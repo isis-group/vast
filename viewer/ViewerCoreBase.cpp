@@ -1,5 +1,8 @@
 #include "ViewerCoreBase.hpp"
 
+#define STR(s) _xstr_(s)
+#define _xstr_(s) std::string(#s)
+
 namespace isis
 {
 namespace viewer
@@ -35,6 +38,12 @@ void ViewerCoreBase::setImageList( std::list< data::Image > imgList, const Image
 		m_DataContainer.clear();
 	}
 	ViewerCoreBase::addImageList( imgList, imageType );
+}
+
+
+std::string ViewerCoreBase::getVersion() const
+{
+	return STR( _ISIS_VIEWER_VERSION_MAJOR ) + "." + STR( _ISIS_VIEWER_VERSION_MINOR ) + "." + STR( _ISIS_VIEWER_VERSION_PATCH );
 }
 
 

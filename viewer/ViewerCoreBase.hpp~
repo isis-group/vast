@@ -31,8 +31,6 @@ public:
 		} else { return false; }
 	}
 	
-	bool setAllImagesToIdentity( bool identity );
-	
 	const DataContainer &getDataContainer() const { return m_DataContainer; }
 	DataContainer &getDataContainer() { return m_DataContainer; }
 

@@ -1,5 +1,8 @@
 #include "ViewerCoreBase.hpp"
 
+#define STR(s) _xstr_(s)
+#define _xstr_(s) std::string(#s)
+
 namespace isis
 {
 namespace viewer
@@ -11,15 +14,6 @@ ViewerCoreBase::ViewerCoreBase( )
 	
 {
 }
-
-bool ViewerCoreBase::setAllImagesToIdentity(bool identity)
-{
-#warning implement setAllImagesToIdentity
-	BOOST_FOREACH( DataContainer::reference images, m_DataContainer ) {
-		
-	}
-}
-
 
 void ViewerCoreBase::addImageList( const std::list< data::Image > imageList, const ImageHolder::ImageType &imageType )
 {
@@ -44,6 +38,12 @@ void ViewerCoreBase::setImageList( std::list< data::Image > imgList, const Image
 		m_DataContainer.clear();
 	}
 	ViewerCoreBase::addImageList( imgList, imageType );
+}
+
+
+std::string ViewerCoreBase::getVersion() const
+{
+
 }
 
 

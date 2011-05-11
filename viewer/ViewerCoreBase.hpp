@@ -17,6 +17,8 @@ class ViewerCoreBase
 public:
 	ViewerCoreBase( );
 
+	std::string getVersion() const;
+	
 	virtual void addImageList( const std::list< data::Image > imageList, const ImageHolder::ImageType &imageType );
 	virtual void setImageList( const std::list< data::Image > imageList, const ImageHolder::ImageType &imageType );
 
