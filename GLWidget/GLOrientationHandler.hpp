@@ -14,7 +14,8 @@ namespace isis
 {
 namespace viewer
 {
-
+namespace GL 
+{
 
 class GLOrientationHandler
 {
@@ -59,7 +60,7 @@ public:
 };
 
 
-
+}
 }
 }// end namespace
 

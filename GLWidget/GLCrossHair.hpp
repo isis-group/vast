@@ -7,7 +7,9 @@ namespace isis
 {
 namespace viewer
 {
-
+namespace GL
+{
+	
 class GLCrossHair
 {
 public:
@@ -23,7 +25,7 @@ private:
 
 };
 
-
+}
 }
 }
 

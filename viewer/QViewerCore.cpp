@@ -19,8 +19,8 @@ QViewerCore::registerWidget( std::string key, QWidget *widget, QViewerCore::Acti
 		widget->setObjectName( QString( key.c_str() ) );
 		m_WidgetMap.insert( std::make_pair< std::string,  QWidget * >( key, widget ) );
 
-		if( dynamic_cast<QGLWidgetImplementation *>( widget ) ) {
-			QGLWidgetImplementation *w = dynamic_cast<QGLWidgetImplementation *>( widget );
+		if( dynamic_cast<GL::QGLWidgetImplementation *>( widget ) ) {
+			GL::QGLWidgetImplementation *w = dynamic_cast<GL::QGLWidgetImplementation *>( widget );
 			connect( w, SIGNAL( voxelCoordsChanged( util::ivector4 ) ), this, SLOT( voxelCoordsChanged ( util::ivector4 ) ) );
 			connect( w, SIGNAL( physicalCoordsChanged( util::fvector4 ) ), this, SLOT( physicalCoordsChanged ( util::fvector4 ) ) );
 			connect( this, SIGNAL( emitVoxelCoordChanged( util::ivector4 ) ), w, SLOT( lookAtVoxel( util::ivector4 ) ) );
@@ -58,7 +58,7 @@ void QViewerCore::addImageList( const std::list< data::Image > imageList, const 
 	emitImagesChanged( getDataContainer() );
 	BOOST_FOREACH( WidgetMap::reference widget, m_WidgetMap ) {
 		BOOST_FOREACH( DataContainer::const_reference data, getDataContainer() ) {
-			dynamic_cast<QGLWidgetImplementation *>( widget.second )->addImage( data.second );
+			dynamic_cast<GL::QGLWidgetImplementation *>( widget.second )->addImage( data.second );
 		}
 	}
 }
@@ -69,7 +69,7 @@ void QViewerCore::setImageList( const std::list< data::Image > imageList, const 
 	emitImagesChanged( getDataContainer() );
 	BOOST_FOREACH( WidgetMap::reference widget, m_WidgetMap ) {
 		BOOST_FOREACH( DataContainer::const_reference data, getDataContainer() ) {
-			dynamic_cast<QGLWidgetImplementation *>( widget.second )->addImage( data.second );
+			dynamic_cast<GL::QGLWidgetImplementation *>( widget.second )->addImage( data.second );
 		}
 	}
 }

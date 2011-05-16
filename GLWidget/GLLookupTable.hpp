@@ -8,6 +8,9 @@ namespace isis
 {
 namespace viewer
 {
+namespace GL 
+{ 
+
 class GLLookUpTable
 {
 public:
@@ -18,6 +21,7 @@ public:
 
 };
 
+}
 }
 }
 

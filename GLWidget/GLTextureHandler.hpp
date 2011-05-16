@@ -15,6 +15,8 @@ namespace isis
 {
 namespace viewer
 {
+namespace GL 
+{
 
 /**
  * This class is responsible for copying the image data to a GL_TEXTURE_3D.
@@ -125,6 +127,7 @@ private:
 
 };
 
+}
 }
 }
 

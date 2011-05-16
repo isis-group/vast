@@ -6,7 +6,9 @@ namespace isis
 {
 namespace viewer
 {
-
+namespace GL 
+{
+	
 GLShaderHandler::GLShaderHandler()
 	: m_isEnabled( false ),
 	  m_Context( false )
@@ -14,7 +16,7 @@ GLShaderHandler::GLShaderHandler()
 
 }
 
-void GLShaderHandler::addShader( const std::string &name, const std::string &source, const isis::viewer::GLShader::ShaderType &shaderType )
+void GLShaderHandler::addShader( const std::string &name, const std::string &source, const isis::viewer::GL::GLShader::ShaderType &shaderType )
 {
 	GLShader shader;
 	shader.setShaderType( shaderType );
@@ -71,13 +73,13 @@ void GLShaderHandler::removeShader( const std::string &name )
 }
 
 
-void GLShaderHandler::addShader( const std::string &name, const isis::viewer::GLShader &shader )
+void GLShaderHandler::addShader( const std::string &name, const isis::viewer::GL::GLShader &shader )
 {
 	m_ShaderMap[name] = shader;
 }
 
 
 
-
+}
 }
 } //end namespace

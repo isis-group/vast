@@ -9,6 +9,8 @@ namespace isis
 {
 namespace viewer
 {
+namespace GL 
+{
 
 
 QGLWidgetImplementation::QGLWidgetImplementation( QViewerCore *core, QWidget *parent, QGLWidget *share, PlaneOrientation orientation )
@@ -75,7 +77,7 @@ void QGLWidgetImplementation::connectSignals()
 
 void QGLWidgetImplementation::initializeGL()
 {
-	util::Singletons::get<GLTextureHandler, 10>().copyAllImagesToTextures( m_ViewerCore->getDataContainer(), true, m_InterplationType );
+	util::Singletons::get<GL::GLTextureHandler, 10>().copyAllImagesToTextures( m_ViewerCore->getDataContainer(), true, m_InterplationType );
 	glClearColor( 0.0, 0.0, 0.0, 0.0 );
 	glEnable( GL_DEPTH_TEST );
 	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
@@ -539,7 +541,7 @@ void  QGLWidgetImplementation::setShowLabels( bool show )
 
 }
 
-void QGLWidgetImplementation::setInterpolationType( const isis::viewer::GLTextureHandler::InterpolationType interpolation )
+void QGLWidgetImplementation::setInterpolationType( const isis::viewer::GL::GLTextureHandler::InterpolationType interpolation )
 {
 	m_InterplationType = interpolation;
 	updateScene();
@@ -550,6 +552,6 @@ void QGLWidgetImplementation::updateScene()
 	lookAtPhysicalCoords( m_ViewerCore->getCurrentImage()->getImage()->getPhysicalCoordsFromIndex( m_StateValues[m_ViewerCore->getCurrentImage()].voxelCoords ) );
 }
 
-
+}
 }
 } // end namespace

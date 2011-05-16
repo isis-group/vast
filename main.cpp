@@ -69,7 +69,6 @@ int main( int argc, char *argv[] )
 		}
 	}
 	
-	
 	isis::viewer::MainWindow isisViewerMainWindow( core );
 
 	if( app.parameters["type"].toString() == "anatomical" && app.parameters["in"].isSet() ) {

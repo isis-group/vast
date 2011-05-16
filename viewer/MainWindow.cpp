@@ -9,6 +9,7 @@
 #include <common.hpp>
 #include <DataStorage/io_factory.hpp>
 
+
 namespace isis
 {
 namespace viewer
@@ -17,6 +18,7 @@ namespace viewer
 MainWindow::MainWindow( QViewerCore *core )
 	: m_ViewerCore( core )
 {
+	m_SubViewWindow = new SubViewWindow( this );
 	actionMakeCurrent = new QAction( "Make current", this );
 	actionAsZMap = new QAction( "Show as zmap", this );
 	actionAsZMap->setCheckable( true );
@@ -35,9 +37,11 @@ MainWindow::MainWindow( QViewerCore *core )
 	connect( ui.lowerThreshold, SIGNAL( sliderMoved( int ) ), this, SLOT( lowerThresholdChanged( int ) ) );
 	connect( ui.timestepSpinBox, SIGNAL( valueChanged( int ) ), m_ViewerCore, SLOT( timestepChanged( int ) ) ) ;
 	connect( ui.interpolationType, SIGNAL( currentIndexChanged( int ) ), this, SLOT( interpolationChanged( int ) ) );
+	connect( ui.axialDockWidget, SIGNAL( topLevelChanged(bool)), this, SLOT( axialTopLevelChanged( bool ) ) );
+	
 	//we need a master widget to keep opengl running in case all visible widgets were closed
 
-	m_MasterWidget = new QGLWidgetImplementation( core, 0, axial );
+	m_MasterWidget = new GL::QGLWidgetImplementation( core, 0, axial );
 
 	m_AxialWidget =  m_MasterWidget->createSharedWidget( ui.axialWidget, axial );
 	m_ViewerCore->registerWidget( "axialView", m_AxialWidget );
@@ -242,9 +246,30 @@ void MainWindow::upperThresholdChanged( int upperThreshold )
 
 void MainWindow::interpolationChanged( int index )
 {
-	util::Singletons::get<GLTextureHandler, 10>().forceReloadingAllOfType( ImageHolder::z_map, static_cast<GLTextureHandler::InterpolationType>( index ) );
+	util::Singletons::get<GL::GLTextureHandler, 10>().forceReloadingAllOfType( ImageHolder::z_map, static_cast<GL::GLTextureHandler::InterpolationType>( index ) );
 	m_ViewerCore->updateScene();
 }
+
+void MainWindow::axialTopLevelChanged( bool docked )
+{
+	if(docked) {
+		m_SubViewWindow->setEnabled( true );
+		m_SubViewWindow->show();	
+	}
+		
+	
+	
+}
+
+void MainWindow::coronalTopLevelChanged( bool docked )
+{
+
+}
+void MainWindow::sagittalTopLevelChanged( bool docked )
+{
+
+}
+
 
 
 }

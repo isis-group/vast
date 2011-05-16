@@ -5,7 +5,9 @@ namespace isis
 {
 namespace viewer
 {
-
+namespace GL
+{
+	
 const unsigned short GLOrientationHandler::matrixSize = 4;
 
 using namespace boost::numeric::ublas;
@@ -169,6 +171,6 @@ void GLOrientationHandler::makeIdentity( GLdouble *matrix )
 }
 
 
-
+}
 }
 } // end namespace

@@ -13,7 +13,9 @@ namespace isis
 {
 namespace viewer
 {
-
+namespace GL
+{
+	
 class GLShader
 {
 public:
@@ -74,7 +76,7 @@ private:
 	bool m_Context;
 };
 
-
+}
 }
 } //end namespace
 

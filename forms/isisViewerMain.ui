@@ -16,7 +16,7 @@
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
     <item row="0" column="0">
-     <widget class="QDockWidget" name="dockWidget">
+     <widget class="QDockWidget" name="axialDockWidget">
       <property name="floating">
        <bool>false</bool>
       </property>
@@ -43,7 +43,7 @@
      </widget>
     </item>
     <item row="0" column="1">
-     <widget class="QDockWidget" name="dockWidget_2">
+     <widget class="QDockWidget" name="sagittalDockWidget">
       <property name="floating">
        <bool>false</bool>
       </property>
@@ -70,7 +70,7 @@
      </widget>
     </item>
     <item row="1" column="0">
-     <widget class="QDockWidget" name="dockWidget_3">
+     <widget class="QDockWidget" name="coronalDockWidget">
       <property name="floating">
        <bool>false</bool>
       </property>

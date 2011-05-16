@@ -18,8 +18,9 @@ namespace isis
 {
 namespace viewer
 {
-
 class QViewerCore;
+namespace GL
+{
 
 class QGLWidgetImplementation : public QGLWidget
 {
@@ -144,7 +145,7 @@ private:
 	ScalingType m_ScalingType;
 	std::pair<double, double> m_ScalingPair;
 
-	isis::viewer::GLLookUpTable m_LookUpTable;
+	isis::viewer::GL::GLLookUpTable m_LookUpTable;
 
 	//flags
 	bool zoomEventHappened;
@@ -156,7 +157,7 @@ private:
 };
 
 
-
+}
 }
 }//end namespace
 

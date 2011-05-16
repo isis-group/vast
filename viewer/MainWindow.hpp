@@ -12,6 +12,7 @@
 #include "QViewerCore.hpp"
 #include "QGLWidgetImplementation.hpp"
 #include <CoreUtils/type.hpp>
+#include "SubViewWindow.hpp"
 
 namespace isis
 {
@@ -44,13 +45,19 @@ public Q_SLOTS:
 
 	void upperThresholdChanged( int );
 	void lowerThresholdChanged( int );
+	
+	void axialTopLevelChanged( bool );
+	void sagittalTopLevelChanged( bool );
+	void coronalTopLevelChanged( bool );
 
 
 private:
-	QGLWidgetImplementation *m_AxialWidget;
-	QGLWidgetImplementation *m_CoronalWidget;
-	QGLWidgetImplementation *m_SagittalWidget;
-	QGLWidgetImplementation *m_MasterWidget;
+	GL::QGLWidgetImplementation *m_AxialWidget;
+	GL::QGLWidgetImplementation *m_CoronalWidget;
+	GL::QGLWidgetImplementation *m_SagittalWidget;
+	GL::QGLWidgetImplementation *m_MasterWidget;
+	
+	SubViewWindow *m_SubViewWindow;
 
 	QAction *actionMakeCurrent;
 	QAction *actionAsZMap;
