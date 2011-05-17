@@ -85,7 +85,7 @@ int main( int argc, char *argv[] )
 	}
 
 	if( app.parameters["z"].isSet() ) {
-		core->addImageList( zImgList, ImageHolder::z_map );
+		core->addImageList( zImgList, ImageHolder::z_map, true );
 	}
 	isisViewerMainWindow.show();
 	return app.getQApplication().exec();

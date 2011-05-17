@@ -264,11 +264,9 @@ void MainWindow::sagittalTopLevelChanged( bool docked )
 
 void MainWindow::setNumberOfRows(size_t rows)
 {
-	std::list<QDockWidget*> dockList;
-	std::list<QFrame*> frameList;
 	ui.gridLayout->addWidget( ui.coronalDockWidget, 0, 2);
 	ui.gridLayout->removeWidget( ui.setupDockWidget );
-	ui.setupDockWidget->setVisible( false );
+// 	ui.setupDockWidget->setVisible( false );
 	m_AxialWidget->addImage( m_ViewerCore->getDataContainer().getImageByID(0));
 	m_SagittalWidget->addImage( m_ViewerCore->getDataContainer().getImageByID(0));
 	m_CoronalWidget->addImage( m_ViewerCore->getDataContainer().getImageByID(0));

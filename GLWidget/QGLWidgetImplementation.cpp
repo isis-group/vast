@@ -152,7 +152,7 @@ void QGLWidgetImplementation::updateStateValues( boost::shared_ptr<ImageHolder> 
 
 	GLOrientationHandler::recalculateViewport( width(), height(), state.mappedVoxelSize, state.mappedImageSize, state.viewport, border );
 
-	if( rightButtonPressed || zoomEventHappened && image.get() == m_ViewerCore->getCurrentImage().get() ) {
+	if( rightButtonPressed || zoomEventHappened  ) {
 		zoomEventHappened = false;
 		calculateTranslation( );
 	}
@@ -266,6 +266,8 @@ bool QGLWidgetImplementation::lookAtVoxel( const boost::shared_ptr<ImageHolder> 
 void QGLWidgetImplementation::paintScene( const boost::shared_ptr<ImageHolder> image )
 {
 	glEnable(GL_BLEND);
+	glBlendFunc ( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+
 	const State &state = m_StateValues[image];
 
 	double scaling, bias;
@@ -346,10 +348,10 @@ void QGLWidgetImplementation::paintScene( const boost::shared_ptr<ImageHolder> i
 
 void QGLWidgetImplementation::paintCrosshair()
 {
-// 	m_LUTShader.setEnabled( false );
-// 	m_ScalingShader.setEnabled( false );
+	m_LUTShader.setEnabled( false );
+	m_ScalingShader.setEnabled( false );
 	//paint crosshair
-// 	glDisable( GL_BLEND );
+	glDisable( GL_BLEND );
 	const State &currentState = m_StateValues.begin()->second;
 	glColor4b( 255, 255, 255, 1 );
 	glLineWidth( 1.0 );
@@ -388,8 +390,7 @@ void QGLWidgetImplementation::paintCrosshair()
 
 void QGLWidgetImplementation::viewLabels()
 {
-	m_LUTShader.setEnabled( false );
-	m_ScalingShader.setEnabled( false );
+
 	
 	QFont font;
 	font.setPointSize( 15 );
