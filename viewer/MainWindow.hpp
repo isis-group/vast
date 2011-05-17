@@ -12,7 +12,6 @@
 #include "QViewerCore.hpp"
 #include "QGLWidgetImplementation.hpp"
 #include <CoreUtils/type.hpp>
-#include "SubViewWindow.hpp"
 
 namespace isis
 {
@@ -57,8 +56,6 @@ private:
 	GL::QGLWidgetImplementation *m_SagittalWidget;
 	GL::QGLWidgetImplementation *m_MasterWidget;
 	
-	SubViewWindow *m_SubViewWindow;
-
 	QAction *actionMakeCurrent;
 	QAction *actionAsZMap;
 

@@ -18,7 +18,6 @@ namespace viewer
 MainWindow::MainWindow( QViewerCore *core )
 	: m_ViewerCore( core )
 {
-	m_SubViewWindow = new SubViewWindow( this );
 	actionMakeCurrent = new QAction( "Make current", this );
 	actionAsZMap = new QAction( "Show as zmap", this );
 	actionAsZMap->setCheckable( true );
@@ -252,11 +251,6 @@ void MainWindow::interpolationChanged( int index )
 
 void MainWindow::axialTopLevelChanged( bool docked )
 {
-	if(docked) {
-		m_SubViewWindow->setEnabled( true );
-		m_SubViewWindow->show();	
-	}
-		
 	
 	
 }

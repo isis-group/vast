@@ -47,20 +47,24 @@ void GLShaderHandler::addShader( const std::string &name, const std::string &sou
 		LOG( Debug, info ) << "Shader " << name << " with id " << shader.getShaderID() << " compiled successfully!";
 	}
 
-
 	glAttachShader( m_ProgramID, shader.getShaderID() );
 	m_ShaderMap[name] = shader;
 }
 
 void GLShaderHandler::setEnabled( bool enable )
 {
-	if( enable ) {
+	if( enable && !m_isEnabled) {
+		BOOST_FOREACH( ShaderMapType::const_reference shader, m_ShaderMap ) {
+			glAttachShader( m_ProgramID, shader.second.getShaderID() );
+		}
 		glLinkProgram( m_ProgramID );
 		glValidateProgram( m_ProgramID );
 		glUseProgram( m_ProgramID );
 		m_isEnabled = true;
-	} else {
-		glUseProgram( 0 );
+	} else if (!enable && m_isEnabled ){
+		BOOST_FOREACH( ShaderMapType::const_reference shader, m_ShaderMap ) {
+			glDetachShader( m_ProgramID, shader.second.getShaderID() );
+		}
 		m_isEnabled = false;
 	}
 }
@@ -77,8 +81,6 @@ void GLShaderHandler::addShader( const std::string &name, const isis::viewer::GL
 {
 	m_ShaderMap[name] = shader;
 }
-
-
 
 }
 }

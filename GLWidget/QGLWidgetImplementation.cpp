@@ -81,7 +81,7 @@ void QGLWidgetImplementation::initializeGL()
 	glClearColor( 0.0, 0.0, 0.0, 0.0 );
 	glEnable( GL_DEPTH_TEST );
 	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-	glShadeModel( GL_FLAT );
+	glShadeModel( GL_SMOOTH );
 	glMatrixMode( GL_MODELVIEW );
 	glLoadIdentity();
 	glMatrixMode( GL_PROJECTION );
@@ -138,7 +138,7 @@ void QGLWidgetImplementation::updateStateValues( boost::shared_ptr<ImageHolder> 
 		state.mappedVoxelSize = GLOrientationHandler::transformVector<float>( image->getPropMap().getPropertyAs<util::fvector4>( "voxelSize" ) + image->getPropMap().getPropertyAs<util::fvector4>( "voxelGap" ) , state.planeOrientation );
 		state.mappedImageSize = GLOrientationHandler::transformVector<int>( image->getImageSize(), state.planeOrientation );
 		state.set = true;
-		state.lutID =  m_LookUpTable.getLookUpTableAsTexture( Color::wbryw );
+		state.lutID =  m_LookUpTable.getLookUpTableAsTexture( Color::hsvLUT );
 	}
 
 	state.mappedVoxelCoords = GLOrientationHandler::transformVector<int>( state.voxelCoords, state.planeOrientation );
@@ -302,7 +302,6 @@ void QGLWidgetImplementation::paintScene( const boost::shared_ptr<ImageHolder> i
 
 	//if the image is declared as a zmap
 	if( image->getImageState().imageType == ImageHolder::z_map ) {
-		m_ScalingShader.setEnabled( false );
 		m_LUTShader.setEnabled( true );
 		glActiveTexture( GL_TEXTURE1 );
 		glBindTexture( GL_TEXTURE_1D, state.lutID );
@@ -324,6 +323,7 @@ void QGLWidgetImplementation::paintScene( const boost::shared_ptr<ImageHolder> i
 		m_ScalingShader.addVariable<float>( "scaling", scaling );
 		m_ScalingShader.addVariable<float>( "bias", bias );
 		m_ScalingShader.addVariable<float>( "opacity", image->getImageState().opacity );
+
 	}
 
 	glActiveTexture( GL_TEXTURE0 );
@@ -340,18 +340,17 @@ void QGLWidgetImplementation::paintScene( const boost::shared_ptr<ImageHolder> i
 	glVertex2f( 1.0, -1.0 );
 	glEnd();
 	glDisable( GL_TEXTURE_3D );
-
-	m_ScalingShader.setEnabled( false );
-	m_LUTShader.setEnabled( false );
-
+	
 }
 
 void QGLWidgetImplementation::paintCrosshair()
 {
+// 	m_LUTShader.setEnabled( false );
+// 	m_ScalingShader.setEnabled( false );
 	//paint crosshair
 // 	glDisable( GL_BLEND );
 	const State &currentState = m_StateValues.at( m_ViewerCore->getCurrentImage() );
-	glColor4f( 1, 1, 1, 1 );
+	glColor4b( 255, 255, 255, 1 );
 	glLineWidth( 1.0 );
 	glMatrixMode( GL_PROJECTION );
 	glLoadIdentity();
