@@ -36,8 +36,6 @@ MainWindow::MainWindow( QViewerCore *core )
 	connect( ui.lowerThreshold, SIGNAL( sliderMoved( int ) ), this, SLOT( lowerThresholdChanged( int ) ) );
 	connect( ui.timestepSpinBox, SIGNAL( valueChanged( int ) ), m_ViewerCore, SLOT( timestepChanged( int ) ) ) ;
 	connect( ui.interpolationType, SIGNAL( currentIndexChanged( int ) ), this, SLOT( interpolationChanged( int ) ) );
-	connect( ui.axialDockWidget, SIGNAL( topLevelChanged(bool)), this, SLOT( axialTopLevelChanged( bool ) ) );
-	
 	//we need a master widget to keep opengl running in case all visible widgets were closed
 
 	m_MasterWidget = new GL::QGLWidgetImplementation( core, 0, axial );
@@ -251,17 +249,70 @@ void MainWindow::interpolationChanged( int index )
 
 void MainWindow::axialTopLevelChanged( bool docked )
 {
-	
-	
+#warning implement undockAxial
 }
 
 void MainWindow::coronalTopLevelChanged( bool docked )
 {
-
+#warning implement undockCoronal
 }
 void MainWindow::sagittalTopLevelChanged( bool docked )
 {
+#warning implement undockSagittal
+}
 
+
+void MainWindow::setNumberOfRows(size_t rows)
+{
+	std::list<QDockWidget*> dockList;
+	std::list<QFrame*> frameList;
+	ui.gridLayout->addWidget( ui.coronalDockWidget, 0, 2);
+	ui.gridLayout->removeWidget( ui.setupDockWidget );
+	ui.setupDockWidget->setVisible( false );
+	m_AxialWidget->addImage( m_ViewerCore->getDataContainer().getImageByID(0));
+	m_SagittalWidget->addImage( m_ViewerCore->getDataContainer().getImageByID(0));
+	m_CoronalWidget->addImage( m_ViewerCore->getDataContainer().getImageByID(0));
+	for (size_t r = 0; r < rows-1; r++ ) {
+		QDockWidget* axialDock = new QDockWidget(this);
+		QDockWidget* sagittalDock = new QDockWidget(this);
+		QDockWidget* coronalDock = new QDockWidget(this);
+		axialDock->setFloating( false );
+		sagittalDock->setFloating( false );
+		coronalDock->setFloating( false );
+		axialDock->setAllowedAreas( Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea | Qt::TopDockWidgetArea | Qt::BottomDockWidgetArea );
+		sagittalDock->setAllowedAreas( Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea | Qt::TopDockWidgetArea | Qt::BottomDockWidgetArea );
+		coronalDock->setAllowedAreas( Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea | Qt::TopDockWidgetArea | Qt::BottomDockWidgetArea );
+		axialDock->setFeatures( QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetVerticalTitleBar );
+		sagittalDock->setFeatures( QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetVerticalTitleBar );
+		coronalDock->setFeatures( QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetVerticalTitleBar );
+		axialDock->setWindowTitle( tr("Axial View") );
+		sagittalDock->setWindowTitle( tr("Sagittal View") );
+		coronalDock->setWindowTitle( tr("Coronal View" ) );
+		QFrame* frameAxial = new QFrame( axialDock );
+		QFrame* frameSagittal = new QFrame( axialDock );
+		QFrame* frameCoronal = new QFrame( axialDock );
+		axialDock->setWidget( frameAxial );
+		sagittalDock->setWidget( frameSagittal );
+		coronalDock->setWidget( frameCoronal );
+		ui.gridLayout->addWidget( axialDock, r+1, 0);
+		ui.gridLayout->addWidget( sagittalDock, r+1, 1);
+		ui.gridLayout->addWidget( coronalDock, r+1, 2);
+		GL::QGLWidgetImplementation *axialWidget = m_MasterWidget->createSharedWidget( frameAxial, axial );
+		GL::QGLWidgetImplementation *sagittalWidget = m_MasterWidget->createSharedWidget( frameSagittal, sagittal );
+		GL::QGLWidgetImplementation *coronalWidget = m_MasterWidget->createSharedWidget( frameCoronal, coronal );
+		std::stringstream nameAxial;
+		std::stringstream nameSagittal;
+		std::stringstream nameCoronal;
+		nameAxial << "axialView_" << r+1;
+		nameSagittal << "sagittalView_" << r+1;
+		nameCoronal << "coronalView_" << r+1;
+		m_ViewerCore->registerWidget(nameAxial.str(), axialWidget );	
+		m_ViewerCore->registerWidget(nameSagittal.str(), sagittalWidget );	
+		m_ViewerCore->registerWidget(nameCoronal.str(), coronalWidget );
+		axialWidget->addImage( m_ViewerCore->getDataContainer().getImageByID(r+1) );
+		sagittalWidget->addImage( m_ViewerCore->getDataContainer().getImageByID(r+1) );	
+		coronalWidget->addImage( m_ViewerCore->getDataContainer().getImageByID(r+1) );
+	}
 }
 
 

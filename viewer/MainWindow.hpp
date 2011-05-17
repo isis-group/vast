@@ -48,6 +48,8 @@ public Q_SLOTS:
 	void axialTopLevelChanged( bool );
 	void sagittalTopLevelChanged( bool );
 	void coronalTopLevelChanged( bool );
+	
+	void setNumberOfRows( size_t rows );
 
 
 private:

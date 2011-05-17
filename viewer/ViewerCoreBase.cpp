@@ -30,6 +30,12 @@ void ViewerCoreBase::addImageList( const std::list< data::Image > imageList, con
 
 }
 
+void ViewerCoreBase::addImage(const isis::data::Image& image, const isis::viewer::ImageHolder::ImageType& imageType)
+{
+	m_DataContainer.addImage( image, imageType );
+	setCurrentImage( m_DataContainer.begin()->second );
+}
+
 
 
 void ViewerCoreBase::setImageList( std::list< data::Image > imgList, const ImageHolder::ImageType &imageType )

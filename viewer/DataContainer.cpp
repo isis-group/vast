@@ -31,6 +31,16 @@ bool DataContainer::addImage( const data::Image &image, const ImageHolder::Image
 	return true;
 }
 
+boost::shared_ptr< ImageHolder > DataContainer::getImageByID(short unsigned int id) const
+{
+	BOOST_FOREACH( DataContainer::const_reference image, *this ) {
+		if( image.second->getID() == id ) {
+			return image.second;
+		}
+	}
+	LOG( Runtime, warning ) << "There is no image with id " << id << " !";
+}
+
 
 }
 } // end namespace

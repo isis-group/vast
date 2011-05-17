@@ -100,7 +100,7 @@
      </widget>
     </item>
     <item row="1" column="1">
-     <widget class="QDockWidget" name="dockWidget_4">
+     <widget class="QDockWidget" name="setupDockWidget">
       <property name="floating">
        <bool>false</bool>
       </property>
@@ -333,6 +333,19 @@
            </property>
            <property name="text">
             <string>0</string>
+           </property>
+          </widget>
+          <widget class="QPushButton" name="testButton">
+           <property name="geometry">
+            <rect>
+             <x>300</x>
+             <y>70</y>
+             <width>92</width>
+             <height>28</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>Test</string>
            </property>
           </widget>
          </widget>

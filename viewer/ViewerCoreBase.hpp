@@ -21,6 +21,7 @@ public:
 	
 	virtual void addImageList( const std::list< data::Image > imageList, const ImageHolder::ImageType &imageType );
 	virtual void setImageList( const std::list< data::Image > imageList, const ImageHolder::ImageType &imageType );
+	virtual void addImage( const data::Image &image, const ImageHolder::ImageType &imageType );
 
 	void setCurrentImage( const boost::shared_ptr<ImageHolder> image ) { m_CurrentImage = image; }
 
