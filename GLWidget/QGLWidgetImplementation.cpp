@@ -343,6 +343,7 @@ void QGLWidgetImplementation::paintScene( const boost::shared_ptr<ImageHolder> i
 	glVertex2f( 1.0, -1.0 );
 	glEnd();
 	glDisable( GL_TEXTURE_3D );
+
 	
 }
 
@@ -353,7 +354,7 @@ void QGLWidgetImplementation::paintCrosshair()
 	//paint crosshair
 	glDisable( GL_BLEND );
 	const State &currentState = m_StateValues.begin()->second;
-	glColor4b( 255, 255, 255, 1 );
+	glColor4f( 1, 1, 1, 1 );
 	glLineWidth( 1.0 );
 	glMatrixMode( GL_PROJECTION );
 	glLoadIdentity();
@@ -390,7 +391,7 @@ void QGLWidgetImplementation::paintCrosshair()
 
 void QGLWidgetImplementation::viewLabels()
 {
-
+	m_LUTShader.setEnabled( false );
 	
 	QFont font;
 	font.setPointSize( 15 );

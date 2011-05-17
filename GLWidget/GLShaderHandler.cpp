@@ -65,6 +65,7 @@ void GLShaderHandler::setEnabled( bool enable )
 		BOOST_FOREACH( ShaderMapType::const_reference shader, m_ShaderMap ) {
 			glDetachShader( m_ProgramID, shader.second.getShaderID() );
 		}
+		glUseProgramObjectARB(0);
 		m_isEnabled = false;
 	}
 }
