@@ -22,6 +22,7 @@ Q_SIGNALS:
 
 protected:
 	Ui::isisViewerMain ui;
+	QScrollArea *sa;
 	QString m_CurrentPath;
 };
 

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>923</width>
-    <height>815</height>
+    <width>951</width>
+    <height>826</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -30,33 +30,6 @@
        <layout class="QHBoxLayout" name="horizontalLayout">
         <item>
          <widget class="QFrame" name="axialWidget">
-          <property name="frameShape">
-           <enum>QFrame::NoFrame</enum>
-          </property>
-          <property name="frameShadow">
-           <enum>QFrame::Raised</enum>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </widget>
-     </widget>
-    </item>
-    <item row="0" column="1">
-     <widget class="QDockWidget" name="sagittalDockWidget">
-      <property name="floating">
-       <bool>false</bool>
-      </property>
-      <property name="features">
-       <set>QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable|QDockWidget::DockWidgetVerticalTitleBar</set>
-      </property>
-      <property name="windowTitle">
-       <string>Sagittal View</string>
-      </property>
-      <widget class="QWidget" name="dockWidgetContents_11">
-       <layout class="QHBoxLayout" name="horizontalLayout_3">
-        <item>
-         <widget class="QFrame" name="sagittalWidget">
           <property name="frameShape">
            <enum>QFrame::NoFrame</enum>
           </property>
@@ -335,23 +308,47 @@
             <string>0</string>
            </property>
           </widget>
-          <widget class="QPushButton" name="testButton">
-           <property name="geometry">
-            <rect>
-             <x>300</x>
-             <y>70</y>
-             <width>92</width>
-             <height>28</height>
-            </rect>
-           </property>
-           <property name="text">
-            <string>Test</string>
-           </property>
-          </widget>
          </widget>
         </item>
        </layout>
       </widget>
+     </widget>
+    </item>
+    <item row="0" column="1">
+     <widget class="QDockWidget" name="sagittalDockWidget">
+      <property name="floating">
+       <bool>false</bool>
+      </property>
+      <property name="features">
+       <set>QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable|QDockWidget::DockWidgetVerticalTitleBar</set>
+      </property>
+      <property name="windowTitle">
+       <string>Sagittal View</string>
+      </property>
+      <widget class="QWidget" name="dockWidgetContents_11">
+       <layout class="QHBoxLayout" name="horizontalLayout_3">
+        <item>
+         <widget class="QFrame" name="sagittalWidget">
+          <property name="frameShape">
+           <enum>QFrame::NoFrame</enum>
+          </property>
+          <property name="frameShadow">
+           <enum>QFrame::Raised</enum>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </widget>
+    </item>
+    <item row="2" column="0" colspan="2">
+     <widget class="QFrame" name="frame">
+      <property name="frameShape">
+       <enum>QFrame::StyledPanel</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Raised</enum>
+      </property>
      </widget>
     </item>
    </layout>
@@ -361,7 +358,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>923</width>
+     <width>951</width>
      <height>25</height>
     </rect>
    </property>

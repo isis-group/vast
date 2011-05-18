@@ -352,7 +352,6 @@ void QGLWidgetImplementation::paintCrosshair()
 	m_LUTShader.setEnabled( false );
 	m_ScalingShader.setEnabled( false );
 	//paint crosshair
-// 	glDisable( GL_BLEND );
 	const State &currentState = m_StateValues.begin()->second;
 	glColor4f( 1, 1, 1, 1 );
 	glLineWidth( 1.0 );

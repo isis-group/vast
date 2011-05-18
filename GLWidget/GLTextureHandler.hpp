@@ -1,8 +1,6 @@
 #ifndef GLMEMORYMANAGER_HPP
 #define GLMEMORYMANAGER_HPP
 
-#define GL_GLEXT_PROTOTYPES
-
 #include "GLCommon.hpp"
 #include "DataContainer.hpp"
 #include "ViewerCoreBase.hpp"

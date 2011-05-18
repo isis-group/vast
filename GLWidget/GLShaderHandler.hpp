@@ -1,8 +1,6 @@
 #ifndef GLSHADER_HPP
 #define GLSHADER_HPP
 
-#define GL_GLEXT_PROTOTYPES
-
 #include "GLCommon.hpp"
 #include <iostream>
 #include <map>

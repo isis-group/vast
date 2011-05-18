@@ -1,8 +1,6 @@
 #ifndef QGLWIDGETIMPLEMENTATION_HPP
 #define QGLWIDGETIMPLEMENTATION_HPP
 
-#define GL_GLEXT_PROTOTYPES
-
 #include "GLCommon.hpp"
 #include <QtOpenGL/QGLWidget>
 #include "QViewerCore.hpp"

@@ -1,5 +1,5 @@
 #define STRINGIFY(A) #A
-#include <boost/concept_check.hpp>
+#include <string>
 
 std::string colormap_shader_code = STRINGIFY(
 									   uniform sampler3D imageTexture;

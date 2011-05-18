@@ -66,6 +66,7 @@ void GLShaderHandler::setEnabled( bool enable )
 			glDetachShader( m_ProgramID, shader.second.getShaderID() );
 		}
 		glUseProgramObjectARB(0);
+		glUseProgram(0);
 		m_isEnabled = false;
 	}
 }
