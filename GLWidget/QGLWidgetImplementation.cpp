@@ -314,6 +314,12 @@ void QGLWidgetImplementation::paintGL()
 		glDisable( GL_TEXTURE_3D );
 		}
 	}
+	GLenum glErrorCode = glGetError();
+
+	if( glErrorCode ) {
+		LOG( Runtime, error ) << "Error during painting scene. Error code is " << glErrorCode
+								<< " ( " << gluErrorString(glErrorCode) << " )";
+	}
 }
 
 void QGLWidgetImplementation::paintCrosshair()

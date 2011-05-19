@@ -83,11 +83,16 @@ private:
 		glBindTexture( GL_TEXTURE_3D, texture );
 		glTexParameteri( GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, interpolationType );
 		glTexParameteri( GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, interpolationType );
-		glTexParameteri( GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER );
-		glTexParameteri( GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER );
-		glTexParameteri( GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_BORDER );
+		glTexParameteri( GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
+		glTexParameteri( GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
+		glTexParameteri( GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE );
 		GLint internalFormat;
 		GLenum dataFormat;
+		if(!gluCheckExtension((const GLubyte*)"GL_ARB_texture_non_power_of_two", glGetString(GL_EXTENSIONS))   )
+		{
+			LOG(Runtime, info) << "Extension GL_ARB_texture_non_power_of_two was not found. Generating power-of-two texture";  
+		}
+		
 
 		if( alpha ) {
 			TYPE *dataWithAplpha = ( TYPE * ) calloc( volume * 2, sizeof( TYPE ) );
@@ -115,7 +120,8 @@ private:
 
 		if( glErrorCode ) {
 			LOG( Runtime, error ) << "Error during loading image " << image->getID()
-								  << " with timestep " << timestep << " to glTexture3D. Error code is " << glErrorCode;
+								  << " with timestep " << timestep << " to glTexture3D. Error code is " << glErrorCode
+								  << " ( " << gluErrorString(glErrorCode) << " )";
 			return 0;
 		} else {
 			m_ImageMap[image].insert( std::make_pair<size_t, GLuint >( timestep, texture ) );
