@@ -198,29 +198,17 @@ bool QGLWidgetImplementation::calculateTranslation(  )
 	}
 }
 
-bool QGLWidgetImplementation::lookAtPhysicalCoords( const boost::shared_ptr< ImageHolder > image, const isis::util::fvector4 &physicalCoords )
-{
-	lookAtVoxel( image, image->getImage()->getIndexFromPhysicalCoords( physicalCoords ) );
-}
 
 bool QGLWidgetImplementation::lookAtPhysicalCoords( const isis::util::fvector4 &physicalCoords )
 {
-	redraw();
-	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-	glEnable ( GL_BLEND );
-	glBlendFunc ( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+
 	BOOST_FOREACH( StateMap::const_reference state, m_StateValues ) {
 		updateStateValues(  state.first, state.first->getImage()->getIndexFromPhysicalCoords( physicalCoords ) );
 	}
 
-	BOOST_FOREACH( StateMap::const_reference state, m_StateValues ) {
-		if( state.first->getImageState().visible ) {
-			paintScene(  state.first );
-		}
-	}
-
+	
 	if( m_StateValues.size() ) {
-		paintCrosshair();
+		redraw();
 	}
 }
 
@@ -238,113 +226,94 @@ bool QGLWidgetImplementation::lookAtVoxel( const isis::util::ivector4 &voxelCoor
 	BOOST_FOREACH( StateMap::const_reference state, m_StateValues ) {
 		updateStateValues(  state.first, voxelCoords );
 	}
+
+	if( m_StateValues.size() ) {
+		redraw();		
+	}
+}
+
+
+void QGLWidgetImplementation::paintGL()
+{
+	glClearColor(0,0,0,0);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glEnable ( GL_BLEND );
+	glBlendFunc ( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+	paintCrosshair();
 	BOOST_FOREACH( StateMap::const_reference state, m_StateValues ) {
 		if( state.first->getImageState().visible ) {
-			paintScene(  state.first );
+			double scaling, bias;
+		if( m_ScalingType == automatic_scaling ) {
+			scaling = state.first->getOptimalScalingPair().second;
+			bias = state.first->getOptimalScalingPair().first;
+		} else if ( m_ScalingType == manual_scaling ) {
+			scaling = m_ScalingPair.second;
+			bias = m_ScalingPair.first;
+		} else {
+			scaling = 1.0;
+			bias = 0.0;
+		}
+
+		glViewport( state.second.viewport[0], state.second.viewport[1], state.second.viewport[2], state.second.viewport[3] );
+		glMatrixMode( GL_PROJECTION );
+		glLoadIdentity();
+		glLoadMatrixd( state.second.projectionMatrix );
+		glMatrixMode( GL_MODELVIEW );
+		glLoadIdentity();
+		glLoadMatrixd( state.second.modelViewMatrix );
+		
+		if( state.first.get() == m_ViewerCore->getCurrentImage().get() ) {
+			glTranslatef( 0.0, 0.0, -0.1 );
+		} 
+		if( state.first->getImageState().imageType == ImageHolder::z_map ) {
+			glTranslatef( 0.0, 0.0, -0.2 );
+		}
+		
+		glMatrixMode( GL_TEXTURE );
+		glLoadIdentity();
+		glLoadMatrixd( state.second.textureMatrix );
+		//shader
+
+		//if the image is declared as a zmap
+		if( state.first->getImageState().imageType == ImageHolder::z_map ) {
+			m_LUTShader.setEnabled( true );
+			glActiveTexture( GL_TEXTURE1 );
+			glBindTexture( GL_TEXTURE_1D, state.second.lutID );
+			m_LUTShader.addVariable<float>( "lut", 1, true );
+			m_LUTShader.addVariable<float>( "max", state.first->getMinMax().second->as<float>() );
+			m_LUTShader.addVariable<float>( "min", state.first->getMinMax().first->as<float>() );
+			m_LUTShader.addVariable<float>( "killZeros", 1.0 );
+			m_LUTShader.addVariable<float>( "upper_threshold", state.first->getImageState().threshold.second );
+			m_LUTShader.addVariable<float>( "lower_threshold", state.first->getImageState().threshold.first );
+			m_LUTShader.addVariable<float>( "bias", 0.0 );
+			m_LUTShader.addVariable<float>( "scaling", 1.0 );
+			m_LUTShader.addVariable<float>( "opacity", state.first->getImageState().opacity );
+		} else if ( state.first->getImageState().imageType == ImageHolder::anatomical_image ) {
+			m_ScalingShader.setEnabled( true );
+			m_ScalingShader.addVariable<float>( "max", state.first->getMinMax().second->as<float>() );
+			m_ScalingShader.addVariable<float>( "min", state.first->getMinMax().first->as<float>() );
+			m_ScalingShader.addVariable<float>( "upper_threshold",  state.first->getImageState().threshold.second );
+			m_ScalingShader.addVariable<float>( "lower_threshold", state.first->getImageState().threshold.first );
+			m_ScalingShader.addVariable<float>( "scaling", scaling );
+			m_ScalingShader.addVariable<float>( "bias", bias );
+			m_ScalingShader.addVariable<float>( "opacity", state.first->getImageState().opacity );
+
+		}
+		glActiveTexture( GL_TEXTURE0 );
+		glBindTexture( GL_TEXTURE_3D, state.second.textureID );
+		glBegin( GL_QUADS );
+		glTexCoord3f( 0, 0, state.second.normalizedSlice );
+		glVertex2f( -1.0, -1.0 );
+		glTexCoord3f( 0, 1, state.second.normalizedSlice );
+		glVertex2f( -1.0, 1.0 );
+		glTexCoord3f( 1, 1, state.second.normalizedSlice );
+		glVertex2f( 1.0, 1.0 );
+		glTexCoord3f( 1, 0, state.second.normalizedSlice );
+		glVertex2f( 1.0, -1.0 );
+		glEnd();
+		glDisable( GL_TEXTURE_3D );
 		}
 	}
-
-	if( m_StateValues.size() ) {
-		paintCrosshair();
-	}
-}
-
-bool QGLWidgetImplementation::lookAtVoxel( const boost::shared_ptr<ImageHolder> image, const util::ivector4 &voxelCoords )
-{
-	updateStateValues( image, voxelCoords );
-
-	if( image->getImageState().visible ) {
-		paintScene( image );
-	}
-
-	if( m_StateValues.size() ) {
-		paintCrosshair();
-	}
-}
-
-
-void QGLWidgetImplementation::paintScene( const boost::shared_ptr<ImageHolder> image )
-{
-	glEnable(GL_BLEND);
-	glBlendFunc ( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
-
-	const State &state = m_StateValues[image];
-
-	double scaling, bias;
-
-	if( m_ScalingType == automatic_scaling ) {
-		scaling = image->getOptimalScalingPair().second;
-		bias = image->getOptimalScalingPair().first;
-	} else if ( m_ScalingType == manual_scaling ) {
-		scaling = m_ScalingPair.second;
-		bias = m_ScalingPair.first;
-	} else {
-		scaling = 1.0;
-		bias = 0.0;
-	}
-
-	glViewport( state.viewport[0], state.viewport[1], state.viewport[2], state.viewport[3] );
-	glMatrixMode( GL_PROJECTION );
-	glLoadIdentity();
-	glLoadMatrixd( state.projectionMatrix );
-	glMatrixMode( GL_MODELVIEW );
-	glLoadIdentity();
-	glLoadMatrixd( state.modelViewMatrix );
-	
-	if( image.get() == m_ViewerCore->getCurrentImage().get() ) {
-		glTranslatef( 0.0, 0.0, -0.1 );
-	} 
-	if( image->getImageState().imageType == ImageHolder::z_map ) {
-		glTranslatef( 0.0, 0.0, -0.2 );
-	}
-	
-	glMatrixMode( GL_TEXTURE );
-	glLoadIdentity();
-	glLoadMatrixd( state.textureMatrix );
-	//shader
-
-	//if the image is declared as a zmap
-	if( image->getImageState().imageType == ImageHolder::z_map ) {
-		m_LUTShader.setEnabled( true );
-		glActiveTexture( GL_TEXTURE1 );
-		glBindTexture( GL_TEXTURE_1D, state.lutID );
-		m_LUTShader.addVariable<float>( "lut", 1, true );
-		m_LUTShader.addVariable<float>( "max", image->getMinMax().second->as<float>() );
-		m_LUTShader.addVariable<float>( "min", image->getMinMax().first->as<float>() );
-		m_LUTShader.addVariable<float>( "killZeros", 1.0 );
-		m_LUTShader.addVariable<float>( "upper_threshold", image->getImageState().threshold.second );
-		m_LUTShader.addVariable<float>( "lower_threshold", image->getImageState().threshold.first );
-		m_LUTShader.addVariable<float>( "bias", 0.0 );
-		m_LUTShader.addVariable<float>( "scaling", 1.0 );
-		m_LUTShader.addVariable<float>( "opacity", image->getImageState().opacity );
-	} else if ( image->getImageState().imageType == ImageHolder::anatomical_image ) {
-		m_ScalingShader.setEnabled( true );
-		m_ScalingShader.addVariable<float>( "max", image->getMinMax().second->as<float>() );
-		m_ScalingShader.addVariable<float>( "min", image->getMinMax().first->as<float>() );
-		m_ScalingShader.addVariable<float>( "upper_threshold",  image->getImageState().threshold.second );
-		m_ScalingShader.addVariable<float>( "lower_threshold", image->getImageState().threshold.first );
-		m_ScalingShader.addVariable<float>( "scaling", scaling );
-		m_ScalingShader.addVariable<float>( "bias", bias );
-		m_ScalingShader.addVariable<float>( "opacity", image->getImageState().opacity );
-
-	}
-
-	glActiveTexture( GL_TEXTURE0 );
-	glBindTexture( GL_TEXTURE_3D, state.textureID );
-
-	glBegin( GL_QUADS );
-	glTexCoord3f( 0, 0, state.normalizedSlice );
-	glVertex2f( -1.0, -1.0 );
-	glTexCoord3f( 0, 1, state.normalizedSlice );
-	glVertex2f( -1.0, 1.0 );
-	glTexCoord3f( 1, 1, state.normalizedSlice );
-	glVertex2f( 1.0, 1.0 );
-	glTexCoord3f( 1, 0, state.normalizedSlice );
-	glVertex2f( 1.0, -1.0 );
-	glEnd();
-	glDisable( GL_TEXTURE_3D );
-
-	
 }
 
 void QGLWidgetImplementation::paintCrosshair()
@@ -382,8 +351,6 @@ void QGLWidgetImplementation::paintCrosshair()
 	if( m_ShowLabels ) {
 		viewLabels();
 	}
-
-	redraw();
 }
 
 

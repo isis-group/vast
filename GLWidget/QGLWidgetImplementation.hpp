@@ -46,8 +46,6 @@ public Q_SLOTS:
 	 */
 	virtual bool removeImage( const boost::shared_ptr<ImageHolder> image );
 	virtual void addImage( const boost::shared_ptr<ImageHolder> image );
-	virtual bool lookAtVoxel( const boost::shared_ptr<ImageHolder> image, const util::ivector4 &voxelCoords );
-	virtual bool lookAtPhysicalCoords( const boost::shared_ptr<ImageHolder> image, const util::fvector4 &physicalCoords );
 	virtual bool lookAtVoxel( const util::ivector4 &voxelCoords );
 	virtual bool lookAtPhysicalCoords( const util::fvector4 &physicalCoords );
 	virtual bool timestepChanged( unsigned int timestep );
@@ -70,8 +68,8 @@ protected:
 	virtual void keyPressEvent( QKeyEvent *e );
 	virtual void initializeGL();
 	virtual void resizeGL( int w, int h );
+	virtual void paintGL();
 
-	virtual void paintScene( const boost::shared_ptr<ImageHolder> image );
 	virtual void paintCrosshair();
 	virtual void updateStateValues( const boost::shared_ptr<ImageHolder> image, const util::ivector4 &voxelCoords );
 
