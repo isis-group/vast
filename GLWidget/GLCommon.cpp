@@ -10,7 +10,9 @@ bool checkAndReportGLError( const std::string &context, LogLevel level )
 	if( glErrorCode ) {
 		LOG( Runtime, level ) << "Error in context \"" << context << "\". Error code is " << glErrorCode
 								<< " ( " << gluErrorString(glErrorCode) << " )";
+		return true;
 	}
+	return false;
 	
 }
 	
