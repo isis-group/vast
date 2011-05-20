@@ -23,7 +23,7 @@ namespace isis {
 namespace viewer {
 namespace GL {
 
-bool checkAndReportGLError( std::string context, LogLevel level = error );
+bool checkAndReportGLError( const std::string &context, LogLevel level = error );
 
 }}}
 

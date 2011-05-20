@@ -28,6 +28,7 @@ GLuint GLLookUpTable::getLookUpTableAsTexture( const Color::LookUpTableType &lut
 	glTexParameteri( GL_TEXTURE_1D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
 	glTexParameteri( GL_TEXTURE_1D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER );
 	glTexImage1D( GL_TEXTURE_1D, 0, GL_RGB8, extent, 0, GL_RGB, GL_FLOAT, colorTable );
+	glDisable( GL_TEXTURE_1D );
 	return id;
 
 }

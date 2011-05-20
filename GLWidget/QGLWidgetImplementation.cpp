@@ -79,10 +79,9 @@ void QGLWidgetImplementation::connectSignals()
 void QGLWidgetImplementation::initializeGL()
 {
 	LOG( Debug, info) << "Using OpenGL version " << glGetString(GL_VERSION) << " .";
+	glShadeModel( GL_FLAT );
 	glClearColor( 0.0, 0.0, 0.0, 0.0 );
-	glEnable( GL_DEPTH_TEST );
 	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-	glShadeModel( GL_SMOOTH );
 	glMatrixMode( GL_MODELVIEW );
 	glLoadIdentity();
 	glMatrixMode( GL_PROJECTION );
@@ -129,7 +128,7 @@ void QGLWidgetImplementation::updateStateValues( boost::shared_ptr<ImageHolder> 
 	}
 
 	//if not happend already copy the image to GLtexture memory and return the texture id
-	state.textureID = util::Singletons::get<GLTextureHandler, 10>().copyImageToTexture( image, state.voxelCoords[3], false, m_InterplationType );
+	state.textureID = util::Singletons::get<GLTextureHandler, 10>().copyImageToTexture( image, state.voxelCoords[3], true, m_InterplationType );
 
 	//update the texture matrix.
 	//The texture matrix holds the orientation of the image and the orientation of the current widget. It does NOT hold the scaling of the image.
@@ -206,7 +205,6 @@ bool QGLWidgetImplementation::lookAtPhysicalCoords( const isis::util::fvector4 &
 	BOOST_FOREACH( StateMap::const_reference state, m_StateValues ) {
 		updateStateValues(  state.first, state.first->getImage()->getIndexFromPhysicalCoords( physicalCoords ) );
 	}
-
 	if( m_StateValues.size() ) {
 		redraw();
 	}
@@ -218,15 +216,10 @@ bool QGLWidgetImplementation::lookAtVoxel( const isis::util::ivector4 &voxelCoor
 	LOG( Debug, verbose_info ) << "Looking at voxel: " << voxelCoords;
 	//someone has told the widget to paint all available images.
 	//So first we have to update the state values for each image
-	redraw();
-	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-	glEnable ( GL_BLEND );
-	glBlendFunc ( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
-
+	
 	BOOST_FOREACH( StateMap::const_reference state, m_StateValues ) {
 		updateStateValues(  state.first, voxelCoords );
 	}
-
 	if( m_StateValues.size() ) {
 		redraw();		
 	}
@@ -239,7 +232,6 @@ void QGLWidgetImplementation::paintGL()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glEnable ( GL_BLEND );
 	glBlendFunc ( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
-	paintCrosshair();
 	BOOST_FOREACH( StateMap::const_reference state, m_StateValues ) {
 		if( state.first->getImageState().visible ) {
 		
@@ -273,6 +265,7 @@ void QGLWidgetImplementation::paintGL()
 			glMatrixMode( GL_TEXTURE );
 			glLoadIdentity();
 			glLoadMatrixd( state.second.textureMatrix );
+			
 			//shader
 
 			//if the image is declared as a zmap
@@ -292,19 +285,16 @@ void QGLWidgetImplementation::paintGL()
 				m_LUTShader.addVariable<float>( "opacity", state.first->getImageState().opacity );
 				glDisable(GL_TEXTURE_1D);
 			} else if ( state.first->getImageState().imageType == ImageHolder::anatomical_image ) {
-// 				glEnable( GL_TEXTURE_3D );
-// 				m_ScalingShader.setEnabled( true );
-// 				m_ScalingShader.addVariable<float>( "max", state.first->getMinMax().second->as<float>() );
-// 				m_ScalingShader.addVariable<float>( "min", state.first->getMinMax().first->as<float>() );
-// 				m_ScalingShader.addVariable<float>( "upper_threshold",  state.first->getImageState().threshold.second );
-// 				m_ScalingShader.addVariable<float>( "lower_threshold", state.first->getImageState().threshold.first );
-// 				m_ScalingShader.addVariable<float>( "scaling", scaling );
-// 				m_ScalingShader.addVariable<float>( "bias", bias );
-// 				m_ScalingShader.addVariable<float>( "opacity", state.first->getImageState().opacity );
-
+				m_ScalingShader.setEnabled( true );
+				m_ScalingShader.addVariable<float>( "max", state.first->getMinMax().second->as<float>() );
+				m_ScalingShader.addVariable<float>( "min", state.first->getMinMax().first->as<float>() );
+				m_ScalingShader.addVariable<float>( "upper_threshold",  state.first->getImageState().threshold.second );
+				m_ScalingShader.addVariable<float>( "lower_threshold", state.first->getImageState().threshold.first );
+				m_ScalingShader.addVariable<float>( "scaling", scaling );
+				m_ScalingShader.addVariable<float>( "bias", bias );
+				m_ScalingShader.addVariable<float>( "opacity", state.first->getImageState().opacity );
 			}
 			glEnable(GL_TEXTURE_3D);
-			glActiveTexture( GL_TEXTURE0 );
 			glBindTexture( GL_TEXTURE_3D, state.second.textureID );
 			glBegin( GL_QUADS );
 			glTexCoord3f( 0, 0, state.second.normalizedSlice );
@@ -318,11 +308,9 @@ void QGLWidgetImplementation::paintGL()
 			glEnd();
 			glDisable( GL_TEXTURE_3D );
 		}
-		
 	}
-	
 	checkAndReportGLError( "painting the scene" );
-
+	paintCrosshair();
 }
 
 void QGLWidgetImplementation::paintCrosshair()
@@ -333,9 +321,10 @@ void QGLWidgetImplementation::paintCrosshair()
 	if( m_ScalingShader.isEnabled()) {
 		m_ScalingShader.setEnabled( false );
 	}
+	glUseProgram(0);
 	//paint crosshair
 	const State &currentState = m_StateValues.begin()->second;
-	glColor4f( 1, 1, 1, 1 );
+	glColor3f(1.0,0.4,0.0);
 	glLineWidth( 1.0 );
 	glMatrixMode( GL_PROJECTION );
 	glLoadIdentity();
@@ -372,8 +361,6 @@ void QGLWidgetImplementation::paintCrosshair()
 
 void QGLWidgetImplementation::viewLabels()
 {
-	m_LUTShader.setEnabled( false );
-	
 	QFont font;
 	font.setPointSize( 15 );
 	font.setPixelSize( 15 );

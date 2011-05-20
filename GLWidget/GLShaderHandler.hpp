@@ -45,22 +45,24 @@ public:
 	void setEnabled( bool enable );
 	void createContext () {
 		m_ProgramID = glCreateProgram();
-		glLinkProgram( m_ProgramID );
 		m_Context = true;
+		checkAndReportGLError( "creating shader context ");
 	}
 	template <typename TYPE>
 	bool addVariable( const std::string &name, TYPE var, bool integer = false ) {
 		if( m_Context ) {
+			LOG( Debug, verbose_info ) << "Setting shader value " << name << " to " << var;
 			GLint location = glGetUniformLocation( m_ProgramID, name.c_str() );
-
+			
 			if( integer ) {
 				glUniform1i( location, var );
 			} else {
 				glUniform1f( location, var );
 			}
-
+			checkAndReportGLError( "setting shader value " + name );
 			return true;
 		} else {
+			LOG(Runtime, error) << "You first have to set a shader context before adding a variable!";
 			return false;
 		}
 
