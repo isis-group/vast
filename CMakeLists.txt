@@ -29,6 +29,9 @@ SET(ISIS_DIR /usr/share/isis/cmake CACHE PATH
 find_package(ISIS REQUIRED)
 include_directories(${ISIS_INCLUDE_DIRS})
 
+option(ISIS_RUNTIME_LOG "Toggles the isis runtime logging" ON)
+option(ISIS_DEBUG_LOG "Toggles the isis debug logging" ON) 
+
 # we use the log definitions of the core
 IF(ISIS_RUNTIME_LOG)
 	ADD_DEFINITIONS(-D_ENABLE_LOG=1)

@@ -17,5 +17,14 @@
 #endif
 #endif
 
+#include "common.hpp"
+
+namespace isis {
+namespace viewer {
+namespace GL {
+
+bool checkAndReportGLError( std::string context, LogLevel level = error );
+
+}}}
 
 #endif

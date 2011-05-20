@@ -88,7 +88,7 @@ private:
 		glTexParameteri( GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE );
 		GLint internalFormat;
 		GLenum dataFormat;
-		if(!gluCheckExtension((const GLubyte*)"GL_ARB_texture_non_power_of_two", glGetString(GL_EXTENSIONS))   )
+		if(!gluCheckExtension((const GLubyte*)"GL_ARB_texture_non_power_of_two", glGetString(GL_EXTENSIONS)) )
 		{
 			LOG(Runtime, info) << "Extension GL_ARB_texture_non_power_of_two was not found. Generating power-of-two texture";  
 		}
@@ -115,13 +115,10 @@ private:
 						  size[2], 0, GL_LUMINANCE, format,
 						  dataPtr );
 		}
-
-		GLenum glErrorCode = glGetError();
-
-		if( glErrorCode ) {
-			LOG( Runtime, error ) << "Error during loading image " << image->getID()
-								  << " with timestep " << timestep << " to glTexture3D. Error code is " << glErrorCode
-								  << " ( " << gluErrorString(glErrorCode) << " )";
+		std::stringstream context;
+		context << "loading timestep " << timestep << " of image " << image->getID() << " to glTexture3D";
+		if( checkAndReportGLError( context.str() ) )
+		{
 			return 0;
 		} else {
 			m_ImageMap[image].insert( std::make_pair<size_t, GLuint >( timestep, texture ) );

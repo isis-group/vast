@@ -243,6 +243,7 @@ void MainWindow::upperThresholdChanged( int upperThreshold )
 
 void MainWindow::interpolationChanged( int index )
 {
+	util::Singletons::get<GL::GLTextureHandler, 10>().forceReloadingAllOfType( ImageHolder::anatomical_image, static_cast<GL::GLTextureHandler::InterpolationType>( index ) );
 	util::Singletons::get<GL::GLTextureHandler, 10>().forceReloadingAllOfType( ImageHolder::z_map, static_cast<GL::GLTextureHandler::InterpolationType>( index ) );
 	m_ViewerCore->updateScene();
 }
