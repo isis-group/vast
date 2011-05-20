@@ -20,14 +20,14 @@ std::string colormap_shader_code = STRINGIFY(
 	vec4 colorLut = texture1D( lut, i);
 	colorLut.a = opacity;
 	float inormed = ( i * range ) + min;
-	if( inormed > 0 + err && inormed < upper_threshold ) {
+	if( inormed > 0 && inormed < upper_threshold ) {
 		colorLut.a = 0;
 	}
-	if( inormed < 0 - err && inormed > lower_threshold ) {
+	if( inormed < 0 && inormed > lower_threshold ) {
 		colorLut.a = 0;
 	}
 	
-	if( killZeros == 1 && i < 0.5 + err && i > 0.5 - err ) {
+	if( killZeros == 1 && inormed > 0 - err && inormed < 0 + err ) {
 		colorLut.a = 0;
 	}
 	gl_FragColor = ( colorLut + bias / range ) * scaling;

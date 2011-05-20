@@ -295,6 +295,7 @@ void QGLWidgetImplementation::paintGL()
 				m_ScalingShader.addVariable<float>( "opacity", state.first->getImageState().opacity );
 			}
 			glEnable(GL_TEXTURE_3D);
+			glActiveTexture( GL_TEXTURE0 );
 			glBindTexture( GL_TEXTURE_3D, state.second.textureID );
 			glBegin( GL_QUADS );
 			glTexCoord3f( 0, 0, state.second.normalizedSlice );
@@ -324,6 +325,7 @@ void QGLWidgetImplementation::paintCrosshair()
 	glUseProgram(0);
 	//paint crosshair
 	const State &currentState = m_StateValues.begin()->second;
+	glDisable(GL_TEXTURE_1D);
 	glColor3f(1.0,0.4,0.0);
 	glLineWidth( 1.0 );
 	glMatrixMode( GL_PROJECTION );
