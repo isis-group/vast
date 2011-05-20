@@ -311,7 +311,9 @@ void QGLWidgetImplementation::paintGL()
 		}
 	}
 	checkAndReportGLError( "painting the scene" );
-	paintCrosshair();
+	if(!m_StateValues.empty()) {
+		paintCrosshair();
+	}
 }
 
 void QGLWidgetImplementation::paintCrosshair()
