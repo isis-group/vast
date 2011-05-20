@@ -173,10 +173,20 @@ void MainWindow::imagesChanged( DataContainer images )
 
 void MainWindow::openImage()
 {
+	std::stringstream fileFormats;
+	fileFormats << "Image files (";
+	BOOST_FOREACH( data::IOFactory::FileFormatList::const_reference formatList, data::IOFactory::getFormats() )
+	{
+		BOOST_FOREACH( std::list<util::istring>::const_reference format, formatList->getSuffixes())
+		{
+			fileFormats << "*." << format << " ";
+		}
+	}
+	fileFormats << ")";
 	QStringList filenames = QFileDialog::getOpenFileNames( this,
 							tr( "Open images" ),
 							m_CurrentPath,
-							tr( "Image Files (*.v *.nii *.hdr *.dcm *.ima" ) );
+							tr( fileFormats.str().c_str() ) );
 	QDir dir;
 	m_CurrentPath = dir.absoluteFilePath( filenames.front() );
 

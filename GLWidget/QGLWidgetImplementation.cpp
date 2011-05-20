@@ -527,7 +527,9 @@ void QGLWidgetImplementation::setInterpolationType( const isis::viewer::GL::GLTe
 
 void QGLWidgetImplementation::updateScene()
 {
-	lookAtPhysicalCoords( m_StateValues.begin()->first->getImage()->getPhysicalCoordsFromIndex( m_StateValues.begin()->second.voxelCoords ) );
+	if( !m_StateValues.empty() ) {
+		lookAtPhysicalCoords( m_StateValues.begin()->first->getImage()->getPhysicalCoordsFromIndex( m_StateValues.begin()->second.voxelCoords ) );
+	}
 }
 
 }
