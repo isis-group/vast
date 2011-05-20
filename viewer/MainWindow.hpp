@@ -63,9 +63,9 @@ private:
 
 	template<typename TYPE> void displayIntensity( util::ivector4 coords ) {
 		util::Value<TYPE> vIntensity (m_ViewerCore->getCurrentImage()->getImage()->voxel<TYPE>( coords[0], coords[1], coords[2], coords[3] ) );
-		ui.pxlIntensityContainer->setText( QString::number( roundNumber<double>( vIntensity, 2 ) ) );
-
-
+		double intensity = roundNumber<double>( vIntensity, 2 );
+		ui.pxlIntensityContainer->setText( QString::number( intensity ) );
+		m_ViewerCore->getCurrentImage()->setCurrentIntensityAsDouble( intensity );
 	}
 
 };

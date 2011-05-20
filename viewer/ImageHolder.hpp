@@ -34,6 +34,7 @@ public:
 		size_t stackPosition;
 		float opacity;
 		bool visible;
+		double currentIntensityAsDouble;
 	};
 	ImageHolder( );
 
@@ -115,6 +116,7 @@ public:
 	void setStackPosition( size_t stackPosition ) { m_ImageState.stackPosition = stackPosition; }
 	void setOpacity( float opacity ) { m_ImageState.opacity = opacity; }
 	void setImageType( ImageType imageType ) { m_ImageState.imageType = imageType; }
+	void setCurrentIntensityAsDouble( double intensity ) { m_ImageState.currentIntensityAsDouble = intensity; }
 
 private:
 

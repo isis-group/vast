@@ -353,7 +353,14 @@ void QGLWidgetImplementation::paintCrosshair()
 	glEnd();
 	glFlush();
 	glLoadIdentity();
-
+	
+	if( leftButtonPressed ) {
+		util::Value<util::fvector4> physicalCoords (m_StateValues.begin()->first->getImage()->getPhysicalCoordsFromIndex(currentState.voxelCoords));
+		glColor3f(0.0,1.0,0.2);
+		renderText(currentState.crosshairCoords.first + currentState.viewport[0] , height() - currentState.crosshairCoords.second - 3 - currentState.viewport[1], QString(physicalCoords.toString().c_str()) );
+		glColor3f(1.0,0.0,0.0);
+		renderText( currentState.crosshairCoords.first + currentState.viewport[0], height() - currentState.crosshairCoords.second - 15 - currentState.viewport[1], QString( QString::number(m_ViewerCore->getCurrentImage()->getImageState().currentIntensityAsDouble )));
+	}
 	if( m_ShowLabels ) {
 		viewLabels();
 	}
@@ -413,7 +420,6 @@ void QGLWidgetImplementation::mousePressEvent( QMouseEvent *e )
 	if( e->button() == Qt::LeftButton ) {
 		leftButtonPressed = true;
 	}
-
 	if( e->button() == Qt::RightButton ) {
 		rightButtonPressed = true;
 	}
@@ -495,6 +501,7 @@ void QGLWidgetImplementation::mouseReleaseEvent( QMouseEvent *e )
 	if( e->button() == Qt::RightButton ) {
 		rightButtonPressed = false;
 	}
+	redraw();
 }
 
 
