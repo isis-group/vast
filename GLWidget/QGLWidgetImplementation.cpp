@@ -525,10 +525,17 @@ void QGLWidgetImplementation::setInterpolationType( const isis::viewer::GL::GLTe
 	updateScene();
 }
 
-void QGLWidgetImplementation::updateScene()
+void QGLWidgetImplementation::updateScene( bool center )
 {
 	if( !m_StateValues.empty() ) {
-		lookAtPhysicalCoords( m_StateValues.begin()->first->getImage()->getPhysicalCoordsFromIndex( m_StateValues.begin()->second.voxelCoords ) );
+		util::ivector4 voxelCoords;
+		if(!center) {
+			voxelCoords =  m_StateValues.begin()->second.voxelCoords ;
+		} else {
+			util::ivector4 size = m_StateValues.begin()->first->getImageSize();
+			voxelCoords = util::ivector4(size[0]/ 2, size[1] / 2, size[2] / 2);
+		}
+		lookAtPhysicalCoords( m_StateValues.begin()->first->getImage()->getPhysicalCoordsFromIndex( voxelCoords ) );
 	}
 }
 

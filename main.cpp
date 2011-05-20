@@ -74,14 +74,14 @@ int main( int argc, char *argv[] )
 	if( app.parameters["type"].toString() == "anatomical" && app.parameters["in"].isSet() ) {
 		
 		if(imgList.size() > 1 ) {
-			core->addImageList( imgList, ImageHolder::anatomical_image );
+			core->addImageList( imgList, ImageHolder::anatomical_image, false );
 			isisViewerMainWindow.setNumberOfRows(imgList.size());
 		} else if( imgList.size() == 1 ) {
 			core->addImageList( imgList, ImageHolder::anatomical_image, true );
 		}
 		
 	} else if ( app.parameters["type"].toString() == "zmap" && app.parameters["in"].isSet() ) {
-		core->addImageList( imgList, ImageHolder::z_map );
+		core->addImageList( imgList, ImageHolder::z_map, false );
 	}
 
 	if( app.parameters["z"].isSet() ) {

@@ -52,7 +52,7 @@ public Q_SLOTS:
 	virtual void setScalingType( ScalingType scalingType ) { m_ScalingType = scalingType; }
 	virtual void setShowLabels( const bool show );
 	virtual void setInterpolationType( const GLTextureHandler::InterpolationType interpolation );
-	virtual void updateScene();
+	virtual void updateScene( bool center = false );
 	virtual void setAutomaticScaling( bool scaling ) {
 		if( scaling ) { m_ScalingType = automatic_scaling;}
 		else { m_ScalingType = manual_scaling; }

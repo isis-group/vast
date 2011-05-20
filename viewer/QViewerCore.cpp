@@ -27,7 +27,7 @@ QViewerCore::registerWidget( std::string key, QWidget *widget, QViewerCore::Acti
 			connect( this, SIGNAL( emitPhysicalCoordsChanged( util::fvector4 ) ), w, SLOT( lookAtPhysicalCoords( util::fvector4 ) ) );
 			connect( this, SIGNAL( emitTimeStepChange( unsigned int ) ), w, SLOT( timestepChanged( unsigned int ) ) );
 			connect( this, SIGNAL( emitShowLabels( bool ) ), w, SLOT( setShowLabels( bool ) ) );
-			connect( this, SIGNAL( emitUpdateScene() ), w, SLOT( updateScene() ) );
+			connect( this, SIGNAL( emitUpdateScene( bool ) ), w, SLOT( updateScene( bool ) ) );
 			connect( this, SIGNAL( emitSetAutomaticScaling( bool ) ), w, SLOT( setAutomaticScaling( bool ) ) );
 		}
 	} else {
@@ -87,9 +87,9 @@ void QViewerCore::setShowLabels( bool l )
 	}
 }
 
-void QViewerCore::updateScene()
+void QViewerCore::updateScene( bool center )
 {
-	emitUpdateScene();
+	emitUpdateScene( center );
 }
 
 void QViewerCore::setAutomaticScaling( bool s )

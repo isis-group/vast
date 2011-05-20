@@ -189,7 +189,7 @@ void MainWindow::openImage()
 							tr( fileFormats.str().c_str() ) );
 	QDir dir;
 	m_CurrentPath = dir.absoluteFilePath( filenames.front() );
-
+	bool isFirstImage = m_ViewerCore->getDataContainer().size() == 0;
 	if( !filenames.empty() ) {
 		std::list<data::Image> imgList;
 		util::slist pathList;
@@ -200,8 +200,8 @@ void MainWindow::openImage()
 				imgList.push_back( image );
 			}
 		}
-		m_ViewerCore->addImageList( imgList, ImageHolder::anatomical_image );
-		m_ViewerCore->updateScene();
+		m_ViewerCore->addImageList( imgList, ImageHolder::anatomical_image, true );
+		m_ViewerCore->updateScene( isFirstImage );
 	}
 }
 

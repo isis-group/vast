@@ -22,8 +22,8 @@ public:
 
 	virtual bool registerWidget( std::string key, QWidget *widget, Actions = not_specified );
 
-	virtual void addImageList( const std::list< data::Image > imageList, const ImageHolder::ImageType &imageType, bool passToWidgets = false );
-	virtual void setImageList( const std::list< data::Image > imageList, const ImageHolder::ImageType &imageType, bool passToWidgets = false );
+	virtual void addImageList( const std::list< data::Image > imageList, const ImageHolder::ImageType &imageType, bool passToWidgets );
+	virtual void setImageList( const std::list< data::Image > imageList, const ImageHolder::ImageType &imageType, bool passToWidgets );
 
 	const WidgetMap &getWidgets() const { return m_WidgetMap; }
 
@@ -49,7 +49,7 @@ public Q_SLOTS:
 	virtual void physicalCoordsChanged( util::fvector4 );
 	virtual void timestepChanged( int );
 	virtual void setShowLabels( bool );
-	virtual void updateScene();
+	virtual void updateScene( bool center = false );
 	virtual void setAutomaticScaling( bool );
 
 Q_SIGNALS:
@@ -59,7 +59,7 @@ Q_SIGNALS:
 	void emitImagesChanged( DataContainer );
 	void emitShowLabels( bool );
 	void emitSetAutomaticScaling( bool );
-	void emitUpdateScene();
+	void emitUpdateScene( bool center );
 
 private:
 	//this map holds the widgets associated with a given name
