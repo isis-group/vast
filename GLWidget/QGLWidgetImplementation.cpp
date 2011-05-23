@@ -44,10 +44,11 @@ void QGLWidgetImplementation::commonInit()
 	m_InterplationType = GLTextureHandler::neares_neighbor;
 	m_ScalingPair = std::make_pair<double, double>( 0.0, 1.0 );
 	//flags
-	zoomEventHappened = false;
-	leftButtonPressed = false;
-	rightButtonPressed = false;
-	init = true;
+	m_Flags.zoomEvent = false;
+	m_Flags.leftButtonPressed = false;
+	m_Flags.rightButtonPressed = false;
+	m_Flags.strgKeyPressed = false;
+	m_Flags.init = true;
 	m_ShowLabels = false;
 
 }
@@ -101,10 +102,10 @@ void QGLWidgetImplementation::resizeGL( int w, int h )
 	LOG( Debug, verbose_info ) << "resizeGL " << objectName().toStdString();
 
 	if( m_StateValues.size() ) {
-		if( init ) {
+		if( m_Flags.init ) {
 			util::ivector4 size = m_StateValues.begin()->first->getImageSize();
 			lookAtPhysicalCoords( m_StateValues.begin()->first->getImage()->getPhysicalCoordsFromIndex( util::ivector4( size[0] / 2, size[1] / 2, size[2] / 2 ) ) );
-			init = false;
+			m_Flags.init = false;
 		} else {
 			updateScene();
 		}
@@ -152,8 +153,8 @@ void QGLWidgetImplementation::updateStateValues( boost::shared_ptr<ImageHolder> 
 
 	GLOrientationHandler::recalculateViewport( width(), height(), state.mappedVoxelSize, state.mappedImageSize, state.viewport, border );
 
-	if( rightButtonPressed || zoomEventHappened  ) {
-		zoomEventHappened = false;
+	if( m_Flags.rightButtonPressed || m_Flags.zoomEvent  ) {
+		m_Flags.zoomEvent = false;
 		calculateTranslation( );
 	}
 
@@ -353,13 +354,12 @@ void QGLWidgetImplementation::paintCrosshair()
 	glEnd();
 	glFlush();
 	glLoadIdentity();
-	
-	if( leftButtonPressed ) {
-		util::Value<util::fvector4> physicalCoords (m_StateValues.begin()->first->getImage()->getPhysicalCoordsFromIndex(currentState.voxelCoords));
-		glColor3f(0.0,1.0,0.2);
-		renderText(currentState.crosshairCoords.first + currentState.viewport[0] , height() - currentState.crosshairCoords.second - 3 - currentState.viewport[1], QString(physicalCoords.toString().c_str()) );
+	if( m_Flags.leftButtonPressed ) {
 		glColor3f(1.0,0.0,0.0);
-		renderText( currentState.crosshairCoords.first + currentState.viewport[0], height() - currentState.crosshairCoords.second - 15 - currentState.viewport[1], QString( QString::number(m_ViewerCore->getCurrentImage()->getImageState().currentIntensityAsDouble )));
+		QFont font;
+		font.setPointSize( 15 );
+		font.setPixelSize( 15 );
+		renderText( currentState.crosshairCoords.first + currentState.viewport[0], height() - currentState.crosshairCoords.second - 15 - currentState.viewport[1], QString( QString::number(m_ViewerCore->getCurrentImage()->getImageState().currentIntensityAsDouble )), font);
 	}
 	if( m_ShowLabels ) {
 		viewLabels();
@@ -410,7 +410,7 @@ void QGLWidgetImplementation::viewLabels()
 
 void QGLWidgetImplementation::mouseMoveEvent( QMouseEvent *e )
 {
-	if ( rightButtonPressed || leftButtonPressed ) {
+	if ( m_Flags.rightButtonPressed || m_Flags.leftButtonPressed ) {
 		emitMousePressEvent( e );
 	}
 }
@@ -418,10 +418,10 @@ void QGLWidgetImplementation::mouseMoveEvent( QMouseEvent *e )
 void QGLWidgetImplementation::mousePressEvent( QMouseEvent *e )
 {
 	if( e->button() == Qt::LeftButton ) {
-		leftButtonPressed = true;
+		m_Flags.leftButtonPressed = true;
 	}
 	if( e->button() == Qt::RightButton ) {
-		rightButtonPressed = true;
+		m_Flags.rightButtonPressed = true;
 	}
 
 	emitMousePressEvent( e );
@@ -481,7 +481,7 @@ void QGLWidgetImplementation::wheelEvent( QWheelEvent *e )
 				glGetDoublev( GL_PROJECTION_MATRIX, state.second.projectionMatrix );
 				glLoadIdentity();
 			}
-			zoomEventHappened = true;
+			m_Flags.zoomEvent = true;
 			updateScene();
 		} else {
 			m_Zoom.currentZoom = 1;
@@ -495,11 +495,11 @@ void QGLWidgetImplementation::wheelEvent( QWheelEvent *e )
 void QGLWidgetImplementation::mouseReleaseEvent( QMouseEvent *e )
 {
 	if( e->button() == Qt::LeftButton ) {
-		leftButtonPressed = false;
+		m_Flags.leftButtonPressed = false;
 	}
 
 	if( e->button() == Qt::RightButton ) {
-		rightButtonPressed = false;
+		m_Flags.rightButtonPressed = false;
 	}
 	redraw();
 }
@@ -517,7 +517,18 @@ void QGLWidgetImplementation::keyPressEvent( QKeyEvent *e )
 		util::ivector4 size = m_StateValues.begin()->first->getImageSize();
 		lookAtPhysicalCoords( m_StateValues.begin()->first->getImage()->getPhysicalCoordsFromIndex( util::ivector4( size[0] / 2, size[1] / 2, size[2] / 2 ) ) );
 	}
+	if( e->key() == Qt::Key_Control ) {
+		m_Flags.strgKeyPressed = true;
+	}
 }
+
+void QGLWidgetImplementation::keyReleaseEvent(QKeyEvent* e)
+{
+	if( e->key() == Qt::Key_Control ) {
+		m_Flags.strgKeyPressed = false;
+	}
+}
+
 
 void  QGLWidgetImplementation::setShowLabels( bool show )
 {
