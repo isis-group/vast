@@ -39,7 +39,7 @@ void GLShaderHandler::addShader( const std::string &name, const std::string &sou
 
 	GLint compileStatus;
 
-	glGetShaderiv( shader.getShaderID(), GL_COMPILE_STATUS, &compileStatus );
+	glGetShaderiv( static_cast<GLuint>(shader.getShaderID()), GL_COMPILE_STATUS, &compileStatus );
 
 	if( compileStatus == GL_FALSE ) {
 		LOG( Runtime, error ) << "Error during compilation of shader " << name << " !";
