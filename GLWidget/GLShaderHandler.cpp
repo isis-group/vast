@@ -38,7 +38,7 @@ void GLShaderHandler::addShader( const std::string &name, const std::string &sou
 	glCompileShaderARB( shader.getShaderID() );
 
 	GLint compileStatus;
-
+#ifndef __APPLE__
 	glGetShaderiv( static_cast<GLuint>(shader.getShaderID()), GL_COMPILE_STATUS, &compileStatus );
 
 	if( compileStatus == GL_FALSE ) {
@@ -46,6 +46,9 @@ void GLShaderHandler::addShader( const std::string &name, const std::string &sou
 	} else {
 		LOG( Debug, info ) << "Shader " << name << " with id " << shader.getShaderID() << " compiled successfully!";
 	}
+#else
+	checkAndReportGLError( "compiling shader" + name );
+#endif
 	m_ShaderMap[name] = shader;
 }
 
