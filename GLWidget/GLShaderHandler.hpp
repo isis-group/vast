@@ -19,13 +19,13 @@ class GLShader
 public:
 	enum ShaderType { fragment, vertex };
 	void setSourceCode( const std::string &source ) { m_SourceCode = source; }
-	void setShaderID ( const GLuint id ) { m_ShaderID = id; }
+	void setShaderID ( const GLhandleARB id ) { m_ShaderID = id; }
 	void setShaderType ( const ShaderType &type ) { m_ShaderType = type; }
 
-	GLuint getShaderID() const { return m_ShaderID; }
+	GLhandleARB getShaderID() const { return m_ShaderID; }
 private:
 	std::string m_SourceCode;
-	GLuint m_ShaderID;
+	GLhandleARB m_ShaderID;
 	ShaderType m_ShaderType;
 };
 
