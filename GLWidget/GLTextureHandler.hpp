@@ -80,7 +80,7 @@ private:
 			texture = m_ImageMap[image].at( timestep );
 		}
 
-		glBindTexture( GL_TEXTURE_3D, texture );
+		glBindTextureEXT( GL_TEXTURE_3D, texture );
 		glTexParameteri( GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, interpolationType );
 		glTexParameteri( GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, interpolationType );
 		glTexParameteri( GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
@@ -100,14 +100,13 @@ private:
 				dataWithAplpha[i] = dataPtr[index++];
 				dataWithAplpha[i + 1] = std::numeric_limits<TYPE>::max();
 			}
-
 			glTexImage3D( GL_TEXTURE_3D, 0, GL_LUMINANCE12_ALPHA4,
 						  size[0],
 						  size[1],
 						  size[2], 0, GL_LUMINANCE_ALPHA, format,
 						  dataWithAplpha );
 		} else {
-			glTexImage3D( GL_TEXTURE_3D, 0, GL_LUMINANCE,
+			glTexImage3DEXT( GL_TEXTURE_3D, 0, GL_LUMINANCE,
 						  size[0],
 						  size[1],
 						  size[2], 0, GL_LUMINANCE, format,
