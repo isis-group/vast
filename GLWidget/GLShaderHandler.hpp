@@ -55,9 +55,9 @@ public:
 			GLint location = glGetUniformLocationARB( m_ProgramID, name.c_str() );
 			
 			if( integer ) {
-				glUniform1i( location, var );
+				glUniform1iARB( location, var );
 			} else {
-				glUniform1f( location, var );
+				glUniform1fARB( location, var );
 			}
 			checkAndReportGLError( "setting shader value " + name );
 			return true;
