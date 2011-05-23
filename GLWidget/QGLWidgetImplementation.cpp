@@ -325,7 +325,7 @@ void QGLWidgetImplementation::paintCrosshair()
 	if( m_ScalingShader.isEnabled()) {
 		m_ScalingShader.setEnabled( false );
 	}
-	glUseProgram(0);
+	glUseProgramObjectARB(0);
 	//paint crosshair
 	const State &currentState = m_StateValues.begin()->second;
 	glDisable(GL_TEXTURE_1D);

@@ -90,10 +90,8 @@ private:
 		GLenum dataFormat;
 		if(!gluCheckExtension((const GLubyte*)"GL_ARB_texture_non_power_of_two", glGetString(GL_EXTENSIONS)) )
 		{
-			LOG(Runtime, info) << "Extension GL_ARB_texture_non_power_of_two was not found. Generating power-of-two texture";  
+			LOG(Runtime, error) << "Your OpenGL version does not support image sizes unequal n^2. The viewer is not yet capable of working with such OpenGL versions.";  
 		}
-		
-
 		if( alpha ) {
 			TYPE *dataWithAplpha = ( TYPE * ) calloc( volume * 2, sizeof( TYPE ) );
 			size_t index = 0;

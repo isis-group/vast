@@ -24,18 +24,18 @@ void GLShaderHandler::addShader( const std::string &name, const std::string &sou
 
 	switch( shaderType ) {
 	case GLShader::fragment:
-		shader.setShaderID( glCreateShader( GL_FRAGMENT_SHADER ) );
+		shader.setShaderID( glCreateShaderObjectARB( GL_FRAGMENT_SHADER ) );
 		break;
 	case GLShader::vertex:
-		shader.setShaderID( glCreateShader( GL_VERTEX_SHADER ) );
+		shader.setShaderID( glCreateShaderObjectARB( GL_VERTEX_SHADER ) );
 		break;
 	}
 
 	const GLcharARB *csource  = source.c_str();
 
-	glShaderSource( shader.getShaderID(), 1, &csource, NULL );
+	glShaderSourceARB( shader.getShaderID(), 1, &csource, NULL );
 
-	glCompileShader( shader.getShaderID() );
+	glCompileShaderARB( shader.getShaderID() );
 
 	GLint compileStatus;
 
@@ -59,9 +59,9 @@ void GLShaderHandler::setEnabled( bool enable )
 			glAttachShader( m_ProgramID, shader.second.getShaderID() );
 			checkAndReportGLError( "attaching shader"  );
 		}
-		glLinkProgram( m_ProgramID );
-		glValidateProgram( m_ProgramID );
-		glUseProgram( m_ProgramID );
+		glLinkProgramARB( m_ProgramID );
+		glValidateProgramARB( m_ProgramID );
+		glUseProgramObjectARB( m_ProgramID );
 		m_isEnabled = true;
 		checkAndReportGLError( "enabling shader" );
 	} else if (!enable && m_isEnabled ){
