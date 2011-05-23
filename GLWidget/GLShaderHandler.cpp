@@ -63,10 +63,12 @@ void GLShaderHandler::setEnabled( bool enable )
 			checkAndReportGLError( "attaching shader"  );
 		}
 		glLinkProgramARB( m_ProgramID );
+		checkAndReportGLError( "glLinkProgramARB" );
 		glValidateProgramARB( m_ProgramID );
+		checkAndReportGLError( "glValidateProgramARB" );
 		glUseProgramObjectARB( m_ProgramID );
 		m_isEnabled = true;
-		checkAndReportGLError( "enabling shader" );
+		checkAndReportGLError( "glUseProgramObjectARB" );
 	} else if (!enable && m_isEnabled ){
 		BOOST_FOREACH( ShaderMapType::const_reference shader, m_ShaderMap ) {
 			glDetachObjectARB( m_ProgramID, shader.second.getShaderID() );
