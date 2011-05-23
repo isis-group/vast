@@ -59,7 +59,7 @@ void GLShaderHandler::setEnabled( bool enable )
 	}
 	if( enable && !m_isEnabled) {
 		BOOST_FOREACH( ShaderMapType::const_reference shader, m_ShaderMap ) {
-			glAttachShader( m_ProgramID, shader.second.getShaderID() );
+			glAttachObjectARB(m_ProgramID, shader.second.getShaderID());
 			checkAndReportGLError( "attaching shader"  );
 		}
 		glLinkProgramARB( m_ProgramID );
@@ -69,7 +69,7 @@ void GLShaderHandler::setEnabled( bool enable )
 		checkAndReportGLError( "enabling shader" );
 	} else if (!enable && m_isEnabled ){
 		BOOST_FOREACH( ShaderMapType::const_reference shader, m_ShaderMap ) {
-			glDetachShader( m_ProgramID, shader.second.getShaderID() );
+			glDetachObjectARB( m_ProgramID, shader.second.getShaderID() );
 			checkAndReportGLError( "detaching shader" );
 		}
 		m_isEnabled = false;
@@ -79,8 +79,7 @@ void GLShaderHandler::setEnabled( bool enable )
 
 void GLShaderHandler::removeShader( const std::string &name )
 {
-	glDetachShader( m_ProgramID, m_ShaderMap[name].getShaderID() );
-	glDeleteShader( m_ShaderMap[name].getShaderID() );
+	glDetachObjectARB( m_ProgramID, m_ShaderMap[name].getShaderID() );
 	m_ShaderMap.erase( name );
 }
 

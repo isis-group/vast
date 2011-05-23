@@ -44,7 +44,7 @@ public:
 	bool isEnabled() const { return m_isEnabled; }
 	void setEnabled( bool enable );
 	void createContext () {
-		m_ProgramID = glCreateProgram();
+		m_ProgramID = glCreateProgramObjectARB();
 		m_Context = true;
 		checkAndReportGLError( "creating shader context ");
 	}
@@ -52,7 +52,7 @@ public:
 	bool addVariable( const std::string &name, TYPE var, bool integer = false ) {
 		if( m_Context ) {
 			LOG( Debug, verbose_info ) << "Setting shader value " << name << " to " << var;
-			GLint location = glGetUniformLocation( m_ProgramID, name.c_str() );
+			GLint location = glGetUniformLocationARB( m_ProgramID, name.c_str() );
 			
 			if( integer ) {
 				glUniform1i( location, var );
@@ -71,7 +71,7 @@ public:
 
 private:
 	ShaderMapType m_ShaderMap;
-	GLuint m_ProgramID;
+	GLhandleARB m_ProgramID;
 	bool m_isEnabled;
 	bool m_Context;
 };
