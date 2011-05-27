@@ -81,7 +81,7 @@ private:
 		glGetIntegerv(GL_MAX_3D_TEXTURE_SIZE, &texSize);
 		bool pass = true;
 		for(size_t i = 0; i < 3; i++) {
-			if( size[i] > texSize ) {
+			if( size[i] > static_cast<GLuint>(texSize) ) {
 				pass = false;
 			}
 		}
