@@ -70,7 +70,8 @@ private:
 			break;
 		}
 
-		glPixelStorei( GL_UNPACK_ALIGNMENT, 1 );
+// 		glPixelStorei( GL_UNPACK_ALIGNMENT, 1 );
+		
 		GLuint texture;
 
 		//look if this texture already exists
@@ -79,7 +80,7 @@ private:
 		} else {
 			texture = m_ImageMap[image].at( timestep );
 		}
-
+		
 		glBindTexture( GL_TEXTURE_3D, texture );
 		glTexParameteri( GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, interpolationType );
 		glTexParameteri( GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, interpolationType );
@@ -92,10 +93,28 @@ private:
 		{
 			LOG(Runtime, error) << "Your OpenGL version does not support image sizes unequal n^2. The viewer is not yet capable of working with such OpenGL versions.";  
 		}
+		util::ivector4 powerOfTwoSize;
+		for( size_t dim = 0; dim < 3; dim++) {
+			size_t exp = 0;
+			while( powerOfTwoSize[dim] < size[dim] ) {
+				powerOfTwoSize[dim] = pow(2, exp++);
+			}
+		}
+		TYPE* retPointer = (TYPE*) calloc( powerOfTwoSize[0] * powerOfTwoSize[1] * powerOfTwoSize[2], sizeof(TYPE) );
+		for( size_t z = 0; z < size[2]; z++ ) {
+			for( size_t y = 0; y < size[1]; y++ ) {
+				for( size_t x = 0; x < size[0]; x++ ) {
+					retPointer[y*powerOfTwoSize[0] + z * powerOfTwoSize[1] * powerOfTwoSize[0] + x] 
+						= dataPtr[y*size[0] + z * size[1] * size[0] + x];
+				}
+			}
+		}	
+		
+		
 		if( alpha ) {
 			TYPE *dataWithAplpha = ( TYPE * ) calloc( volume * 2, sizeof( TYPE ) );
 			size_t index = 0;
-
+			
 			for ( size_t i = 0; i < volume * 2; i += 2 ) {
 				dataWithAplpha[i] = dataPtr[index++];
 				dataWithAplpha[i + 1] = std::numeric_limits<TYPE>::max();
@@ -107,10 +126,10 @@ private:
 						  dataWithAplpha );
 		} else {
 			glTexImage3D( GL_TEXTURE_3D, 0, GL_LUMINANCE,
-						  size[0],
-						  size[1],
-						  size[2], 0, GL_LUMINANCE, format,
-						  dataPtr );
+						  powerOfTwoSize[0],
+						  powerOfTwoSize[1],
+						  powerOfTwoSize[2], 0, GL_LUMINANCE, format,
+						  retPointer );
 		}
 		std::stringstream context;
 		context << "loading timestep " << timestep << " of image " << image->getID() << " to glTexture3D";
@@ -122,6 +141,7 @@ private:
 			return texture;
 		}
 	}
+
 
 };
 

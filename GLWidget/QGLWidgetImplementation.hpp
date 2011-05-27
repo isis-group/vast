@@ -2,7 +2,7 @@
 #define QGLWIDGETIMPLEMENTATION_HPP
 
 #include "GLCommon.hpp"
-#include <QtOpenGL/QGLWidget>
+#include <QtOpenGL>
 #include "QViewerCore.hpp"
 #include "GLTextureHandler.hpp"
 #include <iostream>
@@ -94,7 +94,7 @@ private:
 
 	GLShaderHandler m_ScalingShader;
 	GLShaderHandler m_LUTShader;
-
+	
 	std::vector<GLuint> m_TextureIDVec;
 	PlaneOrientation m_PlaneOrientation;
 	GLTextureHandler::InterpolationType m_InterplationType;
