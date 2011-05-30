@@ -80,7 +80,7 @@ void QGLWidgetImplementation::connectSignals()
 void QGLWidgetImplementation::initializeGL()
 {
 	LOG( Debug, info) << "Using OpenGL version " << glGetString(GL_VERSION) << " .";
-	glShadeModel( GL_FLAT );
+// 	glShadeModel( GL_FLAT );
 	glClearColor( 0.0, 0.0, 0.0, 0.0 );
 	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 	glMatrixMode( GL_MODELVIEW );
@@ -311,6 +311,7 @@ void QGLWidgetImplementation::paintGL()
 			glDisable( GL_TEXTURE_3D );
 		}
 	}
+	glFlush();
 	checkAndReportGLError( "painting the scene" );
 	if(!m_StateValues.empty()) {
 		paintCrosshair();
@@ -329,7 +330,7 @@ void QGLWidgetImplementation::paintCrosshair()
 	//paint crosshair
 	const State &currentState = m_StateValues.begin()->second;
 	glDisable(GL_TEXTURE_1D);
-	glColor3f(1.0,0.4,0.0);
+	
 	glLineWidth( 1.0 );
 	glMatrixMode( GL_PROJECTION );
 	glLoadIdentity();
@@ -337,6 +338,7 @@ void QGLWidgetImplementation::paintCrosshair()
 	glLoadIdentity();
 	glOrtho( 0, currentState.viewport[2], 0, currentState.viewport[3], -1, 1 );
 	glBegin( GL_LINES );
+	glColor3f(1.0,0.4,0.0);
 	unsigned short gap = height() / 20;
 	glVertex3i( currentState.crosshairCoords.first , 0, 1 );
 	glVertex3i( currentState.crosshairCoords.first, currentState.crosshairCoords.second - gap , 1 );
@@ -352,7 +354,6 @@ void QGLWidgetImplementation::paintCrosshair()
 	glBegin( GL_POINTS );
 	glVertex3d( currentState.crosshairCoords.first, currentState.crosshairCoords.second, 1 );
 	glEnd();
-	glFlush();
 	glLoadIdentity();
 	if( m_Flags.leftButtonPressed ) {
 		glColor3f(1.0,0.0,0.0);
@@ -365,7 +366,7 @@ void QGLWidgetImplementation::paintCrosshair()
 		viewLabels();
 	}
 	checkAndReportGLError( "painting the crosshair" );
-	
+	glColor3f(1,1,1);
 }
 
 

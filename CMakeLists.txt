@@ -54,11 +54,12 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR} ${ISIS_INCLUDE_DIRS})
 ###########################################################
 
 FIND_PACKAGE(Qt4 COMPONENTS QtCore QtGui QtOpenGL REQUIRED)
-INCLUDE(${QT_USE_FILE})
 
 set(QT_USE_QTUITOOLS TRUE)
 set(QT_USE_QTOPENGL TRUE)
 set( QT_USE_OPENGL TRUE )
+
+INCLUDE(${QT_USE_FILE})
 
 QT4_ADD_RESOURCES(isisViewer_rcc_files ${RESOURCE_FILES})
 

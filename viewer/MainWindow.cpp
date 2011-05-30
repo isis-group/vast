@@ -276,7 +276,7 @@ void MainWindow::sagittalTopLevelChanged( bool docked )
 void MainWindow::setNumberOfRows(size_t rows)
 {
 #warning optimize setNumberOfRows
-	static_cast<QGridLayout*>( sa->layout())->addWidget( ui.coronalDockWidget, 0, 2);
+	ui.gridLayout->addWidget( ui.coronalDockWidget, 0, 2);
 	ui.setupDockWidget->setVisible( false );
 	m_AxialWidget->addImage( m_ViewerCore->getDataContainer().getImageByID(0));
 	m_SagittalWidget->addImage( m_ViewerCore->getDataContainer().getImageByID(0));
