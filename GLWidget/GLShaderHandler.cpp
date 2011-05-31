@@ -24,10 +24,10 @@ void GLShaderHandler::addShader( const std::string &name, const std::string &sou
 
 	switch( shaderType ) {
 	case GLShader::fragment:
-		shader.setShaderID( glCreateShaderObjectARB( GL_FRAGMENT_SHADER ) );
+		shader.setShaderID( glCreateShaderObjectARB( GL_FRAGMENT_SHADER_ARB ) );
 		break;
 	case GLShader::vertex:
-		shader.setShaderID( glCreateShaderObjectARB( GL_VERTEX_SHADER ) );
+		shader.setShaderID( glCreateShaderObjectARB( GL_VERTEX_SHADER_ARB ) );
 		break;
 	}
 
