@@ -5,7 +5,7 @@ namespace isis
 {
 namespace viewer
 {
-namespace GL 
+namespace GL
 {
 
 GLuint GLLookUpTable::getLookUpTableAsTexture( const Color::LookUpTableType &lutType ) const

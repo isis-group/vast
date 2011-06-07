@@ -14,7 +14,7 @@ namespace isis
 {
 namespace viewer
 {
-namespace GL 
+namespace GL
 {
 
 class GLOrientationHandler

@@ -94,7 +94,7 @@ private:
 
 	GLShaderHandler m_ScalingShader;
 	GLShaderHandler m_LUTShader;
-	
+
 	std::vector<GLuint> m_TextureIDVec;
 	PlaneOrientation m_PlaneOrientation;
 	GLTextureHandler::InterpolationType m_InterplationType;
@@ -143,7 +143,7 @@ private:
 	std::pair<double, double> m_ScalingPair;
 
 	isis::viewer::GL::GLLookUpTable m_LookUpTable;
-	
+
 	bool m_ShowLabels;
 	struct Flags {
 		bool zoomEvent;

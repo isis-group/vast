@@ -47,14 +47,15 @@ int main( int argc, char *argv[] )
 	isis::util::slist zmapFileList = app.parameters["z"];
 	std::list< isis::data::Image > imgList;
 	std::list< isis::data::Image > zImgList;
-	
+
 	//load the anatomical images
 	BOOST_FOREACH ( isis::util::slist::const_reference fileName, fileList ) {
 		std::list< isis::data::Image > tmpList = isis::data::IOFactory::load( fileName, app.parameters["rf"].toString() );
 		BOOST_FOREACH( std::list< isis::data::Image >::reference imageRef, tmpList ) {
-			if(app.parameters["identity"] ) {
-				setOrientationToIdentity(imageRef);
+			if( app.parameters["identity"] ) {
+				setOrientationToIdentity( imageRef );
 			}
+
 			imgList.push_back( imageRef );
 		}
 	}
@@ -62,24 +63,25 @@ int main( int argc, char *argv[] )
 	BOOST_FOREACH ( isis::util::slist::const_reference fileName, zmapFileList ) {
 		std::list< isis::data::Image > tmpList = isis::data::IOFactory::load( fileName, app.parameters["rf"].toString() );
 		BOOST_FOREACH( std::list< isis::data::Image >::reference imageRef, tmpList ) {
-			if(app.parameters["identity"]) {
-				setOrientationToIdentity(imageRef);
+			if( app.parameters["identity"] ) {
+				setOrientationToIdentity( imageRef );
 			}
+
 			zImgList.push_back( imageRef );
 		}
 	}
-	
+
 	isis::viewer::MainWindow isisViewerMainWindow( core );
 
 	if( app.parameters["type"].toString() == "anatomical" && app.parameters["in"].isSet() ) {
-		
-		if(imgList.size() > 1 ) {
+
+		if( imgList.size() > 1 ) {
 			core->addImageList( imgList, ImageHolder::anatomical_image, false );
-			isisViewerMainWindow.setNumberOfRows(imgList.size());
+			isisViewerMainWindow.setNumberOfRows( imgList.size() );
 		} else if( imgList.size() == 1 ) {
 			core->addImageList( imgList, ImageHolder::anatomical_image, true );
 		}
-		
+
 	} else if ( app.parameters["type"].toString() == "zmap" && app.parameters["in"].isSet() ) {
 		core->addImageList( imgList, ImageHolder::z_map, false );
 	}
@@ -87,6 +89,7 @@ int main( int argc, char *argv[] )
 	if( app.parameters["z"].isSet() ) {
 		core->addImageList( zImgList, ImageHolder::z_map, true );
 	}
+
 	isisViewerMainWindow.show();
 	return app.getQApplication().exec();
 }

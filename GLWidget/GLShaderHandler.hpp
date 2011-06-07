@@ -13,7 +13,7 @@ namespace viewer
 {
 namespace GL
 {
-	
+
 class GLShader
 {
 public:
@@ -46,23 +46,24 @@ public:
 	void createContext () {
 		m_ProgramID = glCreateProgramObjectARB();
 		m_Context = true;
-		checkAndReportGLError( "creating shader context ");
+		checkAndReportGLError( "creating shader context " );
 	}
 	template <typename TYPE>
 	bool addVariable( const std::string &name, TYPE var, bool integer = false ) {
 		if( m_Context ) {
 			LOG( Debug, verbose_info ) << "Setting shader value " << name << " to " << var;
 			GLint location = glGetUniformLocationARB( m_ProgramID, name.c_str() );
-			
+
 			if( integer ) {
 				glUniform1iARB( location, var );
 			} else {
 				glUniform1fARB( location, var );
 			}
+
 			checkAndReportGLError( "setting shader value " + name );
 			return true;
 		} else {
-			LOG(Runtime, error) << "You first have to set a shader context before adding a variable!";
+			LOG( Runtime, error ) << "You first have to set a shader context before adding a variable!";
 			return false;
 		}
 

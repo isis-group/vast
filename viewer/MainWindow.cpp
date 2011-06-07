@@ -73,21 +73,21 @@ void MainWindow::contextMenuImageStack( QPoint position )
 void MainWindow::triggeredMakeCurrentImage( bool triggered )
 {
 	m_ViewerCore->setCurrentImage( m_ViewerCore->getDataContainer().at( ui.imageStack->currentItem()->text().toStdString() ) );
-	if(m_ViewerCore->getCurrentImage()->getImageState().imageType == ImageHolder::z_map)
-	{
+
+	if( m_ViewerCore->getCurrentImage()->getImageState().imageType == ImageHolder::z_map ) {
 		ui.lowerThreshold->setSliderPosition( 1000.0 / m_ViewerCore->getCurrentImage()->getMinMax().first->as<double>() *
-			( m_ViewerCore->getCurrentImage()->getImageState().threshold.first  ) );
+											  ( m_ViewerCore->getCurrentImage()->getImageState().threshold.first  ) );
 		ui.upperThreshold->setSliderPosition( 1000.0 / m_ViewerCore->getCurrentImage()->getMinMax().second->as<double>() *
-			( m_ViewerCore->getCurrentImage()->getImageState().threshold.second ) );
+											  ( m_ViewerCore->getCurrentImage()->getImageState().threshold.second ) );
 	} else {
-			double range = m_ViewerCore->getCurrentImage()->getMinMax().second->as<double>() - m_ViewerCore->getCurrentImage()->getMinMax().first->as<double>();
+		double range = m_ViewerCore->getCurrentImage()->getMinMax().second->as<double>() - m_ViewerCore->getCurrentImage()->getMinMax().first->as<double>();
 		ui.lowerThreshold->setSliderPosition( 1000.0 / range *
-			( m_ViewerCore->getCurrentImage()->getImageState().threshold.first - m_ViewerCore->getCurrentImage()->getMinMax().first->as<double>() ) );
+											  ( m_ViewerCore->getCurrentImage()->getImageState().threshold.first - m_ViewerCore->getCurrentImage()->getMinMax().first->as<double>() ) );
 		ui.upperThreshold->setSliderPosition( 1000.0 / range *
-			( m_ViewerCore->getCurrentImage()->getImageState().threshold.second - m_ViewerCore->getCurrentImage()->getMinMax().first->as<double>() ) );
+											  ( m_ViewerCore->getCurrentImage()->getImageState().threshold.second - m_ViewerCore->getCurrentImage()->getMinMax().first->as<double>() ) );
 	}
-		
-	
+
+
 	imagesChanged( m_ViewerCore->getDataContainer() );
 	m_ViewerCore->updateScene();
 }
@@ -175,10 +175,8 @@ void MainWindow::openImage()
 {
 	std::stringstream fileFormats;
 	fileFormats << "Image files (";
-	BOOST_FOREACH( data::IOFactory::FileFormatList::const_reference formatList, data::IOFactory::getFormats() )
-	{
-		BOOST_FOREACH( std::list<util::istring>::const_reference format, formatList->getSuffixes())
-		{
+	BOOST_FOREACH( data::IOFactory::FileFormatList::const_reference formatList, data::IOFactory::getFormats() ) {
+		BOOST_FOREACH( std::list<util::istring>::const_reference format, formatList->getSuffixes() ) {
 			fileFormats << "*." << format << " ";
 		}
 	}
@@ -190,6 +188,7 @@ void MainWindow::openImage()
 	QDir dir;
 	m_CurrentPath = dir.absoluteFilePath( filenames.front() );
 	bool isFirstImage = m_ViewerCore->getDataContainer().size() == 0;
+
 	if( !filenames.empty() ) {
 		std::list<data::Image> imgList;
 		util::slist pathList;
@@ -226,27 +225,26 @@ void MainWindow::exitProgram()
 
 void MainWindow::lowerThresholdChanged( int lowerThreshold )
 {
-	
-	if(m_ViewerCore->getCurrentImage()->getImageState().imageType == ImageHolder::z_map)
-	{
+
+	if( m_ViewerCore->getCurrentImage()->getImageState().imageType == ImageHolder::z_map ) {
 		m_ViewerCore->getCurrentImage()->setLowerThreshold( ( m_ViewerCore->getCurrentImage()->getMinMax().first->as<double>() / 1000 ) * ( lowerThreshold  ) );
 	} else {
 		double range = m_ViewerCore->getCurrentImage()->getMinMax().second->as<double>() - m_ViewerCore->getCurrentImage()->getMinMax().first->as<double>();
 		m_ViewerCore->getCurrentImage()->setLowerThreshold( ( range / 1000 ) * ( lowerThreshold  ) + m_ViewerCore->getCurrentImage()->getMinMax().first->as<double>() );
 	}
+
 	m_ViewerCore->updateScene();
 }
 
 void MainWindow::upperThresholdChanged( int upperThreshold )
 {
-	if(m_ViewerCore->getCurrentImage()->getImageState().imageType == ImageHolder::z_map)
-	{
+	if( m_ViewerCore->getCurrentImage()->getImageState().imageType == ImageHolder::z_map ) {
 		m_ViewerCore->getCurrentImage()->setUpperThreshold( (  m_ViewerCore->getCurrentImage()->getMinMax().second->as<double>() / 1000 ) * ( upperThreshold + 1 ) );
 	} else {
 		double range = m_ViewerCore->getCurrentImage()->getMinMax().second->as<double>() - m_ViewerCore->getCurrentImage()->getMinMax().first->as<double>();
 		m_ViewerCore->getCurrentImage()->setUpperThreshold( ( range / 1000 ) * ( upperThreshold + 1 )  + m_ViewerCore->getCurrentImage()->getMinMax().first->as<double>() );
 	}
-	
+
 	m_ViewerCore->updateScene();
 
 }
@@ -273,18 +271,19 @@ void MainWindow::sagittalTopLevelChanged( bool docked )
 }
 
 
-void MainWindow::setNumberOfRows(size_t rows)
+void MainWindow::setNumberOfRows( size_t rows )
 {
 #warning optimize setNumberOfRows
-	ui.gridLayout->addWidget( ui.coronalDockWidget, 0, 2);
+	ui.gridLayout->addWidget( ui.coronalDockWidget, 0, 2 );
 	ui.setupDockWidget->setVisible( false );
-	m_AxialWidget->addImage( m_ViewerCore->getDataContainer().getImageByID(0));
-	m_SagittalWidget->addImage( m_ViewerCore->getDataContainer().getImageByID(0));
-	m_CoronalWidget->addImage( m_ViewerCore->getDataContainer().getImageByID(0));
-	for (size_t r = 0; r < rows-1; r++ ) {
-		QDockWidget* axialDock = new QDockWidget(this);
-		QDockWidget* sagittalDock = new QDockWidget(this);
-		QDockWidget* coronalDock = new QDockWidget(this);
+	m_AxialWidget->addImage( m_ViewerCore->getDataContainer().getImageByID( 0 ) );
+	m_SagittalWidget->addImage( m_ViewerCore->getDataContainer().getImageByID( 0 ) );
+	m_CoronalWidget->addImage( m_ViewerCore->getDataContainer().getImageByID( 0 ) );
+
+	for ( size_t r = 0; r < rows - 1; r++ ) {
+		QDockWidget *axialDock = new QDockWidget( this );
+		QDockWidget *sagittalDock = new QDockWidget( this );
+		QDockWidget *coronalDock = new QDockWidget( this );
 		axialDock->setFloating( false );
 		sagittalDock->setFloating( false );
 		coronalDock->setFloating( false );
@@ -294,33 +293,33 @@ void MainWindow::setNumberOfRows(size_t rows)
 		axialDock->setFeatures( QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetVerticalTitleBar );
 		sagittalDock->setFeatures( QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetVerticalTitleBar );
 		coronalDock->setFeatures( QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetVerticalTitleBar );
-		axialDock->setWindowTitle( tr("Axial View") );
-		sagittalDock->setWindowTitle( tr("Sagittal View") );
-		coronalDock->setWindowTitle( tr("Coronal View" ) );
-		QFrame* frameAxial = new QFrame( axialDock );
-		QFrame* frameSagittal = new QFrame( axialDock );
-		QFrame* frameCoronal = new QFrame( axialDock );
+		axialDock->setWindowTitle( tr( "Axial View" ) );
+		sagittalDock->setWindowTitle( tr( "Sagittal View" ) );
+		coronalDock->setWindowTitle( tr( "Coronal View" ) );
+		QFrame *frameAxial = new QFrame( axialDock );
+		QFrame *frameSagittal = new QFrame( axialDock );
+		QFrame *frameCoronal = new QFrame( axialDock );
 		axialDock->setWidget( frameAxial );
 		sagittalDock->setWidget( frameSagittal );
 		coronalDock->setWidget( frameCoronal );
-		ui.gridLayout->addWidget( axialDock, r+1, 0);
-		ui.gridLayout->addWidget( sagittalDock, r+1, 1);
-		ui.gridLayout->addWidget( coronalDock, r+1, 2);
+		ui.gridLayout->addWidget( axialDock, r + 1, 0 );
+		ui.gridLayout->addWidget( sagittalDock, r + 1, 1 );
+		ui.gridLayout->addWidget( coronalDock, r + 1, 2 );
 		GL::QGLWidgetImplementation *axialWidget = m_MasterWidget->createSharedWidget( frameAxial, axial );
 		GL::QGLWidgetImplementation *sagittalWidget = m_MasterWidget->createSharedWidget( frameSagittal, sagittal );
 		GL::QGLWidgetImplementation *coronalWidget = m_MasterWidget->createSharedWidget( frameCoronal, coronal );
 		std::stringstream nameAxial;
 		std::stringstream nameSagittal;
 		std::stringstream nameCoronal;
-		nameAxial << "axialView_" << r+1;
-		nameSagittal << "sagittalView_" << r+1;
-		nameCoronal << "coronalView_" << r+1;
-		m_ViewerCore->registerWidget(nameAxial.str(), axialWidget );	
-		m_ViewerCore->registerWidget(nameSagittal.str(), sagittalWidget );	
-		m_ViewerCore->registerWidget(nameCoronal.str(), coronalWidget );
-		axialWidget->addImage( m_ViewerCore->getDataContainer().getImageByID(r+1) );
-		sagittalWidget->addImage( m_ViewerCore->getDataContainer().getImageByID(r+1) );	
-		coronalWidget->addImage( m_ViewerCore->getDataContainer().getImageByID(r+1) );
+		nameAxial << "axialView_" << r + 1;
+		nameSagittal << "sagittalView_" << r + 1;
+		nameCoronal << "coronalView_" << r + 1;
+		m_ViewerCore->registerWidget( nameAxial.str(), axialWidget );
+		m_ViewerCore->registerWidget( nameSagittal.str(), sagittalWidget );
+		m_ViewerCore->registerWidget( nameCoronal.str(), coronalWidget );
+		axialWidget->addImage( m_ViewerCore->getDataContainer().getImageByID( r + 1 ) );
+		sagittalWidget->addImage( m_ViewerCore->getDataContainer().getImageByID( r + 1 ) );
+		coronalWidget->addImage( m_ViewerCore->getDataContainer().getImageByID( r + 1 ) );
 	}
 }
 

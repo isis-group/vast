@@ -17,19 +17,22 @@ std::string colormap_shader_code = STRINGIFY(
 	float err = 0.05;
 	float range = max - min;
 	float i = texture3D( imageTexture, gl_TexCoord[0].xyz ).r;
-	vec4 colorLut = texture1D( lut, i);
+	vec4 colorLut = texture1D( lut, i );
 	colorLut.a = opacity;
 	float inormed = ( i * range ) + min;
+
 	if( inormed > 0 - err && inormed < upper_threshold ) {
 		colorLut.a = 0;
 	}
+
 	if( inormed < 0 + err && inormed > lower_threshold ) {
 		colorLut.a = 0;
 	}
-	
+
 	if( killZeros == 1 && inormed > 0 - err && inormed < 0 + err ) {
 		colorLut.a = 0;
 	}
+
 	gl_FragColor = ( colorLut + bias / range ) * scaling;
 }
 								   );

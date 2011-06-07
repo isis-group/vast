@@ -4,7 +4,7 @@ namespace isis
 {
 namespace viewer
 {
-namespace GL 
+namespace GL
 {
 
 std::map<boost::shared_ptr<ImageHolder>, GLuint> GLTextureHandler::copyAllImagesToTextures( const DataContainer &data, const bool withAlpha, GLTextureHandler::InterpolationType interpolation )

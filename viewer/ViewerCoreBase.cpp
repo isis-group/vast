@@ -10,8 +10,8 @@ namespace viewer
 
 ViewerCoreBase::ViewerCoreBase( )
 	: m_CurrentTimestep( 0 ),
-	m_AllImagesToIdentity( false )
-	
+	  m_AllImagesToIdentity( false )
+
 {
 }
 
@@ -26,11 +26,11 @@ void ViewerCoreBase::addImageList( const std::list< data::Image > imageList, con
 		LOG( Runtime, warning ) << "The image list passed to the core is empty!";
 	}
 
-	
+
 
 }
 
-void ViewerCoreBase::addImage(const isis::data::Image& image, const isis::viewer::ImageHolder::ImageType& imageType)
+void ViewerCoreBase::addImage( const isis::data::Image &image, const isis::viewer::ImageHolder::ImageType &imageType )
 {
 	m_DataContainer.addImage( image, imageType );
 	setCurrentImage( m_DataContainer.begin()->second );
@@ -43,6 +43,7 @@ void ViewerCoreBase::setImageList( std::list< data::Image > imgList, const Image
 	if( !imgList.empty() ) {
 		m_DataContainer.clear();
 	}
+
 	ViewerCoreBase::addImageList( imgList, imageType );
 }
 

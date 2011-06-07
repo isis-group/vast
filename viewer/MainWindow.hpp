@@ -44,11 +44,11 @@ public Q_SLOTS:
 
 	void upperThresholdChanged( int );
 	void lowerThresholdChanged( int );
-	
+
 	void axialTopLevelChanged( bool );
 	void sagittalTopLevelChanged( bool );
 	void coronalTopLevelChanged( bool );
-	
+
 	void setNumberOfRows( size_t rows );
 
 
@@ -57,12 +57,12 @@ private:
 	GL::QGLWidgetImplementation *m_CoronalWidget;
 	GL::QGLWidgetImplementation *m_SagittalWidget;
 	GL::QGLWidgetImplementation *m_MasterWidget;
-	
+
 	QAction *actionMakeCurrent;
 	QAction *actionAsZMap;
 
 	template<typename TYPE> void displayIntensity( util::ivector4 coords ) {
-		util::Value<TYPE> vIntensity (m_ViewerCore->getCurrentImage()->getImage()->voxel<TYPE>( coords[0], coords[1], coords[2], coords[3] ) );
+		util::Value<TYPE> vIntensity ( m_ViewerCore->getCurrentImage()->getImage()->voxel<TYPE>( coords[0], coords[1], coords[2], coords[3] ) );
 		double intensity = roundNumber<double>( vIntensity, 2 );
 		ui.pxlIntensityContainer->setText( QString::number( intensity ) );
 		m_ViewerCore->getCurrentImage()->setCurrentIntensityAsDouble( intensity );

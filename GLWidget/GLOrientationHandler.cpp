@@ -7,7 +7,7 @@ namespace viewer
 {
 namespace GL
 {
-	
+
 const unsigned short GLOrientationHandler::matrixSize = 4;
 
 using namespace boost::numeric::ublas;

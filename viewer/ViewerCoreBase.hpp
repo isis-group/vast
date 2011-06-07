@@ -18,7 +18,7 @@ public:
 	ViewerCoreBase( );
 
 	std::string getVersion() const;
-	
+
 	virtual void addImageList( const std::list< data::Image > imageList, const ImageHolder::ImageType &imageType );
 	virtual void setImageList( const std::list< data::Image > imageList, const ImageHolder::ImageType &imageType );
 	virtual void addImage( const data::Image &image, const ImageHolder::ImageType &imageType );
@@ -33,7 +33,7 @@ public:
 			return true;
 		} else { return false; }
 	}
-	
+
 	const DataContainer &getDataContainer() const { return m_DataContainer; }
 	DataContainer &getDataContainer() { return m_DataContainer; }
 

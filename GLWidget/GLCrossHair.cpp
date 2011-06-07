@@ -8,7 +8,7 @@ namespace viewer
 {
 namespace GL
 {
-	
+
 void GLCrossHair::draw( float x, float y )
 {
 	glColor4f( 0, 0, 0, 0 );

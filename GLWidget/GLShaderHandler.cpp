@@ -6,9 +6,9 @@ namespace isis
 {
 namespace viewer
 {
-namespace GL 
+namespace GL
 {
-	
+
 GLShaderHandler::GLShaderHandler()
 	: m_isEnabled( false ),
 	  m_Context( false )
@@ -38,14 +38,16 @@ void GLShaderHandler::addShader( const std::string &name, const std::string &sou
 	glCompileShaderARB( shader.getShaderID() );
 
 	GLint compileStatus;
+
 #ifndef __APPLE__
-	glGetShaderiv( static_cast<GLuint>(shader.getShaderID()), GL_COMPILE_STATUS, &compileStatus );
+	glGetShaderiv( static_cast<GLuint>( shader.getShaderID() ), GL_COMPILE_STATUS, &compileStatus );
 
 	if( compileStatus == GL_FALSE ) {
 		LOG( Runtime, error ) << "Error during compilation of shader " << name << " !";
 	} else {
 		LOG( Debug, info ) << "Shader " << name << " with id " << shader.getShaderID() << " compiled successfully!";
 	}
+
 #else
 	checkAndReportGLError( "compiling shader" + name );
 #endif
@@ -54,12 +56,13 @@ void GLShaderHandler::addShader( const std::string &name, const std::string &sou
 
 void GLShaderHandler::setEnabled( bool enable )
 {
-	if(!m_Context) {
-		LOG(Runtime, error) << "You first have to create the shader context";
+	if( !m_Context ) {
+		LOG( Runtime, error ) << "You first have to create the shader context";
 	}
-	if( enable && !m_isEnabled) {
+
+	if( enable && !m_isEnabled ) {
 		BOOST_FOREACH( ShaderMapType::const_reference shader, m_ShaderMap ) {
-			glAttachObjectARB(m_ProgramID, shader.second.getShaderID());
+			glAttachObjectARB( m_ProgramID, shader.second.getShaderID() );
 			checkAndReportGLError( "attaching shader"  );
 		}
 		glLinkProgramARB( m_ProgramID );
@@ -69,7 +72,7 @@ void GLShaderHandler::setEnabled( bool enable )
 		glUseProgramObjectARB( m_ProgramID );
 		m_isEnabled = true;
 		checkAndReportGLError( "glUseProgramObjectARB" );
-	} else if (!enable && m_isEnabled ){
+	} else if ( !enable && m_isEnabled ) {
 		BOOST_FOREACH( ShaderMapType::const_reference shader, m_ShaderMap ) {
 			glDetachObjectARB( m_ProgramID, shader.second.getShaderID() );
 			checkAndReportGLError( "detaching shader" );

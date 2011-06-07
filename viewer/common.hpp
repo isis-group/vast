@@ -28,8 +28,9 @@ namespace viewer
 enum PlaneOrientation { axial, sagittal, coronal };
 
 template<typename TYPE>
-TYPE roundNumber( TYPE number, unsigned  short placesOfDec ) {
-	return floor(number * pow(10., placesOfDec) + .5) / pow(10., placesOfDec);
+TYPE roundNumber( TYPE number, unsigned  short placesOfDec )
+{
+	return floor( number * pow( 10., placesOfDec ) + .5 ) / pow( 10., placesOfDec );
 }
 
 void setOrientationToIdentity( data::Image &image );

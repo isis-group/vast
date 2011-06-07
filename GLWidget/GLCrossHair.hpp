@@ -9,7 +9,7 @@ namespace viewer
 {
 namespace GL
 {
-	
+
 class GLCrossHair
 {
 public:
