@@ -80,9 +80,8 @@ void QGLWidgetImplementation::connectSignals()
 void QGLWidgetImplementation::initializeGL()
 {
 	LOG( Debug, info) << "Using OpenGL version " << glGetString(GL_VERSION) << " .";
-// 	glShadeModel( GL_FLAT );
 	glClearColor( 0.0, 0.0, 0.0, 0.0 );
-	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+	glClear( GL_COLOR_BUFFER_BIT );
 	glMatrixMode( GL_MODELVIEW );
 	glLoadIdentity();
 	glMatrixMode( GL_PROJECTION );
@@ -153,7 +152,7 @@ void QGLWidgetImplementation::updateStateValues( boost::shared_ptr<ImageHolder> 
 
 	GLOrientationHandler::recalculateViewport( width(), height(), state.mappedVoxelSize, state.mappedImageSize, state.viewport, border );
 
-	if( m_Flags.rightButtonPressed || m_Flags.zoomEvent  ) {
+	if( !m_Flags.leftButtonPressed || m_Flags.zoomEvent  ) {
 		m_Flags.zoomEvent = false;
 		calculateTranslation( );
 	}
@@ -230,7 +229,7 @@ bool QGLWidgetImplementation::lookAtVoxel( const isis::util::ivector4 &voxelCoor
 void QGLWidgetImplementation::paintGL()
 {
 	glClearColor(0,0,0,0);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT );
 	glEnable ( GL_BLEND );
 	glBlendFunc ( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
 	BOOST_FOREACH( StateMap::const_reference state, m_StateValues ) {
@@ -255,13 +254,6 @@ void QGLWidgetImplementation::paintGL()
 			glMatrixMode( GL_MODELVIEW );
 			glLoadIdentity();
 			glLoadMatrixd( state.second.modelViewMatrix );
-			
-			if( state.first.get() == m_ViewerCore->getCurrentImage().get() ) {
-				glTranslatef( 0.0, 0.0, -0.1 );
-			} 
-			if( state.first->getImageState().imageType == ImageHolder::z_map ) {
-				glTranslatef( 0.0, 0.0, -0.2 );
-			}
 			
 			glMatrixMode( GL_TEXTURE );
 			glLoadIdentity();
