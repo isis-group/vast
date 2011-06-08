@@ -6,339 +6,358 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>961</width>
-    <height>775</height>
+    <width>800</width>
+    <height>720</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>isisViewer</string>
   </property>
+  <property name="animated">
+   <bool>true</bool>
+  </property>
+  <property name="tabShape">
+   <enum>QTabWidget::Triangular</enum>
+  </property>
+  <property name="unifiedTitleAndToolBarOnMac">
+   <bool>false</bool>
+  </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QGridLayout" name="gridLayout">
-    <item row="1" column="0">
-     <widget class="QDockWidget" name="coronalDockWidget">
-      <property name="floating">
-       <bool>false</bool>
-      </property>
-      <property name="features">
-       <set>QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable|QDockWidget::DockWidgetVerticalTitleBar</set>
-      </property>
-      <property name="allowedAreas">
-       <set>Qt::AllDockWidgetAreas</set>
-      </property>
-      <property name="windowTitle">
-       <string>Coronal View</string>
-      </property>
-      <widget class="QWidget" name="dockWidgetContents_12">
-       <layout class="QHBoxLayout" name="horizontalLayout_2">
-        <item>
-         <widget class="QFrame" name="coronalWidget">
-          <property name="frameShape">
-           <enum>QFrame::NoFrame</enum>
-          </property>
-          <property name="frameShadow">
-           <enum>QFrame::Raised</enum>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </widget>
-     </widget>
-    </item>
-    <item row="1" column="1">
-     <widget class="QDockWidget" name="setupDockWidget">
-      <property name="floating">
-       <bool>false</bool>
-      </property>
-      <property name="features">
-       <set>QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable|QDockWidget::DockWidgetVerticalTitleBar</set>
-      </property>
-      <property name="allowedAreas">
-       <set>Qt::AllDockWidgetAreas</set>
-      </property>
-      <widget class="QWidget" name="dockWidgetContents_13">
-       <layout class="QVBoxLayout" name="verticalLayout">
-        <item>
-         <widget class="QWidget" name="widget" native="true">
-          <widget class="QLabel" name="label">
-           <property name="geometry">
-            <rect>
-             <x>100</x>
-             <y>90</y>
-             <width>54</width>
-             <height>18</height>
-            </rect>
-           </property>
-           <property name="text">
-            <string>Intensity</string>
-           </property>
-          </widget>
-          <widget class="QSpinBox" name="timestepSpinBox">
-           <property name="geometry">
-            <rect>
-             <x>9</x>
-             <y>115</y>
-             <width>43</width>
-             <height>26</height>
-            </rect>
-           </property>
-          </widget>
-          <widget class="QListWidget" name="imageStack">
-           <property name="geometry">
-            <rect>
-             <x>10</x>
-             <y>240</y>
-             <width>381</width>
-             <height>101</height>
-            </rect>
-           </property>
-           <property name="editTriggers">
-            <set>QAbstractItemView::DoubleClicked|QAbstractItemView::EditKeyPressed|QAbstractItemView::SelectedClicked</set>
-           </property>
-           <property name="dragEnabled">
-            <bool>true</bool>
-           </property>
-           <property name="dragDropMode">
-            <enum>QAbstractItemView::InternalMove</enum>
-           </property>
-           <property name="alternatingRowColors">
-            <bool>true</bool>
-           </property>
-           <property name="iconSize">
-            <size>
-             <width>16</width>
-             <height>16</height>
-            </size>
-           </property>
-           <property name="movement">
-            <enum>QListView::Free</enum>
-           </property>
-           <property name="selectionRectVisible">
-            <bool>true</bool>
-           </property>
-          </widget>
-          <widget class="QLabel" name="label_2">
-           <property name="geometry">
-            <rect>
-             <x>9</x>
-             <y>91</y>
-             <width>59</width>
-             <height>18</height>
-            </rect>
-           </property>
-           <property name="text">
-            <string>Timestep</string>
-           </property>
-          </widget>
-          <widget class="QLabel" name="pxlIntensityContainer">
-           <property name="geometry">
-            <rect>
-             <x>100</x>
-             <y>110</y>
-             <width>111</width>
-             <height>20</height>
-            </rect>
-           </property>
-           <property name="text">
-            <string/>
-           </property>
-          </widget>
-          <widget class="QLabel" name="maxLabel">
-           <property name="geometry">
-            <rect>
-             <x>10</x>
-             <y>30</y>
-             <width>41</width>
-             <height>21</height>
-            </rect>
-           </property>
-           <property name="text">
-            <string/>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-           </property>
-          </widget>
-          <widget class="QLabel" name="minLabel">
-           <property name="geometry">
-            <rect>
-             <x>10</x>
-             <y>10</y>
-             <width>41</width>
-             <height>21</height>
-            </rect>
-           </property>
-           <property name="text">
-            <string/>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-           </property>
-          </widget>
-          <widget class="QComboBox" name="interpolationType">
-           <property name="geometry">
-            <rect>
-             <x>10</x>
-             <y>170</y>
-             <width>231</width>
-             <height>27</height>
-            </rect>
-           </property>
-           <item>
-            <property name="text">
-             <string>Nearest Neighbor</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>Linear</string>
-            </property>
-           </item>
-          </widget>
-          <widget class="QLabel" name="label_3">
-           <property name="geometry">
-            <rect>
-             <x>10</x>
-             <y>150</y>
-             <width>171</width>
-             <height>18</height>
-            </rect>
-           </property>
-           <property name="text">
-            <string>ZMap-Interpolation</string>
-           </property>
-          </widget>
-          <widget class="QSlider" name="lowerThreshold">
-           <property name="geometry">
-            <rect>
-             <x>60</x>
-             <y>10</y>
-             <width>321</width>
-             <height>20</height>
-            </rect>
-           </property>
-           <property name="maximum">
-            <number>999</number>
-           </property>
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="invertedAppearance">
-            <bool>true</bool>
-           </property>
-           <property name="invertedControls">
-            <bool>true</bool>
-           </property>
-          </widget>
-          <widget class="QSlider" name="upperThreshold">
-           <property name="geometry">
-            <rect>
-             <x>60</x>
-             <y>30</y>
-             <width>321</width>
-             <height>20</height>
-            </rect>
-           </property>
-           <property name="minimum">
-            <number>0</number>
-           </property>
-           <property name="maximum">
-            <number>999</number>
-           </property>
-           <property name="value">
-            <number>0</number>
-           </property>
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="invertedAppearance">
-            <bool>true</bool>
-           </property>
-          </widget>
-          <widget class="QLabel" name="label_4">
-           <property name="geometry">
-            <rect>
-             <x>385</x>
-             <y>11</y>
-             <width>16</width>
-             <height>18</height>
-            </rect>
-           </property>
-           <property name="text">
-            <string>0</string>
-           </property>
-          </widget>
-          <widget class="QLabel" name="label_5">
-           <property name="geometry">
-            <rect>
-             <x>385</x>
-             <y>31</y>
-             <width>16</width>
-             <height>18</height>
-            </rect>
-           </property>
-           <property name="text">
-            <string>0</string>
-           </property>
-          </widget>
-         </widget>
-        </item>
-       </layout>
-      </widget>
-     </widget>
-    </item>
+   <layout class="QGridLayout" name="gridLayout_6">
     <item row="0" column="0">
-     <widget class="QDockWidget" name="axialDockWidget">
-      <property name="floating">
-       <bool>false</bool>
+     <widget class="QFrame" name="frame_2">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
       </property>
-      <property name="features">
-       <set>QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable|QDockWidget::DockWidgetVerticalTitleBar</set>
+      <property name="frameShape">
+       <enum>QFrame::StyledPanel</enum>
       </property>
-      <property name="windowTitle">
-       <string>Axial View</string>
+      <property name="frameShadow">
+       <enum>QFrame::Raised</enum>
       </property>
-      <widget class="QWidget" name="dockWidgetContents_10">
-       <layout class="QHBoxLayout" name="horizontalLayout">
-        <item>
-         <widget class="QFrame" name="axialWidget">
-          <property name="frameShape">
-           <enum>QFrame::NoFrame</enum>
+      <layout class="QHBoxLayout" name="horizontalLayout">
+       <item>
+        <widget class="QPushButton" name="pushButton">
+         <property name="text">
+          <string>PushButton</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="pushButton_2">
+         <property name="text">
+          <string>PushButton</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="horizontalSpacer">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>66</width>
+           <height>14</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <widget class="QLabel" name="label_9">
+         <property name="text">
+          <string>Interpolation:</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="interpolationType">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <item>
+          <property name="text">
+           <string>Nearest Neighbor </string>
           </property>
-          <property name="frameShadow">
-           <enum>QFrame::Raised</enum>
+         </item>
+         <item>
+          <property name="text">
+           <string>Linear </string>
           </property>
-         </widget>
-        </item>
-       </layout>
-      </widget>
+         </item>
+        </widget>
+       </item>
+      </layout>
      </widget>
     </item>
-    <item row="0" column="1">
-     <widget class="QDockWidget" name="sagittalDockWidget">
-      <property name="floating">
-       <bool>false</bool>
+    <item row="1" column="0">
+     <widget class="QFrame" name="frame">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
       </property>
-      <property name="features">
-       <set>QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable|QDockWidget::DockWidgetVerticalTitleBar</set>
+      <property name="frameShape">
+       <enum>QFrame::StyledPanel</enum>
       </property>
-      <property name="windowTitle">
-       <string>Sagittal View</string>
+      <property name="frameShadow">
+       <enum>QFrame::Raised</enum>
       </property>
-      <widget class="QWidget" name="dockWidgetContents_11">
-       <layout class="QHBoxLayout" name="horizontalLayout_3">
-        <item>
-         <widget class="QFrame" name="sagittalWidget">
-          <property name="frameShape">
-           <enum>QFrame::NoFrame</enum>
-          </property>
-          <property name="frameShadow">
-           <enum>QFrame::Raised</enum>
-          </property>
+      <layout class="QGridLayout" name="gridLayout">
+       <property name="margin">
+        <number>0</number>
+       </property>
+       <property name="spacing">
+        <number>0</number>
+       </property>
+       <item row="0" column="0">
+        <widget class="QDockWidget" name="axialDockWidget">
+         <property name="floating">
+          <bool>false</bool>
+         </property>
+         <property name="features">
+          <set>QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable|QDockWidget::DockWidgetVerticalTitleBar</set>
+         </property>
+         <property name="allowedAreas">
+          <set>Qt::AllDockWidgetAreas</set>
+         </property>
+         <property name="windowTitle">
+          <string/>
+         </property>
+         <widget class="QWidget" name="dockWidgetContents_2">
+          <layout class="QGridLayout" name="gridLayout_2">
+           <item row="0" column="0">
+            <widget class="QWidget" name="axialWidget" native="true"/>
+           </item>
+          </layout>
          </widget>
-        </item>
-       </layout>
-      </widget>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QDockWidget" name="sagittalDockWidget">
+         <property name="floating">
+          <bool>false</bool>
+         </property>
+         <property name="features">
+          <set>QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable|QDockWidget::DockWidgetVerticalTitleBar</set>
+         </property>
+         <property name="allowedAreas">
+          <set>Qt::AllDockWidgetAreas</set>
+         </property>
+         <property name="windowTitle">
+          <string/>
+         </property>
+         <widget class="QWidget" name="dockWidgetContents_3">
+          <layout class="QGridLayout" name="gridLayout_3">
+           <item row="0" column="0">
+            <widget class="QWidget" name="sagittalWidget" native="true"/>
+           </item>
+          </layout>
+         </widget>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QDockWidget" name="coronalDockWidget">
+         <property name="floating">
+          <bool>false</bool>
+         </property>
+         <property name="features">
+          <set>QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable|QDockWidget::DockWidgetVerticalTitleBar</set>
+         </property>
+         <property name="allowedAreas">
+          <set>Qt::AllDockWidgetAreas</set>
+         </property>
+         <property name="windowTitle">
+          <string/>
+         </property>
+         <widget class="QWidget" name="dockWidgetContents_4">
+          <layout class="QGridLayout" name="gridLayout_4">
+           <item row="0" column="0">
+            <widget class="QWidget" name="coronalWidget" native="true"/>
+           </item>
+          </layout>
+         </widget>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QDockWidget" name="setupDockWidget">
+         <property name="floating">
+          <bool>false</bool>
+         </property>
+         <property name="features">
+          <set>QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable|QDockWidget::DockWidgetVerticalTitleBar</set>
+         </property>
+         <property name="allowedAreas">
+          <set>Qt::AllDockWidgetAreas</set>
+         </property>
+         <property name="windowTitle">
+          <string/>
+         </property>
+         <widget class="QWidget" name="dockWidgetContents_6">
+          <layout class="QGridLayout" name="gridLayout_5">
+           <item row="0" column="0">
+            <widget class="QWidget" name="widget_4" native="true">
+             <layout class="QHBoxLayout" name="horizontalLayout_4">
+              <item>
+               <widget class="QWidget" name="widget_5" native="true">
+                <layout class="QGridLayout" name="gridLayout_7">
+                 <item row="0" column="0">
+                  <widget class="QListWidget" name="imageStack"/>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+              <item>
+               <widget class="QWidget" name="widget_6" native="true">
+                <layout class="QGridLayout" name="gridLayout_8">
+                 <item row="0" column="0">
+                  <widget class="QLabel" name="minLabel">
+                   <property name="text">
+                    <string/>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="1">
+                  <widget class="QLabel" name="maxLabel">
+                   <property name="text">
+                    <string/>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="0">
+                  <widget class="QSlider" name="upperThreshold">
+                   <property name="maximum">
+                    <number>999</number>
+                   </property>
+                   <property name="orientation">
+                    <enum>Qt::Vertical</enum>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="1">
+                  <widget class="QSlider" name="lowerThreshold">
+                   <property name="maximum">
+                    <number>999</number>
+                   </property>
+                   <property name="orientation">
+                    <enum>Qt::Vertical</enum>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item row="2" column="0">
+     <widget class="QFrame" name="frame_3">
+      <property name="frameShape">
+       <enum>QFrame::StyledPanel</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Raised</enum>
+      </property>
+      <layout class="QHBoxLayout" name="horizontalLayout_2">
+       <item>
+        <widget class="QLabel" name="label_8">
+         <property name="text">
+          <string>Timestep:</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QSpinBox" name="timestepSpinBox"/>
+       </item>
+       <item>
+        <widget class="QLabel" name="label">
+         <property name="text">
+          <string>X:</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLineEdit" name="x_value"/>
+       </item>
+       <item>
+        <widget class="QLabel" name="label_2">
+         <property name="text">
+          <string>Y:</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLineEdit" name="y_value"/>
+       </item>
+       <item>
+        <widget class="QLabel" name="label_3">
+         <property name="text">
+          <string>Z:</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLineEdit" name="z_value"/>
+       </item>
+       <item>
+        <widget class="QLabel" name="label_4">
+         <property name="text">
+          <string>Row:</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLineEdit" name="row_value"/>
+       </item>
+       <item>
+        <widget class="QLabel" name="label_5">
+         <property name="text">
+          <string>Column:</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLineEdit" name="column_value"/>
+       </item>
+       <item>
+        <widget class="QLabel" name="label_6">
+         <property name="text">
+          <string>Slice:</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLineEdit" name="slice_value"/>
+       </item>
+       <item>
+        <widget class="QLabel" name="label_7">
+         <property name="text">
+          <string>Intensity:</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLCDNumber" name="intensity_value">
+         <property name="segmentStyle">
+          <enum>QLCDNumber::Flat</enum>
+         </property>
+        </widget>
+       </item>
+      </layout>
      </widget>
     </item>
    </layout>
@@ -348,7 +367,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>961</width>
+     <width>800</width>
      <height>25</height>
     </rect>
    </property>
@@ -356,15 +375,8 @@
     <property name="title">
      <string>&amp;File</string>
     </property>
-    <widget class="QMenu" name="menuOpen_Image_as">
-     <property name="title">
-      <string>Open Image as</string>
-     </property>
-     <addaction name="actionAnatomical_Image"/>
-     <addaction name="actionZ_Map"/>
-    </widget>
     <addaction name="action_Open_Image"/>
-    <addaction name="menuOpen_Image_as"/>
+    <addaction name="actionOpen_DICOM"/>
     <addaction name="separator"/>
     <addaction name="action_Exit"/>
    </widget>
@@ -372,88 +384,40 @@
     <property name="title">
      <string>&amp;Preferences</string>
     </property>
-    <widget class="QMenu" name="menuQuick_Settings">
+    <widget class="QMenu" name="menu_Quick_Preferences">
      <property name="title">
-      <string>&amp;Quick Settings</string>
+      <string>&amp;Quick Preferences</string>
      </property>
      <addaction name="actionShow_labels"/>
      <addaction name="actionAutomatic_Scaling"/>
     </widget>
-    <widget class="QMenu" name="menuSpatiality">
-     <property name="title">
-      <string>Spatiality</string>
-     </property>
-     <addaction name="actionIgnore_Orientation"/>
-    </widget>
-    <addaction name="menuQuick_Settings"/>
-    <addaction name="menuSpatiality"/>
+    <addaction name="menu_Quick_Preferences"/>
    </widget>
    <addaction name="menu_File"/>
    <addaction name="menu_Preferences"/>
   </widget>
-  <widget class="QStatusBar" name="statusbar"/>
-  <action name="action_Open_Image">
-   <property name="text">
-    <string>&amp;Open Image</string>
+  <widget class="QStatusBar" name="statusbar">
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Preferred" vsizetype="Ignored">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
    </property>
-   <property name="shortcut">
-    <string>Ctrl+O</string>
-   </property>
-  </action>
+  </widget>
   <action name="action_Exit">
    <property name="text">
     <string>&amp;Exit</string>
    </property>
   </action>
-  <action name="actionAnatomical_Image">
-   <property name="text">
-    <string>Anatomical Image</string>
-   </property>
-  </action>
-  <action name="actionZ_Map">
-   <property name="text">
-    <string>Z-Map</string>
-   </property>
-  </action>
   <action name="actionShow_labels">
-   <property name="text">
-    <string>Show &amp;labels</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+L</string>
-   </property>
-  </action>
-  <action name="actionShow_Toolbox">
-   <property name="text">
-    <string>Show &amp;Toolbox</string>
-   </property>
-  </action>
-  <action name="actionAxial">
-   <property name="text">
-    <string>Axial</string>
-   </property>
-  </action>
-  <action name="actionSagittal">
-   <property name="text">
-    <string>Sagittal</string>
-   </property>
-  </action>
-  <action name="actionCoronal">
-   <property name="text">
-    <string>Coronal</string>
-   </property>
-  </action>
-  <action name="actionSet">
-   <property name="text">
-    <string>Set</string>
-   </property>
-  </action>
-  <action name="actionIgnore_Orientation">
    <property name="checkable">
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>&amp;Ignore Orientation</string>
+    <string>Show &amp;Labels</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+L</string>
    </property>
   </action>
   <action name="actionAutomatic_Scaling">
@@ -461,15 +425,23 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>&amp;Automatic scaling</string>
+    <string>&amp;Automatic Scaling</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+S</string>
    </property>
   </action>
+  <action name="action_Open_Image">
+   <property name="text">
+    <string>&amp;Open Image</string>
+   </property>
+  </action>
+  <action name="actionOpen_DICOM">
+   <property name="text">
+    <string>Open &amp;DICOM </string>
+   </property>
+  </action>
  </widget>
- <resources>
-  <include location="../resources/viewer.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>

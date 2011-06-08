@@ -21,7 +21,6 @@ MainWindow::MainWindow( QViewerCore *core )
 	actionMakeCurrent = new QAction( "Make current", this );
 	actionAsZMap = new QAction( "Show as zmap", this );
 	actionAsZMap->setCheckable( true );
-
 	connect( ui.action_Exit, SIGNAL( triggered() ), this, SLOT( exitProgram() ) );
 	connect( ui.actionShow_labels, SIGNAL( toggled( bool ) ), m_ViewerCore, SLOT( setShowLabels( bool ) ) );
 	connect( ui.actionAutomatic_Scaling, SIGNAL( toggled( bool ) ), m_ViewerCore, SLOT( setAutomaticScaling( bool ) ) );
@@ -113,6 +112,12 @@ void MainWindow::doubleClickedMakeCurrentImage( QListWidgetItem * )
 void MainWindow::physicalCoordsChanged( util::fvector4 coords )
 {
 	util::ivector4 voxelCoords = m_ViewerCore->getCurrentImage()->getImage()->getIndexFromPhysicalCoords( coords );
+	ui.row_value->setText( QString::number(voxelCoords[0]));
+	ui.column_value->setText( QString::number(voxelCoords[1]) );
+	ui.slice_value->setText( QString::number(voxelCoords[2]) );
+	ui.x_value->setText( QString::number( coords[0] ) );
+	ui.y_value->setText( QString::number( coords[1] ) );
+	ui.z_value->setText( QString::number( coords[2] ) );
 	data::Chunk ch = m_ViewerCore->getCurrentImage()->getImage()->getChunk( voxelCoords[0], voxelCoords[1], voxelCoords[2], voxelCoords[3] );
 
 	switch( ch.getTypeID() ) {
