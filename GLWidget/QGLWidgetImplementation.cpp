@@ -161,6 +161,8 @@ void QGLWidgetImplementation::updateStateValues( boost::shared_ptr<ImageHolder> 
 	util::dvector4 objectCoords = GLOrientationHandler::transformVoxel2ObjectCoords( state.voxelCoords, image, state.planeOrientation );
 	state.crosshairCoords = object2WindowCoords( objectCoords[0], objectCoords[1], image );
 	state.normalizedSlice = objectCoords[2];
+	image->setCurrentVoxelCoords( voxelCoords );
+	image->setCurrentPhysicalCoords( image->getImage()->getPhysicalCoordsFromIndex( voxelCoords ));
 
 }
 

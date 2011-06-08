@@ -65,6 +65,7 @@ private:
 		util::Value<TYPE> vIntensity ( m_ViewerCore->getCurrentImage()->getImage()->voxel<TYPE>( coords[0], coords[1], coords[2], coords[3] ) );
 		double intensity = roundNumber<double>( vIntensity, 2 );
 		ui.intensity_value->display(intensity);
+		ui.intensity_value_2->display( intensity );
 		m_ViewerCore->getCurrentImage()->setCurrentIntensityAsDouble( intensity );
 	}
 

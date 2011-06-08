@@ -22,9 +22,9 @@ int main( int argc, char *argv[] )
 	app.parameters["in"] = isis::util::slist();
 	app.parameters["in"].needed() = false;
 	app.parameters["in"].setDescription( "The input image file list." );
-	app.parameters["z"] = isis::util::slist();
-	app.parameters["z"].needed() = false;
-	app.parameters["z"].setDescription( "The input image file list interpreted as zmaps. " );
+	app.parameters["zmap"] = isis::util::slist();
+	app.parameters["zmap"].needed() = false;
+	app.parameters["zmap"].setDescription( "The input image file list interpreted as zmaps. " );
 	app.parameters["type"] = image_types;
 	app.parameters["type"].needed() = false;
 	app.parameters["type"].setDescription( "The type as what the image should be interpreted." );
@@ -40,11 +40,14 @@ int main( int argc, char *argv[] )
 	app.parameters["rf"].needed() = false;
 	app.parameters["rf"].setDescription( "Override automatic detection of file suffix for reading with given value" );
 	app.parameters["rf"].hidden() = true;
+	app.parameters["split"] = false;
+	app.parameters["split"].needed() = false;
+	app.parameters["split"].setDescription( "Show each image in a separate view" );
 	app.init( argc, argv, true );
 	app.setLog<isis::ViewerLog>( app.getLLMap()[app.parameters["dViewer"]->as<isis::util::Selection>()] );
 	app.setLog<isis::ViewerDebug>( app.getLLMap()[app.parameters["dViewer"]->as<isis::util::Selection>()] );
 	isis::util::slist fileList = app.parameters["in"];
-	isis::util::slist zmapFileList = app.parameters["z"];
+	isis::util::slist zmapFileList = app.parameters["zmap"];
 	std::list< isis::data::Image > imgList;
 	std::list< isis::data::Image > zImgList;
 
@@ -73,15 +76,15 @@ int main( int argc, char *argv[] )
 
 	isis::viewer::MainWindow isisViewerMainWindow( core );
 
-	if( app.parameters["z"].isSet() ) {
+	if( app.parameters["zmap"].isSet() ) {
 		core->addImageList( zImgList, ImageHolder::z_map, true );
 	}
 	if( app.parameters["type"].toString() == "anatomical" && app.parameters["in"].isSet() ) {
 
-		if( imgList.size() > 1 ) {
+		if( imgList.size() > 1 && app.parameters["split"] ) {
 			core->addImageList( imgList, ImageHolder::anatomical_image, false );
 			isisViewerMainWindow.setNumberOfRows( imgList.size() );
-		} else if( imgList.size() == 1 ) {
+		} else  {
 			core->addImageList( imgList, ImageHolder::anatomical_image, true );
 		}
 

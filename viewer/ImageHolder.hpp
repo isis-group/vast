@@ -35,6 +35,8 @@ public:
 		float opacity;
 		bool visible;
 		double currentIntensityAsDouble;
+		util::ivector4 voxelCoords;
+		util::fvector4 physicalCoords;
 	};
 	ImageHolder( );
 
@@ -117,6 +119,8 @@ public:
 	void setOpacity( float opacity ) { m_ImageState.opacity = opacity; }
 	void setImageType( ImageType imageType ) { m_ImageState.imageType = imageType; }
 	void setCurrentIntensityAsDouble( double intensity ) { m_ImageState.currentIntensityAsDouble = intensity; }
+	void setCurrentVoxelCoords( const util::ivector4 &voxelCoords ) { m_ImageState.voxelCoords = voxelCoords; }
+	void setCurrentPhysicalCoords( const util::fvector4 &physCoords ) { m_ImageState.physicalCoords = physCoords; }
 
 private:
 

@@ -26,8 +26,6 @@ void ViewerCoreBase::addImageList( const std::list< data::Image > imageList, con
 		LOG( Runtime, warning ) << "The image list passed to the core is empty!";
 	}
 
-
-
 }
 
 void ViewerCoreBase::addImage( const isis::data::Image &image, const isis::viewer::ImageHolder::ImageType &imageType )

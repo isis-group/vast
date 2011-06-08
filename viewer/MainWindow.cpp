@@ -35,6 +35,14 @@ MainWindow::MainWindow( QViewerCore *core )
 	connect( ui.lowerThreshold, SIGNAL( sliderMoved( int ) ), this, SLOT( lowerThresholdChanged( int ) ) );
 	connect( ui.timestepSpinBox, SIGNAL( valueChanged( int ) ), m_ViewerCore, SLOT( timestepChanged( int ) ) ) ;
 	connect( ui.interpolationType, SIGNAL( currentIndexChanged( int ) ), this, SLOT( interpolationChanged( int ) ) );
+	//attach all textFields
+	connect( ui.row_value, SIGNAL( textChanged(QString) ), ui.row_value_2, SLOT( setText(QString)) );
+	connect( ui.column_value, SIGNAL( textChanged(QString) ), ui.column_value_2, SLOT( setText(QString)) );
+	connect( ui.slice_value, SIGNAL( textChanged(QString) ), ui.slice_value_2, SLOT( setText(QString)) );
+	connect( ui.x_value, SIGNAL( textChanged(QString)), ui.x_value_2, SLOT( setText(QString)) );
+	connect( ui.y_value, SIGNAL( textChanged(QString)), ui.y_value_2, SLOT( setText(QString)) );
+	connect( ui.z_value, SIGNAL( textChanged(QString)), ui.z_value_2, SLOT( setText(QString)) );
+	
 	//we need a master widget to keep opengl running in case all visible widgets were closed
 
 	m_MasterWidget = new GL::QGLWidgetImplementation( core, 0, axial );
@@ -51,8 +59,8 @@ MainWindow::MainWindow( QViewerCore *core )
 	ui.actionShow_labels->setCheckable( true );
 	ui.actionShow_labels->setChecked( false );
 	ui.imageStack->setContextMenuPolicy( Qt::CustomContextMenu );
+	ui.bottomCoordsFrame->setVisible(false);
 	connect( ui.imageStack, SIGNAL( customContextMenuRequested( QPoint ) ), this, SLOT( contextMenuImageStack( QPoint ) ) );
-
 }
 
 
@@ -174,6 +182,13 @@ void MainWindow::imagesChanged( DataContainer images )
 	double max = roundNumber<double>( m_ViewerCore->getCurrentImage()->getMinMax().second->as<double>(), 2 );
 	ui.minLabel->setText( QString::number( min ) );
 	ui.maxLabel->setText( QString::number( max ) );
+	if( m_ViewerCore->getCurrentImage()->getImage()->getSizeAsVector()[3] > 1 ) {
+		ui.timestepSpinBox->setEnabled( true );
+		ui.timestepSpinBox_2->setEnabled( true );
+	} else {
+		ui.timestepSpinBox->setEnabled( false );
+		ui.timestepSpinBox_2->setEnabled( false );
+	}
 }
 
 void MainWindow::openImage()
@@ -281,6 +296,7 @@ void MainWindow::setNumberOfRows( size_t rows )
 #warning optimize setNumberOfRows
 	ui.gridLayout->addWidget( ui.coronalDockWidget, 0, 2 );
 	ui.setupDockWidget->setVisible( false );
+	ui.bottomCoordsFrame->setVisible( true );
 	m_AxialWidget->addImage( m_ViewerCore->getDataContainer().getImageByID( 0 ) );
 	m_SagittalWidget->addImage( m_ViewerCore->getDataContainer().getImageByID( 0 ) );
 	m_CoronalWidget->addImage( m_ViewerCore->getDataContainer().getImageByID( 0 ) );
