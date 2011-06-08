@@ -73,6 +73,9 @@ int main( int argc, char *argv[] )
 
 	isis::viewer::MainWindow isisViewerMainWindow( core );
 
+	if( app.parameters["z"].isSet() ) {
+		core->addImageList( zImgList, ImageHolder::z_map, true );
+	}
 	if( app.parameters["type"].toString() == "anatomical" && app.parameters["in"].isSet() ) {
 
 		if( imgList.size() > 1 ) {
@@ -84,10 +87,6 @@ int main( int argc, char *argv[] )
 
 	} else if ( app.parameters["type"].toString() == "zmap" && app.parameters["in"].isSet() ) {
 		core->addImageList( imgList, ImageHolder::z_map, false );
-	}
-
-	if( app.parameters["z"].isSet() ) {
-		core->addImageList( zImgList, ImageHolder::z_map, true );
 	}
 
 	isisViewerMainWindow.show();
