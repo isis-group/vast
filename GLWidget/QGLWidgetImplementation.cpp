@@ -368,14 +368,6 @@ void QGLWidgetImplementation::paintCrosshair()
 	glEnd();
 	glLoadIdentity();
 
-	if( m_Flags.leftButtonPressed ) {
-		glColor3f( 1.0, 0.0, 0.0 );
-		QFont font;
-		font.setPointSize( 15 );
-		font.setPixelSize( 15 );
-		renderText( currentState.crosshairCoords.first + currentState.viewport[0], height() - currentState.crosshairCoords.second - 15 - currentState.viewport[1], QString( QString::number( m_ViewerCore->getCurrentImage()->getImageState().currentIntensityAsDouble ) ), font );
-	}
-
 	if( m_ShowLabels ) {
 		viewLabels();
 	}
