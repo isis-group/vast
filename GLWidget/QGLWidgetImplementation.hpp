@@ -99,6 +99,7 @@ private:
 		GLuint textureID;
 		GLuint lutID;
 		util::ivector4 voxelCoords;
+		util::fvector4 physicalCoords;
 		util::ivector4 mappedVoxelCoords;
 		util::fvector4 mappedVoxelSize;
 		util::ivector4 mappedImageSize;

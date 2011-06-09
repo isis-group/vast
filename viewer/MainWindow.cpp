@@ -42,6 +42,7 @@ MainWindow::MainWindow( QViewerCore *core )
 	connect( ui.x_value, SIGNAL( textChanged(QString)), ui.x_value_2, SLOT( setText(QString)) );
 	connect( ui.y_value, SIGNAL( textChanged(QString)), ui.y_value_2, SLOT( setText(QString)) );
 	connect( ui.z_value, SIGNAL( textChanged(QString)), ui.z_value_2, SLOT( setText(QString)) );
+	connect( ui.timestepSpinBox_2, SIGNAL( valueChanged(int)), ui.timestepSpinBox, SLOT(setValue(int)));
 	
 	//we need a master widget to keep opengl running in case all visible widgets were closed
 
@@ -184,7 +185,10 @@ void MainWindow::imagesChanged( DataContainer images )
 	ui.maxLabel->setText( QString::number( max ) );
 	if( m_ViewerCore->getCurrentImage()->getImage()->getSizeAsVector()[3] > 1 ) {
 		ui.timestepSpinBox->setEnabled( true );
+		ui.timestepSpinBox->setMaximum( m_ViewerCore->getCurrentImage()->getImageSize()[3] - 1 );
 		ui.timestepSpinBox_2->setEnabled( true );
+		ui.timestepSpinBox_2->setMaximum( m_ViewerCore->getCurrentImage()->getImageSize()[3] -1 );
+		
 	} else {
 		ui.timestepSpinBox->setEnabled( false );
 		ui.timestepSpinBox_2->setEnabled( false );
