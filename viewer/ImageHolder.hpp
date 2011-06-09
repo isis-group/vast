@@ -119,7 +119,7 @@ public:
 	void setOpacity( float opacity ) { m_ImageState.opacity = opacity; }
 	void setImageType( ImageType imageType ) { m_ImageState.imageType = imageType; }
 	void setCurrentIntensityAsDouble( double intensity ) { m_ImageState.currentIntensityAsDouble = intensity; }
-	void setCurrentVoxelCoords( const util::ivector4 &voxelCoords ) { m_ImageState.voxelCoords = voxelCoords; }
+	void setCurrentVoxelCoords( const util::ivector4 &voxelCoords ) { m_ImageState.voxelCoords = voxelCoords; setCurrentPhysicalCoords( getImage()->getPhysicalCoordsFromIndex( voxelCoords ) ); }
 	void setCurrentPhysicalCoords( const util::fvector4 &physCoords ) { m_ImageState.physicalCoords = physCoords; }
 
 private:

@@ -49,6 +49,12 @@ void QViewerCore::physicalCoordsChanged( util::fvector4 physicalCoords )
 
 void QViewerCore::timestepChanged( int timestep )
 {
+	if( !getCurrentImage()->getImageSize()[3] > timestep ) {
+		timestep = getCurrentImage()->getImageSize()[3] - 1;
+	}
+	util::ivector4 voxelCoords = getCurrentImage()->getImageState().voxelCoords;
+	voxelCoords[3] = timestep;
+	getCurrentImage()->setCurrentVoxelCoords( voxelCoords );
 	emitTimeStepChange( timestep );
 }
 
