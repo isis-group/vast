@@ -107,9 +107,9 @@ util::ivector4 GLOrientationHandler::transformObject2VoxelCoords( const util::fv
 	short voxelx =  image->getImageSize()[0] * transformedObjectCoords( 0 );
 	short voxely =  image->getImageSize()[1] * transformedObjectCoords( 1 );
 	short voxelz =  image->getImageSize()[2] * transformedObjectCoords( 2 );
-	voxelx = direction( 0 ) < 0 ? image->getImageSize()[0] + voxelx - 1 : voxelx;
-	voxely = direction( 1 ) < 0 ? image->getImageSize()[1] + voxely - 1 : voxely;
-	voxelz = direction( 2 ) < 0 ? image->getImageSize()[2] + voxelz - 1 : voxelz;
+	voxelx = direction( 0 ) < 0 ? image->getImageSize()[0] + voxelx -1: voxelx;
+	voxely = direction( 1 ) < 0 ? image->getImageSize()[1] + voxely -1 : voxely;
+	voxelz = direction( 2 ) < 0 ? image->getImageSize()[2] + voxelz -1 : voxelz;
 	return util::ivector4( voxelx, voxely, voxelz );
 
 }
@@ -125,9 +125,10 @@ util::dvector4 GLOrientationHandler::transformVoxel2ObjectCoords( const isis::ut
 	util::dvector4 transformedObjectCoords = transformVector<float>( objectCoords, orientation );
 	util::dvector4 transformedOneHalfVoxel = transformVector<float>( oneHalfVoxel, orientation );
 	util::dvector4 retVec;
-	retVec[0] = transformedObjectCoords[0] <= 0 ? 1.0 + 2 * ( transformedObjectCoords[0] - transformedOneHalfVoxel[0] ) : -1.0 + 2 * ( transformedObjectCoords[0] + transformedOneHalfVoxel[0] );
-	retVec[1] = transformedObjectCoords[1] <= 0 ? 1.0 + 2 * ( transformedObjectCoords[1] - transformedOneHalfVoxel[1] ) : -1.0 + 2 * ( transformedObjectCoords[1] + transformedOneHalfVoxel[1] );
-	retVec[2] = transformedObjectCoords[2] <= 0 ? 1.0 + transformedObjectCoords[2] - transformedOneHalfVoxel[2] : transformedObjectCoords[2] + transformedOneHalfVoxel[2];
+	retVec[0] = transformedObjectCoords[0] > 0 ?  -1.0 + 2 * ( transformedObjectCoords[0] + transformedOneHalfVoxel[0] ) : 1.0 + 2 * ( transformedObjectCoords[0] + transformedOneHalfVoxel[0] ) ;
+	retVec[1] = transformedObjectCoords[1] > 0 ?  -1.0 + 2 * ( transformedObjectCoords[1] + transformedOneHalfVoxel[1] ) : 1.0 + 2 * ( transformedObjectCoords[1] + transformedOneHalfVoxel[1] ) ;
+	retVec[2] = transformedObjectCoords[2] > 0 ? transformedObjectCoords[2] + transformedOneHalfVoxel[2] : 1.0 + transformedObjectCoords[2] + transformedOneHalfVoxel[2] ;
+	
 	return retVec;
 
 }
