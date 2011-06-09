@@ -129,7 +129,9 @@ void QGLWidgetImplementation::updateStateValues( boost::shared_ptr<ImageHolder> 
 	}
 
 	//if not happend already copy the image to GLtexture memory and return the texture id
-	state.textureID = util::Singletons::get<GLTextureHandler, 10>().copyImageToTexture( image, state.voxelCoords[3], false, m_InterplationType );
+	if(image->getImageSize()[3] > m_ViewerCore->getCurrentImage()->getImageState().timestep ) {
+		state.textureID = util::Singletons::get<GLTextureHandler, 10>().copyImageToTexture( image, m_ViewerCore->getCurrentImage()->getImageState().timestep, false, m_InterplationType );
+	}
 
 	//update the texture matrix.
 	//The texture matrix holds the orientation of the image and the orientation of the current widget. It does NOT hold the scaling of the image.

@@ -158,6 +158,7 @@ bool ImageHolder::setImage( const data::Image &image, const ImageType &imageType
 	}
 
 	m_ImageState.opacity = 1.0;
+	m_ImageState.timestep = 0;
 	m_Image->updateOrientationMatrices();
 	return true;
 }

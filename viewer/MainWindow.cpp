@@ -35,6 +35,7 @@ MainWindow::MainWindow( QViewerCore *core )
 	connect( ui.lowerThreshold, SIGNAL( sliderMoved( int ) ), this, SLOT( lowerThresholdChanged( int ) ) );
 	connect( ui.timestepSpinBox, SIGNAL( valueChanged( int ) ), m_ViewerCore, SLOT( timestepChanged( int ) ) ) ;
 	connect( ui.interpolationType, SIGNAL( currentIndexChanged( int ) ), this, SLOT( interpolationChanged( int ) ) );
+	connect( ui.currentImageBox, SIGNAL( currentIndexChanged(int)), this, SLOT( currentImageChanged( int )));
 	//attach all textFields
 	connect( ui.row_value, SIGNAL( textChanged(QString) ), ui.row_value_2, SLOT( setText(QString)) );
 	connect( ui.column_value, SIGNAL( textChanged(QString) ), ui.column_value_2, SLOT( setText(QString)) );
@@ -77,6 +78,13 @@ void MainWindow::contextMenuImageStack( QPoint position )
 	QMenu::exec( actions, ui.imageStack->mapToGlobal( position ) );
 
 }
+
+void MainWindow::currentImageChanged(int index )
+{
+	m_ViewerCore->setCurrentImage( m_ViewerCore->getDataContainer().getImageByID(index) );
+	imagesChanged( m_ViewerCore->getDataContainer() );
+}
+
 
 void MainWindow::triggeredMakeCurrentImage( bool triggered )
 {
@@ -188,6 +196,8 @@ void MainWindow::imagesChanged( DataContainer images )
 		ui.timestepSpinBox->setMaximum( m_ViewerCore->getCurrentImage()->getImageSize()[3] - 1 );
 		ui.timestepSpinBox_2->setEnabled( true );
 		ui.timestepSpinBox_2->setMaximum( m_ViewerCore->getCurrentImage()->getImageSize()[3] -1 );
+		ui.timestepSpinBox->setValue( m_ViewerCore->getCurrentImage()->getImageState().timestep );
+		ui.timestepSpinBox_2->setValue( m_ViewerCore->getCurrentImage()->getImageState().timestep );
 		
 	} else {
 		ui.timestepSpinBox->setEnabled( false );
@@ -304,7 +314,12 @@ void MainWindow::setNumberOfRows( size_t rows )
 	m_AxialWidget->addImage( m_ViewerCore->getDataContainer().getImageByID( 0 ) );
 	m_SagittalWidget->addImage( m_ViewerCore->getDataContainer().getImageByID( 0 ) );
 	m_CoronalWidget->addImage( m_ViewerCore->getDataContainer().getImageByID( 0 ) );
-
+	std::stringstream title;
+	QFileInfo dir(tr( m_ViewerCore->getDataContainer().getImageByID( 0 )->getFileNames().front().c_str()));
+	title << dir.fileName().toStdString() << " (";
+	title <<  m_ViewerCore->getDataContainer().getImageByID( 0 )->getImage()->getPropertyAs<std::string>("sequenceDescription") << ")";
+	ui.axialDockWidget->setWindowTitle( tr( title.str().c_str()) );
+	ui.currentImageBox->addItem( tr( title.str().c_str()) );
 	for ( size_t r = 0; r < rows - 1; r++ ) {
 		QDockWidget *axialDock = new QDockWidget( this );
 		QDockWidget *sagittalDock = new QDockWidget( this );
@@ -315,12 +330,15 @@ void MainWindow::setNumberOfRows( size_t rows )
 		axialDock->setAllowedAreas( Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea | Qt::TopDockWidgetArea | Qt::BottomDockWidgetArea );
 		sagittalDock->setAllowedAreas( Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea | Qt::TopDockWidgetArea | Qt::BottomDockWidgetArea );
 		coronalDock->setAllowedAreas( Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea | Qt::TopDockWidgetArea | Qt::BottomDockWidgetArea );
-		axialDock->setFeatures( QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetVerticalTitleBar );
-		sagittalDock->setFeatures( QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetVerticalTitleBar );
-		coronalDock->setFeatures( QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetVerticalTitleBar );
-		axialDock->setWindowTitle( tr( "Axial View" ) );
-		sagittalDock->setWindowTitle( tr( "Sagittal View" ) );
-		coronalDock->setWindowTitle( tr( "Coronal View" ) );
+		axialDock->setFeatures( QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable );
+		sagittalDock->setFeatures( QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable );
+		coronalDock->setFeatures( QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable );
+		std::stringstream title;
+		QFileInfo dir(tr( m_ViewerCore->getDataContainer().getImageByID( r+1 )->getFileNames().front().c_str()));
+		title << dir.fileName().toStdString() << " (";
+		title <<  m_ViewerCore->getDataContainer().getImageByID( r+1 )->getImage()->getPropertyAs<std::string>("sequenceDescription") << ")";
+		axialDock->setWindowTitle( tr( title.str().c_str()));
+		ui.currentImageBox->addItem( tr( title.str().c_str()) );
 		QFrame *frameAxial = new QFrame( axialDock );
 		QFrame *frameSagittal = new QFrame( axialDock );
 		QFrame *frameCoronal = new QFrame( axialDock );
@@ -346,6 +364,7 @@ void MainWindow::setNumberOfRows( size_t rows )
 		sagittalWidget->addImage( m_ViewerCore->getDataContainer().getImageByID( r + 1 ) );
 		coronalWidget->addImage( m_ViewerCore->getDataContainer().getImageByID( r + 1 ) );
 	}
+	ui.currentImageBox->setCurrentIndex( m_ViewerCore->getCurrentImage()->getID() );
 }
 
 

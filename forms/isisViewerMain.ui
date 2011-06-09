@@ -60,7 +60,7 @@
           <bool>false</bool>
          </property>
          <property name="features">
-          <set>QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable|QDockWidget::DockWidgetVerticalTitleBar</set>
+          <set>QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable</set>
          </property>
          <property name="allowedAreas">
           <set>Qt::AllDockWidgetAreas</set>
@@ -89,7 +89,7 @@
           <bool>false</bool>
          </property>
          <property name="features">
-          <set>QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable|QDockWidget::DockWidgetVerticalTitleBar</set>
+          <set>QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable</set>
          </property>
          <property name="allowedAreas">
           <set>Qt::AllDockWidgetAreas</set>
@@ -118,7 +118,7 @@
           <bool>false</bool>
          </property>
          <property name="features">
-          <set>QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable|QDockWidget::DockWidgetVerticalTitleBar</set>
+          <set>QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable</set>
          </property>
          <property name="allowedAreas">
           <set>Qt::AllDockWidgetAreas</set>
@@ -153,7 +153,7 @@
           <bool>false</bool>
          </property>
          <property name="features">
-          <set>QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable|QDockWidget::DockWidgetVerticalTitleBar</set>
+          <set>QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable</set>
          </property>
          <property name="allowedAreas">
           <set>Qt::AllDockWidgetAreas</set>
@@ -558,6 +558,16 @@
        <enum>QFrame::Raised</enum>
       </property>
       <layout class="QHBoxLayout" name="horizontalLayout_2">
+       <item>
+        <widget class="QComboBox" name="currentImageBox">
+         <property name="maximumSize">
+          <size>
+           <width>200</width>
+           <height>16777215</height>
+          </size>
+         </property>
+        </widget>
+       </item>
        <item>
         <widget class="QLabel" name="label_8">
          <property name="text">

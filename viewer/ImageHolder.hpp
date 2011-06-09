@@ -34,6 +34,7 @@ public:
 		size_t stackPosition;
 		float opacity;
 		bool visible;
+		size_t timestep;
 		double currentIntensityAsDouble;
 		util::ivector4 voxelCoords;
 		util::fvector4 physicalCoords;
@@ -121,6 +122,7 @@ public:
 	void setCurrentIntensityAsDouble( double intensity ) { m_ImageState.currentIntensityAsDouble = intensity; }
 	void setCurrentVoxelCoords( const util::ivector4 &voxelCoords ) { m_ImageState.voxelCoords = voxelCoords; setCurrentPhysicalCoords( getImage()->getPhysicalCoordsFromIndex( voxelCoords ) ); }
 	void setCurrentPhysicalCoords( const util::fvector4 &physCoords ) { m_ImageState.physicalCoords = physCoords; }
+	void setTimestep( size_t timestep ) { m_ImageState.timestep = timestep; }
 
 private:
 
