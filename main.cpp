@@ -24,7 +24,7 @@ int main( int argc, char *argv[] )
 	app.parameters["in"].setDescription( "The input image file list." );
 	app.parameters["zmap"] = isis::util::slist();
 	app.parameters["zmap"].needed() = false;
-	app.parameters["zmap"].setDescription( "The input image file list interpreted as zmaps. " );
+	app.parameters["zmap"].setDescription( "The input image file list is interpreted as zmaps. " );
 	app.parameters["type"] = image_types;
 	app.parameters["type"].needed() = false;
 	app.parameters["type"].setDescription( "The type as what the image should be interpreted." );

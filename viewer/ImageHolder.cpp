@@ -49,20 +49,16 @@ boost::numeric::ublas::matrix< float > ImageHolder::getNormalizedImageOrientatio
 	retMatrix( 3, 3 ) = 1;
 	util::fvector4 rowVec = m_Image->getPropertyAs<util::fvector4>( "rowVec" );
 	util::fvector4 columnVec = m_Image->getPropertyAs<util::fvector4>( "columnVec" );
-	util::fvector4 sliceVec = m_Image->getPropertyAs<util::fvector4>( "sliceVec" );
-
-	for ( size_t i = 0; i < 3; i++ ) {
-		if( !transposed ) {
-			retMatrix( i, 0 ) = rowVec[i] < 0 ? ceil( rowVec[i] - 0.5 ) : floor( rowVec[i] + 0.5 );
-			retMatrix( i, 1 ) = columnVec[i] < 0 ? ceil( columnVec[i] - 0.5 ) : floor( columnVec[i] + 0.5 );
-			retMatrix( i, 2 ) = sliceVec[i] < 0 ? ceil( sliceVec[i] - 0.5 ) : floor( sliceVec[i] + 0.5 );
-		} else {
-			retMatrix( 0, i ) = rowVec[i] < 0 ? ceil( rowVec[i] - 0.5 ) : floor( rowVec[i] + 0.5 );
-			retMatrix( 1, i ) = columnVec[i] < 0 ? ceil( columnVec[i] - 0.5 ) : floor( columnVec[i] + 0.5 );
-			retMatrix( 2, i ) = sliceVec[i] < 0 ? ceil( sliceVec[i] - 0.5 ) : floor( sliceVec[i] + 0.5 );
-		}
+	util::fvector4 sliceVec = m_Image->getPropertyAs<util::fvector4>( "sliceVec" );	
+	if( !transposed ) {
+		retMatrix( getBiggestVecElem<float>(rowVec), 0 ) = getBiggestVecElem<float>(rowVec) < 0 ? -1 : 1; 
+		retMatrix( getBiggestVecElem<float>(columnVec), 1 ) = getBiggestVecElem<float>(columnVec) < 0 ? -1 : 1; 
+		retMatrix( getBiggestVecElem<float>(sliceVec), 2 ) = getBiggestVecElem<float>(sliceVec) < 0 ? -1 : 1; 
+	} else {
+		retMatrix( 0, getBiggestVecElem<float>(rowVec) ) = getBiggestVecElem<float>(rowVec) < 0 ? -1 : 1; 
+		retMatrix( 1, getBiggestVecElem<float>(columnVec) ) = getBiggestVecElem<float>(columnVec) < 0 ? -1 : 1; 
+		retMatrix( 2, getBiggestVecElem<float>(sliceVec) ) = getBiggestVecElem<float>(sliceVec) < 0 ? -1 : 1; 
 	}
-
 	return retMatrix;
 }
 

@@ -157,7 +157,6 @@ void QGLWidgetImplementation::updateStateValues( boost::shared_ptr<ImageHolder> 
 		calculateTranslation( );
 	}
 
-
 	util::dvector4 objectCoords = GLOrientationHandler::transformVoxel2ObjectCoords( state.voxelCoords, image, state.planeOrientation );
 	state.crosshairCoords = object2WindowCoords( objectCoords[0], objectCoords[1], image );
 	state.normalizedSlice = objectCoords[2];
@@ -203,7 +202,6 @@ bool QGLWidgetImplementation::calculateTranslation(  )
 
 bool QGLWidgetImplementation::lookAtPhysicalCoords( const isis::util::fvector4 &physicalCoords )
 {
-
 	BOOST_FOREACH( StateMap::const_reference state, m_ImageStates ) {
 		updateStateValues(  state.first, state.first->getImage()->getIndexFromPhysicalCoords( physicalCoords ) );
 	}
@@ -281,7 +279,6 @@ void QGLWidgetImplementation::paintImage( const std::pair< boost::shared_ptr<Ima
 	glMatrixMode( GL_TEXTURE );
 	glLoadIdentity();
 	glLoadMatrixd( state.second.textureMatrix );
-
 	//shader
 
 	//if the image is declared as a zmap

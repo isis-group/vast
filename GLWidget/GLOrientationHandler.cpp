@@ -16,7 +16,6 @@ using namespace boost::numeric::ublas;
 GLOrientationHandler::MatrixType GLOrientationHandler::transformToPlaneView( const MatrixType &origMatrix, PlaneOrientation orientation, bool back )
 {
 	MatrixType transformMatrix = identity_matrix<float>( matrixSize, matrixSize );
-
 	switch ( orientation ) {
 	case axial:
 		/*setup axial matrix
@@ -119,12 +118,10 @@ util::dvector4 GLOrientationHandler::transformVoxel2ObjectCoords( const isis::ut
 {
 	util::dvector4 objectCoords;
 	util::dvector4 oneHalfVoxel;
-
 	for ( unsigned short i = 0; i < 3; i++ ) {
 		objectCoords[i] = ( 1.0 / image->getImageSize()[i] ) * voxelCoords[i];
 		oneHalfVoxel[i] = 0.5 / image->getImageSize()[i];
 	}
-
 	util::dvector4 transformedObjectCoords = transformVector<float>( objectCoords, orientation );
 	util::dvector4 transformedOneHalfVoxel = transformVector<float>( oneHalfVoxel, orientation );
 	util::dvector4 retVec;
