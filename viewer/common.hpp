@@ -43,21 +43,6 @@ template<typename HANDLE> void enable_log( LogLevel level )
 	ENABLE_LOG( Debug, HANDLE, level );
 }
 
-template<typename T>
-size_t getBiggestVecElem( const isis::util::vector4<T> &vec )
-{
-	size_t biggestVecElem = 0;
-	float tmpValue = 0;
-
-	for ( size_t vecElem = 0; vecElem < 4; vecElem++ ) {
-		if ( fabs( vec[vecElem] ) > fabs( tmpValue ) ) {
-			biggestVecElem = vecElem;
-			tmpValue = vec[vecElem];
-		}
-	}
-
-	return biggestVecElem;
-}
 }
 }
 
