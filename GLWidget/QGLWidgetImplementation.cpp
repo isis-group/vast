@@ -289,7 +289,7 @@ void QGLWidgetImplementation::paintImage( const std::pair< boost::shared_ptr<Ima
 		glEnable( GL_TEXTURE_1D );
 		glActiveTexture( GL_TEXTURE1 );
 		glBindTexture( GL_TEXTURE_1D, state.second.lutID );
-// 		m_LUTShader.addVariable<float>( "lut", 1, true );
+		m_LUTShader.addVariable<float>( "lut", 1, true );
 		m_LUTShader.addVariable<float>( "max", state.first->getMinMax().second->as<float>() );
 		m_LUTShader.addVariable<float>( "min", state.first->getMinMax().first->as<float>() );
 		m_LUTShader.addVariable<float>( "killZeros", 1.0 );

@@ -33,6 +33,7 @@ MainWindow::MainWindow( QViewerCore *core )
 	connect( ui.action_Open_Image, SIGNAL( triggered() ), this, SLOT( openImage() ) );
 	connect( ui.upperThreshold, SIGNAL( sliderMoved( int ) ), this, SLOT( upperThresholdChanged( int ) ) );
 	connect( ui.lowerThreshold, SIGNAL( sliderMoved( int ) ), this, SLOT( lowerThresholdChanged( int ) ) );
+	connect( ui.opacity, SIGNAL( sliderMoved(int)), this, SLOT( opacityChanged( int ) ) );
 	connect( ui.timestepSpinBox, SIGNAL( valueChanged( int ) ), m_ViewerCore, SLOT( timestepChanged( int ) ) ) ;
 	connect( ui.interpolationType, SIGNAL( currentIndexChanged( int ) ), this, SLOT( interpolationChanged( int ) ) );
 	connect( ui.currentImageBox, SIGNAL( currentIndexChanged(int)), this, SLOT( currentImageChanged( int )));
@@ -194,8 +195,8 @@ void MainWindow::imagesChanged( DataContainer images )
 	}
 	double min = roundNumber<double>( m_ViewerCore->getCurrentImage()->getMinMax().first->as<double>(), 2 );
 	double max = roundNumber<double>( m_ViewerCore->getCurrentImage()->getMinMax().second->as<double>(), 2 );
-	ui.minLabel->setText( QString::number( min ) );
-	ui.maxLabel->setText( QString::number( max ) );
+	ui.minValueLabel->setText( QString::number( min ) );
+	ui.maxValueLabel->setText( QString::number( max ) );
 	if( m_ViewerCore->getCurrentImage()->getImage()->getSizeAsVector()[3] > 1 ) {
 		ui.timestepSpinBox->setEnabled( true );
 		ui.timestepSpinBox->setMaximum( m_ViewerCore->getCurrentImage()->getImageSize()[3] - 1 );
@@ -207,6 +208,25 @@ void MainWindow::imagesChanged( DataContainer images )
 	} else {
 		ui.timestepSpinBox->setEnabled( false );
 		ui.timestepSpinBox_2->setEnabled( false );
+	}
+	if( m_ViewerCore->getCurrentImage()->getImageState().imageType == ImageHolder::anatomical_image ) {
+		ui.upperThreshold->setVisible(false);
+		ui.lowerThreshold->setVisible(false);
+		ui.maxLabel->setVisible( false );
+		ui.minLabel->setVisible( false );
+		ui.maxValueLabel->setVisible( false );
+		ui.minValueLabel->setVisible( false );
+		ui.opacity->setVisible( true );
+		ui.labelOpacity->setVisible( true );
+	} else if (m_ViewerCore->getCurrentImage()->getImageState().imageType == ImageHolder::z_map ) {
+		ui.upperThreshold->setVisible(true);
+		ui.lowerThreshold->setVisible(true);
+		ui.maxLabel->setVisible( true );
+		ui.minLabel->setVisible( true );
+		ui.maxValueLabel->setVisible( true );
+		ui.minValueLabel->setVisible( true );
+		ui.opacity->setVisible( false );
+		ui.labelOpacity->setVisible( false );
 	}
 }
 
@@ -262,6 +282,15 @@ void MainWindow::exitProgram()
 {
 	close();
 }
+
+void MainWindow::opacityChanged( int opacity )
+{
+	float opacityFloat = 1.0/ ( ui.opacity->maximum() - ui.opacity->minimum()) * opacity;
+	m_ViewerCore->getCurrentImage()->setOpacity( opacityFloat );
+	m_ViewerCore->updateScene();
+}
+
+
 
 void MainWindow::lowerThresholdChanged( int lowerThreshold )
 {

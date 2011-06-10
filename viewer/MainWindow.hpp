@@ -45,6 +45,7 @@ public Q_SLOTS:
 
 	void upperThresholdChanged( int );
 	void lowerThresholdChanged( int );
+	void opacityChanged( int );
 
 	void axialTopLevelChanged( bool );
 	void sagittalTopLevelChanged( bool );

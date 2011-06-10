@@ -410,17 +410,10 @@
                       </property>
                      </widget>
                     </item>
-                    <item row="3" column="3" colspan="2">
+                    <item row="3" column="5">
                      <widget class="QSpinBox" name="timestepSpinBox_2"/>
                     </item>
-                    <item row="4" column="0" colspan="2">
-                     <widget class="QLabel" name="label_19">
-                      <property name="text">
-                       <string>Intensity:</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="4" column="2" colspan="3">
+                    <item row="4" column="5">
                      <widget class="QLCDNumber" name="intensity_value_2">
                       <property name="sizePolicy">
                        <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
@@ -430,6 +423,13 @@
                       </property>
                       <property name="segmentStyle">
                        <enum>QLCDNumber::Flat</enum>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="4" column="0">
+                     <widget class="QLabel" name="label_19">
+                      <property name="text">
+                       <string>Intensity:</string>
                       </property>
                      </widget>
                     </item>
@@ -450,7 +450,7 @@
                </widget>
               </item>
               <item>
-               <widget class="QWidget" name="widget_6" native="true">
+               <widget class="QWidget" name="frameThreshold" native="true">
                 <layout class="QGridLayout" name="gridLayout_8">
                  <item row="0" column="0">
                   <widget class="QSlider" name="lowerThreshold">
@@ -476,7 +476,7 @@
                     <enum>QSlider::TicksAbove</enum>
                    </property>
                    <property name="tickInterval">
-                    <number>48</number>
+                    <number>50</number>
                    </property>
                   </widget>
                  </item>
@@ -504,35 +504,67 @@
                     <enum>QSlider::TicksAbove</enum>
                    </property>
                    <property name="tickInterval">
-                    <number>48</number>
+                    <number>50</number>
                    </property>
                   </widget>
                  </item>
                  <item row="1" column="0">
-                  <widget class="QLabel" name="label_10">
+                  <widget class="QLabel" name="maxLabel">
                    <property name="text">
                     <string>Max</string>
                    </property>
                   </widget>
                  </item>
                  <item row="1" column="1">
-                  <widget class="QLabel" name="label_11">
+                  <widget class="QLabel" name="minLabel">
                    <property name="text">
                     <string>Min</string>
                    </property>
                   </widget>
                  </item>
                  <item row="2" column="0">
-                  <widget class="QLabel" name="maxLabel">
+                  <widget class="QLabel" name="maxValueLabel">
                    <property name="text">
                     <string/>
                    </property>
                   </widget>
                  </item>
                  <item row="2" column="1">
-                  <widget class="QLabel" name="minLabel">
+                  <widget class="QLabel" name="minValueLabel">
                    <property name="text">
                     <string/>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="2">
+                  <widget class="QSlider" name="opacity">
+                   <property name="maximum">
+                    <number>999</number>
+                   </property>
+                   <property name="sliderPosition">
+                    <number>999</number>
+                   </property>
+                   <property name="orientation">
+                    <enum>Qt::Vertical</enum>
+                   </property>
+                   <property name="invertedAppearance">
+                    <bool>false</bool>
+                   </property>
+                   <property name="invertedControls">
+                    <bool>true</bool>
+                   </property>
+                   <property name="tickPosition">
+                    <enum>QSlider::TicksAbove</enum>
+                   </property>
+                   <property name="tickInterval">
+                    <number>50</number>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="2">
+                  <widget class="QLabel" name="labelOpacity">
+                   <property name="text">
+                    <string>Opacitiy</string>
                    </property>
                   </widget>
                  </item>
