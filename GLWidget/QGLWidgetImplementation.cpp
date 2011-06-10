@@ -122,11 +122,11 @@ void QGLWidgetImplementation::updateStateValues( boost::shared_ptr<ImageHolder> 
 	state.voxelCoords[3] = timestep;
 
 	//check if we are inside the image
-	for( size_t i = 0; i < 4; i++ ) {
-		state.voxelCoords[i] = state.voxelCoords[i] < 0 ? 0 : state.voxelCoords[i];
-		state.voxelCoords[i] = static_cast<size_t>( state.voxelCoords[i] ) >= image->getImageSize()[i] ? image->getImageSize()[i] - 1 : state.voxelCoords[i];
-
-	}
+// 	for( size_t i = 0; i < 4; i++ ) {
+// 		state.voxelCoords[i] = state.voxelCoords[i] < 0 ? 0 : state.voxelCoords[i];
+// 		state.voxelCoords[i] = static_cast<size_t>( state.voxelCoords[i] ) >= image->getImageSize()[i] ? image->getImageSize()[i] - 1 : state.voxelCoords[i];
+// 
+// 	}
 
 	//if not happend already copy the image to GLtexture memory and return the texture id
 	if(image->getImageSize()[3] > m_ViewerCore->getCurrentImage()->getImageState().timestep ) {
@@ -438,7 +438,7 @@ void QGLWidgetImplementation::mousePressEvent( QMouseEvent *e )
 	emitMousePressEvent( e );
 
 }
-
+/*
 bool QGLWidgetImplementation::isInViewport( size_t wx, size_t wy )
 {
 	GLint *viewport = m_ImageStates.begin()->second.viewport;
@@ -448,16 +448,16 @@ bool QGLWidgetImplementation::isInViewport( size_t wx, size_t wy )
 	} else {
 		return false;
 	}
-}
+}*/
 
 
 void QGLWidgetImplementation::emitMousePressEvent( QMouseEvent *e )
 {
-	if( isInViewport( e->x(), height() - e->y() ) ) {
+// 	if( isInViewport( e->x(), height() - e->y() ) ) {
 		std::pair<float, float> objectCoords = window2ObjectCoords( e->x(), height() - e->y(), m_ImageStates.begin()->first );
 		util::ivector4 voxelCoords = GLOrientationHandler::transformObject2VoxelCoords( util::fvector4( objectCoords.first, objectCoords.second, m_ImageStates.begin()->second.normalizedSlice ), m_ImageStates.begin()->first, m_PlaneOrientation );
 		physicalCoordsChanged( m_ImageStates.begin()->first->getImage()->getPhysicalCoordsFromIndex( voxelCoords ) );
-	}
+// 	}
 }
 
 bool QGLWidgetImplementation::timestepChanged( unsigned int timestep )

@@ -135,6 +135,11 @@ void MainWindow::physicalCoordsChanged( util::fvector4 coords )
 	ui.x_value->setText( QString::number( coords[0] ) );
 	ui.y_value->setText( QString::number( coords[1] ) );
 	ui.z_value->setText( QString::number( coords[2] ) );
+	bool isOutside = false;
+	for( size_t i = 0;i<4; i++ ) {
+		if(voxelCoords[i] < 0 || voxelCoords[i] > m_ViewerCore->getCurrentImage()->getImageSize()[i] -  1)
+			return;
+	}
 	data::Chunk ch = m_ViewerCore->getCurrentImage()->getImage()->getChunk( voxelCoords[0], voxelCoords[1], voxelCoords[2], voxelCoords[3] );
 
 	switch( ch.getTypeID() ) {
@@ -219,11 +224,12 @@ void MainWindow::openImage()
 							tr( "Open images" ),
 							m_CurrentPath,
 							tr( fileFormats.str().c_str() ) );
-	QDir dir;
-	m_CurrentPath = dir.absoluteFilePath( filenames.front() );
-	bool isFirstImage = m_ViewerCore->getDataContainer().size() == 0;
+	
 
 	if( !filenames.empty() ) {
+		QDir dir;
+		m_CurrentPath = dir.absoluteFilePath( filenames.front() );
+		bool isFirstImage = m_ViewerCore->getDataContainer().size() == 0;
 		std::list<data::Image> imgList;
 		util::slist pathList;
 		BOOST_FOREACH( QStringList::const_reference filename, filenames ) {
