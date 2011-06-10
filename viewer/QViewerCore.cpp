@@ -59,6 +59,18 @@ void QViewerCore::timestepChanged( int timestep )
 	emitTimeStepChange( timestep );
 }
 
+bool QViewerCore::widgetsAreIntitialized() const
+{
+	BOOST_FOREACH( WidgetMap::const_reference widget, m_WidgetMap ) {
+		if( !dynamic_cast<GL::QGLWidgetImplementation *>( widget.second )->isInitialized() ){
+			return false;
+		}
+	}
+	return true;
+
+}
+
+
 void QViewerCore::addImageList( const std::list< data::Image > imageList, const ImageHolder::ImageType &imageType, bool passToWidgets )
 {
 	isis::viewer::ViewerCoreBase::addImageList( imageList, imageType );

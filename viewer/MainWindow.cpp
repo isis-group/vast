@@ -229,7 +229,9 @@ void MainWindow::imagesChanged( DataContainer images )
 		ui.opacity->setVisible( false );
 		ui.labelOpacity->setVisible( false );
 	}
-	m_ViewerCore->updateScene();
+	if( m_ViewerCore->widgetsAreIntitialized() ) {
+		m_ViewerCore->updateScene();
+	}
 }
 
 void MainWindow::openImage()

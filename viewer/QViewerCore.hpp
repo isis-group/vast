@@ -27,6 +27,8 @@ public:
 
 	const WidgetMap &getWidgets() const { return m_WidgetMap; }
 
+	bool widgetsAreIntitialized() const;
+	
 	std::vector< util::fvector4 > getRGBColorGradient() const { return m_RGBColorGradient; }
 
 	template<typename T>

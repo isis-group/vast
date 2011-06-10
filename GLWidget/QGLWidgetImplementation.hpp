@@ -59,6 +59,7 @@ public Q_SLOTS:
 
 		updateScene();
 	}
+	virtual bool isInitialized() { return m_Flags.glInitialized; }
 
 protected:
 	virtual void mouseMoveEvent( QMouseEvent *e );
@@ -154,6 +155,7 @@ private:
 		bool rightButtonPressed;
 		bool strgKeyPressed;
 		bool init;
+		bool glInitialized;
 	} m_Flags;
 
 };

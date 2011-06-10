@@ -49,7 +49,9 @@ void QGLWidgetImplementation::commonInit()
 	m_Flags.rightButtonPressed = false;
 	m_Flags.strgKeyPressed = false;
 	m_Flags.init = true;
+	m_Flags.glInitialized = false;
 	m_ShowLabels = false;
+	
 
 }
 
@@ -91,6 +93,7 @@ void QGLWidgetImplementation::initializeGL()
 	m_ScalingShader.addShader( "scaling", scaling_shader_code, GLShader::fragment );
 	m_LUTShader.addShader( "lut", colormap_shader_code, GLShader::fragment );
 	checkAndReportGLError( "initializeGL" );
+	m_Flags.glInitialized = true;
 
 }
 
@@ -243,15 +246,16 @@ void QGLWidgetImplementation::paintGL()
 			paintImage( state );
 		}
 	}
+	if(m_ImageStates.find(m_ViewerCore->getCurrentImage() ) != m_ImageStates.end() && m_ViewerCore->getCurrentImage()->getImageState().visible ) {
+		paintImage( std::make_pair<boost::shared_ptr<ImageHolder>, State >( m_ViewerCore->getCurrentImage(), m_ImageStates.at( m_ViewerCore->getCurrentImage() )) );
+	}
 	//paint zmaps		
 	BOOST_FOREACH( StateMap::const_reference state, m_ImageStates ) {
 		if( state.first.get() != m_ViewerCore->getCurrentImage().get() && state.first->getImageState().visible && state.first->getImageState().imageType == ImageHolder::z_map) {
 			paintImage( state );
 		}
 	}
-	if(m_ImageStates.find(m_ViewerCore->getCurrentImage() ) != m_ImageStates.end() ) {
-		paintImage( std::make_pair<boost::shared_ptr<ImageHolder>, State >( m_ViewerCore->getCurrentImage(), m_ImageStates.at( m_ViewerCore->getCurrentImage() )) );
-	}
+
 	glFlush();
 	checkAndReportGLError( "painting the scene" );
 
@@ -459,9 +463,15 @@ bool QGLWidgetImplementation::isInViewport( size_t wx, size_t wy )
 void QGLWidgetImplementation::emitMousePressEvent( QMouseEvent *e )
 {
 // 	if( isInViewport( e->x(), height() - e->y() ) ) {
+	if( m_ImageStates.find( m_ViewerCore->getCurrentImage()) != m_ImageStates.end() ) {
+		std::pair<float, float> objectCoords = window2ObjectCoords( e->x(), height() - e->y(), m_ViewerCore->getCurrentImage());
+		util::ivector4 voxelCoords = GLOrientationHandler::transformObject2VoxelCoords( util::fvector4( objectCoords.first, objectCoords.second, m_ImageStates.at( m_ViewerCore->getCurrentImage() ).normalizedSlice ), m_ViewerCore->getCurrentImage(), m_PlaneOrientation );
+		physicalCoordsChanged( m_ViewerCore->getCurrentImage()->getImage()->getPhysicalCoordsFromIndex( voxelCoords ) );
+	} else {
 		std::pair<float, float> objectCoords = window2ObjectCoords( e->x(), height() - e->y(), m_ImageStates.begin()->first );
 		util::ivector4 voxelCoords = GLOrientationHandler::transformObject2VoxelCoords( util::fvector4( objectCoords.first, objectCoords.second, m_ImageStates.begin()->second.normalizedSlice ), m_ImageStates.begin()->first, m_PlaneOrientation );
 		physicalCoordsChanged( m_ImageStates.begin()->first->getImage()->getPhysicalCoordsFromIndex( voxelCoords ) );
+	}
 // 	}
 }
 
