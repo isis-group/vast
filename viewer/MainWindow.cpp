@@ -229,6 +229,7 @@ void MainWindow::imagesChanged( DataContainer images )
 		ui.opacity->setVisible( false );
 		ui.labelOpacity->setVisible( false );
 	}
+	m_ViewerCore->updateScene();
 }
 
 void MainWindow::openImage()
@@ -286,7 +287,7 @@ void MainWindow::exitProgram()
 
 void MainWindow::opacityChanged( int opacity )
 {
-	float opacityFloat = 1.0/ ( ui.opacity->maximum() - ui.opacity->minimum()) * opacity;
+	float opacityFloat = 1.0 / ( ui.opacity->maximum() - ui.opacity->minimum()) * opacity;
 	m_ViewerCore->getCurrentImage()->setOpacity( opacityFloat );
 	m_ViewerCore->updateScene();
 }

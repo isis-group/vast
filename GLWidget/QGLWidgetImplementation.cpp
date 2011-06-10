@@ -236,17 +236,21 @@ void QGLWidgetImplementation::paintGL()
 	glClear( GL_COLOR_BUFFER_BIT );
 	glEnable ( GL_BLEND );
 	glBlendFunc ( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+	
 	//paint anatomical images
 	BOOST_FOREACH( StateMap::const_reference state, m_ImageStates ) {
-		if( state.first->getImageState().visible && state.first->getImageState().imageType == ImageHolder::anatomical_image) {
+		if( state.first.get() != m_ViewerCore->getCurrentImage().get() && state.first->getImageState().visible && state.first->getImageState().imageType == ImageHolder::anatomical_image) {
 			paintImage( state );
 		}
 	}
-	//paint zmaps
+	//paint zmaps		
 	BOOST_FOREACH( StateMap::const_reference state, m_ImageStates ) {
-		if( state.first->getImageState().visible && state.first->getImageState().imageType == ImageHolder::z_map) {
+		if( state.first.get() != m_ViewerCore->getCurrentImage().get() && state.first->getImageState().visible && state.first->getImageState().imageType == ImageHolder::z_map) {
 			paintImage( state );
 		}
+	}
+	if(m_ImageStates.find(m_ViewerCore->getCurrentImage() ) != m_ImageStates.end() ) {
+		paintImage( std::make_pair<boost::shared_ptr<ImageHolder>, State >( m_ViewerCore->getCurrentImage(), m_ImageStates.at( m_ViewerCore->getCurrentImage() )) );
 	}
 	glFlush();
 	checkAndReportGLError( "painting the scene" );
@@ -308,6 +312,7 @@ void QGLWidgetImplementation::paintImage( const std::pair< boost::shared_ptr<Ima
 		m_ScalingShader.addVariable<float>( "scaling", scaling );
 		m_ScalingShader.addVariable<float>( "bias", bias );
 		m_ScalingShader.addVariable<float>( "opacity", state.first->getImageState().opacity );
+		m_ScalingShader.addVariable<float>( "killZeros", 1.0 );
 	}
 
 	glEnable( GL_TEXTURE_3D );

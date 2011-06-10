@@ -46,16 +46,20 @@ std::string scaling_shader_code = STRINGIFY(
 									  uniform float scaling;
 									  uniform float bias;
 									  uniform float opacity;
+									  uniform float killZeros;
 									  void main()
 {
+	float err = 0.05;
 	float range = max - min;
 	vec4 color = texture3D( imageTexture, gl_TexCoord[0].xyz );
 	color.a = opacity;
-
+	float inormed = ( color * range ) + min;
 	if( ( color.r * range ) + min > upper_threshold || ( color.r * range ) + min < lower_threshold ) {
 		color.a = 0;
 	}
-
+	if( killZeros == 1 && inormed > 0 - err && inormed < 0 + err ) {
+		color.a = 0;
+	}
 
 	gl_FragColor = ( color + bias / range ) * scaling;
 }
