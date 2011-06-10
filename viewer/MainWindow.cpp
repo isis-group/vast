@@ -218,6 +218,7 @@ void MainWindow::imagesChanged( DataContainer images )
 		ui.minValueLabel->setVisible( false );
 		ui.opacity->setVisible( true );
 		ui.labelOpacity->setVisible( true );
+		ui.opacity->setValue( (ui.opacity->maximum() - ui.opacity->minimum()) * m_ViewerCore->getCurrentImage()->getImageState().opacity );
 	} else if (m_ViewerCore->getCurrentImage()->getImageState().imageType == ImageHolder::z_map ) {
 		ui.upperThreshold->setVisible(true);
 		ui.lowerThreshold->setVisible(true);
