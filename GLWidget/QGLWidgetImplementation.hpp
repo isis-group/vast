@@ -132,7 +132,7 @@ private:
 
 	struct Zoom {
 		Zoom() {
-			zoomFactorIn = 2.0;
+			zoomFactorIn = 2;
 			zoomFactorOut = 0.5;
 			currentZoom = 1.0;
 			zoomBorder = 0.1;

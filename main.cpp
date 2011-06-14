@@ -89,7 +89,7 @@ int main( int argc, char *argv[] )
 		}
 
 	} else if ( app.parameters["type"].toString() == "zmap" && app.parameters["in"].isSet() ) {
-		core->addImageList( imgList, ImageHolder::z_map, false );
+		core->addImageList( imgList, ImageHolder::z_map, true );
 	}
 
 	isisViewerMainWindow.show();
