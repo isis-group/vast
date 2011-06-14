@@ -344,7 +344,7 @@ void MainWindow::sagittalTopLevelChanged( bool docked )
 }
 
 
-void MainWindow::setNumberOfRows( size_t rows )
+void MainWindow::assembleViewInRows( size_t rows )
 {
 #warning optimize setNumberOfRows
 	ui.gridLayout->addWidget( ui.coronalDockWidget, 0, 2 );

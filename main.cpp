@@ -83,7 +83,7 @@ int main( int argc, char *argv[] )
 
 		if( imgList.size() > 1 && app.parameters["split"] ) {
 			core->addImageList( imgList, ImageHolder::anatomical_image, false );
-			isisViewerMainWindow.setNumberOfRows( imgList.size() );
+			isisViewerMainWindow.assembleViewInRows( imgList.size() );
 		} else  {
 			core->addImageList( imgList, ImageHolder::anatomical_image, true );
 		}

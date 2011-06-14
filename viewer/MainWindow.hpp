@@ -51,7 +51,7 @@ public Q_SLOTS:
 	void sagittalTopLevelChanged( bool );
 	void coronalTopLevelChanged( bool );
 
-	void setNumberOfRows( size_t rows );
+	void assembleViewInRows( size_t rows );
 
 
 private:
