@@ -34,6 +34,7 @@ TYPE roundNumber( TYPE number, unsigned  short placesOfDec )
 }
 
 void setOrientationToIdentity( data::Image &image );
+std::string getFileFormatsAsString( const std::string preSeparator, const std::string postSeparator = std::string(" ") );
 
 typedef ViewerLog Runtime;
 typedef ViewerDebug Debug;

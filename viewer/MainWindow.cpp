@@ -31,6 +31,7 @@ MainWindow::MainWindow( QViewerCore *core )
 	connect( ui.imageStack, SIGNAL( itemClicked( QListWidgetItem * ) ), this, SLOT( checkImageStack( QListWidgetItem * ) ) );
 	connect( ui.imageStack, SIGNAL( itemDoubleClicked( QListWidgetItem * ) ), this, SLOT( doubleClickedMakeCurrentImage( QListWidgetItem * ) ) );
 	connect( ui.action_Open_Image, SIGNAL( triggered() ), this, SLOT( openImage() ) );
+	connect( ui.actionOpen_DICOM, SIGNAL( triggered() ), this, SLOT( openDICOMDir() ) );
 	connect( ui.upperThreshold, SIGNAL( sliderMoved( int ) ), this, SLOT( upperThresholdChanged( int ) ) );
 	connect( ui.lowerThreshold, SIGNAL( sliderMoved( int ) ), this, SLOT( lowerThresholdChanged( int ) ) );
 	connect( ui.opacity, SIGNAL( sliderMoved(int)), this, SLOT( opacityChanged( int ) ) );
@@ -93,9 +94,9 @@ void MainWindow::triggeredMakeCurrentImage( bool triggered )
 
 	if( m_ViewerCore->getCurrentImage()->getImageState().imageType == ImageHolder::z_map ) {
 		ui.lowerThreshold->setSliderPosition( 1000.0 / m_ViewerCore->getCurrentImage()->getMinMax().first->as<double>() *
-											  ( m_ViewerCore->getCurrentImage()->getImageState().threshold.first  ) );
+											  ( m_ViewerCore->getCurrentImage()->getImageState().zmapThreshold.first  ) );
 		ui.upperThreshold->setSliderPosition( 1000.0 / m_ViewerCore->getCurrentImage()->getMinMax().second->as<double>() *
-											  ( m_ViewerCore->getCurrentImage()->getImageState().threshold.second ) );
+											  ( m_ViewerCore->getCurrentImage()->getImageState().zmapThreshold.second ) );
 	} else {
 		double range = m_ViewerCore->getCurrentImage()->getMinMax().second->as<double>() - m_ViewerCore->getCurrentImage()->getMinMax().first->as<double>();
 		ui.lowerThreshold->setSliderPosition( 1000.0 / range *
@@ -116,8 +117,8 @@ void MainWindow::triggeredMakeCurrentImageZmap( bool triggered )
 	} else {
 		m_ViewerCore->getDataContainer()[ui.imageStack->currentItem()->text().toStdString()]->setImageType( ImageHolder::anatomical_image );
 	}
-
 	m_ViewerCore->updateScene();
+	imagesChanged(m_ViewerCore->getDataContainer());
 }
 
 
@@ -237,13 +238,7 @@ void MainWindow::imagesChanged( DataContainer images )
 void MainWindow::openImage()
 {
 	std::stringstream fileFormats;
-	fileFormats << "Image files (";
-	BOOST_FOREACH( data::IOFactory::FileFormatList::const_reference formatList, data::IOFactory::getFormats() ) {
-		BOOST_FOREACH( std::list<util::istring>::const_reference format, formatList->getSuffixes() ) {
-			fileFormats << "*." << format << " ";
-		}
-	}
-	fileFormats << ")";
+	fileFormats << "Image files (" << getFileFormatsAsString(std::string("*.") ) << ")";
 	QStringList filenames = QFileDialog::getOpenFileNames( this,
 							tr( "Open images" ),
 							m_CurrentPath,
@@ -265,6 +260,18 @@ void MainWindow::openImage()
 		}
 		m_ViewerCore->addImageList( imgList, ImageHolder::anatomical_image, true );
 		m_ViewerCore->updateScene( isFirstImage );
+	}
+}
+
+void MainWindow::openDICOMDir()
+{
+	QString dir = QFileDialog::getExistingDirectory(this, tr( "Open directory" ), m_CurrentPath);
+	if( dir.size() ) {
+		m_CurrentPath = dir;
+		bool isFirstImage = m_ViewerCore->getDataContainer().size() == 0;
+		m_ViewerCore->addImageList( data::IOFactory::load( dir.toStdString(), "", "" ), ImageHolder::anatomical_image, true );
+		m_ViewerCore->updateScene();
+		
 	}
 }
 

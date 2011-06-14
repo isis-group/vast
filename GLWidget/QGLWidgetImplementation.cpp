@@ -102,7 +102,6 @@ void QGLWidgetImplementation::resizeGL( int w, int h )
 {
 	makeCurrent();
 	LOG( Debug, verbose_info ) << "resizeGL " << objectName().toStdString();
-
 	if( m_ImageStates.size() ) {
 		if( m_Flags.init ) {
 			util::ivector4 size = m_ImageStates.begin()->first->getImageSize();
@@ -209,7 +208,7 @@ bool QGLWidgetImplementation::calculateTranslation(  )
 bool QGLWidgetImplementation::lookAtPhysicalCoords( const isis::util::fvector4 &physicalCoords )
 {
 	BOOST_FOREACH( StateMap::const_reference state, m_ImageStates ) {
-		updateStateValues(  state.first, state.first->getImage()->getIndexFromPhysicalCoords( physicalCoords ) );
+		updateStateValues(  state.first, m_ViewerCore->getCurrentImage()->getImage()->getIndexFromPhysicalCoords( physicalCoords ) );
 	}
 
 	if( m_ImageStates.size() ) {
@@ -246,16 +245,16 @@ void QGLWidgetImplementation::paintGL()
 			paintImage( state );
 		}
 	}
-	if(m_ImageStates.find(m_ViewerCore->getCurrentImage() ) != m_ImageStates.end() && m_ViewerCore->getCurrentImage()->getImageState().visible ) {
-		paintImage( std::make_pair<boost::shared_ptr<ImageHolder>, State >( m_ViewerCore->getCurrentImage(), m_ImageStates.at( m_ViewerCore->getCurrentImage() )) );
-	}
+	
 	//paint zmaps		
 	BOOST_FOREACH( StateMap::const_reference state, m_ImageStates ) {
 		if( state.first.get() != m_ViewerCore->getCurrentImage().get() && state.first->getImageState().visible && state.first->getImageState().imageType == ImageHolder::z_map) {
 			paintImage( state );
 		}
 	}
-
+	if(m_ImageStates.find(m_ViewerCore->getCurrentImage() ) != m_ImageStates.end() && m_ViewerCore->getCurrentImage()->getImageState().visible ) {
+		paintImage( std::make_pair<boost::shared_ptr<ImageHolder>, State >( m_ViewerCore->getCurrentImage(), m_ImageStates.at( m_ViewerCore->getCurrentImage() )) );
+	}
 	glFlush();
 	checkAndReportGLError( "painting the scene" );
 
@@ -301,8 +300,8 @@ void QGLWidgetImplementation::paintImage( const std::pair< boost::shared_ptr<Ima
 		m_LUTShader.addVariable<float>( "max", state.first->getMinMax().second->as<float>() );
 		m_LUTShader.addVariable<float>( "min", state.first->getMinMax().first->as<float>() );
 		m_LUTShader.addVariable<float>( "killZeros", 1.0 );
-		m_LUTShader.addVariable<float>( "upper_threshold", state.first->getImageState().threshold.second );
-		m_LUTShader.addVariable<float>( "lower_threshold", state.first->getImageState().threshold.first );
+		m_LUTShader.addVariable<float>( "upper_threshold", state.first->getImageState().zmapThreshold.second );
+		m_LUTShader.addVariable<float>( "lower_threshold", state.first->getImageState().zmapThreshold.first );
 		m_LUTShader.addVariable<float>( "bias", 0.0 );
 		m_LUTShader.addVariable<float>( "scaling", 1.0 );
 		m_LUTShader.addVariable<float>( "opacity", state.first->getImageState().opacity );
@@ -463,11 +462,11 @@ bool QGLWidgetImplementation::isInViewport( size_t wx, size_t wy )
 void QGLWidgetImplementation::emitMousePressEvent( QMouseEvent *e )
 {
 // 	if( isInViewport( e->x(), height() - e->y() ) ) {
-	if( m_ImageStates.find( m_ViewerCore->getCurrentImage()) != m_ImageStates.end() ) {
+	if( m_ImageStates.find( m_ViewerCore->getCurrentImage()) != m_ImageStates.end()  ) {
 		std::pair<float, float> objectCoords = window2ObjectCoords( e->x(), height() - e->y(), m_ViewerCore->getCurrentImage());
 		util::ivector4 voxelCoords = GLOrientationHandler::transformObject2VoxelCoords( util::fvector4( objectCoords.first, objectCoords.second, m_ImageStates.at( m_ViewerCore->getCurrentImage() ).normalizedSlice ), m_ViewerCore->getCurrentImage(), m_PlaneOrientation );
 		physicalCoordsChanged( m_ViewerCore->getCurrentImage()->getImage()->getPhysicalCoordsFromIndex( voxelCoords ) );
-	} else {
+	} else if ( m_ImageStates.size() ){
 		std::pair<float, float> objectCoords = window2ObjectCoords( e->x(), height() - e->y(), m_ImageStates.begin()->first );
 		util::ivector4 voxelCoords = GLOrientationHandler::transformObject2VoxelCoords( util::fvector4( objectCoords.first, objectCoords.second, m_ImageStates.begin()->second.normalizedSlice ), m_ImageStates.begin()->first, m_PlaneOrientation );
 		physicalCoordsChanged( m_ImageStates.begin()->first->getImage()->getPhysicalCoordsFromIndex( voxelCoords ) );

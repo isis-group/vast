@@ -36,6 +36,7 @@ public Q_SLOTS:
 	void imagesChanged( DataContainer );
 	void checkImageStack( QListWidgetItem *item );
 	void openImage();
+	void openDICOMDir();
 	void contextMenuImageStack( QPoint );
 	void triggeredMakeCurrentImage( bool );
 	void triggeredMakeCurrentImageZmap( bool );

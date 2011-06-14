@@ -42,7 +42,6 @@ private:
 	DataContainer m_DataContainer;
 	boost::shared_ptr<ImageHolder>  m_CurrentImage;
 	size_t m_CurrentTimestep;
-	bool m_AllImagesToIdentity;
 
 };
 

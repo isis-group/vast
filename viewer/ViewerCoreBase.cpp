@@ -9,9 +9,7 @@ namespace viewer
 {
 
 ViewerCoreBase::ViewerCoreBase( )
-	: m_CurrentTimestep( 0 ),
-	  m_AllImagesToIdentity( false )
-
+	: m_CurrentTimestep( 0 )
 {
 }
 

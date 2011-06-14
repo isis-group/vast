@@ -77,7 +77,11 @@ int main( int argc, char *argv[] )
 	isis::viewer::MainWindow isisViewerMainWindow( core );
 
 	if( app.parameters["zmap"].isSet() ) {
-		core->addImageList( zImgList, ImageHolder::z_map, true );
+		if( app.parameters["split"] && zImgList.size() > 1 ) {
+			core->addImageList( zImgList, ImageHolder::z_map, false );
+		} else {
+			core->addImageList( zImgList, ImageHolder::z_map, true );
+		}
 	}
 	if( app.parameters["type"].toString() == "anatomical" && app.parameters["in"].isSet() ) {
 
