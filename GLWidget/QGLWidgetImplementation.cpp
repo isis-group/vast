@@ -52,10 +52,7 @@ void QGLWidgetImplementation::commonInit()
 	m_Flags.glInitialized = false;
 	m_ShowLabels = false;
 	
-
 }
-
-
 
 QGLWidgetImplementation *QGLWidgetImplementation::createSharedWidget( QWidget *parent, PlaneOrientation orientation )
 {
@@ -144,7 +141,7 @@ void QGLWidgetImplementation::updateStateValues( boost::shared_ptr<ImageHolder> 
 		state.mappedVoxelSize = GLOrientationHandler::transformVector<float>( image->getPropMap().getPropertyAs<util::fvector4>( "voxelSize" ) + image->getPropMap().getPropertyAs<util::fvector4>( "voxelGap" ) , state.planeOrientation );
 		state.mappedImageSize = GLOrientationHandler::transformVector<int>( image->getImageSize(), state.planeOrientation );
 		state.set = true;
-		state.lutID =  m_LookUpTable.getLookUpTableAsTexture( Color::hsvLUT );
+		state.lutID =  m_LookUpTable.getLookUpTableAsTexture( Color::hsvLUT_reverse );
 	}
 
 	state.mappedVoxelCoords = GLOrientationHandler::transformVector<int>( state.voxelCoords, state.planeOrientation );
@@ -208,7 +205,7 @@ bool QGLWidgetImplementation::calculateTranslation(  )
 bool QGLWidgetImplementation::lookAtPhysicalCoords( const isis::util::fvector4 &physicalCoords )
 {
 	BOOST_FOREACH( StateMap::const_reference state, m_ImageStates ) {
-		updateStateValues(  state.first, m_ViewerCore->getCurrentImage()->getImage()->getIndexFromPhysicalCoords( physicalCoords ) );
+		updateStateValues(  state.first, state.first->getImage()->getIndexFromPhysicalCoords( physicalCoords ) );
 	}
 
 	if( m_ImageStates.size() ) {

@@ -19,7 +19,7 @@ public:
 
 	std::string getVersion() const;
 
-	virtual void addImageList( const std::list< data::Image > imageList, const ImageHolder::ImageType &imageType );
+	virtual std::list<boost::shared_ptr<ImageHolder> > addImageList( const std::list< data::Image > imageList, const ImageHolder::ImageType &imageType );
 	virtual void setImageList( const std::list< data::Image > imageList, const ImageHolder::ImageType &imageType );
 	virtual void addImage( const data::Image &image, const ImageHolder::ImageType &imageType );
 

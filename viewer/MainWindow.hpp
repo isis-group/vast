@@ -48,11 +48,7 @@ public Q_SLOTS:
 	void lowerThresholdChanged( int );
 	void opacityChanged( int );
 
-	void axialTopLevelChanged( bool );
-	void sagittalTopLevelChanged( bool );
-	void coronalTopLevelChanged( bool );
-
-	void assembleViewInRows( size_t rows );
+	void assembleViewInRows( );
 
 
 private:
@@ -63,6 +59,8 @@ private:
 
 	QAction *actionMakeCurrent;
 	QAction *actionAsZMap;
+	
+	GL::QGLWidgetImplementation* createADockWidget( QDockWidget* widget, PlaneOrientation orientation, unsigned short index );
 
 	template<typename TYPE> void displayIntensity( util::ivector4 coords ) {
 		util::Value<TYPE> vIntensity ( m_ViewerCore->getCurrentImage()->getImage()->voxel<TYPE>( coords[0], coords[1], coords[2], coords[3] ) );

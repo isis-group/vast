@@ -455,62 +455,6 @@
               <item>
                <widget class="QWidget" name="frameThreshold" native="true">
                 <layout class="QGridLayout" name="gridLayout_8">
-                 <item row="0" column="0">
-                  <widget class="QSlider" name="lowerThreshold">
-                   <property name="maximum">
-                    <number>999</number>
-                   </property>
-                   <property name="value">
-                    <number>0</number>
-                   </property>
-                   <property name="tracking">
-                    <bool>true</bool>
-                   </property>
-                   <property name="orientation">
-                    <enum>Qt::Vertical</enum>
-                   </property>
-                   <property name="invertedAppearance">
-                    <bool>true</bool>
-                   </property>
-                   <property name="invertedControls">
-                    <bool>true</bool>
-                   </property>
-                   <property name="tickPosition">
-                    <enum>QSlider::TicksAbove</enum>
-                   </property>
-                   <property name="tickInterval">
-                    <number>50</number>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="0" column="1">
-                  <widget class="QSlider" name="upperThreshold">
-                   <property name="maximum">
-                    <number>999</number>
-                   </property>
-                   <property name="value">
-                    <number>0</number>
-                   </property>
-                   <property name="tracking">
-                    <bool>true</bool>
-                   </property>
-                   <property name="orientation">
-                    <enum>Qt::Vertical</enum>
-                   </property>
-                   <property name="invertedAppearance">
-                    <bool>true</bool>
-                   </property>
-                   <property name="invertedControls">
-                    <bool>true</bool>
-                   </property>
-                   <property name="tickPosition">
-                    <enum>QSlider::TicksAbove</enum>
-                   </property>
-                   <property name="tickInterval">
-                    <number>50</number>
-                   </property>
-                  </widget>
-                 </item>
                  <item row="1" column="0">
                   <widget class="QLabel" name="maxLabel">
                    <property name="text">
@@ -539,7 +483,7 @@
                    </property>
                   </widget>
                  </item>
-                 <item row="0" column="2">
+                 <item row="0" column="3">
                   <widget class="QSlider" name="opacity">
                    <property name="maximum">
                     <number>999</number>
@@ -564,10 +508,66 @@
                    </property>
                   </widget>
                  </item>
-                 <item row="1" column="2">
+                 <item row="1" column="3">
                   <widget class="QLabel" name="labelOpacity">
                    <property name="text">
                     <string>Opacitiy</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="0">
+                  <widget class="QSlider" name="upperThreshold">
+                   <property name="maximum">
+                    <number>999</number>
+                   </property>
+                   <property name="value">
+                    <number>0</number>
+                   </property>
+                   <property name="tracking">
+                    <bool>true</bool>
+                   </property>
+                   <property name="orientation">
+                    <enum>Qt::Vertical</enum>
+                   </property>
+                   <property name="invertedAppearance">
+                    <bool>true</bool>
+                   </property>
+                   <property name="invertedControls">
+                    <bool>true</bool>
+                   </property>
+                   <property name="tickPosition">
+                    <enum>QSlider::TicksAbove</enum>
+                   </property>
+                   <property name="tickInterval">
+                    <number>50</number>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="1">
+                  <widget class="QSlider" name="lowerThreshold">
+                   <property name="maximum">
+                    <number>999</number>
+                   </property>
+                   <property name="value">
+                    <number>0</number>
+                   </property>
+                   <property name="tracking">
+                    <bool>true</bool>
+                   </property>
+                   <property name="orientation">
+                    <enum>Qt::Vertical</enum>
+                   </property>
+                   <property name="invertedAppearance">
+                    <bool>true</bool>
+                   </property>
+                   <property name="invertedControls">
+                    <bool>true</bool>
+                   </property>
+                   <property name="tickPosition">
+                    <enum>QSlider::TicksAbove</enum>
+                   </property>
+                   <property name="tickInterval">
+                    <number>50</number>
                    </property>
                   </widget>
                  </item>

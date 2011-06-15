@@ -14,22 +14,22 @@ std::string colormap_shader_code = STRINGIFY(
 									   uniform float killZeros;
 									   void main ()
 {
-	float err = 0.05;
+	float err = 0.04;
 	float range = max - min;
 	float i = texture3D( imageTexture, gl_TexCoord[0].xyz ).r;
 	vec4 colorLut = texture1D( lut, i );
 	colorLut.a = opacity;
 	float inormed = ( i * range ) + min;
 
-	if( inormed > 0 - err && inormed < upper_threshold ) {
+	if( inormed > 0 - err * range && inormed < upper_threshold ) {
 		colorLut.a = 0;
 	}
 
-	if( inormed < 0 + err && inormed > lower_threshold ) {
+	if( inormed < 0 + err * range && inormed > lower_threshold ) {
 		colorLut.a = 0;
 	}
 
-	if( killZeros == 1 && inormed > 0 - err && inormed < 0 + err ) {
+	if( killZeros == 1 && inormed > 0 - err * range && inormed < 0 + err * range ) {
 		colorLut.a = 0;
 	}
 
@@ -49,7 +49,7 @@ std::string scaling_shader_code = STRINGIFY(
 									  uniform float killZeros;
 									  void main()
 {
-	float err = 0.05;
+	float err = 0.001;
 	float range = max - min;
 	vec4 color = texture3D( imageTexture, gl_TexCoord[0].xyz );
 	color.a = opacity;
@@ -57,7 +57,7 @@ std::string scaling_shader_code = STRINGIFY(
 	if( ( color.r * range ) + min > upper_threshold || ( color.r * range ) + min < lower_threshold ) {
 		color.a = 0;
 	}
-	if( killZeros == 1 && inormed > 0 - err && inormed < 0 + err ) {
+	if( killZeros == 1 && inormed > 0 - err * range && inormed < 0 + err * range ) {
 		color.a = 0;
 	}
 

@@ -312,15 +312,14 @@ void MainWindow::lowerThresholdChanged( int lowerThreshold )
 		double range = m_ViewerCore->getCurrentImage()->getMinMax().second->as<double>() - m_ViewerCore->getCurrentImage()->getMinMax().first->as<double>();
 		m_ViewerCore->getCurrentImage()->setLowerThreshold( ( range / 1000 ) * ( lowerThreshold  ) + m_ViewerCore->getCurrentImage()->getMinMax().first->as<double>() );
 	}
-
+	
 	m_ViewerCore->updateScene();
 }
 
 void MainWindow::upperThresholdChanged( int upperThreshold )
 {
 	if( m_ViewerCore->getCurrentImage()->getImageState().imageType == ImageHolder::z_map ) {
-		m_ViewerCore->getCurrentImage()->setUpperThreshold( (  m_ViewerCore->getCurrentImage()->getMinMax().second->as<double>() / 1000 ) * ( upperThreshold + 1 ) );
-	} else {
+		m_ViewerCore->getCurrentImage()->setUpperThreshold( (  m_ViewerCore->getCurrentImage()->getMinMax().second->as<double>() / 1000 ) * ( upperThreshold  ) );	} else {
 		double range = m_ViewerCore->getCurrentImage()->getMinMax().second->as<double>() - m_ViewerCore->getCurrentImage()->getMinMax().first->as<double>();
 		m_ViewerCore->getCurrentImage()->setUpperThreshold( ( range / 1000 ) * ( upperThreshold + 1 )  + m_ViewerCore->getCurrentImage()->getMinMax().first->as<double>() );
 	}
@@ -336,84 +335,94 @@ void MainWindow::interpolationChanged( int index )
 	m_ViewerCore->updateScene();
 }
 
-void MainWindow::axialTopLevelChanged( bool docked )
+void MainWindow::assembleViewInRows( )
 {
-#warning implement undockAxial
-}
-
-void MainWindow::coronalTopLevelChanged( bool docked )
-{
-#warning implement undockCoronal
-}
-void MainWindow::sagittalTopLevelChanged( bool docked )
-{
-#warning implement undockSagittal
-}
-
-
-void MainWindow::assembleViewInRows( size_t rows )
-{
-#warning optimize setNumberOfRows
+	std::list< boost::shared_ptr< ImageHolder> > zMaps;
+	std::list< boost::shared_ptr< ImageHolder> > relevantImages;
+	std::list< boost::shared_ptr< ImageHolder> > anatomicalImages;
+	BOOST_FOREACH( DataContainer::const_reference dataSet, m_ViewerCore->getDataContainer() ) 
+	{
+		if( dataSet.second->getImageState().imageType == ImageHolder::z_map ) {
+			zMaps.push_back( dataSet.second );
+		} else if ( dataSet.second->getImageState().imageType == ImageHolder::anatomical_image ) {
+			anatomicalImages.push_back( dataSet.second );
+		}
+	}
+	if( !anatomicalImages.size() ) {
+		LOG(Runtime, warning) << "Could not find any anatomical image.";
+	}
+	if(zMaps.size()) {
+		relevantImages = zMaps;
+	} else {
+		relevantImages = anatomicalImages;
+	}
+	//some gui related modifications	
 	ui.gridLayout->addWidget( ui.coronalDockWidget, 0, 2 );
 	ui.setupDockWidget->setVisible( false );
 	ui.bottomCoordsFrame->setVisible( true );
-	m_AxialWidget->addImage( m_ViewerCore->getDataContainer().getImageByID( 0 ) );
-	m_SagittalWidget->addImage( m_ViewerCore->getDataContainer().getImageByID( 0 ) );
-	m_CoronalWidget->addImage( m_ViewerCore->getDataContainer().getImageByID( 0 ) );
-	std::stringstream title;
-	QFileInfo dir(tr( m_ViewerCore->getDataContainer().getImageByID( 0 )->getFileNames().front().c_str()));
-	title << dir.fileName().toStdString() << " (";
-	title <<  m_ViewerCore->getDataContainer().getImageByID( 0 )->getImage()->getPropertyAs<std::string>("sequenceDescription") << ")";
-	ui.axialDockWidget->setWindowTitle( tr( title.str().c_str()) );
-	ui.currentImageBox->addItem( tr( title.str().c_str()) );
-	for ( size_t r = 0; r < rows - 1; r++ ) {
+	//we create our widgets dynamically so we do not need the static ones
+	ui.sagittalDockWidget->setVisible(false);
+	ui.coronalDockWidget->setVisible(false);
+	ui.axialDockWidget->setVisible(false);
+	
+	unsigned short row = 0;
+	BOOST_FOREACH( std::list< boost::shared_ptr< ImageHolder> >::const_reference image, relevantImages ) 
+	{
+		row++;
+		//setup dockwidgets
 		QDockWidget *axialDock = new QDockWidget( this );
 		QDockWidget *sagittalDock = new QDockWidget( this );
 		QDockWidget *coronalDock = new QDockWidget( this );
-		axialDock->setFloating( false );
-		sagittalDock->setFloating( false );
-		coronalDock->setFloating( false );
-		axialDock->setAllowedAreas( Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea | Qt::TopDockWidgetArea | Qt::BottomDockWidgetArea );
-		sagittalDock->setAllowedAreas( Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea | Qt::TopDockWidgetArea | Qt::BottomDockWidgetArea );
-		coronalDock->setAllowedAreas( Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea | Qt::TopDockWidgetArea | Qt::BottomDockWidgetArea );
-		axialDock->setFeatures( QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable );
-		sagittalDock->setFeatures( QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable );
-		coronalDock->setFeatures( QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable );
+		GL::QGLWidgetImplementation* axialWidget = createADockWidget( axialDock, axial, row );
+		GL::QGLWidgetImplementation* sagittalWidget = createADockWidget( sagittalDock, sagittal, row );
+		GL::QGLWidgetImplementation* coronalWidget = createADockWidget( coronalDock, coronal, row );
+		axialWidget->addImage( image );
+		sagittalWidget->addImage( image );
+		coronalWidget->addImage( image );
+		if(zMaps.size()) {
+			axialWidget->addImage( anatomicalImages.front() );
+			sagittalWidget->addImage( anatomicalImages.front() );
+			coronalWidget->addImage( anatomicalImages.front() );
+		}
+		//setup title
 		std::stringstream title;
-		QFileInfo dir(tr( m_ViewerCore->getDataContainer().getImageByID( r+1 )->getFileNames().front().c_str()));
+		QFileInfo dir(tr( image->getFileNames().front().c_str()));
 		title << dir.fileName().toStdString() << " (";
-		title <<  m_ViewerCore->getDataContainer().getImageByID( r+1 )->getImage()->getPropertyAs<std::string>("sequenceDescription") << ")";
+		title <<  image->getImage()->getPropertyAs<std::string>("sequenceDescription") << ")";
 		axialDock->setWindowTitle( tr( title.str().c_str()));
 		ui.currentImageBox->addItem( tr( title.str().c_str()) );
-		QFrame *frameAxial = new QFrame( axialDock );
-		QFrame *frameSagittal = new QFrame( axialDock );
-		QFrame *frameCoronal = new QFrame( axialDock );
-		axialDock->setWidget( frameAxial );
-		sagittalDock->setWidget( frameSagittal );
-		coronalDock->setWidget( frameCoronal );
-		ui.gridLayout->addWidget( axialDock, r + 1, 0 );
-		ui.gridLayout->addWidget( sagittalDock, r + 1, 1 );
-		ui.gridLayout->addWidget( coronalDock, r + 1, 2 );
-		GL::QGLWidgetImplementation *axialWidget = m_MasterWidget->createSharedWidget( frameAxial, axial );
-		GL::QGLWidgetImplementation *sagittalWidget = m_MasterWidget->createSharedWidget( frameSagittal, sagittal );
-		GL::QGLWidgetImplementation *coronalWidget = m_MasterWidget->createSharedWidget( frameCoronal, coronal );
-		std::stringstream nameAxial;
-		std::stringstream nameSagittal;
-		std::stringstream nameCoronal;
-		nameAxial << "axialView_" << r + 1;
-		nameSagittal << "sagittalView_" << r + 1;
-		nameCoronal << "coronalView_" << r + 1;
-		m_ViewerCore->registerWidget( nameAxial.str(), axialWidget );
-		m_ViewerCore->registerWidget( nameSagittal.str(), sagittalWidget );
-		m_ViewerCore->registerWidget( nameCoronal.str(), coronalWidget );
-		axialWidget->addImage( m_ViewerCore->getDataContainer().getImageByID( r + 1 ) );
-		sagittalWidget->addImage( m_ViewerCore->getDataContainer().getImageByID( r + 1 ) );
-		coronalWidget->addImage( m_ViewerCore->getDataContainer().getImageByID( r + 1 ) );
-	}
+		ui.gridLayout->addWidget( axialDock, row, 0 );
+		ui.gridLayout->addWidget( sagittalDock, row, 1 );
+		ui.gridLayout->addWidget( coronalDock, row, 2 );
+	}	
 	ui.currentImageBox->setCurrentIndex( m_ViewerCore->getCurrentImage()->getID() );
 }
 
 
+GL::QGLWidgetImplementation* MainWindow::createADockWidget(QDockWidget* widget, PlaneOrientation orientation, unsigned short index )
+{
+	widget->setFloating( false );
+	widget->setAllowedAreas( Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea | Qt::TopDockWidgetArea | Qt::BottomDockWidgetArea );
+	widget->setFeatures( QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable );
+	QFrame *frame = new QFrame( widget );
+	widget->setWidget( frame );
+	GL::QGLWidgetImplementation *view = m_MasterWidget->createSharedWidget( frame, orientation );
+	std::stringstream name;
+	switch ( orientation ) {
+		case axial:
+			name << "axialView_" << index;
+			break;
+		case sagittal:
+			name << "sagittalView_" << index;
+			break;
+		case coronal:
+			name  << "coronalView_" << index;
+			break;
+	}
+	m_ViewerCore->registerWidget( name.str(), view );
+	return view;
+	
+}
 
 }
 } //end namespace

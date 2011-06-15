@@ -73,13 +73,13 @@ bool QViewerCore::widgetsAreIntitialized() const
 
 void QViewerCore::addImageList( const std::list< data::Image > imageList, const ImageHolder::ImageType &imageType, bool passToWidgets )
 {
-	isis::viewer::ViewerCoreBase::addImageList( imageList, imageType );
+	std::list<boost::shared_ptr<ImageHolder> > imageHolderList = 
+		isis::viewer::ViewerCoreBase::addImageList( imageList, imageType );
 
 	if( passToWidgets ) {
-		emitImagesChanged( getDataContainer() );
 		BOOST_FOREACH( WidgetMap::reference widget, m_WidgetMap ) {
-			BOOST_FOREACH( DataContainer::const_reference data, getDataContainer() ) {
-				dynamic_cast<GL::QGLWidgetImplementation *>( widget.second )->addImage( data.second );
+			BOOST_FOREACH( std::list<boost::shared_ptr<ImageHolder> >::const_reference data, imageHolderList ) {
+				dynamic_cast<GL::QGLWidgetImplementation *>( widget.second )->addImage( data );
 			}
 		}
 	}
@@ -91,13 +91,13 @@ void QViewerCore::setImageList( const std::list< data::Image > imageList, const 
 	isis::viewer::ViewerCoreBase::setImageList( imageList, imageType );
 
 	if( passToWidgets ) {
-		emitImagesChanged( getDataContainer() );
 		BOOST_FOREACH( WidgetMap::reference widget, m_WidgetMap ) {
 			BOOST_FOREACH( DataContainer::const_reference data, getDataContainer() ) {
 				dynamic_cast<GL::QGLWidgetImplementation *>( widget.second )->addImage( data.second );
 			}
 		}
 	}
+	emitImagesChanged( getDataContainer() );
 }
 
 void QViewerCore::setShowLabels( bool l )

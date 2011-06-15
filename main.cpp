@@ -73,21 +73,21 @@ int main( int argc, char *argv[] )
 			zImgList.push_back( imageRef );
 		}
 	}
-
+	bool assamble = false;
 	isis::viewer::MainWindow isisViewerMainWindow( core );
 
 	if( app.parameters["zmap"].isSet() ) {
 		if( app.parameters["split"] && zImgList.size() > 1 ) {
 			core->addImageList( zImgList, ImageHolder::z_map, false );
+			assamble = true;
 		} else {
 			core->addImageList( zImgList, ImageHolder::z_map, true );
 		}
 	}
 	if( app.parameters["type"].toString() == "anatomical" && app.parameters["in"].isSet() ) {
-
 		if( imgList.size() > 1 && app.parameters["split"] ) {
 			core->addImageList( imgList, ImageHolder::anatomical_image, false );
-			isisViewerMainWindow.assembleViewInRows( imgList.size() );
+			isisViewerMainWindow.assembleViewInRows();
 		} else  {
 			core->addImageList( imgList, ImageHolder::anatomical_image, true );
 		}
@@ -95,7 +95,9 @@ int main( int argc, char *argv[] )
 	} else if ( app.parameters["type"].toString() == "zmap" && app.parameters["in"].isSet() ) {
 		core->addImageList( imgList, ImageHolder::z_map, true );
 	}
-
+	if(assamble) {
+		isisViewerMainWindow.assembleViewInRows();
+	}
 	isisViewerMainWindow.show();
 	return app.getQApplication().exec();
 }
