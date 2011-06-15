@@ -255,6 +255,7 @@ void MainWindow::imagesChanged( DataContainer images )
 		ui.minValueLabel->setVisible( false );
 		ui.opacity->setVisible( true );
 		ui.labelOpacity->setVisible( true );
+		ui.frame_4->setVisible(false);
 		ui.opacity->setValue( (ui.opacity->maximum() - ui.opacity->minimum()) * m_ViewerCore->getCurrentImage()->getImageState().opacity );
 	} else if (m_ViewerCore->getCurrentImage()->getImageState().imageType == ImageHolder::z_map ) {
 		ui.upperThreshold->setVisible(true);
@@ -424,7 +425,11 @@ void MainWindow::assembleViewInRows( )
 		std::stringstream title;
 		QFileInfo dir(tr( image->getFileNames().front().c_str()));
 		title << dir.fileName().toStdString() << " (";
-		title <<  image->getImage()->getPropertyAs<std::string>("sequenceDescription") << ")";
+		if( image->getImage()->hasProperty("sequenceDescription") ) {
+			title <<  image->getImage()->getPropertyAs<std::string>("sequenceDescription") << ")";
+		} else {
+			title << "no desc.)";
+		}
 		axialDock->setWindowTitle( tr( title.str().c_str()));
 		ui.currentImageBox->addItem( tr( title.str().c_str()) );
 		ui.gridLayout->addWidget( axialDock, row, 0 );
