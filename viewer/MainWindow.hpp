@@ -64,7 +64,7 @@ private:
 	QAction *actionMakeCurrent;
 	QAction *actionAsZMap;
 	
-	GL::QGLWidgetImplementation* createADockWidget( QDockWidget* widget, PlaneOrientation orientation, unsigned short index );
+	GL::QGLWidgetImplementation* createView( QDockWidget* widget, PlaneOrientation orientation, unsigned short index );
 
 	template<typename TYPE> void displayIntensity( util::ivector4 coords ) {
 		util::Value<TYPE> vIntensity ( m_ViewerCore->getCurrentImage()->getImage()->voxel<TYPE>( coords[0], coords[1], coords[2], coords[3] ) );
@@ -73,7 +73,6 @@ private:
 		ui.intensity_value_2->display( intensity );
 		m_ViewerCore->getCurrentImage()->setCurrentIntensityAsDouble( intensity );
 	}
-
 };
 
 

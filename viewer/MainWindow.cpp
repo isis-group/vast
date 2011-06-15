@@ -72,7 +72,7 @@ MainWindow::MainWindow( QViewerCore *core )
 	ui.actionShow_labels->setCheckable( true );
 	ui.actionShow_labels->setChecked( false );
 	ui.imageStack->setContextMenuPolicy( Qt::CustomContextMenu );
-	ui.bottomCoordsFrame->setVisible(false);
+	ui.dockWidget->setVisible(false);
 	connect( ui.imageStack, SIGNAL( customContextMenuRequested( QPoint ) ), this, SLOT( contextMenuImageStack( QPoint ) ) );
 }
 
@@ -114,8 +114,8 @@ void MainWindow::currentImageChanged(int index )
 
 void MainWindow::triggeredMakeCurrentImage( bool triggered )
 {
-	imagesChanged( m_ViewerCore->getDataContainer() );
 	m_ViewerCore->setCurrentImage( m_ViewerCore->getDataContainer().at( ui.imageStack->currentItem()->text().toStdString() ) );
+	imagesChanged( m_ViewerCore->getDataContainer() );
 	updateInterfaceValues();
 }
 
@@ -396,7 +396,7 @@ void MainWindow::assembleViewInRows( )
 	//some gui related modifications	
 	ui.gridLayout->addWidget( ui.coronalDockWidget, 0, 2 );
 	ui.setupDockWidget->setVisible( false );
-	ui.bottomCoordsFrame->setVisible( true );
+	ui.dockWidget->setVisible( true );
 	//we create our widgets dynamically so we do not need the static ones
 	ui.sagittalDockWidget->setVisible(false);
 	ui.coronalDockWidget->setVisible(false);
@@ -410,9 +410,9 @@ void MainWindow::assembleViewInRows( )
 		QDockWidget *axialDock = new QDockWidget( this );
 		QDockWidget *sagittalDock = new QDockWidget( this );
 		QDockWidget *coronalDock = new QDockWidget( this );
-		GL::QGLWidgetImplementation* axialWidget = createADockWidget( axialDock, axial, row );
-		GL::QGLWidgetImplementation* sagittalWidget = createADockWidget( sagittalDock, sagittal, row );
-		GL::QGLWidgetImplementation* coronalWidget = createADockWidget( coronalDock, coronal, row );
+		GL::QGLWidgetImplementation* axialWidget = createView( axialDock, axial, row );
+		GL::QGLWidgetImplementation* sagittalWidget = createView( sagittalDock, sagittal, row );
+		GL::QGLWidgetImplementation* coronalWidget = createView( coronalDock, coronal, row );
 		axialWidget->addImage( image );
 		sagittalWidget->addImage( image );
 		coronalWidget->addImage( image );
@@ -440,7 +440,7 @@ void MainWindow::assembleViewInRows( )
 }
 
 
-GL::QGLWidgetImplementation* MainWindow::createADockWidget(QDockWidget* widget, PlaneOrientation orientation, unsigned short index )
+GL::QGLWidgetImplementation* MainWindow::createView(QDockWidget* widget, PlaneOrientation orientation, unsigned short index )
 {
 	widget->setFloating( false );
 	widget->setAllowedAreas( Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea | Qt::TopDockWidgetArea | Qt::BottomDockWidgetArea );
