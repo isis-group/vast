@@ -28,6 +28,7 @@ MainWindow::MainWindow( QViewerCore *core )
 	connect( actionAsZMap, SIGNAL( triggered( bool ) ), this, SLOT( triggeredMakeCurrentImageZmap( bool ) ) );
 	connect( core, SIGNAL( emitImagesChanged( DataContainer ) ), this, SLOT( imagesChanged( DataContainer ) ) );
 	connect( core, SIGNAL( emitPhysicalCoordsChanged( util::fvector4 ) ), this, SLOT( physicalCoordsChanged( util::fvector4 ) ) );
+	connect( core, SIGNAL( emitVoxelCoordChanged(util::ivector4)), this, SLOT( voxelCoordsChanged( util::ivector4 ) ) );
 	connect( ui.imageStack, SIGNAL( itemClicked( QListWidgetItem * ) ), this, SLOT( checkImageStack( QListWidgetItem * ) ) );
 	connect( ui.imageStack, SIGNAL( itemDoubleClicked( QListWidgetItem * ) ), this, SLOT( doubleClickedMakeCurrentImage( QListWidgetItem * ) ) );
 	connect( ui.action_Open_Image, SIGNAL( triggered() ), this, SLOT( openImage() ) );
@@ -37,7 +38,7 @@ MainWindow::MainWindow( QViewerCore *core )
 	connect( ui.opacity, SIGNAL( sliderMoved(int)), this, SLOT( opacityChanged( int ) ) );
 	connect( ui.timestepSpinBox, SIGNAL( valueChanged( int ) ), m_ViewerCore, SLOT( timestepChanged( int ) ) ) ;
 	connect( ui.interpolationType, SIGNAL( currentIndexChanged( int ) ), this, SLOT( interpolationChanged( int ) ) );
-	connect( ui.currentImageBox, SIGNAL( currentIndexChanged(int)), this, SLOT( currentImageChanged( int )));
+	connect( ui.currentImageBox, SIGNAL( activated(int)), this, SLOT( currentImageChanged( int )));
 	//attach all textFields
 	connect( ui.row_value, SIGNAL( textChanged(QString) ), ui.row_value_2, SLOT( setText(QString)) );
 	connect( ui.column_value, SIGNAL( textChanged(QString) ), ui.column_value_2, SLOT( setText(QString)) );
@@ -46,7 +47,15 @@ MainWindow::MainWindow( QViewerCore *core )
 	connect( ui.y_value, SIGNAL( textChanged(QString)), ui.y_value_2, SLOT( setText(QString)) );
 	connect( ui.z_value, SIGNAL( textChanged(QString)), ui.z_value_2, SLOT( setText(QString)) );
 	connect( ui.timestepSpinBox_2, SIGNAL( valueChanged(int)), ui.timestepSpinBox, SLOT(setValue(int)));
-	
+	connect( ui.horizontalSlider, SIGNAL( valueChanged(int)), this, SLOT( lowerThresholdChanged( int ) ) );
+	connect( ui.horizontalSlider_2, SIGNAL( valueChanged(int)), this, SLOT( upperThresholdChanged( int ) ) );
+	connect( ui.comboBox, SIGNAL( currentIndexChanged(int)), ui.interpolationType, SLOT( setCurrentIndex(int)));
+	connect( ui.row_value, SIGNAL( returnPressed()), this, SLOT(setVoxelPosition()));
+	connect( ui.column_value, SIGNAL( returnPressed()), this, SLOT(setVoxelPosition()));
+	connect( ui.slice_value, SIGNAL( returnPressed()), this, SLOT(setVoxelPosition()));
+	connect( ui.x_value, SIGNAL( returnPressed()), this, SLOT(setPhysicalPosition()));
+	connect( ui.y_value, SIGNAL( returnPressed()), this, SLOT(setPhysicalPosition()));
+	connect( ui.z_value, SIGNAL( returnPressed()), this, SLOT(setPhysicalPosition()));
 	//we need a master widget to keep opengl running in case all visible widgets were closed
 
 	m_MasterWidget = new GL::QGLWidgetImplementation( core, 0, axial );
@@ -67,6 +76,20 @@ MainWindow::MainWindow( QViewerCore *core )
 	connect( ui.imageStack, SIGNAL( customContextMenuRequested( QPoint ) ), this, SLOT( contextMenuImageStack( QPoint ) ) );
 }
 
+void MainWindow::setVoxelPosition()
+{
+	m_ViewerCore->voxelCoordsChanged(util::ivector4( ui.row_value->text().toInt(),
+													 ui.column_value->text().toInt(),
+													 ui.slice_value->text().toInt() ) );
+}
+
+void MainWindow::setPhysicalPosition()
+{
+	m_ViewerCore->physicalCoordsChanged(util::fvector4( ui.x_value->text().toFloat(),
+													 ui.y_value->text().toFloat(),
+													 ui.z_value->text().toFloat() ) );
+}
+
 
 void MainWindow::contextMenuImageStack( QPoint position )
 {
@@ -85,13 +108,20 @@ void MainWindow::currentImageChanged(int index )
 {
 	m_ViewerCore->setCurrentImage( m_ViewerCore->getDataContainer().getImageByID(index) );
 	imagesChanged( m_ViewerCore->getDataContainer() );
+	updateInterfaceValues();
 }
 
 
 void MainWindow::triggeredMakeCurrentImage( bool triggered )
 {
+	imagesChanged( m_ViewerCore->getDataContainer() );
 	m_ViewerCore->setCurrentImage( m_ViewerCore->getDataContainer().at( ui.imageStack->currentItem()->text().toStdString() ) );
+	updateInterfaceValues();
+}
 
+
+void MainWindow::updateInterfaceValues()
+{
 	if( m_ViewerCore->getCurrentImage()->getImageState().imageType == ImageHolder::z_map ) {
 		ui.lowerThreshold->setSliderPosition( 1000.0 / m_ViewerCore->getCurrentImage()->getMinMax().first->as<double>() *
 											  ( m_ViewerCore->getCurrentImage()->getImageState().zmapThreshold.first  ) );
@@ -105,9 +135,10 @@ void MainWindow::triggeredMakeCurrentImage( bool triggered )
 											  ( m_ViewerCore->getCurrentImage()->getImageState().threshold.second - m_ViewerCore->getCurrentImage()->getMinMax().first->as<double>() ) );
 	}
 
-
-	imagesChanged( m_ViewerCore->getDataContainer() );
+	
 	m_ViewerCore->updateScene();
+	
+
 }
 
 void MainWindow::triggeredMakeCurrentImageZmap( bool triggered )
@@ -125,6 +156,11 @@ void MainWindow::triggeredMakeCurrentImageZmap( bool triggered )
 void MainWindow::doubleClickedMakeCurrentImage( QListWidgetItem * )
 {
 	triggeredMakeCurrentImage( true );
+}
+
+void MainWindow::voxelCoordsChanged(util::ivector4 coords )
+{
+	physicalCoordsChanged( m_ViewerCore->getCurrentImage()->getImage()->getPhysicalCoordsFromIndex( coords ));
 }
 
 

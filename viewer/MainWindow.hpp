@@ -32,6 +32,7 @@ private:
 
 public Q_SLOTS:
 	void physicalCoordsChanged( util::fvector4 );
+	void voxelCoordsChanged( util::ivector4);
 	void exitProgram();
 	void imagesChanged( DataContainer );
 	void checkImageStack( QListWidgetItem *item );
@@ -43,6 +44,9 @@ public Q_SLOTS:
 	void doubleClickedMakeCurrentImage( QListWidgetItem * );
 	void interpolationChanged( int );
 	void currentImageChanged( int );
+	void updateInterfaceValues();
+	void setVoxelPosition();
+	void setPhysicalPosition();
 
 	void upperThresholdChanged( int );
 	void lowerThresholdChanged( int );
