@@ -454,6 +454,8 @@ GL::QGLWidgetImplementation* MainWindow::createView(QDockWidget* widget, PlaneOr
 	widget->setFeatures( QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable );
 	QFrame *frame = new QFrame( widget );
 	widget->setWidget( frame );
+	widget->setSizePolicy( QSizePolicy( QSizePolicy::Preferred, QSizePolicy::MinimumExpanding) );
+	widget->setMinimumHeight(200);
 	GL::QGLWidgetImplementation *view = m_MasterWidget->createSharedWidget( frame, orientation );
 	std::stringstream name;
 	switch ( orientation ) {
