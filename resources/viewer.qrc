@@ -1,6 +1,8 @@
 <RCC>
   <qresource prefix="common">
+    <file>preferences_settings.png</file>
     <file>control.gif</file>
+    <file>gazeincrease.gif</file>
     <file>sagittal.png</file>
     <file>coronal.png</file>
     <file>axial.png</file>

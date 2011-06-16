@@ -11,6 +11,7 @@ MainWindowBase::MainWindowBase( QWidget *parent )
 	  m_CurrentPath( QDir::currentPath() )
 {
 	ui.setupUi( this );
+	m_PreferencesDialog = new QPreferencesDialog();
 }
 
 }

@@ -27,6 +27,7 @@ public Q_SLOTS:
 	void toggleSagittalView(bool);
 	void openImageAsZMap();
 	void openImageAsAnatomicalImage();
+	void openPreferences();
 	
 	
 	void toggleViews( PlaneOrientation orientation, bool toggled);

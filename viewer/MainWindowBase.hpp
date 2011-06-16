@@ -3,6 +3,7 @@
 
 #include <QtGui>
 #include "ui_isisViewerMain.h"
+#include "QPreferencesDialog.hpp"
 
 namespace isis
 {
@@ -21,6 +22,7 @@ Q_SIGNALS:
 
 
 protected:
+	QPreferencesDialog* m_PreferencesDialog;
 	Ui::isisViewerMain ui;
 	QScrollArea *sa;
 	QString m_CurrentPath;

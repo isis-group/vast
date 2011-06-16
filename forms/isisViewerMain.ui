@@ -99,10 +99,16 @@
            <item row="0" column="0">
             <widget class="QDockWidget" name="axialDockWidget">
              <property name="sizePolicy">
-              <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+              <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
                <horstretch>0</horstretch>
                <verstretch>0</verstretch>
               </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>218</width>
+               <height>243</height>
+              </size>
              </property>
              <property name="floating">
               <bool>false</bool>
@@ -141,10 +147,16 @@
            <item row="0" column="1">
             <widget class="QDockWidget" name="sagittalDockWidget">
              <property name="sizePolicy">
-              <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+              <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
                <horstretch>0</horstretch>
                <verstretch>0</verstretch>
               </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>200</width>
+               <height>200</height>
+              </size>
              </property>
              <property name="floating">
               <bool>false</bool>
@@ -183,10 +195,16 @@
            <item row="1" column="0">
             <widget class="QDockWidget" name="coronalDockWidget">
              <property name="sizePolicy">
-              <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+              <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
                <horstretch>0</horstretch>
                <verstretch>0</verstretch>
               </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>200</width>
+               <height>200</height>
+              </size>
              </property>
              <property name="floating">
               <bool>false</bool>
@@ -225,10 +243,16 @@
            <item row="1" column="1">
             <widget class="QDockWidget" name="setupDockWidget">
              <property name="sizePolicy">
-              <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+              <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
                <horstretch>0</horstretch>
                <verstretch>0</verstretch>
               </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>200</width>
+               <height>200</height>
+              </size>
              </property>
              <property name="layoutDirection">
               <enum>Qt::LeftToRight</enum>
@@ -928,6 +952,7 @@
      <addaction name="actionShow_labels"/>
      <addaction name="actionAutomatic_Scaling"/>
     </widget>
+    <addaction name="action_Preferences"/>
     <addaction name="menu_Quick_Preferences"/>
    </widget>
    <widget class="QMenu" name="menu_View">
@@ -1115,6 +1140,18 @@ This is needed if you want to open an entire DICOM directory.</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+Alt+Shift+Z</string>
+   </property>
+  </action>
+  <action name="action_Preferences">
+   <property name="icon">
+    <iconset resource="../resources/viewer.qrc">
+     <normaloff>:/common/preferences_settings.png</normaloff>:/common/preferences_settings.png</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Preferences</string>
+   </property>
+   <property name="shortcut">
+    <string>P, P</string>
    </property>
   </action>
  </widget>

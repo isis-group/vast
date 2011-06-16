@@ -58,6 +58,7 @@ void isis::viewer::MainWindow::setInitialState()
 	m_Toolbar->addAction( ui.actionOpenZmap);
 	m_Toolbar->addAction( ui.actionOpen_DICOM);
 	m_Toolbar->addSeparator();
+	m_Toolbar->addAction( ui.action_Preferences);
 	m_Toolbar->addAction( ui.actionShow_labels);
 	m_Toolbar->addAction( ui.actionAutomatic_Scaling);
 	m_Toolbar->addSeparator();
@@ -235,7 +236,7 @@ void MainWindow::imagesChanged( DataContainer images )
 		}
 
 		if( m_ViewerCore->getCurrentImage().get() == imageRef.second.get() ) {
-			item->setIcon( QIcon( ":/common/icon_check.png" ) );
+			item->setIcon( QIcon( ":/common/gazeincrease.png" ) );
 		}
 
 		ui.imageStack->addItem( item );

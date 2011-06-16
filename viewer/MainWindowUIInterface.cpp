@@ -34,6 +34,7 @@ void isis::viewer::MainWindowUIInterface::connectSignals()
 	connect( ui.actionCoronal_View, SIGNAL( triggered(bool)), this, SLOT(toggleCoronalView(bool)) );
 	connect( ui.actionSagittal_View, SIGNAL( triggered(bool)), this, SLOT(toggleSagittalView(bool)) );
 	connect( ui.actionOpenZmap, SIGNAL( triggered()), this, SLOT(openImageAsZMap()));
+	connect( ui.action_Preferences, SIGNAL( triggered()), this, SLOT(openPreferences()));
 	
 	//attach all textFields
 	connect( ui.row_value, SIGNAL( textChanged(QString) ), ui.row_value_2, SLOT( setText(QString)) );
@@ -111,4 +112,9 @@ void isis::viewer::MainWindowUIInterface::openImageAsAnatomicalImage()
 void isis::viewer::MainWindowUIInterface::openImageAsZMap()
 {
 	openImageAs( ImageHolder::z_map);
+}
+
+void isis::viewer::MainWindowUIInterface::openPreferences()
+{
+	m_PreferencesDialog->show();
 }
