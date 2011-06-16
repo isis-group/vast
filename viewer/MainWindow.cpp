@@ -163,9 +163,7 @@ void MainWindow::voxelCoordsChanged(util::ivector4 coords )
 void MainWindow::physicalCoordsChanged( util::fvector4 coords )
 {
 	util::ivector4 voxelCoords = m_ViewerCore->getCurrentImage()->getImage()->getIndexFromPhysicalCoords( coords );
-	if( m_PlottingDialog->isVisible() ) {
-		m_PlottingDialog->replotVoxelCoords( voxelCoords );
-	}
+	
 	ui.row_value->setText( QString::number(voxelCoords[0]));
 	ui.column_value->setText( QString::number(voxelCoords[1]) );
 	ui.slice_value->setText( QString::number(voxelCoords[2]) );
@@ -336,7 +334,10 @@ void MainWindow::checkImageStack( QListWidgetItem *item )
 
 void MainWindow::exitProgram()
 {
+	m_PlottingDialog->close();
+	m_PreferencesDialog->close();
 	close();
+	
 }
 
 void MainWindow::opacityChanged( int opacity )

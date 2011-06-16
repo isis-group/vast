@@ -81,6 +81,9 @@ protected:
 		ui.intensity_value->display(intensity);
 		ui.intensity_value_2->display( intensity );
 		m_ViewerCore->getCurrentImage()->setCurrentIntensityAsDouble( intensity );
+		if( m_PlottingDialog->isVisible() ) {
+			m_PlottingDialog->replotVoxelCoords<TYPE>( coords );
+		}
 	}
 };
 

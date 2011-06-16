@@ -140,7 +140,7 @@ void MainWindowUIInterface::showPlotting()
 {
 	m_PlottingDialog->show();
 	m_PlottingDialog->addImageHolder( m_ViewerCore->getCurrentImage() );
-	m_PlottingDialog->replotVoxelCoords(m_ViewerCore->getCurrentImage()->getImageState().voxelCoords);
+	physicalCoordsChanged( m_ViewerCore->getCurrentImage()->getImageState().physicalCoords );
 }
 
 

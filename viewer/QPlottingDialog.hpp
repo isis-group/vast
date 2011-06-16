@@ -21,7 +21,38 @@ public:
 
 public Q_SLOTS:
 	void addImageHolder( boost::shared_ptr<ImageHolder> imageHolder );
-	void replotVoxelCoords( util::ivector4 coords );
+	
+public:
+	template<typename TYPE>
+	void replotVoxelCoords( util::ivector4 coords ) {
+		if( !plottingUi.checkBox->isChecked() ) {
+			std::stringstream title;
+			std::stringstream coordsAsString;
+			title << "Timecourse for " << m_Images.front()->getFileNames().front();
+			coordsAsString << coords[0] << " | " << coords[1] << " | " << coords[2];
+			plot->setTitle( tr( coordsAsString.str().c_str() ) );
+			setWindowTitle( tr( title.str().c_str() ) );
+			typedef ImageVector::iterator ImageIterator;
+			typedef CurveVector::iterator CurveIterator;
+			ImageIterator image ;
+			CurveIterator curve ;
+			
+			for( image = m_Images.begin(), curve = m_Curves.begin(); image != m_Images.end(); image++, curve++)
+			{
+				QVector<double> timeSteps;
+				QVector<double> intensityValues;
+				util::Value<TYPE> intens;
+				for( size_t t = 0; t < (*image)->getImageSize()[3]; t++ ) {
+					timeSteps.push_back(t);
+					intens = (*image)->getImage()->voxel<TYPE>(coords[0], coords[1], coords[2], t );
+					intensityValues.push_back( intens );
+				}
+				(*curve)->setData(timeSteps, intensityValues);
+				(*curve)->attach( plot );
+			}
+			plot->replot();
+		}
+	}
 	
 protected:
 	Ui::plottingDialog plottingUi;
