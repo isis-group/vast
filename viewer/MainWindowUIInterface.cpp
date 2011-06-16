@@ -1,7 +1,9 @@
 #include "MainWindowUIInterface.hpp"
 
+namespace isis {
+namespace viewer {
 
-isis::viewer::MainWindowUIInterface::MainWindowUIInterface(isis::viewer::QViewerCore* core)
+MainWindowUIInterface::MainWindowUIInterface(isis::viewer::QViewerCore* core)
 	: MainWindow(core),
 	m_ViewerCore(core)
 {
@@ -9,7 +11,7 @@ isis::viewer::MainWindowUIInterface::MainWindowUIInterface(isis::viewer::QViewer
 
 }
 
-void isis::viewer::MainWindowUIInterface::connectSignals()
+void MainWindowUIInterface::connectSignals()
 {
 	connect( ui.action_Exit, SIGNAL( triggered() ), this, SLOT( exitProgram() ) );
 	connect( ui.actionShow_labels, SIGNAL( toggled( bool ) ), m_ViewerCore, SLOT( setShowLabels( bool ) ) );
@@ -35,6 +37,7 @@ void isis::viewer::MainWindowUIInterface::connectSignals()
 	connect( ui.actionSagittal_View, SIGNAL( triggered(bool)), this, SLOT(toggleSagittalView(bool)) );
 	connect( ui.actionOpenZmap, SIGNAL( triggered()), this, SLOT(openImageAsZMap()));
 	connect( ui.action_Preferences, SIGNAL( triggered()), this, SLOT(openPreferences()));
+	connect( ui.action_Plotting, SIGNAL( triggered()), this, SLOT( showPlotting()));
 	
 	//attach all textFields
 	connect( ui.row_value, SIGNAL( textChanged(QString) ), ui.row_value_2, SLOT( setText(QString)) );
@@ -64,7 +67,7 @@ void isis::viewer::MainWindowUIInterface::connectSignals()
 
 
 
-void isis::viewer::MainWindowUIInterface::showControlPanel(bool triggered )
+void MainWindowUIInterface::showControlPanel(bool triggered )
 {
 	if(m_State == splitted ) {
 		ui.dockWidget_Control_Bottom->setVisible( triggered );
@@ -73,21 +76,21 @@ void isis::viewer::MainWindowUIInterface::showControlPanel(bool triggered )
 	}
 }
 
-void isis::viewer::MainWindowUIInterface::toggleCoronalView(bool triggered )
+void MainWindowUIInterface::toggleCoronalView(bool triggered )
 {
 	toggleViews( coronal, triggered);
 }
-void isis::viewer::MainWindowUIInterface::toggleSagittalView(bool triggered )
+void MainWindowUIInterface::toggleSagittalView(bool triggered )
 {
 	toggleViews( sagittal, triggered );
 }
-void isis::viewer::MainWindowUIInterface::toggleAxialView(bool triggered )
+void MainWindowUIInterface::toggleAxialView(bool triggered )
 {
 	toggleViews( axial, triggered );
 }
 
 
-void isis::viewer::MainWindowUIInterface::toggleViews(isis::viewer::PlaneOrientation orientation, bool triggered)
+void MainWindowUIInterface::toggleViews(isis::viewer::PlaneOrientation orientation, bool triggered)
 {
 	BOOST_FOREACH( QViewerCore::WidgetMap::const_reference widget, m_ViewerCore->getWidgets() ) 
 	{
@@ -103,18 +106,42 @@ void isis::viewer::MainWindowUIInterface::toggleViews(isis::viewer::PlaneOrienta
 
 }
 
-void isis::viewer::MainWindowUIInterface::openImageAsAnatomicalImage()
+void MainWindowUIInterface::openImageAsAnatomicalImage()
 {
 	openImageAs( ImageHolder::anatomical_image );
 }
 
 
-void isis::viewer::MainWindowUIInterface::openImageAsZMap()
+void MainWindowUIInterface::openImageAsZMap()
 {
 	openImageAs( ImageHolder::z_map);
 }
 
-void isis::viewer::MainWindowUIInterface::openPreferences()
+void MainWindowUIInterface::openPreferences()
 {
 	m_PreferencesDialog->show();
 }
+
+
+void MainWindowUIInterface::doubleClickedMakeCurrentImage( QListWidgetItem * )
+{
+	triggeredMakeCurrentImage( true );
+}
+
+
+void MainWindowUIInterface::triggeredMakeCurrentImage( bool triggered )
+{
+	m_ViewerCore->setCurrentImage( m_ViewerCore->getDataContainer().at( ui.imageStack->currentItem()->text().toStdString() ) );
+	imagesChanged( m_ViewerCore->getDataContainer() );
+	updateInterfaceValues();
+}
+
+void MainWindowUIInterface::showPlotting()
+{
+	m_PlottingDialog->show();
+	m_PlottingDialog->addImageHolder( m_ViewerCore->getCurrentImage() );
+	m_PlottingDialog->replotVoxelCoords(m_ViewerCore->getCurrentImage()->getImageState().voxelCoords);
+}
+
+
+}}

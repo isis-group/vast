@@ -67,6 +67,8 @@ void isis::viewer::MainWindow::setInitialState()
 	m_Toolbar->addAction( ui.actionCoronal_View);
 	m_Toolbar->addAction( ui.action_Controllpanel);
 	m_Toolbar->addSeparator();
+	m_Toolbar->addAction( ui.action_Plotting );
+	m_Toolbar->addSeparator();	
 	m_Toolbar->addAction( ui.action_Exit);
 }
 
@@ -123,14 +125,6 @@ void MainWindow::currentImageChanged(int index )
 }
 
 
-void MainWindow::triggeredMakeCurrentImage( bool triggered )
-{
-	m_ViewerCore->setCurrentImage( m_ViewerCore->getDataContainer().at( ui.imageStack->currentItem()->text().toStdString() ) );
-	imagesChanged( m_ViewerCore->getDataContainer() );
-	updateInterfaceValues();
-}
-
-
 void MainWindow::updateInterfaceValues()
 {
 	if( m_ViewerCore->getCurrentImage()->getImageState().imageType == ImageHolder::z_map ) {
@@ -145,11 +139,7 @@ void MainWindow::updateInterfaceValues()
 		ui.upperThreshold->setSliderPosition( 1000.0 / range *
 											  ( m_ViewerCore->getCurrentImage()->getImageState().threshold.second - m_ViewerCore->getCurrentImage()->getMinMax().first->as<double>() ) );
 	}
-
-	
 	m_ViewerCore->updateScene();
-	
-
 }
 
 void MainWindow::triggeredMakeCurrentImageZmap( bool triggered )
@@ -164,11 +154,6 @@ void MainWindow::triggeredMakeCurrentImageZmap( bool triggered )
 }
 
 
-void MainWindow::doubleClickedMakeCurrentImage( QListWidgetItem * )
-{
-	triggeredMakeCurrentImage( true );
-}
-
 void MainWindow::voxelCoordsChanged(util::ivector4 coords )
 {
 	physicalCoordsChanged( m_ViewerCore->getCurrentImage()->getImage()->getPhysicalCoordsFromIndex( coords ));
@@ -178,6 +163,9 @@ void MainWindow::voxelCoordsChanged(util::ivector4 coords )
 void MainWindow::physicalCoordsChanged( util::fvector4 coords )
 {
 	util::ivector4 voxelCoords = m_ViewerCore->getCurrentImage()->getImage()->getIndexFromPhysicalCoords( coords );
+	if( m_PlottingDialog->isVisible() ) {
+		m_PlottingDialog->replotVoxelCoords( voxelCoords );
+	}
 	ui.row_value->setText( QString::number(voxelCoords[0]));
 	ui.column_value->setText( QString::number(voxelCoords[1]) );
 	ui.slice_value->setText( QString::number(voxelCoords[2]) );
@@ -236,7 +224,7 @@ void MainWindow::imagesChanged( DataContainer images )
 		}
 
 		if( m_ViewerCore->getCurrentImage().get() == imageRef.second.get() ) {
-			item->setIcon( QIcon( ":/common/gazeincrease.gif" ) );
+			item->setIcon( QIcon( ":/common/currentImage.gif" ) );
 		}
 
 		ui.imageStack->addItem( item );

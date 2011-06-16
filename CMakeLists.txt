@@ -53,11 +53,11 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR} ${ISIS_INCLUDE_DIRS})
 # qt4 stuff
 ###########################################################
 
-FIND_PACKAGE(Qt4 COMPONENTS QtCore QtGui QtOpenGL REQUIRED)
+FIND_PACKAGE(Qt4 COMPONENTS QtCore QtGui QtOpenGL Qwt REQUIRED)
 
 set(QT_USE_QTUITOOLS TRUE)
 set(QT_USE_QTOPENGL TRUE)
-set( QT_USE_OPENGL TRUE )
+set(QT_USE_OPENGL TRUE )
 
 INCLUDE(${QT_USE_FILE})
 
@@ -66,6 +66,16 @@ QT4_ADD_RESOURCES(isisViewer_rcc_files ${RESOURCE_FILES})
 qt4_wrap_cpp(isisViewer_moc_files ${VIEWER_FILES_HPP} ${GLWIDGET_FILES_HPP})
 QT4_WRAP_UI(isisViewer_UIS_H ${UI_FILES})
 
+###########################################################
+# qwt stuff
+###########################################################
+
+find_path( QWT5_include qwt.h PATH_SUFFIXES qwt-qt4 )
+find_library( QWT5_library qwt-qt4 )
+
+MESSAGE(STATUS "Qwt library: ${QWT5_library}")
+
+include_directories(${QWT5_include})
 
 
 ###########################################################
@@ -90,8 +100,8 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/viewer)
 
 #this flags has to be set due to use parallel with boos::signal
 
-SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DQT_NO_KEYWORDS -ftemplate-depth-100 -Wextra -Wfatal-errors" )
-SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DQT_NO_KEYWORDS -Wextra -Wfatal-errors " )
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ftemplate-depth-100 -Wextra -Wfatal-errors" )
+SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}  -Wextra -Wfatal-errors " )
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ftemplate-depth-100")
 
 add_executable(isisViewer main.cpp ${GLWIDGET_FILES_CPP} ${VIEWER_FILES_CPP} ${isisViewer_UIS_H} ${isisViewer_moc_files} ${isisViewer_rcc_files})
@@ -103,7 +113,9 @@ set(NEEDED_LIBS
 	${Boost_LIBRARIES}
 	${ISIS_LIB}
 	${ISIS_LIB_DEPENDS}
-	${isisqt4_LIBRARY})
+	${isisqt4_LIBRARY}
+	${QWT5_library} 
+	)
 
 target_link_libraries(isisViewer ${NEEDED_LIBS})
 

@@ -22,12 +22,16 @@ protected:
 	
 public Q_SLOTS:
 	void showControlPanel(bool);
+	void showPlotting();
 	void toggleAxialView(bool);
 	void toggleCoronalView(bool);
 	void toggleSagittalView(bool);
 	void openImageAsZMap();
 	void openImageAsAnatomicalImage();
 	void openPreferences();
+	
+	void triggeredMakeCurrentImage( bool );
+	void doubleClickedMakeCurrentImage( QListWidgetItem * );
 	
 	
 	void toggleViews( PlaneOrientation orientation, bool toggled);

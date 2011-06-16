@@ -43,9 +43,9 @@ public Q_SLOTS:
 	void openImageAs( ImageHolder::ImageType type );
 	void openDICOMDir();
 	void contextMenuImageStack( QPoint );
-	void triggeredMakeCurrentImage( bool );
+
 	void triggeredMakeCurrentImageZmap( bool );
-	void doubleClickedMakeCurrentImage( QListWidgetItem * );
+
 	void interpolationChanged( int );
 	void currentImageChanged( int );
 	void updateInterfaceValues();

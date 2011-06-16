@@ -969,6 +969,7 @@
      <addaction name="actionCoronal_View"/>
     </widget>
     <addaction name="menu_Show"/>
+    <addaction name="action_Plotting"/>
    </widget>
    <addaction name="menu_File"/>
    <addaction name="menu_Preferences"/>
@@ -1154,7 +1155,45 @@ This is needed if you want to open an entire DICOM directory.</string>
     <string>P, P</string>
    </property>
   </action>
+  <action name="action_Plotting">
+   <property name="icon">
+    <iconset resource="../resources/viewer.qrc">
+     <normaloff>:/common/graph.gif</normaloff>:/common/graph.gif</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Plotting</string>
+   </property>
+   <property name="shortcut">
+    <string>S, P</string>
+   </property>
+  </action>
  </widget>
+ <tabstops>
+  <tabstop>timestepSpinBox</tabstop>
+  <tabstop>row_value</tabstop>
+  <tabstop>column_value</tabstop>
+  <tabstop>slice_value</tabstop>
+  <tabstop>x_value</tabstop>
+  <tabstop>y_value</tabstop>
+  <tabstop>z_value</tabstop>
+  <tabstop>row_value_2</tabstop>
+  <tabstop>lowerThreshold</tabstop>
+  <tabstop>column_value_2</tabstop>
+  <tabstop>currentImageBox</tabstop>
+  <tabstop>x_value_2</tabstop>
+  <tabstop>upperThreshold</tabstop>
+  <tabstop>z_value_2</tabstop>
+  <tabstop>timestepSpinBox_2</tabstop>
+  <tabstop>y_value_2</tabstop>
+  <tabstop>imageStack</tabstop>
+  <tabstop>interpolationType</tabstop>
+  <tabstop>slice_value_2</tabstop>
+  <tabstop>opacity</tabstop>
+  <tabstop>comboBox</tabstop>
+  <tabstop>horizontalSlider</tabstop>
+  <tabstop>horizontalSlider_2</tabstop>
+  <tabstop>scrollArea</tabstop>
+ </tabstops>
  <resources>
   <include location="../resources/viewer.qrc"/>
  </resources>
