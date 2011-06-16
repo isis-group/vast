@@ -236,7 +236,7 @@ void MainWindow::imagesChanged( DataContainer images )
 		}
 
 		if( m_ViewerCore->getCurrentImage().get() == imageRef.second.get() ) {
-			item->setIcon( QIcon( ":/common/gazeincrease.png" ) );
+			item->setIcon( QIcon( ":/common/gazeincrease.gif" ) );
 		}
 
 		ui.imageStack->addItem( item );
