@@ -188,7 +188,8 @@ std::pair<int16_t, int16_t> QGLWidgetImplementation::object2WindowCoords( GLdoub
 
 bool QGLWidgetImplementation::calculateTranslation(  )
 {
-	State state = m_ImageStates.begin()->second;
+	State state = m_ImageStates.at(getOptimalImage());
+	
 	std::pair<int16_t, int16_t> center = std::make_pair<int16_t, int16_t>( abs( state.mappedImageSize[0] ) / 2, abs( state.mappedImageSize[1] ) / 2 );
 	float shiftX = center.first - ( state.mappedVoxelCoords[0] < 0 ? abs( state.mappedImageSize[0] ) + state.mappedVoxelCoords[0] : state.mappedVoxelCoords[0] );
 	float shiftY =  center.second - ( state.mappedVoxelCoords[1] < 0 ? abs( state.mappedImageSize[1] ) + state.mappedVoxelCoords[1] : state.mappedVoxelCoords[1] );
@@ -346,7 +347,7 @@ void QGLWidgetImplementation::paintCrosshair()
 
 	glUseProgramObjectARB( 0 );
 	//paint crosshair
-	const State &currentState = m_ImageStates.begin()->second;
+	const State &currentState = m_ImageStates.at(getOptimalImage());
 	glDisable( GL_TEXTURE_1D );
 
 	glLineWidth( 1.0 );
@@ -443,32 +444,13 @@ void QGLWidgetImplementation::mousePressEvent( QMouseEvent *e )
 	emitMousePressEvent( e );
 
 }
-/*
-bool QGLWidgetImplementation::isInViewport( size_t wx, size_t wy )
-{
-	GLint *viewport = m_ImageStates.begin()->second.viewport;
-
-	if( ( static_cast<int>( wx ) > viewport[0] && static_cast<int>( wx ) < ( viewport[0] + viewport[2] ) ) && ( static_cast<int>( wy ) > viewport[1] && static_cast<int>( wy ) < ( viewport[1] + viewport[3] ) ) ) {
-		return true;
-	} else {
-		return false;
-	}
-}*/
-
 
 void QGLWidgetImplementation::emitMousePressEvent( QMouseEvent *e )
 {
-// 	if( isInViewport( e->x(), height() - e->y() ) ) {
-	if( m_ImageStates.find( m_ViewerCore->getCurrentImage()) != m_ImageStates.end()  ) {
-		std::pair<float, float> objectCoords = window2ObjectCoords( e->x(), height() - e->y(), m_ViewerCore->getCurrentImage());
-		util::ivector4 voxelCoords = GLOrientationHandler::transformObject2VoxelCoords( util::fvector4( objectCoords.first, objectCoords.second, m_ImageStates.at( m_ViewerCore->getCurrentImage() ).normalizedSlice ), m_ViewerCore->getCurrentImage(), m_PlaneOrientation );
-		physicalCoordsChanged( m_ViewerCore->getCurrentImage()->getImage()->getPhysicalCoordsFromIndex( voxelCoords ) );
-	} else if ( m_ImageStates.size() ){
-		std::pair<float, float> objectCoords = window2ObjectCoords( e->x(), height() - e->y(), m_ImageStates.begin()->first );
-		util::ivector4 voxelCoords = GLOrientationHandler::transformObject2VoxelCoords( util::fvector4( objectCoords.first, objectCoords.second, m_ImageStates.begin()->second.normalizedSlice ), m_ImageStates.begin()->first, m_PlaneOrientation );
-		physicalCoordsChanged( m_ImageStates.begin()->first->getImage()->getPhysicalCoordsFromIndex( voxelCoords ) );
-	}
-// 	}
+	
+	std::pair<float, float> objectCoords = window2ObjectCoords( e->x(), height() - e->y(), getOptimalImage());
+	util::ivector4 voxelCoords = GLOrientationHandler::transformObject2VoxelCoords( util::fvector4( objectCoords.first, objectCoords.second, m_ImageStates.at( getOptimalImage() ).normalizedSlice ), getOptimalImage(), m_PlaneOrientation );
+	physicalCoordsChanged( getOptimalImage()->getImage()->getPhysicalCoordsFromIndex( voxelCoords ) );
 }
 
 bool QGLWidgetImplementation::timestepChanged( unsigned int timestep )
@@ -574,6 +556,16 @@ void QGLWidgetImplementation::updateScene( bool center )
 		lookAtPhysicalCoords( m_ImageStates.begin()->first->getImage()->getPhysicalCoordsFromIndex( voxelCoords ) );
 	}
 }
+
+boost::shared_ptr< ImageHolder > QGLWidgetImplementation::getOptimalImage() const
+{
+	if( m_ImageStates.find( m_ViewerCore->getCurrentImage()) != m_ImageStates.end()  ) {
+		return m_ViewerCore->getCurrentImage();
+	} else {
+		return m_ImageStates.begin()->first;
+	}
+}
+
 
 }
 }

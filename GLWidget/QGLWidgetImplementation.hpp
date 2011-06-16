@@ -75,6 +75,7 @@ protected:
 
 	virtual void paintCrosshair();
 	virtual void updateStateValues( const boost::shared_ptr<ImageHolder> image, const util::ivector4 &voxelCoords );
+	virtual boost::shared_ptr<ImageHolder> getOptimalImage() const;
 
 
 protected:
