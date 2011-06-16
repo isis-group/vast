@@ -893,7 +893,7 @@
     <string>Show &amp;Labels</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+Alt+Shift+L</string>
+    <string>P, L</string>
    </property>
   </action>
   <action name="actionAutomatic_Scaling">
@@ -911,7 +911,7 @@
     <string>Tries to autoscale the image get an optimal grey-value distribution</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+Alt+Shift+S</string>
+    <string>P, S</string>
    </property>
   </action>
   <action name="action_Open_Image">
@@ -975,7 +975,7 @@ This is needed if you want to open an entire DICOM directory.</string>
     <string>show/hide axial view</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+Alt+Shift+A</string>
+    <string>S, A</string>
    </property>
   </action>
   <action name="actionSagittal_View">
@@ -993,7 +993,7 @@ This is needed if you want to open an entire DICOM directory.</string>
     <string>show/hide sagittal view</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+Alt+Shift+S</string>
+    <string>S, S</string>
    </property>
   </action>
   <action name="actionCoronal_View">
@@ -1011,7 +1011,7 @@ This is needed if you want to open an entire DICOM directory.</string>
     <string>show/hide coronal view</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+Alt+Shift+C</string>
+    <string>S, C</string>
    </property>
   </action>
   <action name="actionOpenZmap">
