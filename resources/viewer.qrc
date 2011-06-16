@@ -1,5 +1,14 @@
 <RCC>
-  <qresource prefix="common" >
+  <qresource prefix="common">
+    <file>control.gif</file>
+    <file>sagittal.png</file>
+    <file>coronal.png</file>
+    <file>axial.png</file>
+    <file>autoscale.gif</file>
+    <file>openzmap.gif</file>
+    <file>open_image.gif</file>
+    <file>openimage.png</file>
+    <file>orient.gif</file>
     <file>icon_check.png</file>
   </qresource>
 </RCC>

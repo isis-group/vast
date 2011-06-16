@@ -16,7 +16,7 @@ public:
 
 protected:
 	void connectSignals();
-	void setInitialState();
+
 	QViewerCore* m_ViewerCore;
 		
 	
@@ -25,6 +25,10 @@ public Q_SLOTS:
 	void toggleAxialView(bool);
 	void toggleCoronalView(bool);
 	void toggleSagittalView(bool);
+	void openImageAsZMap();
+	void openImageAsAnatomicalImage();
+	
+	
 	void toggleViews( PlaneOrientation orientation, bool toggled);
 	
 }; 

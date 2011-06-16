@@ -6,7 +6,6 @@ isis::viewer::MainWindowUIInterface::MainWindowUIInterface(isis::viewer::QViewer
 	m_ViewerCore(core)
 {
 	connectSignals();
-	setInitialState();
 
 }
 
@@ -22,7 +21,7 @@ void isis::viewer::MainWindowUIInterface::connectSignals()
 	connect( m_ViewerCore, SIGNAL( emitVoxelCoordChanged(util::ivector4)), this, SLOT( voxelCoordsChanged( util::ivector4 ) ) );
 	connect( ui.imageStack, SIGNAL( itemClicked( QListWidgetItem * ) ), this, SLOT( checkImageStack( QListWidgetItem * ) ) );
 	connect( ui.imageStack, SIGNAL( itemDoubleClicked( QListWidgetItem * ) ), this, SLOT( doubleClickedMakeCurrentImage( QListWidgetItem * ) ) );
-	connect( ui.action_Open_Image, SIGNAL( triggered() ), this, SLOT( openImage() ) );
+	connect( ui.action_Open_Image, SIGNAL( triggered() ), this, SLOT( openImageAsAnatomicalImage() ) );
 	connect( ui.actionOpen_DICOM, SIGNAL( triggered() ), this, SLOT( openDICOMDir() ) );
 	connect( ui.upperThreshold, SIGNAL( sliderMoved( int ) ), this, SLOT( upperThresholdChanged( int ) ) );
 	connect( ui.lowerThreshold, SIGNAL( sliderMoved( int ) ), this, SLOT( lowerThresholdChanged( int ) ) );
@@ -34,6 +33,8 @@ void isis::viewer::MainWindowUIInterface::connectSignals()
 	connect( ui.actionAxial_view, SIGNAL( triggered(bool)), this, SLOT( toggleAxialView(bool)) );
 	connect( ui.actionCoronal_View, SIGNAL( triggered(bool)), this, SLOT(toggleCoronalView(bool)) );
 	connect( ui.actionSagittal_View, SIGNAL( triggered(bool)), this, SLOT(toggleSagittalView(bool)) );
+	connect( ui.actionOpenZmap, SIGNAL( triggered()), this, SLOT(openImageAsZMap()));
+	
 	//attach all textFields
 	connect( ui.row_value, SIGNAL( textChanged(QString) ), ui.row_value_2, SLOT( setText(QString)) );
 	connect( ui.column_value, SIGNAL( textChanged(QString) ), ui.column_value_2, SLOT( setText(QString)) );
@@ -51,20 +52,10 @@ void isis::viewer::MainWindowUIInterface::connectSignals()
 	connect( ui.x_value, SIGNAL( returnPressed()), this, SLOT(setPhysicalPosition()));
 	connect( ui.y_value, SIGNAL( returnPressed()), this, SLOT(setPhysicalPosition()));
 	connect( ui.z_value, SIGNAL( returnPressed()), this, SLOT(setPhysicalPosition()));
+	connect( ui.imageStack, SIGNAL( customContextMenuRequested( QPoint ) ), this, SLOT( contextMenuImageStack( QPoint ) ) );
 }
 
 
-void isis::viewer::MainWindowUIInterface::setInitialState()
-{
-	ui.actionShow_labels->setCheckable( true );
-	ui.actionShow_labels->setChecked( false );
-	ui.imageStack->setContextMenuPolicy( Qt::CustomContextMenu );
-	ui.dockWidget_Control_Bottom->setVisible(false);
-	ui.actionAxial_view->setChecked(true);
-	ui.actionCoronal_View->setChecked(true);
-	ui.actionSagittal_View->setChecked(true);
-	ui.action_Controllpanel->setChecked( true );
-}
 
 void isis::viewer::MainWindowUIInterface::showControlPanel(bool triggered )
 {
@@ -103,4 +94,15 @@ void isis::viewer::MainWindowUIInterface::toggleViews(isis::viewer::PlaneOrienta
 		}
 	}
 
+}
+
+void isis::viewer::MainWindowUIInterface::openImageAsAnatomicalImage()
+{
+	openImageAs( ImageHolder::anatomical_image );
+}
+
+
+void isis::viewer::MainWindowUIInterface::openImageAsZMap()
+{
+	openImageAs( ImageHolder::z_map);
 }

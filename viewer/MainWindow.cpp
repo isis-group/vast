@@ -23,6 +23,8 @@ MainWindow::MainWindow( QViewerCore *core )
 	actionAsZMap = new QAction( "Show as zmap", this );
 	actionAsZMap->setCheckable( true );
 	
+	m_Toolbar = new QToolBar(this);
+	
 	m_MasterWidget = new GL::QGLWidgetImplementation( core, 0, axial );
 
 	m_AxialWidget =  m_MasterWidget->createSharedWidget( ui.axialWidget, axial );
@@ -34,8 +36,37 @@ MainWindow::MainWindow( QViewerCore *core )
 	m_SagittalWidget = m_MasterWidget->createSharedWidget( ui.sagittalWidget, sagittal );
 	m_ViewerCore->registerWidget( "sagittalView", m_SagittalWidget );
 
+	setInitialState();
+}
+
+
+void isis::viewer::MainWindow::setInitialState()
+{
+	ui.actionShow_labels->setCheckable( true );
+	ui.actionShow_labels->setChecked( false );
+	ui.imageStack->setContextMenuPolicy( Qt::CustomContextMenu );
+	ui.dockWidget_Control_Bottom->setVisible(false);
+	ui.actionAxial_view->setChecked(true);
+	ui.actionCoronal_View->setChecked(true);
+	ui.actionSagittal_View->setChecked(true);
+	ui.action_Controllpanel->setChecked( true );
 	
-	connect( ui.imageStack, SIGNAL( customContextMenuRequested( QPoint ) ), this, SLOT( contextMenuImageStack( QPoint ) ) );
+	//toolbar stuff
+	m_Toolbar->setOrientation(Qt::Horizontal);
+	this->addToolBar(Qt::TopToolBarArea, m_Toolbar);
+	m_Toolbar->addAction( ui.action_Open_Image);
+	m_Toolbar->addAction( ui.actionOpenZmap);
+	m_Toolbar->addAction( ui.actionOpen_DICOM);
+	m_Toolbar->addSeparator();
+	m_Toolbar->addAction( ui.actionShow_labels);
+	m_Toolbar->addAction( ui.actionAutomatic_Scaling);
+	m_Toolbar->addSeparator();
+	m_Toolbar->addAction( ui.actionAxial_view);
+	m_Toolbar->addAction( ui.actionSagittal_View);
+	m_Toolbar->addAction( ui.actionCoronal_View);
+	m_Toolbar->addAction( ui.action_Controllpanel);
+	m_Toolbar->addSeparator();
+	m_Toolbar->addAction( ui.action_Exit);
 }
 
 void MainWindow::setVoxelPosition()
@@ -236,12 +267,21 @@ void MainWindow::imagesChanged( DataContainer images )
 	}
 }
 
-void MainWindow::openImage()
+void MainWindow::openImageAs( ImageHolder::ImageType type )
 {
+	std::string title;
+	switch (type) {
+		case ImageHolder::anatomical_image:
+			title = "Open anatomical images";
+			break;
+		case ImageHolder::z_map:
+			title = "Open images as zmaps";
+			break;
+	}
 	std::stringstream fileFormats;
 	fileFormats << "Image files (" << getFileFormatsAsString(std::string("*.") ) << ")";
 	QStringList filenames = QFileDialog::getOpenFileNames( this,
-							tr( "Open images" ),
+							tr( title.c_str() ),
 							m_CurrentPath,
 							tr( fileFormats.str().c_str() ) );
 	
@@ -259,7 +299,7 @@ void MainWindow::openImage()
 				imgList.push_back( image );
 			}
 		}
-		m_ViewerCore->addImageList( imgList, ImageHolder::anatomical_image, true );
+		m_ViewerCore->addImageList( imgList, type, true );
 		m_ViewerCore->updateScene( isFirstImage );
 	}
 }

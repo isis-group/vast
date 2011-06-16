@@ -32,6 +32,7 @@ public:
 private:
 
 	QViewerCore *m_ViewerCore;
+	void setInitialState();
 
 public Q_SLOTS:
 	void physicalCoordsChanged( util::fvector4 );
@@ -39,7 +40,7 @@ public Q_SLOTS:
 	void exitProgram();
 	void imagesChanged( DataContainer );
 	void checkImageStack( QListWidgetItem *item );
-	void openImage();
+	void openImageAs( ImageHolder::ImageType type );
 	void openDICOMDir();
 	void contextMenuImageStack( QPoint );
 	void triggeredMakeCurrentImage( bool );
@@ -69,6 +70,8 @@ protected:
 
 	QAction *actionMakeCurrent;
 	QAction *actionAsZMap;
+	
+	QToolBar* m_Toolbar;
 	
 	GL::QGLWidgetImplementation* createView( QDockWidget* widget, PlaneOrientation orientation, unsigned short index );
 
