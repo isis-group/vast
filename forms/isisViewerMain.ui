@@ -39,10 +39,13 @@
        <enum>Qt::ScrollBarAsNeeded</enum>
       </property>
       <property name="horizontalScrollBarPolicy">
-       <enum>Qt::ScrollBarAlwaysOff</enum>
+       <enum>Qt::ScrollBarAsNeeded</enum>
       </property>
       <property name="widgetResizable">
        <bool>true</bool>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
       </property>
       <widget class="QWidget" name="scrollAreaWidgetContents">
        <property name="geometry">
@@ -57,7 +60,7 @@
         <item row="0" column="0">
          <widget class="QFrame" name="frame">
           <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
+           <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
@@ -75,10 +78,10 @@
            </size>
           </property>
           <property name="frameShape">
-           <enum>QFrame::StyledPanel</enum>
+           <enum>QFrame::HLine</enum>
           </property>
           <property name="frameShadow">
-           <enum>QFrame::Raised</enum>
+           <enum>QFrame::Sunken</enum>
           </property>
           <property name="lineWidth">
            <number>0</number>
@@ -332,29 +335,6 @@
                        </property>
                        <layout class="QGridLayout" name="gridLayout_7">
                         <item row="0" column="0">
-                         <widget class="QLabel" name="label_12">
-                          <property name="sizePolicy">
-                           <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-                            <horstretch>0</horstretch>
-                            <verstretch>0</verstretch>
-                           </sizepolicy>
-                          </property>
-                          <property name="text">
-                           <string>X:</string>
-                          </property>
-                         </widget>
-                        </item>
-                        <item row="0" column="1" colspan="3">
-                         <widget class="QLineEdit" name="x_value_2">
-                          <property name="sizePolicy">
-                           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                            <horstretch>0</horstretch>
-                            <verstretch>0</verstretch>
-                           </sizepolicy>
-                          </property>
-                         </widget>
-                        </item>
-                        <item row="0" column="4">
                          <widget class="QLabel" name="label_15">
                           <property name="sizePolicy">
                            <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
@@ -373,7 +353,7 @@
                           </property>
                          </widget>
                         </item>
-                        <item row="0" column="5">
+                        <item row="0" column="1">
                          <widget class="QLineEdit" name="row_value_2">
                           <property name="sizePolicy">
                            <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
@@ -383,8 +363,8 @@
                           </property>
                          </widget>
                         </item>
-                        <item row="1" column="0">
-                         <widget class="QLabel" name="label_13">
+                        <item row="0" column="2">
+                         <widget class="QLabel" name="label_12">
                           <property name="sizePolicy">
                            <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
                             <horstretch>0</horstretch>
@@ -392,12 +372,12 @@
                            </sizepolicy>
                           </property>
                           <property name="text">
-                           <string>Y:</string>
+                           <string>X:</string>
                           </property>
                          </widget>
                         </item>
-                        <item row="1" column="1" colspan="3">
-                         <widget class="QLineEdit" name="y_value_2">
+                        <item row="0" column="3">
+                         <widget class="QLineEdit" name="x_value_2">
                           <property name="sizePolicy">
                            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                             <horstretch>0</horstretch>
@@ -406,7 +386,7 @@
                           </property>
                          </widget>
                         </item>
-                        <item row="1" column="4">
+                        <item row="1" column="0">
                          <widget class="QLabel" name="label_16">
                           <property name="sizePolicy">
                            <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
@@ -425,7 +405,7 @@
                           </property>
                          </widget>
                         </item>
-                        <item row="1" column="5">
+                        <item row="1" column="1">
                          <widget class="QLineEdit" name="column_value_2">
                           <property name="sizePolicy">
                            <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
@@ -435,8 +415,8 @@
                           </property>
                          </widget>
                         </item>
-                        <item row="2" column="0">
-                         <widget class="QLabel" name="label_14">
+                        <item row="1" column="2">
+                         <widget class="QLabel" name="label_13">
                           <property name="sizePolicy">
                            <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
                             <horstretch>0</horstretch>
@@ -444,12 +424,12 @@
                            </sizepolicy>
                           </property>
                           <property name="text">
-                           <string>Z:</string>
+                           <string>Y:</string>
                           </property>
                          </widget>
                         </item>
-                        <item row="2" column="1" colspan="3">
-                         <widget class="QLineEdit" name="z_value_2">
+                        <item row="1" column="3">
+                         <widget class="QLineEdit" name="y_value_2">
                           <property name="sizePolicy">
                            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                             <horstretch>0</horstretch>
@@ -458,7 +438,7 @@
                           </property>
                          </widget>
                         </item>
-                        <item row="2" column="4">
+                        <item row="2" column="0">
                          <widget class="QLabel" name="label_17">
                           <property name="sizePolicy">
                            <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
@@ -477,7 +457,7 @@
                           </property>
                          </widget>
                         </item>
-                        <item row="2" column="5">
+                        <item row="2" column="1">
                          <widget class="QLineEdit" name="slice_value_2">
                           <property name="sizePolicy">
                            <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
@@ -487,17 +467,47 @@
                           </property>
                          </widget>
                         </item>
-                        <item row="3" column="0" colspan="3">
+                        <item row="2" column="2">
+                         <widget class="QLabel" name="label_14">
+                          <property name="sizePolicy">
+                           <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                            <horstretch>0</horstretch>
+                            <verstretch>0</verstretch>
+                           </sizepolicy>
+                          </property>
+                          <property name="text">
+                           <string>Z:</string>
+                          </property>
+                         </widget>
+                        </item>
+                        <item row="2" column="3">
+                         <widget class="QLineEdit" name="z_value_2">
+                          <property name="sizePolicy">
+                           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                            <horstretch>0</horstretch>
+                            <verstretch>0</verstretch>
+                           </sizepolicy>
+                          </property>
+                         </widget>
+                        </item>
+                        <item row="3" column="0" colspan="2">
                          <widget class="QLabel" name="label_18">
                           <property name="text">
                            <string>Timestep:</string>
                           </property>
                          </widget>
                         </item>
-                        <item row="3" column="5">
+                        <item row="3" column="2" colspan="2">
                          <widget class="QSpinBox" name="timestepSpinBox_2"/>
                         </item>
-                        <item row="4" column="5">
+                        <item row="4" column="0">
+                         <widget class="QLabel" name="label_19">
+                          <property name="text">
+                           <string>Intensity:</string>
+                          </property>
+                         </widget>
+                        </item>
+                        <item row="4" column="2" colspan="2">
                          <widget class="QLCDNumber" name="intensity_value_2">
                           <property name="sizePolicy">
                            <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
@@ -507,13 +517,6 @@
                           </property>
                           <property name="segmentStyle">
                            <enum>QLCDNumber::Flat</enum>
-                          </property>
-                         </widget>
-                        </item>
-                        <item row="4" column="0">
-                         <widget class="QLabel" name="label_19">
-                          <property name="text">
-                           <string>Intensity:</string>
                           </property>
                          </widget>
                         </item>

@@ -52,6 +52,12 @@ void isis::viewer::MainWindowUIInterface::connectSignals()
 	connect( ui.x_value, SIGNAL( returnPressed()), this, SLOT(setPhysicalPosition()));
 	connect( ui.y_value, SIGNAL( returnPressed()), this, SLOT(setPhysicalPosition()));
 	connect( ui.z_value, SIGNAL( returnPressed()), this, SLOT(setPhysicalPosition()));
+	connect( ui.row_value_2, SIGNAL( returnPressed()), this, SLOT(setVoxelPosition()));
+	connect( ui.column_value_2, SIGNAL( returnPressed()), this, SLOT(setVoxelPosition()));
+	connect( ui.slice_value_2, SIGNAL( returnPressed()), this, SLOT(setVoxelPosition()));
+	connect( ui.x_value_2, SIGNAL( returnPressed()), this, SLOT(setPhysicalPosition()));
+	connect( ui.y_value_2, SIGNAL( returnPressed()), this, SLOT(setPhysicalPosition()));
+	connect( ui.z_value_2, SIGNAL( returnPressed()), this, SLOT(setPhysicalPosition()));
 	connect( ui.imageStack, SIGNAL( customContextMenuRequested( QPoint ) ), this, SLOT( contextMenuImageStack( QPoint ) ) );
 }
 

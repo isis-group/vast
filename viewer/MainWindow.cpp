@@ -71,17 +71,32 @@ void isis::viewer::MainWindow::setInitialState()
 
 void MainWindow::setVoxelPosition()
 {
-	m_ViewerCore->physicalCoordsChanged( m_ViewerCore->getCurrentImage()->getImage()->getPhysicalCoordsFromIndex(
+	if(m_State == splitted) {
+		
+		m_ViewerCore->physicalCoordsChanged( m_ViewerCore->getCurrentImage()->getImage()->getPhysicalCoordsFromIndex(
 										util::ivector4( ui.row_value->text().toInt(),
 													 ui.column_value->text().toInt(),
 													 ui.slice_value->text().toInt() ) ) ) ;
+	} else if ( m_State == single ) {
+			m_ViewerCore->physicalCoordsChanged( m_ViewerCore->getCurrentImage()->getImage()->getPhysicalCoordsFromIndex(
+										util::ivector4( ui.row_value_2->text().toInt(),
+													 ui.column_value_2->text().toInt(),
+													 ui.slice_value_2->text().toInt() ) ) ) ;
+	}
+													 
 }
 
 void MainWindow::setPhysicalPosition()
 {
-	m_ViewerCore->physicalCoordsChanged(util::fvector4( ui.x_value->text().toFloat(),
+	if(m_State == splitted ) {
+		m_ViewerCore->physicalCoordsChanged(util::fvector4( ui.x_value->text().toFloat(),
 													 ui.y_value->text().toFloat(),
 													 ui.z_value->text().toFloat() ) );
+	} else if ( m_State == single ) {
+		m_ViewerCore->physicalCoordsChanged(util::fvector4( ui.x_value_2->text().toFloat(),
+													 ui.y_value_2->text().toFloat(),
+													 ui.z_value_2->text().toFloat() ) );
+	}
 }
 
 
@@ -454,8 +469,9 @@ GL::QGLWidgetImplementation* MainWindow::createView(QDockWidget* widget, PlaneOr
 	widget->setFeatures( QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable );
 	QFrame *frame = new QFrame( widget );
 	widget->setWidget( frame );
-	widget->setSizePolicy( QSizePolicy( QSizePolicy::Preferred, QSizePolicy::MinimumExpanding) );
+	widget->setSizePolicy( QSizePolicy( QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding) );
 	widget->setMinimumHeight(200);
+	widget->setMinimumWidth(200);
 	GL::QGLWidgetImplementation *view = m_MasterWidget->createSharedWidget( frame, orientation );
 	std::stringstream name;
 	switch ( orientation ) {
