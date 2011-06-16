@@ -585,7 +585,7 @@
      </widget>
     </item>
     <item row="1" column="0">
-     <widget class="QDockWidget" name="dockWidget">
+     <widget class="QDockWidget" name="dockWidget_Control_Bottom">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Minimum" vsizetype="Maximum">
         <horstretch>0</horstretch>
@@ -841,8 +841,24 @@
     </widget>
     <addaction name="menu_Quick_Preferences"/>
    </widget>
+   <widget class="QMenu" name="menu_View">
+    <property name="title">
+     <string>&amp;View</string>
+    </property>
+    <widget class="QMenu" name="menu_Show">
+     <property name="title">
+      <string>&amp;Show</string>
+     </property>
+     <addaction name="action_Controllpanel"/>
+     <addaction name="actionAxial_view"/>
+     <addaction name="actionSagittal_View"/>
+     <addaction name="actionCoronal_View"/>
+    </widget>
+    <addaction name="menu_Show"/>
+   </widget>
    <addaction name="menu_File"/>
    <addaction name="menu_Preferences"/>
+   <addaction name="menu_View"/>
   </widget>
   <widget class="QStatusBar" name="statusbar">
    <property name="sizePolicy">
@@ -887,6 +903,38 @@
   <action name="actionOpen_DICOM">
    <property name="text">
     <string>Open &amp;DICOM </string>
+   </property>
+  </action>
+  <action name="action_Controllpanel">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Control Panel</string>
+   </property>
+  </action>
+  <action name="actionAxial_view">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Axial View</string>
+   </property>
+  </action>
+  <action name="actionSagittal_View">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Sagittal View</string>
+   </property>
+  </action>
+  <action name="actionCoronal_View">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>C&amp;oronal View</string>
    </property>
   </action>
  </widget>

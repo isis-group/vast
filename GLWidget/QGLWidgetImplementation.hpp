@@ -60,6 +60,7 @@ public Q_SLOTS:
 		updateScene();
 	}
 	virtual bool isInitialized() { return m_Flags.glInitialized; }
+	virtual PlaneOrientation getPlaneOrientation() { return m_PlaneOrientation; }
 
 protected:
 	virtual void mouseMoveEvent( QMouseEvent *e );

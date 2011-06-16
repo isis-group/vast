@@ -18,46 +18,11 @@ namespace viewer
 MainWindow::MainWindow( QViewerCore *core )
 	: m_ViewerCore( core )
 {
+	m_State = single;
 	actionMakeCurrent = new QAction( "Make current", this );
 	actionAsZMap = new QAction( "Show as zmap", this );
 	actionAsZMap->setCheckable( true );
-	connect( ui.action_Exit, SIGNAL( triggered() ), this, SLOT( exitProgram() ) );
-	connect( ui.actionShow_labels, SIGNAL( toggled( bool ) ), m_ViewerCore, SLOT( setShowLabels( bool ) ) );
-	connect( ui.actionAutomatic_Scaling, SIGNAL( toggled( bool ) ), m_ViewerCore, SLOT( setAutomaticScaling( bool ) ) );
-	connect( actionMakeCurrent, SIGNAL( triggered( bool ) ), this, SLOT( triggeredMakeCurrentImage( bool ) ) );
-	connect( actionAsZMap, SIGNAL( triggered( bool ) ), this, SLOT( triggeredMakeCurrentImageZmap( bool ) ) );
-	connect( core, SIGNAL( emitImagesChanged( DataContainer ) ), this, SLOT( imagesChanged( DataContainer ) ) );
-	connect( core, SIGNAL( emitPhysicalCoordsChanged( util::fvector4 ) ), this, SLOT( physicalCoordsChanged( util::fvector4 ) ) );
-	connect( core, SIGNAL( emitVoxelCoordChanged(util::ivector4)), this, SLOT( voxelCoordsChanged( util::ivector4 ) ) );
-	connect( ui.imageStack, SIGNAL( itemClicked( QListWidgetItem * ) ), this, SLOT( checkImageStack( QListWidgetItem * ) ) );
-	connect( ui.imageStack, SIGNAL( itemDoubleClicked( QListWidgetItem * ) ), this, SLOT( doubleClickedMakeCurrentImage( QListWidgetItem * ) ) );
-	connect( ui.action_Open_Image, SIGNAL( triggered() ), this, SLOT( openImage() ) );
-	connect( ui.actionOpen_DICOM, SIGNAL( triggered() ), this, SLOT( openDICOMDir() ) );
-	connect( ui.upperThreshold, SIGNAL( sliderMoved( int ) ), this, SLOT( upperThresholdChanged( int ) ) );
-	connect( ui.lowerThreshold, SIGNAL( sliderMoved( int ) ), this, SLOT( lowerThresholdChanged( int ) ) );
-	connect( ui.opacity, SIGNAL( sliderMoved(int)), this, SLOT( opacityChanged( int ) ) );
-	connect( ui.timestepSpinBox, SIGNAL( valueChanged( int ) ), m_ViewerCore, SLOT( timestepChanged( int ) ) ) ;
-	connect( ui.interpolationType, SIGNAL( currentIndexChanged( int ) ), this, SLOT( interpolationChanged( int ) ) );
-	connect( ui.currentImageBox, SIGNAL( activated(int)), this, SLOT( currentImageChanged( int )));
-	//attach all textFields
-	connect( ui.row_value, SIGNAL( textChanged(QString) ), ui.row_value_2, SLOT( setText(QString)) );
-	connect( ui.column_value, SIGNAL( textChanged(QString) ), ui.column_value_2, SLOT( setText(QString)) );
-	connect( ui.slice_value, SIGNAL( textChanged(QString) ), ui.slice_value_2, SLOT( setText(QString)) );
-	connect( ui.x_value, SIGNAL( textChanged(QString)), ui.x_value_2, SLOT( setText(QString)) );
-	connect( ui.y_value, SIGNAL( textChanged(QString)), ui.y_value_2, SLOT( setText(QString)) );
-	connect( ui.z_value, SIGNAL( textChanged(QString)), ui.z_value_2, SLOT( setText(QString)) );
-	connect( ui.timestepSpinBox_2, SIGNAL( valueChanged(int)), ui.timestepSpinBox, SLOT(setValue(int)));
-	connect( ui.horizontalSlider, SIGNAL( valueChanged(int)), this, SLOT( lowerThresholdChanged( int ) ) );
-	connect( ui.horizontalSlider_2, SIGNAL( valueChanged(int)), this, SLOT( upperThresholdChanged( int ) ) );
-	connect( ui.comboBox, SIGNAL( currentIndexChanged(int)), ui.interpolationType, SLOT( setCurrentIndex(int)));
-	connect( ui.row_value, SIGNAL( returnPressed()), this, SLOT(setVoxelPosition()));
-	connect( ui.column_value, SIGNAL( returnPressed()), this, SLOT(setVoxelPosition()));
-	connect( ui.slice_value, SIGNAL( returnPressed()), this, SLOT(setVoxelPosition()));
-	connect( ui.x_value, SIGNAL( returnPressed()), this, SLOT(setPhysicalPosition()));
-	connect( ui.y_value, SIGNAL( returnPressed()), this, SLOT(setPhysicalPosition()));
-	connect( ui.z_value, SIGNAL( returnPressed()), this, SLOT(setPhysicalPosition()));
-	//we need a master widget to keep opengl running in case all visible widgets were closed
-
+	
 	m_MasterWidget = new GL::QGLWidgetImplementation( core, 0, axial );
 
 	m_AxialWidget =  m_MasterWidget->createSharedWidget( ui.axialWidget, axial );
@@ -69,18 +34,16 @@ MainWindow::MainWindow( QViewerCore *core )
 	m_SagittalWidget = m_MasterWidget->createSharedWidget( ui.sagittalWidget, sagittal );
 	m_ViewerCore->registerWidget( "sagittalView", m_SagittalWidget );
 
-	ui.actionShow_labels->setCheckable( true );
-	ui.actionShow_labels->setChecked( false );
-	ui.imageStack->setContextMenuPolicy( Qt::CustomContextMenu );
-	ui.dockWidget->setVisible(false);
+	
 	connect( ui.imageStack, SIGNAL( customContextMenuRequested( QPoint ) ), this, SLOT( contextMenuImageStack( QPoint ) ) );
 }
 
 void MainWindow::setVoxelPosition()
 {
-	m_ViewerCore->voxelCoordsChanged(util::ivector4( ui.row_value->text().toInt(),
+	m_ViewerCore->physicalCoordsChanged( m_ViewerCore->getCurrentImage()->getImage()->getPhysicalCoordsFromIndex(
+										util::ivector4( ui.row_value->text().toInt(),
 													 ui.column_value->text().toInt(),
-													 ui.slice_value->text().toInt() ) );
+													 ui.slice_value->text().toInt() ) ) ) ;
 }
 
 void MainWindow::setPhysicalPosition()
@@ -103,6 +66,7 @@ void MainWindow::contextMenuImageStack( QPoint position )
 	QMenu::exec( actions, ui.imageStack->mapToGlobal( position ) );
 
 }
+
 
 void MainWindow::currentImageChanged(int index )
 {
@@ -374,6 +338,7 @@ void MainWindow::interpolationChanged( int index )
 
 void MainWindow::assembleViewInRows( )
 {
+	m_State = splitted;
 	std::list< boost::shared_ptr< ImageHolder> > zMaps;
 	std::list< boost::shared_ptr< ImageHolder> > relevantImages;
 	std::list< boost::shared_ptr< ImageHolder> > anatomicalImages;
@@ -396,7 +361,7 @@ void MainWindow::assembleViewInRows( )
 	//some gui related modifications	
 	ui.gridLayout->addWidget( ui.coronalDockWidget, 0, 2 );
 	ui.setupDockWidget->setVisible( false );
-	ui.dockWidget->setVisible( true );
+	ui.dockWidget_Control_Bottom->setVisible( true );
 	//we create our widgets dynamically so we do not need the static ones
 	ui.sagittalDockWidget->setVisible(false);
 	ui.coronalDockWidget->setVisible(false);
@@ -431,6 +396,8 @@ void MainWindow::assembleViewInRows( )
 			title << "no desc.)";
 		}
 		axialDock->setWindowTitle( tr( title.str().c_str()));
+		sagittalDock->setWindowTitle( tr( title.str().c_str()));
+		coronalDock->setWindowTitle( tr( title.str().c_str()));
 		ui.currentImageBox->addItem( tr( title.str().c_str()) );
 		ui.gridLayout->addWidget( axialDock, row, 0 );
 		ui.gridLayout->addWidget( sagittalDock, row, 1 );

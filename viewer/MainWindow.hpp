@@ -22,9 +22,12 @@ class MainWindow : public MainWindowBase
 {
 
 	Q_OBJECT
-
+protected:
+	enum State { single, splitted } m_State;
 public:
 	MainWindow( QViewerCore *core  );
+	
+	State getState() const { return m_State; }
 
 private:
 
@@ -47,6 +50,8 @@ public Q_SLOTS:
 	void updateInterfaceValues();
 	void setVoxelPosition();
 	void setPhysicalPosition();
+	
+
 
 	void upperThresholdChanged( int );
 	void lowerThresholdChanged( int );
@@ -55,7 +60,8 @@ public Q_SLOTS:
 	void assembleViewInRows( );
 
 
-private:
+protected:
+	
 	GL::QGLWidgetImplementation *m_AxialWidget;
 	GL::QGLWidgetImplementation *m_CoronalWidget;
 	GL::QGLWidgetImplementation *m_SagittalWidget;

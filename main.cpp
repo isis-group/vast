@@ -1,5 +1,5 @@
 #include "Adapter/qtapplication.hpp"
-#include "MainWindow.hpp"
+#include "MainWindowUIInterface.hpp"
 #include "QViewerCore.hpp"
 #include <iostream>
 #include <DataStorage/io_factory.hpp>
@@ -74,7 +74,7 @@ int main( int argc, char *argv[] )
 		}
 	}
 	bool assamble = false;
-	isis::viewer::MainWindow isisViewerMainWindow( core );
+	isis::viewer::MainWindowUIInterface isisViewerMainWindow( core );
 
 	if( app.parameters["zmap"].isSet() ) {
 		if( app.parameters["split"] && zImgList.size() > 1 ) {
