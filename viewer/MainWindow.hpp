@@ -63,6 +63,8 @@ public Q_SLOTS:
 
 protected:
 	
+	void handImagesToPlotter();
+	
 	GL::QGLWidgetImplementation *m_AxialWidget;
 	GL::QGLWidgetImplementation *m_CoronalWidget;
 	GL::QGLWidgetImplementation *m_SagittalWidget;

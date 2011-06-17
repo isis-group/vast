@@ -18,6 +18,7 @@ namespace viewer
 MainWindow::MainWindow( QViewerCore *core )
 	: m_ViewerCore( core )
 {
+	m_PlottingDialog->setViewerCore( m_ViewerCore );
 	m_State = single;
 	actionMakeCurrent = new QAction( "Make current", this );
 	actionAsZMap = new QAction( "Show as zmap", this );
@@ -50,6 +51,7 @@ void isis::viewer::MainWindow::setInitialState()
 	ui.actionCoronal_View->setChecked(true);
 	ui.actionSagittal_View->setChecked(true);
 	ui.action_Controllpanel->setChecked( true );
+	ui.action_Plotting->setEnabled(false);
 	
 	//toolbar stuff
 	m_Toolbar->setOrientation(Qt::Horizontal);
@@ -224,7 +226,9 @@ void MainWindow::imagesChanged( DataContainer images )
 		if( m_ViewerCore->getCurrentImage().get() == imageRef.second.get() ) {
 			item->setIcon( QIcon( ":/common/currentImage.gif" ) );
 		}
-
+		if( imageRef.second->getImageSize()[3] > 1 ) {
+			ui.action_Plotting->setEnabled(true);
+		}
 		ui.imageStack->addItem( item );
 	}
 	double min = roundNumber<double>( m_ViewerCore->getCurrentImage()->getMinMax().first->as<double>(), 2 );
@@ -306,6 +310,18 @@ void MainWindow::openImageAs( ImageHolder::ImageType type )
 	}
 }
 
+void MainWindow::handImagesToPlotter()
+{
+	//hand all images to plotting instance
+		QPlottingDialog::ImageList tmpList;
+		BOOST_FOREACH( DataContainer::const_reference image, m_ViewerCore->getDataContainer() ) 
+		{
+			tmpList.push_back( image.second );
+		}
+		m_PlottingDialog->setImageHolderList( tmpList );
+}
+
+
 void MainWindow::openDICOMDir()
 {
 	QString dir = QFileDialog::getExistingDirectory(this, tr( "Open directory" ), m_CurrentPath);
@@ -327,17 +343,13 @@ void MainWindow::checkImageStack( QListWidgetItem *item )
 	} else if( item->checkState() == Qt::Unchecked ) {
 		m_ViewerCore->getDataContainer().at( item->text().toStdString() )->setVisible( false );
 	}
-
 	m_ViewerCore->updateScene();
 
 }
 
 void MainWindow::exitProgram()
 {
-	m_PlottingDialog->close();
-	m_PreferencesDialog->close();
 	close();
-	
 }
 
 void MainWindow::opacityChanged( int opacity )

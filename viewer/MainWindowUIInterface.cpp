@@ -139,7 +139,7 @@ void MainWindowUIInterface::triggeredMakeCurrentImage( bool triggered )
 void MainWindowUIInterface::showPlotting()
 {
 	m_PlottingDialog->show();
-	m_PlottingDialog->addImageHolder( m_ViewerCore->getCurrentImage() );
+	handImagesToPlotter();
 	physicalCoordsChanged( m_ViewerCore->getCurrentImage()->getImageState().physicalCoords );
 }
 

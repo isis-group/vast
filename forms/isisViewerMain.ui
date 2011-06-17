@@ -1163,6 +1163,9 @@ This is needed if you want to open an entire DICOM directory.</string>
    <property name="text">
     <string>&amp;Plotting</string>
    </property>
+   <property name="toolTip">
+    <string>Plotting timecourse</string>
+   </property>
    <property name="shortcut">
     <string>S, P</string>
    </property>

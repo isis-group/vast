@@ -4,7 +4,8 @@
 namespace isis {
 namespace viewer {
 	
-QPlottingDialog::QPlottingDialog(QWidget* parent, Qt::WindowFlags f): QDialog(parent, f)
+QPlottingDialog::QPlottingDialog( QWidget* parent, Qt::WindowFlags f)
+ : QDialog(parent, f)
 {
 	plottingUi.setupUi(this);
 	plot = new QwtPlot( tr( "Timecourse" ), plottingUi.widget );
@@ -18,6 +19,16 @@ void QPlottingDialog::addImageHolder(boost::shared_ptr< ImageHolder > imageHolde
 {
 	m_Images.push_back( imageHolder );
 	m_Curves.push_back( new QwtPlotCurve( tr( imageHolder->getFileNames().front().c_str() ) ) );
+}
+void QPlottingDialog::setImageHolderList(std::list< boost::shared_ptr< ImageHolder > > imageHolderList)
+{
+	m_Images.clear();
+	m_Curves.clear();
+	BOOST_FOREACH(  ImageList::const_reference image, imageHolderList ) 
+	{
+		m_Images.push_back( image );
+		m_Curves.push_back( new QwtPlotCurve( tr( image->getFileNames().front().c_str() ) ) );
+	}
 }
 
 
