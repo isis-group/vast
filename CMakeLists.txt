@@ -128,3 +128,4 @@ set(NEEDED_LIBS
 
 target_link_libraries(vast ${NEEDED_LIBS})
 
+install(TARGETS vast RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin )
