@@ -1,0 +1,6 @@
+vast (0.1.0-0) stable; urgency=low
+
+  * first debian package of the new lipsia viewer vast. This viewer is
+    based on the isis package.
+
+ -- ISIS Group (The friendly isis team) <gr_isis@cbs.mpg.de>  Thu, 05 May 2011 15:38:35 +0200
