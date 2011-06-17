@@ -29,7 +29,7 @@ public:
 			std::stringstream title;
 			std::stringstream coordsAsString;
 			title << "Timecourse for " << m_Images.front()->getFileNames().front();
-			coordsAsString << coords[0] << " | " << coords[1] << " | " << coords[2];
+			coordsAsString << coords[0] << " : " << coords[1] << " : " << coords[2];
 			plot->setTitle( tr( coordsAsString.str().c_str() ) );
 			setWindowTitle( tr( title.str().c_str() ) );
 			typedef ImageVector::iterator ImageIterator;
@@ -39,11 +39,16 @@ public:
 			
 			for( image = m_Images.begin(), curve = m_Curves.begin(); image != m_Images.end(); image++, curve++)
 			{
+				uint16_t repTime = 1;
+				if( (*image)->getImage()->hasProperty("repetitionTime") ) {
+					repTime = (float)(*image)->getImage()->getPropertyAs<uint16_t>("repetitionTime") / 1000;
+					plot->setAxisTitle(2, tr( "t / s" ) );
+				}
 				QVector<double> timeSteps;
 				QVector<double> intensityValues;
 				util::Value<TYPE> intens;
 				for( size_t t = 0; t < (*image)->getImageSize()[3]; t++ ) {
-					timeSteps.push_back(t);
+					timeSteps.push_back( t * repTime );
 					intens = (*image)->getImage()->voxel<TYPE>(coords[0], coords[1], coords[2], t );
 					intensityValues.push_back( intens );
 				}

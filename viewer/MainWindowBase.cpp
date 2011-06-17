@@ -11,8 +11,8 @@ MainWindowBase::MainWindowBase( QWidget *parent )
 	  m_CurrentPath( QDir::currentPath() )
 {
 	ui.setupUi( this );
-	m_PreferencesDialog = new QPreferencesDialog();
-	m_PlottingDialog = new QPlottingDialog();
+	m_PreferencesDialog = new QPreferencesDialog(this);
+	m_PlottingDialog = new QPlottingDialog(this);
 }
 
 }

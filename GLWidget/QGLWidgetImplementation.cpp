@@ -120,13 +120,6 @@ void QGLWidgetImplementation::updateStateValues( boost::shared_ptr<ImageHolder> 
 	state.physicalCoords = image->getImage()->getPhysicalCoordsFromIndex(voxelCoords);
 	state.voxelCoords[3] = timestep;
 
-	//check if we are inside the image
-// 	for( size_t i = 0; i < 4; i++ ) {
-// 		state.voxelCoords[i] = state.voxelCoords[i] < 0 ? 0 : state.voxelCoords[i];
-// 		state.voxelCoords[i] = static_cast<size_t>( state.voxelCoords[i] ) >= image->getImageSize()[i] ? image->getImageSize()[i] - 1 : state.voxelCoords[i];
-// 
-// 	}
-
 	//if not happend already copy the image to GLtexture memory and return the texture id
 	if(image->getImageSize()[3] > m_ViewerCore->getCurrentImage()->getImageState().timestep ) {
 		state.textureID = util::Singletons::get<GLTextureHandler, 10>().copyImageToTexture( image, m_ViewerCore->getCurrentImage()->getImageState().timestep, false, m_InterplationType );
@@ -141,7 +134,7 @@ void QGLWidgetImplementation::updateStateValues( boost::shared_ptr<ImageHolder> 
 		state.mappedVoxelSize = GLOrientationHandler::transformVector<float>( image->getPropMap().getPropertyAs<util::fvector4>( "voxelSize" ) + image->getPropMap().getPropertyAs<util::fvector4>( "voxelGap" ) , state.planeOrientation );
 		state.mappedImageSize = GLOrientationHandler::transformVector<int>( image->getImageSize(), state.planeOrientation );
 		state.set = true;
-		state.lutID =  m_LookUpTable.getLookUpTableAsTexture( Color::hsvLUT_reverse );
+		state.lutID =  m_LookUpTable.getLookUpTableAsTexture( image->getImageState().lookUpTableType );
 	}
 
 	state.mappedVoxelCoords = GLOrientationHandler::transformVector<int>( state.voxelCoords, state.planeOrientation );

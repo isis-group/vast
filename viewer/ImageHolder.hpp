@@ -7,6 +7,7 @@
 #include <CoreUtils/propmap.hpp>
 #include <DataStorage/image.hpp>
 #include "common.hpp"
+#include "Color.hpp"
 #include "ImageOps.hpp"
 
 namespace isis
@@ -39,6 +40,8 @@ public:
 		double currentIntensityAsDouble;
 		util::ivector4 voxelCoords;
 		util::fvector4 physicalCoords;
+		Color::LookUpTableType lookUpTableType;
+		
 	};
 	ImageHolder( );
 
