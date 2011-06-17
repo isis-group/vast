@@ -17,7 +17,7 @@ int main( int argc, char *argv[] )
 	dbg_levels.set( "warning" );
 	isis::util::Selection image_types( "anatomical,zmap" );
 	image_types.set( "anatomical" );
-	isis::qt4::IOQtApplication app( "isisViewer", false, false );
+	isis::qt4::IOQtApplication app( "vast", false, false );
 	std::cout << "v" << core->getVersion() << " ( isis core: " << app.getCoreVersion() << " )" << std::endl;
 	app.parameters["in"] = isis::util::slist();
 	app.parameters["in"].needed() = false;

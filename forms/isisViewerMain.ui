@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>isisViewer</string>
+   <string>vast</string>
   </property>
   <property name="animated">
    <bool>true</bool>

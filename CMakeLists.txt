@@ -1,10 +1,9 @@
 cmake_minimum_required(VERSION 2.6)
 
-PROJECT(isisViewer)
+PROJECT(vast)
 
 # collecting files
 file (GLOB VIEWER_FILES_CPP viewer/*.c viewer/*.cpp)
-# file (GLOB GLWIDGET_FILES_HPP GLWidget/*.hpp GLWidget/*.h)
 file (GLOB GLWIDGET_FILES_CPP GLWidget/*.cpp GLWidget/*.c)
 file (GLOB UI_FILES forms/*.ui)
 file (GLOB RESOURCE_FILES resources/*.qrc)
@@ -71,10 +70,10 @@ set(QT_USE_OPENGL TRUE )
 
 INCLUDE(${QT_USE_FILE})
 
-QT4_ADD_RESOURCES(isisViewer_rcc_files ${RESOURCE_FILES})
+QT4_ADD_RESOURCES(vast_rcc_files ${RESOURCE_FILES})
 
-qt4_wrap_cpp(isisViewer_moc_files ${VIEWER_FILES_HPP} ${GLWIDGET_FILES_HPP})
-QT4_WRAP_UI(isisViewer_UIS_H ${UI_FILES})
+qt4_wrap_cpp(vast_moc_files ${VIEWER_FILES_HPP} ${GLWIDGET_FILES_HPP})
+QT4_WRAP_UI(vast_UIS_H ${UI_FILES})
 
 ###########################################################
 # qwt stuff
@@ -114,7 +113,7 @@ SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ftemplate-depth-100 -Wextra -Wfatal-err
 SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}  -Wextra -Wfatal-errors " )
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ftemplate-depth-100")
 
-add_executable(isisViewer main.cpp ${GLWIDGET_FILES_CPP} ${VIEWER_FILES_CPP} ${isisViewer_UIS_H} ${isisViewer_moc_files} ${isisViewer_rcc_files})
+add_executable(vast main.cpp ${GLWIDGET_FILES_CPP} ${VIEWER_FILES_CPP} ${vast_UIS_H} ${vast_moc_files} ${vast_rcc_files})
 find_library(isisqt4_LIBRARY "isisAdapter_qt4")
 
 set(NEEDED_LIBS
@@ -127,5 +126,5 @@ set(NEEDED_LIBS
 	${QWT5_library} 
 	)
 
-target_link_libraries(isisViewer ${NEEDED_LIBS})
+target_link_libraries(vast ${NEEDED_LIBS})
 
