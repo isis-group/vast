@@ -3,12 +3,22 @@ cmake_minimum_required(VERSION 2.6)
 PROJECT(isisViewer)
 
 # collecting files
-file (GLOB VIEWER_FILES_HPP viewer/*.h viewer/*.hpp)
 file (GLOB VIEWER_FILES_CPP viewer/*.c viewer/*.cpp)
-file (GLOB GLWIDGET_FILES_HPP GLWidget/*.hpp GLWidget/*.h)
+# file (GLOB GLWIDGET_FILES_HPP GLWidget/*.hpp GLWidget/*.h)
 file (GLOB GLWIDGET_FILES_CPP GLWidget/*.cpp GLWidget/*.c)
 file (GLOB UI_FILES forms/*.ui)
 file (GLOB RESOURCE_FILES resources/*.qrc)
+
+set(VIEWER_FILES_HPP
+	viewer/MainWindowBase.hpp
+	viewer/MainWindow.hpp
+	viewer/MainWindowUIInterface.hpp
+	viewer/QViewerCore.hpp
+	viewer/QPreferencesDialog.hpp
+	viewer/QPlottingDialog.hpp
+)
+set(GLWIDGET_FILES_HPP
+	GLWidget/QGLWidgetImplementation.hpp)
 
 ##########################################################
 # set viewer version number

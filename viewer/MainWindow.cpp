@@ -174,7 +174,7 @@ void MainWindow::physicalCoordsChanged( util::fvector4 coords )
 	ui.z_value->setText( QString::number( coords[2] ) );
 	bool isOutside = false;
 	for( size_t i = 0;i<4; i++ ) {
-		if(voxelCoords[i] < 0 || voxelCoords[i] > m_ViewerCore->getCurrentImage()->getImageSize()[i] -  1)
+		if(voxelCoords[i] < 0 || voxelCoords[i] > static_cast<int32_t>( m_ViewerCore->getCurrentImage()->getImageSize()[i] -  1 ) )
 			return;
 	}
 	data::Chunk ch = m_ViewerCore->getCurrentImage()->getImage()->getChunk( voxelCoords[0], voxelCoords[1], voxelCoords[2], voxelCoords[3] );
