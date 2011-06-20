@@ -30,9 +30,8 @@ boost::shared_ptr<ImageHolder> DataContainer::addImage( const data::Image &image
 
 	boost::shared_ptr<ImageHolder>  tmpHolder = boost::shared_ptr<ImageHolder> ( new ImageHolder ) ;
 	tmpHolder->setImage( image, imageType, newFileName );
-	tmpHolder->setID( size() );
+	tmpHolder->setID( size()  );
 	insert( std::make_pair<std::string, boost::shared_ptr<ImageHolder> >( newFileName, tmpHolder ) );
-
 	return tmpHolder;
 }
 

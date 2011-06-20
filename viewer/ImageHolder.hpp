@@ -47,8 +47,8 @@ public:
 
 	bool setImage( const data::Image &image, const ImageType &imageType, const std::string &filename = "" );
 
-	unsigned short getID() const { return m_ID; }
-	void setID( const unsigned short id ) { m_ID = id; }
+	size_t getID() const { return m_ID; }
+	void setID( size_t id ) { m_ID = id; }
 
 	std::vector< ImagePointerType > getImageVector() const { return m_ImageVector; }
 	std::vector< util::PropertyMap > getTimeStepProperties() const { return m_TimeStepProperties; }
@@ -139,7 +139,7 @@ private:
 	std::pair<util::ValueReference, util::ValueReference> m_InternMinMax;
 	boost::shared_ptr<data::Image> m_Image;
 	util::slist m_Filenames;
-	unsigned short m_ID;
+	size_t m_ID;
 	std::pair<double, double> m_OptimalScalingPair;
 	std::pair<double, double> m_CutAwayPair;
 	ImageState m_ImageState;

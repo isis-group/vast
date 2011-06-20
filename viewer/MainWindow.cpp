@@ -121,7 +121,7 @@ void MainWindow::contextMenuImageStack( QPoint position )
 
 void MainWindow::currentImageChanged(int index )
 {
-	m_ViewerCore->setCurrentImage( m_ViewerCore->getDataContainer().getImageByID(index) );
+	m_ViewerCore->setCurrentImage( m_ViewerCore->getDataContainer().getImageByID( index ) );
 	imagesChanged( m_ViewerCore->getDataContainer() );
 	updateInterfaceValues();
 }
@@ -455,7 +455,7 @@ void MainWindow::assembleViewInRows( )
 		axialDock->setWindowTitle( tr( title.str().c_str()));
 		sagittalDock->setWindowTitle( tr( title.str().c_str()));
 		coronalDock->setWindowTitle( tr( title.str().c_str()));
-		ui.currentImageBox->addItem( tr( title.str().c_str()) );
+		ui.currentImageBox->insertItem( image->getID(), tr( title.str().c_str()) );
 		ui.gridLayout->addWidget( axialDock, row, 0 );
 		ui.gridLayout->addWidget( sagittalDock, row, 1 );
 		ui.gridLayout->addWidget( coronalDock, row, 2 );
