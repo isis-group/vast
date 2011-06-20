@@ -1172,7 +1172,7 @@ This is needed if you want to open an entire DICOM directory.</string>
   </action>
  </widget>
  <tabstops>
-  <tabstop>timestepSpinBox</tabstop>
+  <tabstop>scrollArea</tabstop>
   <tabstop>row_value</tabstop>
   <tabstop>column_value</tabstop>
   <tabstop>slice_value</tabstop>
@@ -1186,16 +1186,16 @@ This is needed if you want to open an entire DICOM directory.</string>
   <tabstop>x_value_2</tabstop>
   <tabstop>upperThreshold</tabstop>
   <tabstop>z_value_2</tabstop>
-  <tabstop>timestepSpinBox_2</tabstop>
   <tabstop>y_value_2</tabstop>
   <tabstop>imageStack</tabstop>
+  <tabstop>timestepSpinBox</tabstop>
   <tabstop>interpolationType</tabstop>
   <tabstop>slice_value_2</tabstop>
   <tabstop>opacity</tabstop>
   <tabstop>comboBox</tabstop>
   <tabstop>horizontalSlider</tabstop>
   <tabstop>horizontalSlider_2</tabstop>
-  <tabstop>scrollArea</tabstop>
+  <tabstop>timestepSpinBox_2</tabstop>
  </tabstops>
  <resources>
   <include location="../resources/viewer.qrc"/>

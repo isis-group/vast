@@ -149,7 +149,7 @@ bool ImageHolder::setImage( const data::Image &image, const ImageType &imageType
 	m_OptimalScalingPair = getOptimalScalingToForType<TYPE>( m_CutAwayPair );
 	//image seems to be ok...i guess
 	m_ImageState.imageType = imageType;
-	m_ImageState.lookUpTableType = Color::hsvLUT;
+	m_ImageState.lookUpTableType = Color::zmap_standard;
 	m_ImageState.visible = true;
 	m_ImageState.threshold = std::make_pair<double, double>( m_MinMax.first->as<double>(), m_MinMax.second->as<double>() );
 	m_ImageState.zmapThreshold = std::make_pair<double, double>( 0, 0 );

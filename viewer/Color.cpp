@@ -10,54 +10,22 @@ namespace viewer
 std::vector< util::fvector4 > Color::getColorGradientRGB( const Color::LookUpTableType &lutType, const size_t &numberOfEntries )
 {
 
-	std::vector< util::fvector4 > retRGBGradient;
+	std::vector< util::fvector4 > retRGBGradient(numberOfEntries);
 	QColor rgbColor;
-
-	switch( lutType ) {
-	case Color::hsvLUT: {
-		float angleStep = 360.0 / numberOfEntries;
-
-		for ( float angle = 0; angle < 360.0; angle += angleStep ) {
-			rgbColor = QColor::fromHsv( util::Value<float>( angle ).as<int>(), 255, 255 );
-			retRGBGradient.push_back( util::fvector4( rgbColor.red(), rgbColor.green(), rgbColor.blue() ) );
-		}
-
-		return retRGBGradient;
-		break;
-	}
-	case Color::hsvLUT_reverse: {
-		float angleStep = 360.0 / numberOfEntries;
-
-		for ( float angle = 359.0; angle >= 0; angle -= angleStep ) {
-			rgbColor = QColor::fromHsv( util::Value<float>( angle ).as<int>(), 255, 255 );
-			retRGBGradient.push_back( util::fvector4( rgbColor.red(), rgbColor.green(), rgbColor.blue() ) );
-		}
-
-		return retRGBGradient;
-		break;
-	}
-	//white to blue to red to white
-	case Color::wbryw: {
-		float stepLength = 512.0 / numberOfEntries;
-
-		for ( float step = 255; step >= 0; step -= stepLength ) {
-			int rg = util::Value<float>( step ).as<int>();
-			retRGBGradient.push_back( util::fvector4( rg, rg, 255 ) );
-		}
-
-		for ( float step = 0; step <= 255; step += stepLength ) {
-			int gb = util::Value<float>( step ).as<int>();
-
-			if( step < 127 ) {
-				retRGBGradient.push_back( util::fvector4( 255, gb * 2, 0 ) );
-			} else {
-				retRGBGradient.push_back( util::fvector4( 255, 255, ( gb - 127 ) * 2 ) );
+	switch(lutType) {
+		case Color::zmap_standard: {
+			for( size_t i = 0; i < (numberOfEntries / 2); i++) {
+				if( i < (numberOfEntries / 4) ) {
+					retRGBGradient[(numberOfEntries-1)-((numberOfEntries / 2)-i-1)] = util::fvector4(255, i*4, i*2);
+					retRGBGradient[(numberOfEntries-1)-(i+(numberOfEntries / 2))] = util::fvector4(i*2, i*4, 255);
+				} else {
+					retRGBGradient[(numberOfEntries-1)-((numberOfEntries / 2)-i-1)] = util::fvector4(255, 255, i*2);
+					retRGBGradient[(numberOfEntries-1)-(i+(numberOfEntries / 2))] = util::fvector4(i*2, 255, 255);
+				}	
 			}
+			return retRGBGradient;
+			break;
 		}
-
-		return retRGBGradient;
-		break;
-	}
 	}
 }
 
