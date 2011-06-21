@@ -93,6 +93,10 @@ include_directories(${QWT5_include})
 
 find_package(OpenGL REQUIRED)
 
+if(NOT OpenGL)
+	find_library(OpenGL "GL" PATHS "/usr/lib" "/usr/local/lib" "/usr/lib/mesa" "/usr/local/lib/mesa")
+endif(NOT OpenGL)
+
 message(STATUS "openGL library: ${OPENGL_LIBRARY}")
 
 include_directories(${OPENGL_INCLUDE_DIR})

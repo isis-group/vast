@@ -21,16 +21,16 @@ std::string colormap_shader_code = STRINGIFY(
 	colorLut.a = opacity;
 	float inormed = ( i * range ) + min;
 
-	if( inormed > 0 - err * range && inormed < upper_threshold ) {
-		colorLut.a = 0;
+	if( inormed > 0.0 - err * range && inormed < upper_threshold ) {
+		colorLut.a = 0.0;
 	}
 
-	if( inormed < 0 + err * range && inormed > lower_threshold ) {
-		colorLut.a = 0;
+	if( inormed < 0.0 + err * range && inormed > lower_threshold ) {
+		colorLut.a = 0.0;
 	}
 
-	if( killZeros == 1 && inormed > 0 - err * range && inormed < 0 + err * range ) {
-		colorLut.a = 0;
+	if( killZeros == 1.0 && inormed > 0.0 - err * range && inormed < 0.0 + err * range ) {
+		colorLut.a = 0.0;
 	}
 
 	gl_FragColor = ( colorLut + bias / range ) * scaling;
@@ -53,12 +53,12 @@ std::string scaling_shader_code = STRINGIFY(
 	float range = max - min;
 	vec4 color = texture3D( imageTexture, gl_TexCoord[0].xyz );
 	color.a = opacity;
-	float inormed = ( color * range ) + min;
+	float inormed = ( color.r * range ) + min;
 	if( ( color.r * range ) + min > upper_threshold || ( color.r * range ) + min < lower_threshold ) {
-		color.a = 0;
+		color.a = 0.0;
 	}
-	if( killZeros == 1 && inormed > 0 - err * range && inormed < 0 + err * range ) {
-		color.a = 0;
+	if( killZeros == 1.0 && inormed > 0.0 - err * range && inormed < 0.0 + err * range ) {
+		color.a = 0.0;
 	}
 
 	gl_FragColor = ( color + bias / range ) * scaling;
