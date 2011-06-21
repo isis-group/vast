@@ -19,13 +19,13 @@ class GLShader
 public:
 	enum ShaderType { fragment, vertex };
 	void setSourceCode( const std::string &source ) { m_SourceCode = source; }
-	void setShaderID ( const GLhandleARB id ) { m_ShaderID = id; }
+	void setShaderID ( const GLuint id ) { m_ShaderID = id; }
 	void setShaderType ( const ShaderType &type ) { m_ShaderType = type; }
 
-	GLhandleARB getShaderID() const { return m_ShaderID; }
+	GLuint getShaderID() const { return m_ShaderID; }
 private:
 	std::string m_SourceCode;
-	GLhandleARB m_ShaderID;
+	GLuint m_ShaderID;
 	ShaderType m_ShaderType;
 };
 
@@ -44,7 +44,7 @@ public:
 	bool isEnabled() const { return m_isEnabled; }
 	void setEnabled( bool enable );
 	void createContext () {
-		m_ProgramID = glCreateProgramObjectARB();
+		m_ProgramID = glCreateProgram();
 		m_Context = true;
 		checkAndReportGLError( "creating shader context " );
 	}
@@ -52,12 +52,12 @@ public:
 	bool addVariable( const std::string &name, TYPE var, bool integer = false ) {
 		if( m_Context ) {
 			LOG( Debug, verbose_info ) << "Setting shader value " << name << " to " << var;
-			GLint location = glGetUniformLocationARB( m_ProgramID, name.c_str() );
+			GLint location = glGetUniformLocation( m_ProgramID, name.c_str() );
 
 			if( integer ) {
-				glUniform1iARB( location, var );
+				glUniform1i( location, var );
 			} else {
-				glUniform1fARB( location, var );
+				glUniform1f( location, var );
 			}
 
 			checkAndReportGLError( "setting shader value " + name );
@@ -72,7 +72,7 @@ public:
 
 private:
 	ShaderMapType m_ShaderMap;
-	GLhandleARB m_ProgramID;
+	GLuint m_ProgramID;
 	bool m_isEnabled;
 	bool m_Context;
 };

@@ -24,18 +24,20 @@ void GLShaderHandler::addShader( const std::string &name, const std::string &sou
 
 	switch( shaderType ) {
 	case GLShader::fragment:
-		shader.setShaderID( glCreateShaderObjectARB( GL_FRAGMENT_SHADER_ARB ) );
+		shader.setShaderID( glCreateShader( GL_FRAGMENT_SHADER ) );
 		break;
 	case GLShader::vertex:
-		shader.setShaderID( glCreateShaderObjectARB( GL_VERTEX_SHADER_ARB ) );
+		shader.setShaderID( glCreateShader( GL_VERTEX_SHADER ) );
 		break;
 	}
 
-	const GLcharARB *csource  = source.c_str();
+	const GLchar *csource  = source.c_str();
 
-	glShaderSourceARB( shader.getShaderID(), 1, &csource, NULL );
+	glShaderSource( shader.getShaderID(), 1, &csource, NULL);
+	
+// 	glShaderSource( shader.getShaderID(), 1, &csource, NULL );
 
-	glCompileShaderARB( shader.getShaderID() );
+	glCompileShader( shader.getShaderID() );
 
 	GLint compileStatus;
 
@@ -62,19 +64,19 @@ void GLShaderHandler::setEnabled( bool enable )
 
 	if( enable && !m_isEnabled ) {
 		BOOST_FOREACH( ShaderMapType::const_reference shader, m_ShaderMap ) {
-			glAttachObjectARB( m_ProgramID, shader.second.getShaderID() );
+			glAttachShader( m_ProgramID, shader.second.getShaderID() );
 			checkAndReportGLError( "attaching shader"  );
 		}
-		glLinkProgramARB( m_ProgramID );
+		glLinkProgram( m_ProgramID );
 		checkAndReportGLError( "glLinkProgramARB" );
-		glValidateProgramARB( m_ProgramID );
+		glValidateProgram( m_ProgramID );
 		checkAndReportGLError( "glValidateProgramARB" );
-		glUseProgramObjectARB( m_ProgramID );
+		glUseProgram( m_ProgramID );
 		m_isEnabled = true;
 		checkAndReportGLError( "glUseProgramObjectARB" );
 	} else if ( !enable && m_isEnabled ) {
 		BOOST_FOREACH( ShaderMapType::const_reference shader, m_ShaderMap ) {
-			glDetachObjectARB( m_ProgramID, shader.second.getShaderID() );
+			glDetachShader( m_ProgramID, shader.second.getShaderID() );
 			checkAndReportGLError( "detaching shader" );
 		}
 		m_isEnabled = false;
@@ -84,7 +86,7 @@ void GLShaderHandler::setEnabled( bool enable )
 
 void GLShaderHandler::removeShader( const std::string &name )
 {
-	glDetachObjectARB( m_ProgramID, m_ShaderMap[name].getShaderID() );
+	glDetachShader( m_ProgramID, m_ShaderMap[name].getShaderID() );
 	m_ShaderMap.erase( name );
 }
 
