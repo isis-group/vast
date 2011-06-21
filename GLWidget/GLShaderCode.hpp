@@ -14,24 +14,23 @@ std::string colormap_shader_code = STRINGIFY(
 									   uniform float killZeros;
 									   void main ()
 {
-	float err = 0.04;
+	
 	float range = max - min;
+	float err = 0.02 * range;
 	float i = texture3D( imageTexture, gl_TexCoord[0].xyz ).r;
 	vec4 colorLut = texture1D( lut, i );
-	colorLut.a = opacity;
 	float inormed = ( i * range ) + min;
-
-	if( inormed > 0.0 - err * range && inormed < upper_threshold ) {
-		colorLut.a = 0.0;
-	}
-
-	if( inormed < 0.0 + err * range && inormed > lower_threshold ) {
-		colorLut.a = 0.0;
-	}
-
-	if( killZeros == 1.0 && inormed > 0.0 - err * range && inormed < 0.0 + err * range ) {
-		colorLut.a = 0.0;
-	}
+	
+	//ok, since we have to avoid if statements we have to do it that way...
+	
+	bool ut = !( inormed < upper_threshold);
+	bool az = ( inormed > 0.0 );
+	bool lt = !( inormed > lower_threshold);
+	bool bz = (inormed < 0.0 );
+	bool inz1 = !(inormed > 0.0 - err);
+	bool inz2 = !(inormed < 0.0 + err);
+	
+	colorLut.a = float((ut & az & (inz1 ^ inz2)) ^ (lt & bz & (inz1 ^ inz2))) * opacity;
 
 	gl_FragColor = ( colorLut + bias / range ) * scaling;
 }
@@ -49,18 +48,16 @@ std::string scaling_shader_code = STRINGIFY(
 									  uniform float killZeros;
 									  void main()
 {
-	float err = 0.001;
 	float range = max - min;
+	float err = 0.001 * range;
 	vec4 color = texture3D( imageTexture, gl_TexCoord[0].xyz );
 	color.a = opacity;
 	float inormed = ( color.r * range ) + min;
-	if( ( color.r * range ) + min > upper_threshold || ( color.r * range ) + min < lower_threshold ) {
-		color.a = 0.0;
-	}
-	if( killZeros == 1.0 && inormed > 0.0 - err * range && inormed < 0.0 + err * range ) {
-		color.a = 0.0;
-	}
-
+	bool inz1 = !(inormed > 0.0 - err);
+	bool inz2 = !(inormed < 0.0 + err);
+	
+	color.a = float(inz1 ^ inz2) * opacity;
+	
 	gl_FragColor = ( color + bias / range ) * scaling;
 }
 								  );
