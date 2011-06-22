@@ -23,7 +23,7 @@ std::string colormap_shader_code = STRINGIFY(
 	bool az = ( inormed > 0.0 );
 	bool bz = (inormed < 0.0 );
 	
-	float iscaled = float(az) * (i - (upper_threshold / max)) * (max/(max-upper_threshold)) + float(bz) * (i - (lower_threshold / abs(min))) * (abs(min)/(abs(min)-lower_threshold));
+	float iscaled = float(az) * (i - (upper_threshold / abs(max)) + 0.04) * (abs(max)/(abs(max)-upper_threshold)) + float(bz) * (i - (lower_threshold / abs(min))) * (abs(min)/(abs(min)-lower_threshold));
 	
 	
 	vec4 colorLut = texture1D( lut, iscaled );
