@@ -12,7 +12,6 @@ std::string colormap_shader_code = STRINGIFY(
 									   uniform float bias;
 									   uniform float scaling;
 									   uniform float opacity;
-									   uniform float killZeros;
 									   void main ()
 {
 	
@@ -26,10 +25,10 @@ std::string colormap_shader_code = STRINGIFY(
 	float abs_min = abs(min);
 	float abs_min_range = abs_min / range;
 	//since we can not be certain that abs(min) == abs(max) and so i = 0.5 == inormed = 0.0 we have to scale 
-	i = float(az) * (((i - abs_min_range) * (0.5 / (abs_max/range))) + 0.5 - 1e-6) + float(bz) * (i * (0.5 / abs_min_range)) ;
+	i = float(az) * ((i - abs_min_range) * (0.5 / (abs_max/range)) + 0.5 - 1e-6) + float(bz) * (i * (0.5 / abs_min_range)) ;
 		
 	// if the user modifies the lower or upper threshold we always want the same range of the colortable
-	i = (float(az) * (i - (upper_threshold / (abs_max)) ) * (abs_max/(abs_max-upper_threshold))) + (float(bz) * (i - (lower_threshold / abs_min)) * (abs_min/(abs_min-lower_threshold)));
+	i = float(az) * (i - (upper_threshold / abs_max)) * (abs_max/(abs_max-upper_threshold)) + (float(bz) * (i - (lower_threshold / abs_min)) * (abs_min/(abs_min-lower_threshold)));
 	vec4 colorLut = texture1D( lut, i );
 	
 	//ok, since we have to avoid if-statements we have to do it that way...
