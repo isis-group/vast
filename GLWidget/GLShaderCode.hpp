@@ -17,11 +17,11 @@ std::string colormap_shader_code = STRINGIFY(
 {
 	
 	float range = max - min;
-	float err = 0.02 * range;
+	float err = 0.002 * range;
 	float i = texture3D( imageTexture, gl_TexCoord[0].xyz ).r ; // get our intensity of the origin texture (scaled 0.0 ... 1.0)
 	float inormed = ( i * range ) + min; // since i goes 0.0 ... 1.0 we have to caclulate it back to its origin range
-	bool az = ( inormed > 0.0 ); // we are above 0
-	bool bz = (inormed < 0.0 ); // we are below 0
+	bool az = (inormed > 0.0 - err); // we are above 0
+	bool bz = (inormed < 0.0 + err); // we are below 0
 	float abs_max = abs(max);
 	float abs_min = abs(min);
 	float abs_min_range = abs_min / range;
@@ -36,13 +36,11 @@ std::string colormap_shader_code = STRINGIFY(
 	
 	bool ut = !( inormed < upper_threshold);
 	bool lt = !( inormed > lower_threshold);
-	bool inz1 = !(inormed > 0.0 - err);
-	bool inz2 = !(inormed < 0.0 + err);
 	
 	//and since we can not be sure the GLSL version supports bitwise operators we have to cheat a little and simulate them
 	//this exactly the same expression as:
 	//colorLut.a = float((ut & az & (inz1 ^ inz2)) ^ (lt & bz & (inz1 ^ inz2))) * opacity;
-	colorLut.a = (((float(ut) * float(az)) * (float(inz1)+float(inz2))) + ((float(lt) * float(bz)) * (float(inz1) + float(inz2)))) * opacity;
+	colorLut.a = (((float(ut) * float(az)) * (float(!az)+float(!bz))) + ((float(lt) * float(bz)) * (float(!az) + float(!bz)))) * opacity;
 	
 	//gl_FragColor = ( colorLut + bias / range ) * scaling;
 	gl_FragColor = colorLut;
