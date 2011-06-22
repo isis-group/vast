@@ -1,5 +1,6 @@
 #define STRINGIFY(A) #A
 #include <string>
+#include <complex>
 
 std::string colormap_shader_code = STRINGIFY(
 									   uniform sampler3D imageTexture;
@@ -21,12 +22,13 @@ std::string colormap_shader_code = STRINGIFY(
 	float inormed = ( i * range ) + min; // since i goes 0.0 ... 1.0 we have to caclulate it back to its origin range
 	bool az = ( inormed > 0.0 ); // we are above 0
 	bool bz = (inormed < 0.0 ); // we are below 0
-	
+	float abs_max = abs(max);
+	float abs_min = abs(min);
 	//since we can not be certain that abs(min) == abs(max) and so i = 0.5 == inormed = 0.0 we have to scale 
-	i = float(az) * (((i - (abs(min)/range)) * (0.5 / (max/range))) + 0.5 - 1e-6) + float(bz) * (i * (0.5 / abs(min/range))) ;
+	i = float(az) * (((i - (abs_min/range)) * (0.5 / (abs_max/range))) + 0.5 - 1e-6) + float(bz) * (i * (0.5 / (abs_min/range))) ;
 		
 	// if the user modifies the lower or upper threshold we always want the same range of the colortable
-	float iscaled = (float(az) * (i - (upper_threshold / (abs(max))) ) * (abs(max)/(abs(max)-upper_threshold))) + (float(bz) * (i - (lower_threshold / abs(min))) * (abs(min)/(abs(min)-lower_threshold)));
+	float iscaled = (float(az) * (i - (upper_threshold / (abs_max)) ) * (abs_max/(abs_max-upper_threshold))) + (float(bz) * (i - (lower_threshold / abs_min)) * (abs_min/(abs_min-lower_threshold)));
 	vec4 colorLut = texture1D( lut, iscaled );
 	
 	//ok, since we have to avoid if-statements we have to do it that way...
