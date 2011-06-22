@@ -283,10 +283,6 @@ void QGLWidgetImplementation::paintImage( const std::pair< boost::shared_ptr<Ima
 
 	//if the image is declared as a zmap
 	if( state.first->getImageState().imageType == ImageHolder::z_map ) {
-		std::cout << "upper_threshold " << state.first->getImageState().zmapThreshold.second << std::endl;
-		std::cout << "lower_threshold " << state.first->getImageState().zmapThreshold.first << std::endl;
-		std::cout << "max " << state.first->getMinMax().second->as<float>() << std::endl;
-		std::cout << "min " << state.first->getMinMax().first->as<float>() << std::endl;
 		m_LUTShader.setEnabled( true );
 		glEnable( GL_TEXTURE_1D );
 		glActiveTexture( GL_TEXTURE1 );
