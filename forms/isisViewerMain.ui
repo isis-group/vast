@@ -27,6 +27,12 @@
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout_10">
+    <property name="margin">
+     <number>2</number>
+    </property>
+    <property name="spacing">
+     <number>2</number>
+    </property>
     <item row="0" column="0">
      <widget class="QScrollArea" name="scrollArea">
       <property name="frameShape">
@@ -52,11 +58,17 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>940</width>
-         <height>633</height>
+         <width>954</width>
+         <height>733</height>
         </rect>
        </property>
        <layout class="QGridLayout" name="gridLayout_9">
+        <property name="margin">
+         <number>2</number>
+        </property>
+        <property name="spacing">
+         <number>2</number>
+        </property>
         <item row="0" column="0">
          <widget class="QFrame" name="frame">
           <property name="sizePolicy">
@@ -124,6 +136,12 @@
              </property>
              <widget class="QWidget" name="dockWidgetContents_2">
               <layout class="QGridLayout" name="gridLayout_2">
+               <property name="margin">
+                <number>0</number>
+               </property>
+               <property name="spacing">
+                <number>0</number>
+               </property>
                <item row="0" column="0">
                 <widget class="QWidget" name="axialWidget" native="true">
                  <property name="sizePolicy">
@@ -154,8 +172,8 @@
              </property>
              <property name="minimumSize">
               <size>
-               <width>200</width>
-               <height>200</height>
+               <width>209</width>
+               <height>243</height>
               </size>
              </property>
              <property name="floating">
@@ -172,6 +190,12 @@
              </property>
              <widget class="QWidget" name="dockWidgetContents_3">
               <layout class="QGridLayout" name="gridLayout_3">
+               <property name="margin">
+                <number>0</number>
+               </property>
+               <property name="spacing">
+                <number>0</number>
+               </property>
                <item row="0" column="0">
                 <widget class="QWidget" name="sagittalWidget" native="true">
                  <property name="sizePolicy">
@@ -202,8 +226,8 @@
              </property>
              <property name="minimumSize">
               <size>
-               <width>200</width>
-               <height>200</height>
+               <width>209</width>
+               <height>243</height>
               </size>
              </property>
              <property name="floating">
@@ -220,6 +244,12 @@
              </property>
              <widget class="QWidget" name="dockWidgetContents_4">
               <layout class="QGridLayout" name="gridLayout_4">
+               <property name="margin">
+                <number>0</number>
+               </property>
+               <property name="spacing">
+                <number>0</number>
+               </property>
                <item row="0" column="0">
                 <widget class="QWidget" name="coronalWidget" native="true">
                  <property name="sizePolicy">
@@ -274,6 +304,12 @@
              </property>
              <widget class="QWidget" name="dockWidgetContents_6">
               <layout class="QGridLayout" name="gridLayout_5">
+               <property name="margin">
+                <number>2</number>
+               </property>
+               <property name="spacing">
+                <number>2</number>
+               </property>
                <item row="0" column="0">
                 <widget class="QWidget" name="widget_4" native="true">
                  <property name="sizePolicy">
@@ -283,6 +319,12 @@
                   </sizepolicy>
                  </property>
                  <layout class="QHBoxLayout" name="horizontalLayout">
+                  <property name="spacing">
+                   <number>2</number>
+                  </property>
+                  <property name="margin">
+                   <number>2</number>
+                  </property>
                   <item>
                    <widget class="QWidget" name="widget_5" native="true">
                     <property name="sizePolicy">
@@ -292,6 +334,12 @@
                      </sizepolicy>
                     </property>
                     <layout class="QVBoxLayout" name="verticalLayout">
+                     <property name="spacing">
+                      <number>2</number>
+                     </property>
+                     <property name="margin">
+                      <number>2</number>
+                     </property>
                      <item>
                       <widget class="QWidget" name="widget_2" native="true">
                        <property name="sizePolicy">
@@ -300,12 +348,12 @@
                          <verstretch>0</verstretch>
                         </sizepolicy>
                        </property>
-                       <layout class="QHBoxLayout" name="horizontalLayout_3">
+                       <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="0,0">
                         <property name="spacing">
-                         <number>0</number>
+                         <number>2</number>
                         </property>
                         <property name="margin">
-                         <number>0</number>
+                         <number>2</number>
                         </property>
                         <item>
                          <widget class="QLabel" name="label_9">
@@ -346,7 +394,7 @@
                      <item>
                       <widget class="QFrame" name="frame_2">
                        <property name="sizePolicy">
-                        <sizepolicy hsizetype="Ignored" vsizetype="Preferred">
+                        <sizepolicy hsizetype="Ignored" vsizetype="Expanding">
                          <horstretch>0</horstretch>
                          <verstretch>0</verstretch>
                         </sizepolicy>
@@ -358,6 +406,12 @@
                         <enum>QFrame::Raised</enum>
                        </property>
                        <layout class="QGridLayout" name="gridLayout_7">
+                        <property name="margin">
+                         <number>2</number>
+                        </property>
+                        <property name="spacing">
+                         <number>2</number>
+                        </property>
                         <item row="0" column="0">
                          <widget class="QLabel" name="label_15">
                           <property name="sizePolicy">
@@ -550,10 +604,22 @@
                      <item>
                       <widget class="QListWidget" name="imageStack">
                        <property name="sizePolicy">
-                        <sizepolicy hsizetype="Ignored" vsizetype="Expanding">
+                        <sizepolicy hsizetype="Ignored" vsizetype="Minimum">
                          <horstretch>0</horstretch>
                          <verstretch>0</verstretch>
                         </sizepolicy>
+                       </property>
+                       <property name="minimumSize">
+                        <size>
+                         <width>0</width>
+                         <height>100</height>
+                        </size>
+                       </property>
+                       <property name="maximumSize">
+                        <size>
+                         <width>16777215</width>
+                         <height>100</height>
+                        </size>
                        </property>
                       </widget>
                      </item>
@@ -563,6 +629,12 @@
                   <item>
                    <widget class="QWidget" name="frameThreshold" native="true">
                     <layout class="QGridLayout" name="gridLayout_8">
+                     <property name="margin">
+                      <number>2</number>
+                     </property>
+                     <property name="spacing">
+                      <number>2</number>
+                     </property>
                      <item row="1" column="0">
                       <widget class="QLabel" name="maxLabel">
                        <property name="text">
@@ -709,6 +781,12 @@
       </property>
       <widget class="QWidget" name="dockWidgetContents">
        <layout class="QGridLayout" name="gridLayout_6">
+        <property name="margin">
+         <number>0</number>
+        </property>
+        <property name="spacing">
+         <number>0</number>
+        </property>
         <item row="0" column="0">
          <widget class="QFrame" name="frame_3">
           <property name="frameShape">
@@ -718,6 +796,12 @@
            <enum>QFrame::Raised</enum>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_3">
+           <property name="spacing">
+            <number>2</number>
+           </property>
+           <property name="margin">
+            <number>2</number>
+           </property>
            <item>
             <widget class="QFrame" name="bottomCoordsFrame">
              <property name="frameShape">
@@ -727,6 +811,12 @@
               <enum>QFrame::Raised</enum>
              </property>
              <layout class="QHBoxLayout" name="horizontalLayout_2">
+              <property name="spacing">
+               <number>2</number>
+              </property>
+              <property name="margin">
+               <number>2</number>
+              </property>
               <item>
                <widget class="QComboBox" name="currentImageBox">
                 <property name="maximumSize">
@@ -833,6 +923,12 @@
               <enum>QFrame::Raised</enum>
              </property>
              <layout class="QHBoxLayout" name="horizontalLayout_4">
+              <property name="spacing">
+               <number>2</number>
+              </property>
+              <property name="margin">
+               <number>2</number>
+              </property>
               <item>
                <widget class="QLabel" name="label_10">
                 <property name="text">
@@ -863,6 +959,12 @@
                  <enum>QFrame::Raised</enum>
                 </property>
                 <layout class="QVBoxLayout" name="verticalLayout_2">
+                 <property name="spacing">
+                  <number>2</number>
+                 </property>
+                 <property name="margin">
+                  <number>2</number>
+                 </property>
                  <item>
                   <widget class="QSlider" name="horizontalSlider">
                    <property name="maximum">

@@ -55,6 +55,8 @@ void isis::viewer::MainWindow::setInitialState()
 	
 	//toolbar stuff
 	m_Toolbar->setOrientation(Qt::Horizontal);
+	m_Toolbar->setMinimumHeight(20);
+	m_Toolbar->setMaximumHeight(30);
 	this->addToolBar(Qt::TopToolBarArea, m_Toolbar);
 	m_Toolbar->addAction( ui.action_Open_Image);
 	m_Toolbar->addAction( ui.actionOpenZmap);
