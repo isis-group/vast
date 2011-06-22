@@ -30,7 +30,11 @@ std::string colormap_shader_code = STRINGIFY(
 	bool inz1 = !(inormed > 0.0 - err);
 	bool inz2 = !(inormed < 0.0 + err);
 	
-	colorLut.a = float((ut & az & (inz1 ^ inz2)) ^ (lt & bz & (inz1 ^ inz2))) * opacity;
+	//and since we can not be sure the GLSL version supports bitwise operators we have to cheat a little and simulate them
+	//this exactly the same expression as:
+	//colorLut.a = float((ut & az & (inz1 ^ inz2)) ^ (lt & bz & (inz1 ^ inz2))) * opacity;
+	colorLut.a = (((float(ut) * float(az)) * (float(inz1)+float(inz2))) + ((float(lt) * float(bz)) * (float(inz1) + float(inz2)))) * opacity;
+	
 
 	gl_FragColor = ( colorLut + bias / range ) * scaling;
 }
@@ -56,7 +60,7 @@ std::string scaling_shader_code = STRINGIFY(
 	bool inz1 = !(inormed > 0.0 - err);
 	bool inz2 = !(inormed < 0.0 + err);
 	
-	color.a = float(inz1 ^ inz2) * opacity;
+	color.a = float(inz1) + float(inz2) * opacity;
 	
 	gl_FragColor = ( color + bias / range ) * scaling;
 }
