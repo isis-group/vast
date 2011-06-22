@@ -17,24 +17,22 @@ std::string colormap_shader_code = STRINGIFY(
 	
 	float range = max - min;
 	float err = 0.02 * range;
-	float i = texture3D( imageTexture, gl_TexCoord[0].xyz ).r;
-	// we have to scale the colors 
-	float inormed = ( i * range ) + min;
-	bool az = ( inormed > 0.0 );
-	bool bz = (inormed < 0.0 );
+	float i = texture3D( imageTexture, gl_TexCoord[0].xyz ).r ; // get our intensity of the origin texture (scaled 0.0 ... 1.0)
+	float inormed = ( i * range ) + min; // since i goes 0.0 ... 1.0 we have to caclulate it back to its origin range
+	bool az = ( inormed > 0.0 ); // we are above 0
+	bool bz = (inormed < 0.0 ); // we are below 0
 	
-	float iscaled = float(az) * (i - (upper_threshold / abs(max)) + 0.04) * (abs(max)/(abs(max)-upper_threshold)) + float(bz) * (i - (lower_threshold / abs(min))) * (abs(min)/(abs(min)-lower_threshold));
-	
-	
+	//since we can not be certain that abs(min) == abs(max) and so i = 0.5 == inormed = 0.0 we have to scale 
+	i = float(az) * (((i - (abs(min)/range)) * (0.5 / (max/range))) + 0.5 - 1e-6) + float(bz) * (i * (0.5 / abs(min/range))) ;
+		
+	// if the user modifies the lower or upper threshold we always want the same range of the colortable
+	float iscaled = (float(az) * (i - (upper_threshold / (abs(max))) ) * (abs(max)/(abs(max)-upper_threshold))) + (float(bz) * (i - (lower_threshold / abs(min))) * (abs(min)/(abs(min)-lower_threshold)));
 	vec4 colorLut = texture1D( lut, iscaled );
-	
 	
 	//ok, since we have to avoid if-statements we have to do it that way...
 	
 	bool ut = !( inormed < upper_threshold);
-
 	bool lt = !( inormed > lower_threshold);
-	
 	bool inz1 = !(inormed > 0.0 - err);
 	bool inz2 = !(inormed < 0.0 + err);
 	
@@ -43,8 +41,8 @@ std::string colormap_shader_code = STRINGIFY(
 	//colorLut.a = float((ut & az & (inz1 ^ inz2)) ^ (lt & bz & (inz1 ^ inz2))) * opacity;
 	colorLut.a = (((float(ut) * float(az)) * (float(inz1)+float(inz2))) + ((float(lt) * float(bz)) * (float(inz1) + float(inz2)))) * opacity;
 	
-
-	gl_FragColor = ( colorLut + bias / range ) * scaling;
+	//gl_FragColor = ( colorLut + bias / range ) * scaling;
+	gl_FragColor = colorLut;
 }
 								   );
 
