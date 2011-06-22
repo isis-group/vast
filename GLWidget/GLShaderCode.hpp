@@ -18,15 +18,23 @@ std::string colormap_shader_code = STRINGIFY(
 	float range = max - min;
 	float err = 0.02 * range;
 	float i = texture3D( imageTexture, gl_TexCoord[0].xyz ).r;
-	vec4 colorLut = texture1D( lut, i );
+	// we have to scale the colors 
 	float inormed = ( i * range ) + min;
+	bool az = ( inormed > 0.0 );
+	bool bz = (inormed < 0.0 );
 	
-	//ok, since we have to avoid if statements we have to do it that way...
+	float iscaled = float(az) * (i - (upper_threshold / max)) * (max/(max-upper_threshold)) + float(bz) * (i - (lower_threshold / abs(min))) * (abs(min)/(abs(min)-lower_threshold));
+	
+	
+	vec4 colorLut = texture1D( lut, iscaled );
+	
+	
+	//ok, since we have to avoid if-statements we have to do it that way...
 	
 	bool ut = !( inormed < upper_threshold);
-	bool az = ( inormed > 0.0 );
+
 	bool lt = !( inormed > lower_threshold);
-	bool bz = (inormed < 0.0 );
+	
 	bool inz1 = !(inormed > 0.0 - err);
 	bool inz2 = !(inormed < 0.0 + err);
 	
