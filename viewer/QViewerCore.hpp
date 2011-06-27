@@ -6,6 +6,7 @@
 #include "QGLWidgetImplementation.hpp"
 #include <QtGui>
 #include "Color.hpp"
+#include "QPreferenceHandler.hpp"
 
 namespace isis
 {
@@ -26,6 +27,7 @@ public:
 	virtual void setImageList( const std::list< data::Image > imageList, const ImageHolder::ImageType &imageType, bool passToWidgets );
 
 	const WidgetMap &getWidgets() const { return m_WidgetMap; }
+	const pref::QPreferenceHandler* getSettings() const { return m_Preferences; }
 
 	bool widgetsAreIntitialized() const;
 	
@@ -67,6 +69,7 @@ private:
 	//this map holds the widgets associated with a given name
 	WidgetMap m_WidgetMap;
 	std::vector< util::fvector4 > m_RGBColorGradient;
+	pref::QPreferenceHandler *m_Preferences;
 
 };
 

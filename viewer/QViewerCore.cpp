@@ -10,6 +10,7 @@ QViewerCore::QViewerCore( const std::string &appName, const std::string &orgName
 {
 	QCoreApplication::setApplicationName( QString( appName.c_str() ) );
 	QCoreApplication::setOrganizationName( QString( orgName.c_str() ) );
+	m_Preferences = new pref::QPreferenceHandler( appName, orgName );
 }
 
 
