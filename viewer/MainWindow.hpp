@@ -35,6 +35,9 @@ private:
 	void setInitialState();
 
 public Q_SLOTS:
+	void closeEvent( QCloseEvent* );
+	void loadSettings();
+	void saveSettings();
 	void physicalCoordsChanged( util::fvector4 );
 	void voxelCoordsChanged( util::ivector4);
 	void exitProgram();

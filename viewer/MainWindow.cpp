@@ -38,7 +38,39 @@ MainWindow::MainWindow( QViewerCore *core )
 	m_ViewerCore->registerWidget( "sagittalView", m_SagittalWidget );
 
 	setInitialState();
+	loadSettings();
 }
+
+void MainWindow::closeEvent( QCloseEvent *event ) {
+	saveSettings();
+}
+
+void MainWindow::saveSettings()
+{
+	//saving the preferences to the profile file
+	m_ViewerCore->getPreferences()->getQSettings()->beginGroup("MainWindow");
+	m_ViewerCore->getPreferences()->getQSettings()->setValue("size", size() );
+	m_ViewerCore->getPreferences()->getQSettings()->setValue("fullscreen", isFullScreen() );
+	m_ViewerCore->getPreferences()->getQSettings()->setValue("pos", pos() );
+	m_ViewerCore->getPreferences()->getQSettings()->endGroup();
+	m_ViewerCore->getPreferences()->getQSettings()->sync();
+}
+
+
+void MainWindow::loadSettings()
+{
+	m_ViewerCore->getPreferences()->getQSettings()->beginGroup("MainWindow");
+	resize( m_ViewerCore->getPreferences()->getQSettings()->value("size", QSize(900, 900)).toSize() );
+	move( m_ViewerCore->getPreferences()->getQSettings()->value("pos", QPoint(0,0)).toPoint());
+	if( m_ViewerCore->getPreferences()->getQSettings()->value("fullscreen", false).toBool() ) {
+		std::cout << "gna" << std::endl;
+		showFullScreen();
+	}
+	m_ViewerCore->getPreferences()->getQSettings()->endGroup();
+	
+	
+}
+
 
 
 void isis::viewer::MainWindow::setInitialState()
