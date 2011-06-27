@@ -40,8 +40,8 @@ void QGLWidgetImplementation::commonInit()
 	setFocusPolicy( Qt::StrongFocus );
 	setMouseTracking( true );
 	connectSignals();
-	m_ScalingType = no_scaling;
-	m_InterplationType = GLTextureHandler::neares_neighbor;
+	m_ScalingType = static_cast<ScalingType>( m_ViewerCore->getPreferences()->getQSettings()->value("UserProfile/scaling", 0).toUInt());
+	m_InterplationType = static_cast<GLTextureHandler::InterpolationType>( m_ViewerCore->getPreferences()->getQSettings()->value("UserProfile/interpolation", 0).toUInt());
 	m_ScalingPair = std::make_pair<double, double>( 0.0, 1.0 );
 	//flags
 	m_Flags.zoomEvent = false;
@@ -50,7 +50,7 @@ void QGLWidgetImplementation::commonInit()
 	m_Flags.strgKeyPressed = false;
 	m_Flags.init = true;
 	m_Flags.glInitialized = false;
-	m_ShowLabels = false;
+	m_ShowLabels = m_ViewerCore->getPreferences()->getQSettings()->value("UserProfile/labels", false).toBool();
 	
 }
 

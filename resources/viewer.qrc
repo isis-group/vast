@@ -1,5 +1,5 @@
 <RCC>
-  <qresource prefix="common">
+  <qresource prefix="common" >
     <file>graph.gif</file>
     <file>preferences_settings.png</file>
     <file>control.gif</file>
@@ -13,5 +13,8 @@
     <file>openimage.png</file>
     <file>orient.gif</file>
     <file>icon_check.png</file>
+  </qresource>
+  <qresource prefix="lut" >
+    <file>lut_standard.png</file>
   </qresource>
 </RCC>

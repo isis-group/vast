@@ -19,6 +19,7 @@ MainWindow::MainWindow( QViewerCore *core )
 	: m_ViewerCore( core )
 {
 	m_PlottingDialog->setViewerCore( m_ViewerCore );
+	m_PreferencesDialog = new QPreferencesDialog(this, m_ViewerCore );
 	m_State = single;
 	actionMakeCurrent = new QAction( "Make current", this );
 	actionAsZMap = new QAction( "Show as zmap", this );
@@ -65,6 +66,11 @@ void MainWindow::loadSettings()
 	if( m_ViewerCore->getPreferences()->getQSettings()->value("maximized", false).toBool() ) {
 		showMaximized();
 	}
+	m_ViewerCore->getPreferences()->getQSettings()->endGroup();
+	m_ViewerCore->getPreferences()->getQSettings()->beginGroup("UserProfile");
+	ui.interpolationType->setCurrentIndex( m_ViewerCore->getPreferences()->getQSettings()->value("interpolation", 0).toUInt());
+	ui.actionAutomatic_Scaling->setChecked( m_ViewerCore->getPreferences()->getQSettings()->value("scaling", 0).toBool() );
+	ui.actionShow_labels->setChecked( m_ViewerCore->getPreferences()->getQSettings()->value("labels",0).toBool());
 	m_ViewerCore->getPreferences()->getQSettings()->endGroup();
 	
 	
@@ -479,11 +485,14 @@ void MainWindow::assembleViewInRows( )
 		//setup title
 		std::stringstream title;
 		QFileInfo dir(tr( image->getFileNames().front().c_str()));
-		title << dir.fileName().toStdString() << " (";
-		if( image->getImage()->hasProperty("sequenceDescription") ) {
-			title <<  image->getImage()->getPropertyAs<std::string>("sequenceDescription") << ")";
-		} else {
-			title << "no desc.)";
+		title << dir.fileName().toStdString();
+		if( m_ViewerCore->getPreferences()->getQSettings()->value("UserProfile/showDesc", false).toBool() ) {
+			title << " (";
+			if( image->getImage()->hasProperty("sequenceDescription") ) {
+				title <<  image->getImage()->getPropertyAs<std::string>("sequenceDescription") << ")";
+			} else {
+				title << "no desc.)";
+			}
 		}
 		axialDock->setWindowTitle( tr( title.str().c_str()));
 		sagittalDock->setWindowTitle( tr( title.str().c_str()));
