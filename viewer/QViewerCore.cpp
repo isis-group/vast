@@ -6,8 +6,10 @@ namespace isis
 namespace viewer
 {
 
-QViewerCore::QViewerCore( ): ViewerCoreBase( )
+QViewerCore::QViewerCore( const std::string &appName, const std::string &orgName ): ViewerCoreBase( )
 {
+	QCoreApplication::setApplicationName( QString( appName.c_str() ) );
+	QCoreApplication::setOrganizationName( QString( orgName.c_str() ) );
 }
 
 

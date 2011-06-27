@@ -11,7 +11,7 @@ class MainWindowUIInterface : public MainWindow
 {
 	Q_OBJECT;
 public:
-	MainWindowUIInterface(QViewerCore* core);
+	MainWindowUIInterface(QViewerCore* core );
 		
 
 protected:

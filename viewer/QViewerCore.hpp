@@ -18,7 +18,7 @@ class QViewerCore : public QObject, public ViewerCoreBase
 public:
 	enum Actions {not_specified, timestep_changed, show_labels};
 	typedef std::map<std::string, QWidget * > WidgetMap;
-	QViewerCore( );
+	QViewerCore( const std::string &appName = std::string(), const std::string &orgName = std::string() );
 
 	virtual bool registerWidget( std::string key, QWidget *widget, Actions = not_specified );
 

@@ -10,14 +10,16 @@
 
 int main( int argc, char *argv[] )
 {
+	std::string appName = "vast";
+	std::string orgName = "cbs.mpg.de";
 	using namespace isis::viewer;
-	isis::viewer::QViewerCore *core = new isis::viewer::QViewerCore;
+	isis::viewer::QViewerCore *core = new isis::viewer::QViewerCore( appName, orgName );
 
 	isis::util::Selection dbg_levels( "error,warning,info,verbose_info" );
 	dbg_levels.set( "warning" );
 	isis::util::Selection image_types( "anatomical,zmap" );
 	image_types.set( "anatomical" );
-	isis::qt4::IOQtApplication app( "vast", false, false );
+	isis::qt4::IOQtApplication app( appName.c_str(), false, false );
 	std::cout << "v" << core->getVersion() << " ( isis core: " << app.getCoreVersion() << " )" << std::endl;
 	app.parameters["in"] = isis::util::slist();
 	app.parameters["in"].needed() = false;
