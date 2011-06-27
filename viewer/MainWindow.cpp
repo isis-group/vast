@@ -50,7 +50,7 @@ void MainWindow::saveSettings()
 	//saving the preferences to the profile file
 	m_ViewerCore->getPreferences()->getQSettings()->beginGroup("MainWindow");
 	m_ViewerCore->getPreferences()->getQSettings()->setValue("size", size() );
-	m_ViewerCore->getPreferences()->getQSettings()->setValue("fullscreen", isFullScreen() );
+	m_ViewerCore->getPreferences()->getQSettings()->setValue("maximized", isMaximized() );
 	m_ViewerCore->getPreferences()->getQSettings()->setValue("pos", pos() );
 	m_ViewerCore->getPreferences()->getQSettings()->endGroup();
 	m_ViewerCore->getPreferences()->getQSettings()->sync();
@@ -62,9 +62,8 @@ void MainWindow::loadSettings()
 	m_ViewerCore->getPreferences()->getQSettings()->beginGroup("MainWindow");
 	resize( m_ViewerCore->getPreferences()->getQSettings()->value("size", QSize(900, 900)).toSize() );
 	move( m_ViewerCore->getPreferences()->getQSettings()->value("pos", QPoint(0,0)).toPoint());
-	if( m_ViewerCore->getPreferences()->getQSettings()->value("fullscreen", false).toBool() ) {
-		std::cout << "gna" << std::endl;
-		showFullScreen();
+	if( m_ViewerCore->getPreferences()->getQSettings()->value("maximized", false).toBool() ) {
+		showMaximized();
 	}
 	m_ViewerCore->getPreferences()->getQSettings()->endGroup();
 	
