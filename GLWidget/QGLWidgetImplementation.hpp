@@ -44,6 +44,7 @@ public Q_SLOTS:
 	 * @param voxelCoords The voxelCoords that has to be drawn. This also specifies the crosshair position
 	 * @return True if imageID exists and voxelCoords are inside the image. Otherwise returns false.
 	 */
+	virtual void setZoom( float zoom );
 	virtual bool removeImage( const boost::shared_ptr<ImageHolder> image );
 	virtual void addImage( const boost::shared_ptr<ImageHolder> image );
 	virtual bool lookAtVoxel( const util::ivector4 &voxelCoords );
@@ -83,6 +84,7 @@ Q_SIGNALS:
 	void redraw();
 	void voxelCoordsChanged( util::ivector4 );
 	void physicalCoordsChanged( util::fvector4 );
+	void zoomChanged( float zoomFactor );
 
 
 private:

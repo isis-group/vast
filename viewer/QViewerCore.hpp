@@ -49,6 +49,7 @@ public:
 
 
 public Q_SLOTS:
+	virtual void zoomChanged( float zoomFactor );
 	virtual void voxelCoordsChanged( util::ivector4 );
 	virtual void physicalCoordsChanged( util::fvector4 );
 	virtual void timestepChanged( int );
@@ -57,6 +58,7 @@ public Q_SLOTS:
 	virtual void setAutomaticScaling( bool );
 
 Q_SIGNALS:
+	void emitZoomChanged( float zoom );
 	void emitVoxelCoordChanged( util::ivector4 );
 	void emitPhysicalCoordsChanged( util::fvector4 );
 	void emitTimeStepChange( unsigned int );
@@ -65,7 +67,7 @@ Q_SIGNALS:
 	void emitSetAutomaticScaling( bool );
 	void emitUpdateScene( bool center );
 
-private:
+private:	
 	//this map holds the widgets associated with a given name
 	WidgetMap m_WidgetMap;
 	std::vector< util::fvector4 > m_RGBColorGradient;

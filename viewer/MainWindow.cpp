@@ -71,6 +71,7 @@ void MainWindow::loadSettings()
 	ui.interpolationType->setCurrentIndex( m_ViewerCore->getSettings()->value("interpolation", 0).toUInt());
 	ui.actionAutomatic_Scaling->setChecked( m_ViewerCore->getSettings()->value("scaling", 0).toBool() );
 	ui.actionShow_labels->setChecked( m_ViewerCore->getSettings()->value("labels",0).toBool());
+	m_ViewerCore->getOption()->propagateZooming = m_ViewerCore->getSettings()->value("propagateZooming", false).toBool();
 	m_ViewerCore->getSettings()->endGroup();
 	
 	

@@ -13,8 +13,11 @@ namespace viewer
 
 class ViewerCoreBase
 {
-
+	struct OptionStruct {
+		bool propagateZooming;
+	};
 public:
+	
 	ViewerCoreBase( );
 
 	std::string getVersion() const;
@@ -36,6 +39,9 @@ public:
 
 	const DataContainer &getDataContainer() const { return m_DataContainer; }
 	DataContainer &getDataContainer() { return m_DataContainer; }
+	
+	const OptionStruct* getOption() const { return m_Options; }
+	OptionStruct* getOption() { return m_Options; }
 
 private:
 	//this is the container which actually holds all the images
@@ -43,6 +49,10 @@ private:
 	boost::shared_ptr<ImageHolder>  m_CurrentImage;
 	size_t m_CurrentTimestep;
 
+protected:
+	OptionStruct *m_Options;
+	
+	
 };
 
 

@@ -11,6 +11,8 @@ namespace viewer
 ViewerCoreBase::ViewerCoreBase( )
 	: m_CurrentTimestep( 0 )
 {
+	m_Options = new OptionStruct;
+	m_Options->propagateZooming = false;
 }
 
 std::list<boost::shared_ptr<ImageHolder> > ViewerCoreBase::addImageList( const std::list< data::Image > imageList, const ImageHolder::ImageType &imageType )

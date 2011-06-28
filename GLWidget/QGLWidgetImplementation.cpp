@@ -452,30 +452,34 @@ bool QGLWidgetImplementation::timestepChanged( unsigned int timestep )
 
 }
 
+void QGLWidgetImplementation::setZoom(float zoomFactor)
+{
+	BOOST_FOREACH( StateMap::reference state, m_ImageStates ) {
+		glMatrixMode( GL_PROJECTION );
+		glLoadMatrixd( state.second.projectionMatrix );
+		glScalef( zoomFactor, zoomFactor, 1 );
+		glGetDoublev( GL_PROJECTION_MATRIX, state.second.projectionMatrix );
+		glLoadIdentity();
+	}
+	m_Zoom.currentZoom *= zoomFactor;
+	updateScene();
+}
+
+
 void QGLWidgetImplementation::wheelEvent( QWheelEvent *e )
 {
 	float zoomFactor = 1;
-
 	if( e->delta() < 0 ) {
 		zoomFactor = m_Zoom.zoomFactorOut;
 	} else if ( e->delta() > 0 ) { zoomFactor = m_Zoom.zoomFactorIn; }
 
-	if( m_Zoom.currentZoom * zoomFactor < 64 ) {
-		m_Zoom.currentZoom *= zoomFactor;
-
-		if( m_Zoom.currentZoom >= 1 ) {
-			BOOST_FOREACH( StateMap::reference state, m_ImageStates ) {
-				glMatrixMode( GL_PROJECTION );
-				glLoadMatrixd( state.second.projectionMatrix );
-				glScalef( zoomFactor, zoomFactor, 1 );
-				glGetDoublev( GL_PROJECTION_MATRIX, state.second.projectionMatrix );
-				glLoadIdentity();
-			}
-			m_Flags.zoomEvent = true;
-			updateScene();
+	if( m_Zoom.currentZoom * zoomFactor < 64 && m_Zoom.currentZoom * zoomFactor >= 1) {
+		if(m_ViewerCore->getOption()->propagateZooming) {
+			zoomChanged( zoomFactor );
 		} else {
-			m_Zoom.currentZoom = 1;
+			setZoom(zoomFactor);
 		}
+		m_Flags.zoomEvent = true;
 	}
 
 

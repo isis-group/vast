@@ -26,12 +26,14 @@ QViewerCore::registerWidget( std::string key, QWidget *widget, QViewerCore::Acti
 			GL::QGLWidgetImplementation *w = dynamic_cast<GL::QGLWidgetImplementation *>( widget );
 			connect( w, SIGNAL( voxelCoordsChanged( util::ivector4 ) ), this, SLOT( voxelCoordsChanged ( util::ivector4 ) ) );
 			connect( w, SIGNAL( physicalCoordsChanged( util::fvector4 ) ), this, SLOT( physicalCoordsChanged ( util::fvector4 ) ) );
+			connect( w, SIGNAL( zoomChanged(float)), this, SLOT( zoomChanged(float)));
 			connect( this, SIGNAL( emitVoxelCoordChanged( util::ivector4 ) ), w, SLOT( lookAtVoxel( util::ivector4 ) ) );
 			connect( this, SIGNAL( emitPhysicalCoordsChanged( util::fvector4 ) ), w, SLOT( lookAtPhysicalCoords( util::fvector4 ) ) );
 			connect( this, SIGNAL( emitTimeStepChange( unsigned int ) ), w, SLOT( timestepChanged( unsigned int ) ) );
 			connect( this, SIGNAL( emitShowLabels( bool ) ), w, SLOT( setShowLabels( bool ) ) );
 			connect( this, SIGNAL( emitUpdateScene( bool ) ), w, SLOT( updateScene( bool ) ) );
 			connect( this, SIGNAL( emitSetAutomaticScaling( bool ) ), w, SLOT( setAutomaticScaling( bool ) ) );
+			connect( this, SIGNAL( emitZoomChanged(float)), w, SLOT( setZoom(float)));
 		}
 	} else {
 		LOG( Runtime, error ) << "A widget with the name " << key << " already exists! Wont add this";
@@ -120,6 +122,14 @@ void QViewerCore::updateScene( bool center )
 void QViewerCore::setAutomaticScaling( bool s )
 {
 	emitSetAutomaticScaling( s );
+}
+
+
+void QViewerCore::zoomChanged(float zoomFactor)
+{
+	if(m_Options->propagateZooming) {
+		emitZoomChanged( zoomFactor );
+	}
 }
 
 }
