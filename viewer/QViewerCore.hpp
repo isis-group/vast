@@ -6,7 +6,6 @@
 #include "QGLWidgetImplementation.hpp"
 #include <QtGui>
 #include "Color.hpp"
-#include "QPreferenceHandler.hpp"
 
 namespace isis
 {
