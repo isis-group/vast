@@ -59,7 +59,7 @@ std::string scaling_shader_code = STRINGIFY(
 									  void main()
 {
 	float range = max - min;
-	float err = 0.001 * range;
+	float err = 1e-6 * range;
 	vec4 color = texture3D( imageTexture, gl_TexCoord[0].xyz );
 	color.a = opacity;
 	float inormed = ( color.r * range ) + min;
