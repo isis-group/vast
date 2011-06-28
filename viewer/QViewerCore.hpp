@@ -27,8 +27,8 @@ public:
 	virtual void setImageList( const std::list< data::Image > imageList, const ImageHolder::ImageType &imageType, bool passToWidgets );
 
 	const WidgetMap &getWidgets() const { return m_WidgetMap; }
-	const pref::QPreferenceHandler* getPreferences() const { return m_Preferences; }
-	pref::QPreferenceHandler* getPreferences() { return m_Preferences; }
+	const QSettings* getSettings() const { return m_Settings; }
+	QSettings* getSettings() { return m_Settings; }
 
 	bool widgetsAreIntitialized() const;
 	
@@ -70,7 +70,7 @@ private:
 	//this map holds the widgets associated with a given name
 	WidgetMap m_WidgetMap;
 	std::vector< util::fvector4 > m_RGBColorGradient;
-	pref::QPreferenceHandler *m_Preferences;
+	QSettings *m_Settings;
 
 };
 
