@@ -474,6 +474,7 @@ void QGLWidgetImplementation::wheelEvent( QWheelEvent *e )
 	} else if ( e->delta() > 0 ) { zoomFactor = m_Zoom.zoomFactorIn; }
 
 	if( m_Zoom.currentZoom * zoomFactor < 64 && m_Zoom.currentZoom * zoomFactor >= 1) {
+#warning change this!!!!!!!!!
 		if(m_ViewerCore->getOption()->propagateZooming) {
 			zoomChanged( zoomFactor );
 		} else {
@@ -481,9 +482,6 @@ void QGLWidgetImplementation::wheelEvent( QWheelEvent *e )
 		}
 		m_Flags.zoomEvent = true;
 	}
-
-
-
 }
 
 void QGLWidgetImplementation::mouseReleaseEvent( QMouseEvent *e )
