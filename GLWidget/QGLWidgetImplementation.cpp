@@ -540,7 +540,10 @@ void QGLWidgetImplementation::updateScene( bool center )
 {
 	if( !m_ImageStates.empty() ) {
 		util::ivector4 voxelCoords;
-
+		if(m_Flags.init) { 
+		    center = true;
+		    m_Flags.init = false; 
+		}
 		if( !center ) {
 			voxelCoords =  m_ImageStates.begin()->second.voxelCoords ;
 		} else {
