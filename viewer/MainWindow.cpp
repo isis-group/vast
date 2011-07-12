@@ -164,6 +164,11 @@ void MainWindow::currentImageChanged(int index )
 	m_ViewerCore->setCurrentImage( m_ViewerCore->getDataContainer().getImageByID( index ) );
 	imagesChanged( m_ViewerCore->getDataContainer() );
 	updateInterfaceValues();
+	if( m_ViewerCore->getCurrentImage()->getImageSize()[3] > 1 ) {
+	    ui.action_Plotting->setEnabled(true);
+	} else {
+	    ui.action_Plotting->setEnabled( false );
+	}
 }
 
 
@@ -266,9 +271,6 @@ void MainWindow::imagesChanged( DataContainer images )
 		if( m_ViewerCore->getCurrentImage().get() == imageRef.second.get() ) {
 			item->setIcon( QIcon( ":/common/currentImage.gif" ) );
 		}
-		if( imageRef.second->getImageSize()[3] > 1 ) {
-			ui.action_Plotting->setEnabled(true);
-		}
 		ui.imageStack->addItem( item );
 	}
 	double min = roundNumber<double>( m_ViewerCore->getCurrentImage()->getMinMax().first->as<double>(), 2 );
@@ -310,6 +312,11 @@ void MainWindow::imagesChanged( DataContainer images )
 	}
 	if( m_ViewerCore->widgetsAreIntitialized() ) {
 		m_ViewerCore->updateScene();
+	}
+	if( m_ViewerCore->getCurrentImage()->getImageSize()[3] > 1 ) {
+	    ui.action_Plotting->setEnabled( true );
+	} else {
+	    ui.action_Plotting->setEnabled(false);
 	}
 }
 

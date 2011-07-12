@@ -23,7 +23,7 @@ std::string getFileFormatsAsString( const std::string preSeparator, const std::s
 		}
 	}
 	fileFormats.str().erase( fileFormats.str().size() -1 , 1);
-	return fileFormats.str()
+	return fileFormats.str();
 
 }
 
