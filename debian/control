@@ -1,0 +1,15 @@
+Source: vast
+Section: science
+Priority: optional
+Maintainer: ISIS Group (The friendly isis team) <gr_isis@cbs.mpg.de>
+Build-Depends: libboost1.35-dev, libqwt5-qt4-dev, libqt4-dev
+Standards-Version: 3.8.1
+
+Package: vast
+Section: science
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: vast is a viewer for medical image data. It supports all image formats
+ that are supportet by the isis package. With version 0.1.0 these are the following:
+ nifti, vista, dicom, tar.gz, raw, img, hdr.
+ The viewer is capable of visualizing anatomical images, statistical images and functional images.
