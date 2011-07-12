@@ -1,4 +1,4 @@
-#include "Adapter/qtapplication.hpp"
+#include <Adapter/qtapplication.hpp>
 #include "MainWindowUIInterface.hpp"
 #include "QViewerCore.hpp"
 #include <iostream>
@@ -30,10 +30,6 @@ int main( int argc, char *argv[] )
 	app.parameters["type"] = image_types;
 	app.parameters["type"].needed() = false;
 	app.parameters["type"].setDescription( "The type as what the image should be interpreted." );
-	app.parameters["identity"] = bool();
-	app.parameters["identity"] = false;
-	app.parameters["identity"].needed() = false;
-	app.parameters["identity"].setDescription( "Sets the orientation of all images to identity and index origin to 0" );
 	app.parameters["dViewer"] = dbg_levels;
 	app.parameters["dViewer"].setDescription( "Debugging level for the Viewer module" );
 	app.parameters["dViewer"].hidden() = true;
@@ -45,6 +41,9 @@ int main( int argc, char *argv[] )
 	app.parameters["split"] = false;
 	app.parameters["split"].needed() = false;
 	app.parameters["split"].setDescription( "Show each image in a separate view" );
+	app.parameters["old_lipsia"] = false;
+	app.parameters["old_lipsia"].needed() = false;
+	app.parameters["old_lipsia"].setDescription( "Ignore orientation information and treat files as old lipsia files." );
 	app.init( argc, argv, true );
 	app.setLog<isis::ViewerLog>( app.getLLMap()[app.parameters["dViewer"]->as<isis::util::Selection>()] );
 	app.setLog<isis::ViewerDebug>( app.getLLMap()[app.parameters["dViewer"]->as<isis::util::Selection>()] );
@@ -57,7 +56,7 @@ int main( int argc, char *argv[] )
 	BOOST_FOREACH ( isis::util::slist::const_reference fileName, fileList ) {
 		std::list< isis::data::Image > tmpList = isis::data::IOFactory::load( fileName, app.parameters["rf"].toString() );
 		BOOST_FOREACH( std::list< isis::data::Image >::reference imageRef, tmpList ) {
-			if( app.parameters["identity"] ) {
+			if( app.parameters["old_lipsia"] ) {
 				setOrientationToIdentity( imageRef );
 			}
 
@@ -68,7 +67,7 @@ int main( int argc, char *argv[] )
 	BOOST_FOREACH ( isis::util::slist::const_reference fileName, zmapFileList ) {
 		std::list< isis::data::Image > tmpList = isis::data::IOFactory::load( fileName, app.parameters["rf"].toString() );
 		BOOST_FOREACH( std::list< isis::data::Image >::reference imageRef, tmpList ) {
-			if( app.parameters["identity"] ) {
+			if( app.parameters["old_lipsia"] ) {
 				setOrientationToIdentity( imageRef );
 			}
 
