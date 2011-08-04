@@ -112,6 +112,7 @@ void isis::viewer::MainWindow::setInitialState()
 	m_Toolbar->addAction( ui.action_Plotting );
 	m_Toolbar->addSeparator();	
 	m_Toolbar->addAction( ui.action_Exit);
+	m_ViewerCore->setCoordsTransformation( util::fvector4( -1, -1, 1, 1 ) );
 }
 
 void MainWindow::setVoxelPosition()
@@ -210,13 +211,14 @@ void MainWindow::voxelCoordsChanged(util::ivector4 coords )
 void MainWindow::physicalCoordsChanged( util::fvector4 coords )
 {
 	util::ivector4 voxelCoords = m_ViewerCore->getCurrentImage()->getImage()->getIndexFromPhysicalCoords( coords );
+	util::fvector4 transformedCoords = m_ViewerCore->getTransformedCoords( coords );
 	
 	ui.row_value->setText( QString::number(voxelCoords[0]));
 	ui.column_value->setText( QString::number(voxelCoords[1]) );
 	ui.slice_value->setText( QString::number(voxelCoords[2]) );
-	ui.x_value->setText( QString::number( coords[0] ) );
-	ui.y_value->setText( QString::number( coords[1] ) );
-	ui.z_value->setText( QString::number( coords[2] ) );
+	ui.x_value->setText( QString::number( transformedCoords[0] ) );
+	ui.y_value->setText( QString::number( transformedCoords[1] ) );
+	ui.z_value->setText( QString::number( transformedCoords[2] ) );
 	bool isOutside = false;
 	for( size_t i = 0;i<4; i++ ) {
 		if(voxelCoords[i] < 0 || voxelCoords[i] > static_cast<int32_t>( m_ViewerCore->getCurrentImage()->getImageSize()[i] -  1 ) )

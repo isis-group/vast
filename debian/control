@@ -8,7 +8,7 @@ Standards-Version: 3.8.1
 Package: vast
 Section: science
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends} libisiscore0 (>= 0.3.4)
+Depends: ${shlibs:Depends}, ${misc:Depends} libisiscore0 (>= 0.3.4), isis-qt4
 Description: vast is a viewer for medical image data. It supports all image formats
  that are supportet by the isis package. With version 0.1.0 these are the following:
  nifti, vista, dicom, tar.gz, raw, img, hdr.

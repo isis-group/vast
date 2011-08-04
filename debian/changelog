@@ -1,3 +1,12 @@
+vast (0.1.1-0) stable; urgency=low
+
+  * add progress bar for dicom import
+  * add transformation of the physical coords to correctly show mni coords.
+    Later there will be a combo box where users can choose between different
+    transformations
+
+ -- ISIS Group (The friendly isis team) <gr_isis@cbs.mpg.de>  Thu, 05 May 2011 15:38:35 +0200
+
 vast (0.1.0-0) stable; urgency=low
 
   * first debian package of the new lipsia viewer vast. This viewer is

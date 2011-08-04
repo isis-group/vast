@@ -44,6 +44,8 @@ int main( int argc, char *argv[] )
 	app.parameters["old_lipsia"] = false;
 	app.parameters["old_lipsia"].needed() = false;
 	app.parameters["old_lipsia"].setDescription( "Ignore orientation information and treat files as old lipsia files." );
+	isis::util::ConsoleFeedback feedback;
+	isis::data::IOFactory::setProgressFeedback( &feedback );
 	app.init( argc, argv, true );
 	app.setLog<isis::ViewerLog>( app.getLLMap()[app.parameters["dViewer"]->as<isis::util::Selection>()] );
 	app.setLog<isis::ViewerDebug>( app.getLLMap()[app.parameters["dViewer"]->as<isis::util::Selection>()] );
@@ -56,9 +58,9 @@ int main( int argc, char *argv[] )
 	BOOST_FOREACH ( isis::util::slist::const_reference fileName, fileList ) {
 		std::list< isis::data::Image > tmpList = isis::data::IOFactory::load( fileName, app.parameters["rf"].toString() );
 		BOOST_FOREACH( std::list< isis::data::Image >::reference imageRef, tmpList ) {
-			if( app.parameters["old_lipsia"] ) {
-				setOrientationToIdentity( imageRef );
-			}
+// 			if( app.parameters["old_lipsia"] ) {
+// 				setOrientationToIdentity( imageRef );
+// 			}
 
 			imgList.push_back( imageRef );
 		}
@@ -67,9 +69,9 @@ int main( int argc, char *argv[] )
 	BOOST_FOREACH ( isis::util::slist::const_reference fileName, zmapFileList ) {
 		std::list< isis::data::Image > tmpList = isis::data::IOFactory::load( fileName, app.parameters["rf"].toString() );
 		BOOST_FOREACH( std::list< isis::data::Image >::reference imageRef, tmpList ) {
-			if( app.parameters["old_lipsia"] ) {
-				setOrientationToIdentity( imageRef );
-			}
+// 			if( app.parameters["old_lipsia"] ) {
+// 				setOrientationToIdentity( imageRef );
+// 			}
 
 			zImgList.push_back( imageRef );
 		}
