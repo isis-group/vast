@@ -42,12 +42,16 @@ public:
 	
 	const OptionStruct* getOption() const { return m_Options; }
 	OptionStruct* getOption() { return m_Options; }
+	
+	void setCoordsTransformation( const util::fvector4 &transformation ) { m_VoxelTransformation = transformation; }
+	util::fvector4 getTransformedCoords( const util::fvector4 &coords) const;
 
 private:
 	//this is the container which actually holds all the images
 	DataContainer m_DataContainer;
 	boost::shared_ptr<ImageHolder>  m_CurrentImage;
 	size_t m_CurrentTimestep;
+	util::fvector4 m_VoxelTransformation;
 
 protected:
 	OptionStruct *m_Options;

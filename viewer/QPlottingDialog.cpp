@@ -26,8 +26,11 @@ void QPlottingDialog::setImageHolderList(std::list< boost::shared_ptr< ImageHold
 	m_Curves.clear();
 	BOOST_FOREACH(  ImageList::const_reference image, imageHolderList ) 
 	{
+	    if( image->getImageSize()[3] > 1 ) {
 		m_Images.push_back( image );
 		m_Curves.push_back( new QwtPlotCurve( tr( image->getFileNames().front().c_str() ) ) );
+	    }
+	    
 	}
 }
 
