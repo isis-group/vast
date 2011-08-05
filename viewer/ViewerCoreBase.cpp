@@ -56,9 +56,9 @@ std::string ViewerCoreBase::getVersion() const
 util::fvector4 ViewerCoreBase::getTransformedCoords(const isis::util::fvector4& coords) const
 {
     return util::fvector4( coords[0] * m_VoxelTransformation[0],
-			   coords[1] * m_VoxelTransformation[1],
-			   coords[2] * m_VoxelTransformation[2],
-			   coords[3] * m_VoxelTransformation[3] );
+         coords[1] * m_VoxelTransformation[1],
+         coords[2] * m_VoxelTransformation[2],
+         coords[3] * m_VoxelTransformation[3] );
 }
 
 
