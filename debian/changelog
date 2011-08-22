@@ -1,3 +1,9 @@
+vast (0.1.2-0) stable; urgency=low
+
+  * add parameter "rdialect"
+
+ -- ISIS Group (The friendly isis team) <gr_isis@cbs.mpg.de>  Mon, 22 Aug 2011 15:28:35 +0200
+
 vast (0.1.1-0) stable; urgency=low
 
   * add progress bar for dicom import
