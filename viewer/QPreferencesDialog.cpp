@@ -34,7 +34,7 @@ void QPreferencesDialog::saveSettings()
 	m_ViewerCore->getSettings()->beginGroup("UserProfile");
 	m_ViewerCore->getSettings()->setValue("showDesc", preferencesUi.checkShowDesc->isChecked());
 	m_ViewerCore->getSettings()->setValue("interpolation", preferencesUi.comboInterpolation->currentIndex());
-	m_ViewerCore->getSettings()->setValue("scaling", preferencesUi.comboInterpolation->currentIndex());
+	m_ViewerCore->getSettings()->setValue("scaling", preferencesUi.comboScaling->currentIndex());
 	m_ViewerCore->getSettings()->setValue("labels", preferencesUi.checkShowLabels->isChecked());
 	m_ViewerCore->getSettings()->setValue("propagateZooming", preferencesUi.checkPropagateZooming->isChecked());
 	m_ViewerCore->getSettings()->endGroup();

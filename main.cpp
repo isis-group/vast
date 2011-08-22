@@ -38,6 +38,10 @@ int main( int argc, char *argv[] )
 	app.parameters["rf"].needed() = false;
 	app.parameters["rf"].setDescription( "Override automatic detection of file suffix for reading with given value" );
 	app.parameters["rf"].hidden() = true;
+	app.parameters["rdialect"] = std::string();
+	app.parameters["rdialect"].needed() = false;
+	app.parameters["rdialect"].hidden() = true;
+	app.parameters["rdialect"].setDescription( "Dialect for reading" );
 	app.parameters["split"] = false;
 	app.parameters["split"].needed() = false;
 	app.parameters["split"].setDescription( "Show each image in a separate view" );
@@ -56,7 +60,7 @@ int main( int argc, char *argv[] )
 
 	//load the anatomical images
 	BOOST_FOREACH ( isis::util::slist::const_reference fileName, fileList ) {
-		std::list< isis::data::Image > tmpList = isis::data::IOFactory::load( fileName, app.parameters["rf"].toString() );
+		std::list< isis::data::Image > tmpList = isis::data::IOFactory::load( fileName, app.parameters["rf"].toString(), app.parameters["rdialect"].toString() );
 		BOOST_FOREACH( std::list< isis::data::Image >::reference imageRef, tmpList ) {
 // 			if( app.parameters["old_lipsia"] ) {
 // 				setOrientationToIdentity( imageRef );
@@ -67,7 +71,7 @@ int main( int argc, char *argv[] )
 	}
 	//load the zmap images
 	BOOST_FOREACH ( isis::util::slist::const_reference fileName, zmapFileList ) {
-		std::list< isis::data::Image > tmpList = isis::data::IOFactory::load( fileName, app.parameters["rf"].toString() );
+		std::list< isis::data::Image > tmpList = isis::data::IOFactory::load( fileName, app.parameters["rf"].toString(), app.parameters["rdialect"].toString() );
 		BOOST_FOREACH( std::list< isis::data::Image >::reference imageRef, tmpList ) {
 // 			if( app.parameters["old_lipsia"] ) {
 // 				setOrientationToIdentity( imageRef );
