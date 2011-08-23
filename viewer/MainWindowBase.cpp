@@ -12,6 +12,7 @@ MainWindowBase::MainWindowBase( QWidget *parent )
 {
 	ui.setupUi( this );
 
+	m_WidgetType = type_gl;
 	m_PlottingDialog = new QPlottingDialog(this);
 }
 

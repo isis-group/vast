@@ -16,27 +16,26 @@ namespace GL
 
 QGLWidgetImplementation::QGLWidgetImplementation( QViewerCore *core, QWidget *parent, QGLWidget *share, PlaneOrientation orientation )
 	: QGLWidget( parent, share ),
-	  m_ViewerCore( core ),
-	  m_PlaneOrientation( orientation ),
+	  WidgetImplenentationBase( core, parent, orientation ),
 	  m_ShareWidget( share )
+	  
 {
-	( new QVBoxLayout( parent ) )->addWidget( this );
+	//( new QVBoxLayout( parent ) )->addWidget( this ); implemented now in base class
 	commonInit();
 }
 
 QGLWidgetImplementation::QGLWidgetImplementation( QViewerCore *core, QWidget *parent, PlaneOrientation orientation )
 	: QGLWidget( parent ),
-	  m_ViewerCore( core ),
-	  m_PlaneOrientation( orientation )
+	  WidgetImplenentationBase( core, parent, orientation )
 {
-	( new QVBoxLayout( parent ) )->addWidget( this );
+// 	( new QVBoxLayout( parent ) )->addWidget( this ); implemented in base class
 	commonInit();
 }
 
 
 void QGLWidgetImplementation::commonInit()
 {
-	setSizePolicy( QSizePolicy( QSizePolicy::Ignored, QSizePolicy::Ignored ) );
+// 	setSizePolicy( QSizePolicy( QSizePolicy::Ignored, QSizePolicy::Ignored ) );
 	setFocusPolicy( Qt::StrongFocus );
 	setMouseTracking( true );
 	connectSignals();
@@ -54,7 +53,7 @@ void QGLWidgetImplementation::commonInit()
 	
 }
 
-QGLWidgetImplementation *QGLWidgetImplementation::createSharedWidget( QWidget *parent, PlaneOrientation orientation )
+WidgetImplenentationBase *QGLWidgetImplementation::createSharedWidget( QWidget *parent, PlaneOrientation orientation )
 {
 	return new QGLWidgetImplementation( m_ViewerCore, parent, this, orientation );
 }
@@ -73,6 +72,16 @@ bool QGLWidgetImplementation::removeImage( const boost::shared_ptr<ImageHolder> 
 void QGLWidgetImplementation::connectSignals()
 {
 	connect( this, SIGNAL( redraw() ), SLOT( updateGL() ) );
+	connect( this, SIGNAL( voxelCoordsChanged( util::ivector4 ) ), m_ViewerCore, SLOT( voxelCoordsChanged ( util::ivector4 ) ) );
+	connect( this, SIGNAL( physicalCoordsChanged( util::fvector4 ) ), m_ViewerCore, SLOT( physicalCoordsChanged ( util::fvector4 ) ) );
+	connect( this, SIGNAL( zoomChanged(float)), m_ViewerCore, SLOT( zoomChanged(float)));
+	connect( m_ViewerCore, SIGNAL( emitVoxelCoordChanged( util::ivector4 ) ), this, SLOT( lookAtVoxel( util::ivector4 ) ) );
+	connect( m_ViewerCore, SIGNAL( emitPhysicalCoordsChanged( util::fvector4 ) ), this, SLOT( lookAtPhysicalCoords( util::fvector4 ) ) );
+	connect( m_ViewerCore, SIGNAL( emitTimeStepChange( unsigned int ) ), this, SLOT( timestepChanged( unsigned int ) ) );
+	connect( m_ViewerCore, SIGNAL( emitShowLabels( bool ) ), this, SLOT( setShowLabels( bool ) ) );
+	connect( m_ViewerCore, SIGNAL( emitUpdateScene( bool ) ), this, SLOT( updateScene( bool ) ) );
+	connect( m_ViewerCore, SIGNAL( emitSetAutomaticScaling( bool ) ), this, SLOT( setAutomaticScaling( bool ) ) );
+	connect( m_ViewerCore, SIGNAL( emitZoomChanged(float)), this, SLOT( setZoom(float)));
 
 }
 

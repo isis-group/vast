@@ -11,6 +11,7 @@
 #include "GLOrientationHandler.hpp"
 #include "GLShaderHandler.hpp"
 #include "GLLookupTable.hpp"
+#include "WidgetImplementationBase.hpp"
 
 namespace isis
 {
@@ -20,7 +21,7 @@ class QViewerCore;
 namespace GL
 {
 
-class QGLWidgetImplementation : public QGLWidget
+class QGLWidgetImplementation : public QGLWidget, public WidgetImplenentationBase
 {
 	Q_OBJECT
 public:
@@ -28,11 +29,11 @@ public:
 	QGLWidgetImplementation( QViewerCore *core, QWidget *parent = 0, QGLWidget *share = 0, PlaneOrientation orienation = axial );
 	QGLWidgetImplementation( QViewerCore *core, QWidget *parent = 0, PlaneOrientation orientation = axial );
 
-	QGLWidgetImplementation *createSharedWidget( QWidget *parent, PlaneOrientation orienation = axial );
+	WidgetImplenentationBase *createSharedWidget( QWidget *parent, PlaneOrientation orienation = axial );
 
 private:
 	QGLWidgetImplementation( QViewerCore *core, QWidget *parent, QGLWidget *share, QGLContext *context, PlaneOrientation orienation = axial );
-	QViewerCore *m_ViewerCore;
+	
 	QGLWidget *m_ShareWidget;
 
 public Q_SLOTS:
@@ -61,8 +62,7 @@ public Q_SLOTS:
 		updateScene();
 	}
 	virtual bool isInitialized() { return m_Flags.glInitialized; }
-	virtual PlaneOrientation getPlaneOrientation() { return m_PlaneOrientation; }
-
+	
 protected:
 	virtual void mouseMoveEvent( QMouseEvent *e );
 	virtual void wheelEvent( QWheelEvent *e );
@@ -125,7 +125,7 @@ private:
 	GLShaderHandler m_LUTShader;
 
 	std::vector<GLuint> m_TextureIDVec;
-	PlaneOrientation m_PlaneOrientation;
+	
 	GLTextureHandler::InterpolationType m_InterplationType;
 
 	

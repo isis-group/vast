@@ -16,25 +16,11 @@ QViewerCore::QViewerCore( const std::string &appName, const std::string &orgName
 
 
 bool
-QViewerCore::registerWidget( std::string key, QWidget *widget, QViewerCore::Actions action )
+QViewerCore::registerWidget( std::string key, WidgetImplenentationBase *widget, QViewerCore::Actions action )
 {
 	if( m_WidgetMap.find( key ) == m_WidgetMap.end() ) {
-		widget->setObjectName( QString( key.c_str() ) );
-		m_WidgetMap.insert( std::make_pair< std::string,  QWidget * >( key, widget ) );
-
-		if( dynamic_cast<GL::QGLWidgetImplementation *>( widget ) ) {
-			GL::QGLWidgetImplementation *w = dynamic_cast<GL::QGLWidgetImplementation *>( widget );
-			connect( w, SIGNAL( voxelCoordsChanged( util::ivector4 ) ), this, SLOT( voxelCoordsChanged ( util::ivector4 ) ) );
-			connect( w, SIGNAL( physicalCoordsChanged( util::fvector4 ) ), this, SLOT( physicalCoordsChanged ( util::fvector4 ) ) );
-			connect( w, SIGNAL( zoomChanged(float)), this, SLOT( zoomChanged(float)));
-			connect( this, SIGNAL( emitVoxelCoordChanged( util::ivector4 ) ), w, SLOT( lookAtVoxel( util::ivector4 ) ) );
-			connect( this, SIGNAL( emitPhysicalCoordsChanged( util::fvector4 ) ), w, SLOT( lookAtPhysicalCoords( util::fvector4 ) ) );
-			connect( this, SIGNAL( emitTimeStepChange( unsigned int ) ), w, SLOT( timestepChanged( unsigned int ) ) );
-			connect( this, SIGNAL( emitShowLabels( bool ) ), w, SLOT( setShowLabels( bool ) ) );
-			connect( this, SIGNAL( emitUpdateScene( bool ) ), w, SLOT( updateScene( bool ) ) );
-			connect( this, SIGNAL( emitSetAutomaticScaling( bool ) ), w, SLOT( setAutomaticScaling( bool ) ) );
-			connect( this, SIGNAL( emitZoomChanged(float)), w, SLOT( setZoom(float)));
-		}
+		widget->setWidgetName( key );
+		m_WidgetMap.insert( std::make_pair< std::string,  WidgetImplenentationBase * >( key, widget ) );
 	} else {
 		LOG( Runtime, error ) << "A widget with the name " << key << " already exists! Wont add this";
 		return false;
@@ -64,17 +50,6 @@ void QViewerCore::timestepChanged( int timestep )
 	emitTimeStepChange( timestep );
 }
 
-bool QViewerCore::widgetsAreIntitialized() const
-{
-	BOOST_FOREACH( WidgetMap::const_reference widget, m_WidgetMap ) {
-		if( !dynamic_cast<GL::QGLWidgetImplementation *>( widget.second )->isInitialized() ){
-			return false;
-		}
-	}
-	return true;
-
-}
-
 
 void QViewerCore::addImageList( const std::list< data::Image > imageList, const ImageHolder::ImageType &imageType, bool passToWidgets )
 {
@@ -84,7 +59,7 @@ void QViewerCore::addImageList( const std::list< data::Image > imageList, const 
 	if( passToWidgets ) {
 		BOOST_FOREACH( WidgetMap::reference widget, m_WidgetMap ) {
 			BOOST_FOREACH( std::list<boost::shared_ptr<ImageHolder> >::const_reference data, imageHolderList ) {
-				dynamic_cast<GL::QGLWidgetImplementation *>( widget.second )->addImage( data );
+				widget.second->addImage( data );
 			}
 		}
 	}
@@ -98,11 +73,12 @@ void QViewerCore::setImageList( const std::list< data::Image > imageList, const 
 	if( passToWidgets ) {
 		BOOST_FOREACH( WidgetMap::reference widget, m_WidgetMap ) {
 			BOOST_FOREACH( DataContainer::const_reference data, getDataContainer() ) {
-				dynamic_cast<GL::QGLWidgetImplementation *>( widget.second )->addImage( data.second );
+				widget.second->addImage( data.second );
 			}
 		}
 	}
 	emitImagesChanged( getDataContainer() );
+	
 }
 
 void QViewerCore::setShowLabels( bool l )

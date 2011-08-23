@@ -27,8 +27,15 @@ MainWindow::MainWindow( QViewerCore *core )
 	
 	m_Toolbar = new QToolBar(this);
 	
-	m_MasterWidget = new GL::QGLWidgetImplementation( core, 0, axial );
-
+	switch( m_WidgetType ) {
+	    case type_gl:
+		m_MasterWidget = new GL::QGLWidgetImplementation( core, 0, axial );
+		break;
+	    case type_qt:
+		m_MasterWidget = new qt::QImageWidgetImplementation( core, 0, axial );
+		break;
+	}
+	
 	m_AxialWidget =  m_MasterWidget->createSharedWidget( ui.axialWidget, axial );
 	m_ViewerCore->registerWidget( "axialView", m_AxialWidget );
 
@@ -312,9 +319,10 @@ void MainWindow::imagesChanged( DataContainer images )
 		ui.opacity->setVisible( false );
 		ui.labelOpacity->setVisible( false );
 	}
-	if( m_ViewerCore->widgetsAreIntitialized() ) {
-		m_ViewerCore->updateScene();
-	}
+	/*if( m_ViewerCore->widgetsAreIntitialized() ) {
+		
+	}*/
+	m_ViewerCore->updateScene();
 	if( m_ViewerCore->getCurrentImage()->getImageSize()[3] > 1 ) {
 	    ui.action_Plotting->setEnabled( true );
 	} else {
@@ -481,9 +489,9 @@ void MainWindow::assembleViewInRows( )
 		QDockWidget *axialDock = new QDockWidget( this );
 		QDockWidget *sagittalDock = new QDockWidget( this );
 		QDockWidget *coronalDock = new QDockWidget( this );
-		GL::QGLWidgetImplementation* axialWidget = createView( axialDock, axial, row );
-		GL::QGLWidgetImplementation* sagittalWidget = createView( sagittalDock, sagittal, row );
-		GL::QGLWidgetImplementation* coronalWidget = createView( coronalDock, coronal, row );
+		WidgetImplenentationBase* axialWidget = createView( axialDock, axial, row );
+		WidgetImplenentationBase* sagittalWidget = createView( sagittalDock, sagittal, row );
+		WidgetImplenentationBase* coronalWidget = createView( coronalDock, coronal, row );
 		axialWidget->addImage( image );
 		sagittalWidget->addImage( image );
 		coronalWidget->addImage( image );
@@ -516,7 +524,7 @@ void MainWindow::assembleViewInRows( )
 }
 
 
-GL::QGLWidgetImplementation* MainWindow::createView(QDockWidget* widget, PlaneOrientation orientation, unsigned short index )
+WidgetImplenentationBase* MainWindow::createView(QDockWidget* widget, PlaneOrientation orientation, unsigned short index )
 {
 	widget->setFloating( false );
 	widget->setAllowedAreas( Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea | Qt::TopDockWidgetArea | Qt::BottomDockWidgetArea );
@@ -526,7 +534,7 @@ GL::QGLWidgetImplementation* MainWindow::createView(QDockWidget* widget, PlaneOr
 	widget->setSizePolicy( QSizePolicy( QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding) );
 	widget->setMinimumHeight(200);
 	widget->setMinimumWidth(200);
-	GL::QGLWidgetImplementation *view = m_MasterWidget->createSharedWidget( frame, orientation );
+	WidgetImplenentationBase *view = m_MasterWidget->createSharedWidget( frame, orientation );
 	std::stringstream name;
 	switch ( orientation ) {
 		case axial:

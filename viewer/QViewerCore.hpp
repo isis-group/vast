@@ -3,7 +3,9 @@
 
 
 #include "ViewerCoreBase.hpp"
+#include "WidgetImplementationBase.hpp"
 #include "QGLWidgetImplementation.hpp"
+#include "QImageWidgetImplementation.hpp"
 #include <QtGui>
 #include "Color.hpp"
 
@@ -17,11 +19,12 @@ class QViewerCore : public QObject, public ViewerCoreBase
 	Q_OBJECT
 public:
 	enum Actions {not_specified, timestep_changed, show_labels};
-	typedef std::map<std::string, QWidget * > WidgetMap;
+	typedef std::map<std::string, WidgetImplenentationBase * > WidgetMap;
 	QViewerCore( const std::string &appName = std::string(), const std::string &orgName = std::string() );
 
-	virtual bool registerWidget( std::string key, QWidget *widget, Actions = not_specified );
-
+	
+	bool registerWidget( std::string key, WidgetImplenentationBase *widget, Actions = not_specified );
+	
 	virtual void addImageList( const std::list< data::Image > imageList, const ImageHolder::ImageType &imageType, bool passToWidgets );
 	virtual void setImageList( const std::list< data::Image > imageList, const ImageHolder::ImageType &imageType, bool passToWidgets );
 
@@ -29,7 +32,7 @@ public:
 	const QSettings* getSettings() const { return m_Settings; }
 	QSettings* getSettings() { return m_Settings; }
 
-	bool widgetsAreIntitialized() const;
+// 	bool widgetsAreIntitialized() const;
 	
 	std::vector< util::fvector4 > getRGBColorGradient() const { return m_RGBColorGradient; }
 

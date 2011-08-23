@@ -10,7 +10,10 @@
 
 #include "MainWindowBase.hpp"
 #include "QViewerCore.hpp"
+
 #include "QGLWidgetImplementation.hpp"
+#include "QImageWidgetImplementation.hpp"
+
 #include <CoreUtils/type.hpp>
 
 namespace isis
@@ -68,17 +71,17 @@ protected:
 	
 	void handImagesToPlotter();
 	
-	GL::QGLWidgetImplementation *m_AxialWidget;
-	GL::QGLWidgetImplementation *m_CoronalWidget;
-	GL::QGLWidgetImplementation *m_SagittalWidget;
-	GL::QGLWidgetImplementation *m_MasterWidget;
+	WidgetImplenentationBase *m_AxialWidget;
+	WidgetImplenentationBase *m_CoronalWidget;
+	WidgetImplenentationBase *m_SagittalWidget;
+	WidgetImplenentationBase *m_MasterWidget;
 
 	QAction *actionMakeCurrent;
 	QAction *actionAsZMap;
 	
 	QToolBar* m_Toolbar;
 	
-	GL::QGLWidgetImplementation* createView( QDockWidget* widget, PlaneOrientation orientation, unsigned short index );
+	WidgetImplenentationBase* createView( QDockWidget* widget, PlaneOrientation orientation, unsigned short index );
 
 	template<typename TYPE> void displayIntensity( util::ivector4 coords ) {
 		util::Value<TYPE> vIntensity ( m_ViewerCore->getCurrentImage()->getImage()->voxel<TYPE>( coords[0], coords[1], coords[2], coords[3] ) );
