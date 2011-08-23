@@ -16,19 +16,19 @@ namespace GL
 
 QGLWidgetImplementation::QGLWidgetImplementation( QViewerCore *core, QWidget *parent, QGLWidget *share, PlaneOrientation orientation )
 	: QGLWidget( parent, share ),
-	  WidgetImplenentationBase( core, parent, orientation ),
+	  WidgetImplementationBase( core, parent, orientation ),
 	  m_ShareWidget( share )
 	  
 {
-	//( new QVBoxLayout( parent ) )->addWidget( this ); implemented now in base class
+	( new QVBoxLayout( parent ) )->addWidget( this );
 	commonInit();
 }
 
 QGLWidgetImplementation::QGLWidgetImplementation( QViewerCore *core, QWidget *parent, PlaneOrientation orientation )
 	: QGLWidget( parent ),
-	  WidgetImplenentationBase( core, parent, orientation )
+	  WidgetImplementationBase( core, parent, orientation )
 {
-// 	( new QVBoxLayout( parent ) )->addWidget( this ); implemented in base class
+	( new QVBoxLayout( parent ) )->addWidget( this );
 	commonInit();
 }
 
@@ -53,7 +53,7 @@ void QGLWidgetImplementation::commonInit()
 	
 }
 
-WidgetImplenentationBase *QGLWidgetImplementation::createSharedWidget( QWidget *parent, PlaneOrientation orientation )
+WidgetImplementationBase *QGLWidgetImplementation::createSharedWidget( QWidget *parent, PlaneOrientation orientation )
 {
 	return new QGLWidgetImplementation( m_ViewerCore, parent, this, orientation );
 }

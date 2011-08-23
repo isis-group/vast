@@ -489,9 +489,9 @@ void MainWindow::assembleViewInRows( )
 		QDockWidget *axialDock = new QDockWidget( this );
 		QDockWidget *sagittalDock = new QDockWidget( this );
 		QDockWidget *coronalDock = new QDockWidget( this );
-		WidgetImplenentationBase* axialWidget = createView( axialDock, axial, row );
-		WidgetImplenentationBase* sagittalWidget = createView( sagittalDock, sagittal, row );
-		WidgetImplenentationBase* coronalWidget = createView( coronalDock, coronal, row );
+		WidgetImplementationBase* axialWidget = createView( axialDock, axial, row );
+		WidgetImplementationBase* sagittalWidget = createView( sagittalDock, sagittal, row );
+		WidgetImplementationBase* coronalWidget = createView( coronalDock, coronal, row );
 		axialWidget->addImage( image );
 		sagittalWidget->addImage( image );
 		coronalWidget->addImage( image );
@@ -524,7 +524,7 @@ void MainWindow::assembleViewInRows( )
 }
 
 
-WidgetImplenentationBase* MainWindow::createView(QDockWidget* widget, PlaneOrientation orientation, unsigned short index )
+WidgetImplementationBase* MainWindow::createView(QDockWidget* widget, PlaneOrientation orientation, unsigned short index )
 {
 	widget->setFloating( false );
 	widget->setAllowedAreas( Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea | Qt::TopDockWidgetArea | Qt::BottomDockWidgetArea );
@@ -534,7 +534,7 @@ WidgetImplenentationBase* MainWindow::createView(QDockWidget* widget, PlaneOrien
 	widget->setSizePolicy( QSizePolicy( QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding) );
 	widget->setMinimumHeight(200);
 	widget->setMinimumWidth(200);
-	WidgetImplenentationBase *view = m_MasterWidget->createSharedWidget( frame, orientation );
+	WidgetImplementationBase *view = m_MasterWidget->createSharedWidget( frame, orientation );
 	std::stringstream name;
 	switch ( orientation ) {
 		case axial:

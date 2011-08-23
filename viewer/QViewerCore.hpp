@@ -1,11 +1,9 @@
-#ifndef VIEWERCORE_HPP
-#define VIEWERCORE_HPP
+#ifndef QVIEWERCORE_HPP
+#define QVIEWERCORE_HPP
 
 
 #include "ViewerCoreBase.hpp"
 #include "WidgetImplementationBase.hpp"
-#include "QGLWidgetImplementation.hpp"
-#include "QImageWidgetImplementation.hpp"
 #include <QtGui>
 #include "Color.hpp"
 
@@ -13,17 +11,16 @@ namespace isis
 {
 namespace viewer
 {
-
 class QViewerCore : public QObject, public ViewerCoreBase
 {
 	Q_OBJECT
 public:
 	enum Actions {not_specified, timestep_changed, show_labels};
-	typedef std::map<std::string, WidgetImplenentationBase * > WidgetMap;
+	typedef std::map<std::string, WidgetImplementationBase * > WidgetMap;
 	QViewerCore( const std::string &appName = std::string(), const std::string &orgName = std::string() );
 
 	
-	bool registerWidget( std::string key, WidgetImplenentationBase *widget, Actions = not_specified );
+	bool registerWidget( std::string key, WidgetImplementationBase *widget, Actions = not_specified );
 	
 	virtual void addImageList( const std::list< data::Image > imageList, const ImageHolder::ImageType &imageType, bool passToWidgets );
 	virtual void setImageList( const std::list< data::Image > imageList, const ImageHolder::ImageType &imageType, bool passToWidgets );

@@ -8,24 +8,36 @@ namespace qt {
 
 QImageWidgetImplementation::QImageWidgetImplementation(QViewerCore* core, QWidget* parent, PlaneOrientation orientation)
     : QWidget( parent ),
-    WidgetImplenentationBase( core, parent, orientation )
+    WidgetImplementationBase( core, parent, orientation )
 {
     m_Painter = new QPainter( this );
 }
 
 
 QImageWidgetImplementation::QImageWidgetImplementation(QViewerCore* core, QWidget* parent, QWidget* share, PlaneOrientation orienation)
-    : QWidget( parent, share ),
-    WidgetImplenentationBase( core, parent, orienation )
+    : QWidget( parent ),
+    WidgetImplementationBase( core, parent, orienation )
 {
     m_Painter = new QPainter( this );
 }
 
 
 
-WidgetImplenentationBase *QImageWidgetImplementation::createSharedWidget( QWidget *parent, PlaneOrientation orientation )
+WidgetImplementationBase *QImageWidgetImplementation::createSharedWidget( QWidget *parent, PlaneOrientation orientation )
 {
-	return new QGLWidgetImplementation( m_ViewerCore, parent, this, orientation );
+	return new QImageWidgetImplementation( m_ViewerCore, parent, this, orientation );
 }
+
+
+void QImageWidgetImplementation::addImage(const boost::shared_ptr< ImageHolder > image)
+{
+
+}
+
+void QImageWidgetImplementation::setZoom(float zoom)
+{
+
+}
+
 
 }}} //end namespace

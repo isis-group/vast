@@ -17,11 +17,10 @@ namespace isis
 {
 namespace viewer
 {
-class QViewerCore;
 namespace GL
 {
 
-class QGLWidgetImplementation : public QGLWidget, public WidgetImplenentationBase
+class QGLWidgetImplementation : public QGLWidget, public WidgetImplementationBase
 {
 	Q_OBJECT
 public:
@@ -29,7 +28,7 @@ public:
 	QGLWidgetImplementation( QViewerCore *core, QWidget *parent = 0, QGLWidget *share = 0, PlaneOrientation orienation = axial );
 	QGLWidgetImplementation( QViewerCore *core, QWidget *parent = 0, PlaneOrientation orientation = axial );
 
-	WidgetImplenentationBase *createSharedWidget( QWidget *parent, PlaneOrientation orienation = axial );
+	WidgetImplementationBase *createSharedWidget( QWidget *parent, PlaneOrientation orienation = axial );
 
 private:
 	QGLWidgetImplementation( QViewerCore *core, QWidget *parent, QGLWidget *share, QGLContext *context, PlaneOrientation orienation = axial );

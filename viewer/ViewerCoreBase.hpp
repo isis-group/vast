@@ -1,4 +1,3 @@
-
 #ifndef VIEWERCOREBASE_HPP
 #define VIEWERCOREBASE_HPP
 

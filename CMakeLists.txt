@@ -5,6 +5,7 @@ PROJECT(vast)
 # collecting files
 file (GLOB VIEWER_FILES_CPP viewer/*.c viewer/*.cpp)
 file (GLOB GLWIDGET_FILES_CPP GLWidget/*.cpp GLWidget/*.c)
+file (GLOB QWIDGET_FILES_CPP QImageWidget/*.cpp QImageWidget/*.c)
 file (GLOB UI_FILES forms/*.ui)
 file (GLOB RESOURCE_FILES resources/*.qrc)
 
@@ -137,7 +138,7 @@ INCLUDE(CPack)
 
 
 
-add_executable(vast main.cpp ${GLWIDGET_FILES_CPP} ${VIEWER_FILES_CPP} ${vast_UIS_H} ${vast_moc_files} ${vast_rcc_files})
+add_executable(vast main.cpp ${QWIDGET_FILES_CPP} ${GLWIDGET_FILES_CPP} ${VIEWER_FILES_CPP} ${vast_UIS_H} ${vast_moc_files} ${vast_rcc_files})
 find_library(isisqt4_LIBRARY "isisAdapter_qt4")
 
 set(NEEDED_LIBS

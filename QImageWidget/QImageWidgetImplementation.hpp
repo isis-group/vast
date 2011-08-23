@@ -4,6 +4,7 @@
 #include <QImage>
 #include <QWidget>
 #include <QPainter>
+#include <QtGui>
 #include "WidgetImplementationBase.hpp"
 #include "QViewerCore.hpp"
 
@@ -13,7 +14,7 @@ namespace viewer {
 
 namespace qt {
     
-class QImageWidgetImplementation : public WidgetImplenentationBase, public QWidget
+class QImageWidgetImplementation : public QWidget,  public WidgetImplementationBase
 {
     Q_OBJECT
     
@@ -21,13 +22,13 @@ public:
     QImageWidgetImplementation( QViewerCore *core, QWidget *parent = 0, QWidget *share = 0, PlaneOrientation orienation = axial );
     QImageWidgetImplementation( QViewerCore *core, QWidget *parent = 0, PlaneOrientation orientation = axial );
     
-    virtual WidgetImplenentationBase* createSharedWidget( QWidget *parent, PlaneOrientation orienation = axial );
+    virtual WidgetImplementationBase* createSharedWidget( QWidget *parent, PlaneOrientation orienation = axial );
 
     
 public Q_SLOTS:
     
-    virtual void setZoom( float zoom ) {};
-    virtual void addImage( const boost::shared_ptr<ImageHolder> image ) {};
+    virtual void setZoom( float zoom );
+    virtual void addImage( const boost::shared_ptr<ImageHolder> image );
     
     
 protected:

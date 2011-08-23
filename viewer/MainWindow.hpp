@@ -71,17 +71,17 @@ protected:
 	
 	void handImagesToPlotter();
 	
-	WidgetImplenentationBase *m_AxialWidget;
-	WidgetImplenentationBase *m_CoronalWidget;
-	WidgetImplenentationBase *m_SagittalWidget;
-	WidgetImplenentationBase *m_MasterWidget;
+	WidgetImplementationBase *m_AxialWidget;
+	WidgetImplementationBase *m_CoronalWidget;
+	WidgetImplementationBase *m_SagittalWidget;
+	WidgetImplementationBase *m_MasterWidget;
 
 	QAction *actionMakeCurrent;
 	QAction *actionAsZMap;
 	
 	QToolBar* m_Toolbar;
 	
-	WidgetImplenentationBase* createView( QDockWidget* widget, PlaneOrientation orientation, unsigned short index );
+	WidgetImplementationBase* createView( QDockWidget* widget, PlaneOrientation orientation, unsigned short index );
 
 	template<typename TYPE> void displayIntensity( util::ivector4 coords ) {
 		util::Value<TYPE> vIntensity ( m_ViewerCore->getCurrentImage()->getImage()->voxel<TYPE>( coords[0], coords[1], coords[2], coords[3] ) );
