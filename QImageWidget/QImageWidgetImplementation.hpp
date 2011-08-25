@@ -7,6 +7,7 @@
 #include <QtGui>
 #include "WidgetImplementationBase.hpp"
 #include "QViewerCore.hpp"
+#include "QMemoryHandler.hpp"
 
 namespace isis {
 
@@ -29,17 +30,20 @@ public Q_SLOTS:
     
     virtual void setZoom( float zoom );
     virtual void addImage( const boost::shared_ptr<ImageHolder> image );
+   
     
     
 protected:
+    void paintEvent( QPaintEvent *event );
 Q_SIGNALS:
-	void redraw();
-	void voxelCoordsChanged( util::ivector4 );
-	void physicalCoordsChanged( util::fvector4 );
-	void zoomChanged( float zoomFactor );
+    void redraw();
+    void voxelCoordsChanged( util::ivector4 );
+    void physicalCoordsChanged( util::fvector4 );
+    void zoomChanged( float zoomFactor );
+	
 
 private:
-    QPainter *m_Painter;
+    QMemoryHandler m_MemoryHandler;
 };
 
 
