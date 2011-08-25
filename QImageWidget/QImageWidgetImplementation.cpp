@@ -59,7 +59,8 @@ void QImageWidgetImplementation::paintEvent( QPaintEvent *event )
     }
     image.setColorTable(colorTable);
     QPainter painter( this );
-    painter.drawImage(0,0, image );
+    
+    painter.drawImage(0,0, image.scaled(width(), height()) );
 
 }
 

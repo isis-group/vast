@@ -16,7 +16,7 @@ class MainWindowBase : public QMainWindow
 	Q_OBJECT
 public:
 	MainWindowBase( QWidget *parent = 0 );
-	void setWidgetType( WidgetType type ) { m_WidgetType = type; };
+	
 
 protected Q_SLOTS:
 
@@ -29,7 +29,6 @@ protected:
 	Ui::isisViewerMain ui;
 	QScrollArea *sa;
 	QString m_CurrentPath;
-	WidgetType m_WidgetType;
 };
 
 

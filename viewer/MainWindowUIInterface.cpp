@@ -3,8 +3,8 @@
 namespace isis {
 namespace viewer {
 
-MainWindowUIInterface::MainWindowUIInterface(isis::viewer::QViewerCore* core )
-	: MainWindow(core),
+MainWindowUIInterface::MainWindowUIInterface(isis::viewer::QViewerCore* core, WidgetType wType )
+	: MainWindow(core, wType ),
 	m_ViewerCore(core)
 {
 	connectSignals();

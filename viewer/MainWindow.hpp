@@ -28,9 +28,10 @@ class MainWindow : public MainWindowBase
 protected:
 	enum State { single, splitted } m_State;
 public:
-	MainWindow( QViewerCore *core  );
+	MainWindow( QViewerCore *core, WidgetType wType = type_gl );
 	
 	State getState() const { return m_State; }
+	void setWidgetType( WidgetType type ) { m_WidgetType = type; };
 
 private:
 
@@ -68,7 +69,8 @@ public Q_SLOTS:
 
 
 protected:
-	
+	WidgetType m_WidgetType;
+    
 	void handImagesToPlotter();
 	
 	WidgetImplementationBase *m_AxialWidget;

@@ -15,8 +15,9 @@ namespace isis
 namespace viewer
 {
 
-MainWindow::MainWindow( QViewerCore *core )
-	: m_ViewerCore( core )
+MainWindow::MainWindow( QViewerCore *core, WidgetType wType )
+	: m_ViewerCore( core ),
+	m_WidgetType( wType )
 {
 	m_PlottingDialog->setViewerCore( m_ViewerCore );
 	m_PreferencesDialog = new QPreferencesDialog(this, m_ViewerCore );
