@@ -15,7 +15,7 @@ public:
     QMemoryHandler( QViewerCore *core );
     
     //debug
-    void getSlice( boost::shared_ptr< ImageHolder> image, uint8_t slice, uint8_t *retPointer );
+    void getSlice( boost::shared_ptr< ImageHolder> image, uint8_t slice, uint8_t *retPointer, PlaneOrientation orientation );
     
 private:
     QViewerCore *m_ViewerCore;
