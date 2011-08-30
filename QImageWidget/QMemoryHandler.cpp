@@ -21,14 +21,23 @@ void QMemoryHandler::getSlice( boost::shared_ptr< ImageHolder > image, uint8_t s
     size_t planeSize = image->getImageSize()[0] * image->getImageSize()[1];
     util::ivector4 diffSize = alignedSize - image->getImageSize();
     
-    
     switch (orientation) {
 	case axial:
-	    memcpy(retPointer, dataPtr + planeSize * slice, planeSize );
+	    for ( size_t i = 0; i < image->getImageSize()[data::columnDim]; i++ ) {
+		memcpy(retPointer + i * alignedSize[data::rowDim], dataPtr + i * image->getImageSize()[data::rowDim] + planeSize * slice, image->getImageSize()[data::rowDim]);
+		for(size_t j = 0; j < diffSize[data::rowDim]; j++)
+		{
+		    retPointer[(i+1)*image->getImageSize()[data::rowDim] + j] = 0;
+		}
+	    }
 	    break;
 	case coronal:
 	    for ( size_t i = 0; i< image->getImageSize()[2]; i++ ) {
-		memcpy(retPointer + i * image->getImageSize()[0], dataPtr + i * planeSize + image->getImageSize()[0] * slice,image->getImageSize()[0] );
+		memcpy(retPointer + i * alignedSize[data::rowDim], dataPtr + i * planeSize + image->getImageSize()[data::rowDim] * slice,image->getImageSize()[data::rowDim] );
+		for(size_t j = 0; j < diffSize[data::rowDim]; j++)
+		{
+		    retPointer[(i+1)*image->getImageSize()[data::rowDim] + j] = 0;
+		}
 	    }
 	    break;
 	case sagittal:
