@@ -44,6 +44,7 @@ Q_SIGNALS:
 
 private:
     QMemoryHandler m_MemoryHandler;
+    void commonInit();
 };
 
 

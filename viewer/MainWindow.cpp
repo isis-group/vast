@@ -36,7 +36,6 @@ MainWindow::MainWindow( QViewerCore *core, WidgetType wType )
 		m_MasterWidget = new qt::QImageWidgetImplementation( core, 0, axial );
 		break;
 	}
-	
 	m_AxialWidget =  m_MasterWidget->createSharedWidget( ui.axialWidget, axial );
 	m_ViewerCore->registerWidget( "axialView", m_AxialWidget );
 

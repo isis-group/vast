@@ -1,5 +1,5 @@
 #include "QImageWidgetImplementation.hpp"
-
+#include "QtWidgetCommon.hpp"
 
 namespace isis {
 namespace viewer {
@@ -11,11 +11,8 @@ QImageWidgetImplementation::QImageWidgetImplementation(QViewerCore* core, QWidge
     WidgetImplementationBase( core, parent, orientation ),
     m_MemoryHandler( core )
 {
-   
     ( new QVBoxLayout( parent ) )->addWidget( this );
-   
-//     
-//     m_Painter->drawImage(0,0, *image );
+    commonInit();
 }
 
 
@@ -25,9 +22,15 @@ QImageWidgetImplementation::QImageWidgetImplementation(QViewerCore* core, QWidge
     m_MemoryHandler( core )
 {
     ( new QVBoxLayout( parent ) )->addWidget( this );
-//     m_Painter = new QPainter( this );
+    commonInit();
 }
 
+void QImageWidgetImplementation::commonInit()
+{
+    setAutoFillBackground( true );
+    setPalette( QPalette(Qt::black ) );
+
+}
 
 
 WidgetImplementationBase *QImageWidgetImplementation::createSharedWidget( QWidget *parent, PlaneOrientation orientation )
@@ -48,20 +51,32 @@ void QImageWidgetImplementation::setZoom(float zoom)
 
 void QImageWidgetImplementation::paintEvent( QPaintEvent *event )
 {
-    size_t plane = m_ViewerCore->getCurrentImage()->getImageSize()[0] * m_ViewerCore->getCurrentImage()->getImageSize()[1];
-    uint8_t *dataPtr = ( uint8_t * ) calloc( plane , sizeof( uint8_t ) );
-    m_MemoryHandler.getSlice( m_ViewerCore->getCurrentImage(), 100, dataPtr, sagittal );
-    QImage image = QImage( (uchar*)dataPtr, m_ViewerCore->getCurrentImage()->getImageSize()[0],m_ViewerCore->getCurrentImage()->getImageSize()[2], QImage::Format_Indexed8 );
+    size_t x = 0;
+    size_t y = 0;
+    util::ivector4 alignedSize = get32BitAlignedSize( m_ViewerCore->getCurrentImage()->getImageSize());
+    switch( m_PlaneOrientation ) {
+	case axial:
+	    x = alignedSize[0];
+	    y = alignedSize[1];
+	    break;
+	case sagittal:
+	    x = alignedSize[1];
+	    y = alignedSize[2];
+	    break;
+	case coronal:
+	    x = alignedSize[0];
+	    y = alignedSize[2];
+	    break;
+    }
+    uint8_t *dataPtr = ( uint8_t * ) calloc( x*y , sizeof( uint8_t ) );
+    m_MemoryHandler.getSlice( m_ViewerCore->getCurrentImage(), 100, dataPtr, m_PlaneOrientation, alignedSize );
+    QImage image = QImage( (uchar*)dataPtr,x,y, QImage::Format_Indexed8 );
     QVector<QRgb> colorTable;
     for (int i = 0; i < 256; i++) {
         colorTable.push_back(QColor(i, i, i).rgb());
     }
     image.setColorTable(colorTable);
     QPainter painter( this );
-    QBrush brush;
-    brush.setColor(Qt::black);
-    QTransform matrix;
-    painter.setTransform( matrix );
     painter.drawImage(0,0, image );
 
 }
