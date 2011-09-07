@@ -77,12 +77,9 @@ void QImageWidgetImplementation::paintImage(boost::shared_ptr< ImageHolder > ima
     
     qImage.setColorTable(colorTable);
     QPainter painter( this );
-    util::fvector4 scalingAndOffset = QOrienationHandler::getScalingAndOffset(image, width(),height(),m_PlaneOrientation );
-    QTransform transform;
-    transform = transform.scale(scalingAndOffset[0], scalingAndOffset[1] );
-    painter.setTransform(transform);
-    painter.drawImage(scalingAndOffset[2],scalingAndOffset[3], qImage);
     
+    painter.setTransform( QOrienationHandler::getTransform(image, width(), height(), m_PlaneOrientation ) );
+    painter.drawImage(0,0, qImage);
 }
 
 
