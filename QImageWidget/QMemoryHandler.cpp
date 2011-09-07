@@ -53,12 +53,38 @@ void QMemoryHandler::getSlice( boost::shared_ptr< ImageHolder > image, uint8_t s
 	    }
 	    break;
     } 
+}
+    
+QImage QMemoryHandler::getQImage(const boost::shared_ptr< ImageHolder > image, const size_t &slice, PlaneOrientation orientation ) const
+{
+    size_t x = 0;
+    size_t y = 0;
+    util::ivector4 alignedSize = get32BitAlignedSize( image->getImageSize() );
+    switch( orientation ) {
+	case axial:
+	    x = alignedSize[0];
+	    y = alignedSize[1];
+	    break;
+	case sagittal:
+	    x = alignedSize[1];
+	    y = alignedSize[2];
+	    break;
+	case coronal:
+	    x = alignedSize[0];
+	    y = alignedSize[2];
+	    break;
+    }
+    //allocate memory of the aligned size
+    uint8_t *dataPtr = ( uint8_t * ) calloc( x*y , sizeof( uint8_t ) );
     
     
-
+    
+    return QImage( (uchar*)dataPtr,x,y, QImage::Format_Indexed8 );
+    
+}
     
     
 }
 
     
-}}} // end namespace
+}} // end namespace

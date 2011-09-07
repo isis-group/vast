@@ -17,6 +17,7 @@ public:
     //debug
     void getSlice( boost::shared_ptr< ImageHolder> image, uint8_t slice, uint8_t *retPointer, PlaneOrientation orientation, const util::ivector4 &alignedSize );
     
+    QImage getQImage( const boost::shared_ptr< ImageHolder > image, const size_t &slice, PlaneOrientation orientation ) const;
 private:
     QViewerCore *m_ViewerCore;
 };

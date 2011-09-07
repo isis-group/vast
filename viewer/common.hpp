@@ -37,6 +37,8 @@ TYPE roundNumber( TYPE number, unsigned  short placesOfDec )
 void setOrientationToIdentity( data::Image &image );
 std::string getFileFormatsAsString( const std::string preSeparator, const std::string postSeparator = std::string(" ") );
 
+util::ivector4 get32BitAlignedSize( const util::ivector4 &origSize );
+
 typedef ViewerLog Runtime;
 typedef ViewerDebug Debug;
 template<typename HANDLE> void enable_log( LogLevel level )

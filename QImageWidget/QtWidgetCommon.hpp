@@ -8,8 +8,7 @@ namespace viewer {
 namespace qt {
 
     
-util::ivector4 get32BitAlignedSize( const util::ivector4 &origSize );
-   
+ 
 
     
 }}}//end namespace
