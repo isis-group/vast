@@ -60,7 +60,7 @@ QImage QMemoryHandler::getQImage(const boost::shared_ptr< ImageHolder > image, c
     size_t x = 0;
     size_t y = 0;
     //qt is only capable of creating images that have 32-bit aligned size
-    util::ivector4 alignedSize = image->getImageState().alignedSize32Bit;
+    util::ivector4 alignedSize = image->getImageProperties().alignedSize32Bit;
     
     switch( orientation ) {
 	case axial:

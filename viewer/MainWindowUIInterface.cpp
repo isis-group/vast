@@ -139,7 +139,7 @@ void MainWindowUIInterface::showPlotting()
 {
 	m_PlottingDialog->show();
 	handImagesToPlotter();
-	physicalCoordsChanged( m_ViewerCore->getCurrentImage()->getImageState().physicalCoords );
+	physicalCoordsChanged( m_ViewerCore->getCurrentImage()->getImageProperties().physicalCoords );
 }
 
 

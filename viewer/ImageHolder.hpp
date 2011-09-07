@@ -29,7 +29,7 @@ public:
 
 	typedef data::_internal::ValuePtrBase::Reference ImagePointerType;
 	enum ImageType { anatomical_image, z_map };
-	struct ImageState {
+	struct ImageProperties {
 		ImageType imageType;
 		std::pair<double, double> threshold;
 		std::pair<double, double> zmapThreshold;
@@ -71,7 +71,7 @@ public:
 
 	bool operator<( const ImageHolder &ref ) const { return m_ID < ref.getID(); }
 
-	const ImageState &getImageState() const { return m_ImageState; }
+	const ImageProperties &getImageProperties() const { return m_ImageProperties; }
 
 	template<typename TYPE>
 	std::pair<double, double> getOptimalScalingToForType( const std::pair<double, double> &cutAway ) const {
@@ -119,16 +119,16 @@ public:
 		return retPair;
 	}
 
-	void setVisible( bool v ) { m_ImageState.visible = v; }
-	void setLowerThreshold( double lowerThreshold ) { m_ImageState.threshold.first = lowerThreshold ; m_ImageState.zmapThreshold.first = lowerThreshold; }
-	void setUpperThreshold( double upperThreshold ) { m_ImageState.threshold.second = upperThreshold ; m_ImageState.zmapThreshold.second = upperThreshold; }
-	void setStackPosition( size_t stackPosition ) { m_ImageState.stackPosition = stackPosition; }
-	void setOpacity( float opacity ) { m_ImageState.opacity = opacity; }
-	void setImageType( ImageType imageType ) { m_ImageState.imageType = imageType; }
-	void setCurrentIntensityAsDouble( double intensity ) { m_ImageState.currentIntensityAsDouble = intensity; }
-	void setCurrentVoxelCoords( const util::ivector4 &voxelCoords ) { m_ImageState.voxelCoords = voxelCoords; setCurrentPhysicalCoords( getImage()->getPhysicalCoordsFromIndex( voxelCoords ) ); }
-	void setCurrentPhysicalCoords( const util::fvector4 &physCoords ) { m_ImageState.physicalCoords = physCoords; }
-	void setTimestep( size_t timestep ) { m_ImageState.timestep = timestep; }
+	void setVisible( bool v ) { m_ImageProperties.visible = v; }
+	void setLowerThreshold( double lowerThreshold ) { m_ImageProperties.threshold.first = lowerThreshold ; m_ImageProperties.zmapThreshold.first = lowerThreshold; }
+	void setUpperThreshold( double upperThreshold ) { m_ImageProperties.threshold.second = upperThreshold ; m_ImageProperties.zmapThreshold.second = upperThreshold; }
+	void setStackPosition( size_t stackPosition ) { m_ImageProperties.stackPosition = stackPosition; }
+	void setOpacity( float opacity ) { m_ImageProperties.opacity = opacity; }
+	void setImageType( ImageType imageType ) { m_ImageProperties.imageType = imageType; }
+	void setCurrentIntensityAsDouble( double intensity ) { m_ImageProperties.currentIntensityAsDouble = intensity; }
+	void setCurrentVoxelCoords( const util::ivector4 &voxelCoords ) { m_ImageProperties.voxelCoords = voxelCoords; setCurrentPhysicalCoords( getImage()->getPhysicalCoordsFromIndex( voxelCoords ) ); }
+	void setCurrentPhysicalCoords( const util::fvector4 &physCoords ) { m_ImageProperties.physicalCoords = physCoords; }
+	void setTimestep( size_t timestep ) { m_ImageProperties.timestep = timestep; }
 
 private:
 
@@ -144,7 +144,7 @@ private:
 	size_t m_ID;
 	std::pair<double, double> m_OptimalScalingPair;
 	std::pair<double, double> m_CutAwayPair;
-	ImageState m_ImageState;
+	ImageProperties m_ImageProperties;
 
 	std::vector< ImagePointerType > m_ImageVector;
 	std::vector< data::Chunk > m_ChunkVector;

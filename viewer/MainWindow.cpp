@@ -182,17 +182,17 @@ void MainWindow::currentImageChanged(int index )
 
 void MainWindow::updateInterfaceValues()
 {
-	if( m_ViewerCore->getCurrentImage()->getImageState().imageType == ImageHolder::z_map ) {
+	if( m_ViewerCore->getCurrentImage()->getImageProperties().imageType == ImageHolder::z_map ) {
 		ui.lowerThreshold->setSliderPosition( 1000.0 / m_ViewerCore->getCurrentImage()->getMinMax().first->as<double>() *
-											  ( m_ViewerCore->getCurrentImage()->getImageState().zmapThreshold.first  ) );
+											  ( m_ViewerCore->getCurrentImage()->getImageProperties().zmapThreshold.first  ) );
 		ui.upperThreshold->setSliderPosition( 1000.0 / m_ViewerCore->getCurrentImage()->getMinMax().second->as<double>() *
-											  ( m_ViewerCore->getCurrentImage()->getImageState().zmapThreshold.second ) );
+											  ( m_ViewerCore->getCurrentImage()->getImageProperties().zmapThreshold.second ) );
 	} else {
 		double range = m_ViewerCore->getCurrentImage()->getMinMax().second->as<double>() - m_ViewerCore->getCurrentImage()->getMinMax().first->as<double>();
 		ui.lowerThreshold->setSliderPosition( 1000.0 / range *
-											  ( m_ViewerCore->getCurrentImage()->getImageState().threshold.first - m_ViewerCore->getCurrentImage()->getMinMax().first->as<double>() ) );
+											  ( m_ViewerCore->getCurrentImage()->getImageProperties().threshold.first - m_ViewerCore->getCurrentImage()->getMinMax().first->as<double>() ) );
 		ui.upperThreshold->setSliderPosition( 1000.0 / range *
-											  ( m_ViewerCore->getCurrentImage()->getImageState().threshold.second - m_ViewerCore->getCurrentImage()->getMinMax().first->as<double>() ) );
+											  ( m_ViewerCore->getCurrentImage()->getImageProperties().threshold.second - m_ViewerCore->getCurrentImage()->getMinMax().first->as<double>() ) );
 	}
 	m_ViewerCore->updateScene();
 }
@@ -271,7 +271,7 @@ void MainWindow::imagesChanged( DataContainer images )
 		item->setText( QString( imageRef.second->getFileNames().front().c_str() ) );
 		item->setFlags( Qt::ItemIsEnabled | Qt::ItemIsUserCheckable | Qt::ItemIsSelectable );
 
-		if( imageRef.second->getImageState().visible ) {
+		if( imageRef.second->getImageProperties().visible ) {
 			item->setCheckState( Qt::Checked );
 		} else {
 			item->setCheckState( Qt::Unchecked );
@@ -291,14 +291,14 @@ void MainWindow::imagesChanged( DataContainer images )
 		ui.timestepSpinBox->setMaximum( m_ViewerCore->getCurrentImage()->getImageSize()[3] - 1 );
 		ui.timestepSpinBox_2->setEnabled( true );
 		ui.timestepSpinBox_2->setMaximum( m_ViewerCore->getCurrentImage()->getImageSize()[3] -1 );
-		ui.timestepSpinBox->setValue( m_ViewerCore->getCurrentImage()->getImageState().timestep );
-		ui.timestepSpinBox_2->setValue( m_ViewerCore->getCurrentImage()->getImageState().timestep );
+		ui.timestepSpinBox->setValue( m_ViewerCore->getCurrentImage()->getImageProperties().timestep );
+		ui.timestepSpinBox_2->setValue( m_ViewerCore->getCurrentImage()->getImageProperties().timestep );
 		
 	} else {
 		ui.timestepSpinBox->setEnabled( false );
 		ui.timestepSpinBox_2->setEnabled( false );
 	}
-	if( m_ViewerCore->getCurrentImage()->getImageState().imageType == ImageHolder::anatomical_image ) {
+	if( m_ViewerCore->getCurrentImage()->getImageProperties().imageType == ImageHolder::anatomical_image ) {
 		ui.upperThreshold->setVisible(false);
 		ui.lowerThreshold->setVisible(false);
 		ui.maxLabel->setVisible( false );
@@ -308,8 +308,8 @@ void MainWindow::imagesChanged( DataContainer images )
 		ui.opacity->setVisible( true );
 		ui.labelOpacity->setVisible( true );
 		ui.frame_4->setVisible(false);
-		ui.opacity->setValue( (ui.opacity->maximum() - ui.opacity->minimum()) * m_ViewerCore->getCurrentImage()->getImageState().opacity );
-	} else if (m_ViewerCore->getCurrentImage()->getImageState().imageType == ImageHolder::z_map ) {
+		ui.opacity->setValue( (ui.opacity->maximum() - ui.opacity->minimum()) * m_ViewerCore->getCurrentImage()->getImageProperties().opacity );
+	} else if (m_ViewerCore->getCurrentImage()->getImageProperties().imageType == ImageHolder::z_map ) {
 		ui.upperThreshold->setVisible(true);
 		ui.lowerThreshold->setVisible(true);
 		ui.maxLabel->setVisible( true );
@@ -421,7 +421,7 @@ void MainWindow::opacityChanged( int opacity )
 void MainWindow::lowerThresholdChanged( int lowerThreshold )
 {
 
-	if( m_ViewerCore->getCurrentImage()->getImageState().imageType == ImageHolder::z_map ) {
+	if( m_ViewerCore->getCurrentImage()->getImageProperties().imageType == ImageHolder::z_map ) {
 		m_ViewerCore->getCurrentImage()->setLowerThreshold( ( m_ViewerCore->getCurrentImage()->getMinMax().first->as<double>() / 1000 ) * ( lowerThreshold  ) );
 	} else {
 		double range = m_ViewerCore->getCurrentImage()->getMinMax().second->as<double>() - m_ViewerCore->getCurrentImage()->getMinMax().first->as<double>();
@@ -433,7 +433,7 @@ void MainWindow::lowerThresholdChanged( int lowerThreshold )
 
 void MainWindow::upperThresholdChanged( int upperThreshold )
 {
-	if( m_ViewerCore->getCurrentImage()->getImageState().imageType == ImageHolder::z_map ) {
+	if( m_ViewerCore->getCurrentImage()->getImageProperties().imageType == ImageHolder::z_map ) {
 		m_ViewerCore->getCurrentImage()->setUpperThreshold( (  m_ViewerCore->getCurrentImage()->getMinMax().second->as<double>() / 1000 ) * ( upperThreshold  ) );	} else {
 		double range = m_ViewerCore->getCurrentImage()->getMinMax().second->as<double>() - m_ViewerCore->getCurrentImage()->getMinMax().first->as<double>();
 		m_ViewerCore->getCurrentImage()->setUpperThreshold( ( range / 1000 ) * ( upperThreshold + 1 )  + m_ViewerCore->getCurrentImage()->getMinMax().first->as<double>() );
@@ -458,9 +458,9 @@ void MainWindow::assembleViewInRows( )
 	std::list< boost::shared_ptr< ImageHolder> > anatomicalImages;
 	BOOST_FOREACH( DataContainer::const_reference dataSet, m_ViewerCore->getDataContainer() ) 
 	{
-		if( dataSet.second->getImageState().imageType == ImageHolder::z_map ) {
+		if( dataSet.second->getImageProperties().imageType == ImageHolder::z_map ) {
 			zMaps.push_back( dataSet.second );
-		} else if ( dataSet.second->getImageState().imageType == ImageHolder::anatomical_image ) {
+		} else if ( dataSet.second->getImageProperties().imageType == ImageHolder::anatomical_image ) {
 			anatomicalImages.push_back( dataSet.second );
 		}
 	}

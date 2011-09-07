@@ -40,7 +40,7 @@ public:
 			CurveIterator curve ;
 			for( image = m_Images.begin(), curve = m_Curves.begin(); image != m_Images.end(); image++, curve++)
 			{
-				if((*image)->getImageState().visible) {
+				if((*image)->getImageProperties().visible) {
 					uint16_t repTime = 1;
 					if( (*image)->getImage()->hasProperty("repetitionTime") ) {
 						repTime = (float)(*image)->getImage()->getPropertyAs<uint16_t>("repetitionTime") / 1000;

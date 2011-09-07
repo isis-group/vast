@@ -130,8 +130,8 @@ void QGLWidgetImplementation::updateStateValues( boost::shared_ptr<ImageHolder> 
 	state.voxelCoords[3] = timestep;
 
 	//if not happend already copy the image to GLtexture memory and return the texture id
-	if(image->getImageSize()[3] > m_ViewerCore->getCurrentImage()->getImageState().timestep ) {
-		state.textureID = util::Singletons::get<GLTextureHandler, 10>().copyImageToTexture( image, m_ViewerCore->getCurrentImage()->getImageState().timestep, false, m_InterplationType );
+	if(image->getImageSize()[3] > m_ViewerCore->getCurrentImage()->getImageProperties().timestep ) {
+		state.textureID = util::Singletons::get<GLTextureHandler, 10>().copyImageToTexture( image, m_ViewerCore->getCurrentImage()->getImageProperties().timestep, false, m_InterplationType );
 	}
 
 	//update the texture matrix.
@@ -143,7 +143,7 @@ void QGLWidgetImplementation::updateStateValues( boost::shared_ptr<ImageHolder> 
 		state.mappedVoxelSize = GLOrientationHandler::transformVector<float>( image->getPropMap().getPropertyAs<util::fvector4>( "voxelSize" ) + image->getPropMap().getPropertyAs<util::fvector4>( "voxelGap" ) , state.planeOrientation );
 		state.mappedImageSize = GLOrientationHandler::transformVector<int>( image->getImageSize(), state.planeOrientation );
 		state.set = true;
-		state.lutID =  m_LookUpTable.getLookUpTableAsTexture( image->getImageState().lookUpTableType );
+		state.lutID =  m_LookUpTable.getLookUpTableAsTexture( image->getImageProperties().lookUpTableType );
 	}
 
 	state.mappedVoxelCoords = GLOrientationHandler::transformVector<int>( state.voxelCoords, state.planeOrientation );
@@ -241,18 +241,18 @@ void QGLWidgetImplementation::paintGL()
 	
 	//paint anatomical images
 	BOOST_FOREACH( StateMap::const_reference state, m_ImageStates ) {
-		if( state.first.get() != m_ViewerCore->getCurrentImage().get() && state.first->getImageState().visible && state.first->getImageState().imageType == ImageHolder::anatomical_image) {
+		if( state.first.get() != m_ViewerCore->getCurrentImage().get() && state.first->getImageProperties().visible && state.first->getImageProperties().imageType == ImageHolder::anatomical_image) {
 			paintImage( state );
 		}
 	}
 	
 	//paint zmaps		
 	BOOST_FOREACH( StateMap::const_reference state, m_ImageStates ) {
-		if( state.first.get() != m_ViewerCore->getCurrentImage().get() && state.first->getImageState().visible && state.first->getImageState().imageType == ImageHolder::z_map) {
+		if( state.first.get() != m_ViewerCore->getCurrentImage().get() && state.first->getImageProperties().visible && state.first->getImageProperties().imageType == ImageHolder::z_map) {
 			paintImage( state );
 		}
 	}
-	if(m_ImageStates.find(m_ViewerCore->getCurrentImage() ) != m_ImageStates.end() && m_ViewerCore->getCurrentImage()->getImageState().visible ) {
+	if(m_ImageStates.find(m_ViewerCore->getCurrentImage() ) != m_ImageStates.end() && m_ViewerCore->getCurrentImage()->getImageProperties().visible ) {
 		paintImage( std::make_pair<boost::shared_ptr<ImageHolder>, State >( m_ViewerCore->getCurrentImage(), m_ImageStates.at( m_ViewerCore->getCurrentImage() )) );
 	}
 	glFlush();
@@ -291,7 +291,7 @@ void QGLWidgetImplementation::paintImage( const std::pair< boost::shared_ptr<Ima
 	//shader
 
 	//if the image is declared as a zmap
-	if( state.first->getImageState().imageType == ImageHolder::z_map ) {
+	if( state.first->getImageProperties().imageType == ImageHolder::z_map ) {
 		m_LUTShader.setEnabled( true );
 		glEnable( GL_TEXTURE_1D );
 		glActiveTexture( GL_TEXTURE1 );
@@ -299,21 +299,21 @@ void QGLWidgetImplementation::paintImage( const std::pair< boost::shared_ptr<Ima
 		m_LUTShader.addVariable<float>( "lut", 1, true );
 		m_LUTShader.addVariable<float>( "max", state.first->getMinMax().second->as<float>() );
 		m_LUTShader.addVariable<float>( "min", state.first->getMinMax().first->as<float>() );
-		m_LUTShader.addVariable<float>( "upper_threshold", state.first->getImageState().zmapThreshold.second );
-		m_LUTShader.addVariable<float>( "lower_threshold", state.first->getImageState().zmapThreshold.first );
+		m_LUTShader.addVariable<float>( "upper_threshold", state.first->getImageProperties().zmapThreshold.second );
+		m_LUTShader.addVariable<float>( "lower_threshold", state.first->getImageProperties().zmapThreshold.first );
 		m_LUTShader.addVariable<float>( "bias", 0.0 );
 		m_LUTShader.addVariable<float>( "scaling", 1.0 );
-		m_LUTShader.addVariable<float>( "opacity", state.first->getImageState().opacity );
+		m_LUTShader.addVariable<float>( "opacity", state.first->getImageProperties().opacity );
 		glDisable( GL_TEXTURE_1D );
-	} else if ( state.first->getImageState().imageType == ImageHolder::anatomical_image ) {
+	} else if ( state.first->getImageProperties().imageType == ImageHolder::anatomical_image ) {
 		m_ScalingShader.setEnabled( true );
 		m_ScalingShader.addVariable<float>( "max", state.first->getMinMax().second->as<float>() );
 		m_ScalingShader.addVariable<float>( "min", state.first->getMinMax().first->as<float>() );
-		m_ScalingShader.addVariable<float>( "upper_threshold",  state.first->getImageState().threshold.second );
-		m_ScalingShader.addVariable<float>( "lower_threshold", state.first->getImageState().threshold.first );
+		m_ScalingShader.addVariable<float>( "upper_threshold",  state.first->getImageProperties().threshold.second );
+		m_ScalingShader.addVariable<float>( "lower_threshold", state.first->getImageProperties().threshold.first );
 		m_ScalingShader.addVariable<float>( "scaling", scaling );
 		m_ScalingShader.addVariable<float>( "bias", bias );
-		m_ScalingShader.addVariable<float>( "opacity", state.first->getImageState().opacity );
+		m_ScalingShader.addVariable<float>( "opacity", state.first->getImageProperties().opacity );
 		m_ScalingShader.addVariable<float>( "killZeros", 1.0 );
 	}
 
@@ -456,7 +456,7 @@ void QGLWidgetImplementation::emitMousePressEvent( QMouseEvent *e )
 
 bool QGLWidgetImplementation::timestepChanged( unsigned int timestep )
 {
-	physicalCoordsChanged( m_ImageStates.begin()->first->getImageState().physicalCoords );
+	physicalCoordsChanged( m_ImageStates.begin()->first->getImageProperties().physicalCoords );
 	updateScene();
 
 }
