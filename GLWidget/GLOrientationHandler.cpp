@@ -144,10 +144,7 @@ void GLOrientationHandler::recalculateViewport( size_t w, size_t h, util::fvecto
 {
 	//first we have to map the imagesize and scaling to our current planeview
 	util::fvector4 physicalSize;
-
-	for ( unsigned short i = 0; i < 3; i++ ) {
-		physicalSize[i] = mappedVoxelSize[i] * mappedImageSize[i];
-	}
+	physicalSize = mappedVoxelSize * mappedImageSize;
 
 	size_t wspace = w - 2 * border;
 	size_t hspace = h - 2 * border;

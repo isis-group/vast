@@ -52,9 +52,9 @@ void QImageWidgetImplementation::setZoom(float zoom)
 
 void QImageWidgetImplementation::paintEvent( QPaintEvent *event )
 {
-    paintImage( m_ViewerCore->getCurrentImage() );
-    
-    
+    BOOST_FOREACH( DataContainer::const_reference image, m_ViewerCore->getDataContainer() ) {
+	paintImage( image.second );
+    }
 
 }
 
@@ -73,9 +73,16 @@ void QImageWidgetImplementation::paintImage(boost::shared_ptr< ImageHolder > ima
     for (int i = 0; i < 256; i++) {
         colorTable.push_back(QColor(i, i, i).rgb());
     }
+    
+    
     qImage.setColorTable(colorTable);
     QPainter painter( this );
-    painter.drawImage(0,0, qImage );
+    util::fvector4 scalingAndOffset = QOrienationHandler::getScalingAndOffset(image, width(),height(),m_PlaneOrientation );
+    QTransform transform;
+    transform = transform.scale(scalingAndOffset[0], scalingAndOffset[1] );
+    painter.setTransform(transform);
+    painter.drawImage(scalingAndOffset[2],scalingAndOffset[3], qImage);
+    
 }
 
 
