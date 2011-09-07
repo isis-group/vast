@@ -52,6 +52,7 @@ public:
 	void setID( size_t id ) { m_ID = id; }
 
 	std::vector< ImagePointerType > getImageVector() const { return m_ImageVector; }
+	std::vector< data::Chunk > getChunkVector() const { return m_ChunkVector; }
 	std::vector< util::PropertyMap > getTimeStepProperties() const { return m_TimeStepProperties; }
 	util::PropertyMap getPropMap() const { return m_PropMap; }
 	const util::FixedVector<size_t, 4> &getImageSize() const { return m_ImageSize; }
@@ -146,6 +147,8 @@ private:
 	ImageState m_ImageState;
 
 	std::vector< ImagePointerType > m_ImageVector;
+	std::vector< data::Chunk > m_ChunkVector;
+	
 	bool filterRelevantMetaInformation();
 
 };

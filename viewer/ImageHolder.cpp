@@ -141,6 +141,12 @@ bool ImageHolder::setImage( const data::Image &image, const ImageType &imageType
 							  << ") does not coincide with the number of volumes ("  << m_ImageVector.size() << ").";
 		return false;
 	}
+	//create the chunk vector
+	BOOST_FOREACH( std::vector< ImagePointerType >::const_reference pointerRef, m_ImageVector )
+	{
+	    m_ChunkVector.push_back( data::Chunk( pointerRef, m_ImageSize[0], m_ImageSize[1], m_ImageSize[2] ) );
+	}
+
 
 	LOG( Debug, verbose_info ) << "Spliced image to " << m_ImageVector.size() << " volumes.";
 
@@ -156,6 +162,7 @@ bool ImageHolder::setImage( const data::Image &image, const ImageType &imageType
 
 	m_ImageState.opacity = 1.0;
 	m_ImageState.timestep = 0;
+	m_ImageState.alignedSize32Bit = get32BitAlignedSize( m_ImageSize );
 	m_Image->updateOrientationMatrices();
 	return true;
 }
