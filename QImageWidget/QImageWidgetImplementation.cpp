@@ -1,5 +1,6 @@
 #include "QImageWidgetImplementation.hpp"
 #include "QtWidgetCommon.hpp"
+#include "QOrientationHandler.hpp"
 
 namespace isis {
 namespace viewer {
@@ -51,19 +52,31 @@ void QImageWidgetImplementation::setZoom(float zoom)
 
 void QImageWidgetImplementation::paintEvent( QPaintEvent *event )
 {
+    paintImage( m_ViewerCore->getCurrentImage() );
+    
+    
 
-    QImage image = m_MemoryHandler.getQImage( m_ViewerCore->getCurrentImage(), 100, m_PlaneOrientation );
+}
+
+void QImageWidgetImplementation::paintImage(boost::shared_ptr< ImageHolder > image)
+{
+    
+    util::ivector4 mappedSizeAligned = QOrienationHandler::mapCoordsToOrientation( image->getImageProperties().alignedSize32Bit, image, m_PlaneOrientation);
+    isis::data::MemChunk<InternalImageType> sliceChunk( mappedSizeAligned[0], mappedSizeAligned[1] );
+    
+    m_MemoryHandler.fillSliceChunk( sliceChunk, image, 100, m_PlaneOrientation );
+    
+    QImage qImage( (InternalImageType*) sliceChunk.asValuePtr<InternalImageType>().getRawAddress().lock().get(), 
+		   mappedSizeAligned[0], mappedSizeAligned[1], QImage::Format_Indexed8 );
     
     QVector<QRgb> colorTable;
     for (int i = 0; i < 256; i++) {
         colorTable.push_back(QColor(i, i, i).rgb());
     }
-    image.setColorTable(colorTable);
+    qImage.setColorTable(colorTable);
     QPainter painter( this );
-    painter.drawImage(0,0, image );
-
+    painter.drawImage(0,0, qImage );
 }
-
 
 
 

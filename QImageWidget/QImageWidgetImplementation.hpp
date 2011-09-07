@@ -30,6 +30,8 @@ public Q_SLOTS:
     
     virtual void setZoom( float zoom );
     virtual void addImage( const boost::shared_ptr<ImageHolder> image );
+    
+    virtual void paintImage( boost::shared_ptr< ImageHolder > image );
    
     
     
