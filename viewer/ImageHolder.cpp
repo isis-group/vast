@@ -88,9 +88,6 @@ boost::numeric::ublas::matrix< float > ImageHolder::getImageOrientation( bool tr
 bool ImageHolder::setImage( const data::Image &image, const ImageType &imageType, const std::string &filename )
 {
 
-	//we convert the image to an uint8_t data type
-	typedef uint8_t TYPE;
-
 	//some checks
 	if( image.isEmpty() ) {
 		LOG( Runtime, error ) << "Getting an empty image? Obviously something went wrong.";
@@ -121,9 +118,9 @@ bool ImageHolder::setImage( const data::Image &image, const ImageType &imageType
 	LOG( Debug, verbose_info )  << "Fetched image of size " << m_ImageSize << " and type "
 								<< image.getMajorTypeName() << ".";
 	//copy the image into continuous memory space and assure consistent data type
-	data::ValuePtr<TYPE> imagePtr( ( TYPE * ) calloc( image.getVolume(), sizeof( TYPE ) ), image.getVolume() );
-	LOG( Debug, verbose_info ) << "Needed memory: " << image.getVolume() * sizeof( TYPE ) / ( 1024.0 * 1024.0 ) << " mb.";
-	image.copyToMem<TYPE>( &imagePtr[0] );
+	data::ValuePtr<InternalImageType> imagePtr( ( InternalImageType * ) calloc( image.getVolume(), sizeof( InternalImageType ) ), image.getVolume() );
+	LOG( Debug, verbose_info ) << "Needed memory: " << image.getVolume() * sizeof( InternalImageType ) / ( 1024.0 * 1024.0 ) << " mb.";
+	image.copyToMem<InternalImageType>( &imagePtr[0] );
 	LOG( Debug, verbose_info ) << "Copied image to continuous memory space.";
 	m_InternMinMax = imagePtr.getMinMax();
 
@@ -152,7 +149,7 @@ bool ImageHolder::setImage( const data::Image &image, const ImageType &imageType
 
 	//copy all the relevant meta information
 	m_PropMap = static_cast<util::PropertyMap>( image );
-	m_OptimalScalingPair = getOptimalScalingToForType<TYPE>( m_CutAwayPair );
+	m_OptimalScalingPair = getOptimalScalingToForType<InternalImageType>( m_CutAwayPair );
 	//image seems to be ok...i guess
 	
 	//add some more 

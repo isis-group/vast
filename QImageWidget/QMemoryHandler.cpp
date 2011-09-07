@@ -14,9 +14,9 @@ QMemoryHandler::QMemoryHandler(QViewerCore* core)
 }
 
 
-void QMemoryHandler::getSlice( boost::shared_ptr< ImageHolder > image, uint8_t slice, uint8_t *retPointer, PlaneOrientation orientation, const util::ivector4 &alignedSize )
+void QMemoryHandler::getSlice( boost::shared_ptr< ImageHolder > image, size_t slice, InternalImageType *retPointer, PlaneOrientation orientation, const util::ivector4 &alignedSize )
 {
-    uint8_t *dataPtr = static_cast<uint8_t *>( image->getImageWeakPointer( 0 ).lock().get() );
+    InternalImageType *dataPtr = static_cast<InternalImageType *>( image->getImageWeakPointer( 0 ).lock().get() );
     assert( dataPtr != 0 );
     size_t planeSize = image->getImageSize()[0] * image->getImageSize()[1];
     util::ivector4 diffSize = alignedSize - image->getImageSize();
@@ -76,12 +76,17 @@ QImage QMemoryHandler::getQImage(const boost::shared_ptr< ImageHolder > image, c
 	    y = alignedSize[2];
 	    break;
     }
+    //we create an empty MemChunk that eventually will hold our extracted slice
+    data::MemChunk<InternalImageType> tmpChunk(x,y);
+    
     //allocate memory of the aligned size
-    uint8_t *dataPtr = ( uint8_t * ) calloc( x*y , sizeof( uint8_t ) );
+    
+    
+    InternalImageType *dataPtr = ( InternalImageType * ) calloc( x*y , sizeof( InternalImageType ) );
     
     
     
-    return QImage( (uchar*)dataPtr,x,y, QImage::Format_Indexed8 );
+    return QImage( (InternalImageType*)dataPtr,x,y, QImage::Format_Indexed8 );
     
 }
     

@@ -24,6 +24,8 @@ struct ViewerDebug {static const char *name() {return "ViewerDebug";}; enum {use
 namespace viewer
 {
 
+typedef uint8_t InternalImageType;
+    
 // just some helper typedefs which we will need regularly
 enum PlaneOrientation { axial, sagittal, coronal };
 enum WidgetType { type_gl, type_qt };

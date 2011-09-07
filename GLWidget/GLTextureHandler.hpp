@@ -23,7 +23,6 @@ namespace GL
 
 class GLTextureHandler
 {
-	typedef uint8_t TYPE;
 public:
 
 	enum InterpolationType { neares_neighbor, linear };

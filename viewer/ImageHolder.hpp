@@ -28,6 +28,7 @@ class ImageHolder
 public:
 
 	typedef data::_internal::ValuePtrBase::Reference ImagePointerType;
+	
 	enum ImageType { anatomical_image, z_map };
 	struct ImageProperties {
 		ImageType imageType;
