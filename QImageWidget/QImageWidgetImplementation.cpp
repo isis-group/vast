@@ -85,6 +85,7 @@ void QImageWidgetImplementation::mousePressEvent(QMouseEvent* e)
 {
     QWidget::mousePressEvent(e);
     std::cout << e->x() << " : " << e->y() << std::endl;
+    QOrienationHandler::convertWindow2VoxelCoords(m_ViewerCore->getCurrentImage(), x(), y(), m_PlaneOrientation );
     
     
 }

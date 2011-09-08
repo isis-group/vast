@@ -49,7 +49,8 @@ public:
 	std::vector< ImagePointerType > getImageVector() const { return m_ImageVector; }
 	std::vector< data::Chunk > getChunkVector() const { return m_ChunkVector; }
 	std::vector< util::PropertyMap > getTimeStepProperties() const { return m_TimeStepProperties; }
-	util::PropertyMap getPropMap() const { return m_PropMap; }
+	util::PropertyMap &getPropMap() { return m_PropMap; }
+	const util::PropertyMap &getPropMap() const { return m_PropMap; }
 	const util::FixedVector<size_t, 4> &getImageSize() const { return m_ImageSize; }
 	boost::shared_ptr< data::Image >getImage() const { return m_Image; }
 	boost::numeric::ublas::matrix<float> getNormalizedImageOrientation( bool transposed = false ) const;
