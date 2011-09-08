@@ -155,16 +155,19 @@ bool ImageHolder::setImage( const data::Image &image, const ImageType &imageType
 	//add some more properties
 	m_ImageProperties.imageType = imageType;
 	m_ImageProperties.lookUpTableType = Color::standard_grey_values;
-	m_PropMap.setPropertyAs<bool>("isVisible", true);
-	if( m_PropMap.hasProperty("isVisible") ) {
-	    std::cout << "has" << std::endl;
-	}
+	
+	
 	m_ImageProperties.threshold = std::make_pair<double, double>( m_MinMax.first->as<double>(), m_MinMax.second->as<double>() );
 	m_ImageProperties.zmapThreshold = std::make_pair<double, double>( 0, 0 );
-
+	
+	m_PropMap.setPropertyAs<util::ivector4>("voxelCoords", util::ivector4(m_ImageSize[0] / 2, m_ImageSize[1] / 2, m_ImageSize[2] / 2, 0) );
+	m_PropMap.setPropertyAs<util::fvector4>("physicalCoords", m_Image->getPhysicalCoordsFromIndex( m_PropMap.getPropertyAs<util::ivector4>("voxelCoords") ) );
+	
+	m_PropMap.setPropertyAs<bool>("isVisible", true);
 	m_PropMap.setPropertyAs<float>("opacity", 1.0 );
 	m_PropMap.setPropertyAs<size_t>("currentTimestep", 0);
 	m_PropMap.setPropertyAs<util::ivector4>("alignedSize32Bit", get32BitAlignedSize(m_ImageSize));
+	m_PropMap.setPropertyAs<bool>("init", true );
 	m_Image->updateOrientationMatrices();
 	return true;
 }

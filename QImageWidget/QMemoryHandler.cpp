@@ -15,14 +15,14 @@ QMemoryHandler::QMemoryHandler(QViewerCore* core)
 }
 
 
-bool QMemoryHandler::fillSliceChunk(data::MemChunk< InternalImageType > &sliceChunk, const boost::shared_ptr< ImageHolder > image, const size_t slice, PlaneOrientation orientation) const
+bool QMemoryHandler::fillSliceChunk(data::MemChunk< InternalImageType > &sliceChunk, const boost::shared_ptr< ImageHolder > image, PlaneOrientation orientation) const
 {
     util::ivector4 mappedSize = QOrienationHandler::mapCoordsToOrientation( image->getImageSize(), image, orientation );
-
+    util::ivector4 mappedCoords = QOrienationHandler::mapCoordsToOrientation( image->getPropMap().getPropertyAs<util::ivector4>("voxelCoords"), image, orientation );
     util::ivector4 mapping = QOrienationHandler::mapCoordsToOrientation( util::ivector4(0,1,2,3), image, orientation, true );
     data::Chunk chunk = image->getChunkVector()[0];
     util::ivector4 coords;
-    coords[2] = slice;
+    coords[2] = mappedCoords[2];
      for ( coords[1] = 0; coords[1] < mappedSize[1]; coords[1]++ ) {
 	for ( coords[0] = 0; coords[0] < mappedSize[0]; coords[0]++ ) {
 	    sliceChunk.voxel<InternalImageType>(coords[0],coords[1]) = 
