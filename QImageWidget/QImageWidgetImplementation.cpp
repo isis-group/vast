@@ -31,6 +31,8 @@ void QImageWidgetImplementation::commonInit()
     setAutoFillBackground( true );
     setPalette( QPalette(Qt::black ) );
     m_LutType = Color::standard_grey_values;
+    m_Painter = new QPainter();
+    
 
 }
 
@@ -53,11 +55,14 @@ void QImageWidgetImplementation::setZoom(float zoom)
 
 void QImageWidgetImplementation::paintEvent( QPaintEvent *event )
 {
+    m_Painter->begin(this);
     BOOST_FOREACH( DataContainer::const_reference image, m_ViewerCore->getDataContainer() ) {
 	if( image.second->getPropMap().getPropertyAs<bool>("isVisible") ) {
 	    paintImage( image.second );
 	} 
     }
+    paintCrosshair();
+    m_Painter->end();
 
 }
 
@@ -71,13 +76,12 @@ void QImageWidgetImplementation::paintImage(boost::shared_ptr< ImageHolder > ima
     
     QImage qImage( (InternalImageType*) sliceChunk.asValuePtr<InternalImageType>().getRawAddress().lock().get(), 
 		   mappedSizeAligned[0], mappedSizeAligned[1], QImage::Format_Indexed8 );
-    
+    qImage.setColorCount(512);
     qImage.setColorTable(Color::getColorTable( m_LutType ));
-    QPainter painter( this );
     
-    painter.setTransform( QOrienationHandler::getTransform(image, width(), height(), m_PlaneOrientation ) );
-    painter.setOpacity( image->getPropMap().getPropertyAs<float>("opacity") );
-    painter.drawImage(0,0, qImage);
+    m_Painter->setTransform( QOrienationHandler::getTransform( m_WidgetProperties, image, width(), height(), m_PlaneOrientation ) );
+    m_Painter->setOpacity( image->getPropMap().getPropertyAs<float>("opacity") );
+    m_Painter->drawImage(0,0, qImage);
 }
 
 
@@ -85,9 +89,30 @@ void QImageWidgetImplementation::mousePressEvent(QMouseEvent* e)
 {
     QWidget::mousePressEvent(e);
 
-    QOrienationHandler::convertWindow2VoxelCoords(m_ViewerCore->getCurrentImage(), e->x(), e->y(), m_PlaneOrientation );
-    
-    
+    std::pair<size_t, size_t> coords = QOrienationHandler::convertWindow2VoxelCoords( m_WidgetProperties, m_ViewerCore->getCurrentImage(), e->x(), e->y(), m_PlaneOrientation);
+    m_ViewerCore->getCurrentImage()->getPropMap().setPropertyAs<util::ivector4>("voxelCoords", util::ivector4(coords.first, coords.first, coords.first));
+    update();
+}
+
+void QImageWidgetImplementation::mouseMoveEvent(QMouseEvent* e)
+{
+    QWidget::mouseMoveEvent(e);
+    std::pair<size_t, size_t> coords = QOrienationHandler::convertWindow2VoxelCoords( m_WidgetProperties, m_ViewerCore->getCurrentImage(), e->x(), e->y(), m_PlaneOrientation);
+    m_ViewerCore->getCurrentImage()->getPropMap().setPropertyAs<util::ivector4>("voxelCoords", util::ivector4(coords.first, coords.first, coords.first));
+    update();
+}
+
+
+void QImageWidgetImplementation::paintCrosshair()
+{
+    std::pair<size_t, size_t> coords = QOrienationHandler::convertVoxel2WindowCoords( m_WidgetProperties, m_ViewerCore->getCurrentImage(), m_PlaneOrientation  );
+    util::fvector4 mappedSize = QOrienationHandler::mapCoordsToOrientation( m_ViewerCore->getCurrentImage()->getImageSize(), m_ViewerCore->getCurrentImage(), m_PlaneOrientation);
+    util::fvector4 scalingAndOffset = m_WidgetProperties.getPropertyAs<util::fvector4>("scalingAndOffset");
+    QLine xline(coords.first, 0, coords.first, mappedSize[1] );
+    QLine yline(0, coords.second, mappedSize[0], coords.second );
+    m_Painter->setPen( Qt::blue );
+    m_Painter->drawLine(xline);
+    m_Painter->drawLine(yline);
 }
 
 

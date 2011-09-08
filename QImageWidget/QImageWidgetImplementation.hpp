@@ -33,8 +33,10 @@ public Q_SLOTS:
     virtual void addImage( const boost::shared_ptr<ImageHolder> image );
     
     virtual void paintImage( boost::shared_ptr< ImageHolder > image );
+    virtual void paintCrosshair();
    
     virtual void mousePressEvent( QMouseEvent *e );
+    virtual void mouseMoveEvent( QMouseEvent *e); 
     
 protected:
     void paintEvent( QPaintEvent *event );
@@ -49,6 +51,9 @@ private:
     QMemoryHandler m_MemoryHandler;
     Color::LookUpTableType m_LutType;
     void commonInit();
+    util::PropertyMap m_WidgetProperties;
+    QPainter *m_Painter;
+    
 };
 
 

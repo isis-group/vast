@@ -106,7 +106,7 @@ util::fvector4 QOrienationHandler::getScalingAndOffset(const boost::shared_ptr< 
 }
 
 
-QTransform QOrienationHandler::getTransform(const boost::shared_ptr< ImageHolder > image, const size_t& w, const size_t& h, PlaneOrientation orientation)
+QTransform QOrienationHandler::getTransform( util::PropertyMap &properties, const boost::shared_ptr< ImageHolder > image, const size_t& w, const size_t& h, PlaneOrientation orientation )
 {
     util::ivector4 mappedSize = QOrienationHandler::mapCoordsToOrientation( image->getImageSize(), image, orientation );
     util::fvector4 flipVec = QOrienationHandler::mapCoordsToOrientation(util::fvector4(1,1,1), image, orientation, false, false );
@@ -116,8 +116,7 @@ QTransform QOrienationHandler::getTransform(const boost::shared_ptr< ImageHolder
 			   0, 0, 1 );
     
     util::fvector4 scalingAndOffset = QOrienationHandler::getScalingAndOffset(image, w, h, orientation );
-    image->getPropMap().setPropertyAs<util::fvector4>("scalingAndOffset", scalingAndOffset );
-    
+    properties.setPropertyAs<util::fvector4>("scalingAndOffset", scalingAndOffset );
     retTransform.translate( flipVec[0] * scalingAndOffset[2], flipVec[1] * scalingAndOffset[3] );
     retTransform.scale(scalingAndOffset[0], scalingAndOffset[1] );
     retTransform.translate(  flipVec[0] < 0 ? -mappedSize[0] : 0, flipVec[1] < 0 ? -mappedSize[1] : 0 );
@@ -126,13 +125,21 @@ QTransform QOrienationHandler::getTransform(const boost::shared_ptr< ImageHolder
     
 }
 
-util::ivector4 QOrienationHandler::convertWindow2VoxelCoords(const boost::shared_ptr< ImageHolder > image, const size_t& x, const size_t& y, PlaneOrientation orientation)
+std::pair<size_t, size_t> QOrienationHandler::convertWindow2VoxelCoords( const util::PropertyMap &properties, const boost::shared_ptr< ImageHolder > image, const size_t& x, const size_t& y, PlaneOrientation orientation )
 {
-    util::fvector4 scalingAndOffset = image->getPropMap().getPropertyAs<util::fvector4>("scalingAndOffset");
-    float test = (x - scalingAndOffset[2] ) / scalingAndOffset[0];
-    std::cout << test << std::endl;
+    util::fvector4 scalingAndOffset = properties.getPropertyAs<util::fvector4>("scalingAndOffset");
+    return std::make_pair<size_t, size_t> ( (x - scalingAndOffset[2] ) / scalingAndOffset[0],
+					    (y - scalingAndOffset[3] ) / scalingAndOffset[1] );
     
 }
 
+std::pair< size_t, size_t > QOrienationHandler::convertVoxel2WindowCoords(const isis::util::PropertyMap& properties, const boost::shared_ptr< ImageHolder > image, PlaneOrientation orientation)
+{
+    util::fvector4 scalingAndOffset = properties.getPropertyAs<util::fvector4>("scalingAndOffset");
+    util::ivector4 mappedVoxelCoords = QOrienationHandler::mapCoordsToOrientation( image->getPropMap().getPropertyAs<util::ivector4>("voxelCoords"), image, orientation);
+    
+    return std::make_pair<size_t, size_t>( mappedVoxelCoords[0] ,
+					    mappedVoxelCoords[1] );
+}
 
 }}} // end namespace
