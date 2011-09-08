@@ -84,8 +84,8 @@ void QImageWidgetImplementation::paintImage(boost::shared_ptr< ImageHolder > ima
 void QImageWidgetImplementation::mousePressEvent(QMouseEvent* e)
 {
     QWidget::mousePressEvent(e);
-    std::cout << e->x() << " : " << e->y() << std::endl;
-    QOrienationHandler::convertWindow2VoxelCoords(m_ViewerCore->getCurrentImage(), x(), y(), m_PlaneOrientation );
+
+    QOrienationHandler::convertWindow2VoxelCoords(m_ViewerCore->getCurrentImage(), e->x(), e->y(), m_PlaneOrientation );
     
     
 }
