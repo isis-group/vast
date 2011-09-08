@@ -30,6 +30,7 @@ void QImageWidgetImplementation::commonInit()
 {
     setAutoFillBackground( true );
     setPalette( QPalette(Qt::black ) );
+    m_LutType = Color::standard_grey_values;
 
 }
 
@@ -69,13 +70,8 @@ void QImageWidgetImplementation::paintImage(boost::shared_ptr< ImageHolder > ima
     QImage qImage( (InternalImageType*) sliceChunk.asValuePtr<InternalImageType>().getRawAddress().lock().get(), 
 		   mappedSizeAligned[0], mappedSizeAligned[1], QImage::Format_Indexed8 );
     
-    QVector<QRgb> colorTable;
-    for (int i = 0; i < 256; i++) {
-        colorTable.push_back(QColor(i, i, i).rgb());
-    }
-    
-    
-    qImage.setColorTable(colorTable);
+        
+    qImage.setColorTable(Color::getColorTable( m_LutType ));
     QPainter painter( this );
     
     painter.setTransform( QOrienationHandler::getTransform(image, width(), height(), m_PlaneOrientation ) );

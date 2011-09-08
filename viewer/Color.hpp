@@ -3,6 +3,8 @@
 
 #include "common.hpp"
 #include <QColor>
+#include <QVector>
+#include <QRgb>
 
 namespace isis
 {
@@ -14,10 +16,10 @@ class Color
 {
 
 public:
-	enum LookUpTableType { zmap_standard };
+	enum LookUpTableType { standard_grey_values, zmap_standard };
 	static std::vector< util::fvector4 > getColorGradientRGB( const LookUpTableType &lutType, const size_t &numberOfEntries = 256 );
-
-
+	
+	static QVector<QRgb> getColorTable( const LookUpTableType &lutType );
 };
 
 }

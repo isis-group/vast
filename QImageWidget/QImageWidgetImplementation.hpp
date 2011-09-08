@@ -8,6 +8,7 @@
 #include "WidgetImplementationBase.hpp"
 #include "QViewerCore.hpp"
 #include "QMemoryHandler.hpp"
+#include "Color.hpp"
 
 namespace isis {
 
@@ -46,6 +47,7 @@ Q_SIGNALS:
 
 private:
     QMemoryHandler m_MemoryHandler;
+    Color::LookUpTableType m_LutType;
     void commonInit();
 };
 

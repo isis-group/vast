@@ -116,8 +116,6 @@ QTransform QOrienationHandler::getTransform(const boost::shared_ptr< ImageHolder
 			   0, 0, 1 );
     
     util::fvector4 scalingAndOffset = QOrienationHandler::getScalingAndOffset(image, w, h, orientation );
-    std::cout << scalingAndOffset << std::endl;
-    
     retTransform.translate( flipVec[0] * scalingAndOffset[2], flipVec[1] * scalingAndOffset[3] );
     retTransform.scale(scalingAndOffset[0], scalingAndOffset[1] );
     retTransform.translate(  flipVec[0] < 0 ? -mappedSize[0] : 0, flipVec[1] < 0 ? -mappedSize[1] : 0 );
