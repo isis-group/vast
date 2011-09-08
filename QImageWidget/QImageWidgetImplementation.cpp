@@ -72,7 +72,6 @@ void QImageWidgetImplementation::paintImage(boost::shared_ptr< ImageHolder > ima
     QImage qImage( (InternalImageType*) sliceChunk.asValuePtr<InternalImageType>().getRawAddress().lock().get(), 
 		   mappedSizeAligned[0], mappedSizeAligned[1], QImage::Format_Indexed8 );
     
-        
     qImage.setColorTable(Color::getColorTable( m_LutType ));
     QPainter painter( this );
     
@@ -80,10 +79,13 @@ void QImageWidgetImplementation::paintImage(boost::shared_ptr< ImageHolder > ima
     painter.setOpacity( image->getPropMap().getPropertyAs<float>("opacity") );
     painter.drawImage(0,0, qImage);
 }
+
+
 void QImageWidgetImplementation::mousePressEvent(QMouseEvent* e)
 {
     QWidget::mousePressEvent(e);
     std::cout << e->x() << " : " << e->y() << std::endl;
+    
     
 }
 

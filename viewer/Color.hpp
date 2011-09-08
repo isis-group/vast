@@ -17,9 +17,8 @@ class Color
 
 public:
 	enum LookUpTableType { standard_grey_values, zmap_standard };
-	static std::vector< util::fvector4 > getColorGradientRGB( const LookUpTableType &lutType, const size_t &numberOfEntries = 256 );
 	
-	static QVector<QRgb> getColorTable( const LookUpTableType &lutType );
+	static QVector<QRgb> getColorTable( const LookUpTableType &lutType, size_t numberOfElems = 256 );
 };
 
 }

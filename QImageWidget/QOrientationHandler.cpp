@@ -127,6 +127,10 @@ QTransform QOrienationHandler::getTransform(const boost::shared_ptr< ImageHolder
     
 }
 
+util::ivector4 QOrienationHandler::convertWindow2VoxelCoords(const boost::shared_ptr< ImageHolder > image, const size_t& x, const size_t& y, PlaneOrientation orientation)
+{
+
+}
 
 
 }}} // end namespace

@@ -100,9 +100,7 @@ public:
 			sum += histogram[upperBorder--];
 
 		}
-
 		sum = 0;
-
 		while ( sum < cutAway.first ) {
 			sum += histogram[lowerBorder++];
 		}

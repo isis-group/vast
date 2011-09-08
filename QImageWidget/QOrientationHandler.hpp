@@ -23,6 +23,8 @@ public:
     
     static util::fvector4 getScalingAndOffset( const boost::shared_ptr< ImageHolder > image, const size_t &w, const size_t &h, PlaneOrientation orientation );
     static QTransform getTransform( const boost::shared_ptr< ImageHolder > image, const size_t &w, const size_t &h, PlaneOrientation orientation );
+    
+    util::ivector4 convertWindow2VoxelCoords( const boost::shared_ptr< ImageHolder > image, const size_t &x, const size_t &y, PlaneOrientation orientation );
 };
  
     
