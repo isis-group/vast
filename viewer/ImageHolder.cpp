@@ -152,16 +152,19 @@ bool ImageHolder::setImage( const data::Image &image, const ImageType &imageType
 	m_OptimalScalingPair = getOptimalScalingToForType<InternalImageType>( m_CutAwayPair );
 	//image seems to be ok...i guess
 	
-	//add some more 
+	//add some more properties
 	m_ImageProperties.imageType = imageType;
-	m_ImageProperties.lookUpTableType = Color::zmap_standard;
-	m_ImageProperties.visible = true;
+	m_ImageProperties.lookUpTableType = Color::standard_grey_values;
+	m_PropMap.setPropertyAs<bool>("isVisible", true);
+	if( m_PropMap.hasProperty("isVisible") ) {
+	    std::cout << "has" << std::endl;
+	}
 	m_ImageProperties.threshold = std::make_pair<double, double>( m_MinMax.first->as<double>(), m_MinMax.second->as<double>() );
 	m_ImageProperties.zmapThreshold = std::make_pair<double, double>( 0, 0 );
 
-	m_ImageProperties.opacity = 1.0;
-	m_ImageProperties.timestep = 0;
-	m_ImageProperties.alignedSize32Bit = get32BitAlignedSize( m_ImageSize );
+	m_PropMap.setPropertyAs<float>("opacity", 1.0 );
+	m_PropMap.setPropertyAs<size_t>("currentTimestep", 0);
+	m_PropMap.setPropertyAs<util::ivector4>("alignedSize32Bit", get32BitAlignedSize(m_ImageSize));
 	m_Image->updateOrientationMatrices();
 	return true;
 }

@@ -34,7 +34,7 @@ public Q_SLOTS:
     
     virtual void paintImage( boost::shared_ptr< ImageHolder > image );
    
-    
+    virtual void mousePressEvent( QMouseEvent *e );
     
 protected:
     void paintEvent( QPaintEvent *event );

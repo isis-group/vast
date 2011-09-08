@@ -43,10 +43,10 @@ void QViewerCore::timestepChanged( int timestep )
 	if( !getCurrentImage()->getImageSize()[3] > timestep ) {
 		timestep = getCurrentImage()->getImageSize()[3] - 1;
 	}
-	util::ivector4 voxelCoords = getCurrentImage()->getImageProperties().voxelCoords;
+	util::ivector4 voxelCoords = getCurrentImage()->getPropMap().getPropertyAs<util::ivector4>("voxelCoords");
 	voxelCoords[3] = timestep;
-	getCurrentImage()->setCurrentVoxelCoords( voxelCoords );
-	getCurrentImage()->setTimestep( timestep );
+	getCurrentImage()->getPropMap().setPropertyAs<util::ivector4>("voxelCoords", voxelCoords );
+	getCurrentImage()->getPropMap().setPropertyAs<size_t>("currentTimestep", timestep );
 	emitTimeStepChange( timestep );
 }
 

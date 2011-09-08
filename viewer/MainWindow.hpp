@@ -90,7 +90,7 @@ protected:
 		double intensity = roundNumber<double>( vIntensity, 2 );
 		ui.intensity_value->display(intensity);
 		ui.intensity_value_2->display( intensity );
-		m_ViewerCore->getCurrentImage()->setCurrentIntensityAsDouble( intensity );
+		m_ViewerCore->getCurrentImage()->getPropMap().setPropertyAs<double>("currentIntensity",intensity);
 		if( m_PlottingDialog->isVisible() ) {
 			m_PlottingDialog->replotVoxelCoords<TYPE>( coords );
 		}

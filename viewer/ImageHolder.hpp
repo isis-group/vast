@@ -30,19 +30,13 @@ public:
 	typedef data::_internal::ValuePtrBase::Reference ImagePointerType;
 	
 	enum ImageType { anatomical_image, z_map };
+	
+	//here we store only properties which can not be stored as isis::PropertyValue
 	struct ImageProperties {
 		ImageType imageType;
 		std::pair<double, double> threshold;
 		std::pair<double, double> zmapThreshold;
-		size_t stackPosition;
-		float opacity;
-		bool visible;
-		size_t timestep;
-		double currentIntensityAsDouble;
-		util::ivector4 voxelCoords;
-		util::fvector4 physicalCoords;
 		Color::LookUpTableType lookUpTableType;
-		util::ivector4 alignedSize32Bit;
 		
 	};
 	ImageHolder( );
@@ -120,16 +114,9 @@ public:
 		return retPair;
 	}
 
-	void setVisible( bool v ) { m_ImageProperties.visible = v; }
 	void setLowerThreshold( double lowerThreshold ) { m_ImageProperties.threshold.first = lowerThreshold ; m_ImageProperties.zmapThreshold.first = lowerThreshold; }
 	void setUpperThreshold( double upperThreshold ) { m_ImageProperties.threshold.second = upperThreshold ; m_ImageProperties.zmapThreshold.second = upperThreshold; }
-	void setStackPosition( size_t stackPosition ) { m_ImageProperties.stackPosition = stackPosition; }
-	void setOpacity( float opacity ) { m_ImageProperties.opacity = opacity; }
 	void setImageType( ImageType imageType ) { m_ImageProperties.imageType = imageType; }
-	void setCurrentIntensityAsDouble( double intensity ) { m_ImageProperties.currentIntensityAsDouble = intensity; }
-	void setCurrentVoxelCoords( const util::ivector4 &voxelCoords ) { m_ImageProperties.voxelCoords = voxelCoords; setCurrentPhysicalCoords( getImage()->getPhysicalCoordsFromIndex( voxelCoords ) ); }
-	void setCurrentPhysicalCoords( const util::fvector4 &physCoords ) { m_ImageProperties.physicalCoords = physCoords; }
-	void setTimestep( size_t timestep ) { m_ImageProperties.timestep = timestep; }
 
 private:
 

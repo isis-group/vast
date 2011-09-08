@@ -54,7 +54,9 @@ void QImageWidgetImplementation::setZoom(float zoom)
 void QImageWidgetImplementation::paintEvent( QPaintEvent *event )
 {
     BOOST_FOREACH( DataContainer::const_reference image, m_ViewerCore->getDataContainer() ) {
-	paintImage( image.second );
+	if( image.second->getPropMap().getPropertyAs<bool>("isVisible") ) {
+	    paintImage( image.second );
+	} 
     }
 
 }
@@ -62,7 +64,7 @@ void QImageWidgetImplementation::paintEvent( QPaintEvent *event )
 void QImageWidgetImplementation::paintImage(boost::shared_ptr< ImageHolder > image)
 {
     
-    util::ivector4 mappedSizeAligned = QOrienationHandler::mapCoordsToOrientation( image->getImageProperties().alignedSize32Bit, image, m_PlaneOrientation);
+    util::ivector4 mappedSizeAligned = QOrienationHandler::mapCoordsToOrientation( image->getPropMap().getPropertyAs<util::ivector4>("alignedSize32Bit"), image, m_PlaneOrientation);
     isis::data::MemChunk<InternalImageType> sliceChunk( mappedSizeAligned[0], mappedSizeAligned[1] );
     
     m_MemoryHandler.fillSliceChunk( sliceChunk, image, 100, m_PlaneOrientation );
@@ -75,7 +77,14 @@ void QImageWidgetImplementation::paintImage(boost::shared_ptr< ImageHolder > ima
     QPainter painter( this );
     
     painter.setTransform( QOrienationHandler::getTransform(image, width(), height(), m_PlaneOrientation ) );
+    painter.setOpacity( image->getPropMap().getPropertyAs<float>("opacity") );
     painter.drawImage(0,0, qImage);
+}
+void QImageWidgetImplementation::mousePressEvent(QMouseEvent* e)
+{
+    QWidget::mousePressEvent(e);
+    std::cout << e->x() << " : " << e->y() << std::endl;
+    
 }
 
 

@@ -271,7 +271,7 @@ void MainWindow::imagesChanged( DataContainer images )
 		item->setText( QString( imageRef.second->getFileNames().front().c_str() ) );
 		item->setFlags( Qt::ItemIsEnabled | Qt::ItemIsUserCheckable | Qt::ItemIsSelectable );
 
-		if( imageRef.second->getImageProperties().visible ) {
+		if( imageRef.second->getPropMap().getPropertyAs<bool>("isVisible") ) {
 			item->setCheckState( Qt::Checked );
 		} else {
 			item->setCheckState( Qt::Unchecked );
@@ -291,8 +291,8 @@ void MainWindow::imagesChanged( DataContainer images )
 		ui.timestepSpinBox->setMaximum( m_ViewerCore->getCurrentImage()->getImageSize()[3] - 1 );
 		ui.timestepSpinBox_2->setEnabled( true );
 		ui.timestepSpinBox_2->setMaximum( m_ViewerCore->getCurrentImage()->getImageSize()[3] -1 );
-		ui.timestepSpinBox->setValue( m_ViewerCore->getCurrentImage()->getImageProperties().timestep );
-		ui.timestepSpinBox_2->setValue( m_ViewerCore->getCurrentImage()->getImageProperties().timestep );
+		ui.timestepSpinBox->setValue( m_ViewerCore->getCurrentImage()->getPropMap().getPropertyAs<size_t>("currentTimestep") );
+		ui.timestepSpinBox_2->setValue( m_ViewerCore->getCurrentImage()->getPropMap().getPropertyAs<size_t>("currentTimestep") );
 		
 	} else {
 		ui.timestepSpinBox->setEnabled( false );
@@ -308,7 +308,7 @@ void MainWindow::imagesChanged( DataContainer images )
 		ui.opacity->setVisible( true );
 		ui.labelOpacity->setVisible( true );
 		ui.frame_4->setVisible(false);
-		ui.opacity->setValue( (ui.opacity->maximum() - ui.opacity->minimum()) * m_ViewerCore->getCurrentImage()->getImageProperties().opacity );
+		ui.opacity->setValue( (ui.opacity->maximum() - ui.opacity->minimum()) * m_ViewerCore->getCurrentImage()->getPropMap().getPropertyAs<float>("opacity") );
 	} else if (m_ViewerCore->getCurrentImage()->getImageProperties().imageType == ImageHolder::z_map ) {
 		ui.upperThreshold->setVisible(true);
 		ui.lowerThreshold->setVisible(true);
@@ -395,10 +395,10 @@ void MainWindow::openDICOMDir()
 void MainWindow::checkImageStack( QListWidgetItem *item )
 {
 	if( item->checkState() == Qt::Checked ) {
-		m_ViewerCore->getDataContainer().at( item->text().toStdString() )->setVisible( true );
+		m_ViewerCore->getDataContainer().at( item->text().toStdString() )->getPropMap().setPropertyAs<bool>("isVisible", true );
 
 	} else if( item->checkState() == Qt::Unchecked ) {
-		m_ViewerCore->getDataContainer().at( item->text().toStdString() )->setVisible( false );
+		m_ViewerCore->getDataContainer().at( item->text().toStdString() )->getPropMap().setPropertyAs<bool>("isVisible", false );
 	}
 	m_ViewerCore->updateScene();
 
@@ -412,7 +412,7 @@ void MainWindow::exitProgram()
 void MainWindow::opacityChanged( int opacity )
 {
 	float opacityFloat = 1.0 / ( ui.opacity->maximum() - ui.opacity->minimum()) * opacity;
-	m_ViewerCore->getCurrentImage()->setOpacity( opacityFloat );
+	m_ViewerCore->getCurrentImage()->getPropMap().setPropertyAs<float>("opacity",opacityFloat );
 	m_ViewerCore->updateScene();
 }
 
