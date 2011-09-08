@@ -3,43 +3,46 @@
 
 #include "MainWindow.hpp"
 
-namespace isis {
-namespace viewer {
+namespace isis
+{
+namespace viewer
+{
 
 
 class MainWindowUIInterface : public MainWindow
 {
 	Q_OBJECT;
 public:
-	MainWindowUIInterface(QViewerCore* core, WidgetType wType = type_gl );
-		
+	MainWindowUIInterface( QViewerCore *core, WidgetType wType = type_gl );
+
 
 protected:
 	void connectSignals();
 
-	QViewerCore* m_ViewerCore;
-		
-	
+	QViewerCore *m_ViewerCore;
+
+
 public Q_SLOTS:
-	void showControlPanel(bool);
+	void showControlPanel( bool );
 	void showPlotting();
-	void toggleAxialView(bool);
-	void toggleCoronalView(bool);
-	void toggleSagittalView(bool);
+	void toggleAxialView( bool );
+	void toggleCoronalView( bool );
+	void toggleSagittalView( bool );
 	void openImageAsZMap();
 	void openImageAsAnatomicalImage();
 	void openPreferences();
-	
+
 	void triggeredMakeCurrentImage( bool );
 	void doubleClickedMakeCurrentImage( QListWidgetItem * );
-	
-	
-	void toggleViews( PlaneOrientation orientation, bool toggled);
-	
-}; 
+
+
+	void toggleViews( PlaneOrientation orientation, bool toggled );
+
+};
 
 
 
-}}
+}
+}
 
 #endif

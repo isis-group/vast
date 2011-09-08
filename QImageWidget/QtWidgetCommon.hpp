@@ -3,15 +3,20 @@
 
 #include "CoreUtils/vector.hpp"
 
-namespace isis {
-namespace viewer {
-namespace qt {
+namespace isis
+{
+namespace viewer
+{
+namespace qt
+{
 
-    
- 
 
-    
-}}}//end namespace
+
+
+
+}
+}
+}//end namespace
 
 
 

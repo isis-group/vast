@@ -32,7 +32,7 @@ public:
 
 private:
 	QGLWidgetImplementation( QViewerCore *core, QWidget *parent, QGLWidget *share, QGLContext *context, PlaneOrientation orienation = axial );
-	
+
 	QGLWidget *m_ShareWidget;
 
 public Q_SLOTS:
@@ -61,7 +61,7 @@ public Q_SLOTS:
 		updateScene();
 	}
 	virtual bool isInitialized() { return m_Flags.glInitialized; }
-	
+
 protected:
 	virtual void mouseMoveEvent( QMouseEvent *e );
 	virtual void wheelEvent( QWheelEvent *e );
@@ -115,7 +115,7 @@ private:
 	void emitMousePressEvent( QMouseEvent *e );
 	bool isInViewport( size_t wx, size_t wy );
 	void viewLabels() ;
-	void paintImage( const std::pair< boost::shared_ptr<ImageHolder>, State> &state) ;
+	void paintImage( const std::pair< boost::shared_ptr<ImageHolder>, State> &state ) ;
 
 	std::pair<GLdouble, GLdouble> window2ObjectCoords( int16_t winx, int16_t winy, const boost::shared_ptr<ImageHolder> image ) const;
 	std::pair<int16_t, int16_t> object2WindowCoords( GLdouble objx, GLdouble objy, const boost::shared_ptr<ImageHolder> image ) const;
@@ -124,10 +124,10 @@ private:
 	GLShaderHandler m_LUTShader;
 
 	std::vector<GLuint> m_TextureIDVec;
-	
+
 	GLTextureHandler::InterpolationType m_InterplationType;
 
-	
+
 	bool calculateTranslation( );
 
 	typedef std::map<boost::shared_ptr<ImageHolder>, State> StateMap;

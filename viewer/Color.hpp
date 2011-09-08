@@ -17,7 +17,7 @@ class Color
 
 public:
 	enum LookUpTableType { standard_grey_values, zmap_standard };
-	
+
 	static QVector<QRgb> getColorTable( const LookUpTableType &lutType, size_t numberOfElems = 256 );
 };
 

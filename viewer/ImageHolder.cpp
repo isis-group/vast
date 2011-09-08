@@ -49,16 +49,18 @@ boost::numeric::ublas::matrix< float > ImageHolder::getNormalizedImageOrientatio
 	retMatrix( 3, 3 ) = 1;
 	util::fvector4 rowVec = m_Image->getPropertyAs<util::fvector4>( "rowVec" );
 	util::fvector4 columnVec = m_Image->getPropertyAs<util::fvector4>( "columnVec" );
-	util::fvector4 sliceVec = m_Image->getPropertyAs<util::fvector4>( "sliceVec" );	
+	util::fvector4 sliceVec = m_Image->getPropertyAs<util::fvector4>( "sliceVec" );
+
 	if( !transposed ) {
-		retMatrix( rowVec.getBiggestVecElemAbs(), 0 ) = rowVec[rowVec.getBiggestVecElemAbs()] < 0 ? -1 : 1; 
-		retMatrix( columnVec.getBiggestVecElemAbs(), 1 ) = columnVec[columnVec.getBiggestVecElemAbs()] < 0 ? -1 : 1; 
-		retMatrix( sliceVec.getBiggestVecElemAbs(), 2 ) =  sliceVec[sliceVec.getBiggestVecElemAbs()] < 0 ? -1 : 1; 
+		retMatrix( rowVec.getBiggestVecElemAbs(), 0 ) = rowVec[rowVec.getBiggestVecElemAbs()] < 0 ? -1 : 1;
+		retMatrix( columnVec.getBiggestVecElemAbs(), 1 ) = columnVec[columnVec.getBiggestVecElemAbs()] < 0 ? -1 : 1;
+		retMatrix( sliceVec.getBiggestVecElemAbs(), 2 ) =  sliceVec[sliceVec.getBiggestVecElemAbs()] < 0 ? -1 : 1;
 	} else {
-		retMatrix( 0, rowVec.getBiggestVecElemAbs() ) = rowVec[rowVec.getBiggestVecElemAbs()] < 0 ? -1 : 1; 
-		retMatrix( 1, columnVec.getBiggestVecElemAbs() ) =  columnVec[columnVec.getBiggestVecElemAbs()] < 0 ? -1 : 1; 
-		retMatrix( 2, sliceVec.getBiggestVecElemAbs() ) = sliceVec[sliceVec.getBiggestVecElemAbs()] < 0 ? -1 : 1; 
+		retMatrix( 0, rowVec.getBiggestVecElemAbs() ) = rowVec[rowVec.getBiggestVecElemAbs()] < 0 ? -1 : 1;
+		retMatrix( 1, columnVec.getBiggestVecElemAbs() ) =  columnVec[columnVec.getBiggestVecElemAbs()] < 0 ? -1 : 1;
+		retMatrix( 2, sliceVec.getBiggestVecElemAbs() ) = sliceVec[sliceVec.getBiggestVecElemAbs()] < 0 ? -1 : 1;
 	}
+
 	return retMatrix;
 }
 
@@ -138,10 +140,10 @@ bool ImageHolder::setImage( const data::Image &image, const ImageType &imageType
 							  << ") does not coincide with the number of volumes ("  << m_ImageVector.size() << ").";
 		return false;
 	}
+
 	//create the chunk vector
-	BOOST_FOREACH( std::vector< ImagePointerType >::const_reference pointerRef, m_ImageVector )
-	{
-	    m_ChunkVector.push_back( data::Chunk( pointerRef, m_ImageSize[0], m_ImageSize[1], m_ImageSize[2] ) );
+	BOOST_FOREACH( std::vector< ImagePointerType >::const_reference pointerRef, m_ImageVector ) {
+		m_ChunkVector.push_back( data::Chunk( pointerRef, m_ImageSize[0], m_ImageSize[1], m_ImageSize[2] ) );
 	}
 
 
@@ -151,23 +153,23 @@ bool ImageHolder::setImage( const data::Image &image, const ImageType &imageType
 	m_PropMap = static_cast<util::PropertyMap>( image );
 	m_OptimalScalingPair = getOptimalScalingToForType<InternalImageType>( m_CutAwayPair );
 	//image seems to be ok...i guess
-	
+
 	//add some more properties
 	m_ImageProperties.imageType = imageType;
 	m_ImageProperties.lookUpTableType = Color::standard_grey_values;
-	
-	
+
+
 	m_ImageProperties.threshold = std::make_pair<double, double>( m_MinMax.first->as<double>(), m_MinMax.second->as<double>() );
 	m_ImageProperties.zmapThreshold = std::make_pair<double, double>( 0, 0 );
-	
-	m_PropMap.setPropertyAs<util::ivector4>("voxelCoords", util::ivector4(m_ImageSize[0] / 2, m_ImageSize[1] / 2, m_ImageSize[2] / 2, 0) );
-	m_PropMap.setPropertyAs<util::fvector4>("physicalCoords", m_Image->getPhysicalCoordsFromIndex( m_PropMap.getPropertyAs<util::ivector4>("voxelCoords") ) );
-	
-	m_PropMap.setPropertyAs<bool>("isVisible", true);
-	m_PropMap.setPropertyAs<float>("opacity", 1.0 );
-	m_PropMap.setPropertyAs<size_t>("currentTimestep", 0);
-	m_PropMap.setPropertyAs<util::ivector4>("alignedSize32Bit", get32BitAlignedSize(m_ImageSize));
-	m_PropMap.setPropertyAs<bool>("init", true );
+
+	m_PropMap.setPropertyAs<util::ivector4>( "voxelCoords", util::ivector4( m_ImageSize[0] / 2, m_ImageSize[1] / 2, m_ImageSize[2] / 2, 0 ) );
+	m_PropMap.setPropertyAs<util::fvector4>( "physicalCoords", m_Image->getPhysicalCoordsFromIndex( m_PropMap.getPropertyAs<util::ivector4>( "voxelCoords" ) ) );
+
+	m_PropMap.setPropertyAs<bool>( "isVisible", true );
+	m_PropMap.setPropertyAs<float>( "opacity", 1.0 );
+	m_PropMap.setPropertyAs<size_t>( "currentTimestep", 0 );
+	m_PropMap.setPropertyAs<util::ivector4>( "alignedSize32Bit", get32BitAlignedSize( m_ImageSize ) );
+	m_PropMap.setPropertyAs<bool>( "init", true );
 	m_Image->updateOrientationMatrices();
 	return true;
 }

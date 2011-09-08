@@ -1,17 +1,20 @@
 #include "WidgetImplementationBase.hpp"
 
-namespace isis {
-namespace viewer {
-    
-    
-WidgetImplementationBase::WidgetImplementationBase( QViewerCore *core, QWidget *parent, PlaneOrientation orientation )
-    : m_ViewerCore( core ),
-      m_PlaneOrientation( orientation ),
-      m_Parent( parent )
+namespace isis
 {
-//     ( new QVBoxLayout( parent ) )->addWidget( this );
-    
+namespace viewer
+{
+
+
+WidgetImplementationBase::WidgetImplementationBase( QViewerCore *core, QWidget *parent, PlaneOrientation orientation )
+	: m_ViewerCore( core ),
+	  m_PlaneOrientation( orientation ),
+	  m_Parent( parent )
+{
+	//     ( new QVBoxLayout( parent ) )->addWidget( this );
+
 }
 
-    
-}} // end namespace
+
+}
+} // end namespace

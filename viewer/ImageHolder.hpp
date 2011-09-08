@@ -28,16 +28,16 @@ class ImageHolder
 public:
 
 	typedef data::_internal::ValuePtrBase::Reference ImagePointerType;
-	
+
 	enum ImageType { anatomical_image, z_map };
-	
+
 	//here we store only properties which can not be stored as isis::PropertyValue
 	struct ImageProperties {
 		ImageType imageType;
 		std::pair<double, double> threshold;
 		std::pair<double, double> zmapThreshold;
 		Color::LookUpTableType lookUpTableType;
-		
+
 	};
 	ImageHolder( );
 
@@ -101,7 +101,9 @@ public:
 			sum += histogram[upperBorder--];
 
 		}
+
 		sum = 0;
+
 		while ( sum < cutAway.first ) {
 			sum += histogram[lowerBorder++];
 		}
@@ -135,7 +137,7 @@ private:
 
 	std::vector< ImagePointerType > m_ImageVector;
 	std::vector< data::Chunk > m_ChunkVector;
-	
+
 	bool filterRelevantMetaInformation();
 
 };

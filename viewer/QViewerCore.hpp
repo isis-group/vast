@@ -19,18 +19,18 @@ public:
 	typedef std::map<std::string, WidgetImplementationBase * > WidgetMap;
 	QViewerCore( const std::string &appName = std::string(), const std::string &orgName = std::string() );
 
-	
+
 	bool registerWidget( std::string key, WidgetImplementationBase *widget, Actions = not_specified );
-	
+
 	virtual void addImageList( const std::list< data::Image > imageList, const ImageHolder::ImageType &imageType, bool passToWidgets );
 	virtual void setImageList( const std::list< data::Image > imageList, const ImageHolder::ImageType &imageType, bool passToWidgets );
 
 	const WidgetMap &getWidgets() const { return m_WidgetMap; }
-	const QSettings* getSettings() const { return m_Settings; }
-	QSettings* getSettings() { return m_Settings; }
+	const QSettings *getSettings() const { return m_Settings; }
+	QSettings *getSettings() { return m_Settings; }
 
-// 	bool widgetsAreIntitialized() const;
-	
+	//  bool widgetsAreIntitialized() const;
+
 	std::vector< util::fvector4 > getRGBColorGradient() const { return m_RGBColorGradient; }
 
 	template<typename T>
@@ -67,7 +67,7 @@ Q_SIGNALS:
 	void emitSetAutomaticScaling( bool );
 	void emitUpdateScene( bool center );
 
-private:	
+private:
 	//this map holds the widgets associated with a given name
 	WidgetMap m_WidgetMap;
 	std::vector< util::fvector4 > m_RGBColorGradient;

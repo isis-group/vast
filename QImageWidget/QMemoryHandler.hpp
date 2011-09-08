@@ -7,21 +7,23 @@ namespace isis
 {
 namespace viewer
 {
-namespace qt 
+namespace qt
 {
 class QMemoryHandler
 {
 public:
-    QMemoryHandler( QViewerCore *core );
-    
-    bool fillSliceChunk( data::MemChunk<InternalImageType> &sliceChunk, const boost::shared_ptr< ImageHolder > image, PlaneOrientation orientation ) const;
-    
+	QMemoryHandler( QViewerCore *core );
+
+	bool fillSliceChunk( data::MemChunk<InternalImageType> &sliceChunk, const boost::shared_ptr< ImageHolder > image, PlaneOrientation orientation ) const;
+
 private:
-    QViewerCore *m_ViewerCore;
+	QViewerCore *m_ViewerCore;
 };
 
 
-}}} // end namespace
+}
+}
+} // end namespace
 
 
 #endif

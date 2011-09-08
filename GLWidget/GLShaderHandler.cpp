@@ -33,9 +33,9 @@ void GLShaderHandler::addShader( const std::string &name, const std::string &sou
 
 	const GLchar *csource  = source.c_str();
 
-	glShaderSource( shader.getShaderID(), 1, &csource, NULL);
-	
-// 	glShaderSource( shader.getShaderID(), 1, &csource, NULL );
+	glShaderSource( shader.getShaderID(), 1, &csource, NULL );
+
+	//  glShaderSource( shader.getShaderID(), 1, &csource, NULL );
 
 	glCompileShader( shader.getShaderID() );
 

@@ -43,17 +43,18 @@ void QViewerCore::timestepChanged( int timestep )
 	if( !getCurrentImage()->getImageSize()[3] > timestep ) {
 		timestep = getCurrentImage()->getImageSize()[3] - 1;
 	}
-	util::ivector4 voxelCoords = getCurrentImage()->getPropMap().getPropertyAs<util::ivector4>("voxelCoords");
+
+	util::ivector4 voxelCoords = getCurrentImage()->getPropMap().getPropertyAs<util::ivector4>( "voxelCoords" );
 	voxelCoords[3] = timestep;
-	getCurrentImage()->getPropMap().setPropertyAs<util::ivector4>("voxelCoords", voxelCoords );
-	getCurrentImage()->getPropMap().setPropertyAs<size_t>("currentTimestep", timestep );
+	getCurrentImage()->getPropMap().setPropertyAs<util::ivector4>( "voxelCoords", voxelCoords );
+	getCurrentImage()->getPropMap().setPropertyAs<size_t>( "currentTimestep", timestep );
 	emitTimeStepChange( timestep );
 }
 
 
 void QViewerCore::addImageList( const std::list< data::Image > imageList, const ImageHolder::ImageType &imageType, bool passToWidgets )
 {
-	std::list<boost::shared_ptr<ImageHolder> > imageHolderList = 
+	std::list<boost::shared_ptr<ImageHolder> > imageHolderList =
 		isis::viewer::ViewerCoreBase::addImageList( imageList, imageType );
 
 	if( passToWidgets ) {
@@ -63,6 +64,7 @@ void QViewerCore::addImageList( const std::list< data::Image > imageList, const 
 			}
 		}
 	}
+
 	emitImagesChanged( getDataContainer() );
 }
 
@@ -77,8 +79,9 @@ void QViewerCore::setImageList( const std::list< data::Image > imageList, const 
 			}
 		}
 	}
+
 	emitImagesChanged( getDataContainer() );
-	
+
 }
 
 void QViewerCore::setShowLabels( bool l )
@@ -101,9 +104,9 @@ void QViewerCore::setAutomaticScaling( bool s )
 }
 
 
-void QViewerCore::zoomChanged(float zoomFactor)
+void QViewerCore::zoomChanged( float zoomFactor )
 {
-	if(m_Options->propagateZooming) {
+	if( m_Options->propagateZooming ) {
 		emitZoomChanged( zoomFactor );
 	}
 }

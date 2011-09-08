@@ -12,7 +12,7 @@ MainWindowBase::MainWindowBase( QWidget *parent )
 {
 	ui.setupUi( this );
 
-	m_PlottingDialog = new QPlottingDialog(this);
+	m_PlottingDialog = new QPlottingDialog( this );
 }
 
 }

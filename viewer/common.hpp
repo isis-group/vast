@@ -25,7 +25,7 @@ namespace viewer
 {
 
 typedef uint8_t InternalImageType;
-    
+
 // just some helper typedefs which we will need regularly
 enum PlaneOrientation { axial, sagittal, coronal };
 enum WidgetType { type_gl, type_qt };
@@ -37,7 +37,7 @@ TYPE roundNumber( TYPE number, unsigned  short placesOfDec )
 }
 
 void setOrientationToIdentity( data::Image &image );
-std::string getFileFormatsAsString( const std::string preSeparator, const std::string postSeparator = std::string(" ") );
+std::string getFileFormatsAsString( const std::string preSeparator, const std::string postSeparator = std::string( " " ) );
 
 util::ivector4 get32BitAlignedSize( const util::ivector4 &origSize );
 

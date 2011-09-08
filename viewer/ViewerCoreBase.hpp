@@ -16,7 +16,7 @@ class ViewerCoreBase
 		bool propagateZooming;
 	};
 public:
-	
+
 	ViewerCoreBase( );
 
 	std::string getVersion() const;
@@ -38,12 +38,12 @@ public:
 
 	const DataContainer &getDataContainer() const { return m_DataContainer; }
 	DataContainer &getDataContainer() { return m_DataContainer; }
-	
-	const OptionStruct* getOption() const { return m_Options; }
-	OptionStruct* getOption() { return m_Options; }
-	
+
+	const OptionStruct *getOption() const { return m_Options; }
+	OptionStruct *getOption() { return m_Options; }
+
 	void setCoordsTransformation( const util::fvector4 &transformation ) { m_VoxelTransformation = transformation; }
-	util::fvector4 getTransformedCoords( const util::fvector4 &coords) const;
+	util::fvector4 getTransformedCoords( const util::fvector4 &coords ) const;
 
 private:
 	//this is the container which actually holds all the images
@@ -54,8 +54,8 @@ private:
 
 protected:
 	OptionStruct *m_Options;
-	
-	
+
+
 };
 
 

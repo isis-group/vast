@@ -59,6 +59,7 @@ public:
 			} else {
 				glUniform1f( location, var );
 			}
+
 			checkAndReportGLError( "setting shader value " + name );
 			return true;
 		} else {
