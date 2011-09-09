@@ -31,10 +31,13 @@ QImageWidgetImplementation::QImageWidgetImplementation( QViewerCore *core, QWidg
 
 void QImageWidgetImplementation::commonInit()
 {
+	connect( this, SIGNAL( physicalCoordsChanged( util::fvector4 ) ), m_ViewerCore, SLOT( physicalCoordsChanged ( util::fvector4 ) ) );
+	connect( m_ViewerCore, SIGNAL( emitPhysicalCoordsChanged( util::fvector4 ) ), this, SLOT( lookAtPhysicalCoords( util::fvector4 ) ) );
 	setAutoFillBackground( true );
 	setPalette( QPalette( Qt::black ) );
 	m_LutType = Color::standard_grey_values;
 	m_Painter = new QPainter();
+	m_WidgetProperties.setPropertyAs<bool>("mousePressed", false );
 
 
 }
@@ -91,33 +94,68 @@ void QImageWidgetImplementation::paintImage( boost::shared_ptr< ImageHolder > im
 void QImageWidgetImplementation::mousePressEvent( QMouseEvent *e )
 {
 	QWidget::mousePressEvent( e );
+	m_WidgetProperties.setPropertyAs<bool>("mousePressed", true );
+	emitMousePressEvent( e );
 
-	std::pair<size_t, size_t> coords = QOrienationHandler::convertWindow2VoxelCoords( m_WidgetProperties, m_ViewerCore->getCurrentImage(), e->x(), e->y(), m_PlaneOrientation );
-	m_ViewerCore->getCurrentImage()->getPropMap().setPropertyAs<util::ivector4>( "voxelCoords", util::ivector4( coords.first, coords.first, coords.first ) );
-	update();
+	
 }
 
 void QImageWidgetImplementation::mouseMoveEvent( QMouseEvent *e )
 {
-	QWidget::mouseMoveEvent( e );
-	std::pair<size_t, size_t> coords = QOrienationHandler::convertWindow2VoxelCoords( m_WidgetProperties, m_ViewerCore->getCurrentImage(), e->x(), e->y(), m_PlaneOrientation );
-	m_ViewerCore->getCurrentImage()->getPropMap().setPropertyAs<util::ivector4>( "voxelCoords", util::ivector4( coords.first, coords.first, coords.first ) );
-	update();
+	if( m_WidgetProperties.getPropertyAs<bool>("mousePressed") ) {
+	    emitMousePressEvent( e ); 
+	}
 }
 
+void QImageWidgetImplementation::emitMousePressEvent(QMouseEvent* e)
+{
+    	
+	size_t slice = QOrienationHandler::mapCoordsToOrientation( m_ViewerCore->getCurrentImage()->getPropMap().getPropertyAs<util::ivector4>("voxelCoords"), m_ViewerCore->getCurrentImage(), m_PlaneOrientation )[2];
+	std::pair<size_t, size_t> coords = QOrienationHandler::convertWindow2VoxelCoords( m_WidgetProperties, m_ViewerCore->getCurrentImage(), e->x(), e->y(), m_PlaneOrientation );
+	util::ivector4 mappedCoords = QOrienationHandler::mapCoordsToOrientation( util::ivector4( coords.first, coords.second, slice), m_ViewerCore->getCurrentImage(), m_PlaneOrientation, true, false );
+	physicalCoordsChanged( m_ViewerCore->getCurrentImage()->getImage()->getPhysicalCoordsFromIndex( mappedCoords ) );
+}
 
 void QImageWidgetImplementation::paintCrosshair()
 {
 	std::pair<size_t, size_t> coords = QOrienationHandler::convertVoxel2WindowCoords( m_WidgetProperties, m_ViewerCore->getCurrentImage(), m_PlaneOrientation  );
 	util::fvector4 mappedSize = QOrienationHandler::mapCoordsToOrientation( m_ViewerCore->getCurrentImage()->getImageSize(), m_ViewerCore->getCurrentImage(), m_PlaneOrientation );
 	util::fvector4 scalingAndOffset = m_WidgetProperties.getPropertyAs<util::fvector4>( "scalingAndOffset" );
-	QLine xline( coords.first, 0, coords.first, mappedSize[1] );
-	QLine yline( 0, coords.second, mappedSize[0], coords.second );
-	m_Painter->setPen( Qt::blue );
-	m_Painter->drawLine( xline );
-	m_Painter->drawLine( yline );
+	
+	QLine xline1( coords.first, 0, coords.first, coords.second - 15 );
+	QLine xline2( coords.first, coords.second + 15, coords.first, height() );
+	
+	QLine yline1( 0, coords.second, coords.first - 15, coords.second );
+	QLine yline2( coords.first + 15, coords.second, width(), coords.second  );
+	
+	QPen pen;
+	pen.setColor( QColor(255, 102, 0) );
+	
+	m_Painter->scale( 1.0 / scalingAndOffset[0], 1.0 / scalingAndOffset[1] );
+	m_Painter->translate( -scalingAndOffset[2], -scalingAndOffset[3] );
+	m_Painter->setPen( pen );
+	m_Painter->drawLine( xline1 );
+	m_Painter->drawLine( xline2 );
+	m_Painter->drawLine( yline1 );
+	m_Painter->drawLine( yline2 );
+	pen.setWidth(2);;
+	m_Painter->drawPoint( coords.first, coords.second );
+	m_Painter->scale( scalingAndOffset[0], scalingAndOffset[1]);
+	m_Painter->translate( scalingAndOffset[2], scalingAndOffset[3] );
 }
 
+bool QImageWidgetImplementation::lookAtPhysicalCoords(const isis::util::fvector4& physicalCoords)
+{
+    m_ViewerCore->getCurrentImage()->getPropMap().setPropertyAs<util::ivector4>( "voxelCoords", m_ViewerCore->getCurrentImage()->getImage()->getIndexFromPhysicalCoords(physicalCoords) );
+    m_ViewerCore->getCurrentImage()->getPropMap().setPropertyAs<util::ivector4>( "physicalCoords", physicalCoords );
+    update();
+}
+
+void QImageWidgetImplementation::mouseReleaseEvent(QMouseEvent* e)
+{
+    QWidget::mouseReleaseEvent(e);
+    m_WidgetProperties.setPropertyAs<bool>("mousePressed", false );
+}
 
 
 }

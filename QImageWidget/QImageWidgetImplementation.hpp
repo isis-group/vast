@@ -39,7 +39,9 @@ public Q_SLOTS:
 	virtual void paintCrosshair();
 
 	virtual void mousePressEvent( QMouseEvent *e );
+	virtual void mouseReleaseEvent( QMouseEvent *e );
 	virtual void mouseMoveEvent( QMouseEvent *e );
+	virtual bool lookAtPhysicalCoords( const util::fvector4 &physicalCoords );
 
 protected:
 	void paintEvent( QPaintEvent *event );
@@ -51,6 +53,8 @@ Q_SIGNALS:
 
 
 private:
+    
+	void emitMousePressEvent( QMouseEvent *e );
 	QMemoryHandler m_MemoryHandler;
 	Color::LookUpTableType m_LutType;
 	void commonInit();
