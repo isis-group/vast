@@ -31,13 +31,18 @@ QImageWidgetImplementation::QImageWidgetImplementation( QViewerCore *core, QWidg
 
 void QImageWidgetImplementation::commonInit()
 {
+	connect( this, SIGNAL( zoomChanged( float ) ), m_ViewerCore, SLOT( zoomChanged( float ) ) );
 	connect( this, SIGNAL( physicalCoordsChanged( util::fvector4 ) ), m_ViewerCore, SLOT( physicalCoordsChanged ( util::fvector4 ) ) );
 	connect( m_ViewerCore, SIGNAL( emitPhysicalCoordsChanged( util::fvector4 ) ), this, SLOT( lookAtPhysicalCoords( util::fvector4 ) ) );
+	connect( m_ViewerCore, SIGNAL( emitZoomChanged( float ) ), this, SLOT( setZoom( float ) ) );
 	setAutoFillBackground( true );
 	setPalette( QPalette( Qt::black ) );
 	m_LutType = Color::standard_grey_values;
 	m_Painter = new QPainter();
 	m_WidgetProperties.setPropertyAs<bool>("mousePressed", false );
+	m_WidgetProperties.setPropertyAs<float>("currentZoom", 1.0 );
+	m_WidgetProperties.setPropertyAs<float>("zoomFactorIn", 1.5);
+	m_WidgetProperties.setPropertyAs<float>("zoomFactorOut", 1.5);
 
 
 }
@@ -56,7 +61,8 @@ void QImageWidgetImplementation::addImage( const boost::shared_ptr< ImageHolder 
 
 void QImageWidgetImplementation::setZoom( float zoom )
 {
-
+    m_WidgetProperties.setPropertyAs<float>("currentZoom", zoom );
+    update();
 }
 
 void QImageWidgetImplementation::paintEvent( QPaintEvent *event )
@@ -155,6 +161,23 @@ void QImageWidgetImplementation::mouseReleaseEvent(QMouseEvent* e)
 {
     QWidget::mouseReleaseEvent(e);
     m_WidgetProperties.setPropertyAs<bool>("mousePressed", false );
+}
+
+void QImageWidgetImplementation::wheelEvent(QWheelEvent* e)
+{
+    float oldZoom = m_WidgetProperties.getPropertyAs<float>("currentZoom");
+    if ( e->delta() < 0 ) {
+	oldZoom /= m_WidgetProperties.getPropertyAs<float>("zoomFactorOut");
+    } else {
+	oldZoom *= m_WidgetProperties.getPropertyAs<float>("zoomFactorIn");
+	
+    }
+    if( m_ViewerCore->getOption()->propagateZooming ) {
+	    zoomChanged( oldZoom );
+    } else {
+	    setZoom( oldZoom );
+    }
+    
 }
 
 
