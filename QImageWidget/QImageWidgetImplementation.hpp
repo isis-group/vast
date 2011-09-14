@@ -58,6 +58,8 @@ Q_SIGNALS:
 private:
     
 	void emitMousePressEvent( QMouseEvent *e );
+	void recalculateTranslation( const boost::shared_ptr<ImageHolder> image );
+	
 	QMemoryHandler m_MemoryHandler;
 	Color::LookUpTableType m_LutType;
 	void commonInit();
