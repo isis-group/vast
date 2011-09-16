@@ -83,7 +83,7 @@ public:
 		double *histogram = ( double * ) calloc( extent + 1, sizeof( double ) );
 		size_t stepSize = 2;
 		size_t numberOfVoxels = volume / stepSize;
-		TYPE *dataPtr = static_cast<TYPE *>( getImageVector().front()->getRawAddress().lock().get() );
+		TYPE *dataPtr = static_cast<TYPE *>( getImageVector().front()->getRawAddress().get() );
 
 		//create the histogram
 		for( size_t i = 0; i < volume; i += stepSize ) {
