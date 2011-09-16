@@ -9,7 +9,7 @@ std::list< util::ivector4 > ImageOps::getPositionsWithValue( double value, const
 {
 	std::list<util::ivector4> retList;
 	data::ValuePtr<ImageOps::TYPE> imagePtr( ( ImageOps::TYPE * ) calloc( image.getVolume(), sizeof( ImageOps::TYPE ) ), image.getVolume() );
-	image.copyToMem<ImageOps::TYPE>( &imagePtr[0] );
+	image.copyToMem<ImageOps::TYPE>( &imagePtr[0], image.getVolume() );
 	std::list<size_t> posList;
 
 	for( size_t i = 0; i < image.getVolume(); i++ ) {

@@ -120,9 +120,9 @@ bool ImageHolder::setImage( const data::Image &image, const ImageType &imageType
 	LOG( Debug, verbose_info )  << "Fetched image of size " << m_ImageSize << " and type "
 								<< image.getMajorTypeName() << ".";
 	//copy the image into continuous memory space and assure consistent data type
-	data::ValuePtr<InternalImageType> imagePtr( ( InternalImageType * ) calloc( image.getVolume(), sizeof( InternalImageType ) ), image.getVolume() );
-	LOG( Debug, verbose_info ) << "Needed memory: " << image.getVolume() * sizeof( InternalImageType ) / ( 1024.0 * 1024.0 ) << " mb.";
-	image.copyToMem<InternalImageType>( &imagePtr[0] );
+	data::ValuePtr<TYPE> imagePtr( ( TYPE * ) calloc( image.getVolume(), sizeof( TYPE ) ), image.getVolume() );
+	LOG( Debug, verbose_info ) << "Needed memory: " << image.getVolume() * sizeof( TYPE ) / ( 1024.0 * 1024.0 ) << " mb.";
+	image.copyToMem<TYPE>( &imagePtr[0], image.getVolume() );
 	LOG( Debug, verbose_info ) << "Copied image to continuous memory space.";
 	m_InternMinMax = imagePtr.getMinMax();
 
