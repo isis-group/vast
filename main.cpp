@@ -58,8 +58,8 @@ int main( int argc, char *argv[] )
 	app.parameters["wtype"].needed() = false;
 	app.parameters["wtype"].hidden() = true;
 	app.parameters["wtype"].setDescription( "Sets the type of the widgets" );
-	isis::util::ConsoleFeedback feedback;
-	isis::data::IOFactory::setProgressFeedback( &feedback );
+	boost::shared_ptr< isis::util::ProgressFeedback > feedback = boost::shared_ptr<isis::util::ProgressFeedback>( new isis::util::ConsoleFeedback );
+	isis::data::IOFactory::setProgressFeedback( feedback );
 	app.init( argc, argv, true );
 	app.setLog<isis::ViewerLog>( app.getLLMap()[app.parameters["dViewer"]->as<isis::util::Selection>()] );
 	app.setLog<isis::ViewerDebug>( app.getLLMap()[app.parameters["dViewer"]->as<isis::util::Selection>()] );
