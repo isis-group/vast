@@ -48,8 +48,8 @@ int main( int argc, char *argv[] )
 	app.parameters["old_lipsia"] = false;
 	app.parameters["old_lipsia"].needed() = false;
 	app.parameters["old_lipsia"].setDescription( "Ignore orientation information and treat files as old lipsia files." );
-	isis::util::ConsoleFeedback feedback;
-	isis::data::IOFactory::setProgressFeedback( &feedback );
+	boost::shared_ptr< isis::util::ProgressFeedback > feedback = boost::shared_ptr<isis::util::ProgressFeedback>( new isis::util::ConsoleFeedback );
+	isis::data::IOFactory::setProgressFeedback( feedback );
 	app.init( argc, argv, true );
 	app.setLog<isis::ViewerLog>( app.getLLMap()[app.parameters["dViewer"]->as<isis::util::Selection>()] );
 	app.setLog<isis::ViewerDebug>( app.getLLMap()[app.parameters["dViewer"]->as<isis::util::Selection>()] );
