@@ -99,7 +99,7 @@ void QImageWidgetImplementation::paintImage( boost::shared_ptr< ImageHolder > im
 	
 	m_MemoryHandler.fillSliceChunk( sliceChunk, image, m_PlaneOrientation );
 
-	QImage qImage( ( InternalImageType * ) sliceChunk.asValuePtr<InternalImageType>().getRawAddress().lock().get(),
+	QImage qImage( ( InternalImageType * ) sliceChunk.asValuePtr<InternalImageType>().getRawAddress().get(),
 				   mappedSizeAligned[0], mappedSizeAligned[1], QImage::Format_Indexed8 );
 	qImage.setColorCount( 512 );
 	qImage.setColorTable( Color::getColorTable( m_LutType ) );
