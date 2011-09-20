@@ -63,6 +63,7 @@ void QImageWidgetImplementation::addImage( const boost::shared_ptr< ImageHolder 
 void QImageWidgetImplementation::setZoom( float zoom )
 {
     m_WidgetProperties.setPropertyAs<float>("currentZoom", zoom );
+    recalculateTranslation( m_ViewerCore->getCurrentImage() );
     update();
 }
 
@@ -86,9 +87,10 @@ void QImageWidgetImplementation::recalculateTranslation( const boost::shared_ptr
     util::ivector4 center = mappedImageSize / 2;
     util::ivector4 diff = center - mappedVoxelCoords;
     float zoomDependentShift = 1.0 - ( 2.0 / m_WidgetProperties.getPropertyAs<float>( "currentZoom" ) );
-    
-    m_WidgetProperties.setPropertyAs<float>("translationX", (diff[0] + zoomDependentShift * diff[0] + 0.02 * diff[0] ) );
-    m_WidgetProperties.setPropertyAs<float>("translationY", (diff[1] + zoomDependentShift * diff[1] + 0.02 * diff[1] ) );
+    float transX = diff[0] + zoomDependentShift * diff[0] + 0.02 * diff[0];
+    float transY = diff[1] + zoomDependentShift * diff[1] + 0.02 * diff[1];
+//     m_WidgetProperties.setPropertyAs<float>("transX", transX );
+//     m_WidgetProperties.setPropertyAs<float>("transY", transY );
 }
 
 
@@ -112,6 +114,7 @@ void QImageWidgetImplementation::paintImage( boost::shared_ptr< ImageHolder > im
 	if( m_WidgetProperties.getPropertyAs<bool>("mousePressedRight") )  {
 	    recalculateTranslation(image);
 	}
+	m_Painter->translate( m_WidgetProperties.getPropertyAs<float>("transX"), m_WidgetProperties.getPropertyAs<float>("transY") );
 	m_Painter->drawImage( 0,0, qImage );
 	
 }
@@ -142,16 +145,17 @@ void QImageWidgetImplementation::emitMousePressEvent(QMouseEvent* e)
 {
     	
 	size_t slice = QOrienationHandler::mapCoordsToOrientation( m_ViewerCore->getCurrentImage()->getPropMap().getPropertyAs<util::ivector4>("voxelCoords"), m_ViewerCore->getCurrentImage(), m_PlaneOrientation )[2];
-	std::pair<size_t, size_t> coords = QOrienationHandler::convertWindow2VoxelCoords( m_WidgetProperties, m_ViewerCore->getCurrentImage(), e->x(), e->y(), m_PlaneOrientation );
+	util::ivector4 coords = QOrienationHandler::convertWindow2VoxelCoords( m_WidgetProperties, m_ViewerCore->getCurrentImage(), e->x(), e->y(), slice, m_PlaneOrientation );
+#warning remove debug output in emitMousePressEvent
 	std::cout << "emitMousePress: " << e->x() << " : " << e->y() << " -> " << coords << std::endl;
-	physicalCoordsChanged( m_ViewerCore->getCurrentImage()->getImage()->getPhysicalCoordsFromIndex( util::ivector4( coords.first, coords.second, slice ) ) );
+	physicalCoordsChanged( m_ViewerCore->getCurrentImage()->getImage()->getPhysicalCoordsFromIndex( coords ) );
 }
 
 void QImageWidgetImplementation::paintCrosshair()
 {
 	std::pair<size_t, size_t> coords = QOrienationHandler::convertVoxel2WindowCoords( m_WidgetProperties, m_ViewerCore->getCurrentImage(), m_PlaneOrientation  );
 	util::fvector4 mappedSize = QOrienationHandler::mapCoordsToOrientation( m_ViewerCore->getCurrentImage()->getImageSize(), m_ViewerCore->getCurrentImage(), m_PlaneOrientation );
-	util::fvector4 scalingAndOffset = m_WidgetProperties.getPropertyAs<util::fvector4>( "scalingAndOffset" );
+	util::fvector4 viewPort = m_WidgetProperties.getPropertyAs<util::fvector4>( "viewPort" );
 	
 	QLine xline1( coords.first, 0, coords.first, coords.second - 15 );
 	QLine xline2( coords.first, coords.second + 15, coords.first, height() );
@@ -162,8 +166,8 @@ void QImageWidgetImplementation::paintCrosshair()
 	QPen pen;
 	pen.setColor( QColor(255, 102, 0) );
 	
-	m_Painter->scale( 1.0 / scalingAndOffset[0], 1.0 / scalingAndOffset[1] );
-	m_Painter->translate( -scalingAndOffset[2], -scalingAndOffset[3] );
+	m_Painter->scale( 1.0 / viewPort[0], 1.0 / viewPort[1] );
+	m_Painter->translate( -viewPort[2], -viewPort[3] );
 	m_Painter->setPen( pen );
 	m_Painter->drawLine( xline1 );
 	m_Painter->drawLine( xline2 );
