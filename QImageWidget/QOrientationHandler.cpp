@@ -163,11 +163,12 @@ std::pair< size_t, size_t > QOrienationHandler::convertVoxel2WindowCoords( const
 	
 	float currentZoom = properties.getPropertyAs<float>("currentZoom") ;
 	util::ivector4 mappedVoxelCoords = QOrienationHandler::mapCoordsToOrientation( image->getPropMap().getPropertyAs<util::ivector4>( "voxelCoords" ), image, orientation );
-	size_t halfVoxelX = viewPort[0] / 2;
-	size_t halfVoxelY = viewPort[1] / 2;
+	float halfVoxelX = viewPort[0] / 2;
+	float halfVoxelY = viewPort[1] / 2;
 	
-	return std::make_pair<size_t, size_t>(  mappedVoxelCoords[0] * viewPort[0] / currentZoom + viewPort[2] + halfVoxelX - properties.getPropertyAs<float>("transX")  ,
-					        mappedVoxelCoords[1] * viewPort[1] / currentZoom + viewPort[3] + halfVoxelY - properties.getPropertyAs<float>("transY"));
+	float x = mappedVoxelCoords[0] * viewPort[0] + viewPort[2] + halfVoxelX;
+	float y = mappedVoxelCoords[1] * viewPort[1] + viewPort[3] + halfVoxelY;
+	return std::make_pair<size_t, size_t>( x, y );
 }
 
 }

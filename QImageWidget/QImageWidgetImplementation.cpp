@@ -154,6 +154,7 @@ void QImageWidgetImplementation::emitMousePressEvent(QMouseEvent* e)
 void QImageWidgetImplementation::paintCrosshair()
 {
 	std::pair<size_t, size_t> coords = QOrienationHandler::convertVoxel2WindowCoords( m_WidgetProperties, m_ViewerCore->getCurrentImage(), m_PlaneOrientation  );
+	std::cout << coords << std::endl;
 	util::fvector4 mappedSize = QOrienationHandler::mapCoordsToOrientation( m_ViewerCore->getCurrentImage()->getImageSize(), m_ViewerCore->getCurrentImage(), m_PlaneOrientation );
 	util::fvector4 viewPort = m_WidgetProperties.getPropertyAs<util::fvector4>( "viewPort" );
 	
