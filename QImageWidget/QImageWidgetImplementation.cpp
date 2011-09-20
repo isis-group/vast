@@ -85,9 +85,10 @@ void QImageWidgetImplementation::recalculateTranslation( const boost::shared_ptr
     util::ivector4 mappedVoxelCoords = QOrienationHandler::mapCoordsToOrientation( image->getPropMap().getPropertyAs<util::ivector4>("voxelCoords"), image, m_PlaneOrientation );
     util::ivector4 center = mappedImageSize / 2;
     util::ivector4 diff = center - mappedVoxelCoords;
+    float zoomDependentShift = 1.0 - ( 2.0 / m_WidgetProperties.getPropertyAs<float>( "currentZoom" ) );
     
-    m_WidgetProperties.setPropertyAs<float>("translationX", diff[0] );
-    m_WidgetProperties.setPropertyAs<float>("translationY", diff[1] );
+    m_WidgetProperties.setPropertyAs<float>("translationX", (diff[0] + zoomDependentShift * diff[0] + 0.02 * diff[0] ) );
+    m_WidgetProperties.setPropertyAs<float>("translationY", (diff[1] + zoomDependentShift * diff[1] + 0.02 * diff[1] ) );
 }
 
 
@@ -111,9 +112,6 @@ void QImageWidgetImplementation::paintImage( boost::shared_ptr< ImageHolder > im
 	if( m_WidgetProperties.getPropertyAs<bool>("mousePressedRight") )  {
 	    recalculateTranslation(image);
 	}
-	float x = m_WidgetProperties.getPropertyAs<float>("translationX");
-	float y = m_WidgetProperties.getPropertyAs<float>("translationY");
-	m_Painter->translate( x, y );
 	m_Painter->drawImage( 0,0, qImage );
 	
 }
@@ -145,8 +143,8 @@ void QImageWidgetImplementation::emitMousePressEvent(QMouseEvent* e)
     	
 	size_t slice = QOrienationHandler::mapCoordsToOrientation( m_ViewerCore->getCurrentImage()->getPropMap().getPropertyAs<util::ivector4>("voxelCoords"), m_ViewerCore->getCurrentImage(), m_PlaneOrientation )[2];
 	std::pair<size_t, size_t> coords = QOrienationHandler::convertWindow2VoxelCoords( m_WidgetProperties, m_ViewerCore->getCurrentImage(), e->x(), e->y(), m_PlaneOrientation );
-	util::ivector4 mappedCoords = QOrienationHandler::mapCoordsToOrientation( util::ivector4( coords.first, coords.second, slice), m_ViewerCore->getCurrentImage(), m_PlaneOrientation, true, false );
-	physicalCoordsChanged( m_ViewerCore->getCurrentImage()->getImage()->getPhysicalCoordsFromIndex( mappedCoords ) );
+	std::cout << "emitMousePress: " << e->x() << " : " << e->y() << " -> " << coords << std::endl;
+	physicalCoordsChanged( m_ViewerCore->getCurrentImage()->getImage()->getPhysicalCoordsFromIndex( util::ivector4( coords.first, coords.second, slice ) ) );
 }
 
 void QImageWidgetImplementation::paintCrosshair()

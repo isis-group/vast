@@ -145,8 +145,14 @@ QTransform QOrienationHandler::getTransform( util::PropertyMap &properties, cons
 std::pair<size_t, size_t> QOrienationHandler::convertWindow2VoxelCoords( const util::PropertyMap &properties, const boost::shared_ptr< ImageHolder > image, const size_t &x, const size_t &y, PlaneOrientation orientation )
 {
 	util::fvector4 scalingAndOffset = properties.getPropertyAs<util::fvector4>( "scalingAndOffset" );
-	return std::make_pair<size_t, size_t> ( ( x - scalingAndOffset[2] - properties.getPropertyAs<float>("translationX") ) / scalingAndOffset[0],
+	util::ivector4 mappedSize = QOrienationHandler::mapCoordsToOrientation( image->getImageSize(), image, orientation );
+	std::pair<size_t, size_t> voxCoords = std::make_pair<size_t, size_t> ( ( x - scalingAndOffset[2] - properties.getPropertyAs<float>("translationX") ) / scalingAndOffset[0],
 											( y - scalingAndOffset[3] - properties.getPropertyAs<float>("translationY") ) / scalingAndOffset[1] ) ;
+	util::ivector4 mappedCoords = QOrienationHandler::mapCoordsToOrientation( util::ivector4( voxCoords.first, voxCoords.second), image , orientation, true, false );
+	for ( size_t i = 0; i < 2; i++ ) {
+	    mappedCoords[i] = mappedCoords[i] < 0 ? mappedSize[i] + mappedCoords[i] - 1 : mappedCoords[i];
+	}
+	return std::make_pair<size_t, size_t>( mappedCoords[0], mappedCoords[1] );
 
 }
 
