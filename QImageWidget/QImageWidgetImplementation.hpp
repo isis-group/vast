@@ -37,17 +37,17 @@ public Q_SLOTS:
 
 	virtual void paintImage( boost::shared_ptr< ImageHolder > image );
 	virtual void paintCrosshair();
-	
+
 	virtual bool lookAtPhysicalCoords( const util::fvector4 &physicalCoords );
 
 protected:
 	void paintEvent( QPaintEvent *event );
-	
+
 	virtual void wheelEvent( QWheelEvent *e );
 	virtual void mousePressEvent( QMouseEvent *e );
 	virtual void mouseReleaseEvent( QMouseEvent *e );
 	virtual void mouseMoveEvent( QMouseEvent *e );
-	
+
 Q_SIGNALS:
 	void redraw();
 	void voxelCoordsChanged( util::ivector4 );
@@ -56,10 +56,10 @@ Q_SIGNALS:
 
 
 private:
-    
+
 	void emitMousePressEvent( QMouseEvent *e );
 	void recalculateTranslation( const boost::shared_ptr<ImageHolder> image );
-	
+
 	QMemoryHandler m_MemoryHandler;
 	Color::LookUpTableType m_LutType;
 	void commonInit();

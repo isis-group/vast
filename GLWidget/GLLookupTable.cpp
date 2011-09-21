@@ -15,9 +15,9 @@ GLuint GLLookUpTable::getLookUpTableAsTexture( const Color::LookUpTableType &lut
 	GLfloat *colorTable = ( GLfloat * ) calloc( extent * 3, sizeof( GLfloat ) );
 	size_t index = 0;
 	BOOST_FOREACH( QVector<QRgb>::const_reference color, rgbColorGradient ) {
-		colorTable[index++] = (float)QColor( color ).red() / float( extent - 1 );
-		colorTable[index++] = (float)QColor( color ).green() / float( extent - 1 );
-		colorTable[index++] = (float)QColor( color ).blue() / float( extent - 1 );
+		colorTable[index++] = ( float )QColor( color ).red() / float( extent - 1 );
+		colorTable[index++] = ( float )QColor( color ).green() / float( extent - 1 );
+		colorTable[index++] = ( float )QColor( color ).blue() / float( extent - 1 );
 	}
 	GLuint id;
 	glEnable( GL_TEXTURE_1D );

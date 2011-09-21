@@ -18,9 +18,9 @@ int main( int argc, char *argv[] )
 
 	isis::util::Selection dbg_levels( "error,warning,info,verbose_info" );
 	isis::util::Selection wTypes( "gl,qt" );
-	wTypeMap.insert( std::make_pair<std::string, isis::viewer::WidgetType>("gl", type_gl) );
-	wTypeMap.insert( std::make_pair<std::string, isis::viewer::WidgetType>("qt", type_qt) );
-	wTypes.set("gl");
+	wTypeMap.insert( std::make_pair<std::string, isis::viewer::WidgetType>( "gl", type_gl ) );
+	wTypeMap.insert( std::make_pair<std::string, isis::viewer::WidgetType>( "qt", type_qt ) );
+	wTypes.set( "gl" );
 	dbg_levels.set( "warning" );
 	isis::util::Selection image_types( "anatomical,zmap" );
 	image_types.set( "anatomical" );
@@ -72,9 +72,9 @@ int main( int argc, char *argv[] )
 	BOOST_FOREACH ( isis::util::slist::const_reference fileName, fileList ) {
 		std::list< isis::data::Image > tmpList = isis::data::IOFactory::load( fileName, app.parameters["rf"].toString(), app.parameters["rdialect"].toString() );
 		BOOST_FOREACH( std::list< isis::data::Image >::reference imageRef, tmpList ) {
-// 			if( app.parameters["old_lipsia"] ) {
-// 				setOrientationToIdentity( imageRef );
-// 			}
+			//          if( app.parameters["old_lipsia"] ) {
+			//              setOrientationToIdentity( imageRef );
+			//          }
 
 			imgList.push_back( imageRef );
 		}
@@ -83,15 +83,15 @@ int main( int argc, char *argv[] )
 	BOOST_FOREACH ( isis::util::slist::const_reference fileName, zmapFileList ) {
 		std::list< isis::data::Image > tmpList = isis::data::IOFactory::load( fileName, app.parameters["rf"].toString(), app.parameters["rdialect"].toString() );
 		BOOST_FOREACH( std::list< isis::data::Image >::reference imageRef, tmpList ) {
-// 			if( app.parameters["old_lipsia"] ) {
-// 				setOrientationToIdentity( imageRef );
-// 			}
+			//          if( app.parameters["old_lipsia"] ) {
+			//              setOrientationToIdentity( imageRef );
+			//          }
 
 			zImgList.push_back( imageRef );
 		}
 	}
 	bool assamble = false;
-		
+
 	isis::viewer::MainWindowUIInterface isisViewerMainWindow( core, wTypeMap[app.parameters["wtype"].toString()] );
 
 	if( app.parameters["zmap"].isSet() ) {
@@ -102,6 +102,7 @@ int main( int argc, char *argv[] )
 			core->addImageList( zImgList, ImageHolder::z_map, true );
 		}
 	}
+
 	if( app.parameters["type"].toString() == "anatomical" && app.parameters["in"].isSet() ) {
 		if( imgList.size() > 1 && app.parameters["split"] ) {
 			core->addImageList( imgList, ImageHolder::anatomical_image, false );
@@ -113,9 +114,11 @@ int main( int argc, char *argv[] )
 	} else if ( app.parameters["type"].toString() == "zmap" && app.parameters["in"].isSet() ) {
 		core->addImageList( imgList, ImageHolder::z_map, true );
 	}
-	if(assamble) {
+
+	if( assamble ) {
 		isisViewerMainWindow.assembleViewInRows();
 	}
+
 	isisViewerMainWindow.show();
 	return app.getQApplication().exec();
 }

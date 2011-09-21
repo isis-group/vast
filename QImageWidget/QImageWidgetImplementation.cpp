@@ -39,11 +39,11 @@ void QImageWidgetImplementation::commonInit()
 	setPalette( QPalette( Qt::black ) );
 	m_LutType = Color::standard_grey_values;
 	m_Painter = new QPainter();
-	m_WidgetProperties.setPropertyAs<bool>("mousePressedRight", false );
-	m_WidgetProperties.setPropertyAs<bool>("mousePressedLeft", false );
-	m_WidgetProperties.setPropertyAs<float>("currentZoom", 1.0 );
-	m_WidgetProperties.setPropertyAs<float>("zoomFactorIn", 1.5);
-	m_WidgetProperties.setPropertyAs<float>("zoomFactorOut", 1.5);
+	m_WidgetProperties.setPropertyAs<bool>( "mousePressedRight", false );
+	m_WidgetProperties.setPropertyAs<bool>( "mousePressedLeft", false );
+	m_WidgetProperties.setPropertyAs<float>( "currentZoom", 1.0 );
+	m_WidgetProperties.setPropertyAs<float>( "zoomFactorIn", 1.5 );
+	m_WidgetProperties.setPropertyAs<float>( "zoomFactorOut", 1.5 );
 
 
 }
@@ -62,9 +62,9 @@ void QImageWidgetImplementation::addImage( const boost::shared_ptr< ImageHolder 
 
 void QImageWidgetImplementation::setZoom( float zoom )
 {
-    m_WidgetProperties.setPropertyAs<float>("currentZoom", zoom );
-    recalculateTranslation( m_ViewerCore->getCurrentImage() );
-    update();
+	m_WidgetProperties.setPropertyAs<float>( "currentZoom", zoom );
+	recalculateTranslation( m_ViewerCore->getCurrentImage() );
+	update();
 }
 
 void QImageWidgetImplementation::paintEvent( QPaintEvent *event )
@@ -82,15 +82,15 @@ void QImageWidgetImplementation::paintEvent( QPaintEvent *event )
 
 void QImageWidgetImplementation::recalculateTranslation( const boost::shared_ptr<ImageHolder> image )
 {
-    util::ivector4 mappedImageSize = QOrienationHandler::mapCoordsToOrientation( image->getImageSize(), image, m_PlaneOrientation );
-    util::ivector4 mappedVoxelCoords = QOrienationHandler::mapCoordsToOrientation( image->getPropMap().getPropertyAs<util::ivector4>("voxelCoords"), image, m_PlaneOrientation );
-    util::ivector4 center = mappedImageSize / 2;
-    util::ivector4 diff = center - mappedVoxelCoords;
-    float zoomDependentShift = 1.0 - ( 2.0 / m_WidgetProperties.getPropertyAs<float>( "currentZoom" ) );
-    float transX = diff[0] + zoomDependentShift * diff[0] + 0.02 * diff[0];
-    float transY = diff[1] + zoomDependentShift * diff[1] + 0.02 * diff[1];
-//     m_WidgetProperties.setPropertyAs<float>("transX", transX );
-//     m_WidgetProperties.setPropertyAs<float>("transY", transY );
+	util::ivector4 mappedImageSize = QOrienationHandler::mapCoordsToOrientation( image->getImageSize(), image, m_PlaneOrientation );
+	util::ivector4 mappedVoxelCoords = QOrienationHandler::mapCoordsToOrientation( image->getPropMap().getPropertyAs<util::ivector4>( "voxelCoords" ), image, m_PlaneOrientation );
+	util::ivector4 center = mappedImageSize / 2;
+	util::ivector4 diff = center - mappedVoxelCoords;
+	float zoomDependentShift = 1.0 - ( 2.0 / m_WidgetProperties.getPropertyAs<float>( "currentZoom" ) );
+	float transX = diff[0] + zoomDependentShift * diff[0] + 0.02 * diff[0];
+	float transY = diff[1] + zoomDependentShift * diff[1] + 0.02 * diff[1];
+	//     m_WidgetProperties.setPropertyAs<float>("transX", transX );
+	//     m_WidgetProperties.setPropertyAs<float>("transY", transY );
 }
 
 
@@ -99,7 +99,7 @@ void QImageWidgetImplementation::paintImage( boost::shared_ptr< ImageHolder > im
 
 	util::ivector4 mappedSizeAligned = QOrienationHandler::mapCoordsToOrientation( image->getPropMap().getPropertyAs<util::ivector4>( "alignedSize32Bit" ), image, m_PlaneOrientation );
 	isis::data::MemChunk<InternalImageType> sliceChunk( mappedSizeAligned[0], mappedSizeAligned[1] );
-	
+
 	m_MemoryHandler.fillSliceChunk( sliceChunk, image, m_PlaneOrientation );
 
 	QImage qImage( ( InternalImageType * ) sliceChunk.asValuePtr<InternalImageType>().getRawAddress().get(),
@@ -109,41 +109,44 @@ void QImageWidgetImplementation::paintImage( boost::shared_ptr< ImageHolder > im
 
 	m_Painter->resetMatrix();
 	m_Painter->setTransform( QOrienationHandler::getTransform( m_WidgetProperties, image, width(), height(), m_PlaneOrientation ) );
-	
+
 	m_Painter->setOpacity( image->getPropMap().getPropertyAs<float>( "opacity" ) );
-	if( m_WidgetProperties.getPropertyAs<bool>("mousePressedRight") )  {
-	    recalculateTranslation(image);
+
+	if( m_WidgetProperties.getPropertyAs<bool>( "mousePressedRight" ) )  {
+		recalculateTranslation( image );
 	}
-	m_Painter->translate( m_WidgetProperties.getPropertyAs<float>("transX"), m_WidgetProperties.getPropertyAs<float>("transY") );
-	m_Painter->drawImage( 0,0, qImage );
-	
+
+	m_Painter->translate( m_WidgetProperties.getPropertyAs<float>( "transX" ), m_WidgetProperties.getPropertyAs<float>( "transY" ) );
+	m_Painter->drawImage( 0, 0, qImage );
+
 }
 
 
 void QImageWidgetImplementation::mousePressEvent( QMouseEvent *e )
 {
 	QWidget::mousePressEvent( e );
+
 	if( e->button() == Qt::RightButton ) {
-	    m_WidgetProperties.setPropertyAs<bool>("mousePressedRight", true );
+		m_WidgetProperties.setPropertyAs<bool>( "mousePressedRight", true );
 	} else if ( e->button() == Qt::LeftButton ) {
-	    m_WidgetProperties.setPropertyAs<bool>("mousePressedLeft", true );
+		m_WidgetProperties.setPropertyAs<bool>( "mousePressedLeft", true );
 	}
-	
+
 	emitMousePressEvent( e );
 
-	
+
 }
 
 void QImageWidgetImplementation::mouseMoveEvent( QMouseEvent *e )
 {
-	if( m_WidgetProperties.getPropertyAs<bool>("mousePressedRight") || m_WidgetProperties.getPropertyAs<bool>("mousePressedLeft") ) {
-	    emitMousePressEvent( e ); 
+	if( m_WidgetProperties.getPropertyAs<bool>( "mousePressedRight" ) || m_WidgetProperties.getPropertyAs<bool>( "mousePressedLeft" ) ) {
+		emitMousePressEvent( e );
 	}
 }
 
-void QImageWidgetImplementation::emitMousePressEvent(QMouseEvent* e)
+void QImageWidgetImplementation::emitMousePressEvent( QMouseEvent *e )
 {
-	size_t slice = QOrienationHandler::mapCoordsToOrientation( m_ViewerCore->getCurrentImage()->getPropMap().getPropertyAs<util::ivector4>("voxelCoords"), m_ViewerCore->getCurrentImage(), m_PlaneOrientation )[2];
+	size_t slice = QOrienationHandler::mapCoordsToOrientation( m_ViewerCore->getCurrentImage()->getPropMap().getPropertyAs<util::ivector4>( "voxelCoords" ), m_ViewerCore->getCurrentImage(), m_PlaneOrientation )[2];
 	util::ivector4 coords = QOrienationHandler::convertWindow2VoxelCoords( m_WidgetProperties, m_ViewerCore->getCurrentImage(), e->x(), e->y(), slice, m_PlaneOrientation );
 	physicalCoordsChanged( m_ViewerCore->getCurrentImage()->getImage()->getPhysicalCoordsFromIndex( coords ) );
 }
@@ -153,16 +156,16 @@ void QImageWidgetImplementation::paintCrosshair()
 	std::pair<size_t, size_t> coords = QOrienationHandler::convertVoxel2WindowCoords( m_WidgetProperties, m_ViewerCore->getCurrentImage(), m_PlaneOrientation  );
 	util::fvector4 mappedSize = QOrienationHandler::mapCoordsToOrientation( m_ViewerCore->getCurrentImage()->getImageSize(), m_ViewerCore->getCurrentImage(), m_PlaneOrientation );
 	util::fvector4 viewPort = m_WidgetProperties.getPropertyAs<util::fvector4>( "viewPort" );
-	
+
 	QLine xline1( coords.first, 0, coords.first, coords.second - 15 );
 	QLine xline2( coords.first, coords.second + 15, coords.first, height() );
-	
+
 	QLine yline1( 0, coords.second, coords.first - 15, coords.second );
 	QLine yline2( coords.first + 15, coords.second, width(), coords.second  );
-	
+
 	QPen pen;
-	pen.setColor( QColor(255, 102, 0) );
-	
+	pen.setColor( QColor( 255, 102, 0 ) );
+
 	m_Painter->scale( 1.0 / viewPort[0], 1.0 / viewPort[1] );
 	m_Painter->translate( -viewPort[2], -viewPort[3] );
 	m_Painter->setPen( pen );
@@ -170,42 +173,45 @@ void QImageWidgetImplementation::paintCrosshair()
 	m_Painter->drawLine( xline2 );
 	m_Painter->drawLine( yline1 );
 	m_Painter->drawLine( yline2 );
-	pen.setWidth(2);;
+	pen.setWidth( 2 );;
 	m_Painter->drawPoint( coords.first, coords.second );
 }
 
-bool QImageWidgetImplementation::lookAtPhysicalCoords(const isis::util::fvector4& physicalCoords)
+bool QImageWidgetImplementation::lookAtPhysicalCoords( const isis::util::fvector4 &physicalCoords )
 {
-    m_ViewerCore->getCurrentImage()->getPropMap().setPropertyAs<util::fvector4>( "physicalCoords", physicalCoords );
-    m_ViewerCore->getCurrentImage()->getPropMap().setPropertyAs<util::ivector4>( "voxelCoords", m_ViewerCore->getCurrentImage()->getImage()->getIndexFromPhysicalCoords(physicalCoords) );
-    update();
+	m_ViewerCore->getCurrentImage()->getPropMap().setPropertyAs<util::fvector4>( "physicalCoords", physicalCoords );
+	m_ViewerCore->getCurrentImage()->getPropMap().setPropertyAs<util::ivector4>( "voxelCoords", m_ViewerCore->getCurrentImage()->getImage()->getIndexFromPhysicalCoords( physicalCoords ) );
+	update();
 }
 
-void QImageWidgetImplementation::mouseReleaseEvent(QMouseEvent* e)
+void QImageWidgetImplementation::mouseReleaseEvent( QMouseEvent *e )
 {
-    QWidget::mouseReleaseEvent(e);
-    if( e->button() == Qt::RightButton ) {
-	m_WidgetProperties.setPropertyAs<bool>("mousePressedRight", false );
-    } else if ( e->button() == Qt::LeftButton ) {
-	m_WidgetProperties.setPropertyAs<bool>("mousePressedLeft", false );
-    }
+	QWidget::mouseReleaseEvent( e );
+
+	if( e->button() == Qt::RightButton ) {
+		m_WidgetProperties.setPropertyAs<bool>( "mousePressedRight", false );
+	} else if ( e->button() == Qt::LeftButton ) {
+		m_WidgetProperties.setPropertyAs<bool>( "mousePressedLeft", false );
+	}
 }
 
-void QImageWidgetImplementation::wheelEvent(QWheelEvent* e)
+void QImageWidgetImplementation::wheelEvent( QWheelEvent *e )
 {
-    float oldZoom = m_WidgetProperties.getPropertyAs<float>("currentZoom");
-    if ( e->delta() < 0 ) {
-	oldZoom /= m_WidgetProperties.getPropertyAs<float>("zoomFactorOut");
-    } else {
-	oldZoom *= m_WidgetProperties.getPropertyAs<float>("zoomFactorIn");
-	
-    }
-    if( m_ViewerCore->getOption()->propagateZooming ) {
-	    zoomChanged( oldZoom );
-    } else {
-	    setZoom( oldZoom );
-    }
-    
+	float oldZoom = m_WidgetProperties.getPropertyAs<float>( "currentZoom" );
+
+	if ( e->delta() < 0 ) {
+		oldZoom /= m_WidgetProperties.getPropertyAs<float>( "zoomFactorOut" );
+	} else {
+		oldZoom *= m_WidgetProperties.getPropertyAs<float>( "zoomFactorIn" );
+
+	}
+
+	if( m_ViewerCore->getOption()->propagateZooming ) {
+		zoomChanged( oldZoom );
+	} else {
+		setZoom( oldZoom );
+	}
+
 }
 
 
