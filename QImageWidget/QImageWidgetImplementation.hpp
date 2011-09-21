@@ -57,8 +57,11 @@ Q_SIGNALS:
 
 private:
 
+	/**scaling, offset, size**/
+	util::FixedVector<float, 6> m_Viewport;
 	void emitMousePressEvent( QMouseEvent *e );
 	void recalculateTranslation( const boost::shared_ptr<ImageHolder> image );
+	bool isInViewPort( QMouseEvent *e ) const;
 
 	QMemoryHandler m_MemoryHandler;
 	Color::LookUpTableType m_LutType;

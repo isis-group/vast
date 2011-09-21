@@ -95,9 +95,9 @@ util::ivector4 QOrienationHandler::getMappedCoords( const boost::shared_ptr< Ima
 
 
 
-util::fvector4 QOrienationHandler::getViewPort( const boost::shared_ptr< ImageHolder > image, const size_t &w, const size_t &h, PlaneOrientation orientation )
+util::FixedVector<float, 6> QOrienationHandler::getViewPort( const boost::shared_ptr< ImageHolder > image, const size_t &w, const size_t &h, PlaneOrientation orientation )
 {
-	util::fvector4 retVec;
+	util::FixedVector<float, 6> retVec;
 	util::ivector4 mappedSize = QOrienationHandler::mapCoordsToOrientation( image->getImageSize(), image, orientation );
 	util::fvector4 mappedScaling = QOrienationHandler::mapCoordsToOrientation( image->getImage()->getPropertyAs<util::fvector4>( "voxelSize" ), image, orientation );
 	util::fvector4 physicalSize = mappedScaling * mappedSize;
@@ -111,12 +111,14 @@ util::fvector4 QOrienationHandler::getViewPort( const boost::shared_ptr< ImageHo
 	retVec[1] = scaleh * normh;
 	retVec[2] = ( w - retVec[0] * mappedSize[0] ) / 2 ;
 	retVec[3] = ( h - retVec[1] * mappedSize[1] ) / 2 ;
+	retVec[4] = round(mappedSize[0] * retVec[0]);
+	retVec[5] = round(mappedSize[1] * retVec[1]);
 	return retVec;
 
 }
 
 
-QTransform QOrienationHandler::getTransform( util::PropertyMap &properties, const boost::shared_ptr< ImageHolder > image, const size_t &w, const size_t &h, PlaneOrientation orientation )
+QTransform QOrienationHandler::getTransform( const util::FixedVector<float, 6> &viewPort, util::PropertyMap &properties, const boost::shared_ptr< ImageHolder > image, const size_t &w, const size_t &h, PlaneOrientation orientation )
 {
 	util::ivector4 mappedSize = QOrienationHandler::mapCoordsToOrientation( image->getImageSize(), image, orientation );
 	util::fvector4 flipVec = QOrienationHandler::mapCoordsToOrientation( util::fvector4( 1, 1, 1 ), image, orientation, false, false );
@@ -127,10 +129,6 @@ QTransform QOrienationHandler::getTransform( util::PropertyMap &properties, cons
 							0, flipVec[1], 0,
 							0, 0, 1 );
 
-	util::fvector4 viewPort = QOrienationHandler::getViewPort( image, w, h, orientation );
-
-	properties.setPropertyAs<util::fvector4>( "viewPort", viewPort );
-
 	//calculate crosshair dependent translation
 	retTransform.translate( flipVec[0] * viewPort[2], flipVec[1] * viewPort[3] );
 	retTransform.scale( viewPort[0] * currentZoom, viewPort[1] * currentZoom );
@@ -140,9 +138,8 @@ QTransform QOrienationHandler::getTransform( util::PropertyMap &properties, cons
 
 }
 
-util::ivector4 QOrienationHandler::convertWindow2VoxelCoords( const util::PropertyMap &properties, const boost::shared_ptr< ImageHolder > image, const size_t &x, const size_t &y, const size_t &slice, PlaneOrientation orientation )
+util::ivector4 QOrienationHandler::convertWindow2VoxelCoords( const util::FixedVector<float, 6> &viewPort, const util::PropertyMap &properties, const boost::shared_ptr< ImageHolder > image, const size_t &x, const size_t &y, const size_t &slice, PlaneOrientation orientation )
 {
-	util::fvector4 viewPort = properties.getPropertyAs<util::fvector4>( "viewPort" );
 	util::ivector4 mappedSize = QOrienationHandler::mapCoordsToOrientation( image->getImageSize(), image, orientation );
 	float currentZoom = properties.getPropertyAs<float>( "currentZoom" );
 	size_t voxCoordX = ( x - viewPort[2] ) / viewPort[0] / currentZoom;
@@ -156,10 +153,8 @@ util::ivector4 QOrienationHandler::convertWindow2VoxelCoords( const util::Proper
 	return QOrienationHandler::mapCoordsToOrientation( coords, image, orientation, true );
 }
 
-std::pair< size_t, size_t > QOrienationHandler::convertVoxel2WindowCoords( const isis::util::PropertyMap &properties, const boost::shared_ptr< ImageHolder > image, PlaneOrientation orientation )
+std::pair< size_t, size_t > QOrienationHandler::convertVoxel2WindowCoords( const util::FixedVector<float, 6> &viewPort, const isis::util::PropertyMap &properties, const boost::shared_ptr< ImageHolder > image, PlaneOrientation orientation )
 {
-	util::fvector4 viewPort = properties.getPropertyAs<util::fvector4>( "viewPort" );
-
 	float currentZoom = properties.getPropertyAs<float>( "currentZoom" ) ;
 	util::ivector4 mappedVoxelCoords = QOrienationHandler::mapCoordsToOrientation( image->getPropMap().getPropertyAs<util::ivector4>( "voxelCoords" ), image, orientation );
 	float halfVoxelX = viewPort[0] / 2;
