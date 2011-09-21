@@ -141,7 +141,7 @@ void QGLWidgetImplementation::updateStateValues( boost::shared_ptr<ImageHolder> 
 		state.planeOrientation =
 			GLOrientationHandler::transformToPlaneView( image->getNormalizedImageOrientation(), m_PlaneOrientation );
 		GLOrientationHandler::boostMatrix2Pointer( GLOrientationHandler::addOffset( state.planeOrientation ), state.textureMatrix );
-		state.mappedVoxelSize = GLOrientationHandler::transformVector<float>( image->getPropMap().getPropertyAs<util::fvector4>( "voxelSize" ) + image->getPropMap().getPropertyAs<util::fvector4>( "voxelGap" ) , state.planeOrientation );
+		state.mappedVoxelSize = GLOrientationHandler::transformVector<float>( image->getImage()->getPropertyAs<util::fvector4>( "voxelSize" ) + image->getImage()->getPropertyAs<util::fvector4>( "voxelGap" ) , state.planeOrientation );
 		state.mappedImageSize = GLOrientationHandler::transformVector<int>( image->getImageSize(), state.planeOrientation );
 		state.set = true;
 		state.lutID =  m_LookUpTable.getLookUpTableAsTexture( image->getImageProperties().lookUpTableType );

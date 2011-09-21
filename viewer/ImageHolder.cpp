@@ -149,8 +149,6 @@ bool ImageHolder::setImage( const data::Image &image, const ImageType &imageType
 
 	LOG( Debug, verbose_info ) << "Spliced image to " << m_ImageVector.size() << " volumes.";
 
-	//copy all the relevant meta information
-	m_PropMap = static_cast<util::PropertyMap>( image );
 	m_OptimalScalingPair = getOptimalScalingToForType<InternalImageType>( m_CutAwayPair );
 	//image seems to be ok...i guess
 

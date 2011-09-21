@@ -143,18 +143,14 @@ void QImageWidgetImplementation::mouseMoveEvent( QMouseEvent *e )
 
 void QImageWidgetImplementation::emitMousePressEvent(QMouseEvent* e)
 {
-    	
 	size_t slice = QOrienationHandler::mapCoordsToOrientation( m_ViewerCore->getCurrentImage()->getPropMap().getPropertyAs<util::ivector4>("voxelCoords"), m_ViewerCore->getCurrentImage(), m_PlaneOrientation )[2];
 	util::ivector4 coords = QOrienationHandler::convertWindow2VoxelCoords( m_WidgetProperties, m_ViewerCore->getCurrentImage(), e->x(), e->y(), slice, m_PlaneOrientation );
-#warning remove debug output in emitMousePressEvent
-	std::cout << "emitMousePress: " << e->x() << " : " << e->y() << " -> " << coords << std::endl;
 	physicalCoordsChanged( m_ViewerCore->getCurrentImage()->getImage()->getPhysicalCoordsFromIndex( coords ) );
 }
 
 void QImageWidgetImplementation::paintCrosshair()
 {
 	std::pair<size_t, size_t> coords = QOrienationHandler::convertVoxel2WindowCoords( m_WidgetProperties, m_ViewerCore->getCurrentImage(), m_PlaneOrientation  );
-	std::cout << coords << std::endl;
 	util::fvector4 mappedSize = QOrienationHandler::mapCoordsToOrientation( m_ViewerCore->getCurrentImage()->getImageSize(), m_ViewerCore->getCurrentImage(), m_PlaneOrientation );
 	util::fvector4 viewPort = m_WidgetProperties.getPropertyAs<util::fvector4>( "viewPort" );
 	
@@ -180,8 +176,8 @@ void QImageWidgetImplementation::paintCrosshair()
 
 bool QImageWidgetImplementation::lookAtPhysicalCoords(const isis::util::fvector4& physicalCoords)
 {
-    m_ViewerCore->getCurrentImage()->getPropMap().setPropertyAs<util::ivector4>( "voxelCoords", m_ViewerCore->getCurrentImage()->getImage()->getIndexFromPhysicalCoords(physicalCoords) );
     m_ViewerCore->getCurrentImage()->getPropMap().setPropertyAs<util::fvector4>( "physicalCoords", physicalCoords );
+    m_ViewerCore->getCurrentImage()->getPropMap().setPropertyAs<util::ivector4>( "voxelCoords", m_ViewerCore->getCurrentImage()->getImage()->getIndexFromPhysicalCoords(physicalCoords) );
     update();
 }
 

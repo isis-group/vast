@@ -145,16 +145,13 @@ util::ivector4 QOrienationHandler::convertWindow2VoxelCoords( const util::Proper
 	util::fvector4 viewPort = properties.getPropertyAs<util::fvector4>( "viewPort" );
 	util::ivector4 mappedSize = QOrienationHandler::mapCoordsToOrientation( image->getImageSize(), image, orientation );
 	float currentZoom = properties.getPropertyAs<float>("currentZoom");
-// 	float transX = properties.getPropertyAs<float>("transX");
-// 	float transY = properties.getPropertyAs<float>("transY");
 	size_t voxCoordX = (x - viewPort[2]) / viewPort[0] / currentZoom;
 	size_t voxCoordY = (y - viewPort[3]) / viewPort[1] / currentZoom;
-		
-	util::ivector4 mappedCoords = QOrienationHandler::mapCoordsToOrientation( util::ivector4( voxCoordX, voxCoordY, slice ), image , orientation, true, false );
-	for ( size_t i = 0; i < 2; i++ ) {
-	    mappedCoords[i] = mappedCoords[i] < 0 ? mappedSize[i] + mappedCoords[i] - 1 : mappedCoords[i];
+	util::ivector4 coords =  util::ivector4( voxCoordX, voxCoordY, slice );
+	for ( size_t i = 0; i < 3; i++ ) {
+	    coords[i] = mappedSize[i] < 0 ? mappedSize[i] + coords[i] - 1 : coords[i];
 	}
-	return mappedCoords;
+	return QOrienationHandler::mapCoordsToOrientation( coords, image, orientation, true );
 }
 
 std::pair< size_t, size_t > QOrienationHandler::convertVoxel2WindowCoords( const isis::util::PropertyMap &properties, const boost::shared_ptr< ImageHolder > image, PlaneOrientation orientation )
@@ -168,7 +165,7 @@ std::pair< size_t, size_t > QOrienationHandler::convertVoxel2WindowCoords( const
 	
 	float x = mappedVoxelCoords[0] * viewPort[0] + viewPort[2] + halfVoxelX;
 	float y = mappedVoxelCoords[1] * viewPort[1] + viewPort[3] + halfVoxelY;
-	return std::make_pair<size_t, size_t>( x, y );
+	return std::make_pair<size_t, size_t>( round(x), round(y) );
 }
 
 }
