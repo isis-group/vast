@@ -86,9 +86,14 @@ void QImageWidgetImplementation::recalculateTranslation( const boost::shared_ptr
 	util::ivector4 mappedVoxelCoords = QOrienationHandler::mapCoordsToOrientation( image->getPropMap().getPropertyAs<util::ivector4>( "voxelCoords" ), image, m_PlaneOrientation );
 	util::ivector4 center = mappedImageSize / 2;
 	util::ivector4 diff = center - mappedVoxelCoords;
-	float zoomDependentShift = 1.0 - ( 2.0 / m_WidgetProperties.getPropertyAs<float>( "currentZoom" ) );
+	const float currentZoom = m_WidgetProperties.getPropertyAs<float>( "currentZoom" );
+	m_Viewport[2] += mappedImageSize[0] - currentZoom * mappedImageSize[0];
+	m_Viewport[3] += mappedImageSize[1] - currentZoom * mappedImageSize[1];
+	float zoomDependentShift = 1.0 - ( 2.0 / currentZoom );
 	float transX = diff[0] + zoomDependentShift * diff[0] + 0.02 * diff[0];
 	float transY = diff[1] + zoomDependentShift * diff[1] + 0.02 * diff[1];
+	m_Viewport[2] += transX;
+	m_Viewport[3] += transY;
 }
 
 
@@ -107,15 +112,19 @@ void QImageWidgetImplementation::paintImage( boost::shared_ptr< ImageHolder > im
 
 	m_Painter->resetMatrix();
 	m_Viewport = QOrienationHandler::getViewPort( image, width(), height(), m_PlaneOrientation );
-	m_Painter->setTransform( QOrienationHandler::getTransform( m_Viewport, m_WidgetProperties, image, width(), height(), m_PlaneOrientation ) );
-
-	
-	
-	m_Painter->setOpacity( image->getPropMap().getPropertyAs<float>( "opacity" ) );
-
 	if( m_WidgetProperties.getPropertyAs<bool>( "mousePressedRight" ) )  {
 		recalculateTranslation( image );
 	}
+	const float currentZoom = m_WidgetProperties.getPropertyAs<float>("currentZoom");
+	m_Viewport[0] *= currentZoom;
+	m_Viewport[1] *= currentZoom;
+	m_Viewport[4] *= currentZoom;
+	m_Viewport[5] *= currentZoom;
+	m_Painter->setTransform( QOrienationHandler::getTransform( m_Viewport, m_WidgetProperties, image, width(), height(), m_PlaneOrientation ) );
+	
+	m_Painter->setOpacity( image->getPropMap().getPropertyAs<float>( "opacity" ) );
+
+	
 
 	m_Painter->drawImage( 0, 0, qImage );
 
@@ -131,10 +140,7 @@ void QImageWidgetImplementation::mousePressEvent( QMouseEvent *e )
 	} else if ( e->button() == Qt::LeftButton ) {
 		m_WidgetProperties.setPropertyAs<bool>( "mousePressedLeft", true );
 	}
-
 	emitMousePressEvent( e );
-
-
 }
 
 void QImageWidgetImplementation::mouseMoveEvent( QMouseEvent *e )
@@ -204,7 +210,8 @@ void QImageWidgetImplementation::mouseReleaseEvent( QMouseEvent *e )
 
 	if( e->button() == Qt::RightButton ) {
 		m_WidgetProperties.setPropertyAs<bool>( "mousePressedRight", false );
-	} else if ( e->button() == Qt::LeftButton ) {
+	} 
+	if ( e->button() == Qt::LeftButton ) {
 		m_WidgetProperties.setPropertyAs<bool>( "mousePressedLeft", false );
 	}
 }
