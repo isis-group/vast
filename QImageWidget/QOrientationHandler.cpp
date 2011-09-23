@@ -100,7 +100,7 @@ util::FixedVector<float, 6> QOrienationHandler::getViewPort( const boost::shared
 	util::FixedVector<float, 6> retVec;
 	util::ivector4 mappedSize = QOrienationHandler::mapCoordsToOrientation( image->getImageSize(), image, orientation );
 	util::fvector4 mappedScaling = QOrienationHandler::mapCoordsToOrientation( image->getImage()->getPropertyAs<util::fvector4>( "voxelSize" ), image, orientation );
-	
+	util::fvector4 mappedPhysicalSize = mappedScaling * mappedSize;
 	float scalew = w / float( mappedSize[0] );
 	float scaleh = h / float( mappedSize[1] );
 
@@ -110,12 +110,12 @@ util::FixedVector<float, 6> QOrienationHandler::getViewPort( const boost::shared
 	retVec[1] = scaleh * normh;
 	retVec[2] = ( w - retVec[0] * mappedSize[0] ) / 2 ;
 	retVec[3] = ( h - retVec[1] * mappedSize[1] ) / 2 ;
-	retVec[2] += mappedSize[0] - zoom * mappedSize[0];
-	retVec[3] += mappedSize[1] - zoom * mappedSize[1];
+	retVec[2] += mappedPhysicalSize[0] - zoom * mappedPhysicalSize[0];
+	retVec[3] += mappedPhysicalSize[1] - zoom * mappedPhysicalSize[1];
 	retVec[4] = round(mappedSize[0] * retVec[0]);
 	retVec[5] = round(mappedSize[1] * retVec[1]);
 	if(move) {
-		util::ivector4 mappedVoxelCoords = QOrienationHandler::mapCoordsToOrientation( image->getPropMap().getPropertyAs<util::ivector4>( "voxelCoords" ), image, orientation );
+		util::ivector4 mappedVoxelCoords = QOrienationHandler::mapCoordsToOrientation( image->getPropMap().getPropertyAs<util::ivector4>( "voxelCoords" ), image, orientation, false, false );
 		util::ivector4 center = mappedSize / 2;
 		util::ivector4 diff = center - mappedVoxelCoords;
 		float zoomDependentShift = 1.0 - ( 2.0 / zoom );

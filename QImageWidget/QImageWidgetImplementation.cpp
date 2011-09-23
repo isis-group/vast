@@ -13,7 +13,8 @@ namespace qt
 QImageWidgetImplementation::QImageWidgetImplementation( QViewerCore *core, QWidget *parent, PlaneOrientation orientation )
 	: QWidget( parent ),
 	  WidgetImplementationBase( core, parent, orientation ),
-	  m_MemoryHandler( core )
+	  m_MemoryHandler( core ),
+	  m_Painter( new QPainter() )
 {
 	( new QVBoxLayout( parent ) )->addWidget( this );
 	commonInit();
@@ -23,7 +24,8 @@ QImageWidgetImplementation::QImageWidgetImplementation( QViewerCore *core, QWidg
 QImageWidgetImplementation::QImageWidgetImplementation( QViewerCore *core, QWidget *parent, QWidget *share, PlaneOrientation orienation )
 	: QWidget( parent ),
 	  WidgetImplementationBase( core, parent, orienation ),
-	  m_MemoryHandler( core )
+	  m_MemoryHandler( core ),
+	  m_Painter( new QPainter() )
 {
 	( new QVBoxLayout( parent ) )->addWidget( this );
 	commonInit();
@@ -38,7 +40,6 @@ void QImageWidgetImplementation::commonInit()
 	setAutoFillBackground( true );
 	setPalette( QPalette( Qt::black ) );
 	m_LutType = Color::standard_grey_values;
-	m_Painter = new QPainter();
 	m_WidgetProperties.setPropertyAs<bool>( "mousePressedRight", false );
 	m_WidgetProperties.setPropertyAs<bool>( "mousePressedLeft", false );
 	m_WidgetProperties.setPropertyAs<float>( "currentZoom", 1.0 );
