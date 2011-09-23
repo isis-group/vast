@@ -11,7 +11,6 @@ WidgetImplementationBase::WidgetImplementationBase( QViewerCore *core, QWidget *
 	  m_PlaneOrientation( orientation ),
 	  m_Parent( parent )
 {
-	//     ( new QVBoxLayout( parent ) )->addWidget( this );
 
 }
 

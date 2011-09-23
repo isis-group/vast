@@ -29,6 +29,7 @@ typedef uint8_t InternalImageType;
 // just some helper typedefs which we will need regularly
 enum PlaneOrientation { axial, sagittal, coronal };
 enum WidgetType { type_gl, type_qt };
+enum InterpolationType { nn, lin };
 
 template<typename TYPE>
 TYPE roundNumber( TYPE number, unsigned  short placesOfDec )

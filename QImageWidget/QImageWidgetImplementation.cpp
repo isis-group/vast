@@ -112,7 +112,7 @@ void QImageWidgetImplementation::paintImage( boost::shared_ptr< ImageHolder > im
 	m_Viewport[4] *= currentZoom;
 	m_Viewport[5] *= currentZoom;
 	m_Painter->setTransform( QOrienationHandler::getTransform( m_Viewport, m_WidgetProperties, image, width(), height(), m_PlaneOrientation ) );
-	m_Painter->setRenderHint(QPainter::SmoothPixmapTransform, true );
+	
 	m_Painter->setOpacity( image->getPropMap().getPropertyAs<float>( "opacity" ) );
 	m_Painter->drawImage( 0, 0, qImage );
 
@@ -234,6 +234,18 @@ void QImageWidgetImplementation::wheelEvent( QWheelEvent *e )
 void QImageWidgetImplementation::updateScene(bool )
 {
 	update();
+}
+void QImageWidgetImplementation::setInterpolationType(InterpolationType interType)
+{
+	switch (interType) {
+		case nn:
+			m_Painter->setRenderHint(QPainter::Antialiasing, true );
+			break;
+		case lin:
+			m_Painter->setRenderHint(QPainter::SmoothPixmapTransform, true );
+			break;
+	}
+	std::cout << "fsdf" << std::endl;
 }
 
 

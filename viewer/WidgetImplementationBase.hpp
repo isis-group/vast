@@ -29,6 +29,7 @@ public:
 	virtual QWidget *getParent( ) const { return m_Parent; }
 
 	virtual PlaneOrientation getPlaneOrientation() { return m_PlaneOrientation; }
+	virtual void setInterpolationType( InterpolationType interpolation ) = 0;
 
 
 protected:

@@ -41,6 +41,7 @@ public Q_SLOTS:
 	virtual bool lookAtPhysicalCoords( const util::fvector4 &physicalCoords );
 	virtual bool lookAtVoxelCoords( const util::ivector4 &voxelCoords );
 	virtual void updateScene( bool );
+	virtual void setInterpolationType( InterpolationType interType );
 
 protected:
 	void paintEvent( QPaintEvent *event );
@@ -69,6 +70,7 @@ private:
 	void commonInit();
 	util::PropertyMap m_WidgetProperties;
 	QPainter *m_Painter;
+	InternalImageType m_InterpolationType;
 };
 
 

@@ -52,7 +52,7 @@ public Q_SLOTS:
 	virtual bool timestepChanged( unsigned int timestep );
 	virtual void setScalingType( ScalingType scalingType ) { m_ScalingType = scalingType; }
 	virtual void setShowLabels( const bool show );
-	virtual void setInterpolationType( const GLTextureHandler::InterpolationType interpolation );
+	virtual void setInterpolationType( InterpolationType interpolation );
 	virtual void updateScene( bool center = false );
 	virtual void setAutomaticScaling( bool scaling ) {
 		if( scaling ) { m_ScalingType = automatic_scaling;}
@@ -125,7 +125,7 @@ private:
 
 	std::vector<GLuint> m_TextureIDVec;
 
-	GLTextureHandler::InterpolationType m_InterplationType;
+	InterpolationType m_InterplationType;
 
 
 	bool calculateTranslation( );

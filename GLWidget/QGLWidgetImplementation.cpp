@@ -40,7 +40,7 @@ void QGLWidgetImplementation::commonInit()
 	setMouseTracking( true );
 	connectSignals();
 	m_ScalingType = static_cast<ScalingType>( m_ViewerCore->getSettings()->value( "UserProfile/scaling", 0 ).toUInt() );
-	m_InterplationType = static_cast<GLTextureHandler::InterpolationType>( m_ViewerCore->getSettings()->value( "UserProfile/interpolation", 0 ).toUInt() );
+	m_InterplationType = static_cast<InterpolationType>( m_ViewerCore->getSettings()->value( "UserProfile/interpolation", 0 ).toUInt() );
 	m_ScalingPair = std::make_pair<double, double>( 0.0, 1.0 );
 	//flags
 	m_Flags.zoomEvent = false;
@@ -132,7 +132,7 @@ void QGLWidgetImplementation::updateStateValues( boost::shared_ptr<ImageHolder> 
 
 	//if not happend already copy the image to GLtexture memory and return the texture id
 	if( image->getImageSize()[3] > m_ViewerCore->getCurrentImage()->getPropMap().getPropertyAs<size_t>( "currentTimestep" ) ) {
-		state.textureID = util::Singletons::get<GLTextureHandler, 10>().copyImageToTexture( image, m_ViewerCore->getCurrentImage()->getPropMap().getPropertyAs<size_t>( "currentTimestep" ), false, m_InterplationType );
+		state.textureID = util::Singletons::get<GLTextureHandler, 10>().copyImageToTexture( image, m_ViewerCore->getCurrentImage()->getPropMap().getPropertyAs<size_t>( "currentTimestep" ), false, static_cast<GLTextureHandler::InterpolationType> (m_InterplationType) );
 	}
 
 	//update the texture matrix.
@@ -544,7 +544,7 @@ void  QGLWidgetImplementation::setShowLabels( bool show )
 
 }
 
-void QGLWidgetImplementation::setInterpolationType( const isis::viewer::GL::GLTextureHandler::InterpolationType interpolation )
+void QGLWidgetImplementation::setInterpolationType( isis::viewer::InterpolationType interpolation )
 {
 	m_InterplationType = interpolation;
 	updateScene();
