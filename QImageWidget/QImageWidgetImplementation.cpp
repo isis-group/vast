@@ -13,7 +13,8 @@ namespace qt
 QImageWidgetImplementation::QImageWidgetImplementation( QViewerCore *core, QWidget *parent, PlaneOrientation orientation )
 	: QWidget( parent ),
 	  WidgetImplementationBase( core, parent, orientation ),
-	  m_MemoryHandler( core )
+	  m_MemoryHandler( core ),
+	  active(true)
 {
 	( new QVBoxLayout( parent ) )->addWidget( this );
 	commonInit();
@@ -23,7 +24,8 @@ QImageWidgetImplementation::QImageWidgetImplementation( QViewerCore *core, QWidg
 QImageWidgetImplementation::QImageWidgetImplementation( QViewerCore *core, QWidget *parent, QWidget *share, PlaneOrientation orienation )
 	: QWidget( parent ),
 	  WidgetImplementationBase( core, parent, orienation ),
-	  m_MemoryHandler( core )
+	  m_MemoryHandler( core ),
+	  active(true)
 {
 	( new QVBoxLayout( parent ) )->addWidget( this );
 	commonInit();
@@ -45,7 +47,6 @@ void QImageWidgetImplementation::commonInit()
 	m_WidgetProperties.setPropertyAs<float>( "zoomFactorIn", 1.5 );
 	m_WidgetProperties.setPropertyAs<float>( "zoomFactorOut", 1.5 );
 
-
 }
 
 
@@ -63,7 +64,6 @@ void QImageWidgetImplementation::addImage( const boost::shared_ptr< ImageHolder 
 void QImageWidgetImplementation::setZoom( float zoom )
 {
 	m_WidgetProperties.setPropertyAs<float>( "currentZoom", zoom );
-	recalculateTranslation( m_ViewerCore->getCurrentImage() );
 	update();
 }
 
@@ -80,21 +80,6 @@ void QImageWidgetImplementation::paintEvent( QPaintEvent *event )
 
 }
 
-void QImageWidgetImplementation::recalculateTranslation( const boost::shared_ptr<ImageHolder> image )
-{
-	util::ivector4 mappedImageSize = QOrienationHandler::mapCoordsToOrientation( image->getImageSize(), image, m_PlaneOrientation );
-	util::ivector4 mappedVoxelCoords = QOrienationHandler::mapCoordsToOrientation( image->getPropMap().getPropertyAs<util::ivector4>( "voxelCoords" ), image, m_PlaneOrientation );
-	util::ivector4 center = mappedImageSize / 2;
-	util::ivector4 diff = center - mappedVoxelCoords;
-	const float currentZoom = m_WidgetProperties.getPropertyAs<float>( "currentZoom" );
-	m_Viewport[2] += mappedImageSize[0] - currentZoom * mappedImageSize[0];
-	m_Viewport[3] += mappedImageSize[1] - currentZoom * mappedImageSize[1];
-	float zoomDependentShift = 1.0 - ( 2.0 / currentZoom );
-	float transX = diff[0] + zoomDependentShift * diff[0] + 0.02 * diff[0];
-	float transY = diff[1] + zoomDependentShift * diff[1] + 0.02 * diff[1];
-	m_Viewport[2] += transX;
-	m_Viewport[3] += transY;
-}
 
 
 void QImageWidgetImplementation::paintImage( boost::shared_ptr< ImageHolder > image )
@@ -107,15 +92,14 @@ void QImageWidgetImplementation::paintImage( boost::shared_ptr< ImageHolder > im
 
 	QImage qImage( ( InternalImageType * ) sliceChunk.asValuePtr<InternalImageType>().getRawAddress().get(),
 				   mappedSizeAligned[0], mappedSizeAligned[1], QImage::Format_Indexed8 );
-	qImage.setColorCount( 512 );
 	qImage.setColorTable( Color::getColorTable( m_LutType ) );
-
 	m_Painter->resetMatrix();
-	m_Viewport = QOrienationHandler::getViewPort( image, width(), height(), m_PlaneOrientation );
-	if( m_WidgetProperties.getPropertyAs<bool>( "mousePressedRight" ) )  {
-		recalculateTranslation( image );
-	}
 	const float currentZoom = m_WidgetProperties.getPropertyAs<float>("currentZoom");
+	m_Viewport = QOrienationHandler::getViewPort( image, width(), height(), 
+						      currentZoom, 
+						      m_PlaneOrientation, 
+						      m_WidgetProperties.getPropertyAs<bool>( "mousePressedRight" )
+    						);
 	m_Viewport[0] *= currentZoom;
 	m_Viewport[1] *= currentZoom;
 	m_Viewport[4] *= currentZoom;
@@ -123,9 +107,6 @@ void QImageWidgetImplementation::paintImage( boost::shared_ptr< ImageHolder > im
 	m_Painter->setTransform( QOrienationHandler::getTransform( m_Viewport, m_WidgetProperties, image, width(), height(), m_PlaneOrientation ) );
 	
 	m_Painter->setOpacity( image->getPropMap().getPropertyAs<float>( "opacity" ) );
-
-	
-
 	m_Painter->drawImage( 0, 0, qImage );
 
 }
