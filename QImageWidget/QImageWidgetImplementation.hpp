@@ -67,7 +67,6 @@ private:
 	void commonInit();
 	util::PropertyMap m_WidgetProperties;
 	QPainter *m_Painter;
-	bool active;
 };
 
 

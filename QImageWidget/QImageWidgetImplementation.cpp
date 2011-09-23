@@ -13,8 +13,7 @@ namespace qt
 QImageWidgetImplementation::QImageWidgetImplementation( QViewerCore *core, QWidget *parent, PlaneOrientation orientation )
 	: QWidget( parent ),
 	  WidgetImplementationBase( core, parent, orientation ),
-	  m_MemoryHandler( core ),
-	  active(true)
+	  m_MemoryHandler( core )
 {
 	( new QVBoxLayout( parent ) )->addWidget( this );
 	commonInit();
@@ -24,8 +23,7 @@ QImageWidgetImplementation::QImageWidgetImplementation( QViewerCore *core, QWidg
 QImageWidgetImplementation::QImageWidgetImplementation( QViewerCore *core, QWidget *parent, QWidget *share, PlaneOrientation orienation )
 	: QWidget( parent ),
 	  WidgetImplementationBase( core, parent, orienation ),
-	  m_MemoryHandler( core ),
-	  active(true)
+	  m_MemoryHandler( core )
 {
 	( new QVBoxLayout( parent ) )->addWidget( this );
 	commonInit();
