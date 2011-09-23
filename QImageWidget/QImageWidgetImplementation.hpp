@@ -39,6 +39,8 @@ public Q_SLOTS:
 	virtual void paintCrosshair();
 
 	virtual bool lookAtPhysicalCoords( const util::fvector4 &physicalCoords );
+	virtual bool lookAtVoxelCoords( const util::ivector4 &voxelCoords );
+	virtual void updateScene( bool );
 
 protected:
 	void paintEvent( QPaintEvent *event );

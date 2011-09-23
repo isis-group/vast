@@ -26,6 +26,7 @@ int main( int argc, char *argv[] )
 	image_types.set( "anatomical" );
 
 	isis::qt4::IOQtApplication app( appName.c_str(), false, false );
+	
 	std::cout << "v" << core->getVersion() << " ( isis core: " << app.getCoreVersion() << " )" << std::endl;
 	app.parameters["in"] = isis::util::slist();
 	app.parameters["in"].needed() = false;
@@ -60,6 +61,8 @@ int main( int argc, char *argv[] )
 	app.parameters["wtype"].setDescription( "Sets the type of the widgets" );
 	boost::shared_ptr< isis::util::ProgressFeedback > feedback = boost::shared_ptr<isis::util::ProgressFeedback>( new isis::util::ConsoleFeedback );
 	isis::data::IOFactory::setProgressFeedback( feedback );
+	//setting graphics mode
+	app.getQApplication().setGraphicsSystem("raster");
 	app.init( argc, argv, true );
 	app.setLog<isis::ViewerLog>( app.getLLMap()[app.parameters["dViewer"]->as<isis::util::Selection>()] );
 	app.setLog<isis::ViewerDebug>( app.getLLMap()[app.parameters["dViewer"]->as<isis::util::Selection>()] );
