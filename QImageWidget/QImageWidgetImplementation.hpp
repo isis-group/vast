@@ -37,6 +37,7 @@ public Q_SLOTS:
 	virtual bool removeImage( const boost::shared_ptr<ImageHolder> image);
 	virtual void paintImage( boost::shared_ptr< ImageHolder > image );
 	virtual void paintCrosshair();
+	virtual void setScalingType( ScalingType scaling ) { m_ScalingType = scaling; }
 
 	virtual bool lookAtPhysicalCoords( const util::fvector4 &physicalCoords );
 	virtual bool lookAtVoxelCoords( const util::ivector4 &voxelCoords );
@@ -65,13 +66,16 @@ private:
 	bool isInViewPort( QMouseEvent *e ) const;
 
 	QMemoryHandler m_MemoryHandler;
-	Color::LookUpTableType m_LutType;
+	
+	Color m_ColorHandler;
+	
 	void commonInit();
 	util::PropertyMap m_WidgetProperties;
 	QPainter *m_Painter;
 	InternalImageType m_InterpolationType;
-	
+	ScalingType m_ScalingType;
 	ImageVectorType m_ImageVector;
+	
 	
 };
 

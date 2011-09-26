@@ -24,7 +24,7 @@ class QGLWidgetImplementation : public QGLWidget, public WidgetImplementationBas
 {
 	Q_OBJECT
 public:
-	enum ScalingType { no_scaling, automatic_scaling, manual_scaling };
+	
 	QGLWidgetImplementation( QViewerCore *core, QWidget *parent = 0, QGLWidget *share = 0, PlaneOrientation orienation = axial );
 	QGLWidgetImplementation( QViewerCore *core, QWidget *parent = 0, PlaneOrientation orientation = axial );
 
@@ -54,12 +54,7 @@ public Q_SLOTS:
 	virtual void setShowLabels( const bool show );
 	virtual void setInterpolationType( InterpolationType interpolation );
 	virtual void updateScene( bool center = false );
-	virtual void setAutomaticScaling( bool scaling ) {
-		if( scaling ) { m_ScalingType = automatic_scaling;}
-		else { m_ScalingType = manual_scaling; }
 
-		updateScene();
-	}
 	virtual bool isInitialized() { return m_Flags.glInitialized; }
 
 protected:
@@ -146,7 +141,7 @@ private:
 		float zoomBorder;
 	} m_Zoom;
 
-	ScalingType m_ScalingType;
+	isis::viewer::ScalingType m_ScalingType;
 	std::pair<double, double> m_ScalingPair;
 
 	isis::viewer::GL::GLLookUpTable m_LookUpTable;

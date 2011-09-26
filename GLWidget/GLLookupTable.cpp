@@ -11,10 +11,13 @@ namespace GL
 GLuint GLLookUpTable::getLookUpTableAsTexture( const Color::LookUpTableType &lutType ) const
 {
 	size_t extent = std::numeric_limits<GLubyte>::max() + 1;
-	QVector<QRgb> rgbColorGradient = Color::getColorTable( lutType, extent );
+	Color colorHandler;
+	colorHandler.setLutType( lutType );
+	colorHandler.setNumberOfElements( extent );
+	colorHandler.update();
 	GLfloat *colorTable = ( GLfloat * ) calloc( extent * 3, sizeof( GLfloat ) );
 	size_t index = 0;
-	BOOST_FOREACH( QVector<QRgb>::const_reference color, rgbColorGradient ) {
+	BOOST_FOREACH( QVector<QRgb>::const_reference color, colorHandler.getColorTable() ) {
 		colorTable[index++] = ( float )QColor( color ).red() / float( extent - 1 );
 		colorTable[index++] = ( float )QColor( color ).green() / float( extent - 1 );
 		colorTable[index++] = ( float )QColor( color ).blue() / float( extent - 1 );

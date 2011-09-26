@@ -6,38 +6,41 @@ namespace isis
 {
 namespace viewer
 {
-
-
-QVector< QRgb > Color::getColorTable( const isis::viewer::Color::LookUpTableType &lutType, size_t numberOfEntries )
+	
+Color::Color()
+	: m_NumberOfElements( 256 ),
+	m_LutType( standard_grey_values )
 {
-	QVector<QRgb> retVec( numberOfEntries );
-
-	switch( lutType ) {
-	case Color::standard_grey_values: {
-		for ( size_t i = 0; i < numberOfEntries; i++ ) {
-			retVec[i] = QColor( i, i, i, 255 ).rgba();
-		}
-
-		break;
-	}
-	case Color::zmap_standard: {
-		for( size_t i = 0; i < ( numberOfEntries / 2 ); i++ ) {
-			if( i < ( numberOfEntries / 4 ) ) {
-				retVec[( numberOfEntries - 1 ) - ( ( numberOfEntries / 2 ) - i - 1 )] = QColor( 255, i * 4, i * 2, 255 ).rgba();
-				retVec[( numberOfEntries - 1 ) - ( i + ( numberOfEntries / 2 ) )] = QColor( i * 2, i * 4, 255, 255 ).rgba();
-			} else {
-				retVec[( numberOfEntries - 1 ) - ( ( numberOfEntries / 2 ) - i - 1 )] = QColor( 255, 255, i * 2, 255 ).rgba();
-				retVec[( numberOfEntries - 1 ) - ( i + ( numberOfEntries / 2 ) )] = QColor( i * 2, 255, 255, 255 ).rgba();
-			}
-		}
-
-		break;
-	}
-
-	}
-
-	return retVec;
+	
 }
+	
+void Color::update()
+{
+	switch( m_LutType ) {
+		case Color::standard_grey_values: {
+			for ( size_t i = 0; i < m_NumberOfElements; i++ ) {
+				m_ColorTable[i] = QColor( i, i, i, 255 ).rgba();
+			}
+
+			break;
+		}
+		case Color::zmap_standard: {
+			for( size_t i = 0; i < ( m_NumberOfElements / 2 ); i++ ) {
+				if( i < ( m_NumberOfElements / 4 ) ) {
+					m_ColorTable[( m_NumberOfElements - 1 ) - ( ( m_NumberOfElements / 2 ) - i - 1 )] = QColor( 255, i * 4, i * 2, 255 ).rgba();
+					m_ColorTable[( m_NumberOfElements - 1 ) - ( i + ( m_NumberOfElements / 2 ) )] = QColor( i * 2, i * 4, 255, 255 ).rgba();
+				} else {
+					m_ColorTable[( m_NumberOfElements - 1 ) - ( ( m_NumberOfElements / 2 ) - i - 1 )] = QColor( 255, 255, i * 2, 255 ).rgba();
+					m_ColorTable[( m_NumberOfElements - 1 ) - ( i + ( m_NumberOfElements / 2 ) )] = QColor( i * 2, 255, 255, 255 ).rgba();
+				}
+			}
+
+			break;
+		}
+	}
+
+}
+
 
 
 

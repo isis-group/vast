@@ -33,16 +33,18 @@ QImageWidgetImplementation::QImageWidgetImplementation( QViewerCore *core, QWidg
 
 void QImageWidgetImplementation::commonInit()
 {	
-	connect( m_ViewerCore, SIGNAL( emitUpdateScene( bool ) ), this, SLOT( updateScene( bool ) ) );
+	
 	connect( this, SIGNAL( zoomChanged( float ) ), m_ViewerCore, SLOT( zoomChanged( float ) ) );
 	connect( this, SIGNAL( voxelCoordsChanged( util::ivector4 ) ), m_ViewerCore, SLOT( voxelCoordsChanged ( util::ivector4 ) ) );
 	connect( this, SIGNAL( physicalCoordsChanged( util::fvector4 ) ), m_ViewerCore, SLOT( physicalCoordsChanged ( util::fvector4 ) ) );
+	connect( m_ViewerCore, SIGNAL( emitUpdateScene( bool ) ), this, SLOT( updateScene( bool ) ) );
 	connect( m_ViewerCore, SIGNAL( emitPhysicalCoordsChanged( util::fvector4 ) ), this, SLOT( lookAtPhysicalCoords( util::fvector4 ) ) );
 	connect( m_ViewerCore, SIGNAL( emitVoxelCoordChanged( util::ivector4 ) ), this, SLOT( lookAtVoxelCoords(util::ivector4)) );
 	connect( m_ViewerCore, SIGNAL( emitZoomChanged( float ) ), this, SLOT( setZoom( float ) ) );
 	setAutoFillBackground( true );
 	setPalette( QPalette( Qt::black ) );
-	m_LutType = Color::standard_grey_values;
+	m_ColorHandler.setLutType( Color::standard_grey_values );
+	m_ColorHandler.update();
 	m_WidgetProperties.setPropertyAs<bool>( "mousePressedRight", false );
 	m_WidgetProperties.setPropertyAs<bool>( "mousePressedLeft", false );
 	m_WidgetProperties.setPropertyAs<float>( "currentZoom", 1.0 );
@@ -101,10 +103,11 @@ void QImageWidgetImplementation::paintEvent( QPaintEvent *event )
 void QImageWidgetImplementation::paintImage( boost::shared_ptr< ImageHolder > image )
 {
 	if( image->getImageProperties().imageType == ImageHolder::z_map ) {
-		m_LutType = Color::zmap_standard;
+		m_ColorHandler.setLutType( Color::zmap_standard );
 	} else {
-		m_LutType = Color::standard_grey_values;
+		m_ColorHandler.setLutType( Color::standard_grey_values );
 	}
+	m_ColorHandler.update();
 	
 	util::ivector4 mappedSizeAligned = QOrienationHandler::mapCoordsToOrientation( image->getPropMap().getPropertyAs<util::ivector4>( "alignedSize32Bit" ), image, m_PlaneOrientation );
 	isis::data::MemChunk<InternalImageType> sliceChunk( mappedSizeAligned[0], mappedSizeAligned[1] );
@@ -113,7 +116,8 @@ void QImageWidgetImplementation::paintImage( boost::shared_ptr< ImageHolder > im
 
 	QImage qImage( ( InternalImageType * ) sliceChunk.asValuePtr<InternalImageType>().getRawAddress().get(),
 				   mappedSizeAligned[0], mappedSizeAligned[1], QImage::Format_Indexed8 );
-	qImage.setColorTable( Color::getColorTable( m_LutType ) );
+	
+	qImage.setColorTable( m_ColorHandler.getColorTable() );
 	
 	m_Painter->resetMatrix();
 	const float currentZoom = m_WidgetProperties.getPropertyAs<float>("currentZoom");

@@ -65,7 +65,6 @@ Q_SIGNALS:
 	void emitTimeStepChange( unsigned int );
 	void emitImagesChanged( DataContainer );
 	void emitShowLabels( bool );
-	void emitSetAutomaticScaling( bool );
 	void emitUpdateScene( bool center );
 
 private:

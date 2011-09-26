@@ -80,7 +80,6 @@ void QGLWidgetImplementation::connectSignals()
 	connect( m_ViewerCore, SIGNAL( emitTimeStepChange( unsigned int ) ), this, SLOT( timestepChanged( unsigned int ) ) );
 	connect( m_ViewerCore, SIGNAL( emitShowLabels( bool ) ), this, SLOT( setShowLabels( bool ) ) );
 	connect( m_ViewerCore, SIGNAL( emitUpdateScene( bool ) ), this, SLOT( updateScene( bool ) ) );
-	connect( m_ViewerCore, SIGNAL( emitSetAutomaticScaling( bool ) ), this, SLOT( setAutomaticScaling( bool ) ) );
 	connect( m_ViewerCore, SIGNAL( emitZoomChanged( float ) ), this, SLOT( setZoom( float ) ) );
 
 }

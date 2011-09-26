@@ -100,7 +100,13 @@ void QViewerCore::updateScene( bool center )
 
 void QViewerCore::setAutomaticScaling( bool s )
 {
-	emitSetAutomaticScaling( s );
+	BOOST_FOREACH( WidgetMap::reference widget, m_WidgetMap ) {
+		if(s) {
+			widget.second->setScalingType( automatic_scaling );
+		} else {
+			widget.second->setScalingType( manual_scaling );
+		}
+	}
 }
 
 

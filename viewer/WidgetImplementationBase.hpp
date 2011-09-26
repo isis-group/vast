@@ -32,6 +32,7 @@ public:
 
 	virtual PlaneOrientation getPlaneOrientation() { return m_PlaneOrientation; }
 	virtual void setInterpolationType( InterpolationType interpolation ) = 0;
+	virtual void setScalingType( ScalingType scaling ) = 0;
 
 
 protected:

@@ -30,6 +30,7 @@ typedef uint8_t InternalImageType;
 enum PlaneOrientation { axial, sagittal, coronal };
 enum WidgetType { type_gl, type_qt };
 enum InterpolationType { nn, lin };
+enum ScalingType { no_scaling, automatic_scaling, manual_scaling };
 
 template<typename TYPE>
 TYPE roundNumber( TYPE number, unsigned  short placesOfDec )
