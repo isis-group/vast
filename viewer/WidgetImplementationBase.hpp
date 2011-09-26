@@ -26,6 +26,7 @@ public:
 	virtual void addImage( const boost::shared_ptr<ImageHolder> image ) = 0;
 	virtual bool removeImage( const boost::shared_ptr< ImageHolder > image ) = 0;
 	virtual void setWidgetName( std::string name ) { m_WidgetName = name; }
+	virtual const std::string &getWidgetName() const { return m_WidgetName; }
 
 	virtual QWidget *getParent( ) const { return m_Parent; }
 

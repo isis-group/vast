@@ -202,15 +202,21 @@ void QImageWidgetImplementation::paintCrosshair()
 
 bool QImageWidgetImplementation::lookAtPhysicalCoords( const isis::util::fvector4 &physicalCoords )
 {
-	m_ViewerCore->getCurrentImage()->getPropMap().setPropertyAs<util::fvector4>( "physicalCoords", physicalCoords );
-	m_ViewerCore->getCurrentImage()->getPropMap().setPropertyAs<util::ivector4>( "voxelCoords", m_ViewerCore->getCurrentImage()->getImage()->getIndexFromPhysicalCoords( physicalCoords ) );
+	BOOST_FOREACH( DataContainer::reference image, m_ViewerCore->getDataContainer() ) 
+	{
+		image.second->getPropMap().setPropertyAs<util::fvector4>( "physicalCoords", physicalCoords );
+		image.second->getPropMap().setPropertyAs<util::ivector4>( "voxelCoords", image.second->getImage()->getIndexFromPhysicalCoords( physicalCoords ) );
+	}
 	update();
 }
 
 bool QImageWidgetImplementation::lookAtVoxelCoords(const isis::util::ivector4& voxelCoords)
 {
-	m_ViewerCore->getCurrentImage()->getPropMap().setPropertyAs<util::fvector4>( "voxelCoords", voxelCoords );
-	m_ViewerCore->getCurrentImage()->getPropMap().setPropertyAs<util::ivector4>( "physicalCoords", m_ViewerCore->getCurrentImage()->getImage()->getIndexFromPhysicalCoords( voxelCoords ) );
+	BOOST_FOREACH( DataContainer::reference image, m_ViewerCore->getDataContainer() ) 
+	{
+		image.second->getPropMap().setPropertyAs<util::fvector4>( "voxelCoords", voxelCoords );
+		image.second->getPropMap().setPropertyAs<util::ivector4>( "physicalCoords", image.second->getImage()->getIndexFromPhysicalCoords( voxelCoords ) );
+	}
 	update();
 }
 
