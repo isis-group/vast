@@ -61,6 +61,7 @@ Q_SIGNALS:
 
 private:
 	/**scaling, offset, size**/
+	
 	util::FixedVector<float, 6> m_Viewport;
 	void emitMousePressEvent( QMouseEvent *e );
 	bool isInViewPort( QMouseEvent *e ) const;
@@ -68,6 +69,7 @@ private:
 	QMemoryHandler m_MemoryHandler;
 	
 	Color m_ColorHandler;
+	
 	
 	void commonInit();
 	util::PropertyMap m_WidgetProperties;

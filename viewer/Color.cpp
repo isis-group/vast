@@ -9,7 +9,8 @@ namespace viewer
 	
 Color::Color()
 	: m_NumberOfElements( 256 ),
-	m_LutType( standard_grey_values )
+	m_LutType( standard_grey_values ),
+	m_OffsetScaling( std::make_pair<double, double>(0.0, 1.0) )
 {
 
 }
@@ -22,7 +23,6 @@ void Color::update()
 			for ( size_t i = 0; i < m_NumberOfElements; i++ ) {
 				m_ColorTable[i] = QColor( i, i, i, 255 ).rgba();
 			}
-
 			break;
 		}
 		case Color::zmap_standard: {

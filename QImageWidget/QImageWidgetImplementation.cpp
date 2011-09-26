@@ -47,9 +47,12 @@ void QImageWidgetImplementation::commonInit()
 	m_ColorHandler.update();
 	m_WidgetProperties.setPropertyAs<bool>( "mousePressedRight", false );
 	m_WidgetProperties.setPropertyAs<bool>( "mousePressedLeft", false );
+	m_WidgetProperties.setPropertyAs<bool>( "zoomEvent", false );
 	m_WidgetProperties.setPropertyAs<float>( "currentZoom", 1.0 );
 	m_WidgetProperties.setPropertyAs<float>( "zoomFactorIn", 1.5 );
 	m_WidgetProperties.setPropertyAs<float>( "zoomFactorOut", 1.5 );
+	m_WidgetProperties.setPropertyAs<float>( "translationX", 0 );
+	m_WidgetProperties.setPropertyAs<float>( "translationY", 0 );
 
 }
 
@@ -73,7 +76,8 @@ bool QImageWidgetImplementation::removeImage(const boost::shared_ptr< ImageHolde
 
 void QImageWidgetImplementation::setZoom( float zoom )
 {
-	m_WidgetProperties.setPropertyAs<float>( "currentZoom", zoom );
+	m_WidgetProperties.setPropertyAs<bool>("zoomEvent", true);
+	m_WidgetProperties.setPropertyAs<float>( "currentZoom", zoom >= 1.0 ? zoom : 1.0 );
 	update();
 }
 
@@ -107,8 +111,8 @@ void QImageWidgetImplementation::paintImage( boost::shared_ptr< ImageHolder > im
 	} else {
 		m_ColorHandler.setLutType( Color::standard_grey_values );
 	}
+	//TODO only update if necessary
 	m_ColorHandler.update();
-	std::cout << image->getOptimalScalingPair() << std::endl;
 	util::ivector4 mappedSizeAligned = QOrienationHandler::mapCoordsToOrientation( image->getPropMap().getPropertyAs<util::ivector4>( "alignedSize32Bit" ), image, m_PlaneOrientation );
 	isis::data::MemChunk<InternalImageType> sliceChunk( mappedSizeAligned[0], mappedSizeAligned[1] );
 
@@ -120,16 +124,15 @@ void QImageWidgetImplementation::paintImage( boost::shared_ptr< ImageHolder > im
 	qImage.setColorTable( m_ColorHandler.getColorTable() );
 	
 	m_Painter->resetMatrix();
-	const float currentZoom = m_WidgetProperties.getPropertyAs<float>("currentZoom");
-	m_Viewport = QOrienationHandler::getViewPort( image, width(), height(), 
-						      currentZoom, 
-						      m_PlaneOrientation, 
-						      m_WidgetProperties.getPropertyAs<bool>( "mousePressedRight" )
+	QOrienationHandler::updateViewPort( m_Viewport, m_WidgetProperties, image, width(), height(), 
+							m_WidgetProperties.getPropertyAs<float>("currentZoom"), 
+							m_PlaneOrientation, 
+							m_WidgetProperties.getPropertyAs<bool>( "mousePressedRight" )
     						);
-	m_Viewport[0] *= currentZoom;
-	m_Viewport[1] *= currentZoom;
-	m_Viewport[4] *= currentZoom;
-	m_Viewport[5] *= currentZoom;
+	m_Viewport[2] += m_WidgetProperties.getPropertyAs<float>("translationX");
+	m_Viewport[3] += m_WidgetProperties.getPropertyAs<float>("translationY");
+	
+	
 	m_Painter->setTransform( QOrienationHandler::getTransform( m_Viewport, m_WidgetProperties, image, width(), height(), m_PlaneOrientation ) );
 	
 	m_Painter->setOpacity( image->getPropMap().getPropertyAs<float>( "opacity" ) );

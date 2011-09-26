@@ -56,7 +56,7 @@ public:
 	boost::numeric::ublas::matrix<float> getImageOrientation( bool transposed = false ) const;
 	std::pair<util::ValueReference, util::ValueReference> getMinMax() const { return m_MinMax; }
 	std::pair<util::ValueReference, util::ValueReference> getInternMinMax() const { return m_InternMinMax; }
-	/**scaling, offset**/
+	/**offset, scaling**/
 	std::pair<double, double> getOptimalScalingPair() const { return m_OptimalScalingPair;  }
 	boost::weak_ptr<void>
 	getImageWeakPointer( size_t timestep = 0 ) const {
@@ -68,7 +68,7 @@ public:
 	bool operator<( const ImageHolder &ref ) const { return m_ID < ref.getID(); }
 
 	const ImageProperties &getImageProperties() const { return m_ImageProperties; }
-	/**scaling, offset**/
+	/**offset, scaling**/
 	template<typename TYPE>
 	std::pair<double, double> getOptimalScalingToForType( const std::pair<double, double> &cutAway ) const {
 		size_t volume = getImageSize()[0] * getImageSize()[1] * getImageSize()[2];
