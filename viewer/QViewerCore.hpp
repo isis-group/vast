@@ -26,6 +26,7 @@ public:
 	virtual void setImageList( const std::list< data::Image > imageList, const ImageHolder::ImageType &imageType, bool passToWidgets );
 
 	const WidgetMap &getWidgets() const { return m_WidgetMap; }
+	WidgetMap &getWidgets() { return m_WidgetMap; }
 	const QSettings *getSettings() const { return m_Settings; }
 	QSettings *getSettings() { return m_Settings; }
 

@@ -195,9 +195,9 @@ void MainWindow::updateInterfaceValues()
 	} else {
 		double range = m_ViewerCore->getCurrentImage()->getMinMax().second->as<double>() - m_ViewerCore->getCurrentImage()->getMinMax().first->as<double>();
 		ui.lowerThreshold->setSliderPosition( 1000.0 / range *
-											  ( m_ViewerCore->getCurrentImage()->getImageProperties().threshold.first - m_ViewerCore->getCurrentImage()->getMinMax().first->as<double>() ) );
+											  ( m_ViewerCore->getCurrentImage()->getPropMap().getPropertyAs<float>("lowerThreshold") - m_ViewerCore->getCurrentImage()->getMinMax().first->as<double>() ) );
 		ui.upperThreshold->setSliderPosition( 1000.0 / range *
-											  ( m_ViewerCore->getCurrentImage()->getImageProperties().threshold.second - m_ViewerCore->getCurrentImage()->getMinMax().first->as<double>() ) );
+											  ( m_ViewerCore->getCurrentImage()->getPropMap().getPropertyAs<float>("lowerThreshold") - m_ViewerCore->getCurrentImage()->getMinMax().first->as<double>() ) );
 	}
 
 	m_ViewerCore->updateScene();
@@ -439,22 +439,21 @@ void MainWindow::lowerThresholdChanged( int lowerThreshold )
 {
 
 	if( m_ViewerCore->getCurrentImage()->getImageProperties().imageType == ImageHolder::z_map ) {
-		m_ViewerCore->getCurrentImage()->setLowerThreshold( ( m_ViewerCore->getCurrentImage()->getMinMax().first->as<double>() / 1000 ) * ( lowerThreshold  ) );
+		m_ViewerCore->getCurrentImage()->getPropMap().setPropertyAs<float>( "lowerThreshold", ( m_ViewerCore->getCurrentImage()->getMinMax().first->as<double>() / 1000 ) * ( lowerThreshold  )  );
 	} else {
 		double range = m_ViewerCore->getCurrentImage()->getMinMax().second->as<double>() - m_ViewerCore->getCurrentImage()->getMinMax().first->as<double>();
-		m_ViewerCore->getCurrentImage()->setLowerThreshold( ( range / 1000 ) * ( lowerThreshold  ) + m_ViewerCore->getCurrentImage()->getMinMax().first->as<double>() );
+		m_ViewerCore->getCurrentImage()->getPropMap().setPropertyAs<float>( "lowerThreshold", ( range / 1000 ) * ( lowerThreshold  ) + m_ViewerCore->getCurrentImage()->getMinMax().first->as<double>() );
 	}
-
 	m_ViewerCore->updateScene();
 }
 
 void MainWindow::upperThresholdChanged( int upperThreshold )
 {
 	if( m_ViewerCore->getCurrentImage()->getImageProperties().imageType == ImageHolder::z_map ) {
-		m_ViewerCore->getCurrentImage()->setUpperThreshold( (  m_ViewerCore->getCurrentImage()->getMinMax().second->as<double>() / 1000 ) * ( upperThreshold  ) );
+		m_ViewerCore->getCurrentImage()->getPropMap().setPropertyAs<float>( "upperThreshold", (  m_ViewerCore->getCurrentImage()->getMinMax().second->as<double>() / 1000 ) * ( upperThreshold  ) );
 	} else {
 		double range = m_ViewerCore->getCurrentImage()->getMinMax().second->as<double>() - m_ViewerCore->getCurrentImage()->getMinMax().first->as<double>();
-		m_ViewerCore->getCurrentImage()->setUpperThreshold( ( range / 1000 ) * ( upperThreshold + 1 )  + m_ViewerCore->getCurrentImage()->getMinMax().first->as<double>() );
+		m_ViewerCore->getCurrentImage()->getPropMap().setPropertyAs<float>( "upperThreshold", ( range / 1000 ) * ( upperThreshold + 1 )  + m_ViewerCore->getCurrentImage()->getMinMax().first->as<double>() ) ;
 	}
 
 	m_ViewerCore->updateScene();
@@ -463,8 +462,10 @@ void MainWindow::upperThresholdChanged( int upperThreshold )
 
 void MainWindow::interpolationChanged( int index )
 {
-	util::Singletons::get<GL::GLTextureHandler, 10>().forceReloadingAllOfType( ImageHolder::anatomical_image, static_cast<GL::GLTextureHandler::InterpolationType>( index ) );
-	util::Singletons::get<GL::GLTextureHandler, 10>().forceReloadingAllOfType( ImageHolder::z_map, static_cast<GL::GLTextureHandler::InterpolationType>( index ) );
+	BOOST_FOREACH( QViewerCore::WidgetMap::reference widget, m_ViewerCore->getWidgets() ) 
+	{
+		widget.second->setInterpolationType( static_cast<InterpolationType>( index ) );
+	}
 	m_ViewerCore->updateScene();
 }
 

@@ -72,6 +72,14 @@ void QImageWidgetImplementation::setZoom( float zoom )
 void QImageWidgetImplementation::paintEvent( QPaintEvent *event )
 {
 	m_Painter->begin( this );
+	switch (m_InterpolationType) {
+		case nn:
+			m_Painter->setRenderHint(QPainter::Antialiasing, true );
+			break;
+		case lin:
+			m_Painter->setRenderHint(QPainter::SmoothPixmapTransform, true );
+			break;
+	}
 	BOOST_FOREACH( DataContainer::const_reference image, m_ViewerCore->getDataContainer() ) {
 		if( image.second->getPropMap().getPropertyAs<bool>( "isVisible" ) ) {
 			paintImage( image.second );
@@ -91,6 +99,7 @@ void QImageWidgetImplementation::paintImage( boost::shared_ptr< ImageHolder > im
 	} else {
 		m_LutType = Color::standard_grey_values;
 	}
+	
 	util::ivector4 mappedSizeAligned = QOrienationHandler::mapCoordsToOrientation( image->getPropMap().getPropertyAs<util::ivector4>( "alignedSize32Bit" ), image, m_PlaneOrientation );
 	isis::data::MemChunk<InternalImageType> sliceChunk( mappedSizeAligned[0], mappedSizeAligned[1] );
 
@@ -234,18 +243,6 @@ void QImageWidgetImplementation::wheelEvent( QWheelEvent *e )
 void QImageWidgetImplementation::updateScene(bool )
 {
 	update();
-}
-void QImageWidgetImplementation::setInterpolationType(InterpolationType interType)
-{
-	switch (interType) {
-		case nn:
-			m_Painter->setRenderHint(QPainter::Antialiasing, true );
-			break;
-		case lin:
-			m_Painter->setRenderHint(QPainter::SmoothPixmapTransform, true );
-			break;
-	}
-	std::cout << "fsdf" << std::endl;
 }
 
 

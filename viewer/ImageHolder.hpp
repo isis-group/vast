@@ -34,7 +34,6 @@ public:
 	//here we store only properties which can not be stored as isis::PropertyValue
 	struct ImageProperties {
 		ImageType imageType;
-		std::pair<double, double> threshold;
 		std::pair<double, double> zmapThreshold;
 		Color::LookUpTableType lookUpTableType;
 
@@ -115,8 +114,6 @@ public:
 		return retPair;
 	}
 
-	void setLowerThreshold( double lowerThreshold ) { m_ImageProperties.threshold.first = lowerThreshold ; m_ImageProperties.zmapThreshold.first = lowerThreshold; }
-	void setUpperThreshold( double upperThreshold ) { m_ImageProperties.threshold.second = upperThreshold ; m_ImageProperties.zmapThreshold.second = upperThreshold; }
 	void setImageType( ImageType imageType ) { m_ImageProperties.imageType = imageType; }
 
 private:

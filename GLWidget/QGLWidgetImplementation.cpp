@@ -313,8 +313,8 @@ void QGLWidgetImplementation::paintImage( const std::pair< boost::shared_ptr<Ima
 		m_ScalingShader.setEnabled( true );
 		m_ScalingShader.addVariable<float>( "max", state.first->getMinMax().second->as<float>() );
 		m_ScalingShader.addVariable<float>( "min", state.first->getMinMax().first->as<float>() );
-		m_ScalingShader.addVariable<float>( "upper_threshold",  state.first->getImageProperties().threshold.second );
-		m_ScalingShader.addVariable<float>( "lower_threshold", state.first->getImageProperties().threshold.first );
+		m_ScalingShader.addVariable<float>( "upper_threshold",  state.first->getPropMap().getPropertyAs<float>("lowerThreshold") );
+		m_ScalingShader.addVariable<float>( "lower_threshold", state.first->getPropMap().getPropertyAs<float>("lowerThreshold" ) );
 		m_ScalingShader.addVariable<float>( "scaling", scaling );
 		m_ScalingShader.addVariable<float>( "bias", bias );
 		m_ScalingShader.addVariable<float>( "opacity", state.first->getPropMap().getPropertyAs<float>( "opacity" ) );
@@ -547,6 +547,8 @@ void  QGLWidgetImplementation::setShowLabels( bool show )
 void QGLWidgetImplementation::setInterpolationType( isis::viewer::InterpolationType interpolation )
 {
 	m_InterplationType = interpolation;
+	util::Singletons::get<GL::GLTextureHandler, 10>().forceReloadingAllOfType( ImageHolder::anatomical_image, static_cast<GL::GLTextureHandler::InterpolationType>( interpolation ) );
+	util::Singletons::get<GL::GLTextureHandler, 10>().forceReloadingAllOfType( ImageHolder::z_map, static_cast<GL::GLTextureHandler::InterpolationType>( interpolation ) );
 	updateScene();
 }
 
