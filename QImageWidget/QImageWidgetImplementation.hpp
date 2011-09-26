@@ -22,7 +22,7 @@ namespace qt
 class QImageWidgetImplementation : public QWidget,  public WidgetImplementationBase
 {
 	Q_OBJECT
-
+	typedef std::vector<boost::shared_ptr<ImageHolder> > ImageVectorType;
 public:
 	QImageWidgetImplementation( QViewerCore *core, QWidget *parent = 0, QWidget *share = 0, PlaneOrientation orienation = axial );
 	QImageWidgetImplementation( QViewerCore *core, QWidget *parent = 0, PlaneOrientation orientation = axial );
@@ -34,7 +34,7 @@ public Q_SLOTS:
 
 	virtual void setZoom( float zoom );
 	virtual void addImage( const boost::shared_ptr<ImageHolder> image );
-
+	virtual bool removeImage( const boost::shared_ptr<ImageHolder> image);
 	virtual void paintImage( boost::shared_ptr< ImageHolder > image );
 	virtual void paintCrosshair();
 
@@ -59,7 +59,6 @@ Q_SIGNALS:
 
 
 private:
-
 	/**scaling, offset, size**/
 	util::FixedVector<float, 6> m_Viewport;
 	void emitMousePressEvent( QMouseEvent *e );
@@ -71,6 +70,9 @@ private:
 	util::PropertyMap m_WidgetProperties;
 	QPainter *m_Painter;
 	InternalImageType m_InterpolationType;
+	
+	ImageVectorType m_ImageVector;
+	
 };
 
 

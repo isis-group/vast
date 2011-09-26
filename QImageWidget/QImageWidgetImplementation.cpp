@@ -60,8 +60,14 @@ WidgetImplementationBase *QImageWidgetImplementation::createSharedWidget( QWidge
 
 void QImageWidgetImplementation::addImage( const boost::shared_ptr< ImageHolder > image )
 {
-
+	m_ImageVector.push_back( image );
 }
+
+bool QImageWidgetImplementation::removeImage(const boost::shared_ptr< ImageHolder > image)
+{
+	m_ImageVector.erase( std::find(m_ImageVector.begin(), m_ImageVector.end(), image ) );
+}
+
 
 void QImageWidgetImplementation::setZoom( float zoom )
 {
@@ -80,9 +86,9 @@ void QImageWidgetImplementation::paintEvent( QPaintEvent *event )
 			m_Painter->setRenderHint(QPainter::SmoothPixmapTransform, true );
 			break;
 	}
-	BOOST_FOREACH( DataContainer::const_reference image, m_ViewerCore->getDataContainer() ) {
-		if( image.second->getPropMap().getPropertyAs<bool>( "isVisible" ) ) {
-			paintImage( image.second );
+	BOOST_FOREACH( ImageVectorType::const_reference image, m_ImageVector ) {
+		if( image->getPropMap().getPropertyAs<bool>( "isVisible" ) ) {
+			paintImage( image);
 		}
 	}
 	paintCrosshair();
