@@ -45,8 +45,8 @@ public:
 				if( ( *image )->getPropMap().getPropertyAs<bool>( "isVisible" ) ) {
 					uint16_t repTime = 1;
 
-					if( ( *image )->getImage()->hasProperty( "repetitionTime" ) ) {
-						repTime = ( float )( *image )->getImage()->getPropertyAs<uint16_t>( "repetitionTime" ) / 1000;
+					if( ( *image )->getISISImage()->hasProperty( "repetitionTime" ) ) {
+						repTime = ( float )( *image )->getISISImage()->getPropertyAs<uint16_t>( "repetitionTime" ) / 1000;
 						plot->setAxisTitle( 2, tr( "t / s" ) );
 					} else {
 						plot->setAxisTitle( 2, tr( "Repetition (missing tr)" ) );
@@ -58,7 +58,7 @@ public:
 
 					for( size_t t = 0; t < ( *image )->getImageSize()[3]; t++ ) {
 						timeSteps.push_back( t * repTime );
-						intens = ( *image )->getImage()->voxel<TYPE>( coords[0], coords[1], coords[2], t );
+						intens = ( *image )->getISISImage()->voxel<TYPE>( coords[0], coords[1], coords[2], t );
 						intensityValues.push_back( intens );
 					}
 

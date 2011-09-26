@@ -99,7 +99,7 @@ util::FixedVector<float, 6> QOrienationHandler::getViewPort( const boost::shared
 {
 	util::FixedVector<float, 6> retVec;
 	util::ivector4 mappedSize = QOrienationHandler::mapCoordsToOrientation( image->getImageSize(), image, orientation );
-	util::fvector4 mappedScaling = QOrienationHandler::mapCoordsToOrientation( image->getImage()->getPropertyAs<util::fvector4>( "voxelSize" ), image, orientation );
+	util::fvector4 mappedScaling = QOrienationHandler::mapCoordsToOrientation( image->getISISImage()->getPropertyAs<util::fvector4>( "voxelSize" ), image, orientation );
 	util::fvector4 mappedPhysicalSize = mappedScaling * mappedSize;
 	float scalew = w / float( mappedSize[0] );
 	float scaleh = h / float( mappedSize[1] );

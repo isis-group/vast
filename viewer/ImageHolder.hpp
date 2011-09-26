@@ -51,11 +51,12 @@ public:
 	util::PropertyMap &getPropMap() { return m_PropMap; }
 	const util::PropertyMap &getPropMap() const { return m_PropMap; }
 	const util::FixedVector<size_t, 4> &getImageSize() const { return m_ImageSize; }
-	boost::shared_ptr< data::Image >getImage() const { return m_Image; }
+	boost::shared_ptr< data::Image >getISISImage() const { return m_Image; }
 	boost::numeric::ublas::matrix<float> getNormalizedImageOrientation( bool transposed = false ) const;
 	boost::numeric::ublas::matrix<float> getImageOrientation( bool transposed = false ) const;
 	std::pair<util::ValueReference, util::ValueReference> getMinMax() const { return m_MinMax; }
 	std::pair<util::ValueReference, util::ValueReference> getInternMinMax() const { return m_InternMinMax; }
+	/**scaling, offset**/
 	std::pair<double, double> getOptimalScalingPair() const { return m_OptimalScalingPair;  }
 	boost::weak_ptr<void>
 	getImageWeakPointer( size_t timestep = 0 ) const {
@@ -67,7 +68,7 @@ public:
 	bool operator<( const ImageHolder &ref ) const { return m_ID < ref.getID(); }
 
 	const ImageProperties &getImageProperties() const { return m_ImageProperties; }
-
+	/**scaling, offset**/
 	template<typename TYPE>
 	std::pair<double, double> getOptimalScalingToForType( const std::pair<double, double> &cutAway ) const {
 		size_t volume = getImageSize()[0] * getImageSize()[1] * getImageSize()[2];

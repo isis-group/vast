@@ -86,7 +86,7 @@ protected:
 	WidgetImplementationBase *createView( QDockWidget *widget, PlaneOrientation orientation, unsigned short index );
 
 	template<typename TYPE> void displayIntensity( util::ivector4 coords ) {
-		util::Value<TYPE> vIntensity ( m_ViewerCore->getCurrentImage()->getImage()->voxel<TYPE>( coords[0], coords[1], coords[2], coords[3] ) );
+		util::Value<TYPE> vIntensity ( m_ViewerCore->getCurrentImage()->getISISImage()->voxel<TYPE>( coords[0], coords[1], coords[2], coords[3] ) );
 		double intensity = roundNumber<double>( vIntensity, 2 );
 		ui.intensity_value->display( intensity );
 		ui.intensity_value_2->display( intensity );

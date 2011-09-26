@@ -19,7 +19,7 @@ public:
 	enum LookUpTableType { standard_grey_values, zmap_standard };
 	
 	Color();
-	const QVector<QRgb> &getColorTable() const { return m_ColorTable; }
+	QVector<QRgb> getColorTable() const { return m_ColorTable; }
 	void setLutType( LookUpTableType type ) { m_LutType = type; }
 	void setNumberOfElements( size_t nE ) { m_NumberOfElements = nE; }
 	void update();

@@ -11,11 +11,12 @@ Color::Color()
 	: m_NumberOfElements( 256 ),
 	m_LutType( standard_grey_values )
 {
-	
+
 }
 	
 void Color::update()
 {
+	m_ColorTable.resize( m_NumberOfElements );
 	switch( m_LutType ) {
 		case Color::standard_grey_values: {
 			for ( size_t i = 0; i < m_NumberOfElements; i++ ) {

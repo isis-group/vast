@@ -111,7 +111,7 @@ void QGLWidgetImplementation::resizeGL( int w, int h )
 	if( m_ImageStates.size() ) {
 		if( m_Flags.init ) {
 			util::ivector4 size = m_ImageStates.begin()->first->getImageSize();
-			lookAtPhysicalCoords( m_ImageStates.begin()->first->getImage()->getPhysicalCoordsFromIndex( util::ivector4( size[0] / 2, size[1] / 2, size[2] / 2 ) ) );
+			lookAtPhysicalCoords( m_ImageStates.begin()->first->getISISImage()->getPhysicalCoordsFromIndex( util::ivector4( size[0] / 2, size[1] / 2, size[2] / 2 ) ) );
 			m_Flags.init = false;
 		} else {
 			updateScene();
@@ -126,7 +126,7 @@ void QGLWidgetImplementation::updateStateValues( boost::shared_ptr<ImageHolder> 
 	State &state = m_ImageStates.at( image );
 	unsigned int timestep = state.voxelCoords[3];
 	state.voxelCoords = voxelCoords;
-	state.physicalCoords = image->getImage()->getPhysicalCoordsFromIndex( voxelCoords );
+	state.physicalCoords = image->getISISImage()->getPhysicalCoordsFromIndex( voxelCoords );
 	state.voxelCoords[3] = timestep;
 
 	//if not happend already copy the image to GLtexture memory and return the texture id
@@ -140,7 +140,7 @@ void QGLWidgetImplementation::updateStateValues( boost::shared_ptr<ImageHolder> 
 		state.planeOrientation =
 			GLOrientationHandler::transformToPlaneView( image->getNormalizedImageOrientation(), m_PlaneOrientation );
 		GLOrientationHandler::boostMatrix2Pointer( GLOrientationHandler::addOffset( state.planeOrientation ), state.textureMatrix );
-		state.mappedVoxelSize = GLOrientationHandler::transformVector<float>( image->getImage()->getPropertyAs<util::fvector4>( "voxelSize" ) + image->getImage()->getPropertyAs<util::fvector4>( "voxelGap" ) , state.planeOrientation );
+		state.mappedVoxelSize = GLOrientationHandler::transformVector<float>( image->getISISImage()->getPropertyAs<util::fvector4>( "voxelSize" ) + image->getISISImage()->getPropertyAs<util::fvector4>( "voxelGap" ) , state.planeOrientation );
 		state.mappedImageSize = GLOrientationHandler::transformVector<int>( image->getImageSize(), state.planeOrientation );
 		state.set = true;
 		state.lutID =  m_LookUpTable.getLookUpTableAsTexture( image->getImageProperties().lookUpTableType );
@@ -165,7 +165,7 @@ void QGLWidgetImplementation::updateStateValues( boost::shared_ptr<ImageHolder> 
 	state.crosshairCoords = object2WindowCoords( objectCoords[0], objectCoords[1], image );
 	state.normalizedSlice = objectCoords[2];
 	image->getPropMap().setPropertyAs<util::ivector4>( "voxelCoords", voxelCoords );
-	image->getPropMap().setPropertyAs<util::fvector4>( "physicalCoords", image->getImage()->getPhysicalCoordsFromIndex( voxelCoords ) );
+	image->getPropMap().setPropertyAs<util::fvector4>( "physicalCoords", image->getISISImage()->getPhysicalCoordsFromIndex( voxelCoords ) );
 
 }
 
@@ -208,7 +208,7 @@ bool QGLWidgetImplementation::calculateTranslation(  )
 bool QGLWidgetImplementation::lookAtPhysicalCoords( const isis::util::fvector4 &physicalCoords )
 {
 	BOOST_FOREACH( StateMap::const_reference state, m_ImageStates ) {
-		updateStateValues(  state.first, state.first->getImage()->getIndexFromPhysicalCoords( physicalCoords ) );
+		updateStateValues(  state.first, state.first->getISISImage()->getIndexFromPhysicalCoords( physicalCoords ) );
 	}
 
 	if( m_ImageStates.size() ) {
@@ -454,7 +454,7 @@ void QGLWidgetImplementation::emitMousePressEvent( QMouseEvent *e )
 
 	std::pair<float, float> objectCoords = window2ObjectCoords( e->x(), height() - e->y(), getOptimalImage() );
 	util::ivector4 voxelCoords = GLOrientationHandler::transformObject2VoxelCoords( util::fvector4( objectCoords.first, objectCoords.second, m_ImageStates.at( getOptimalImage() ).normalizedSlice ), getOptimalImage(), m_PlaneOrientation );
-	physicalCoordsChanged( getOptimalImage()->getImage()->getPhysicalCoordsFromIndex( voxelCoords ) );
+	physicalCoordsChanged( getOptimalImage()->getISISImage()->getPhysicalCoordsFromIndex( voxelCoords ) );
 }
 
 bool QGLWidgetImplementation::timestepChanged( unsigned int timestep )
@@ -520,7 +520,7 @@ void QGLWidgetImplementation::keyPressEvent( QKeyEvent *e )
 		}
 		m_Zoom.currentZoom = 1.0;
 		util::ivector4 size = m_ImageStates.begin()->first->getImageSize();
-		lookAtPhysicalCoords( m_ImageStates.begin()->first->getImage()->getPhysicalCoordsFromIndex( util::ivector4( size[0] / 2, size[1] / 2, size[2] / 2 ) ) );
+		lookAtPhysicalCoords( m_ImageStates.begin()->first->getISISImage()->getPhysicalCoordsFromIndex( util::ivector4( size[0] / 2, size[1] / 2, size[2] / 2 ) ) );
 	}
 
 	if( e->key() == Qt::Key_Control ) {
@@ -568,7 +568,7 @@ void QGLWidgetImplementation::updateScene( bool center )
 			voxelCoords = util::ivector4( size[0] / 2, size[1] / 2, size[2] / 2 );
 		}
 
-		lookAtPhysicalCoords( m_ImageStates.begin()->first->getImage()->getPhysicalCoordsFromIndex( voxelCoords ) );
+		lookAtPhysicalCoords( m_ImageStates.begin()->first->getISISImage()->getPhysicalCoordsFromIndex( voxelCoords ) );
 	}
 }
 

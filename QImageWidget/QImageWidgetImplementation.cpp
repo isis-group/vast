@@ -108,7 +108,7 @@ void QImageWidgetImplementation::paintImage( boost::shared_ptr< ImageHolder > im
 		m_ColorHandler.setLutType( Color::standard_grey_values );
 	}
 	m_ColorHandler.update();
-	
+	std::cout << image->getOptimalScalingPair() << std::endl;
 	util::ivector4 mappedSizeAligned = QOrienationHandler::mapCoordsToOrientation( image->getPropMap().getPropertyAs<util::ivector4>( "alignedSize32Bit" ), image, m_PlaneOrientation );
 	isis::data::MemChunk<InternalImageType> sliceChunk( mappedSizeAligned[0], mappedSizeAligned[1] );
 
@@ -171,7 +171,7 @@ void QImageWidgetImplementation::emitMousePressEvent( QMouseEvent *e )
 	if( isInViewPort( e ) ) {
 		size_t slice = QOrienationHandler::mapCoordsToOrientation( image->getPropMap().getPropertyAs<util::ivector4>( "voxelCoords" ), m_ViewerCore->getCurrentImage(), m_PlaneOrientation )[2];
 		util::ivector4 coords = QOrienationHandler::convertWindow2VoxelCoords( m_Viewport, m_WidgetProperties, image, e->x(), e->y(), slice, m_PlaneOrientation );
-		physicalCoordsChanged( image->getImage()->getPhysicalCoordsFromIndex( coords ) );
+		physicalCoordsChanged( image->getISISImage()->getPhysicalCoordsFromIndex( coords ) );
 	}
 }
 
@@ -209,7 +209,7 @@ bool QImageWidgetImplementation::lookAtPhysicalCoords( const isis::util::fvector
 	BOOST_FOREACH( DataContainer::reference image, m_ViewerCore->getDataContainer() ) 
 	{
 		image.second->getPropMap().setPropertyAs<util::fvector4>( "physicalCoords", physicalCoords );
-		image.second->getPropMap().setPropertyAs<util::ivector4>( "voxelCoords", image.second->getImage()->getIndexFromPhysicalCoords( physicalCoords ) );
+		image.second->getPropMap().setPropertyAs<util::ivector4>( "voxelCoords", image.second->getISISImage()->getIndexFromPhysicalCoords( physicalCoords ) );
 	}
 	update();
 }
@@ -219,7 +219,7 @@ bool QImageWidgetImplementation::lookAtVoxelCoords(const isis::util::ivector4& v
 	BOOST_FOREACH( DataContainer::reference image, m_ViewerCore->getDataContainer() ) 
 	{
 		image.second->getPropMap().setPropertyAs<util::fvector4>( "voxelCoords", voxelCoords );
-		image.second->getPropMap().setPropertyAs<util::ivector4>( "physicalCoords", image.second->getImage()->getIndexFromPhysicalCoords( voxelCoords ) );
+		image.second->getPropMap().setPropertyAs<util::ivector4>( "physicalCoords", image.second->getISISImage()->getIndexFromPhysicalCoords( voxelCoords ) );
 	}
 	update();
 }

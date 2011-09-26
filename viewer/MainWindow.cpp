@@ -130,12 +130,12 @@ void MainWindow::setVoxelPosition()
 {
 	if( m_State == splitted ) {
 
-		m_ViewerCore->physicalCoordsChanged( m_ViewerCore->getCurrentImage()->getImage()->getPhysicalCoordsFromIndex(
+		m_ViewerCore->physicalCoordsChanged( m_ViewerCore->getCurrentImage()->getISISImage()->getPhysicalCoordsFromIndex(
 				util::ivector4( ui.row_value->text().toInt(),
 								ui.column_value->text().toInt(),
 								ui.slice_value->text().toInt() ) ) ) ;
 	} else if ( m_State == single ) {
-		m_ViewerCore->physicalCoordsChanged( m_ViewerCore->getCurrentImage()->getImage()->getPhysicalCoordsFromIndex(
+		m_ViewerCore->physicalCoordsChanged( m_ViewerCore->getCurrentImage()->getISISImage()->getPhysicalCoordsFromIndex(
 				util::ivector4( ui.row_value_2->text().toInt(),
 								ui.column_value_2->text().toInt(),
 								ui.slice_value_2->text().toInt() ) ) ) ;
@@ -218,13 +218,13 @@ void MainWindow::triggeredMakeCurrentImageZmap( bool triggered )
 
 void MainWindow::voxelCoordsChanged( util::ivector4 coords )
 {
-	physicalCoordsChanged( m_ViewerCore->getCurrentImage()->getImage()->getPhysicalCoordsFromIndex( coords ) );
+	physicalCoordsChanged( m_ViewerCore->getCurrentImage()->getISISImage()->getPhysicalCoordsFromIndex( coords ) );
 }
 
 
 void MainWindow::physicalCoordsChanged( util::fvector4 coords )
 {
-	util::ivector4 voxelCoords = m_ViewerCore->getCurrentImage()->getImage()->getIndexFromPhysicalCoords( coords );
+	util::ivector4 voxelCoords = m_ViewerCore->getCurrentImage()->getISISImage()->getIndexFromPhysicalCoords( coords );
 	util::fvector4 transformedCoords = m_ViewerCore->getTransformedCoords( coords );
 
 	ui.row_value->setText( QString::number( voxelCoords[0] ) );
@@ -240,7 +240,7 @@ void MainWindow::physicalCoordsChanged( util::fvector4 coords )
 			return;
 	}
 
-	data::Chunk ch = m_ViewerCore->getCurrentImage()->getImage()->getChunk( voxelCoords[0], voxelCoords[1], voxelCoords[2], voxelCoords[3] );
+	data::Chunk ch = m_ViewerCore->getCurrentImage()->getISISImage()->getChunk( voxelCoords[0], voxelCoords[1], voxelCoords[2], voxelCoords[3] );
 
 	switch( ch.getTypeID() ) {
 	case data::ValuePtr<int8_t>::staticID:
@@ -297,7 +297,7 @@ void MainWindow::imagesChanged( DataContainer images )
 	ui.minValueLabel->setText( QString::number( min ) );
 	ui.maxValueLabel->setText( QString::number( max ) );
 
-	if( m_ViewerCore->getCurrentImage()->getImage()->getSizeAsVector()[3] > 1 ) {
+	if( m_ViewerCore->getCurrentImage()->getISISImage()->getSizeAsVector()[3] > 1 ) {
 		ui.timestepSpinBox->setEnabled( true );
 		ui.timestepSpinBox->setMaximum( m_ViewerCore->getCurrentImage()->getImageSize()[3] - 1 );
 		ui.timestepSpinBox_2->setEnabled( true );
@@ -530,8 +530,8 @@ void MainWindow::assembleViewInRows( )
 		if( m_ViewerCore->getSettings()->value( "UserProfile/showDesc", false ).toBool() ) {
 			title << " (";
 
-			if( image->getImage()->hasProperty( "sequenceDescription" ) ) {
-				title <<  image->getImage()->getPropertyAs<std::string>( "sequenceDescription" ) << ")";
+			if( image->getISISImage()->hasProperty( "sequenceDescription" ) ) {
+				title <<  image->getISISImage()->getPropertyAs<std::string>( "sequenceDescription" ) << ")";
 			} else {
 				title << "no desc.)";
 			}
