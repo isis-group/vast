@@ -5,7 +5,7 @@
 #include <QWidget>
 #include <QPainter>
 #include <QtGui>
-#include "WidgetImplementationBase.hpp"
+#include "QWidgetImplementationBase.hpp"
 #include "QViewerCore.hpp"
 #include "QMemoryHandler.hpp"
 #include "Color.hpp"
@@ -19,7 +19,7 @@ namespace viewer
 namespace qt
 {
 
-class QImageWidgetImplementation : public QWidget, public WidgetImplementationBase
+class QImageWidgetImplementation : public QWidget, public QWidgetImplementationBase
 {
 	Q_OBJECT
 	typedef std::vector<boost::shared_ptr<ImageHolder> > ImageVectorType;
@@ -27,7 +27,7 @@ public:
 	QImageWidgetImplementation( QViewerCore *core, QWidget *parent = 0, QWidget *share = 0, PlaneOrientation orienation = axial );
 	QImageWidgetImplementation( QViewerCore *core, QWidget *parent = 0, PlaneOrientation orientation = axial );
 
-	virtual WidgetImplementationBase *createSharedWidget( QWidget *parent, PlaneOrientation orienation = axial );
+	virtual QWidgetImplementationBase *createSharedWidget( QWidget *parent, PlaneOrientation orienation = axial );
 
 public Q_SLOTS:
 
@@ -43,7 +43,7 @@ public Q_SLOTS:
 	virtual void updateScene( bool );
 	virtual void setInterpolationType( InterpolationType interType ) { m_InterpolationType = interType; }
 	
-	virtual const std::string &getWidgetName() const;
+	virtual std::string getWidgetName() const;
 	virtual void setWidgetName( const std::string &wName);
 
 protected:

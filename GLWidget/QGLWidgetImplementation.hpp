@@ -11,7 +11,7 @@
 #include "GLOrientationHandler.hpp"
 #include "GLShaderHandler.hpp"
 #include "GLLookupTable.hpp"
-#include "WidgetImplementationBase.hpp"
+#include "QWidgetImplementationBase.hpp"
 
 namespace isis
 {
@@ -20,7 +20,7 @@ namespace viewer
 namespace GL
 {
 
-class QGLWidgetImplementation : public QGLWidget, public WidgetImplementationBase
+class QGLWidgetImplementation : public QGLWidget, public QWidgetImplementationBase
 {
 	Q_OBJECT
 public:
@@ -28,7 +28,7 @@ public:
 	QGLWidgetImplementation( QViewerCore *core, QWidget *parent = 0, QGLWidget *share = 0, PlaneOrientation orienation = axial );
 	QGLWidgetImplementation( QViewerCore *core, QWidget *parent = 0, PlaneOrientation orientation = axial );
 
-	WidgetImplementationBase *createSharedWidget( QWidget *parent, PlaneOrientation orienation = axial );
+	QWidgetImplementationBase *createSharedWidget( QWidget *parent, PlaneOrientation orienation = axial );
 
 private:
 	QGLWidgetImplementation( QViewerCore *core, QWidget *parent, QGLWidget *share, QGLContext *context, PlaneOrientation orienation = axial );
@@ -57,7 +57,7 @@ public Q_SLOTS:
 
 	virtual bool isInitialized() { return m_Flags.glInitialized; }
 	
-	virtual const std::string &getWidgetName() const;
+	virtual std::string getWidgetName() const;
 	virtual void setWidgetName( const std::string &wName);
 
 protected:

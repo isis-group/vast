@@ -1,5 +1,5 @@
-#ifndef WIDGETIMPLEMENTATIONBASE_HPP
-#define WIDGETIMPLEMENTATIONBASE_HPP
+#ifndef QWIDGETIMPLEMENTATIONBASE_HPP
+#define QWIDGETIMPLEMENTATIONBASE_HPP
 
 #include "common.hpp"
 #include "ImageHolder.hpp"
@@ -13,18 +13,18 @@ namespace viewer
 
 class QViewerCore;
 
-class WidgetImplementationBase
+class QWidgetImplementationBase
 {
 
 public:
-	virtual WidgetImplementationBase *createSharedWidget( QWidget *parent, PlaneOrientation orienation ) = 0;
+	virtual QWidgetImplementationBase *createSharedWidget( QWidget *parent, PlaneOrientation orienation ) = 0;
 
 	virtual void setZoom( float zoom ) = 0;
 
 	virtual void addImage( const boost::shared_ptr<ImageHolder> image ) = 0;
 	virtual bool removeImage( const boost::shared_ptr< ImageHolder > image ) = 0;
 	virtual void setWidgetName( const std::string &name ) = 0;
-	virtual const std::string &getWidgetName() const = 0;
+	virtual std::string getWidgetName() const = 0;
 
 	virtual QWidget *getParent( ) const { return m_Parent; }
 
@@ -34,12 +34,11 @@ public:
 
 
 protected:
-	WidgetImplementationBase( QViewerCore *core, QWidget *parent, PlaneOrientation orientation );
+	QWidgetImplementationBase( QViewerCore *core, QWidget *parent, PlaneOrientation orientation );
 
 	QViewerCore *m_ViewerCore;
 	PlaneOrientation m_PlaneOrientation;
 	QWidget *m_Parent;
-	std::string m_WidgetName;
 };
 
 

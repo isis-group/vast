@@ -12,12 +12,10 @@ namespace qt
 
 QImageWidgetImplementation::QImageWidgetImplementation( QViewerCore *core, QWidget *parent, PlaneOrientation orientation )
 	: QWidget( parent ),
-	  WidgetImplementationBase( core, parent, orientation ),
+	  QWidgetImplementationBase( core, parent, orientation ),
 	  m_MemoryHandler( core ),
 	  m_Painter( new QPainter() )
 {
-	std::cout << "this: " << this << std::endl;
-	std::cout << "base: " << dynamic_cast<WidgetImplementationBase*>(this) << std::endl;
 	( new QVBoxLayout( parent ) )->addWidget( this );
 	commonInit();
 }
@@ -25,7 +23,7 @@ QImageWidgetImplementation::QImageWidgetImplementation( QViewerCore *core, QWidg
 
 QImageWidgetImplementation::QImageWidgetImplementation( QViewerCore *core, QWidget *parent, QWidget *share, PlaneOrientation orienation )
 	: QWidget( parent ),
-	  WidgetImplementationBase( core, parent, orienation ),
+	  QWidgetImplementationBase( core, parent, orienation ),
 	  m_MemoryHandler( core ),
 	  m_Painter( new QPainter() )
 {
@@ -58,7 +56,7 @@ void QImageWidgetImplementation::commonInit()
 }
 
 
-WidgetImplementationBase *QImageWidgetImplementation::createSharedWidget( QWidget *parent, PlaneOrientation orientation )
+QWidgetImplementationBase *QImageWidgetImplementation::createSharedWidget( QWidget *parent, PlaneOrientation orientation )
 {
 	return new QImageWidgetImplementation( m_ViewerCore, parent, this, orientation );
 }
@@ -262,7 +260,7 @@ void QImageWidgetImplementation::updateScene(bool )
 	update();
 }
 
-const std::string& QImageWidgetImplementation::getWidgetName() const
+std::string QImageWidgetImplementation::getWidgetName() const
 {
 	return windowTitle().toStdString();
 }

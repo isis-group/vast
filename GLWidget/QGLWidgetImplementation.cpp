@@ -16,7 +16,7 @@ namespace GL
 
 QGLWidgetImplementation::QGLWidgetImplementation( QViewerCore *core, QWidget *parent, QGLWidget *share, PlaneOrientation orientation )
 	: QGLWidget( parent, share ),
-	  WidgetImplementationBase( core, parent, orientation ),
+	  QWidgetImplementationBase( core, parent, orientation ),
 	  m_ShareWidget( share )
 
 {
@@ -26,7 +26,7 @@ QGLWidgetImplementation::QGLWidgetImplementation( QViewerCore *core, QWidget *pa
 
 QGLWidgetImplementation::QGLWidgetImplementation( QViewerCore *core, QWidget *parent, PlaneOrientation orientation )
 	: QGLWidget( parent ),
-	  WidgetImplementationBase( core, parent, orientation )
+	  QWidgetImplementationBase( core, parent, orientation )
 {
 	( new QVBoxLayout( parent ) )->addWidget( this );
 	commonInit();
@@ -53,7 +53,7 @@ void QGLWidgetImplementation::commonInit()
 
 }
 
-WidgetImplementationBase *QGLWidgetImplementation::createSharedWidget( QWidget *parent, PlaneOrientation orientation )
+QWidgetImplementationBase *QGLWidgetImplementation::createSharedWidget( QWidget *parent, PlaneOrientation orientation )
 {
 	return new QGLWidgetImplementation( m_ViewerCore, parent, this, orientation );
 }
@@ -581,7 +581,7 @@ boost::shared_ptr< ImageHolder > QGLWidgetImplementation::getOptimalImage() cons
 	}
 }
 
-const std::string& QGLWidgetImplementation::getWidgetName() const
+std::string QGLWidgetImplementation::getWidgetName() const
 {
 	return windowTitle().toStdString();
 }

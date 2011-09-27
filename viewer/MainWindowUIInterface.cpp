@@ -94,7 +94,7 @@ void MainWindowUIInterface::toggleAxialView( bool triggered )
 void MainWindowUIInterface::toggleViews( isis::viewer::PlaneOrientation orientation, bool triggered )
 {
 	BOOST_FOREACH( QViewerCore::WidgetMap::const_reference widget, m_ViewerCore->getWidgets() ) {
-		if( static_cast< WidgetImplementationBase * >( widget.second )->getPlaneOrientation() == orientation ) {
+		if( static_cast< QWidgetImplementationBase * >( widget.second )->getPlaneOrientation() == orientation ) {
 			if( m_State == splitted ) {
 				widget.second->getParent()->parentWidget()->setVisible( triggered );
 			} else if ( m_State == single ) {

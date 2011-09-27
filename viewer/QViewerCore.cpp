@@ -16,11 +16,11 @@ QViewerCore::QViewerCore( const std::string &appName, const std::string &orgName
 
 
 bool
-QViewerCore::registerWidget( std::string key, WidgetImplementationBase *widget, QViewerCore::Actions action )
+QViewerCore::registerWidget( std::string key, QWidgetImplementationBase *widget, QViewerCore::Actions action )
 {
 	if( m_WidgetMap.find( key ) == m_WidgetMap.end() ) {
 		widget->setWidgetName( key );
-		m_WidgetMap.insert( std::make_pair< std::string,  WidgetImplementationBase * >( key, widget ) );
+		m_WidgetMap.insert( std::make_pair< std::string,  QWidgetImplementationBase * >( key, widget ) );
 	} else {
 		LOG( Runtime, error ) << "A widget with the name " << key << " already exists! Wont add this";
 		return false;
