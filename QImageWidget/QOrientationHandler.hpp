@@ -25,7 +25,7 @@ public:
 	static util::fvector4 mapCoordsToOrientation( const util::fvector4 &coords, const boost::shared_ptr<ImageHolder> image, PlaneOrientation orientation, bool back = false, bool absolute = true );
 	static util::ivector4 getMappedCoords( const boost::shared_ptr<ImageHolder> image, const util::ivector4 &coords );
 
-	static void updateViewPort( util::FixedVector<float,6> &viewPort, util::PropertyMap &properties, const boost::shared_ptr< ImageHolder > image, const size_t &w, const size_t &h, const float &zoom, PlaneOrientation orientation, bool move );
+	static void updateViewPort( util::FixedVector<float,6> &viewPort, util::PropertyMap &properties, const boost::shared_ptr< ImageHolder > image, const size_t &w, const size_t &h, PlaneOrientation orientation );
 	static QTransform getTransform( const util::FixedVector<float, 6> &viewPort, util::PropertyMap &properties, const boost::shared_ptr< ImageHolder > image, const size_t &w, const size_t &h, PlaneOrientation orientation );
 
 	static util::ivector4 convertWindow2VoxelCoords( const util::FixedVector<float, 6> &viewPort, const util::PropertyMap &properties, const boost::shared_ptr< ImageHolder > image, const size_t &x, const size_t &y, const size_t &slice, PlaneOrientation orientation );

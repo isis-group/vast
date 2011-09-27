@@ -21,12 +21,10 @@ public:
 
 	virtual void setZoom( float zoom ) = 0;
 
-
-
 	virtual void addImage( const boost::shared_ptr<ImageHolder> image ) = 0;
 	virtual bool removeImage( const boost::shared_ptr< ImageHolder > image ) = 0;
-	virtual void setWidgetName( std::string name ) { m_WidgetName = name; }
-	virtual const std::string &getWidgetName() const { return m_WidgetName; }
+	virtual void setWidgetName( const std::string &name ) = 0;
+	virtual const std::string &getWidgetName() const = 0;
 
 	virtual QWidget *getParent( ) const { return m_Parent; }
 

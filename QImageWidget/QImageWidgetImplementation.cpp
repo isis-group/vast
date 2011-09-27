@@ -16,6 +16,8 @@ QImageWidgetImplementation::QImageWidgetImplementation( QViewerCore *core, QWidg
 	  m_MemoryHandler( core ),
 	  m_Painter( new QPainter() )
 {
+	std::cout << "this: " << this << std::endl;
+	std::cout << "base: " << dynamic_cast<WidgetImplementationBase*>(this) << std::endl;
 	( new QVBoxLayout( parent ) )->addWidget( this );
 	commonInit();
 }
@@ -53,7 +55,6 @@ void QImageWidgetImplementation::commonInit()
 	m_WidgetProperties.setPropertyAs<float>( "zoomFactorOut", 1.5 );
 	m_WidgetProperties.setPropertyAs<float>( "translationX", 0 );
 	m_WidgetProperties.setPropertyAs<float>( "translationY", 0 );
-
 }
 
 
@@ -124,14 +125,11 @@ void QImageWidgetImplementation::paintImage( boost::shared_ptr< ImageHolder > im
 	qImage.setColorTable( m_ColorHandler.getColorTable() );
 	
 	m_Painter->resetMatrix();
-	QOrienationHandler::updateViewPort( m_Viewport, m_WidgetProperties, image, width(), height(), 
-							m_WidgetProperties.getPropertyAs<float>("currentZoom"), 
-							m_PlaneOrientation, 
-							m_WidgetProperties.getPropertyAs<bool>( "mousePressedRight" )
+	QOrienationHandler::updateViewPort( m_Viewport, m_WidgetProperties, image, width(), height(),  
+							m_PlaneOrientation
     						);
 	m_Viewport[2] += m_WidgetProperties.getPropertyAs<float>("translationX");
 	m_Viewport[3] += m_WidgetProperties.getPropertyAs<float>("translationY");
-	
 	
 	m_Painter->setTransform( QOrienationHandler::getTransform( m_Viewport, m_WidgetProperties, image, width(), height(), m_PlaneOrientation ) );
 	
@@ -262,6 +260,17 @@ void QImageWidgetImplementation::wheelEvent( QWheelEvent *e )
 void QImageWidgetImplementation::updateScene(bool )
 {
 	update();
+}
+
+const std::string& QImageWidgetImplementation::getWidgetName() const
+{
+	return windowTitle().toStdString();
+}
+
+void QImageWidgetImplementation::setWidgetName(const std::string& wName)
+{
+	setWindowTitle( QString( wName.c_str() ) );
+	m_WidgetProperties.setPropertyAs<std::string>( "widgetName", wName );
 }
 
 

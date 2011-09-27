@@ -95,15 +95,14 @@ util::ivector4 QOrienationHandler::getMappedCoords( const boost::shared_ptr< Ima
 
 
 
-void QOrienationHandler::updateViewPort( util::FixedVector<float, 6> &viewPort, util::PropertyMap &properties, const boost::shared_ptr< ImageHolder > image, const size_t &w, const size_t &h, const float &zoom, PlaneOrientation orientation,  bool move )
+void QOrienationHandler::updateViewPort( util::FixedVector<float, 6> &viewPort, util::PropertyMap &properties, const boost::shared_ptr< ImageHolder > image, const size_t &w, const size_t &h, PlaneOrientation orientation )
 {
-	
+	float zoom = properties.getPropertyAs<float>("currentZoom");
 	util::ivector4 mappedSize = QOrienationHandler::mapCoordsToOrientation( image->getImageSize(), image, orientation );
 	util::fvector4 mappedScaling = QOrienationHandler::mapCoordsToOrientation( image->getISISImage()->getPropertyAs<util::fvector4>( "voxelSize" ), image, orientation );
 	util::fvector4 mappedPhysicalSize = mappedScaling * mappedSize;
 	float scalew = w / float( mappedSize[0] );
 	float scaleh = h / float( mappedSize[1] );
-
 	float normh = scalew < scaleh ? scalew / scaleh : 1;
 	float normw = scalew > scaleh ? scaleh / scalew : 1;
 	viewPort[0] = scalew * normw;
@@ -114,15 +113,16 @@ void QOrienationHandler::updateViewPort( util::FixedVector<float, 6> &viewPort, 
 	viewPort[3] += mappedPhysicalSize[1] - zoom * mappedPhysicalSize[1];
 	viewPort[4] = round(mappedSize[0] * viewPort[0]);
 	viewPort[5] = round(mappedSize[1] * viewPort[1]);
-	if(move) {
+	if(properties.getPropertyAs<bool>("mousePressedRight") || properties.getPropertyAs<bool>("zoomEvent")) {
 		util::ivector4 mappedVoxelCoords = QOrienationHandler::mapCoordsToOrientation( image->getPropMap().getPropertyAs<util::ivector4>( "voxelCoords" ), image, orientation, false, false );
 		util::ivector4 center = mappedSize / 2;
 		util::ivector4 diff = center - mappedVoxelCoords;
 		float zoomDependentShift = 1.0 - ( 2.0 / zoom );
-		float transX = diff[0] + zoomDependentShift * diff[0] + 0.10 * diff[0];
-		float transY = diff[1] + zoomDependentShift * diff[1] + 0.10 * diff[1];
+		float transX = diff[0] + zoomDependentShift * diff[0] + diff[0] ;
+		float transY = diff[1] + zoomDependentShift * diff[1] + diff[1] ;
 		properties.setPropertyAs<float>("translationX", transX );
-		properties.setPropertyAs<float>("translationY", transY );
+		properties.setPropertyAs<float>( "translationY", transY );
+		properties.setPropertyAs<bool>("zoomEvent", false);
 	}
 	viewPort[0] *= zoom;
 	viewPort[1] *= zoom;
@@ -138,8 +138,8 @@ QTransform QOrienationHandler::getTransform( const util::FixedVector<float, 6> &
 	util::ivector4 mappedVoxelCoords = QOrienationHandler::mapCoordsToOrientation( image->getPropMap().getPropertyAs<util::ivector4>( "voxelCoords" ), image, orientation );
 	QTransform retTransform;
 	retTransform.setMatrix( flipVec[0], 0, 0,
-							0, flipVec[1], 0,
-							0, 0, 1 );
+				0, flipVec[1], 0,
+				0, 0, 1 );
 
 	//calculate crosshair dependent translation
 	retTransform.translate( flipVec[0] * viewPort[2], flipVec[1] * viewPort[3] );

@@ -581,6 +581,18 @@ boost::shared_ptr< ImageHolder > QGLWidgetImplementation::getOptimalImage() cons
 	}
 }
 
+const std::string& QGLWidgetImplementation::getWidgetName() const
+{
+	return windowTitle().toStdString();
+}
+
+void QGLWidgetImplementation::setWidgetName(const std::string& wName)
+{
+	setWindowTitle( QString( wName.c_str() ) );
+}
+
+
+
 
 }
 }

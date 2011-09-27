@@ -27,7 +27,6 @@ MainWindow::MainWindow( QViewerCore *core, WidgetType wType )
 	actionAsZMap->setCheckable( true );
 
 	m_Toolbar = new QToolBar( this );
-
 	switch( m_WidgetType ) {
 	case type_gl:
 		m_MasterWidget = new GL::QGLWidgetImplementation( core, 0, axial );
@@ -36,7 +35,6 @@ MainWindow::MainWindow( QViewerCore *core, WidgetType wType )
 		m_MasterWidget = new qt::QImageWidgetImplementation( core, 0, axial );
 		break;
 	}
-
 	m_AxialWidget =  m_MasterWidget->createSharedWidget( ui.axialWidget, axial );
 	m_ViewerCore->registerWidget( "axialView", m_AxialWidget );
 

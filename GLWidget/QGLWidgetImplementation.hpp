@@ -56,6 +56,9 @@ public Q_SLOTS:
 	virtual void updateScene( bool center = false );
 
 	virtual bool isInitialized() { return m_Flags.glInitialized; }
+	
+	virtual const std::string &getWidgetName() const;
+	virtual void setWidgetName( const std::string &wName);
 
 protected:
 	virtual void mouseMoveEvent( QMouseEvent *e );

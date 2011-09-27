@@ -19,7 +19,7 @@ namespace viewer
 namespace qt
 {
 
-class QImageWidgetImplementation : public QWidget,  public WidgetImplementationBase
+class QImageWidgetImplementation : public QWidget, public WidgetImplementationBase
 {
 	Q_OBJECT
 	typedef std::vector<boost::shared_ptr<ImageHolder> > ImageVectorType;
@@ -28,7 +28,6 @@ public:
 	QImageWidgetImplementation( QViewerCore *core, QWidget *parent = 0, PlaneOrientation orientation = axial );
 
 	virtual WidgetImplementationBase *createSharedWidget( QWidget *parent, PlaneOrientation orienation = axial );
-
 
 public Q_SLOTS:
 
@@ -43,6 +42,9 @@ public Q_SLOTS:
 	virtual bool lookAtVoxelCoords( const util::ivector4 &voxelCoords );
 	virtual void updateScene( bool );
 	virtual void setInterpolationType( InterpolationType interType ) { m_InterpolationType = interType; }
+	
+	virtual const std::string &getWidgetName() const;
+	virtual void setWidgetName( const std::string &wName);
 
 protected:
 	void paintEvent( QPaintEvent *event );
@@ -61,7 +63,6 @@ Q_SIGNALS:
 
 private:
 	/**scaling, offset, size**/
-	
 	util::FixedVector<float, 6> m_Viewport;
 	void emitMousePressEvent( QMouseEvent *e );
 	bool isInViewPort( QMouseEvent *e ) const;
@@ -69,7 +70,6 @@ private:
 	QMemoryHandler m_MemoryHandler;
 	
 	Color m_ColorHandler;
-	
 	
 	void commonInit();
 	util::PropertyMap m_WidgetProperties;
