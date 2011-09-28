@@ -107,25 +107,31 @@ void QOrienationHandler::updateViewPort( util::FixedVector<float, 6> &viewPort, 
 	float normw = scalew > scaleh ? scaleh / scalew : 1;
 	viewPort[0] = scalew * normw;
 	viewPort[1] = scaleh * normh;
-	viewPort[2] = ( w - viewPort[0] * mappedSize[0] ) / 2 ;
-	viewPort[3] = ( h - viewPort[1] * mappedSize[1] ) / 2 ;
-	viewPort[2] += mappedPhysicalSize[0] - zoom * mappedPhysicalSize[0];
-	viewPort[3] += mappedPhysicalSize[1] - zoom * mappedPhysicalSize[1];
+	float offsetX = ( w - viewPort[0] * mappedSize[0] ) / 2 ;
+	float offsetY = ( h - viewPort[1] * mappedSize[1] ) / 2 ;
+	float zoomDepTransX = mappedSize[0] - (zoom *mappedSize[0]);
+	float zoomDepTransY = mappedSize[1] - (zoom *mappedSize[1]);
+	viewPort[2] = offsetX ;
+	viewPort[3] = offsetY ;
 	viewPort[4] = round(mappedSize[0] * viewPort[0]);
 	viewPort[5] = round(mappedSize[1] * viewPort[1]);
-	if(properties.getPropertyAs<bool>("mousePressedRight") || properties.getPropertyAs<bool>("zoomEvent")) {
+	viewPort[0] *= zoom;
+	viewPort[1] *= zoom;
+	if(!properties.getPropertyAs<bool>("mousePressedLeft") || properties.getPropertyAs<bool>("mousePressedRight") || properties.getPropertyAs<bool>("zoomEvent")) {
 		util::ivector4 mappedVoxelCoords = QOrienationHandler::mapCoordsToOrientation( image->getPropMap().getPropertyAs<util::ivector4>( "voxelCoords" ), image, orientation, false, false );
 		util::ivector4 center = mappedSize / 2;
 		util::ivector4 diff = center - mappedVoxelCoords;
-		float zoomDependentShift = 1.0 - ( 2.0 / zoom );
-		float transX = diff[0] + zoomDependentShift * diff[0] + diff[0] ;
-		float transY = diff[1] + zoomDependentShift * diff[1] + diff[1] ;
-		properties.setPropertyAs<float>("translationX", transX );
-		properties.setPropertyAs<float>( "translationY", transY );
+		float transXConst = ( center[0] - mappedSize[0] / (2 * zoom) );
+		float transYConst = ( center[1] - mappedSize[1] / (2 * zoom) );
+		float transX = transXConst * ((float)diff[0] / (float)center[0]);
+		float transY = transYConst * ((float)diff[1] / (float)center[1]);
+		viewPort[2] -= transXConst * viewPort[0];
+		viewPort[3] -= transYConst * viewPort[1];
+		properties.setPropertyAs<float>("translationX", transX * viewPort[0] );
+		properties.setPropertyAs<float>( "translationY", transY * viewPort[1] );
 		properties.setPropertyAs<bool>("zoomEvent", false);
 	}
-	viewPort[0] *= zoom;
-	viewPort[1] *= zoom;
+	
 	viewPort[4] *= zoom;
 	viewPort[5] *= zoom;
 }
