@@ -44,7 +44,6 @@ void QImageWidgetImplementation::commonInit()
 	setAutoFillBackground( true );
 	setPalette( QPalette( Qt::black ) );
 	m_ColorHandler.setLutType( Color::standard_grey_values );
-	m_ColorHandler.update();
 	m_WidgetProperties.setPropertyAs<bool>( "mousePressedRight", false );
 	m_WidgetProperties.setPropertyAs<bool>( "mousePressedLeft", false );
 	
@@ -132,6 +131,7 @@ void QImageWidgetImplementation::paintImage( boost::shared_ptr< ImageHolder > im
 {
 	if( image->getImageProperties().imageType == ImageHolder::z_map ) {
 		m_ColorHandler.setLutType( Color::zmap_standard );
+		m_ColorHandler.setOmitZeros(true);
 	} else {
 		m_ColorHandler.setLutType( Color::standard_grey_values );
 	}
@@ -139,6 +139,7 @@ void QImageWidgetImplementation::paintImage( boost::shared_ptr< ImageHolder > im
 		m_ColorHandler.setOffsetAndScaling( image->getOptimalScalingPair() );
 	}
 	//TODO only update if necessary
+	m_ColorHandler.setImage(image);
 	m_ColorHandler.update();
 	util::ivector4 mappedSizeAligned = QOrienationHandler::mapCoordsToOrientation( image->getPropMap().getPropertyAs<util::ivector4>( "alignedSize32Bit" ), image, m_PlaneOrientation );
 	isis::data::MemChunk<InternalImageType> sliceChunk( mappedSizeAligned[0], mappedSizeAligned[1] );

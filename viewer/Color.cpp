@@ -10,7 +10,8 @@ namespace viewer
 Color::Color()
 	: m_NumberOfElements( 256 ),
 	m_LutType( standard_grey_values ),
-	m_OffsetScaling( std::make_pair<double, double>(0.0, 1.0) )
+	m_OffsetScaling( std::make_pair<double, double>(0.0, 1.0) ),
+	m_OmitZeros( false )
 {
 
 }
@@ -42,6 +43,12 @@ void Color::update()
 			break;
 		}
 	}
+	if( m_OmitZeros && m_ImageHolder.get() ) {
+		double extent = m_ImageHolder->getMinMax().second->as<double>() - m_ImageHolder->getMinMax().first->as<double>();
+		int elemZero = (m_NumberOfElements / extent) * fabs(m_ImageHolder->getMinMax().first->as<double>());
+		m_ColorTable[elemZero] = QColor(0,0,0,0).rgba();
+	}
+	
 }
 
 

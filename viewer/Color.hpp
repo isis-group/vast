@@ -11,6 +11,7 @@ namespace isis
 namespace viewer
 {
 
+class ImageHolder;
 
 class Color
 {
@@ -23,6 +24,8 @@ public:
 	void setLutType( LookUpTableType type ) { m_LutType = type; }
 	void setNumberOfElements( size_t nE ) { m_NumberOfElements = nE; }
 	void setOffsetAndScaling( std::pair<double, double> offsetScaling ) { m_OffsetScaling = offsetScaling; }
+	void setImage( const boost::shared_ptr<ImageHolder> image ) { m_ImageHolder = image; }
+	void setOmitZeros( bool omit ) { m_OmitZeros = omit; }
 	
 	void update();
 private:
@@ -30,13 +33,15 @@ private:
 	LookUpTableType m_LutType;
 	size_t m_NumberOfElements;
 	std::pair<double, double> m_OffsetScaling;
+	boost::shared_ptr<ImageHolder> m_ImageHolder;
+	bool m_OmitZeros;
 };
 
 }
 }
 
 
-
+#include "ImageHolder.hpp"
 
 
 #endif
