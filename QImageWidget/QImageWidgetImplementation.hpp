@@ -65,7 +65,6 @@ Q_SIGNALS:
 private:
 	/**scaling, offset, size**/
 	ViewPortMapType m_ViewPortMap;
-	util::FixedVector<float, 6> m_Viewport;
 	void emitMousePressEvent( QMouseEvent *e );
 	bool isInViewPort( const ViewPortType &viewPort, QMouseEvent *e ) const;
 	void recalculateTranslation();
