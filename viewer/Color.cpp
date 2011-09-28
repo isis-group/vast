@@ -39,7 +39,7 @@ void Color::update()
 					m_ColorTable[( m_NumberOfElements - 1 ) - ( i + ( m_NumberOfElements / 2 ) )] = QColor( i * 2, 255, 255, 255 ).rgba();
 				}
 			}
-
+			m_ColorTable[0] = QColor(0,0,0,0).rgba();
 			break;
 		}
 	}

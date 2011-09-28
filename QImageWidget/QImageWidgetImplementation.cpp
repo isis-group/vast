@@ -143,9 +143,9 @@ void QImageWidgetImplementation::paintImage( boost::shared_ptr< ImageHolder > im
 	m_ColorHandler.update();
 	util::ivector4 mappedSizeAligned = QOrienationHandler::mapCoordsToOrientation( image->getPropMap().getPropertyAs<util::ivector4>( "alignedSize32Bit" ), image, m_PlaneOrientation );
 	isis::data::MemChunk<InternalImageType> sliceChunk( mappedSizeAligned[0], mappedSizeAligned[1] );
-
+	
 	m_MemoryHandler.fillSliceChunk( sliceChunk, image, m_PlaneOrientation, image->getPropMap().getPropertyAs<size_t>("currentTimestep") );
-
+	
 	QImage qImage( ( InternalImageType * ) sliceChunk.asValuePtr<InternalImageType>().getRawAddress().get(),
 				   mappedSizeAligned[0], mappedSizeAligned[1], QImage::Format_Indexed8 );
 	
