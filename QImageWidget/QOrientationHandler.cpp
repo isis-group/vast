@@ -95,8 +95,9 @@ util::ivector4 QOrienationHandler::getMappedCoords( const boost::shared_ptr< Ima
 
 
 
-void QOrienationHandler::updateViewPort( util::FixedVector<float, 6> &viewPort, util::PropertyMap &properties, const boost::shared_ptr< ImageHolder > image, const size_t &w, const size_t &h, PlaneOrientation orientation )
+ViewPortType QOrienationHandler::getViewPort(  util::PropertyMap &properties, const boost::shared_ptr< ImageHolder > image, const size_t &w, const size_t &h, PlaneOrientation orientation )
 {
+	ViewPortType viewPort;
 	float zoom = properties.getPropertyAs<float>("currentZoom");
 	util::ivector4 mappedSize = QOrienationHandler::mapCoordsToOrientation( image->getImageSize(), image, orientation );
 	util::ivector4 center = mappedSize / 2;
@@ -104,35 +105,19 @@ void QOrienationHandler::updateViewPort( util::FixedVector<float, 6> &viewPort, 
 	float scaleh = h / float( mappedSize[1] );
 	float normh = scalew < scaleh ? scalew / scaleh : 1;
 	float normw = scalew > scaleh ? scaleh / scalew : 1;
-	viewPort[0] = scalew * normw;
-	viewPort[1] = scaleh * normh;
-	float offsetX = ( w - viewPort[0] * mappedSize[0] * zoom ) / 2 ;
-	float offsetY = ( h - viewPort[1] * mappedSize[1] * zoom ) / 2 ;
-	
+	viewPort[0] = scalew * normw * zoom;
+	viewPort[1] = scaleh * normh * zoom;
+	float offsetX = ( w - viewPort[0] * mappedSize[0] ) / 2 ;
+	float offsetY = ( h - viewPort[1] * mappedSize[1] ) / 2 ;
 	viewPort[2] = offsetX ;
 	viewPort[3] = offsetY ;
 	viewPort[4] = round(mappedSize[0] * viewPort[0]);
 	viewPort[5] = round(mappedSize[1] * viewPort[1]);
-	viewPort[0] *= zoom;
-	viewPort[1] *= zoom;
-	if( !properties.getPropertyAs<bool>("mousePressedLeft") || properties.getPropertyAs<bool>("mousePressedRight") || properties.getPropertyAs<bool>("zoomEvent")) {
-		util::ivector4 mappedVoxelCoords = QOrienationHandler::mapCoordsToOrientation( image->getPropMap().getPropertyAs<util::ivector4>( "voxelCoords" ), image, orientation, false, false );
-		util::ivector4 diff = center - mappedVoxelCoords;
-		float transXConst = ( (center[0]+2) - mappedSize[0] / (2 * zoom) );
-		float transYConst = ( (center[1]+2) - mappedSize[1] / (2 * zoom) );
-		float transX = transXConst * ((float)diff[0] / (float)center[0]);
-		float transY = transYConst * ((float)diff[1] / (float)center[1]);
-		
-		properties.setPropertyAs<float>("translationX", transX * viewPort[0] );
-		properties.setPropertyAs<float>( "translationY", transY * viewPort[1] );
-		properties.setPropertyAs<bool>("zoomEvent", false);
-	}
-	viewPort[4] *= zoom;
-	viewPort[5] *= zoom;
+	return viewPort;
 }
 
 
-QTransform QOrienationHandler::getTransform( const util::FixedVector<float, 6> &viewPort, util::PropertyMap &properties, const boost::shared_ptr< ImageHolder > image, const size_t &w, const size_t &h, PlaneOrientation orientation )
+QTransform QOrienationHandler::getTransform( const ViewPortType &viewPort, util::PropertyMap &properties, const boost::shared_ptr< ImageHolder > image, const size_t &w, const size_t &h, PlaneOrientation orientation )
 {
 	util::ivector4 mappedSize = QOrienationHandler::mapCoordsToOrientation( image->getImageSize(), image, orientation );
 	util::fvector4 flipVec = QOrienationHandler::mapCoordsToOrientation( util::fvector4( 1, 1, 1 ), image, orientation, false, false );

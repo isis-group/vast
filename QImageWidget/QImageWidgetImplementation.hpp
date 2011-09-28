@@ -9,6 +9,7 @@
 #include "QViewerCore.hpp"
 #include "QMemoryHandler.hpp"
 #include "Color.hpp"
+#include "QtWidgetCommon.hpp"
 
 namespace isis
 {
@@ -22,7 +23,7 @@ namespace qt
 class QImageWidgetImplementation : public QWidget, public QWidgetImplementationBase
 {
 	Q_OBJECT
-	typedef std::vector<boost::shared_ptr<ImageHolder> > ImageVectorType;
+	
 public:
 	QImageWidgetImplementation( QViewerCore *core, QWidget *parent = 0, QWidget *share = 0, PlaneOrientation orienation = axial );
 	QImageWidgetImplementation( QViewerCore *core, QWidget *parent = 0, PlaneOrientation orientation = axial );
@@ -63,9 +64,11 @@ Q_SIGNALS:
 
 private:
 	/**scaling, offset, size**/
+	ViewPortMapType m_ViewPortMap;
 	util::FixedVector<float, 6> m_Viewport;
 	void emitMousePressEvent( QMouseEvent *e );
-	bool isInViewPort( QMouseEvent *e ) const;
+	bool isInViewPort( const ViewPortType &viewPort, QMouseEvent *e ) const;
+	void recalculateTranslation();
 
 	QMemoryHandler m_MemoryHandler;
 	
