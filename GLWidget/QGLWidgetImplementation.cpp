@@ -129,8 +129,8 @@ void QGLWidgetImplementation::updateStateValues( boost::shared_ptr<ImageHolder> 
 	state.voxelCoords[3] = timestep;
 
 	//if not happend already copy the image to GLtexture memory and return the texture id
-	if( image->getImageSize()[3] > m_ViewerCore->getCurrentImage()->getPropMap().getPropertyAs<size_t>( "currentTimestep" ) ) {
-		state.textureID = util::Singletons::get<GLTextureHandler, 10>().copyImageToTexture( image, m_ViewerCore->getCurrentImage()->getPropMap().getPropertyAs<size_t>( "currentTimestep" ), false, static_cast<GLTextureHandler::InterpolationType> (m_InterplationType) );
+	if( image->getImageSize()[3] > m_ViewerCore->getCurrentImage()->getPropMap().getPropertyAs<uint16_t>( "currentTimestep" ) ) {
+		state.textureID = util::Singletons::get<GLTextureHandler, 10>().copyImageToTexture( image, m_ViewerCore->getCurrentImage()->getPropMap().getPropertyAs<uint16_t>( "currentTimestep" ), false, static_cast<GLTextureHandler::InterpolationType> (m_InterplationType) );
 	}
 
 	//update the texture matrix.

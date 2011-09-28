@@ -153,7 +153,7 @@ void QImageWidgetImplementation::paintImage( boost::shared_ptr< ImageHolder > im
 	util::ivector4 mappedSizeAligned = QOrienationHandler::mapCoordsToOrientation( image->getPropMap().getPropertyAs<util::ivector4>( "alignedSize32Bit" ), image, m_PlaneOrientation );
 	isis::data::MemChunk<InternalImageType> sliceChunk( mappedSizeAligned[0], mappedSizeAligned[1] );
 	
-	m_MemoryHandler.fillSliceChunk( sliceChunk, image, m_PlaneOrientation, image->getPropMap().getPropertyAs<size_t>("currentTimestep") );
+	m_MemoryHandler.fillSliceChunk( sliceChunk, image, m_PlaneOrientation, image->getPropMap().getPropertyAs<uint16_t>("currentTimestep") );
 	
 	QImage qImage( ( InternalImageType * ) sliceChunk.asValuePtr<InternalImageType>().getRawAddress().get(),
 				   mappedSizeAligned[0], mappedSizeAligned[1], QImage::Format_Indexed8 );
@@ -207,7 +207,7 @@ void QImageWidgetImplementation::emitMousePressEvent( QMouseEvent *e )
 {
 	boost::shared_ptr<ImageHolder> image = m_ViewerCore->getCurrentImage();
 	if( isInViewPort( m_ViewPortMap.at(image), e ) ) {
-		size_t slice = QOrienationHandler::mapCoordsToOrientation( image->getPropMap().getPropertyAs<util::ivector4>( "voxelCoords" ), image, m_PlaneOrientation )[2];
+		uint16_t slice = QOrienationHandler::mapCoordsToOrientation( image->getPropMap().getPropertyAs<util::ivector4>( "voxelCoords" ), image, m_PlaneOrientation )[2];
 		util::ivector4 coords = QOrienationHandler::convertWindow2VoxelCoords( m_ViewPortMap[image], m_WidgetProperties, image, e->x(), e->y(), slice, m_PlaneOrientation );
 		physicalCoordsChanged( image->getISISImage()->getPhysicalCoordsFromIndex( coords ) );
 	}
@@ -216,7 +216,7 @@ void QImageWidgetImplementation::emitMousePressEvent( QMouseEvent *e )
 void QImageWidgetImplementation::paintCrosshair()
 {
 	boost::shared_ptr< ImageHolder > image = m_ViewerCore->getCurrentImage();
-	std::pair<size_t, size_t> coords = QOrienationHandler::convertVoxel2WindowCoords( m_ViewPortMap[image], m_WidgetProperties, m_ViewerCore->getCurrentImage(), m_PlaneOrientation  );
+	std::pair<uint16_t, size_t> coords = QOrienationHandler::convertVoxel2WindowCoords( m_ViewPortMap[image], m_WidgetProperties, m_ViewerCore->getCurrentImage(), m_PlaneOrientation  );
 
 	QLine xline1( coords.first, 0, coords.first, coords.second - 15 );
 	QLine xline2( coords.first, coords.second + 15, coords.first, height() );
@@ -246,7 +246,7 @@ void QImageWidgetImplementation::paintCrosshair()
 
 bool QImageWidgetImplementation::lookAtPhysicalCoords( const isis::util::fvector4 &physicalCoords )
 {
-	m_WidgetProperties.setPropertyAs<size_t>("currentTimeStep", physicalCoords[3] );
+	m_WidgetProperties.setPropertyAs<uint16_t>("currentTimeStep", physicalCoords[3] );
 	BOOST_FOREACH( DataContainer::reference image, m_ViewerCore->getDataContainer() ) 
 	{
 		image.second->getPropMap().setPropertyAs<util::fvector4>( "physicalCoords", physicalCoords );
@@ -257,7 +257,7 @@ bool QImageWidgetImplementation::lookAtPhysicalCoords( const isis::util::fvector
 
 bool QImageWidgetImplementation::lookAtVoxelCoords(const isis::util::ivector4& voxelCoords)
 {
-	m_WidgetProperties.setPropertyAs<size_t>("currentTimeStep", voxelCoords[3] );
+	m_WidgetProperties.setPropertyAs<uint16_t>("currentTimeStep", voxelCoords[3] );
 	BOOST_FOREACH( DataContainer::reference image, m_ViewerCore->getDataContainer() ) 
 	{
 		image.second->getPropMap().setPropertyAs<util::ivector4>( "voxelCoords", voxelCoords );

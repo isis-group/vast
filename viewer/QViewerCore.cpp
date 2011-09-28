@@ -47,7 +47,7 @@ void QViewerCore::timestepChanged( int timestep )
 	util::ivector4 voxelCoords = getCurrentImage()->getPropMap().getPropertyAs<util::ivector4>( "voxelCoords" );
 	voxelCoords[3] = timestep;
 	getCurrentImage()->getPropMap().setPropertyAs<util::ivector4>( "voxelCoords", voxelCoords );
-	getCurrentImage()->getPropMap().setPropertyAs<size_t>( "currentTimestep", timestep );
+	getCurrentImage()->getPropMap().setPropertyAs<uint16_t>( "currentTimestep", timestep );
 	updateScene();
 }
 

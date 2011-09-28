@@ -233,7 +233,7 @@ void MainWindow::physicalCoordsChanged( util::fvector4 coords )
 	ui.z_value->setText( QString::number( transformedCoords[2] ) );
 	bool isOutside = false;
 
-	for( size_t i = 0; i < 4; i++ ) {
+	for( uint16_t i = 0; i < 4; i++ ) {
 		if( voxelCoords[i] < 0 || voxelCoords[i] > static_cast<int32_t>( m_ViewerCore->getCurrentImage()->getImageSize()[i] -  1 ) )
 			return;
 	}
@@ -300,8 +300,8 @@ void MainWindow::imagesChanged( DataContainer images )
 		ui.timestepSpinBox->setMaximum( m_ViewerCore->getCurrentImage()->getImageSize()[3] - 1 );
 		ui.timestepSpinBox_2->setEnabled( true );
 		ui.timestepSpinBox_2->setMaximum( m_ViewerCore->getCurrentImage()->getImageSize()[3] - 1 );
-		ui.timestepSpinBox->setValue( m_ViewerCore->getCurrentImage()->getPropMap().getPropertyAs<size_t>( "currentTimestep" ) );
-		ui.timestepSpinBox_2->setValue( m_ViewerCore->getCurrentImage()->getPropMap().getPropertyAs<size_t>( "currentTimestep" ) );
+		ui.timestepSpinBox->setValue( m_ViewerCore->getCurrentImage()->getPropMap().getPropertyAs<uint16_t>( "currentTimestep" ) );
+		ui.timestepSpinBox_2->setValue( m_ViewerCore->getCurrentImage()->getPropMap().getPropertyAs<uint16_t>( "currentTimestep" ) );
 
 	} else {
 		ui.timestepSpinBox->setEnabled( false );

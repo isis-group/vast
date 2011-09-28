@@ -26,9 +26,9 @@ ImageHolder::filterRelevantMetaInformation()
                                     << " timesteps. The number of chunks should be a multiple of number of timesteps!";
             return false;
         } else {
-            size_t factor = chunkList.size() / m_NumberOfTimeSteps;
+            uint16_t factor = chunkList.size() / m_NumberOfTimeSteps;
 
-            for ( size_t t = 0; t < chunkList.size(); t += factor ) {
+            for ( uint16_t t = 0; t < chunkList.size(); t += factor ) {
                 m_TimeStepProperties.push_back( *( chunkList.operator[]( t ) ) );
             }
 
@@ -72,7 +72,7 @@ boost::numeric::ublas::matrix< float > ImageHolder::getImageOrientation( bool tr
 	util::fvector4 columnVec = m_Image->getPropertyAs<util::fvector4>( "columnVec" );
 	util::fvector4 sliceVec = m_Image->getPropertyAs<util::fvector4>( "sliceVec" );
 
-	for ( size_t i = 0; i < 3; i++ ) {
+	for ( uint16_t i = 0; i < 3; i++ ) {
 		if( !transposed ) {
 			retMatrix( i, 0 ) = rowVec[i];
 			retMatrix( i, 1 ) = columnVec[i];
@@ -164,7 +164,7 @@ bool ImageHolder::setImage( const data::Image &image, const ImageType &imageType
 
 	m_PropMap.setPropertyAs<bool>( "isVisible", true );
 	m_PropMap.setPropertyAs<float>( "opacity", 1.0 );
-	m_PropMap.setPropertyAs<size_t>( "currentTimestep", 0 );
+	m_PropMap.setPropertyAs<uint16_t>( "currentTimestep", 0 );
 	m_PropMap.setPropertyAs<util::ivector4>( "alignedSize32Bit", get32BitAlignedSize( m_ImageSize ) );
 	m_PropMap.setPropertyAs<bool>( "init", true );
 	m_Image->updateOrientationMatrices();
