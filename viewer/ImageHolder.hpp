@@ -34,6 +34,7 @@ public:
 	//here we store only properties which can not be stored as isis::PropertyValue
 	struct ImageProperties {
 		ImageType imageType;
+		InterpolationType interpolationType;
 		std::pair<double, double> zmapThreshold;
 		Color::LookUpTableType lookUpTableType;
 
@@ -56,6 +57,7 @@ public:
 	boost::numeric::ublas::matrix<float> getImageOrientation( bool transposed = false ) const;
 	std::pair<util::ValueReference, util::ValueReference> getMinMax() const { return m_MinMax; }
 	std::pair<util::ValueReference, util::ValueReference> getInternMinMax() const { return m_InternMinMax; }
+	
 	/**offset, scaling**/
 	std::pair<double, double> getOptimalScalingPair() const { return m_OptimalScalingPair;  }
 	boost::weak_ptr<void>
@@ -68,6 +70,8 @@ public:
 	bool operator<( const ImageHolder &ref ) const { return m_ID < ref.getID(); }
 
 	const ImageProperties &getImageProperties() const { return m_ImageProperties; }
+	ImageProperties &getImageProperties() { return m_ImageProperties; }
+	
 	/**offset, scaling**/
 	template<typename TYPE>
 	std::pair<double, double> getOptimalScalingToForType( const std::pair<double, double> &cutAway ) const {

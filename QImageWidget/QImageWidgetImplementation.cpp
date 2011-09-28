@@ -90,16 +90,16 @@ void QImageWidgetImplementation::setZoom( float zoom )
 void QImageWidgetImplementation::paintEvent( QPaintEvent *event )
 {
 	m_Painter->begin( this );
-	switch (m_InterpolationType) {
-		case nn:
-			m_Painter->setRenderHint(QPainter::Antialiasing, true );
-			break;
-		case lin:
-			m_Painter->setRenderHint(QPainter::SmoothPixmapTransform, true );
-			break;
-	}
+	
+	//painting all anatomical images
 	BOOST_FOREACH( ImageVectorType::const_reference image, m_ImageVector ) {
-		if( image->getPropMap().getPropertyAs<bool>( "isVisible" ) ) {
+		if( image->getPropMap().getPropertyAs<bool>( "isVisible" )  && image->getImageProperties().imageType == ImageHolder::anatomical_image ) {
+			paintImage( image);
+		}
+	}
+	//painting the zmaps
+	BOOST_FOREACH( ImageVectorType::const_reference image, m_ImageVector ) {
+		if( image->getPropMap().getPropertyAs<bool>( "isVisible" )  && image->getImageProperties().imageType == ImageHolder::z_map ) {
 			paintImage( image);
 		}
 	}
@@ -129,6 +129,14 @@ void QImageWidgetImplementation::recalculateTranslation()
 
 void QImageWidgetImplementation::paintImage( boost::shared_ptr< ImageHolder > image )
 {
+	switch (image->getImageProperties().interpolationType) {
+		case nn:
+			m_Painter->setRenderHint(QPainter::Antialiasing, true );
+			break;
+		case lin:
+			m_Painter->setRenderHint(QPainter::SmoothPixmapTransform, true );
+			break;
+	}
 	if( image->getImageProperties().imageType == ImageHolder::z_map ) {
 		m_ColorHandler.setLutType( Color::zmap_standard );
 		m_ColorHandler.setOmitZeros(true);
@@ -138,6 +146,7 @@ void QImageWidgetImplementation::paintImage( boost::shared_ptr< ImageHolder > im
 	if( m_ScalingType == automatic_scaling ) {
 		m_ColorHandler.setOffsetAndScaling( image->getOptimalScalingPair() );
 	}
+	
 	//TODO only update if necessary
 	m_ColorHandler.setImage(image);
 	m_ColorHandler.update();

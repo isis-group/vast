@@ -340,6 +340,8 @@ void MainWindow::imagesChanged( DataContainer images )
 	} else {
 		ui.action_Plotting->setEnabled( false );
 	}
+		//setting the interpolation type 
+	ui.interpolationType->setCurrentIndex( m_ViewerCore->getCurrentImage()->getImageProperties().interpolationType );
 }
 
 void MainWindow::openImageAs( ImageHolder::ImageType type )
@@ -460,10 +462,12 @@ void MainWindow::upperThresholdChanged( int upperThreshold )
 
 void MainWindow::interpolationChanged( int index )
 {
+	InterpolationType inter = static_cast<InterpolationType>( index );
 	BOOST_FOREACH( QViewerCore::WidgetMap::reference widget, m_ViewerCore->getWidgets() ) 
 	{
-		widget.second->setInterpolationType( static_cast<InterpolationType>( index ) );
+		widget.second->setInterpolationType( inter );
 	}
+	m_ViewerCore->getCurrentImage()->getImageProperties().interpolationType = inter;
 	m_ViewerCore->updateScene();
 }
 
