@@ -99,8 +99,6 @@ void QOrienationHandler::updateViewPort( util::FixedVector<float, 6> &viewPort, 
 {
 	float zoom = properties.getPropertyAs<float>("currentZoom");
 	util::ivector4 mappedSize = QOrienationHandler::mapCoordsToOrientation( image->getImageSize(), image, orientation );
-	util::fvector4 mappedScaling = QOrienationHandler::mapCoordsToOrientation( image->getISISImage()->getPropertyAs<util::fvector4>( "voxelSize" ), image, orientation );
-	util::fvector4 mappedPhysicalSize = mappedScaling * mappedSize;
 	util::ivector4 center = mappedSize / 2;
 	float scalew = w / float( mappedSize[0] );
 	float scaleh = h / float( mappedSize[1] );
@@ -117,7 +115,7 @@ void QOrienationHandler::updateViewPort( util::FixedVector<float, 6> &viewPort, 
 	viewPort[5] = round(mappedSize[1] * viewPort[1]);
 	viewPort[0] *= zoom;
 	viewPort[1] *= zoom;
-	if(!properties.getPropertyAs<bool>("mousePressedLeft") || properties.getPropertyAs<bool>("mousePressedRight") || properties.getPropertyAs<bool>("zoomEvent")) {
+	if( !properties.getPropertyAs<bool>("mousePressedLeft") || properties.getPropertyAs<bool>("mousePressedRight") || properties.getPropertyAs<bool>("zoomEvent")) {
 		util::ivector4 mappedVoxelCoords = QOrienationHandler::mapCoordsToOrientation( image->getPropMap().getPropertyAs<util::ivector4>( "voxelCoords" ), image, orientation, false, false );
 		util::ivector4 diff = center - mappedVoxelCoords;
 		float transXConst = ( (center[0]+2) - mappedSize[0] / (2 * zoom) );
@@ -129,7 +127,6 @@ void QOrienationHandler::updateViewPort( util::FixedVector<float, 6> &viewPort, 
 		properties.setPropertyAs<float>( "translationY", transY * viewPort[1] );
 		properties.setPropertyAs<bool>("zoomEvent", false);
 	}
-	
 	viewPort[4] *= zoom;
 	viewPort[5] *= zoom;
 }

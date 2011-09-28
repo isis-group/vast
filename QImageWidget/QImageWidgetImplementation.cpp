@@ -116,6 +116,10 @@ void QImageWidgetImplementation::paintImage( boost::shared_ptr< ImageHolder > im
 	} else {
 		m_ColorHandler.setLutType( Color::standard_grey_values );
 	}
+	if( m_ScalingType == automatic_scaling ) {
+		m_ColorHandler.setOffsetAndScaling( image->getOptimalScalingPair() );
+	}
+	
 	//TODO only update if necessary
 	m_ColorHandler.update();
 	util::ivector4 mappedSizeAligned = QOrienationHandler::mapCoordsToOrientation( image->getPropMap().getPropertyAs<util::ivector4>( "alignedSize32Bit" ), image, m_PlaneOrientation );
@@ -145,8 +149,6 @@ void QImageWidgetImplementation::paintImage( boost::shared_ptr< ImageHolder > im
 
 void QImageWidgetImplementation::mousePressEvent( QMouseEvent *e )
 {
-	QWidget::mousePressEvent( e );
-
 	if( e->button() == Qt::RightButton ) {
 		m_WidgetProperties.setPropertyAs<bool>( "mousePressedRight", true );
 	} else if ( e->button() == Qt::LeftButton ) {
@@ -232,8 +234,6 @@ bool QImageWidgetImplementation::lookAtVoxelCoords(const isis::util::ivector4& v
 
 void QImageWidgetImplementation::mouseReleaseEvent( QMouseEvent *e )
 {
-	QWidget::mouseReleaseEvent( e );
-
 	if( e->button() == Qt::RightButton ) {
 		m_WidgetProperties.setPropertyAs<bool>( "mousePressedRight", false );
 	} 
@@ -261,7 +261,7 @@ void QImageWidgetImplementation::wheelEvent( QWheelEvent *e )
 
 }
 
-void QImageWidgetImplementation::updateScene(bool )
+void QImageWidgetImplementation::updateScene(bool center)
 {
 	update();
 }

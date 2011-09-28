@@ -268,13 +268,13 @@ void QGLWidgetImplementation::paintGL()
 void QGLWidgetImplementation::paintImage( const std::pair< boost::shared_ptr<ImageHolder>, State> &state )
 {
 	double scaling, bias;
-
+	double extent = state.first->getMinMax().second->as<double>() - state.first->getMinMax().first->as<double>();
 	if( m_ScalingType == automatic_scaling ) {
 		scaling = state.first->getOptimalScalingPair().second;
-		bias = state.first->getOptimalScalingPair().first;
+		bias = (1.0 / extent) * state.first->getOptimalScalingPair().first ;
 	} else if ( m_ScalingType == manual_scaling ) {
 		scaling = m_ScalingPair.second;
-		bias = m_ScalingPair.first;
+		bias = (1.0 / extent ) * m_ScalingPair.first;
 	} else {
 		scaling = 1.0;
 		bias = 0.0;

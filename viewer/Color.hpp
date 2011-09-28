@@ -22,7 +22,7 @@ public:
 	QVector<QRgb> getColorTable() const { return m_ColorTable; }
 	void setLutType( LookUpTableType type ) { m_LutType = type; }
 	void setNumberOfElements( size_t nE ) { m_NumberOfElements = nE; }
-	void setOffsetScaling( std::pair<double, double> offsetScaling ) { m_OffsetScaling = offsetScaling; }
+	void setOffsetAndScaling( std::pair<double, double> offsetScaling ) { m_OffsetScaling = offsetScaling; }
 	
 	void update();
 private:

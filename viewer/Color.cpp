@@ -20,8 +20,11 @@ void Color::update()
 	m_ColorTable.resize( m_NumberOfElements );
 	switch( m_LutType ) {
 		case Color::standard_grey_values: {
+			int value = m_OffsetScaling.first;
+			int sum = (m_NumberOfElements * m_OffsetScaling.second) / m_NumberOfElements;
 			for ( size_t i = 0; i < m_NumberOfElements; i++ ) {
-				m_ColorTable[i] = QColor( i, i, i, 255 ).rgba();
+				m_ColorTable[i] = QColor( value, value, value, 255 ).rgba();
+				value+sum > 255 ? value : value+=sum;
 			}
 			break;
 		}
@@ -39,7 +42,6 @@ void Color::update()
 			break;
 		}
 	}
-
 }
 
 

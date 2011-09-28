@@ -109,7 +109,7 @@ public:
 		}
 
 		std::pair<double, double> retPair;
-		retPair.first = ( 1.0 / extent ) * lowerBorder;
+		retPair.first = lowerBorder;
 		retPair.second = ( float )maxTypeValue / float( upperBorder - lowerBorder );
 		delete[] histogram;
 		return retPair;

@@ -19,18 +19,18 @@ class QWidgetImplementationBase
 public:
 	virtual QWidgetImplementationBase *createSharedWidget( QWidget *parent, PlaneOrientation orienation ) = 0;
 
+	virtual void updateScene( bool center ) = 0;
 	virtual void setZoom( float zoom ) = 0;
-
 	virtual void addImage( const boost::shared_ptr<ImageHolder> image ) = 0;
 	virtual bool removeImage( const boost::shared_ptr< ImageHolder > image ) = 0;
 	virtual void setWidgetName( const std::string &name ) = 0;
 	virtual std::string getWidgetName() const = 0;
-
-	virtual QWidget *getParent( ) const { return m_Parent; }
-
-	virtual PlaneOrientation getPlaneOrientation() { return m_PlaneOrientation; }
 	virtual void setInterpolationType( InterpolationType interpolation ) = 0;
 	virtual void setScalingType( ScalingType scaling ) = 0;
+
+	
+	virtual QWidget *getParent( ) const { return m_Parent; }
+	virtual PlaneOrientation getPlaneOrientation() { return m_PlaneOrientation; }
 
 
 protected:

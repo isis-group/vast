@@ -50,7 +50,7 @@ public Q_SLOTS:
 	virtual bool lookAtVoxel( const util::ivector4 &voxelCoords );
 	virtual bool lookAtPhysicalCoords( const util::fvector4 &physicalCoords );
 	virtual bool timestepChanged( unsigned int timestep );
-	virtual void setScalingType( ScalingType scalingType ) { m_ScalingType = scalingType; }
+	virtual void setScalingType( ScalingType scalingType ) { m_ScalingType = scalingType;  }
 	virtual void setShowLabels( const bool show );
 	virtual void setInterpolationType( InterpolationType interpolation );
 	virtual void updateScene( bool center = false );

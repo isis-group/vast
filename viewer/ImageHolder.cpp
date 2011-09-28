@@ -156,7 +156,6 @@ bool ImageHolder::setImage( const data::Image &image, const ImageType &imageType
 	m_ImageProperties.imageType = imageType;
 	m_ImageProperties.lookUpTableType = Color::standard_grey_values;
 
-
 	m_ImageProperties.zmapThreshold = std::make_pair<double, double>( 0, 0 );
 
 	m_PropMap.setPropertyAs<util::ivector4>( "voxelCoords", util::ivector4( m_ImageSize[0] / 2, m_ImageSize[1] / 2, m_ImageSize[2] / 2, 0 ) );
