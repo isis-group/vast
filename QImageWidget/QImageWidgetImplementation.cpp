@@ -143,7 +143,7 @@ void QImageWidgetImplementation::paintImage( boost::shared_ptr< ImageHolder > im
 	util::ivector4 mappedSizeAligned = QOrienationHandler::mapCoordsToOrientation( image->getPropMap().getPropertyAs<util::ivector4>( "alignedSize32Bit" ), image, m_PlaneOrientation );
 	isis::data::MemChunk<InternalImageType> sliceChunk( mappedSizeAligned[0], mappedSizeAligned[1] );
 
-	m_MemoryHandler.fillSliceChunk( sliceChunk, image, m_PlaneOrientation );
+	m_MemoryHandler.fillSliceChunk( sliceChunk, image, m_PlaneOrientation, image->getPropMap().getPropertyAs<size_t>("currentTimestep") );
 
 	QImage qImage( ( InternalImageType * ) sliceChunk.asValuePtr<InternalImageType>().getRawAddress().get(),
 				   mappedSizeAligned[0], mappedSizeAligned[1], QImage::Format_Indexed8 );
@@ -236,6 +236,7 @@ void QImageWidgetImplementation::paintCrosshair()
 
 bool QImageWidgetImplementation::lookAtPhysicalCoords( const isis::util::fvector4 &physicalCoords )
 {
+	m_WidgetProperties.setPropertyAs<size_t>("currentTimeStep", physicalCoords[3] );
 	BOOST_FOREACH( DataContainer::reference image, m_ViewerCore->getDataContainer() ) 
 	{
 		image.second->getPropMap().setPropertyAs<util::fvector4>( "physicalCoords", physicalCoords );
@@ -246,6 +247,7 @@ bool QImageWidgetImplementation::lookAtPhysicalCoords( const isis::util::fvector
 
 bool QImageWidgetImplementation::lookAtVoxelCoords(const isis::util::ivector4& voxelCoords)
 {
+	m_WidgetProperties.setPropertyAs<size_t>("currentTimeStep", voxelCoords[3] );
 	BOOST_FOREACH( DataContainer::reference image, m_ViewerCore->getDataContainer() ) 
 	{
 		image.second->getPropMap().setPropertyAs<util::ivector4>( "voxelCoords", voxelCoords );

@@ -14,7 +14,7 @@ class QMemoryHandler
 public:
 	QMemoryHandler( QViewerCore *core );
 
-	bool fillSliceChunk( data::MemChunk<InternalImageType> &sliceChunk, const boost::shared_ptr< ImageHolder > image, PlaneOrientation orientation ) const;
+	bool fillSliceChunk( data::MemChunk<InternalImageType> &sliceChunk, const boost::shared_ptr< ImageHolder > image, PlaneOrientation orientation, size_t timestep = 0 ) const;
 
 private:
 	QViewerCore *m_ViewerCore;

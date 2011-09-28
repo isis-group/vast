@@ -77,7 +77,6 @@ void QGLWidgetImplementation::connectSignals()
 	connect( this, SIGNAL( zoomChanged( float ) ), m_ViewerCore, SLOT( zoomChanged( float ) ) );
 	connect( m_ViewerCore, SIGNAL( emitVoxelCoordChanged( util::ivector4 ) ), this, SLOT( lookAtVoxel( util::ivector4 ) ) );
 	connect( m_ViewerCore, SIGNAL( emitPhysicalCoordsChanged( util::fvector4 ) ), this, SLOT( lookAtPhysicalCoords( util::fvector4 ) ) );
-	connect( m_ViewerCore, SIGNAL( emitTimeStepChange( unsigned int ) ), this, SLOT( timestepChanged( unsigned int ) ) );
 	connect( m_ViewerCore, SIGNAL( emitShowLabels( bool ) ), this, SLOT( setShowLabels( bool ) ) );
 	connect( m_ViewerCore, SIGNAL( emitUpdateScene( bool ) ), this, SLOT( updateScene( bool ) ) );
 	connect( m_ViewerCore, SIGNAL( emitZoomChanged( float ) ), this, SLOT( setZoom( float ) ) );
@@ -457,12 +456,6 @@ void QGLWidgetImplementation::emitMousePressEvent( QMouseEvent *e )
 	physicalCoordsChanged( getOptimalImage()->getISISImage()->getPhysicalCoordsFromIndex( voxelCoords ) );
 }
 
-bool QGLWidgetImplementation::timestepChanged( unsigned int timestep )
-{
-	physicalCoordsChanged( m_ImageStates.begin()->first->getPropMap().getPropertyAs<util::fvector4>( "physicalCoords" ) );
-	updateScene();
-
-}
 
 void QGLWidgetImplementation::setZoom( float zoomFactor )
 {
