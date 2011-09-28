@@ -47,12 +47,16 @@ void QImageWidgetImplementation::commonInit()
 	m_ColorHandler.update();
 	m_WidgetProperties.setPropertyAs<bool>( "mousePressedRight", false );
 	m_WidgetProperties.setPropertyAs<bool>( "mousePressedLeft", false );
+	
 	m_WidgetProperties.setPropertyAs<bool>( "zoomEvent", false );
 	m_WidgetProperties.setPropertyAs<float>( "currentZoom", 1.0 );
 	m_WidgetProperties.setPropertyAs<float>( "zoomFactorIn", 1.5 );
 	m_WidgetProperties.setPropertyAs<float>( "zoomFactorOut", 1.5 );
+	m_WidgetProperties.setPropertyAs<float>( "maxZoom", 20 );
+	
 	m_WidgetProperties.setPropertyAs<float>( "translationX", 0 );
 	m_WidgetProperties.setPropertyAs<float>( "translationY", 0 );
+
 }
 
 
@@ -75,9 +79,11 @@ bool QImageWidgetImplementation::removeImage(const boost::shared_ptr< ImageHolde
 
 void QImageWidgetImplementation::setZoom( float zoom )
 {
-	m_WidgetProperties.setPropertyAs<bool>("zoomEvent", true);
-	m_WidgetProperties.setPropertyAs<float>( "currentZoom", zoom >= 1.0 ? zoom : 1.0 );
-	update();
+	if( zoom <= m_WidgetProperties.getPropertyAs<float>("maxZoom") ) {
+		m_WidgetProperties.setPropertyAs<bool>("zoomEvent", true);
+		m_WidgetProperties.setPropertyAs<float>( "currentZoom", zoom >= 1.0 ? zoom : 1.0 );
+		update();
+	}
 }
 
 void QImageWidgetImplementation::paintEvent( QPaintEvent *event )
