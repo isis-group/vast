@@ -10,6 +10,7 @@
 
 int main( int argc, char *argv[] )
 {
+	ENABLE_LOG( isis::data::Runtime, isis::util::DefaultMsgPrint, isis::error );
 	std::string appName = "vast";
 	std::string orgName = "cbs.mpg.de";
 	std::map<std::string, isis::viewer::WidgetType> wTypeMap;
