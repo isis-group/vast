@@ -254,7 +254,7 @@ void QImageWidgetImplementation::paintCrosshair() const
 	boost::shared_ptr< ImageHolder > image = getWidgetSpecCurrentImage();
 	const ImageProperties &imgProps = m_ImageProperties.at( image );
 	std::pair<size_t, size_t> coords = QOrienationHandler::convertVoxel2WindowCoords( imgProps.viewPort, m_WidgetProperties, getWidgetSpecCurrentImage(), m_PlaneOrientation  );
-	uint8_t border = 500;
+	size_t border = 500;
 	
 	QLine xline1( coords.first, -border , coords.first, coords.second - 15);
 	QLine xline2( coords.first, coords.second + 15, coords.first, height() + border );
