@@ -79,6 +79,14 @@ bool QImageWidgetImplementation::removeImage( const boost::shared_ptr< ImageHold
 	m_ImageVector.erase( std::find( m_ImageVector.begin(), m_ImageVector.end(), image ) );
 }
 
+boost::shared_ptr< ImageHolder > QImageWidgetImplementation::getWidgetSpecCurrentImage() const
+{
+	if( std::find(m_ImageVector.begin(), m_ImageVector.end(), m_ViewerCore->getCurrentImage() ) != m_ImageVector.end() ) {
+		return m_ViewerCore->getCurrentImage();
+	}
+	return m_ImageVector.front();
+	
+}
 
 void QImageWidgetImplementation::setZoom( float zoom )
 {
@@ -92,19 +100,33 @@ void QImageWidgetImplementation::setZoom( float zoom )
 void QImageWidgetImplementation::paintEvent( QPaintEvent *event )
 {
 	m_Painter->begin( this );
+	boost::shared_ptr<ImageHolder> cImage =  getWidgetSpecCurrentImage();
 
 	//painting all anatomical images
 	BOOST_FOREACH( ImageVectorType::const_reference image, m_ImageVector ) {
-		if( image->getPropMap().getPropertyAs<bool>( "isVisible" )  && image->getImageProperties().imageType == ImageHolder::anatomical_image ) {
+		if( image.get() != cImage.get() 
+			&& image->getPropMap().getPropertyAs<bool>( "isVisible" )  
+			&& image->getImageProperties().imageType == ImageHolder::anatomical_image ) {
 			paintImage( image );
 		}
+	}
+	if( cImage->getImageProperties().imageType == ImageHolder::anatomical_image 
+		&& cImage->getPropMap().getPropertyAs<bool>("isVisible") ) {
+		paintImage( cImage );
 	}
 	//painting the zmaps
 	BOOST_FOREACH( ImageVectorType::const_reference image, m_ImageVector ) {
-		if( image->getPropMap().getPropertyAs<bool>( "isVisible" )  && image->getImageProperties().imageType == ImageHolder::z_map ) {
+		if( image.get() != cImage.get() 
+			&& image->getPropMap().getPropertyAs<bool>( "isVisible" )  
+			&& image->getImageProperties().imageType == ImageHolder::z_map ) {
 			paintImage( image );
 		}
 	}
+	if( cImage->getImageProperties().imageType == ImageHolder::z_map 
+		&& cImage->getPropMap().getPropertyAs<bool>("isVisible") ) {
+		paintImage( cImage );
+	}
+	
 	paintCrosshair();
 	m_Painter->end();
 
@@ -112,7 +134,7 @@ void QImageWidgetImplementation::paintEvent( QPaintEvent *event )
 
 void QImageWidgetImplementation::recalculateTranslation()
 {
-	boost::shared_ptr<ImageHolder > image = m_ViewerCore->getCurrentImage();
+	boost::shared_ptr<ImageHolder > image = getWidgetSpecCurrentImage();
 	util::ivector4 mappedSize = QOrienationHandler::mapCoordsToOrientation( image->getImageSize(), image, m_PlaneOrientation );
 	util::ivector4 mappedVoxelCoords = QOrienationHandler::mapCoordsToOrientation( image->getPropMap().getPropertyAs<util::ivector4>( "voxelCoords" ), image, m_PlaneOrientation, false, false );
 	util::ivector4 center = mappedSize / 2;
@@ -217,7 +239,7 @@ bool QImageWidgetImplementation::isInViewPort( const ViewPortType &viewPort, QMo
 
 void QImageWidgetImplementation::emitMousePressEvent( QMouseEvent *e )
 {
-	boost::shared_ptr<ImageHolder> image = m_ViewerCore->getCurrentImage();
+	boost::shared_ptr<ImageHolder> image = getWidgetSpecCurrentImage();
 	ImageProperties &imgProps = m_ImageProperties.at( image );
 
 	if( isInViewPort( imgProps.viewPort, e ) ) {
@@ -229,9 +251,9 @@ void QImageWidgetImplementation::emitMousePressEvent( QMouseEvent *e )
 
 void QImageWidgetImplementation::paintCrosshair()
 {
-	boost::shared_ptr< ImageHolder > image = m_ViewerCore->getCurrentImage();
+	boost::shared_ptr< ImageHolder > image = getWidgetSpecCurrentImage();
 	ImageProperties &imgProps = m_ImageProperties.at( image );
-	std::pair<uint16_t, size_t> coords = QOrienationHandler::convertVoxel2WindowCoords( imgProps.viewPort, m_WidgetProperties, m_ViewerCore->getCurrentImage(), m_PlaneOrientation  );
+	std::pair<uint16_t, size_t> coords = QOrienationHandler::convertVoxel2WindowCoords( imgProps.viewPort, m_WidgetProperties, getWidgetSpecCurrentImage(), m_PlaneOrientation  );
 
 	QLine xline1( coords.first, 0, coords.first, coords.second - 15 );
 	QLine xline2( coords.first, coords.second + 15, coords.first, height() );

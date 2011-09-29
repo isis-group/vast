@@ -63,9 +63,10 @@ void QViewerCore::addImageList( const std::list< data::Image > imageList, const 
 				widget.second->addImage( data );
 			}
 		}
+		emitImagesChanged( getDataContainer() );
 	}
 
-	emitImagesChanged( getDataContainer() );
+	
 }
 
 void QViewerCore::setImageList( const std::list< data::Image > imageList, const ImageHolder::ImageType &imageType, bool passToWidgets  )
@@ -78,9 +79,10 @@ void QViewerCore::setImageList( const std::list< data::Image > imageList, const 
 				widget.second->addImage( data.second );
 			}
 		}
+		emitImagesChanged( getDataContainer() );
 	}
 
-	emitImagesChanged( getDataContainer() );
+	
 
 }
 

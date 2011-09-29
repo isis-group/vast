@@ -76,6 +76,8 @@ private:
 	bool isInViewPort( const ViewPortType &viewPort, QMouseEvent *e ) const;
 	void recalculateTranslation();
 
+	boost::shared_ptr<ImageHolder> getWidgetSpecCurrentImage() const;
+	
 	QMemoryHandler m_MemoryHandler;
 
 	void commonInit();
