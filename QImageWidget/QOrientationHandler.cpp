@@ -101,7 +101,7 @@ ViewPortType QOrienationHandler::getViewPort(  util::PropertyMap &properties, co
 	float zoom = properties.getPropertyAs<float>( "currentZoom" );
 	util::ivector4 mappedSize = QOrienationHandler::mapCoordsToOrientation( image->getImageSize(), image, orientation );
 	util::fvector4 mappedScaling = QOrienationHandler::mapCoordsToOrientation( image->getISISImage()->getPropertyAs<util::fvector4>("voxelSize"), image, orientation );
-	mappedScaling *= QOrienationHandler::mapCoordsToOrientation( image->getISISImage()->getPropertyAs<util::fvector4>("voxelGap"), image, orientation );
+	mappedScaling += QOrienationHandler::mapCoordsToOrientation( image->getISISImage()->getPropertyAs<util::fvector4>("voxelGap"), image, orientation );
 	util::fvector4 physSize = mappedScaling * mappedSize;
 	
 	float scalew = w / float( physSize[0] );
