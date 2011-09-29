@@ -41,7 +41,7 @@ public:
 		util::ivector4 voxelCoords;
 		util::fvector4 physicalCoords;
 		Color::LookUpTableType lookUpTableType;
-		
+
 	};
 	ImageHolder( );
 

@@ -71,6 +71,7 @@ private:
 		}
 
 		glPixelStorei( GL_UNPACK_ALIGNMENT, 1 );
+
 		if( !gluCheckExtension( ( const GLubyte * )"GL_ARB_texture_non_power_of_two", glGetString( GL_EXTENSIONS ) ) ) {
 			LOG( Runtime, error ) << "Your OpenGL version does not support image sizes unequal n^2. The viewer is not yet capable of working with such OpenGL versions.";
 			return 0;
