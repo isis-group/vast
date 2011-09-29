@@ -100,15 +100,19 @@ ViewPortType QOrienationHandler::getViewPort(  util::PropertyMap &properties, co
 	ViewPortType viewPort;
 	float zoom = properties.getPropertyAs<float>( "currentZoom" );
 	util::ivector4 mappedSize = QOrienationHandler::mapCoordsToOrientation( image->getImageSize(), image, orientation );
-	util::ivector4 center = mappedSize / 2;
-	float scalew = w / float( mappedSize[0] );
-	float scaleh = h / float( mappedSize[1] );
-	float normh = scalew < scaleh ? scalew / scaleh : 1;
-	float normw = scalew > scaleh ? scaleh / scalew : 1;
-	viewPort[0] = scalew * normw * zoom;
-	viewPort[1] = scaleh * normh * zoom;
-	float offsetX = ( w - viewPort[0] * mappedSize[0] ) / 2 ;
-	float offsetY = ( h - viewPort[1] * mappedSize[1] ) / 2 ;
+	util::fvector4 mappedScaling = QOrienationHandler::mapCoordsToOrientation( image->getISISImage()->getPropertyAs<util::fvector4>("voxelSize"), image, orientation );
+	util::fvector4 physSize = mappedScaling * mappedSize;
+	
+	float scalew = w / float( physSize[0] );
+	float scaleh = h / float( physSize[1] );
+	
+	float scale = scaleh < scalew ? scaleh : scalew; 
+	
+	viewPort[0] =  mappedScaling[0] * zoom * scale;
+	viewPort[1] =  mappedScaling[1] * zoom * scale;
+	
+	float offsetX = ( w - (mappedSize[0] * viewPort[0]) ) / 2;
+	float offsetY = ( h - (mappedSize[1] * viewPort[1]) ) / 2;
 	viewPort[2] = offsetX ;
 	viewPort[3] = offsetY ;
 	viewPort[4] = round( mappedSize[0] * viewPort[0] );

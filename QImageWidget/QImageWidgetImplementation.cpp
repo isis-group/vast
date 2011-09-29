@@ -136,14 +136,15 @@ void QImageWidgetImplementation::recalculateTranslation()
 {
 	boost::shared_ptr<ImageHolder > image = getWidgetSpecCurrentImage();
 	util::ivector4 mappedSize = QOrienationHandler::mapCoordsToOrientation( image->getImageSize(), image, m_PlaneOrientation );
-	util::ivector4 mappedVoxelCoords = QOrienationHandler::mapCoordsToOrientation( image->getPropMap().getPropertyAs<util::ivector4>( "voxelCoords" ), image, m_PlaneOrientation, false, false );
+	util::ivector4 mappedVoxelCoords = QOrienationHandler::mapCoordsToOrientation( image->getPropMap().getPropertyAs<util::ivector4>( "voxelCoords" ), image, m_PlaneOrientation);
+	util::ivector4 signVec = QOrienationHandler::mapCoordsToOrientation( util::ivector4(1,1,1,1), image, m_PlaneOrientation, false, false );
 	util::ivector4 center = mappedSize / 2;
 	util::ivector4 diff = center - mappedVoxelCoords;
 	float zoom = m_WidgetProperties.getPropertyAs<float>( "currentZoom" );
 	float transXConst = ( ( center[0] + 2 ) - mappedSize[0] / ( 2 * zoom ) );
 	float transYConst = ( ( center[1] + 2 ) - mappedSize[1] / ( 2 * zoom ) );
-	float transX = transXConst * ( ( float )diff[0] / ( float )center[0] );
-	float transY = transYConst * ( ( float )diff[1] / ( float )center[1] );
+	float transX = transXConst * ( ( float )diff[0] / ( float )center[0] ) * signVec[0];
+	float transY = transYConst * ( ( float )diff[1] / ( float )center[1] ) * signVec[1];
 	ViewPortType viewPort = m_ImageProperties.at( image ).viewPort;
 	m_WidgetProperties.setPropertyAs<float>( "translationX", transX * viewPort[0] );
 	m_WidgetProperties.setPropertyAs<float>( "translationY", transY * viewPort[1] );
@@ -262,10 +263,6 @@ void QImageWidgetImplementation::paintCrosshair()
 	QLine yline2( coords.first + 15, coords.second, width(), coords.second  );
 
 	QPen pen;
-	QVector<qreal> dashes;
-	qreal space = 4;
-	dashes << 27 << space << 27 << space ;
-	pen.setDashPattern( dashes );
 	pen.setColor( QColor( 255, 102, 0 ) );
 	m_Painter->setOpacity( 1.0 );
 	m_Painter->resetTransform();
