@@ -130,7 +130,7 @@ void QGLWidgetImplementation::updateStateValues( boost::shared_ptr<ImageHolder> 
 
 	//if not happend already copy the image to GLtexture memory and return the texture id
 	if( image->getImageSize()[3] > m_ViewerCore->getCurrentImage()->getPropMap().getPropertyAs<uint16_t>( "currentTimestep" ) ) {
-		state.textureID = util::Singletons::get<GLTextureHandler, 10>().copyImageToTexture( image, m_ViewerCore->getCurrentImage()->getPropMap().getPropertyAs<uint16_t>( "currentTimestep" ), false, static_cast<GLTextureHandler::InterpolationType> (m_InterplationType) );
+		state.textureID = util::Singletons::get<GLTextureHandler, 10>().copyImageToTexture( image, m_ViewerCore->getCurrentImage()->getPropMap().getPropertyAs<uint16_t>( "currentTimestep" ), false, static_cast<GLTextureHandler::InterpolationType> ( m_InterplationType ) );
 	}
 
 	//update the texture matrix.
@@ -268,12 +268,13 @@ void QGLWidgetImplementation::paintImage( const std::pair< boost::shared_ptr<Ima
 {
 	double scaling, bias;
 	double extent = state.first->getMinMax().second->as<double>() - state.first->getMinMax().first->as<double>();
+
 	if( m_ScalingType == automatic_scaling ) {
 		scaling = state.first->getOptimalScalingPair().second;
-		bias = (1.0 / extent) * state.first->getOptimalScalingPair().first ;
+		bias = ( 1.0 / extent ) * state.first->getOptimalScalingPair().first ;
 	} else if ( m_ScalingType == manual_scaling ) {
 		scaling = m_ScalingPair.second;
-		bias = (1.0 / extent ) * m_ScalingPair.first;
+		bias = ( 1.0 / extent ) * m_ScalingPair.first;
 	} else {
 		scaling = 1.0;
 		bias = 0.0;
@@ -311,8 +312,8 @@ void QGLWidgetImplementation::paintImage( const std::pair< boost::shared_ptr<Ima
 		m_ScalingShader.setEnabled( true );
 		m_ScalingShader.addVariable<float>( "max", state.first->getMinMax().second->as<float>() );
 		m_ScalingShader.addVariable<float>( "min", state.first->getMinMax().first->as<float>() );
-		m_ScalingShader.addVariable<float>( "upper_threshold",  state.first->getPropMap().getPropertyAs<float>("lowerThreshold") );
-		m_ScalingShader.addVariable<float>( "lower_threshold", state.first->getPropMap().getPropertyAs<float>("lowerThreshold" ) );
+		m_ScalingShader.addVariable<float>( "upper_threshold",  state.first->getPropMap().getPropertyAs<float>( "lowerThreshold" ) );
+		m_ScalingShader.addVariable<float>( "lower_threshold", state.first->getPropMap().getPropertyAs<float>( "lowerThreshold" ) );
 		m_ScalingShader.addVariable<float>( "scaling", scaling );
 		m_ScalingShader.addVariable<float>( "bias", bias );
 		m_ScalingShader.addVariable<float>( "opacity", state.first->getPropMap().getPropertyAs<float>( "opacity" ) );
@@ -579,7 +580,7 @@ std::string QGLWidgetImplementation::getWidgetName() const
 	return windowTitle().toStdString();
 }
 
-void QGLWidgetImplementation::setWidgetName(const std::string& wName)
+void QGLWidgetImplementation::setWidgetName( const std::string &wName )
 {
 	setWindowTitle( QString( wName.c_str() ) );
 }

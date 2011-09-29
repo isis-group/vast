@@ -98,7 +98,7 @@ util::ivector4 QOrienationHandler::getMappedCoords( const boost::shared_ptr< Ima
 ViewPortType QOrienationHandler::getViewPort(  util::PropertyMap &properties, const boost::shared_ptr< ImageHolder > image, const size_t &w, const size_t &h, PlaneOrientation orientation )
 {
 	ViewPortType viewPort;
-	float zoom = properties.getPropertyAs<float>("currentZoom");
+	float zoom = properties.getPropertyAs<float>( "currentZoom" );
 	util::ivector4 mappedSize = QOrienationHandler::mapCoordsToOrientation( image->getImageSize(), image, orientation );
 	util::ivector4 center = mappedSize / 2;
 	float scalew = w / float( mappedSize[0] );
@@ -111,8 +111,8 @@ ViewPortType QOrienationHandler::getViewPort(  util::PropertyMap &properties, co
 	float offsetY = ( h - viewPort[1] * mappedSize[1] ) / 2 ;
 	viewPort[2] = offsetX ;
 	viewPort[3] = offsetY ;
-	viewPort[4] = round(mappedSize[0] * viewPort[0]);
-	viewPort[5] = round(mappedSize[1] * viewPort[1]);
+	viewPort[4] = round( mappedSize[0] * viewPort[0] );
+	viewPort[5] = round( mappedSize[1] * viewPort[1] );
 	return viewPort;
 }
 
@@ -124,8 +124,8 @@ QTransform QOrienationHandler::getTransform( const ViewPortType &viewPort, util:
 	util::ivector4 mappedVoxelCoords = QOrienationHandler::mapCoordsToOrientation( image->getPropMap().getPropertyAs<util::ivector4>( "voxelCoords" ), image, orientation );
 	QTransform retTransform;
 	retTransform.setMatrix( flipVec[0], 0, 0,
-				0, flipVec[1], 0,
-				0, 0, 1 );
+							0, flipVec[1], 0,
+							0, 0, 1 );
 
 	//calculate crosshair dependent translation
 	retTransform.translate( flipVec[0] * viewPort[2], flipVec[1] * viewPort[3] );
@@ -142,9 +142,11 @@ util::ivector4 QOrienationHandler::convertWindow2VoxelCoords( const util::FixedV
 	size_t voxCoordX = ( x - viewPort[2] ) / viewPort[0];
 	size_t voxCoordY = ( y - viewPort[3] ) / viewPort[1];
 	util::ivector4 coords =  util::ivector4( voxCoordX, voxCoordY, slice );
+
 	for ( size_t i = 0; i < 2; i++ ) {
-		coords[i] = mappedSize[i] < 0 ? abs(mappedSize[i]) - coords[i] - 1 : coords[i];
+		coords[i] = mappedSize[i] < 0 ? abs( mappedSize[i] ) - coords[i] - 1 : coords[i];
 	}
+
 	return QOrienationHandler::mapCoordsToOrientation( coords, image, orientation, true );
 }
 

@@ -24,7 +24,7 @@ class QGLWidgetImplementation : public QGLWidget, public QWidgetImplementationBa
 {
 	Q_OBJECT
 public:
-	
+
 	QGLWidgetImplementation( QViewerCore *core, QWidget *parent = 0, QGLWidget *share = 0, PlaneOrientation orienation = axial );
 	QGLWidgetImplementation( QViewerCore *core, QWidget *parent = 0, PlaneOrientation orientation = axial );
 
@@ -55,9 +55,9 @@ public Q_SLOTS:
 	virtual void updateScene( bool center = false );
 
 	virtual bool isInitialized() { return m_Flags.glInitialized; }
-	
+
 	virtual std::string getWidgetName() const;
-	virtual void setWidgetName( const std::string &wName);
+	virtual void setWidgetName( const std::string &wName );
 
 protected:
 	virtual void mouseMoveEvent( QMouseEvent *e );

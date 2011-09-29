@@ -57,7 +57,7 @@ public:
 	boost::numeric::ublas::matrix<float> getImageOrientation( bool transposed = false ) const;
 	std::pair<util::ValueReference, util::ValueReference> getMinMax() const { return m_MinMax; }
 	std::pair<util::ValueReference, util::ValueReference> getInternMinMax() const { return m_InternMinMax; }
-	
+
 	/**offset, scaling**/
 	std::pair<double, double> getOptimalScalingPair() const { return m_OptimalScalingPair;  }
 	boost::weak_ptr<void>
@@ -71,7 +71,7 @@ public:
 
 	const ImageProperties &getImageProperties() const { return m_ImageProperties; }
 	ImageProperties &getImageProperties() { return m_ImageProperties; }
-	
+
 	/**offset, scaling**/
 	template<typename TYPE>
 	std::pair<double, double> getOptimalScalingToForType( const std::pair<double, double> &cutAway ) const {

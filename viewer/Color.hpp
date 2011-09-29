@@ -15,11 +15,11 @@ class ImageHolder;
 
 class Color
 {
-	
+
 public:
 	enum LookUpTableType { standard_grey_values, zmap_standard };
 	typedef QVector<QRgb> ColorMapType;
-	
+
 	Color();
 	ColorMapType getColorTable() const { return m_ColorTable; }
 	void setLutType( LookUpTableType type ) { m_LutType = type; }
@@ -28,7 +28,7 @@ public:
 	void resetOffsetAndScaling();
 	void setImage( const boost::shared_ptr<ImageHolder> image ) { m_ImageHolder = image; }
 	void setOmitZeros( bool omit ) { m_OmitZeros = omit; }
-	
+
 	void update();
 private:
 	ColorMapType m_ColorTable;
@@ -37,7 +37,7 @@ private:
 	std::pair<double, double> m_OffsetScaling;
 	boost::shared_ptr<ImageHolder> m_ImageHolder;
 	bool m_OmitZeros;
-	
+
 };
 
 }

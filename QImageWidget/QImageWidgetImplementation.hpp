@@ -23,15 +23,14 @@ namespace qt
 class QImageWidgetImplementation : public QWidget, public QWidgetImplementationBase
 {
 	Q_OBJECT
-	struct ImageProperties
-	{	
+	struct ImageProperties {
 		/**scaling, offset, size**/
 		ViewPortType viewPort;
 		Color colorHandler;
 		util::PropertyMap propMap;
 	};
 	typedef std::map<boost::shared_ptr<ImageHolder>, ImageProperties> ImagePropertiesMapType;
-	
+
 public:
 	QImageWidgetImplementation( QViewerCore *core, QWidget *parent = 0, QWidget *share = 0, PlaneOrientation orienation = axial );
 	QImageWidgetImplementation( QViewerCore *core, QWidget *parent = 0, PlaneOrientation orientation = axial );
@@ -42,7 +41,7 @@ public Q_SLOTS:
 
 	virtual void setZoom( float zoom );
 	virtual void addImage( const boost::shared_ptr<ImageHolder> image );
-	virtual bool removeImage( const boost::shared_ptr<ImageHolder> image);
+	virtual bool removeImage( const boost::shared_ptr<ImageHolder> image );
 	virtual void paintImage( boost::shared_ptr< ImageHolder > image );
 	virtual void paintCrosshair();
 	virtual void setScalingType( ScalingType scaling );
@@ -51,9 +50,9 @@ public Q_SLOTS:
 	virtual bool lookAtVoxelCoords( const util::ivector4 &voxelCoords );
 	virtual void updateScene( bool center );
 	virtual void setInterpolationType( InterpolationType interType ) { m_InterpolationType = interType; }
-	
+
 	virtual std::string getWidgetName() const;
-	virtual void setWidgetName( const std::string &wName);
+	virtual void setWidgetName( const std::string &wName );
 
 protected:
 	void paintEvent( QPaintEvent *event );
@@ -72,21 +71,21 @@ Q_SIGNALS:
 
 private:
 	ImagePropertiesMapType m_ImageProperties;
-	
+
 	void emitMousePressEvent( QMouseEvent *e );
 	bool isInViewPort( const ViewPortType &viewPort, QMouseEvent *e ) const;
 	void recalculateTranslation();
 
 	QMemoryHandler m_MemoryHandler;
-	
+
 	void commonInit();
 	util::PropertyMap m_WidgetProperties;
 	QPainter *m_Painter;
 	InternalImageType m_InterpolationType;
 	ScalingType m_ScalingType;
 	ImageVectorType m_ImageVector;
-	
-	
+
+
 };
 
 
