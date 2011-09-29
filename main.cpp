@@ -20,7 +20,7 @@ int main( int argc, char *argv[] )
 	isis::util::Selection wTypes( "gl,qt" );
 	wTypeMap.insert( std::make_pair<std::string, isis::viewer::WidgetType>( "gl", type_gl ) );
 	wTypeMap.insert( std::make_pair<std::string, isis::viewer::WidgetType>( "qt", type_qt ) );
-	wTypes.set( "gl" );
+	wTypes.set( "qt" );
 	dbg_levels.set( "warning" );
 	isis::util::Selection image_types( "anatomical,zmap" );
 	image_types.set( "anatomical" );
