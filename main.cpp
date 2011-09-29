@@ -10,29 +10,31 @@
 
 int main( int argc, char *argv[] )
 {
-	ENABLE_LOG( isis::data::Runtime, isis::util::DefaultMsgPrint, isis::error );
+	using namespace isis;
+	using namespace viewer;
+	ENABLE_LOG( data::Runtime, DefaultMsgPrint, error );
 	std::string appName = "vast";
 	std::string orgName = "cbs.mpg.de";
-	std::map<std::string, isis::viewer::WidgetType> wTypeMap;
-	using namespace isis::viewer;
-	isis::viewer::QViewerCore *core = new isis::viewer::QViewerCore( appName, orgName );
+	std::map<std::string, WidgetType> wTypeMap;
+	
+	QViewerCore *core = new QViewerCore( appName, orgName );
 
-	isis::util::Selection dbg_levels( "error,warning,info,verbose_info" );
-	isis::util::Selection wTypes( "gl,qt" );
-	wTypeMap.insert( std::make_pair<std::string, isis::viewer::WidgetType>( "gl", type_gl ) );
-	wTypeMap.insert( std::make_pair<std::string, isis::viewer::WidgetType>( "qt", type_qt ) );
+	util::Selection dbg_levels( "error,warning,info,verbose_info" );
+	util::Selection wTypes( "gl,qt" );
+	wTypeMap.insert( std::make_pair<std::string, WidgetType>( "gl", type_gl ) );
+	wTypeMap.insert( std::make_pair<std::string, WidgetType>( "qt", type_qt ) );
 	wTypes.set( "qt" );
 	dbg_levels.set( "warning" );
-	isis::util::Selection image_types( "anatomical,zmap" );
+	util::Selection image_types( "anatomical,zmap" );
 	image_types.set( "anatomical" );
 
-	isis::qt4::IOQtApplication app( appName.c_str(), false, false );
+	qt4::IOQtApplication app( appName.c_str(), false, false );
 
 	std::cout << "v" << core->getVersion() << " ( isis core: " << app.getCoreVersion() << " )" << std::endl;
-	app.parameters["in"] = isis::util::slist();
+	app.parameters["in"] = util::slist();
 	app.parameters["in"].needed() = false;
 	app.parameters["in"].setDescription( "The input image file list." );
-	app.parameters["zmap"] = isis::util::slist();
+	app.parameters["zmap"] = util::slist();
 	app.parameters["zmap"].needed() = false;
 	app.parameters["zmap"].setDescription( "The input image file list is interpreted as zmaps. " );
 	app.parameters["type"] = image_types;
@@ -60,22 +62,22 @@ int main( int argc, char *argv[] )
 	app.parameters["wtype"].needed() = false;
 	app.parameters["wtype"].hidden() = true;
 	app.parameters["wtype"].setDescription( "Sets the type of the widgets" );
-	boost::shared_ptr< isis::util::ProgressFeedback > feedback = boost::shared_ptr<isis::util::ProgressFeedback>( new isis::util::ConsoleFeedback );
-	isis::data::IOFactory::setProgressFeedback( feedback );
+	boost::shared_ptr< util::ProgressFeedback > feedback = boost::shared_ptr<util::ProgressFeedback>( new util::ConsoleFeedback );
+	data::IOFactory::setProgressFeedback( feedback );
 	//setting graphics mode
 	app.getQApplication().setGraphicsSystem( "raster" );
 	app.init( argc, argv, true );
-	app.setLog<isis::ViewerLog>( app.getLLMap()[app.parameters["dViewer"]->as<isis::util::Selection>()] );
-	app.setLog<isis::ViewerDebug>( app.getLLMap()[app.parameters["dViewer"]->as<isis::util::Selection>()] );
-	isis::util::slist fileList = app.parameters["in"];
-	isis::util::slist zmapFileList = app.parameters["zmap"];
-	std::list< isis::data::Image > imgList;
-	std::list< isis::data::Image > zImgList;
+	app.setLog<ViewerLog>( app.getLLMap()[app.parameters["dViewer"]->as<util::Selection>()] );
+	app.setLog<ViewerDebug>( app.getLLMap()[app.parameters["dViewer"]->as<util::Selection>()] );
+	util::slist fileList = app.parameters["in"];
+	util::slist zmapFileList = app.parameters["zmap"];
+	std::list< data::Image > imgList;
+	std::list< data::Image > zImgList;
 
 	//load the anatomical images
-	BOOST_FOREACH ( isis::util::slist::const_reference fileName, fileList ) {
-		std::list< isis::data::Image > tmpList = isis::data::IOFactory::load( fileName, app.parameters["rf"].toString(), app.parameters["rdialect"].toString() );
-		BOOST_FOREACH( std::list< isis::data::Image >::reference imageRef, tmpList ) {
+	BOOST_FOREACH ( util::slist::const_reference fileName, fileList ) {
+		std::list< data::Image > tmpList = data::IOFactory::load( fileName, app.parameters["rf"].toString(), app.parameters["rdialect"].toString() );
+		BOOST_FOREACH( std::list< data::Image >::reference imageRef, tmpList ) {
 			//          if( app.parameters["old_lipsia"] ) {
 			//              setOrientationToIdentity( imageRef );
 			//          }
@@ -84,9 +86,9 @@ int main( int argc, char *argv[] )
 		}
 	}
 	//load the zmap images
-	BOOST_FOREACH ( isis::util::slist::const_reference fileName, zmapFileList ) {
-		std::list< isis::data::Image > tmpList = isis::data::IOFactory::load( fileName, app.parameters["rf"].toString(), app.parameters["rdialect"].toString() );
-		BOOST_FOREACH( std::list< isis::data::Image >::reference imageRef, tmpList ) {
+	BOOST_FOREACH ( util::slist::const_reference fileName, zmapFileList ) {
+		std::list< data::Image > tmpList = data::IOFactory::load( fileName, app.parameters["rf"].toString(), app.parameters["rdialect"].toString() );
+		BOOST_FOREACH( std::list< data::Image >::reference imageRef, tmpList ) {
 			//          if( app.parameters["old_lipsia"] ) {
 			//              setOrientationToIdentity( imageRef );
 			//          }
@@ -96,7 +98,7 @@ int main( int argc, char *argv[] )
 	}
 	bool assamble = false;
 
-	isis::viewer::MainWindowUIInterface isisViewerMainWindow( core, wTypeMap[app.parameters["wtype"].toString()] );
+	MainWindowUIInterface isisViewerMainWindow( core, wTypeMap[app.parameters["wtype"].toString()] );
 
 	if( app.parameters["zmap"].isSet() ) {
 		if( app.parameters["split"] && zImgList.size() > 1 ) {
