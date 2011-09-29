@@ -254,20 +254,21 @@ void QImageWidgetImplementation::paintCrosshair()
 {
 	boost::shared_ptr< ImageHolder > image = getWidgetSpecCurrentImage();
 	ImageProperties &imgProps = m_ImageProperties.at( image );
-	std::pair<uint16_t, size_t> coords = QOrienationHandler::convertVoxel2WindowCoords( imgProps.viewPort, m_WidgetProperties, getWidgetSpecCurrentImage(), m_PlaneOrientation  );
+	std::pair<size_t, size_t> coords = QOrienationHandler::convertVoxel2WindowCoords( imgProps.viewPort, m_WidgetProperties, getWidgetSpecCurrentImage(), m_PlaneOrientation  );
+	
+	QLine xline1( coords.first, imgProps.viewPort[3], coords.first, coords.second - 15);
+	QLine xline2( coords.first, coords.second + 15, coords.first, height() + imgProps.viewPort[3] );
 
-	QLine xline1( coords.first, 0, coords.first, coords.second - 15 );
-	QLine xline2( coords.first, coords.second + 15, coords.first, height() );
-
-	QLine yline1( 0, coords.second, coords.first - 15, coords.second );
-	QLine yline2( coords.first + 15, coords.second, width(), coords.second  );
+	QLine yline1( imgProps.viewPort[2], coords.second, coords.first - 15, coords.second );
+	QLine yline2( coords.first + 15, coords.second, width() + imgProps.viewPort[2], coords.second  );
 
 	QPen pen;
 	pen.setColor( QColor( 255, 102, 0 ) );
 	m_Painter->setOpacity( 1.0 );
+	m_Painter->resetMatrix();
 	m_Painter->resetTransform();
 	m_Painter->setTransform( QOrienationHandler::getTransform( imgProps.viewPort, m_WidgetProperties, image, width(), height(), m_PlaneOrientation ) );
-	m_Painter->scale( 1.0 / imgProps.viewPort[0], 1.0 / imgProps.viewPort[1] );
+	m_Painter->scale( 1.0 / imgProps.viewPort[0], 1.0 / imgProps.viewPort[1] );	
 	m_Painter->translate( -imgProps.viewPort[2], -imgProps.viewPort[3] );
 	m_Painter->setPen( pen );
 	m_Painter->drawLine( xline1 );

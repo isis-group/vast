@@ -136,12 +136,13 @@ QTransform QOrienationHandler::getTransform( const ViewPortType &viewPort, util:
 	retTransform.translate( flipVec[0] * viewPort[2], flipVec[1] * viewPort[3] );
 	retTransform.scale( viewPort[0], viewPort[1] );
 	retTransform.translate(  flipVec[0] < 0 ? -mappedSize[0] : 0, flipVec[1] < 0 ? -mappedSize[1] : 0 );
-
+	
+	
 	return retTransform;
 
 }
 
-util::ivector4 QOrienationHandler::convertWindow2VoxelCoords( const util::FixedVector<float, 6> &viewPort, const util::PropertyMap &properties, const boost::shared_ptr< ImageHolder > image, const size_t &x, const size_t &y, const size_t &slice, PlaneOrientation orientation )
+util::ivector4 QOrienationHandler::convertWindow2VoxelCoords( const ViewPortType &viewPort, const util::PropertyMap &properties, const boost::shared_ptr< ImageHolder > image, const size_t &x, const size_t &y, const size_t &slice, PlaneOrientation orientation )
 {
 	util::ivector4 mappedSize = QOrienationHandler::mapCoordsToOrientation( image->getImageSize(), image, orientation, false, false );
 	size_t voxCoordX = ( x - viewPort[2] ) / viewPort[0];
@@ -155,7 +156,7 @@ util::ivector4 QOrienationHandler::convertWindow2VoxelCoords( const util::FixedV
 	return QOrienationHandler::mapCoordsToOrientation( coords, image, orientation, true );
 }
 
-std::pair< size_t, size_t > QOrienationHandler::convertVoxel2WindowCoords( const util::FixedVector<float, 6> &viewPort, const isis::util::PropertyMap &properties, const boost::shared_ptr< ImageHolder > image, PlaneOrientation orientation )
+std::pair< size_t, size_t > QOrienationHandler::convertVoxel2WindowCoords( const ViewPortType &viewPort, const isis::util::PropertyMap &properties, const boost::shared_ptr< ImageHolder > image, PlaneOrientation orientation )
 {
 	util::ivector4 mappedVoxelCoords = QOrienationHandler::mapCoordsToOrientation( image->getPropMap().getPropertyAs<util::ivector4>( "voxelCoords" ), image, orientation );
 	float halfVoxelX = viewPort[0] / 2;
