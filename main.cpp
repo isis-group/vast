@@ -12,7 +12,7 @@ int main( int argc, char *argv[] )
 {
 	using namespace isis;
 	using namespace viewer;
-	ENABLE_LOG( data::Runtime, DefaultMsgPrint, error );
+	ENABLE_LOG( data::Runtime, util::DefaultMsgPrint, error );
 	std::string appName = "vast";
 	std::string orgName = "cbs.mpg.de";
 	std::map<std::string, WidgetType> wTypeMap;
