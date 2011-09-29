@@ -6,28 +6,56 @@ namespace isis
 {
 namespace viewer
 {
-
-std::vector< util::fvector4 > Color::getColorGradientRGB( const Color::LookUpTableType &lutType, const size_t &numberOfEntries )
+	
+Color::Color()
+	: m_NumberOfElements( 256 ),
+	m_LutType( standard_grey_values ),
+	m_OffsetScaling( std::make_pair<double, double>(0.0, 1.0) ),
+	m_OmitZeros( false )
 {
 
-	std::vector< util::fvector4 > retRGBGradient(numberOfEntries);
-	QColor rgbColor;
-	switch(lutType) {
-		case Color::zmap_standard: {
-			for( size_t i = 0; i < (numberOfEntries / 2); i++) {
-				if( i < (numberOfEntries / 4) ) {
-					retRGBGradient[(numberOfEntries-1)-((numberOfEntries / 2)-i-1)] = util::fvector4(255, i*4, i*2);
-					retRGBGradient[(numberOfEntries-1)-(i+(numberOfEntries / 2))] = util::fvector4(i*2, i*4, 255);
-				} else {
-					retRGBGradient[(numberOfEntries-1)-((numberOfEntries / 2)-i-1)] = util::fvector4(255, 255, i*2);
-					retRGBGradient[(numberOfEntries-1)-(i+(numberOfEntries / 2))] = util::fvector4(i*2, 255, 255);
-				}	
+}
+	
+void Color::update()
+{
+	m_ColorTable.resize( m_NumberOfElements );
+	switch( m_LutType ) {
+		case Color::standard_grey_values: {
+			int value = m_OffsetScaling.first;
+			int sum = (m_NumberOfElements * m_OffsetScaling.second) / m_NumberOfElements;
+			for ( size_t i = 0; i < m_NumberOfElements; i++ ) {
+				m_ColorTable[i] = QColor( value, value, value, 255 ).rgba();
+				value+sum > 255 ? value : value+=sum;
 			}
-			return retRGBGradient;
+			break;
+		}
+		case Color::zmap_standard: {
+			for( size_t i = 0; i < ( m_NumberOfElements / 2 ); i++ ) {
+				if( i < ( m_NumberOfElements / 4 ) ) {
+					m_ColorTable[( m_NumberOfElements - 1 ) - ( ( m_NumberOfElements / 2 ) - i - 1 )] = QColor( 255, i * 4, i * 2, 255 ).rgba();
+					m_ColorTable[( m_NumberOfElements - 1 ) - ( i + ( m_NumberOfElements / 2 ) )] = QColor( i * 2, i * 4, 255, 255 ).rgba();
+				} else {
+					m_ColorTable[( m_NumberOfElements - 1 ) - ( ( m_NumberOfElements / 2 ) - i - 1 )] = QColor( 255, 255, i * 2, 255 ).rgba();
+					m_ColorTable[( m_NumberOfElements - 1 ) - ( i + ( m_NumberOfElements / 2 ) )] = QColor( i * 2, 255, 255, 255 ).rgba();
+				}
+			}
+			m_ColorTable[0] = QColor(0,0,0,0).rgba();
 			break;
 		}
 	}
+	if( m_OmitZeros && m_ImageHolder.get() ) {
+		double extent = m_ImageHolder->getMinMax().second->as<double>() - m_ImageHolder->getMinMax().first->as<double>();
+		int elemZero = (m_NumberOfElements / extent) * fabs(m_ImageHolder->getMinMax().first->as<double>());
+		m_ColorTable[elemZero] = QColor(0,0,0,0).rgba();
+	}
+	
 }
+
+void Color::resetOffsetAndScaling()
+{
+	m_OffsetScaling = std::make_pair<double, double>(0.0, 1.0);
+}
+
 
 
 }

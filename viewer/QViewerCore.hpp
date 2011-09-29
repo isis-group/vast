@@ -1,9 +1,9 @@
-#ifndef VIEWERCORE_HPP
-#define VIEWERCORE_HPP
+#ifndef QVIEWERCORE_HPP
+#define QVIEWERCORE_HPP
 
 
 #include "ViewerCoreBase.hpp"
-#include "QGLWidgetImplementation.hpp"
+#include "QWidgetImplementationBase.hpp"
 #include <QtGui>
 #include "Color.hpp"
 
@@ -11,26 +11,27 @@ namespace isis
 {
 namespace viewer
 {
-
 class QViewerCore : public QObject, public ViewerCoreBase
 {
 	Q_OBJECT
 public:
 	enum Actions {not_specified, timestep_changed, show_labels};
-	typedef std::map<std::string, QWidget * > WidgetMap;
+	typedef std::map<std::string, QWidgetImplementationBase * > WidgetMap;
 	QViewerCore( const std::string &appName = std::string(), const std::string &orgName = std::string() );
 
-	virtual bool registerWidget( std::string key, QWidget *widget, Actions = not_specified );
+
+	bool registerWidget( std::string key, QWidgetImplementationBase *widget, Actions = not_specified );
 
 	virtual void addImageList( const std::list< data::Image > imageList, const ImageHolder::ImageType &imageType, bool passToWidgets );
 	virtual void setImageList( const std::list< data::Image > imageList, const ImageHolder::ImageType &imageType, bool passToWidgets );
 
 	const WidgetMap &getWidgets() const { return m_WidgetMap; }
-	const QSettings* getSettings() const { return m_Settings; }
-	QSettings* getSettings() { return m_Settings; }
+	WidgetMap &getWidgets() { return m_WidgetMap; }
+	const QSettings *getSettings() const { return m_Settings; }
+	QSettings *getSettings() { return m_Settings; }
 
-	bool widgetsAreIntitialized() const;
-	
+	//  bool widgetsAreIntitialized() const;
+
 	std::vector< util::fvector4 > getRGBColorGradient() const { return m_RGBColorGradient; }
 
 	template<typename T>
@@ -64,10 +65,9 @@ Q_SIGNALS:
 	void emitTimeStepChange( unsigned int );
 	void emitImagesChanged( DataContainer );
 	void emitShowLabels( bool );
-	void emitSetAutomaticScaling( bool );
 	void emitUpdateScene( bool center );
 
-private:	
+private:
 	//this map holds the widgets associated with a given name
 	WidgetMap m_WidgetMap;
 	std::vector< util::fvector4 > m_RGBColorGradient;

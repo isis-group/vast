@@ -46,6 +46,7 @@ public:
 		for( size_t i = 0; i < matrixSize; i++ ) {
 			tempVec( i ) = inVec[i];
 		}
+
 		boost::numeric::ublas::vector<TYPE> result = boost::numeric::ublas::prod( transform, tempVec );
 		util::FixedVector<TYPE, 4> retVec;
 

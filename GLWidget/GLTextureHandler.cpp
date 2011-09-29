@@ -36,7 +36,7 @@ GLuint GLTextureHandler::copyImageToTexture(  const boost::shared_ptr<ImageHolde
 		return m_ImageMap[image][timestep];
 	}
 
-	return internCopyImageToTexture<GLTextureHandler::TYPE>( GL_UNSIGNED_BYTE, image, timestep, withAlpha, interpolation );
+	return internCopyImageToTexture<InternalImageType>( GL_UNSIGNED_BYTE, image, timestep, withAlpha, interpolation );
 
 
 }
@@ -44,9 +44,9 @@ bool GLTextureHandler::forceReloadingAllOfType( ImageHolder::ImageType imageType
 {
 	typedef std::map< size_t, GLuint> TimeStepMap;
 	BOOST_FOREACH( ImageMapType::const_reference image, m_ImageMap ) {
-		if( image.first->getImageState().imageType == imageType ) {
+		if( image.first->getImageProperties().imageType == imageType ) {
 			BOOST_FOREACH( TimeStepMap::const_reference timestep, image.second ) {
-				internCopyImageToTexture<GLTextureHandler::TYPE>( GL_UNSIGNED_BYTE, image.first, timestep.first, withAlpha, interpolation );
+				internCopyImageToTexture<InternalImageType>( GL_UNSIGNED_BYTE, image.first, timestep.first, withAlpha, interpolation );
 			}
 		}
 	}

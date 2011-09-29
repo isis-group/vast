@@ -17,14 +17,15 @@ class MainWindowBase : public QMainWindow
 public:
 	MainWindowBase( QWidget *parent = 0 );
 
+
 protected Q_SLOTS:
 
 Q_SIGNALS:
 
 
 protected:
-	QPreferencesDialog* m_PreferencesDialog;
-	QPlottingDialog* m_PlottingDialog;
+	QPreferencesDialog *m_PreferencesDialog;
+	QPlottingDialog *m_PlottingDialog;
 	Ui::isisViewerMain ui;
 	QScrollArea *sa;
 	QString m_CurrentPath;

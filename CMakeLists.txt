@@ -5,6 +5,7 @@ PROJECT(vast)
 # collecting files
 file (GLOB VIEWER_FILES_CPP viewer/*.c viewer/*.cpp)
 file (GLOB GLWIDGET_FILES_CPP GLWidget/*.cpp GLWidget/*.c)
+file (GLOB QWIDGET_FILES_CPP QImageWidget/*.cpp QImageWidget/*.c)
 file (GLOB UI_FILES forms/*.ui)
 file (GLOB RESOURCE_FILES resources/*.qrc)
 
@@ -17,7 +18,8 @@ set(VIEWER_FILES_HPP
 	viewer/QPlottingDialog.hpp
 )
 set(GLWIDGET_FILES_HPP
-	GLWidget/QGLWidgetImplementation.hpp)
+	GLWidget/QGLWidgetImplementation.hpp
+	QImageWidget/QImageWidgetImplementation.hpp)
 
 ##########################################################
 # set viewer version number
@@ -36,7 +38,6 @@ add_definitions(-D_ISIS_VIEWER_VERSION_PATCH=${ISIS_VIEWER_VERSION_PATCH})
 SET(ISIS_DIR /usr/share/isis/cmake CACHE PATH 
     "The directory where the isis cmake configuration skript script is located.")
 find_package(ISIS REQUIRED)
-include_directories(${ISIS_INCLUDE_DIRS})
 
 option(ISIS_RUNTIME_LOG "Toggles the isis runtime logging" ON)
 option(ISIS_DEBUG_LOG "Toggles the isis debug logging" ON) 
@@ -109,6 +110,7 @@ FIND_PACKAGE(Boost REQUIRED)
 
 INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIR})
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/GLWidget)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/QImageWidget)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/viewer)
 
 #this flags has to be set due to use parallel with boos::signal
@@ -136,7 +138,7 @@ INCLUDE(CPack)
 
 
 
-add_executable(vast main.cpp ${GLWIDGET_FILES_CPP} ${VIEWER_FILES_CPP} ${vast_UIS_H} ${vast_moc_files} ${vast_rcc_files})
+add_executable(vast main.cpp ${QWIDGET_FILES_CPP} ${GLWIDGET_FILES_CPP} ${VIEWER_FILES_CPP} ${vast_UIS_H} ${vast_moc_files} ${vast_rcc_files})
 find_library(isisqt4_LIBRARY "isisAdapter_qt4")
 
 set(NEEDED_LIBS

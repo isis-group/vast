@@ -16,6 +16,7 @@ using namespace boost::numeric::ublas;
 GLOrientationHandler::MatrixType GLOrientationHandler::transformToPlaneView( const MatrixType &origMatrix, PlaneOrientation orientation, bool back )
 {
 	MatrixType transformMatrix = identity_matrix<float>( matrixSize, matrixSize );
+
 	switch ( orientation ) {
 	case axial:
 		/*setup axial matrix
@@ -107,9 +108,9 @@ util::ivector4 GLOrientationHandler::transformObject2VoxelCoords( const util::fv
 	short voxelx =  image->getImageSize()[0] * transformedObjectCoords( 0 );
 	short voxely =  image->getImageSize()[1] * transformedObjectCoords( 1 );
 	short voxelz =  image->getImageSize()[2] * transformedObjectCoords( 2 );
-	voxelx = direction( 0 ) < 0 ? image->getImageSize()[0] + voxelx -1: voxelx;
-	voxely = direction( 1 ) < 0 ? image->getImageSize()[1] + voxely -1 : voxely;
-	voxelz = direction( 2 ) < 0 ? image->getImageSize()[2] + voxelz -1 : voxelz;
+	voxelx = direction( 0 ) < 0 ? image->getImageSize()[0] + voxelx - 1 : voxelx;
+	voxely = direction( 1 ) < 0 ? image->getImageSize()[1] + voxely - 1 : voxely;
+	voxelz = direction( 2 ) < 0 ? image->getImageSize()[2] + voxelz - 1 : voxelz;
 	return util::ivector4( voxelx, voxely, voxelz );
 
 }
@@ -123,18 +124,21 @@ util::dvector4 GLOrientationHandler::transformVoxel2ObjectCoords( const isis::ut
 	for( size_t i = 0; i < matrixSize; i++ ) {
 		oneVector( i ) = 1;
 	}
+
 	VectorType direction = prod (  orientation , oneVector );
+
 	for ( unsigned short i = 0; i < 3; i++ ) {
 		objectCoords[i] = ( 1.0 / image->getImageSize()[i] ) * voxelCoords[i];
 		oneHalfVoxel[i] = 0.5 / image->getImageSize()[i];
 	}
+
 	util::dvector4 transformedObjectCoords = transformVector<float>( objectCoords, orientation );
 	util::dvector4 transformedOneHalfVoxel = transformVector<float>( oneHalfVoxel, orientation );
 	util::dvector4 retVec;
-	retVec[0] = direction(0) > 0 ?  -1.0 + 2 * ( transformedObjectCoords[0] + transformedOneHalfVoxel[0] ) : 1.0 + 2 * ( transformedObjectCoords[0] + transformedOneHalfVoxel[0] ) ;
-	retVec[1] = direction(1) > 0 ?  -1.0 + 2 * ( transformedObjectCoords[1] + transformedOneHalfVoxel[1] ) : 1.0 + 2 * ( transformedObjectCoords[1] + transformedOneHalfVoxel[1] ) ;
-	retVec[2] = direction(2) > 0 ? transformedObjectCoords[2] + transformedOneHalfVoxel[2] : 1.0 + transformedObjectCoords[2] + transformedOneHalfVoxel[2] ;
-	
+	retVec[0] = direction( 0 ) > 0 ?  -1.0 + 2 * ( transformedObjectCoords[0] + transformedOneHalfVoxel[0] ) : 1.0 + 2 * ( transformedObjectCoords[0] + transformedOneHalfVoxel[0] ) ;
+	retVec[1] = direction( 1 ) > 0 ?  -1.0 + 2 * ( transformedObjectCoords[1] + transformedOneHalfVoxel[1] ) : 1.0 + 2 * ( transformedObjectCoords[1] + transformedOneHalfVoxel[1] ) ;
+	retVec[2] = direction( 2 ) > 0 ? transformedObjectCoords[2] + transformedOneHalfVoxel[2] : 1.0 + transformedObjectCoords[2] + transformedOneHalfVoxel[2] ;
+
 	return retVec;
 
 }
@@ -144,10 +148,7 @@ void GLOrientationHandler::recalculateViewport( size_t w, size_t h, util::fvecto
 {
 	//first we have to map the imagesize and scaling to our current planeview
 	util::fvector4 physicalSize;
-
-	for ( unsigned short i = 0; i < 3; i++ ) {
-		physicalSize[i] = mappedVoxelSize[i] * mappedImageSize[i];
-	}
+	physicalSize = mappedVoxelSize * mappedImageSize;
 
 	size_t wspace = w - 2 * border;
 	size_t hspace = h - 2 * border;

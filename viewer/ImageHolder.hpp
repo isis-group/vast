@@ -28,20 +28,16 @@ class ImageHolder
 public:
 
 	typedef data::_internal::ValuePtrBase::Reference ImagePointerType;
+
 	enum ImageType { anatomical_image, z_map };
-	struct ImageState {
+
+	//here we store only properties which can not be stored as isis::PropertyValue
+	struct ImageProperties {
 		ImageType imageType;
-		std::pair<double, double> threshold;
+		InterpolationType interpolationType;
 		std::pair<double, double> zmapThreshold;
-		size_t stackPosition;
-		float opacity;
-		bool visible;
-		size_t timestep;
-		double currentIntensityAsDouble;
-		util::ivector4 voxelCoords;
-		util::fvector4 physicalCoords;
 		Color::LookUpTableType lookUpTableType;
-		
+
 	};
 	ImageHolder( );
 
@@ -51,14 +47,18 @@ public:
 	void setID( size_t id ) { m_ID = id; }
 
 	std::vector< ImagePointerType > getImageVector() const { return m_ImageVector; }
+	std::vector< data::Chunk > getChunkVector() const { return m_ChunkVector; }
 	std::vector< util::PropertyMap > getTimeStepProperties() const { return m_TimeStepProperties; }
-	util::PropertyMap getPropMap() const { return m_PropMap; }
+	util::PropertyMap &getPropMap() { return m_PropMap; }
+	const util::PropertyMap &getPropMap() const { return m_PropMap; }
 	const util::FixedVector<size_t, 4> &getImageSize() const { return m_ImageSize; }
-	boost::shared_ptr< data::Image >getImage() const { return m_Image; }
+	boost::shared_ptr< data::Image >getISISImage() const { return m_Image; }
 	boost::numeric::ublas::matrix<float> getNormalizedImageOrientation( bool transposed = false ) const;
 	boost::numeric::ublas::matrix<float> getImageOrientation( bool transposed = false ) const;
 	std::pair<util::ValueReference, util::ValueReference> getMinMax() const { return m_MinMax; }
 	std::pair<util::ValueReference, util::ValueReference> getInternMinMax() const { return m_InternMinMax; }
+
+	/**offset, scaling**/
 	std::pair<double, double> getOptimalScalingPair() const { return m_OptimalScalingPair;  }
 	boost::weak_ptr<void>
 	getImageWeakPointer( size_t timestep = 0 ) const {
@@ -69,8 +69,10 @@ public:
 
 	bool operator<( const ImageHolder &ref ) const { return m_ID < ref.getID(); }
 
-	const ImageState &getImageState() const { return m_ImageState; }
+	const ImageProperties &getImageProperties() const { return m_ImageProperties; }
+	ImageProperties &getImageProperties() { return m_ImageProperties; }
 
+	/**offset, scaling**/
 	template<typename TYPE>
 	std::pair<double, double> getOptimalScalingToForType( const std::pair<double, double> &cutAway ) const {
 		size_t volume = getImageSize()[0] * getImageSize()[1] * getImageSize()[2];
@@ -111,22 +113,13 @@ public:
 		}
 
 		std::pair<double, double> retPair;
-		retPair.first = ( 1.0 / extent ) * lowerBorder;
+		retPair.first = lowerBorder;
 		retPair.second = ( float )maxTypeValue / float( upperBorder - lowerBorder );
 		delete[] histogram;
 		return retPair;
 	}
 
-	void setVisible( bool v ) { m_ImageState.visible = v; }
-	void setLowerThreshold( double lowerThreshold ) { m_ImageState.threshold.first = lowerThreshold ; m_ImageState.zmapThreshold.first = lowerThreshold; }
-	void setUpperThreshold( double upperThreshold ) { m_ImageState.threshold.second = upperThreshold ; m_ImageState.zmapThreshold.second = upperThreshold; }
-	void setStackPosition( size_t stackPosition ) { m_ImageState.stackPosition = stackPosition; }
-	void setOpacity( float opacity ) { m_ImageState.opacity = opacity; }
-	void setImageType( ImageType imageType ) { m_ImageState.imageType = imageType; }
-	void setCurrentIntensityAsDouble( double intensity ) { m_ImageState.currentIntensityAsDouble = intensity; }
-	void setCurrentVoxelCoords( const util::ivector4 &voxelCoords ) { m_ImageState.voxelCoords = voxelCoords; setCurrentPhysicalCoords( getImage()->getPhysicalCoordsFromIndex( voxelCoords ) ); }
-	void setCurrentPhysicalCoords( const util::fvector4 &physCoords ) { m_ImageState.physicalCoords = physCoords; }
-	void setTimestep( size_t timestep ) { m_ImageState.timestep = timestep; }
+	void setImageType( ImageType imageType ) { m_ImageProperties.imageType = imageType; }
 
 private:
 
@@ -142,9 +135,11 @@ private:
 	size_t m_ID;
 	std::pair<double, double> m_OptimalScalingPair;
 	std::pair<double, double> m_CutAwayPair;
-	ImageState m_ImageState;
+	ImageProperties m_ImageProperties;
 
 	std::vector< ImagePointerType > m_ImageVector;
+	std::vector< data::Chunk > m_ChunkVector;
+
 	bool filterRelevantMetaInformation();
 
 };
