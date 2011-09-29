@@ -122,7 +122,7 @@ ViewPortType QOrienationHandler::getViewPort(  util::PropertyMap &properties, co
 }
 
 
-QTransform QOrienationHandler::getTransform( const ViewPortType &viewPort, util::PropertyMap &properties, const boost::shared_ptr< ImageHolder > image, const size_t &w, const size_t &h, PlaneOrientation orientation )
+QTransform QOrienationHandler::getTransform( const ViewPortType &viewPort, const boost::shared_ptr< ImageHolder > image, const size_t &w, const size_t &h, PlaneOrientation orientation )
 {
 	util::ivector4 mappedSize = QOrienationHandler::mapCoordsToOrientation( image->getImageSize(), image, orientation );
 	util::fvector4 flipVec = QOrienationHandler::mapCoordsToOrientation( util::fvector4( 1, 1, 1 ), image, orientation, false, false );

@@ -43,7 +43,7 @@ public Q_SLOTS:
 	virtual void addImage( const boost::shared_ptr<ImageHolder> image );
 	virtual bool removeImage( const boost::shared_ptr<ImageHolder> image );
 	virtual void paintImage( boost::shared_ptr< ImageHolder > image );
-	virtual void paintCrosshair();
+	virtual void paintCrosshair() const;
 	virtual void setScalingType( ScalingType scaling );
 
 	virtual bool lookAtPhysicalCoords( const util::fvector4 &physicalCoords );
