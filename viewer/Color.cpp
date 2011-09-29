@@ -51,6 +51,10 @@ void Color::update()
 	
 }
 
+void Color::resetOffsetAndScaling()
+{
+	m_OffsetScaling = std::make_pair<double, double>(0.0, 1.0);
+}
 
 
 

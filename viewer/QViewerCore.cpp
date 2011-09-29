@@ -104,7 +104,7 @@ void QViewerCore::setAutomaticScaling( bool s )
 		if(s) {
 			widget.second->setScalingType( automatic_scaling );
 		} else {
-			widget.second->setScalingType( manual_scaling );
+			widget.second->setScalingType( no_scaling );
 		}
 		widget.second->updateScene(false);
 	}

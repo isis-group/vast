@@ -43,7 +43,6 @@ void QImageWidgetImplementation::commonInit()
 	connect( m_ViewerCore, SIGNAL( emitZoomChanged( float ) ), this, SLOT( setZoom( float ) ) );
 	setAutoFillBackground( true );
 	setPalette( QPalette( Qt::black ) );
-	m_ColorHandler.setLutType( Color::standard_grey_values );
 	m_WidgetProperties.setPropertyAs<bool>( "mousePressedRight", false );
 	m_WidgetProperties.setPropertyAs<bool>( "mousePressedLeft", false );
 	
@@ -67,13 +66,16 @@ QWidgetImplementationBase *QImageWidgetImplementation::createSharedWidget( QWidg
 
 void QImageWidgetImplementation::addImage( const boost::shared_ptr< ImageHolder > image )
 {
-	m_ViewPortMap.insert( std::make_pair< boost::shared_ptr<ImageHolder>, ViewPortType>  (image, util::FixedVector<float,6>()));
+	ImageProperties imgProperties;
+	imgProperties.propMap.setPropertyAs<bool>("colorMapChanged", true );
+	imgProperties.viewPort = ViewPortType();
+	m_ImageProperties.insert( std::make_pair<boost::shared_ptr<ImageHolder> ,ImageProperties >( image, imgProperties));
 	m_ImageVector.push_back( image );
 }
 
 bool QImageWidgetImplementation::removeImage(const boost::shared_ptr< ImageHolder > image)
 {
-	m_ViewPortMap.erase( image );
+	m_ImageProperties.erase( image );
 	m_ImageVector.erase( std::find(m_ImageVector.begin(), m_ImageVector.end(), image ) );
 }
 
@@ -120,15 +122,16 @@ void QImageWidgetImplementation::recalculateTranslation()
 	float transYConst = ( (center[1]+2) - mappedSize[1] / (2 * zoom) );
 	float transX = transXConst * ((float)diff[0] / (float)center[0]);
 	float transY = transYConst * ((float)diff[1] / (float)center[1]);
-	
-	m_WidgetProperties.setPropertyAs<float>("translationX", transX * m_ViewPortMap[image][0] );
-	m_WidgetProperties.setPropertyAs<float>( "translationY", transY * m_ViewPortMap[image][1] );
+	ViewPortType viewPort = m_ImageProperties.at(image).viewPort;
+	m_WidgetProperties.setPropertyAs<float>("translationX", transX * viewPort[0] );
+	m_WidgetProperties.setPropertyAs<float>( "translationY", transY * viewPort[1] );
 	m_WidgetProperties.setPropertyAs<bool>("zoomEvent", false);
 }
 
 
 void QImageWidgetImplementation::paintImage( boost::shared_ptr< ImageHolder > image )
 {
+	ImageProperties &imgProps = m_ImageProperties.at(image);
 	switch (image->getImageProperties().interpolationType) {
 		case nn:
 			m_Painter->setRenderHint(QPainter::Antialiasing, true );
@@ -138,18 +141,20 @@ void QImageWidgetImplementation::paintImage( boost::shared_ptr< ImageHolder > im
 			break;
 	}
 	if( image->getImageProperties().imageType == ImageHolder::z_map ) {
-		m_ColorHandler.setLutType( Color::zmap_standard );
-		m_ColorHandler.setOmitZeros(true);
+		imgProps.colorHandler.setLutType( Color::zmap_standard );
+		imgProps.colorHandler.setOmitZeros(true);
 	} else {
-		m_ColorHandler.setLutType( Color::standard_grey_values );
+		imgProps.colorHandler.setLutType( Color::standard_grey_values );
 	}
 	if( m_ScalingType == automatic_scaling ) {
-		m_ColorHandler.setOffsetAndScaling( image->getOptimalScalingPair() );
-	}
+		imgProps.colorHandler.setOffsetAndScaling( image->getOptimalScalingPair() );
+	} 
 	
-	//TODO only update if necessary
-	m_ColorHandler.setImage(image);
-	m_ColorHandler.update();
+	if( imgProps.propMap.getPropertyAs<bool>("colorMapChanged") ) {
+		imgProps.colorHandler.setImage(image);
+		imgProps.colorHandler.update();
+		imgProps.propMap.setPropertyAs<bool>("colorMapChanged", false);
+	}
 	util::ivector4 mappedSizeAligned = QOrienationHandler::mapCoordsToOrientation( image->getPropMap().getPropertyAs<util::ivector4>( "alignedSize32Bit" ), image, m_PlaneOrientation );
 	isis::data::MemChunk<InternalImageType> sliceChunk( mappedSizeAligned[0], mappedSizeAligned[1] );
 	
@@ -158,19 +163,19 @@ void QImageWidgetImplementation::paintImage( boost::shared_ptr< ImageHolder > im
 	QImage qImage( ( InternalImageType * ) sliceChunk.asValuePtr<InternalImageType>().getRawAddress().get(),
 				   mappedSizeAligned[0], mappedSizeAligned[1], QImage::Format_Indexed8 );
 	
-	qImage.setColorTable( m_ColorHandler.getColorTable() );
+	qImage.setColorTable( imgProps.colorHandler.getColorTable() );
 	
 	m_Painter->resetMatrix();
-	m_ViewPortMap[image] =  QOrienationHandler::getViewPort( m_WidgetProperties, image, width(), height(),  
+	imgProps.viewPort =  QOrienationHandler::getViewPort( m_WidgetProperties, image, width(), height(),  
 							m_PlaneOrientation
     						);
 	if( !m_WidgetProperties.getPropertyAs<bool>("mousePressedLeft") || m_WidgetProperties.getPropertyAs<bool>("mousePressedRight") || m_WidgetProperties.getPropertyAs<bool>("zoomEvent")) {
 		recalculateTranslation();
 	}
-	m_ViewPortMap[image][2] += m_WidgetProperties.getPropertyAs<float>("translationX");
-	m_ViewPortMap[image][3] += m_WidgetProperties.getPropertyAs<float>("translationY");
+	imgProps.viewPort[2] += m_WidgetProperties.getPropertyAs<float>("translationX");
+	imgProps.viewPort[3] += m_WidgetProperties.getPropertyAs<float>("translationY");
 	
-	m_Painter->setTransform( QOrienationHandler::getTransform( m_ViewPortMap[image], m_WidgetProperties, image, width(), height(), m_PlaneOrientation ) );
+	m_Painter->setTransform( QOrienationHandler::getTransform( imgProps.viewPort, m_WidgetProperties, image, width(), height(), m_PlaneOrientation ) );
 	
 	m_Painter->setOpacity( image->getPropMap().getPropertyAs<float>( "opacity" ) );
 	m_Painter->drawImage( 0, 0, qImage );
@@ -206,9 +211,10 @@ bool QImageWidgetImplementation::isInViewPort( const ViewPortType &viewPort, QMo
 void QImageWidgetImplementation::emitMousePressEvent( QMouseEvent *e )
 {
 	boost::shared_ptr<ImageHolder> image = m_ViewerCore->getCurrentImage();
-	if( isInViewPort( m_ViewPortMap.at(image), e ) ) {
+	ImageProperties &imgProps = m_ImageProperties.at(image);
+	if( isInViewPort( imgProps.viewPort, e ) ) {
 		uint16_t slice = QOrienationHandler::mapCoordsToOrientation( image->getPropMap().getPropertyAs<util::ivector4>( "voxelCoords" ), image, m_PlaneOrientation )[2];
-		util::ivector4 coords = QOrienationHandler::convertWindow2VoxelCoords( m_ViewPortMap[image], m_WidgetProperties, image, e->x(), e->y(), slice, m_PlaneOrientation );
+		util::ivector4 coords = QOrienationHandler::convertWindow2VoxelCoords( imgProps.viewPort, m_WidgetProperties, image, e->x(), e->y(), slice, m_PlaneOrientation );
 		physicalCoordsChanged( image->getISISImage()->getPhysicalCoordsFromIndex( coords ) );
 	}
 }
@@ -216,7 +222,8 @@ void QImageWidgetImplementation::emitMousePressEvent( QMouseEvent *e )
 void QImageWidgetImplementation::paintCrosshair()
 {
 	boost::shared_ptr< ImageHolder > image = m_ViewerCore->getCurrentImage();
-	std::pair<uint16_t, size_t> coords = QOrienationHandler::convertVoxel2WindowCoords( m_ViewPortMap[image], m_WidgetProperties, m_ViewerCore->getCurrentImage(), m_PlaneOrientation  );
+	ImageProperties &imgProps = m_ImageProperties.at(image);
+	std::pair<uint16_t, size_t> coords = QOrienationHandler::convertVoxel2WindowCoords( imgProps.viewPort, m_WidgetProperties, m_ViewerCore->getCurrentImage(), m_PlaneOrientation  );
 
 	QLine xline1( coords.first, 0, coords.first, coords.second - 15 );
 	QLine xline2( coords.first, coords.second + 15, coords.first, height() );
@@ -232,9 +239,9 @@ void QImageWidgetImplementation::paintCrosshair()
 	pen.setColor( QColor( 255, 102, 0 ) );
 	m_Painter->setOpacity(1.0);
 	m_Painter->resetTransform();
-	m_Painter->setTransform( QOrienationHandler::getTransform( m_ViewPortMap[image], m_WidgetProperties, image, width(), height(), m_PlaneOrientation ) );
-	m_Painter->scale( 1.0 / m_ViewPortMap[image][0], 1.0 / m_ViewPortMap[image][1] );
-	m_Painter->translate( -m_ViewPortMap[image][2], -m_ViewPortMap[image][3] );
+	m_Painter->setTransform( QOrienationHandler::getTransform( imgProps.viewPort, m_WidgetProperties, image, width(), height(), m_PlaneOrientation ) );
+	m_Painter->scale( 1.0 / imgProps.viewPort[0], 1.0 / imgProps.viewPort[1] );
+	m_Painter->translate( -imgProps.viewPort[2], -imgProps.viewPort[3] );
 	m_Painter->setPen( pen );
 	m_Painter->drawLine( xline1 );
 	m_Painter->drawLine( xline2 );
@@ -311,6 +318,19 @@ void QImageWidgetImplementation::setWidgetName(const std::string& wName)
 	setWindowTitle( QString( wName.c_str() ) );
 	m_WidgetProperties.setPropertyAs<std::string>( "widgetName", wName );
 }
+
+void QImageWidgetImplementation::setScalingType(ScalingType scaling)
+{
+	m_ScalingType = scaling; 
+	BOOST_FOREACH( ImagePropertiesMapType::reference iPRef, m_ImageProperties )
+	{
+		if( m_ScalingType == no_scaling ) {
+			iPRef.second.colorHandler.resetOffsetAndScaling();
+		}
+		iPRef.second.propMap.setPropertyAs<bool>("colorMapChanged", true);
+	}
+}
+
 
 
 }

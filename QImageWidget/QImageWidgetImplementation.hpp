@@ -23,6 +23,14 @@ namespace qt
 class QImageWidgetImplementation : public QWidget, public QWidgetImplementationBase
 {
 	Q_OBJECT
+	struct ImageProperties
+	{	
+		/**scaling, offset, size**/
+		ViewPortType viewPort;
+		Color colorHandler;
+		util::PropertyMap propMap;
+	};
+	typedef std::map<boost::shared_ptr<ImageHolder>, ImageProperties> ImagePropertiesMapType;
 	
 public:
 	QImageWidgetImplementation( QViewerCore *core, QWidget *parent = 0, QWidget *share = 0, PlaneOrientation orienation = axial );
@@ -37,7 +45,7 @@ public Q_SLOTS:
 	virtual bool removeImage( const boost::shared_ptr<ImageHolder> image);
 	virtual void paintImage( boost::shared_ptr< ImageHolder > image );
 	virtual void paintCrosshair();
-	virtual void setScalingType( ScalingType scaling ) { m_ScalingType = scaling; }
+	virtual void setScalingType( ScalingType scaling );
 
 	virtual bool lookAtPhysicalCoords( const util::fvector4 &physicalCoords );
 	virtual bool lookAtVoxelCoords( const util::ivector4 &voxelCoords );
@@ -63,15 +71,13 @@ Q_SIGNALS:
 
 
 private:
-	/**scaling, offset, size**/
-	ViewPortMapType m_ViewPortMap;
+	ImagePropertiesMapType m_ImageProperties;
+	
 	void emitMousePressEvent( QMouseEvent *e );
 	bool isInViewPort( const ViewPortType &viewPort, QMouseEvent *e ) const;
 	void recalculateTranslation();
 
 	QMemoryHandler m_MemoryHandler;
-	
-	Color m_ColorHandler;
 	
 	void commonInit();
 	util::PropertyMap m_WidgetProperties;

@@ -13,7 +13,6 @@ namespace qt
 
 typedef std::vector<boost::shared_ptr<ImageHolder> > ImageVectorType;
 typedef  util::FixedVector<float, 6 > ViewPortType;
-typedef std::map<boost::shared_ptr< ImageHolder >, ViewPortType >  ViewPortMapType;
 
 
 
