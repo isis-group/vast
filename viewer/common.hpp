@@ -24,8 +24,13 @@ struct ViewerDebug {static const char *name() {return "ViewerDebug";}; enum {use
 namespace viewer
 {
 
+typedef uint8_t InternalImageType;
+
 // just some helper typedefs which we will need regularly
 enum PlaneOrientation { axial, sagittal, coronal };
+enum WidgetType { type_gl, type_qt };
+enum InterpolationType { nn = 0, lin };
+enum ScalingType { no_scaling, automatic_scaling, manual_scaling };
 
 template<typename TYPE>
 TYPE roundNumber( TYPE number, unsigned  short placesOfDec )
@@ -35,6 +40,8 @@ TYPE roundNumber( TYPE number, unsigned  short placesOfDec )
 
 void setOrientationToIdentity( data::Image &image );
 std::string getFileFormatsAsString( const std::string preSeparator, const std::string postSeparator = std::string( " " ) );
+
+util::ivector4 get32BitAlignedSize( const util::ivector4 &origSize );
 
 typedef ViewerLog Runtime;
 typedef ViewerDebug Debug;

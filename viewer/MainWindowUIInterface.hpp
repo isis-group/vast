@@ -13,8 +13,7 @@ class MainWindowUIInterface : public MainWindow
 {
 	Q_OBJECT;
 public:
-	MainWindowUIInterface( QViewerCore *core );
-
+	MainWindowUIInterface( QViewerCore *core, WidgetType wType = type_gl );
 
 protected:
 	void connectSignals();

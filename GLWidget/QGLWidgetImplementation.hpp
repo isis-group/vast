@@ -11,28 +11,28 @@
 #include "GLOrientationHandler.hpp"
 #include "GLShaderHandler.hpp"
 #include "GLLookupTable.hpp"
+#include "QWidgetImplementationBase.hpp"
 
 namespace isis
 {
 namespace viewer
 {
-class QViewerCore;
 namespace GL
 {
 
-class QGLWidgetImplementation : public QGLWidget
+class QGLWidgetImplementation : public QGLWidget, public QWidgetImplementationBase
 {
 	Q_OBJECT
 public:
-	enum ScalingType { no_scaling, automatic_scaling, manual_scaling };
+
 	QGLWidgetImplementation( QViewerCore *core, QWidget *parent = 0, QGLWidget *share = 0, PlaneOrientation orienation = axial );
 	QGLWidgetImplementation( QViewerCore *core, QWidget *parent = 0, PlaneOrientation orientation = axial );
 
-	QGLWidgetImplementation *createSharedWidget( QWidget *parent, PlaneOrientation orienation = axial );
+	QWidgetImplementationBase *createSharedWidget( QWidget *parent, PlaneOrientation orienation = axial );
 
 private:
 	QGLWidgetImplementation( QViewerCore *core, QWidget *parent, QGLWidget *share, QGLContext *context, PlaneOrientation orienation = axial );
-	QViewerCore *m_ViewerCore;
+
 	QGLWidget *m_ShareWidget;
 
 public Q_SLOTS:
@@ -49,19 +49,15 @@ public Q_SLOTS:
 	virtual void addImage( const boost::shared_ptr<ImageHolder> image );
 	virtual bool lookAtVoxel( const util::ivector4 &voxelCoords );
 	virtual bool lookAtPhysicalCoords( const util::fvector4 &physicalCoords );
-	virtual bool timestepChanged( unsigned int timestep );
-	virtual void setScalingType( ScalingType scalingType ) { m_ScalingType = scalingType; }
+	virtual void setScalingType( ScalingType scalingType ) { m_ScalingType = scalingType;  }
 	virtual void setShowLabels( const bool show );
-	virtual void setInterpolationType( const GLTextureHandler::InterpolationType interpolation );
+	virtual void setInterpolationType( InterpolationType interpolation );
 	virtual void updateScene( bool center = false );
-	virtual void setAutomaticScaling( bool scaling ) {
-		if( scaling ) { m_ScalingType = automatic_scaling;}
-		else { m_ScalingType = manual_scaling; }
 
-		updateScene();
-	}
 	virtual bool isInitialized() { return m_Flags.glInitialized; }
-	virtual PlaneOrientation getPlaneOrientation() { return m_PlaneOrientation; }
+
+	virtual std::string getWidgetName() const;
+	virtual void setWidgetName( const std::string &wName );
 
 protected:
 	virtual void mouseMoveEvent( QMouseEvent *e );
@@ -125,9 +121,7 @@ private:
 	GLShaderHandler m_LUTShader;
 
 	std::vector<GLuint> m_TextureIDVec;
-	PlaneOrientation m_PlaneOrientation;
-	GLTextureHandler::InterpolationType m_InterplationType;
-
+	InterpolationType m_InterplationType;
 
 	bool calculateTranslation( );
 
@@ -147,7 +141,7 @@ private:
 		float zoomBorder;
 	} m_Zoom;
 
-	ScalingType m_ScalingType;
+	isis::viewer::ScalingType m_ScalingType;
 	std::pair<double, double> m_ScalingPair;
 
 	isis::viewer::GL::GLLookUpTable m_LookUpTable;

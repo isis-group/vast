@@ -16,9 +16,9 @@ namespace GL
 
 QGLWidgetImplementation::QGLWidgetImplementation( QViewerCore *core, QWidget *parent, QGLWidget *share, PlaneOrientation orientation )
 	: QGLWidget( parent, share ),
-	  m_ViewerCore( core ),
-	  m_PlaneOrientation( orientation ),
+	  QWidgetImplementationBase( core, parent, orientation ),
 	  m_ShareWidget( share )
+
 {
 	( new QVBoxLayout( parent ) )->addWidget( this );
 	commonInit();
@@ -26,8 +26,7 @@ QGLWidgetImplementation::QGLWidgetImplementation( QViewerCore *core, QWidget *pa
 
 QGLWidgetImplementation::QGLWidgetImplementation( QViewerCore *core, QWidget *parent, PlaneOrientation orientation )
 	: QGLWidget( parent ),
-	  m_ViewerCore( core ),
-	  m_PlaneOrientation( orientation )
+	  QWidgetImplementationBase( core, parent, orientation )
 {
 	( new QVBoxLayout( parent ) )->addWidget( this );
 	commonInit();
@@ -36,12 +35,12 @@ QGLWidgetImplementation::QGLWidgetImplementation( QViewerCore *core, QWidget *pa
 
 void QGLWidgetImplementation::commonInit()
 {
-	setSizePolicy( QSizePolicy( QSizePolicy::Ignored, QSizePolicy::Ignored ) );
+	//  setSizePolicy( QSizePolicy( QSizePolicy::Ignored, QSizePolicy::Ignored ) );
 	setFocusPolicy( Qt::StrongFocus );
 	setMouseTracking( true );
 	connectSignals();
 	m_ScalingType = static_cast<ScalingType>( m_ViewerCore->getSettings()->value( "UserProfile/scaling", 0 ).toUInt() );
-	m_InterplationType = static_cast<GLTextureHandler::InterpolationType>( m_ViewerCore->getSettings()->value( "UserProfile/interpolation", 0 ).toUInt() );
+	m_InterplationType = static_cast<InterpolationType>( m_ViewerCore->getSettings()->value( "UserProfile/interpolation", 0 ).toUInt() );
 	m_ScalingPair = std::make_pair<double, double>( 0.0, 1.0 );
 	//flags
 	m_Flags.zoomEvent = false;
@@ -54,7 +53,7 @@ void QGLWidgetImplementation::commonInit()
 
 }
 
-QGLWidgetImplementation *QGLWidgetImplementation::createSharedWidget( QWidget *parent, PlaneOrientation orientation )
+QWidgetImplementationBase *QGLWidgetImplementation::createSharedWidget( QWidget *parent, PlaneOrientation orientation )
 {
 	return new QGLWidgetImplementation( m_ViewerCore, parent, this, orientation );
 }
@@ -73,6 +72,14 @@ bool QGLWidgetImplementation::removeImage( const boost::shared_ptr<ImageHolder> 
 void QGLWidgetImplementation::connectSignals()
 {
 	connect( this, SIGNAL( redraw() ), SLOT( updateGL() ) );
+	connect( this, SIGNAL( voxelCoordsChanged( util::ivector4 ) ), m_ViewerCore, SLOT( voxelCoordsChanged ( util::ivector4 ) ) );
+	connect( this, SIGNAL( physicalCoordsChanged( util::fvector4 ) ), m_ViewerCore, SLOT( physicalCoordsChanged ( util::fvector4 ) ) );
+	connect( this, SIGNAL( zoomChanged( float ) ), m_ViewerCore, SLOT( zoomChanged( float ) ) );
+	connect( m_ViewerCore, SIGNAL( emitVoxelCoordChanged( util::ivector4 ) ), this, SLOT( lookAtVoxel( util::ivector4 ) ) );
+	connect( m_ViewerCore, SIGNAL( emitPhysicalCoordsChanged( util::fvector4 ) ), this, SLOT( lookAtPhysicalCoords( util::fvector4 ) ) );
+	connect( m_ViewerCore, SIGNAL( emitShowLabels( bool ) ), this, SLOT( setShowLabels( bool ) ) );
+	connect( m_ViewerCore, SIGNAL( emitUpdateScene( bool ) ), this, SLOT( updateScene( bool ) ) );
+	connect( m_ViewerCore, SIGNAL( emitZoomChanged( float ) ), this, SLOT( setZoom( float ) ) );
 
 }
 
@@ -103,7 +110,7 @@ void QGLWidgetImplementation::resizeGL( int w, int h )
 	if( m_ImageStates.size() ) {
 		if( m_Flags.init ) {
 			util::ivector4 size = m_ImageStates.begin()->first->getImageSize();
-			lookAtPhysicalCoords( m_ImageStates.begin()->first->getImage()->getPhysicalCoordsFromIndex( util::ivector4( size[0] / 2, size[1] / 2, size[2] / 2 ) ) );
+			lookAtPhysicalCoords( m_ImageStates.begin()->first->getISISImage()->getPhysicalCoordsFromIndex( util::ivector4( size[0] / 2, size[1] / 2, size[2] / 2 ) ) );
 			m_Flags.init = false;
 		} else {
 			updateScene();
@@ -118,12 +125,13 @@ void QGLWidgetImplementation::updateStateValues( boost::shared_ptr<ImageHolder> 
 	State &state = m_ImageStates.at( image );
 	unsigned int timestep = state.voxelCoords[3];
 	state.voxelCoords = voxelCoords;
-	state.physicalCoords = image->getImage()->getPhysicalCoordsFromIndex( voxelCoords );
+
+	state.physicalCoords = image->getISISImage()->getPhysicalCoordsFromIndex( voxelCoords );
 	state.voxelCoords[3] = timestep;
 
 	//if not happend already copy the image to GLtexture memory and return the texture id
-	if( image->getImageSize()[3] > m_ViewerCore->getCurrentImage()->getImageState().timestep ) {
-		state.textureID = util::Singletons::get<GLTextureHandler, 10>().copyImageToTexture( image, m_ViewerCore->getCurrentImage()->getImageState().timestep, false, m_InterplationType );
+	if( image->getImageSize()[3] > m_ViewerCore->getCurrentImage()->getPropMap().getPropertyAs<uint16_t>( "currentTimestep" ) ) {
+		state.textureID = util::Singletons::get<GLTextureHandler, 10>().copyImageToTexture( image, m_ViewerCore->getCurrentImage()->getPropMap().getPropertyAs<uint16_t>( "currentTimestep" ), false, static_cast<GLTextureHandler::InterpolationType> ( m_InterplationType ) );
 	}
 
 	//update the texture matrix.
@@ -132,10 +140,10 @@ void QGLWidgetImplementation::updateStateValues( boost::shared_ptr<ImageHolder> 
 		state.planeOrientation =
 			GLOrientationHandler::transformToPlaneView( image->getNormalizedImageOrientation(), m_PlaneOrientation );
 		GLOrientationHandler::boostMatrix2Pointer( GLOrientationHandler::addOffset( state.planeOrientation ), state.textureMatrix );
-		state.mappedVoxelSize = GLOrientationHandler::transformVector<float>( image->getPropMap().getPropertyAs<util::fvector4>( "voxelSize" ) + image->getPropMap().getPropertyAs<util::fvector4>( "voxelGap" ) , state.planeOrientation );
+		state.mappedVoxelSize = GLOrientationHandler::transformVector<float>( image->getISISImage()->getPropertyAs<util::fvector4>( "voxelSize" ) + image->getISISImage()->getPropertyAs<util::fvector4>( "voxelGap" ) , state.planeOrientation );
 		state.mappedImageSize = GLOrientationHandler::transformVector<int>( image->getImageSize(), state.planeOrientation );
 		state.set = true;
-		state.lutID =  m_LookUpTable.getLookUpTableAsTexture( image->getImageState().lookUpTableType );
+		state.lutID =  m_LookUpTable.getLookUpTableAsTexture( image->getImageProperties().lookUpTableType );
 	}
 
 	state.mappedVoxelCoords = GLOrientationHandler::transformVector<int>( state.voxelCoords, state.planeOrientation );
@@ -156,8 +164,9 @@ void QGLWidgetImplementation::updateStateValues( boost::shared_ptr<ImageHolder> 
 	util::dvector4 objectCoords = GLOrientationHandler::transformVoxel2ObjectCoords( state.voxelCoords, image, state.planeOrientation );
 	state.crosshairCoords = object2WindowCoords( objectCoords[0], objectCoords[1], image );
 	state.normalizedSlice = objectCoords[2];
-	image->setCurrentVoxelCoords( voxelCoords );
-	image->setCurrentPhysicalCoords( image->getImage()->getPhysicalCoordsFromIndex( voxelCoords ) );
+
+	image->getPropMap().setPropertyAs<util::ivector4>( "voxelCoords", voxelCoords );
+	image->getPropMap().setPropertyAs<util::fvector4>( "physicalCoords", image->getISISImage()->getPhysicalCoordsFromIndex( voxelCoords ) );
 
 }
 
@@ -200,7 +209,7 @@ bool QGLWidgetImplementation::calculateTranslation(  )
 bool QGLWidgetImplementation::lookAtPhysicalCoords( const isis::util::fvector4 &physicalCoords )
 {
 	BOOST_FOREACH( StateMap::const_reference state, m_ImageStates ) {
-		updateStateValues(  state.first, state.first->getImage()->getIndexFromPhysicalCoords( physicalCoords ) );
+		updateStateValues(  state.first, state.first->getISISImage()->getIndexFromPhysicalCoords( physicalCoords ) );
 	}
 
 	if( m_ImageStates.size() ) {
@@ -233,19 +242,19 @@ void QGLWidgetImplementation::paintGL()
 
 	//paint anatomical images
 	BOOST_FOREACH( StateMap::const_reference state, m_ImageStates ) {
-		if( state.first.get() != m_ViewerCore->getCurrentImage().get() && state.first->getImageState().visible && state.first->getImageState().imageType == ImageHolder::anatomical_image ) {
+		if( state.first.get() != m_ViewerCore->getCurrentImage().get() && state.first->getPropMap().getPropertyAs<bool>( "isVisible" ) && state.first->getImageProperties().imageType == ImageHolder::anatomical_image ) {
 			paintImage( state );
 		}
 	}
 
 	//paint zmaps
 	BOOST_FOREACH( StateMap::const_reference state, m_ImageStates ) {
-		if( state.first.get() != m_ViewerCore->getCurrentImage().get() && state.first->getImageState().visible && state.first->getImageState().imageType == ImageHolder::z_map ) {
+		if( state.first.get() != m_ViewerCore->getCurrentImage().get() && state.first->getPropMap().getPropertyAs<bool>( "isVisible" ) && state.first->getImageProperties().imageType == ImageHolder::z_map ) {
 			paintImage( state );
 		}
 	}
 
-	if( m_ImageStates.find( m_ViewerCore->getCurrentImage() ) != m_ImageStates.end() && m_ViewerCore->getCurrentImage()->getImageState().visible ) {
+	if( m_ImageStates.find( m_ViewerCore->getCurrentImage() ) != m_ImageStates.end() && m_ViewerCore->getCurrentImage()->getPropMap().getPropertyAs<bool>( "isVisible" ) ) {
 		paintImage( std::make_pair<boost::shared_ptr<ImageHolder>, State >( m_ViewerCore->getCurrentImage(), m_ImageStates.at( m_ViewerCore->getCurrentImage() ) ) );
 	}
 
@@ -260,13 +269,14 @@ void QGLWidgetImplementation::paintGL()
 void QGLWidgetImplementation::paintImage( const std::pair< boost::shared_ptr<ImageHolder>, State> &state )
 {
 	double scaling, bias;
+	double extent = state.first->getMinMax().second->as<double>() - state.first->getMinMax().first->as<double>();
 
 	if( m_ScalingType == automatic_scaling ) {
 		scaling = state.first->getOptimalScalingPair().second;
-		bias = state.first->getOptimalScalingPair().first;
+		bias = ( 1.0 / extent ) * state.first->getOptimalScalingPair().first ;
 	} else if ( m_ScalingType == manual_scaling ) {
 		scaling = m_ScalingPair.second;
-		bias = m_ScalingPair.first;
+		bias = ( 1.0 / extent ) * m_ScalingPair.first;
 	} else {
 		scaling = 1.0;
 		bias = 0.0;
@@ -286,7 +296,7 @@ void QGLWidgetImplementation::paintImage( const std::pair< boost::shared_ptr<Ima
 	//shader
 
 	//if the image is declared as a zmap
-	if( state.first->getImageState().imageType == ImageHolder::z_map ) {
+	if( state.first->getImageProperties().imageType == ImageHolder::z_map ) {
 		m_LUTShader.setEnabled( true );
 		glEnable( GL_TEXTURE_1D );
 		glActiveTexture( GL_TEXTURE1 );
@@ -294,21 +304,21 @@ void QGLWidgetImplementation::paintImage( const std::pair< boost::shared_ptr<Ima
 		m_LUTShader.addVariable<float>( "lut", 1, true );
 		m_LUTShader.addVariable<float>( "max", state.first->getMinMax().second->as<float>() );
 		m_LUTShader.addVariable<float>( "min", state.first->getMinMax().first->as<float>() );
-		m_LUTShader.addVariable<float>( "upper_threshold", state.first->getImageState().zmapThreshold.second );
-		m_LUTShader.addVariable<float>( "lower_threshold", state.first->getImageState().zmapThreshold.first );
+		m_LUTShader.addVariable<float>( "upper_threshold", state.first->getImageProperties().zmapThreshold.second );
+		m_LUTShader.addVariable<float>( "lower_threshold", state.first->getImageProperties().zmapThreshold.first );
 		m_LUTShader.addVariable<float>( "bias", 0.0 );
 		m_LUTShader.addVariable<float>( "scaling", 1.0 );
-		m_LUTShader.addVariable<float>( "opacity", state.first->getImageState().opacity );
+		m_LUTShader.addVariable<float>( "opacity", state.first->getPropMap().getPropertyAs<float>( "opacity" ) );
 		glDisable( GL_TEXTURE_1D );
-	} else if ( state.first->getImageState().imageType == ImageHolder::anatomical_image ) {
+	} else if ( state.first->getImageProperties().imageType == ImageHolder::anatomical_image ) {
 		m_ScalingShader.setEnabled( true );
 		m_ScalingShader.addVariable<float>( "max", state.first->getMinMax().second->as<float>() );
 		m_ScalingShader.addVariable<float>( "min", state.first->getMinMax().first->as<float>() );
-		m_ScalingShader.addVariable<float>( "upper_threshold",  state.first->getImageState().threshold.second );
-		m_ScalingShader.addVariable<float>( "lower_threshold", state.first->getImageState().threshold.first );
+		m_ScalingShader.addVariable<float>( "upper_threshold",  state.first->getPropMap().getPropertyAs<float>( "lowerThreshold" ) );
+		m_ScalingShader.addVariable<float>( "lower_threshold", state.first->getPropMap().getPropertyAs<float>( "lowerThreshold" ) );
 		m_ScalingShader.addVariable<float>( "scaling", scaling );
 		m_ScalingShader.addVariable<float>( "bias", bias );
-		m_ScalingShader.addVariable<float>( "opacity", state.first->getImageState().opacity );
+		m_ScalingShader.addVariable<float>( "opacity", state.first->getPropMap().getPropertyAs<float>( "opacity" ) );
 		m_ScalingShader.addVariable<float>( "killZeros", 1.0 );
 	}
 
@@ -446,15 +456,9 @@ void QGLWidgetImplementation::emitMousePressEvent( QMouseEvent *e )
 
 	std::pair<float, float> objectCoords = window2ObjectCoords( e->x(), height() - e->y(), getOptimalImage() );
 	util::ivector4 voxelCoords = GLOrientationHandler::transformObject2VoxelCoords( util::fvector4( objectCoords.first, objectCoords.second, m_ImageStates.at( getOptimalImage() ).normalizedSlice ), getOptimalImage(), m_PlaneOrientation );
-	physicalCoordsChanged( getOptimalImage()->getImage()->getPhysicalCoordsFromIndex( voxelCoords ) );
+	physicalCoordsChanged( getOptimalImage()->getISISImage()->getPhysicalCoordsFromIndex( voxelCoords ) );
 }
 
-bool QGLWidgetImplementation::timestepChanged( unsigned int timestep )
-{
-	physicalCoordsChanged( m_ImageStates.begin()->first->getImageState().physicalCoords );
-	updateScene();
-
-}
 
 void QGLWidgetImplementation::setZoom( float zoomFactor )
 {
@@ -479,7 +483,6 @@ void QGLWidgetImplementation::wheelEvent( QWheelEvent *e )
 	} else if ( e->delta() > 0 ) { zoomFactor = m_Zoom.zoomFactorIn; }
 
 	if( m_Zoom.currentZoom *zoomFactor < 64 && m_Zoom.currentZoom *zoomFactor >= 1 ) {
-#warning change this!!!!!!!!!
 		if( m_ViewerCore->getOption()->propagateZooming ) {
 			zoomChanged( zoomFactor );
 		} else {
@@ -513,7 +516,7 @@ void QGLWidgetImplementation::keyPressEvent( QKeyEvent *e )
 		}
 		m_Zoom.currentZoom = 1.0;
 		util::ivector4 size = m_ImageStates.begin()->first->getImageSize();
-		lookAtPhysicalCoords( m_ImageStates.begin()->first->getImage()->getPhysicalCoordsFromIndex( util::ivector4( size[0] / 2, size[1] / 2, size[2] / 2 ) ) );
+		lookAtPhysicalCoords( m_ImageStates.begin()->first->getISISImage()->getPhysicalCoordsFromIndex( util::ivector4( size[0] / 2, size[1] / 2, size[2] / 2 ) ) );
 	}
 
 	if( e->key() == Qt::Key_Control ) {
@@ -536,9 +539,11 @@ void  QGLWidgetImplementation::setShowLabels( bool show )
 
 }
 
-void QGLWidgetImplementation::setInterpolationType( const isis::viewer::GL::GLTextureHandler::InterpolationType interpolation )
+void QGLWidgetImplementation::setInterpolationType( isis::viewer::InterpolationType interpolation )
 {
 	m_InterplationType = interpolation;
+	util::Singletons::get<GL::GLTextureHandler, 10>().forceReloadingAllOfType( ImageHolder::anatomical_image, static_cast<GL::GLTextureHandler::InterpolationType>( interpolation ) );
+	util::Singletons::get<GL::GLTextureHandler, 10>().forceReloadingAllOfType( ImageHolder::z_map, static_cast<GL::GLTextureHandler::InterpolationType>( interpolation ) );
 	updateScene();
 }
 
@@ -559,7 +564,7 @@ void QGLWidgetImplementation::updateScene( bool center )
 			voxelCoords = util::ivector4( size[0] / 2, size[1] / 2, size[2] / 2 );
 		}
 
-		lookAtPhysicalCoords( m_ImageStates.begin()->first->getImage()->getPhysicalCoordsFromIndex( voxelCoords ) );
+		lookAtPhysicalCoords( m_ImageStates.begin()->first->getISISImage()->getPhysicalCoordsFromIndex( voxelCoords ) );
 	}
 }
 
@@ -571,6 +576,18 @@ boost::shared_ptr< ImageHolder > QGLWidgetImplementation::getOptimalImage() cons
 		return m_ImageStates.begin()->first;
 	}
 }
+
+std::string QGLWidgetImplementation::getWidgetName() const
+{
+	return windowTitle().toStdString();
+}
+
+void QGLWidgetImplementation::setWidgetName( const std::string &wName )
+{
+	setWindowTitle( QString( wName.c_str() ) );
+}
+
+
 
 
 }
