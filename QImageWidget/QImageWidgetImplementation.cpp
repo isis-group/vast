@@ -54,7 +54,7 @@ void QImageWidgetImplementation::commonInit()
 
 	m_WidgetProperties.setPropertyAs<float>( "translationX", 0 );
 	m_WidgetProperties.setPropertyAs<float>( "translationY", 0 );
-
+	
 }
 
 
@@ -67,7 +67,8 @@ QWidgetImplementationBase *QImageWidgetImplementation::createSharedWidget( QWidg
 void QImageWidgetImplementation::addImage( const boost::shared_ptr< ImageHolder > image )
 {
 	ImageProperties imgProperties;
-	imgProperties.propMap.setPropertyAs<bool>( "colorMapChanged", true );
+	image->getPropMap().setPropertyAs<bool>("colorMapChanged", true);
+	imgProperties.colorHandler.setImage( image );
 	imgProperties.viewPort = ViewPortType();
 	m_ImageProperties.insert( std::make_pair<boost::shared_ptr<ImageHolder> , ImageProperties >( image, imgProperties ) );
 	m_ImageVector.push_back( image );
@@ -176,10 +177,10 @@ void QImageWidgetImplementation::paintImage( boost::shared_ptr< ImageHolder > im
 		imgProps.colorHandler.setOffsetAndScaling( image->getOptimalScalingPair() );
 	}
 
-	if( imgProps.propMap.getPropertyAs<bool>( "colorMapChanged" ) ) {
-		imgProps.colorHandler.setImage( image );
+	if( image->getPropMap().getPropertyAs<bool>( "colorMapChanged" ) ) {
+		
 		imgProps.colorHandler.update();
-		imgProps.propMap.setPropertyAs<bool>( "colorMapChanged", false );
+// 		image->getPropMap().setPropertyAs<bool>( "colorMapChanged", false );
 	}
 
 	util::ivector4 mappedSizeAligned = QOrienationHandler::mapCoordsToOrientation( image->getPropMap().getPropertyAs<util::ivector4>( "alignedSize32Bit" ), image, m_PlaneOrientation );
@@ -349,13 +350,13 @@ void QImageWidgetImplementation::setWidgetName( const std::string &wName )
 void QImageWidgetImplementation::setScalingType( ScalingType scaling )
 {
 	m_ScalingType = scaling;
-	BOOST_FOREACH( ImagePropertiesMapType::reference iPRef, m_ImageProperties ) {
+	BOOST_FOREACH( ImageVectorType::reference imgRef, m_ImageVector ) {
 		if( m_ScalingType == no_scaling ) {
-			iPRef.second.colorHandler.resetOffsetAndScaling();
+			m_ImageProperties.at(imgRef).colorHandler.resetOffsetAndScaling();
 		}
-
-		iPRef.second.propMap.setPropertyAs<bool>( "colorMapChanged", true );
+		imgRef->getPropMap().setPropertyAs<bool>("colorMapChanged", true);
 	}
+	
 }
 
 

@@ -27,7 +27,6 @@ class QImageWidgetImplementation : public QWidget, public QWidgetImplementationB
 		/**scaling, offset, size**/
 		ViewPortType viewPort;
 		Color colorHandler;
-		util::PropertyMap propMap;
 	};
 	typedef std::map<boost::shared_ptr<ImageHolder>, ImageProperties> ImagePropertiesMapType;
 
