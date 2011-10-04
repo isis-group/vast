@@ -102,36 +102,40 @@ void QImageWidgetImplementation::setZoom( float zoom )
 
 void QImageWidgetImplementation::paintEvent( QPaintEvent *event )
 {
-	m_Painter->begin( this );
-	boost::shared_ptr<ImageHolder> cImage =  getWidgetSpecCurrentImage();
+	if(m_ImageVector.size()) {
+		m_Painter->begin( this );
 
-	//painting all anatomical images
-	BOOST_FOREACH( ImageVectorType::const_reference image, m_ImageVector ) {
-		if( image.get() != cImage.get() 
-			&& image->getPropMap().getPropertyAs<bool>( "isVisible" )  
-			&& image->getImageProperties().imageType == ImageHolder::anatomical_image ) {
-			paintImage( image );
+
+		boost::shared_ptr<ImageHolder> cImage =  getWidgetSpecCurrentImage();
+
+		//painting all anatomical images
+		BOOST_FOREACH( ImageVectorType::const_reference image, m_ImageVector ) {
+			if( image.get() != cImage.get()
+				&& image->getPropMap().getPropertyAs<bool>( "isVisible" )
+				&& image->getImageProperties().imageType == ImageHolder::anatomical_image ) {
+				paintImage( image );
+			}
 		}
-	}
-	if( cImage->getImageProperties().imageType == ImageHolder::anatomical_image 
-		&& cImage->getPropMap().getPropertyAs<bool>("isVisible") ) {
-		paintImage( cImage );
-	}
-	//painting the zmaps
-	BOOST_FOREACH( ImageVectorType::const_reference image, m_ImageVector ) {
-		if( image.get() != cImage.get() 
-			&& image->getPropMap().getPropertyAs<bool>( "isVisible" )  
-			&& image->getImageProperties().imageType == ImageHolder::z_map ) {
-			paintImage( image );
+		if( cImage->getImageProperties().imageType == ImageHolder::anatomical_image
+			&& cImage->getPropMap().getPropertyAs<bool>("isVisible") ) {
+			paintImage( cImage );
 		}
+		//painting the zmaps
+		BOOST_FOREACH( ImageVectorType::const_reference image, m_ImageVector ) {
+			if( image.get() != cImage.get()
+				&& image->getPropMap().getPropertyAs<bool>( "isVisible" )
+				&& image->getImageProperties().imageType == ImageHolder::z_map ) {
+				paintImage( image );
+			}
+		}
+		if( cImage->getImageProperties().imageType == ImageHolder::z_map
+			&& cImage->getPropMap().getPropertyAs<bool>("isVisible") ) {
+			paintImage( cImage );
+		}
+
+		paintCrosshair();
+		m_Painter->end();
 	}
-	if( cImage->getImageProperties().imageType == ImageHolder::z_map 
-		&& cImage->getPropMap().getPropertyAs<bool>("isVisible") ) {
-		paintImage( cImage );
-	}
-	
-	paintCrosshair();
-	m_Painter->end();
 
 }
 

@@ -97,7 +97,6 @@ int main( int argc, char *argv[] )
 		}
 	}
 	bool assamble = false;
-
 	MainWindowUIInterface isisViewerMainWindow( core, wTypeMap[app.parameters["wtype"].toString()] );
 
 	if( app.parameters["zmap"].isSet() ) {
