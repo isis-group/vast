@@ -95,7 +95,9 @@ void QImageWidgetImplementation::setZoom( float zoom )
 		m_WidgetProperties.setPropertyAs<bool>( "zoomEvent", true );
 		m_WidgetProperties.setPropertyAs<float>( "currentZoom", zoom >= 1.0 ? zoom : 1.0 );
 		update();
+		m_WidgetProperties.setPropertyAs<bool>("zoomEvent", false);
 	}
+	
 }
 
 void QImageWidgetImplementation::paintEvent( QPaintEvent *event )
@@ -149,7 +151,6 @@ void QImageWidgetImplementation::recalculateTranslation()
 	ViewPortType viewPort = m_ImageProperties.at( image ).viewPort;
 	m_WidgetProperties.setPropertyAs<float>( "translationX", transX * viewPort[0] );
 	m_WidgetProperties.setPropertyAs<float>( "translationY", transY * viewPort[1] );
-	m_WidgetProperties.setPropertyAs<bool>( "zoomEvent", false );
 }
 
 
@@ -194,19 +195,22 @@ void QImageWidgetImplementation::paintImage( boost::shared_ptr< ImageHolder > im
 	qImage.setColorTable( imgProps.colorHandler.getColorTable() );
 
 	m_Painter->resetMatrix();
+	
 	imgProps.viewPort =  QOrienationHandler::getViewPort( m_WidgetProperties, image, width(), height(),
 						 m_PlaneOrientation
 														);
-
-	if( !m_WidgetProperties.getPropertyAs<bool>( "mousePressedLeft" ) || m_WidgetProperties.getPropertyAs<bool>( "mousePressedRight" ) || m_WidgetProperties.getPropertyAs<bool>( "zoomEvent" ) ) {
+	
+	
+	if( !m_WidgetProperties.getPropertyAs<bool>( "mousePressedLeft" ) || m_WidgetProperties.getPropertyAs<bool>( "mousePressedRight" ) || m_WidgetProperties.getPropertyAs<bool>("zoomEvent") ) {
 		recalculateTranslation();
 	}
-
 	imgProps.viewPort[2] += m_WidgetProperties.getPropertyAs<float>( "translationX" );
 	imgProps.viewPort[3] += m_WidgetProperties.getPropertyAs<float>( "translationY" );
-
+	
+	
 	m_Painter->setTransform( QOrienationHandler::getTransform( imgProps.viewPort, image, width(), height(), m_PlaneOrientation ) );
-
+	
+	
 	m_Painter->setOpacity( image->getPropMap().getPropertyAs<float>( "opacity" ) );
 	m_Painter->drawImage( 0, 0, qImage );
 }

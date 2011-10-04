@@ -158,7 +158,17 @@ bool ImageHolder::setImage( const data::Image &image, const ImageType &imageType
 	m_ImageProperties.interpolationType = nn;
 
 	m_ImageProperties.zmapThreshold = std::make_pair<double, double>( 0, 0 );
-
+	
+	if(imageType == z_map ) {
+		m_PropMap.setPropertyAs<double>("lowerThreshold", 0 );
+		m_PropMap.setPropertyAs<double>("upperThreshold", 0 );
+	} else if( imageType == anatomical_image ) {
+		m_PropMap.setPropertyAs<double>("lowerThreshold", getMinMax().first->as<double>() );
+		m_PropMap.setPropertyAs<double>("upperThreshold", getMinMax().second->as<double>() );
+	}
+	m_PropMap.setPropertyAs<double>("extent", fabs(getMinMax().second->as<double>() - getMinMax().first->as<double>()) );
+	
+	
 	m_PropMap.setPropertyAs<util::ivector4>( "voxelCoords", util::ivector4( m_ImageSize[0] / 2, m_ImageSize[1] / 2, m_ImageSize[2] / 2, 0 ) );
 	m_PropMap.setPropertyAs<util::fvector4>( "physicalCoords", m_Image->getPhysicalCoordsFromIndex( m_PropMap.getPropertyAs<util::ivector4>( "voxelCoords" ) ) );
 
