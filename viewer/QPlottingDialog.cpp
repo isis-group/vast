@@ -34,6 +34,11 @@ void QPlottingDialog::setImageHolderList( std::list< boost::shared_ptr< ImageHol
 
 	}
 }
+void QPlottingDialog::clear()
+{
+	m_Images.clear();
+	m_Curves.clear();
+}
 
 
 

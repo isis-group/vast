@@ -25,6 +25,7 @@ public Q_SLOTS:
 	void addImageHolder( boost::shared_ptr<ImageHolder> imageHolder );
 	void setImageHolderList( std::list<boost::shared_ptr<ImageHolder> > imageHolderList );
 	void setViewerCore( QViewerCore *core ) { m_ViewerCore = core; }
+	void clear();
 
 public:
 	template<typename TYPE>

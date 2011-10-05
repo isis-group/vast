@@ -50,15 +50,12 @@ void Color::update()
 	
 	if( m_ImageHolder->getMinMax().first->as<double>() < 0 ) {
 		
-		float normMin = fabs(extent / m_ImageHolder->getMinMax().first->as<double>()) / 2.0;
-		for(size_t i = 0; i < m_NumberOfElements / 2 / normMin ; i++ ) 
-		{
-			m_ColorTable[i] = tmpTable[i * normMin];
+		double normMin = fabs(m_ImageHolder->getMinMax().first->as<double>()) / ( extent / 2);
+		for ( size_t i = 0; i < m_NumberOfElements / 2; i++) {
+			m_ColorTable[i] = tmpTable[i / normMin];
 		}
-		float normMax = fabs(extent / m_ImageHolder->getMinMax().second->as<double>()) / 2.0;
-		for(size_t i = m_NumberOfElements - (m_NumberOfElements / 2 / normMax); i < m_NumberOfElements ; i++ ) 
-		{
-			m_ColorTable[i] = tmpTable[i * normMax];
+		for ( size_t i = m_NumberOfElements / 2; i < m_NumberOfElements; i++ ){
+			m_ColorTable[i] = tmpTable[i / normMin ];
 		}
 		
 	}else {

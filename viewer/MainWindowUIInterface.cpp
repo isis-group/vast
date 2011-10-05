@@ -137,6 +137,7 @@ void MainWindowUIInterface::triggeredMakeCurrentImage( bool triggered )
 
 void MainWindowUIInterface::showPlotting()
 {
+	m_PlottingDialog->clear();
 	m_PlottingDialog->show();
 	handImagesToPlotter();
 	physicalCoordsChanged( m_ViewerCore->getCurrentImage()->getPropMap().getPropertyAs<util::fvector4>( "physicalCoords" ) );
