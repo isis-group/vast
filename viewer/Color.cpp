@@ -43,7 +43,7 @@ void Color::update()
 				}
 				
 			}
-			tmpTable[0] = QColor(0,0,0,0).rgba();
+			
 			break;
 		}
 	}
@@ -51,19 +51,20 @@ void Color::update()
 	if( m_ImageHolder->getMinMax().first->as<double>() < 0 ) {
 		
 		double normMin = fabs(m_ImageHolder->getMinMax().first->as<double>()) / ( extent / 2);
+		double scaleMin = 1 - fabs( m_ImageHolder->getPropMap().getPropertyAs<double>("lowerThreshold")  / m_ImageHolder->getMinMax().first->as<double>() );
 		for ( size_t i = 0; i < m_NumberOfElements / 2; i++) {
-			m_ColorTable[i] = tmpTable[i / normMin];
+			m_ColorTable[i * scaleMin] = tmpTable[i / normMin];
 		}
-		for ( size_t i = m_NumberOfElements / 2; i < m_NumberOfElements; i++ ){
-			m_ColorTable[i] = tmpTable[i / normMin ];
+		double scaleMax = fabs( m_ImageHolder->getPropMap().getPropertyAs<double>("upperThreshold") / m_ImageHolder->getMinMax().second->as<double>());
+		double offset = 0;
+		for ( size_t i = m_NumberOfElements / 2; i < m_NumberOfElements; i++ ) {
+			m_ColorTable[i + offset] = tmpTable[i / normMin];
 		}
-		
 	}else {
 		m_ColorTable = tmpTable;
 	}
-	
-// 	m_ColorTable = tmpTable;
-	//do some additional stuff
+	m_ColorTable[0] = QColor(0,0,0,0).rgba();
+
 	
 	
 	int elemZero = norm * fabs(m_ImageHolder->getMinMax().first->as<double>());
