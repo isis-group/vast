@@ -104,7 +104,14 @@ void QImageWidgetImplementation::paintEvent( QPaintEvent *event )
 {
 	if(m_ImageVector.size()) {
 		m_Painter->begin( this );
-
+		m_ImageProperties.at(getWidgetSpecCurrentImage()).viewPort 
+			= QOrienationHandler::getViewPort( m_WidgetProperties,
+							   getWidgetSpecCurrentImage(),
+							   width(),
+							   height(),
+							   m_PlaneOrientation
+													
+		);
 
 		boost::shared_ptr<ImageHolder> cImage =  getWidgetSpecCurrentImage();
 		//painting all anatomical images
@@ -199,15 +206,15 @@ void QImageWidgetImplementation::paintImage( boost::shared_ptr< ImageHolder > im
 
 	m_Painter->resetMatrix();
 	
-	imgProps.viewPort =  QOrienationHandler::getViewPort( m_WidgetProperties, image, width(), height(),
+	if( image.get() != getWidgetSpecCurrentImage().get() ) {
+		imgProps.viewPort =  QOrienationHandler::getViewPort( m_WidgetProperties, image, width(), height(),
 						 m_PlaneOrientation );	
-	
+	}
 	if( !m_WidgetProperties.getPropertyAs<bool>( "mousePressedLeft" ) || m_WidgetProperties.getPropertyAs<bool>( "mousePressedRight" ) || m_WidgetProperties.getPropertyAs<bool>("zoomEvent") ) {
 		recalculateTranslation();
 	}
 	imgProps.viewPort[2] += m_WidgetProperties.getPropertyAs<float>( "translationX" );
 	imgProps.viewPort[3] += m_WidgetProperties.getPropertyAs<float>( "translationY" );
-	
 	m_Painter->setTransform( QOrienationHandler::getTransform( imgProps.viewPort, image, width(), height(), m_PlaneOrientation ) );
 	
 	m_Painter->setOpacity( image->getPropMap().getPropertyAs<float>( "opacity" ) );
