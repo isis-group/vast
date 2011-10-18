@@ -170,7 +170,7 @@ void QImageWidgetImplementation::paintImage( boost::shared_ptr< ImageHolder > im
 
 	switch ( image->getImageProperties().interpolationType ) {
 	case nn:
-		m_Painter->setRenderHint( QPainter::Antialiasing, true );
+		m_Painter->setRenderHint( QPainter::TextAntialiasing, true );
 		break;
 	case lin:
 		m_Painter->setRenderHint( QPainter::SmoothPixmapTransform, true );
@@ -178,7 +178,7 @@ void QImageWidgetImplementation::paintImage( boost::shared_ptr< ImageHolder > im
 	}
 
 	if( image->getImageProperties().imageType == ImageHolder::z_map ) {
-		imgProps.colorHandler.setLutType( Color::zmap_standard );
+		imgProps.colorHandler.setLutType( Color::zmap_standard);
 		imgProps.colorHandler.setOmitZeros( true );
 	} else {
 		imgProps.colorHandler.setLutType( Color::standard_grey_values );
