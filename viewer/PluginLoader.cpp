@@ -47,7 +47,7 @@ unsigned int PluginLoader::findPlugins( std::list< std::string > paths )
 	BOOST_FOREACH( PathsType::const_reference pathRef, paths ) {
 		boost::filesystem::path p( pathRef );
 
-		if( boost::filesystem::exists( p ) ) {
+		if( !boost::filesystem::exists( p ) ) {
 			LOG( Runtime, warning ) << "Pluginpath " << util::MSubject( p.native_file_string() ) << " not found!";
 		}
 

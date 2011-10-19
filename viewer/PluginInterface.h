@@ -20,6 +20,7 @@ public:
 	virtual bool call() = 0;
 	virtual std::string getName() = 0;
 	virtual std::string getDescription() = 0;
+	virtual std::string getTooltip() = 0;
 	
 	virtual ~PluginInterface() {}
 	

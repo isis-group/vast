@@ -142,6 +142,7 @@ void isis::viewer::MainWindow::setInitialState()
 			}
 
 			QAction *processAction = new QAction( QString( ( --sepName.end() )->c_str() ), this );
+			processAction->setStatusTip( QString( plugin->getTooltip().c_str() ) );
 			signalMapper->setMapping( processAction, QString( plugin->getName().c_str() ) );
 			tmpMenu->addAction( processAction );
 			connect( processAction, SIGNAL( triggered() ), signalMapper, SLOT( map() ) );
