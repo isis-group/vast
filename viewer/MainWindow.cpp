@@ -8,7 +8,10 @@
 #include "MainWindow.hpp"
 #include <common.hpp>
 #include <DataStorage/io_factory.hpp>
+#include <QMenuBar>
 
+
+#include "../plugin/ProcessTest.hpp"
 
 namespace isis
 {
@@ -19,6 +22,8 @@ MainWindow::MainWindow( QViewerCore *core, WidgetType wType )
 	: m_ViewerCore( core ),
 	  m_WidgetType( wType )
 {
+	m_ViewerCore->addPlugin( boost::shared_ptr< plugin::PluginInterface >( new plugin::ProcessTest() ) );
+	
 	m_PlottingDialog->setViewerCore( m_ViewerCore );
 	m_PreferencesDialog = new QPreferencesDialog( this, m_ViewerCore );
 	m_State = single;
@@ -121,6 +126,31 @@ void isis::viewer::MainWindow::setInitialState()
 	m_Toolbar->addAction( ui.action_Plotting );
 	m_Toolbar->addSeparator();
 	m_Toolbar->addAction( ui.action_Exit );
+	
+	//adding all processes to the process (plugin) menu and connect the action to the respective call functions
+	QMenu * processMenu = new QMenu(tr("Plugins"));
+	if( m_ViewerCore->getPlugins().size() ) {
+		ui.menubar->addMenu( processMenu );
+	
+		QSignalMapper *signalMapper = new QSignalMapper(this);
+		BOOST_FOREACH( ViewerCoreBase::PluginVecType::const_reference plugin, m_ViewerCore->getPlugins() )
+		{
+			std::list<std::string> sepName = isis::util::stringToList<std::string>( plugin->getName(), boost::regex( "/" ) );
+			QMenu *tmpMenu = processMenu;
+			std::list<std::string>::iterator iter = sepName.begin();
+			for ( unsigned short i = 0; i < sepName.size() -1; iter++, i++ )
+			{
+				tmpMenu = tmpMenu->addMenu(iter->c_str());
+				
+			}
+			QAction *processAction = new QAction(QString( (--sepName.end())->c_str() ), this );
+			signalMapper->setMapping( processAction, QString( plugin->getName().c_str() ) );
+			tmpMenu->addAction( processAction );
+			connect( processAction, SIGNAL( triggered() ), signalMapper, SLOT(map()) );
+			
+		}
+		connect( signalMapper, SIGNAL(mapped(QString)), this, SLOT( callProcess( QString ) ) );
+	}
 	m_ViewerCore->setCoordsTransformation( util::fvector4( -1, -1, 1, 1 ) );
 }
 
@@ -577,6 +607,12 @@ QWidgetImplementationBase *MainWindow::createView( QDockWidget *widget, PlaneOri
 	return view;
 
 }
+
+void MainWindow::callProcess(QString name )
+{
+	m_ViewerCore->callPlugin(name.toStdString());
+}
+
 
 }
 } //end namespace

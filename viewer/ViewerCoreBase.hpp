@@ -4,6 +4,7 @@
 #include "DataContainer.hpp"
 #include "ImageOps.hpp"
 #include <map>
+#include "PluginInterface.hpp"
 
 namespace isis
 {
@@ -17,6 +18,7 @@ class ViewerCoreBase
 	};
 public:
 
+	typedef std::vector<boost::shared_ptr< plugin::PluginInterface > > PluginVecType;
 	ViewerCoreBase( );
 
 	std::string getVersion() const;
@@ -35,7 +37,7 @@ public:
 			return true;
 		} else { return false; }
 	}
-
+	
 	const DataContainer &getDataContainer() const { return m_DataContainer; }
 	DataContainer &getDataContainer() { return m_DataContainer; }
 
@@ -44,6 +46,13 @@ public:
 
 	void setCoordsTransformation( const util::fvector4 &transformation ) { m_VoxelTransformation = transformation; }
 	util::fvector4 getTransformedCoords( const util::fvector4 &coords ) const;
+	
+	//plugin stuff
+	
+	void addPlugin( boost::shared_ptr< plugin::PluginInterface > process );
+	PluginVecType getPlugins() const { return m_PluginVec; }
+	
+	bool callPlugin( const std::string &name );
 
 private:
 	//this is the container which actually holds all the images
@@ -54,6 +63,7 @@ private:
 
 protected:
 	OptionStruct *m_Options;
+	PluginVecType m_PluginVec;
 
 
 };

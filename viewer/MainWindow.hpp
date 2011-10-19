@@ -59,7 +59,7 @@ public Q_SLOTS:
 	void setVoxelPosition();
 	void setPhysicalPosition();
 
-
+	void callProcess( QString );
 
 	void upperThresholdChanged( int );
 	void lowerThresholdChanged( int );
