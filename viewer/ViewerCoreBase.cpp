@@ -67,12 +67,21 @@ util::fvector4 ViewerCoreBase::getTransformedCoords( const isis::util::fvector4 
 void ViewerCoreBase::addPlugin( boost::shared_ptr< plugin::PluginInterface > plugin )
 {
 	plugin->setViewerCore(this);
-	m_PluginVec.push_back( plugin );
+	m_PluginList.push_back( plugin );
 }
+
+void ViewerCoreBase::addPlugins(isis::viewer::plugin::PluginLoader::PluginListType plugins)
+{
+	BOOST_FOREACH( PluginListType::const_reference plugin, plugins )
+	{
+		m_PluginList.push_back( plugin );
+	}
+}
+
 
 bool ViewerCoreBase::callPlugin(const std::string& name)
 {
-	BOOST_FOREACH( PluginVecType::const_reference plugin, m_PluginVec ) 
+	BOOST_FOREACH( PluginListType::const_reference plugin, m_PluginList ) 
 	{
 		if( plugin->getName() == name ) {
 			return plugin->call();

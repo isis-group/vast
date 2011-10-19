@@ -4,7 +4,7 @@
 #include "DataContainer.hpp"
 #include "ImageOps.hpp"
 #include <map>
-#include "PluginInterface.hpp"
+#include "PluginLoader.hpp"
 
 namespace isis
 {
@@ -18,7 +18,7 @@ class ViewerCoreBase
 	};
 public:
 
-	typedef std::vector<boost::shared_ptr< plugin::PluginInterface > > PluginVecType;
+	typedef std::list<boost::shared_ptr< plugin::PluginInterface > > PluginListType;
 	ViewerCoreBase( );
 
 	std::string getVersion() const;
@@ -49,8 +49,9 @@ public:
 	
 	//plugin stuff
 	
-	void addPlugin( boost::shared_ptr< plugin::PluginInterface > process );
-	PluginVecType getPlugins() const { return m_PluginVec; }
+	void addPlugin( boost::shared_ptr< plugin::PluginInterface > plugin );
+	void addPlugins( plugin::PluginLoader::PluginListType plugins );
+	PluginListType getPlugins() const { return m_PluginList; }
 	
 	bool callPlugin( const std::string &name );
 
@@ -63,7 +64,7 @@ private:
 
 protected:
 	OptionStruct *m_Options;
-	PluginVecType m_PluginVec;
+	PluginListType m_PluginList;
 
 
 };

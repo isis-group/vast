@@ -1,5 +1,4 @@
 #include "QMemoryHandler.hpp"
-#include "DataStorage/io_factory.hpp"
 #include "QtWidgetCommon.hpp"
 #include "QOrientationHandler.hpp"
 

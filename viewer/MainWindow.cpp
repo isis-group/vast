@@ -11,8 +11,6 @@
 #include <QMenuBar>
 
 
-#include "../plugin/ProcessTest.hpp"
-
 namespace isis
 {
 namespace viewer
@@ -22,8 +20,6 @@ MainWindow::MainWindow( QViewerCore *core, WidgetType wType )
 	: m_ViewerCore( core ),
 	  m_WidgetType( wType )
 {
-	m_ViewerCore->addPlugin( boost::shared_ptr< plugin::PluginInterface >( new plugin::ProcessTest() ) );
-	
 	m_PlottingDialog->setViewerCore( m_ViewerCore );
 	m_PreferencesDialog = new QPreferencesDialog( this, m_ViewerCore );
 	m_State = single;
@@ -133,7 +129,7 @@ void isis::viewer::MainWindow::setInitialState()
 		ui.menubar->addMenu( processMenu );
 	
 		QSignalMapper *signalMapper = new QSignalMapper(this);
-		BOOST_FOREACH( ViewerCoreBase::PluginVecType::const_reference plugin, m_ViewerCore->getPlugins() )
+		BOOST_FOREACH( ViewerCoreBase::PluginListType::const_reference plugin, m_ViewerCore->getPlugins() )
 		{
 			std::list<std::string> sepName = isis::util::stringToList<std::string>( plugin->getName(), boost::regex( "/" ) );
 			QMenu *tmpMenu = processMenu;

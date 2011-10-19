@@ -2,6 +2,13 @@ cmake_minimum_required(VERSION 2.6)
 
 PROJECT(vast)
 
+
+############################################################
+# set install infix for plugin installation path
+############################################################
+set(VAST_PLUGIN_INFIX lib/vast/plugins)
+
+
 # collecting files
 file (GLOB VIEWER_FILES_CPP viewer/*.c viewer/*.cpp)
 file (GLOB GLWIDGET_FILES_CPP GLWidget/*.cpp GLWidget/*.c)
@@ -119,6 +126,14 @@ SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ftemplate-depth-100 -Wextra -Wfatal-err
 SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}  -Wextra -Wfatal-errors " )
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ftemplate-depth-100")
 
+############################################################
+# set the plugin directory and the system dependend shared
+# library naming conventions
+############################################################
+set_source_files_properties( "viewer/PluginLoader.cpp" PROPERTIES COMPILE_FLAGS
+	"-DPLUGIN_PATH=\\\"${CMAKE_INSTALL_PREFIX}/${VAST_PLUGIN_INFIX}\\\" -DDL_SUFFIX=\\\"${CMAKE_SHARED_LIBRARY_SUFFIX}\\\" -DDL_PREFIX=\\\"${CMAKE_SHARED_LIBRARY_PREFIX}\\\""
+)
+
 ###########################################################
 # CPack config
 ###########################################################
@@ -150,6 +165,8 @@ set(NEEDED_LIBS
 	${isisqt4_LIBRARY}
 	${QWT5_library} 
 	)
+
+add_subdirectory(plugins)
 
 target_link_libraries(vast ${NEEDED_LIBS})
 
