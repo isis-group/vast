@@ -167,23 +167,21 @@ void QImageWidgetImplementation::recalculateTranslation()
 void QImageWidgetImplementation::paintImage( boost::shared_ptr< ImageHolder > image )
 {
 	ImageProperties &imgProps = m_ImageProperties.at( image );
-
-	switch ( image->getImageProperties().interpolationType ) {
-	case nn:
+	switch( m_InterpolationType ) {
+	case 0:
 		m_Painter->setRenderHint( QPainter::TextAntialiasing, true );
 		break;
-	case lin:
+	case 1:
 		m_Painter->setRenderHint( QPainter::SmoothPixmapTransform, true );
 		break;
 	}
-
 	if( image->getImageProperties().imageType == ImageHolder::z_map ) {
-		imgProps.colorHandler.setLutType( Color::zmap_standard);
-		imgProps.colorHandler.setOmitZeros( true );
+		imgProps.colorHandler.setLutType( static_cast<Color::LookUpTableType>(image->getPropMap().getPropertyAs<unsigned short>("lut")) );
+		imgProps.colorHandler.setOmitZeros(true);
 	} else {
-		imgProps.colorHandler.setLutType( Color::standard_grey_values );
+		imgProps.colorHandler.setLutType( isis::viewer::Color::standard_grey_values );
 	}
-
+	
 	if( m_ScalingType == automatic_scaling ) {
 		imgProps.colorHandler.setOffsetAndScaling( image->getOptimalScalingPair() );
 	}

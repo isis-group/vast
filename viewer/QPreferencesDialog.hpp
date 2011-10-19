@@ -23,6 +23,7 @@ public Q_SLOTS:
 	void closeEvent( QCloseEvent * );
 	void loadSettings();
 	void saveSettings();
+	void apply();
 
 private:
 	QViewerCore *m_ViewerCore;

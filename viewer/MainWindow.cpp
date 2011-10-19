@@ -78,7 +78,6 @@ void MainWindow::loadSettings()
 
 	m_ViewerCore->getSettings()->endGroup();
 	m_ViewerCore->getSettings()->beginGroup( "UserProfile" );
-	ui.interpolationType->setCurrentIndex( m_ViewerCore->getSettings()->value( "interpolation", 0 ).toUInt() );
 	ui.actionAutomatic_Scaling->setChecked( m_ViewerCore->getSettings()->value( "scaling", 0 ).toBool() );
 	ui.actionShow_labels->setChecked( m_ViewerCore->getSettings()->value( "labels", 0 ).toBool() );
 	m_ViewerCore->getOption()->propagateZooming = m_ViewerCore->getSettings()->value( "propagateZooming", false ).toBool();
@@ -341,8 +340,6 @@ void MainWindow::imagesChanged( DataContainer images )
 	} else {
 		ui.action_Plotting->setEnabled( false );
 	}
-		//setting the interpolation type 
-	ui.interpolationType->setCurrentIndex( m_ViewerCore->getCurrentImage()->getImageProperties().interpolationType );
 }
 
 void MainWindow::openImageAs( ImageHolder::ImageType type )

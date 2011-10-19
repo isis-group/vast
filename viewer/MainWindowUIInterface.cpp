@@ -30,7 +30,6 @@ void MainWindowUIInterface::connectSignals()
 	connect( ui.lowerThreshold, SIGNAL( sliderMoved( int ) ), this, SLOT( lowerThresholdChanged( int ) ) );
 	connect( ui.opacity, SIGNAL( sliderMoved( int ) ), this, SLOT( opacityChanged( int ) ) );
 	connect( ui.timestepSpinBox, SIGNAL( valueChanged( int ) ), m_ViewerCore, SLOT( timestepChanged( int ) ) ) ;
-	connect( ui.interpolationType, SIGNAL( currentIndexChanged( int ) ), this, SLOT( interpolationChanged( int ) ) );
 	connect( ui.currentImageBox, SIGNAL( activated( int ) ), this, SLOT( currentImageChanged( int ) ) );
 	connect( ui.action_Controllpanel, SIGNAL( triggered( bool ) ), this, SLOT( showControlPanel( bool ) ) );
 	connect( ui.actionAxial_view, SIGNAL( triggered( bool ) ), this, SLOT( toggleAxialView( bool ) ) );
@@ -50,7 +49,6 @@ void MainWindowUIInterface::connectSignals()
 	connect( ui.timestepSpinBox_2, SIGNAL( valueChanged( int ) ), ui.timestepSpinBox, SLOT( setValue( int ) ) );
 	connect( ui.horizontalSlider, SIGNAL( valueChanged( int ) ), this, SLOT( lowerThresholdChanged( int ) ) );
 	connect( ui.horizontalSlider_2, SIGNAL( valueChanged( int ) ), this, SLOT( upperThresholdChanged( int ) ) );
-	connect( ui.comboBox, SIGNAL( currentIndexChanged( int ) ), ui.interpolationType, SLOT( setCurrentIndex( int ) ) );
 	connect( ui.row_value, SIGNAL( returnPressed() ), this, SLOT( setVoxelPosition() ) );
 	connect( ui.column_value, SIGNAL( returnPressed() ), this, SLOT( setVoxelPosition() ) );
 	connect( ui.slice_value, SIGNAL( returnPressed() ), this, SLOT( setVoxelPosition() ) );

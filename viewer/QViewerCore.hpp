@@ -50,6 +50,7 @@ public:
 
 
 public Q_SLOTS:
+	virtual void settingsChanged();
 	virtual void zoomChanged( float zoomFactor );
 	virtual void voxelCoordsChanged( util::ivector4 );
 	virtual void physicalCoordsChanged( util::fvector4 );

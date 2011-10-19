@@ -17,7 +17,7 @@ class Color
 {
 
 public:
-	enum LookUpTableType { standard_grey_values, zmap_standard, colormap1, colormap2, colormap3, colormap4, colormap5, colormap6, colormap7, colormap8, colormap9 };
+	enum LookUpTableType { standard_grey_values = 0, zmap_standard, colormap1, colormap2, colormap3, colormap4, colormap5, colormap6, colormap7, colormap8, colormap9, colormap10, colormap11, colormap12 };
 	typedef QVector<QRgb> ColorMapType;
 
 	Color();

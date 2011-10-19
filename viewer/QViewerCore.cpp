@@ -65,7 +65,7 @@ void QViewerCore::addImageList( const std::list< data::Image > imageList, const 
 		}
 		emitImagesChanged( getDataContainer() );
 	}
-
+	settingsChanged();
 	
 }
 
@@ -81,7 +81,7 @@ void QViewerCore::setImageList( const std::list< data::Image > imageList, const 
 		}
 		emitImagesChanged( getDataContainer() );
 	}
-
+	settingsChanged();
 	
 
 }
@@ -93,6 +93,16 @@ void QViewerCore::setShowLabels( bool l )
 	} else {
 		emitShowLabels( false );
 	}
+}
+
+void QViewerCore::settingsChanged()
+{
+	getSettings()->beginGroup("UserProfile");
+	getCurrentImage()->getPropMap().setPropertyAs<unsigned short>("lut", getSettings()->value("lut", 0).toUInt());
+	BOOST_FOREACH( WidgetMap::reference widget, m_WidgetMap ) {
+		widget.second->setInterpolationType( static_cast<InterpolationType>( getSettings()->value("interpolationType", 0).toUInt() ) );
+	}
+	getSettings()->endGroup();
 }
 
 void QViewerCore::updateScene( bool center )
