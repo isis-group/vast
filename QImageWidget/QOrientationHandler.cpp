@@ -100,20 +100,20 @@ ViewPortType QOrienationHandler::getViewPort(  util::PropertyMap &properties, co
 	ViewPortType viewPort;
 	float zoom = properties.getPropertyAs<float>( "currentZoom" );
 	util::ivector4 mappedSize = QOrienationHandler::mapCoordsToOrientation( image->getImageSize(), image, orientation );
-	util::fvector4 mappedScaling = QOrienationHandler::mapCoordsToOrientation( image->getISISImage()->getPropertyAs<util::fvector4>("voxelSize"), image, orientation );
-	mappedScaling += QOrienationHandler::mapCoordsToOrientation( image->getISISImage()->getPropertyAs<util::fvector4>("voxelGap"), image, orientation );
+	util::fvector4 mappedScaling = QOrienationHandler::mapCoordsToOrientation( image->getISISImage()->getPropertyAs<util::fvector4>( "voxelSize" ), image, orientation );
+	mappedScaling += QOrienationHandler::mapCoordsToOrientation( image->getISISImage()->getPropertyAs<util::fvector4>( "voxelGap" ), image, orientation );
 	util::fvector4 physSize = mappedScaling * mappedSize;
-	
+
 	float scalew = w / float( physSize[0] );
 	float scaleh = h / float( physSize[1] );
-	
-	float scale = scaleh < scalew ? scaleh : scalew; 
-	
+
+	float scale = scaleh < scalew ? scaleh : scalew;
+
 	viewPort[0] =  mappedScaling[0] * zoom * scale;
 	viewPort[1] =  mappedScaling[1] * zoom * scale;
-	
-	float offsetX = ( w - (mappedSize[0] * viewPort[0]) ) / 2;
-	float offsetY = ( h - (mappedSize[1] * viewPort[1]) ) / 2;
+
+	float offsetX = ( w - ( mappedSize[0] * viewPort[0] ) ) / 2;
+	float offsetY = ( h - ( mappedSize[1] * viewPort[1] ) ) / 2;
 	viewPort[2] = offsetX ;
 	viewPort[3] = offsetY ;
 	viewPort[4] = round( mappedSize[0] * viewPort[0] );
@@ -136,8 +136,8 @@ QTransform QOrienationHandler::getTransform( const ViewPortType &viewPort, const
 	retTransform.translate( flipVec[0] * viewPort[2], flipVec[1] * viewPort[3] );
 	retTransform.scale( viewPort[0], viewPort[1] );
 	retTransform.translate(  flipVec[0] < 0 ? -mappedSize[0] : 0, flipVec[1] < 0 ? -mappedSize[1] : 0 );
-	
-	
+
+
 	return retTransform;
 
 }

@@ -65,8 +65,9 @@ void QViewerCore::addImageList( const std::list< data::Image > imageList, const 
 		}
 		emitImagesChanged( getDataContainer() );
 	}
+
 	settingsChanged();
-	
+
 }
 
 void QViewerCore::setImageList( const std::list< data::Image > imageList, const ImageHolder::ImageType &imageType, bool passToWidgets  )
@@ -81,8 +82,9 @@ void QViewerCore::setImageList( const std::list< data::Image > imageList, const 
 		}
 		emitImagesChanged( getDataContainer() );
 	}
+
 	settingsChanged();
-	
+
 
 }
 
@@ -97,10 +99,10 @@ void QViewerCore::setShowLabels( bool l )
 
 void QViewerCore::settingsChanged()
 {
-	getSettings()->beginGroup("UserProfile");
-	getCurrentImage()->getPropMap().setPropertyAs<unsigned short>("lut", getSettings()->value("lut", 0).toUInt());
+	getSettings()->beginGroup( "UserProfile" );
+	getCurrentImage()->getPropMap().setPropertyAs<unsigned short>( "lut", getSettings()->value( "lut", 0 ).toUInt() );
 	BOOST_FOREACH( WidgetMap::reference widget, m_WidgetMap ) {
-		widget.second->setInterpolationType( static_cast<InterpolationType>( getSettings()->value("interpolationType", 0).toUInt() ) );
+		widget.second->setInterpolationType( static_cast<InterpolationType>( getSettings()->value( "interpolationType", 0 ).toUInt() ) );
 	}
 	getSettings()->endGroup();
 }
@@ -113,12 +115,13 @@ void QViewerCore::updateScene( bool center )
 void QViewerCore::setAutomaticScaling( bool s )
 {
 	BOOST_FOREACH( WidgetMap::reference widget, m_WidgetMap ) {
-		if(s) {
+		if( s ) {
 			widget.second->setScalingType( automatic_scaling );
 		} else {
 			widget.second->setScalingType( no_scaling );
 		}
-		widget.second->updateScene(false);
+
+		widget.second->updateScene( false );
 	}
 }
 

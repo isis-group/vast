@@ -7,9 +7,12 @@
 #include <dlfcn.h>
 #endif
 
-namespace isis {
-namespace viewer {
-namespace plugin {
+namespace isis
+{
+namespace viewer
+{
+namespace plugin
+{
 namespace _internal
 {
 struct pluginDeleter {
@@ -33,43 +36,46 @@ struct pluginDeleter {
 bool PluginLoader::registerPlugin ( const PluginInterfacePointer plugin )
 {
 	if ( !plugin )return false;
+
 	pluginList.push_back( plugin );
 	return true;
 }
 
-unsigned int PluginLoader::findPlugins(std::list< std::string > paths)
+unsigned int PluginLoader::findPlugins( std::list< std::string > paths )
 {
 	unsigned int ret = 0;
-	BOOST_FOREACH( PathsType::const_reference pathRef, paths ) 
-	{
-		boost::filesystem::path p(pathRef);
+	BOOST_FOREACH( PathsType::const_reference pathRef, paths ) {
+		boost::filesystem::path p( pathRef );
+
 		if( boost::filesystem::exists( p ) ) {
 			LOG( Runtime, warning ) << "Pluginpath " << util::MSubject( p.native_file_string() ) << " not found!";
 		}
+
 		if( !boost::filesystem::is_directory( p ) ) {
 			LOG( Runtime, warning ) << util::MSubject( p.native_file_string() ) << " is not a directory!";
 		}
+
 		LOG( Runtime, info ) << "Scanning " << util::MSubject( p ) << " for plugins...";
-		
+
 		boost::regex pluginFilter( std::string( "^" ) + DL_PREFIX + "vastPlugin" + "[[:word:]]+" + DL_SUFFIX + "$" );
-		
+
 		for ( boost::filesystem::directory_iterator itr( p ); itr != boost::filesystem::directory_iterator(); ++itr ) {
 			if ( boost::filesystem::is_directory( *itr ) )continue;
 
 			if ( boost::regex_match( itr->path().leaf(), pluginFilter ) ) {
 				const std::string pluginName = itr->path().file_string();
-	#ifdef WIN32
+#ifdef WIN32
 				HINSTANCE handle = LoadLibrary( pluginName.c_str() );
-	#else
+#else
 				void *handle = dlopen( pluginName.c_str(), RTLD_NOW );
-	#endif
+#endif
 
 				if ( handle ) {
-	#ifdef WIN32
+#ifdef WIN32
 					isis::viewer::plugin::PluginInterface* ( *loadPlugin_func )() = ( isis::viewer::plugin::PluginInterface * ( * )() )GetProcAddress( handle, "loadPlugin" );
-	#else
+#else
 					isis::viewer::plugin::PluginInterface* ( *loadPlugin_func )() = ( isis::viewer::plugin::PluginInterface * ( * )() )dlsym( handle, "loadPlugin" );
-	#endif
+#endif
 
 					if ( loadPlugin_func ) {
 						PluginInterfacePointer plugin_class( loadPlugin_func(), _internal::pluginDeleter( handle, pluginName ) );
@@ -81,30 +87,30 @@ unsigned int PluginLoader::findPlugins(std::list< std::string > paths)
 							LOG( Runtime, warning ) << "failed to register plugin " << util::MSubject( pluginName );
 						}
 					} else {
-	#ifdef WIN32
+#ifdef WIN32
 						LOG( Runtime, warning )
 								<< "could not get format factory function from " << util::MSubject( pluginName );
 						FreeLibrary( handle );
-	#else
+#else
 						LOG( Runtime, warning )
 								<< "could not get format factory function from " << util::MSubject( pluginName ) << ":" << util::MSubject( dlerror() );
 						dlclose( handle );
-	#endif
+#endif
 					}
 				} else
-	#ifdef WIN32
+#ifdef WIN32
 					LOG( Runtime, warning ) << "Could not load library " << util::MSubject( pluginName );
 
-	#else
+#else
 					LOG( Runtime, warning ) << "Could not load library " << util::MSubject( pluginName ) << ":" <<  util::MSubject( dlerror() );
-	#endif
+#endif
 			} else {
 				LOG( Runtime, verbose_info )
 						<< "Ignoring " << util::MSubject( itr->path() )
 						<< " because it doesn't match " << pluginFilter.str();
 			}
-		}	
-		
+		}
+
 	}
 	return ret;
 }
@@ -113,29 +119,34 @@ PluginLoader::PluginLoader()
 {
 	const char *env_path = getenv( "VAST_PLUGIN_PATH" );
 	const char *env_home = getenv( "HOME" );
-	
+
 	if( env_path ) {
 		addPluginSearchPath( boost::filesystem::path( env_path ).directory_string() );
 	}
+
 	if( env_home ) {
 		const boost::filesystem::path home = boost::filesystem::path( env_home ) / "vast" / "plugins";
+
 		if( boost::filesystem::exists( home ) ) {
 			addPluginSearchPath( home.directory_string() );
 		}
 	}
+
 	if( std::string( PLUGIN_PATH ).size() ) {
 		addPluginSearchPath( std::string ( PLUGIN_PATH ) );
 	}
-	
+
 	findPlugins( m_PluginSearchPaths );
 
 }
 
-PluginLoader& PluginLoader::get()
+PluginLoader &PluginLoader::get()
 {
 	return util::Singletons::get< PluginLoader, INT_MAX>();
 }
 
-	
-}}}
+
+}
+}
+}
 

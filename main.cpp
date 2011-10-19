@@ -13,17 +13,17 @@ int main( int argc, char *argv[] )
 {
 	using namespace isis;
 	using namespace viewer;
-	
+
 	ENABLE_LOG( data::Runtime, util::DefaultMsgPrint, error );
 	std::string appName = "vast";
 	std::string orgName = "cbs.mpg.de";
 	std::map<std::string, WidgetType> wTypeMap;
-	
+
 	QViewerCore *core = new QViewerCore( appName, orgName );
 
 	//scan for plugins and hand them to the core
 	core->addPlugins( plugin::PluginLoader::get().getPlugins() );
-	
+
 	util::Selection dbg_levels( "error,warning,info,verbose_info" );
 	util::Selection wTypes( "gl,qt" );
 	wTypeMap.insert( std::make_pair<std::string, WidgetType>( "gl", type_gl ) );
