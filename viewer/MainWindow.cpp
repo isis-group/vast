@@ -20,7 +20,6 @@ MainWindow::MainWindow( QViewerCore *core, WidgetType wType )
 	: m_ViewerCore( core ),
 	  m_WidgetType( wType )
 {
-	m_PlottingDialog->setViewerCore( m_ViewerCore );
 	m_PreferencesDialog = new QPreferencesDialog( this, m_ViewerCore );
 	m_State = single;
 	actionMakeCurrent = new QAction( "Make current", this );
@@ -148,7 +147,7 @@ void isis::viewer::MainWindow::setInitialState()
 			connect( processAction, SIGNAL( triggered() ), signalMapper, SLOT( map() ) );
 
 		}
-		connect( signalMapper, SIGNAL( mapped( QString ) ), this, SLOT( callProcess( QString ) ) );
+		connect( signalMapper, SIGNAL( mapped( QString ) ), this, SLOT( callPlugin( QString ) ) );
 	}
 
 	m_ViewerCore->setCoordsTransformation( util::fvector4( -1, -1, 1, 1 ) );
@@ -411,16 +410,6 @@ void MainWindow::openImageAs( ImageHolder::ImageType type )
 	}
 }
 
-void MainWindow::handImagesToPlotter()
-{
-	//hand all images to plotting instance
-	QPlottingDialog::ImageList tmpList;
-	BOOST_FOREACH( DataContainer::const_reference image, m_ViewerCore->getDataContainer() ) {
-		tmpList.push_back( image.second );
-	}
-	m_PlottingDialog->setImageHolderList( tmpList );
-}
-
 
 void MainWindow::openDICOMDir()
 {
@@ -609,7 +598,7 @@ QWidgetImplementationBase *MainWindow::createView( QDockWidget *widget, PlaneOri
 
 }
 
-void MainWindow::callProcess( QString name )
+void MainWindow::callPlugin( QString name )
 {
 	m_ViewerCore->callPlugin( name.toStdString() );
 }

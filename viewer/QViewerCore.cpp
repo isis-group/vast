@@ -6,7 +6,9 @@ namespace isis
 namespace viewer
 {
 
-QViewerCore::QViewerCore( const std::string &appName, const std::string &orgName ): ViewerCoreBase( )
+QViewerCore::QViewerCore( const std::string &appName, const std::string &orgName, QWidget *parent )
+	: ViewerCoreBase( ),
+	m_Parent( parent )
 {
 	QCoreApplication::setApplicationName( QString( appName.c_str() ) );
 	QCoreApplication::setOrganizationName( QString( orgName.c_str() ) );
@@ -132,6 +134,34 @@ void QViewerCore::zoomChanged( float zoomFactor )
 		emitZoomChanged( zoomFactor );
 	}
 }
+
+
+void QViewerCore::addPlugin( boost::shared_ptr< plugin::PluginInterface > plugin )
+{
+	plugin->setViewerCore( this );
+	plugin->setParent( m_Parent );
+	m_PluginList.push_back( plugin );
+}
+
+void QViewerCore::addPlugins( isis::viewer::plugin::PluginLoader::PluginListType plugins )
+{
+	BOOST_FOREACH( PluginListType::const_reference plugin, plugins ) {
+		addPlugin( plugin );
+	}
+}
+
+
+bool QViewerCore::callPlugin( const std::string &name )
+{
+	BOOST_FOREACH( PluginListType::const_reference plugin, m_PluginList ) {
+		if( plugin->getName() == name ) {
+			return plugin->call();
+		}
+	}
+	return false;
+}
+
+
 
 }
 }

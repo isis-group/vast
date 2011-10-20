@@ -37,7 +37,6 @@ void MainWindowUIInterface::connectSignals()
 	connect( ui.actionSagittal_View, SIGNAL( triggered( bool ) ), this, SLOT( toggleSagittalView( bool ) ) );
 	connect( ui.actionOpenZmap, SIGNAL( triggered() ), this, SLOT( openImageAsZMap() ) );
 	connect( ui.action_Preferences, SIGNAL( triggered() ), this, SLOT( openPreferences() ) );
-	connect( ui.action_Plotting, SIGNAL( triggered() ), this, SLOT( showPlotting() ) );
 
 	//attach all textFields
 	connect( ui.row_value, SIGNAL( textChanged( QString ) ), ui.row_value_2, SLOT( setText( QString ) ) );
@@ -131,14 +130,6 @@ void MainWindowUIInterface::triggeredMakeCurrentImage( bool triggered )
 	m_ViewerCore->setCurrentImage( m_ViewerCore->getDataContainer().at( ui.imageStack->currentItem()->text().toStdString() ) );
 	imagesChanged( m_ViewerCore->getDataContainer() );
 	updateInterfaceValues();
-}
-
-void MainWindowUIInterface::showPlotting()
-{
-	m_PlottingDialog->clear();
-	m_PlottingDialog->show();
-	handImagesToPlotter();
-	physicalCoordsChanged( m_ViewerCore->getCurrentImage()->getPropMap().getPropertyAs<util::fvector4>( "physicalCoords" ) );
 }
 
 

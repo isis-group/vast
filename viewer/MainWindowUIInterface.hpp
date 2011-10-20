@@ -23,7 +23,6 @@ protected:
 
 public Q_SLOTS:
 	void showControlPanel( bool );
-	void showPlotting();
 	void toggleAxialView( bool );
 	void toggleCoronalView( bool );
 	void toggleSagittalView( bool );

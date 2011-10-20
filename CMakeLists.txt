@@ -70,7 +70,7 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR} ${ISIS_INCLUDE_DIRS})
 # qt4 stuff
 ###########################################################
 
-FIND_PACKAGE(Qt4 COMPONENTS QtCore QtGui QtOpenGL Qwt REQUIRED)
+FIND_PACKAGE(Qt4 COMPONENTS QtCore QtGui QtOpenGL REQUIRED)
 
 set(QT_USE_QTUITOOLS TRUE)
 set(QT_USE_QTOPENGL TRUE)
@@ -166,6 +166,7 @@ set(NEEDED_LIBS
 	${QWT5_library} 
 	)
 
+#add the plugin directory
 add_subdirectory(plugins)
 
 target_link_libraries(vast ${NEEDED_LIBS})

@@ -47,14 +47,6 @@ public:
 	void setCoordsTransformation( const util::fvector4 &transformation ) { m_VoxelTransformation = transformation; }
 	util::fvector4 getTransformedCoords( const util::fvector4 &coords ) const;
 
-	//plugin stuff
-
-	void addPlugin( boost::shared_ptr< plugin::PluginInterface > plugin );
-	void addPlugins( plugin::PluginLoader::PluginListType plugins );
-	PluginListType getPlugins() const { return m_PluginList; }
-
-	bool callPlugin( const std::string &name );
-
 private:
 	//this is the container which actually holds all the images
 	DataContainer m_DataContainer;

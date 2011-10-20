@@ -23,7 +23,7 @@ int main( int argc, char *argv[] )
 
 	//scan for plugins and hand them to the core
 	core->addPlugins( plugin::PluginLoader::get().getPlugins() );
-
+	
 	util::Selection dbg_levels( "error,warning,info,verbose_info" );
 	util::Selection wTypes( "gl,qt" );
 	wTypeMap.insert( std::make_pair<std::string, WidgetType>( "gl", type_gl ) );

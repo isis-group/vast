@@ -17,7 +17,7 @@ class QViewerCore : public QObject, public ViewerCoreBase
 public:
 	enum Actions {not_specified, timestep_changed, show_labels};
 	typedef std::map<std::string, QWidgetImplementationBase * > WidgetMap;
-	QViewerCore( const std::string &appName = std::string(), const std::string &orgName = std::string() );
+	QViewerCore( const std::string &appName = std::string(), const std::string &orgName = std::string(), QWidget *parent = 0 );
 
 
 	bool registerWidget( std::string key, QWidgetImplementationBase *widget, Actions = not_specified );
@@ -48,6 +48,13 @@ public:
 		}
 	};
 
+	//plugin stuff
+
+	void addPlugin( boost::shared_ptr< plugin::PluginInterface > plugin );
+	void addPlugins( plugin::PluginLoader::PluginListType plugins );
+	PluginListType getPlugins() const { return m_PluginList; }
+
+	bool callPlugin( const std::string &name );
 
 public Q_SLOTS:
 	virtual void settingsChanged();
@@ -73,6 +80,8 @@ private:
 	WidgetMap m_WidgetMap;
 	std::vector< util::fvector4 > m_RGBColorGradient;
 	QSettings *m_Settings;
+	
+	QWidget *m_Parent;
 
 };
 
