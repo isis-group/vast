@@ -1,3 +1,4 @@
+/*
 #include "QPlottingDialog.hpp"
 
 
@@ -46,3 +47,4 @@ void QPlottingDialog::clear()
 
 }
 }
+*/

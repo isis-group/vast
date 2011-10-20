@@ -123,6 +123,12 @@ void isis::viewer::MainWindow::setInitialState()
 	m_Toolbar->addSeparator();
 	m_Toolbar->addAction( ui.action_Exit );
 
+
+	m_ViewerCore->setCoordsTransformation( util::fvector4( -1, -1, 1, 1 ) );
+}
+
+void MainWindow::reloadPluginsToGUI()
+{
 	//adding all processes to the process (plugin) menu and connect the action to the respective call functions
 	QMenu *processMenu = new QMenu( tr( "Plugins" ) );
 
@@ -150,8 +156,8 @@ void isis::viewer::MainWindow::setInitialState()
 		connect( signalMapper, SIGNAL( mapped( QString ) ), this, SLOT( callPlugin( QString ) ) );
 	}
 
-	m_ViewerCore->setCoordsTransformation( util::fvector4( -1, -1, 1, 1 ) );
 }
+
 
 void MainWindow::setVoxelPosition()
 {

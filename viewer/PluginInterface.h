@@ -19,7 +19,7 @@ class PluginInterface
 public:
 	PluginInterface() {};
 	void setViewerCore( isis::viewer::QViewerCore *core) { viewerCore = core; }
-	void setParent( QWidget *p ) { parent = p; }
+	void setParentWidget( QWidget *p ) { parent = p; }
 	
 	/**
 	 * Calls the plugin. This function should execute the plugin 
@@ -40,6 +40,9 @@ public:
 	
 	///returns the tooltip of the plugin
 	virtual std::string getTooltip() = 0;
+	
+	///returns if the plugin uses a gui
+	virtual bool isGUI() = 0;
 	
 	virtual ~PluginInterface() {}
 	

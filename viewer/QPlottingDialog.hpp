@@ -1,3 +1,4 @@
+/*
 #ifndef QPLOTTINGDIALOG_HPP
 #define QPLOTTINGDIALOG_HPP
 
@@ -102,3 +103,4 @@ private:
 
 
 #endif
+*/

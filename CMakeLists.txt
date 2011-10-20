@@ -22,7 +22,6 @@ set(VIEWER_FILES_HPP
 	viewer/MainWindowUIInterface.hpp
 	viewer/QViewerCore.hpp
 	viewer/QPreferencesDialog.hpp
-	viewer/QPlottingDialog.hpp
 )
 set(GLWIDGET_FILES_HPP
 	GLWidget/QGLWidgetImplementation.hpp
@@ -82,17 +81,6 @@ QT4_ADD_RESOURCES(vast_rcc_files ${RESOURCE_FILES})
 
 qt4_wrap_cpp(vast_moc_files ${VIEWER_FILES_HPP} ${GLWIDGET_FILES_HPP})
 QT4_WRAP_UI(vast_UIS_H ${UI_FILES})
-
-###########################################################
-# qwt stuff
-###########################################################
-
-find_path( QWT5_include qwt.h PATH_SUFFIXES qwt-qt4 )
-find_library( QWT5_library qwt-qt4 )
-
-MESSAGE(STATUS "Qwt library: ${QWT5_library}")
-
-include_directories(${QWT5_include})
 
 
 ###########################################################

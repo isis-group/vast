@@ -56,7 +56,7 @@ private:
 
 protected:
 	OptionStruct *m_Options;
-	PluginListType m_PluginList;
+
 
 
 };

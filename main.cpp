@@ -21,9 +21,6 @@ int main( int argc, char *argv[] )
 
 	QViewerCore *core = new QViewerCore( appName, orgName );
 
-	//scan for plugins and hand them to the core
-	core->addPlugins( plugin::PluginLoader::get().getPlugins() );
-	
 	util::Selection dbg_levels( "error,warning,info,verbose_info" );
 	util::Selection wTypes( "gl,qt" );
 	wTypeMap.insert( std::make_pair<std::string, WidgetType>( "gl", type_gl ) );
@@ -102,7 +99,13 @@ int main( int argc, char *argv[] )
 		}
 	}
 	bool assamble = false;
-	MainWindowUIInterface isisViewerMainWindow( core, wTypeMap[app.parameters["wtype"].toString()] );
+	MainWindowUIInterface *isisViewerMainWindow = new MainWindowUIInterface( core, wTypeMap[app.parameters["wtype"].toString()] );
+	//because some plugins may use a gui we have to pass a parent
+	core->setParentWidget( isisViewerMainWindow );
+	//scan for plugins and hand them to the core
+	core->addPlugins( plugin::PluginLoader::get().getPlugins() );
+	isisViewerMainWindow->reloadPluginsToGUI();
+	
 
 	if( app.parameters["zmap"].isSet() ) {
 		if( app.parameters["split"] && zImgList.size() > 1 ) {
@@ -116,7 +119,7 @@ int main( int argc, char *argv[] )
 	if( app.parameters["type"].toString() == "anatomical" && app.parameters["in"].isSet() ) {
 		if( imgList.size() > 1 && app.parameters["split"] ) {
 			core->addImageList( imgList, ImageHolder::anatomical_image, false );
-			isisViewerMainWindow.assembleViewInRows();
+			isisViewerMainWindow->assembleViewInRows();
 		} else  {
 			core->addImageList( imgList, ImageHolder::anatomical_image, true );
 		}
@@ -126,9 +129,9 @@ int main( int argc, char *argv[] )
 	}
 
 	if( assamble ) {
-		isisViewerMainWindow.assembleViewInRows();
+		isisViewerMainWindow->assembleViewInRows();
 	}
 
-	isisViewerMainWindow.show();
+	isisViewerMainWindow->show();
 	return app.getQApplication().exec();
 }

@@ -10,7 +10,6 @@ include_directories(${CMAKE_SOURCE_DIR}/viewer)
 
 option(${CMAKE_PROJECT_NAME}_PLUGIN_TIMEPLOTTER "Enable TimePlotter plugin" OFF)
 
-
 ############################################################
 # TimePlotter plugin
 ############################################################
@@ -21,4 +20,4 @@ endif(${CMAKE_PROJECT_NAME}_PLUGIN_TIMEPLOTTER)
 ###########################################################
 # actual install
 ###########################################################
-install(TARGETS ${TARGETS} DESTINATION ${VAST_PLUGIN_INFIX} COMPONENT "vast plugins" )
+

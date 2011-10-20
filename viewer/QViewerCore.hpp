@@ -55,6 +55,8 @@ public:
 	PluginListType getPlugins() const { return m_PluginList; }
 
 	bool callPlugin( const std::string &name );
+	
+	void setParentWidget( QWidget *parent ) { m_Parent = parent; }
 
 public Q_SLOTS:
 	virtual void settingsChanged();
@@ -82,6 +84,7 @@ private:
 	QSettings *m_Settings;
 	
 	QWidget *m_Parent;
+	PluginListType m_PluginList;
 
 };
 
