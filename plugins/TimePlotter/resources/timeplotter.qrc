@@ -1,0 +1,5 @@
+<RCC>
+  <qresource prefix="common">
+    <file>graph.gif</file>
+  </qresource>
+</RCC>
