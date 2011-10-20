@@ -119,9 +119,6 @@ void isis::viewer::MainWindow::setInitialState()
 	m_Toolbar->addAction( ui.actionCoronal_View );
 	m_Toolbar->addAction( ui.action_Controllpanel );
 	m_Toolbar->addSeparator();
-	m_Toolbar->addAction( ui.action_Plotting );
-	m_Toolbar->addSeparator();
-	m_Toolbar->addAction( ui.action_Exit );
 
 
 	m_ViewerCore->setCoordsTransformation( util::fvector4( -1, -1, 1, 1 ) );
@@ -145,8 +142,14 @@ void MainWindow::reloadPluginsToGUI()
 				tmpMenu = tmpMenu->addMenu( iter->c_str() );
 
 			}
-
+			
 			QAction *processAction = new QAction( QString( ( --sepName.end() )->c_str() ), this );
+			
+			//optionally add plugin to the toolbar
+			if( !plugin->getToolbarIcon()->isNull() ) {
+				processAction->setIcon( *plugin->getToolbarIcon() );
+				m_Toolbar->addAction( processAction );
+			}
 			processAction->setStatusTip( QString( plugin->getTooltip().c_str() ) );
 			signalMapper->setMapping( processAction, QString( plugin->getName().c_str() ) );
 			tmpMenu->addAction( processAction );

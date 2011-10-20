@@ -139,7 +139,8 @@ void QViewerCore::zoomChanged( float zoomFactor )
 void QViewerCore::addPlugin( boost::shared_ptr< plugin::PluginInterface > plugin )
 {
 	if( !m_Parent && plugin->isGUI() ) {
-		LOG( Runtime, error ) << "Core does not own a parent. Before calling addPlugin/addPlugins you have to use setParentWidget!";
+		LOG( Runtime, error ) 
+			<< "Core does not own a parent. Before calling addPlugin/addPlugins you have to use setParentWidget!";
 	} else {
 		plugin->setViewerCore( this );
 		plugin->setParentWidget( m_Parent );

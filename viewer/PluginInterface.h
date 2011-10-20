@@ -4,6 +4,7 @@
 #ifdef __cplusplus
 #include <iostream>
 #include <QObject>
+#include <QIcon>
 
 namespace isis {
 namespace viewer {
@@ -19,15 +20,13 @@ class PluginInterface
 public:
 	PluginInterface() {};
 	void setViewerCore( isis::viewer::QViewerCore *core) { viewerCore = core; }
-	void setParentWidget( QWidget *p ) { parent = p; }
+	void setParentWidget( QWidget *p ) { parentWidget = p; }
 	
 	/**
 	 * Calls the plugin. This function should execute the plugin 
 	 * (e.g. showing a dialog or directly executing an operation)
 	 */
 	virtual bool call() = 0;
-	
-	
 	/**
 	 * This function returns the name of the plugin.
 	 * A name for instance can look like "category/subcategory/pluginname
@@ -44,12 +43,14 @@ public:
 	///returns if the plugin uses a gui
 	virtual bool isGUI() = 0;
 	
+	///returns the string pointing to the toolbarIcon. If this string is empty the plugin will not be placed in the toolbar.
+	virtual QIcon *getToolbarIcon() { return new QIcon(); }
 	virtual ~PluginInterface() {}
 	
 	std::string plugin_file;
 protected:
 	QViewerCore *viewerCore;
-	QWidget *parent;
+	QWidget *parentWidget;
 	
 	
 };

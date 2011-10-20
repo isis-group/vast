@@ -2,39 +2,35 @@
 #define TIMEPLOTTER_HPP
 
 #include "PluginInterface.h"
-#include <QtGui>
-#include <qwt_plot.h>
-#include <qwt_plot_curve.h>
-#include "ui_plotting.h"
+#include "PlotterDialog.hpp"
+#include "common.hpp"
+#include <QViewerCore.hpp>
 
 namespace isis {
 namespace viewer {
 namespace plugin {
 	
+	
 class TimePlotter : public PluginInterface
 {
 public:
-	TimePlotter();
 	
 	virtual std::string getName() { return std::string( "Plotter/TimePlotter" ) ; }
 	virtual std::string getDescription() { return std::string( "Plots a timeseries" ); }
 	virtual std::string getTooltip() { return std::string(""); }
+	virtual QIcon *getToolbarIcon() { return new QIcon( ":/common/graph.gif" ); }
 	virtual bool isGUI() { return true; }
 	virtual bool call();
 
-	~TimePlotter();
-private:
+	~TimePlotter() {};
 	
-	class PlotterDialog : public QDialog
-	{
-	public:
-		PlotterDialog( QWidget *p ) : QDialog(p) {};
-	};
+
+private:
 	
 	PlotterDialog *m_PlotterDialog;
 	
 };
-	
+
 	
 }}}
 

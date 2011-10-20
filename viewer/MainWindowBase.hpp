@@ -4,7 +4,6 @@
 #include <QtGui>
 #include "ui_isisViewerMain.h"
 #include "QPreferencesDialog.hpp"
-#include "QPlottingDialog.hpp"
 
 namespace isis
 {
