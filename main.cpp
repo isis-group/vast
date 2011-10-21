@@ -30,7 +30,7 @@ int main( int argc, char *argv[] )
 	util::Selection image_types( "anatomical,zmap" );
 	image_types.set( "anatomical" );
 
-	qt4::IOQtApplication app( appName.c_str(), false, false );
+	qt4::IOQtApplication app( appName.c_str(), false, false, std::string("raster") );
 
 	std::cout << "v" << core->getVersion() << " ( isis core: " << app.getCoreVersion() << " )" << std::endl;
 	app.parameters["in"] = util::slist();
@@ -67,7 +67,6 @@ int main( int argc, char *argv[] )
 	boost::shared_ptr< util::ProgressFeedback > feedback = boost::shared_ptr<util::ProgressFeedback>( new util::ConsoleFeedback );
 	data::IOFactory::setProgressFeedback( feedback );
 	//setting graphics mode
-	app.getQApplication().setGraphicsSystem( "raster" );
 	app.init( argc, argv, true );
 	app.setLog<ViewerLog>( app.getLLMap()[app.parameters["dViewer"]->as<util::Selection>()] );
 	app.setLog<ViewerDebug>( app.getLLMap()[app.parameters["dViewer"]->as<util::Selection>()] );

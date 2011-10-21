@@ -53,7 +53,7 @@
          <x>0</x>
          <y>0</y>
          <width>1503</width>
-         <height>733</height>
+         <height>723</height>
         </rect>
        </property>
        <layout class="QGridLayout" name="gridLayout_9">
@@ -342,7 +342,7 @@
                          <verstretch>0</verstretch>
                         </sizepolicy>
                        </property>
-                       <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="">
+                       <layout class="QHBoxLayout" name="horizontalLayout_3">
                         <property name="spacing">
                          <number>2</number>
                         </property>
@@ -970,7 +970,7 @@
      <x>0</x>
      <y>0</y>
      <width>1507</width>
-     <height>25</height>
+     <height>27</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
@@ -1199,7 +1199,7 @@ This is needed if you want to open an entire DICOM directory.</string>
   </action>
   <action name="action_Plotting">
    <property name="icon">
-    <iconset resource="../resources/viewer.qrc">
+    <iconset>
      <normaloff>:/common/graph.gif</normaloff>:/common/graph.gif</iconset>
    </property>
    <property name="text">

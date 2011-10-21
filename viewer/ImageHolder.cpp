@@ -47,20 +47,26 @@ boost::numeric::ublas::matrix< float > ImageHolder::getNormalizedImageOrientatio
 {
 	boost::numeric::ublas::matrix<float> retMatrix = boost::numeric::ublas::zero_matrix<float>( 4, 4 );
 	retMatrix( 3, 3 ) = 1;
+	float piHalf = sin((45.0 / 180) * M_PI);
 	util::fvector4 rowVec = m_Image->getPropertyAs<util::fvector4>( "rowVec" );
 	util::fvector4 columnVec = m_Image->getPropertyAs<util::fvector4>( "columnVec" );
 	util::fvector4 sliceVec = m_Image->getPropertyAs<util::fvector4>( "sliceVec" );
-
-	if( !transposed ) {
-		retMatrix( rowVec.getBiggestVecElemAbs(), 0 ) = rowVec[rowVec.getBiggestVecElemAbs()] < 0 ? -1 : 1;
-		retMatrix( columnVec.getBiggestVecElemAbs(), 1 ) = columnVec[columnVec.getBiggestVecElemAbs()] < 0 ? -1 : 1;
-		retMatrix( sliceVec.getBiggestVecElemAbs(), 2 ) =  sliceVec[sliceVec.getBiggestVecElemAbs()] < 0 ? -1 : 1;
-	} else {
-		retMatrix( 0, rowVec.getBiggestVecElemAbs() ) = rowVec[rowVec.getBiggestVecElemAbs()] < 0 ? -1 : 1;
-		retMatrix( 1, columnVec.getBiggestVecElemAbs() ) =  columnVec[columnVec.getBiggestVecElemAbs()] < 0 ? -1 : 1;
-		retMatrix( 2, sliceVec.getBiggestVecElemAbs() ) = sliceVec[sliceVec.getBiggestVecElemAbs()] < 0 ? -1 : 1;
+	size_t rB = rowVec.getBiggestVecElemAbs();
+	size_t cB = columnVec.getBiggestVecElemAbs();
+	size_t sB = sliceVec.getBiggestVecElemAbs();
+	//if image is rotated of 45 °
+	if( fabs(rowVec[0]) == piHalf || fabs(columnVec[1]) == piHalf || fabs(sliceVec[2]) == piHalf) {
+				
 	}
-
+	if( !transposed ) {
+		retMatrix( rB, 0 ) = rowVec[rB] < 0 ? -1 : 1;
+		retMatrix( cB, 1 ) = columnVec[cB] < 0 ? -1 : 1;
+		retMatrix( sB, 2 ) =  sliceVec[sB] < 0 ? -1 : 1;
+	} else {
+		retMatrix( 0, rB ) = rowVec[rB] < 0 ? -1 : 1;
+		retMatrix( 1, cB ) =  columnVec[cB] < 0 ? -1 : 1;
+		retMatrix( 2, sB ) = sliceVec[sB] < 0 ? -1 : 1;
+	}
 	return retMatrix;
 }
 

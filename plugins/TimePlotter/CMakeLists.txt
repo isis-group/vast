@@ -1,5 +1,4 @@
 
-set(FILES_HPP vastPlugin_TimePlotter)
 set(FILES_UI forms/plotting.ui)
 
 message(STATUS "Adding TimePlotter plugin")

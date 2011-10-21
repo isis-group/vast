@@ -1,6 +1,5 @@
 <RCC>
   <qresource prefix="common">
-    <file>graph.gif</file>
     <file>preferences_settings.png</file>
     <file>control.gif</file>
     <file>sagittal.png</file>
