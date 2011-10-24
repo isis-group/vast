@@ -4,6 +4,7 @@
 #include "DataContainer.hpp"
 #include "ImageOps.hpp"
 #include <map>
+#include "PluginLoader.hpp"
 
 namespace isis
 {
@@ -17,6 +18,7 @@ class ViewerCoreBase
 	};
 public:
 
+	typedef std::list<boost::shared_ptr< plugin::PluginInterface > > PluginListType;
 	ViewerCoreBase( );
 
 	std::string getVersion() const;
@@ -54,6 +56,7 @@ private:
 
 protected:
 	OptionStruct *m_Options;
+
 
 
 };

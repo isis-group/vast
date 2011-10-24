@@ -59,8 +59,10 @@ public Q_SLOTS:
 	void setVoxelPosition();
 	void setPhysicalPosition();
 
+	void callPlugin( QString );
 
-
+	void reloadPluginsToGUI();
+	
 	void upperThresholdChanged( int );
 	void lowerThresholdChanged( int );
 	void opacityChanged( int );
@@ -70,8 +72,6 @@ public Q_SLOTS:
 
 protected:
 	WidgetType m_WidgetType;
-
-	void handImagesToPlotter();
 
 	QWidgetImplementationBase *m_AxialWidget;
 	QWidgetImplementationBase *m_CoronalWidget;
@@ -92,9 +92,6 @@ protected:
 		ui.intensity_value_2->display( intensity );
 		m_ViewerCore->getCurrentImage()->getPropMap().setPropertyAs<double>( "currentIntensity", intensity );
 
-		if( m_PlottingDialog->isVisible() ) {
-			m_PlottingDialog->replotVoxelCoords<TYPE>( coords );
-		}
 	}
 };
 

@@ -4,7 +4,6 @@
 #include <QtGui>
 #include "ui_isisViewerMain.h"
 #include "QPreferencesDialog.hpp"
-#include "QPlottingDialog.hpp"
 
 namespace isis
 {
@@ -25,7 +24,6 @@ Q_SIGNALS:
 
 protected:
 	QPreferencesDialog *m_PreferencesDialog;
-	QPlottingDialog *m_PlottingDialog;
 	Ui::isisViewerMain ui;
 	QScrollArea *sa;
 	QString m_CurrentPath;

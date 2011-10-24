@@ -48,7 +48,6 @@ public:
 
 	std::vector< ImagePointerType > getImageVector() const { return m_ImageVector; }
 	std::vector< data::Chunk > getChunkVector() const { return m_ChunkVector; }
-	std::vector< util::PropertyMap > getTimeStepProperties() const { return m_TimeStepProperties; }
 	util::PropertyMap &getPropMap() { return m_PropMap; }
 	const util::PropertyMap &getPropMap() const { return m_PropMap; }
 	const util::FixedVector<size_t, 4> &getImageSize() const { return m_ImageSize; }
@@ -127,7 +126,6 @@ private:
 	size_t m_NumberOfTimeSteps;
 	util::FixedVector<size_t, 4> m_ImageSize;
 	util::PropertyMap m_PropMap;
-	std::vector< util::PropertyMap > m_TimeStepProperties;
 	std::pair<util::ValueReference, util::ValueReference> m_MinMax;
 	std::pair<util::ValueReference, util::ValueReference> m_InternMinMax;
 	boost::shared_ptr<data::Image> m_Image;
@@ -141,7 +139,7 @@ private:
 	std::vector< data::Chunk > m_ChunkVector;
 
 	bool filterRelevantMetaInformation();
-
+	
 };
 
 }

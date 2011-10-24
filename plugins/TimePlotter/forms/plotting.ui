@@ -44,6 +44,8 @@
    </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="../resources/timeplotter.qrc"/>
+ </resources>
  <connections/>
 </ui>

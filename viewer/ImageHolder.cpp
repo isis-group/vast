@@ -11,56 +11,34 @@ ImageHolder::ImageHolder( )
 	  m_CutAwayPair( std::make_pair<double, double>( 0.03, 0.03 ) )
 {
 }
-
-/*
-bool
-ImageHolder::filterRelevantMetaInformation()
-{
-    std::vector<boost::shared_ptr< data::Chunk > > chunkList = m_Image->getChunksAsVector();
-
-    // in case we get more chunks than timesteps we should filter the chunk metadata
-    if( chunkList.size() > m_NumberOfTimeSteps ) {
-        if( chunkList.size() % m_NumberOfTimeSteps ) {
-            LOG( Runtime, warning ) << "Cannot filter the metadata for each timestep. Your image contains of "
-                                    << chunkList.size() << " chunks and " << m_NumberOfTimeSteps
-                                    << " timesteps. The number of chunks should be a multiple of number of timesteps!";
-            return false;
-        } else {
-            uint16_t factor = chunkList.size() / m_NumberOfTimeSteps;
-
-            for ( uint16_t t = 0; t < chunkList.size(); t += factor ) {
-                m_TimeStepProperties.push_back( *( chunkList.operator[]( t ) ) );
-            }
-
-            if( m_TimeStepProperties.size() != m_NumberOfTimeSteps ) {
-                LOG(  Runtime, warning ) << "Something went wrong while filtering the properties of each timestep. We got "
-                                         << m_TimeStepProperties.size() << " timestep properties for " << m_NumberOfTimeSteps << " timestep.";
-                return false;
-            }
-        }
-    }
-
-    return true;
-}*/
-
 boost::numeric::ublas::matrix< float > ImageHolder::getNormalizedImageOrientation( bool transposed ) const
 {
 	boost::numeric::ublas::matrix<float> retMatrix = boost::numeric::ublas::zero_matrix<float>( 4, 4 );
 	retMatrix( 3, 3 ) = 1;
+	float deg45 = sin((45.0 / 180) * M_PI);
 	util::fvector4 rowVec = m_Image->getPropertyAs<util::fvector4>( "rowVec" );
 	util::fvector4 columnVec = m_Image->getPropertyAs<util::fvector4>( "columnVec" );
 	util::fvector4 sliceVec = m_Image->getPropertyAs<util::fvector4>( "sliceVec" );
-
-	if( !transposed ) {
-		retMatrix( rowVec.getBiggestVecElemAbs(), 0 ) = rowVec[rowVec.getBiggestVecElemAbs()] < 0 ? -1 : 1;
-		retMatrix( columnVec.getBiggestVecElemAbs(), 1 ) = columnVec[columnVec.getBiggestVecElemAbs()] < 0 ? -1 : 1;
-		retMatrix( sliceVec.getBiggestVecElemAbs(), 2 ) =  sliceVec[sliceVec.getBiggestVecElemAbs()] < 0 ? -1 : 1;
-	} else {
-		retMatrix( 0, rowVec.getBiggestVecElemAbs() ) = rowVec[rowVec.getBiggestVecElemAbs()] < 0 ? -1 : 1;
-		retMatrix( 1, columnVec.getBiggestVecElemAbs() ) =  columnVec[columnVec.getBiggestVecElemAbs()] < 0 ? -1 : 1;
-		retMatrix( 2, sliceVec.getBiggestVecElemAbs() ) = sliceVec[sliceVec.getBiggestVecElemAbs()] < 0 ? -1 : 1;
+	size_t rB = rowVec.getBiggestVecElemAbs();
+	size_t cB = columnVec.getBiggestVecElemAbs();
+	size_t sB = sliceVec.getBiggestVecElemAbs();
+	//if image is rotated of 45 °
+	if( fabs(rowVec[0]) == deg45 || fabs(columnVec[1]) == deg45 || fabs(sliceVec[2]) == deg45) {
+		if( rB == sB || rB == cB) {
+			rB = (sB + cB + 1) > 2 ? 0 : sB + cB + 1;
+		} else if ( sB == cB ) {
+			sB = ( rB + cB + 1) > 2 ? 0 : rB + cB + 1;
+		}
 	}
-
+	if( !transposed ) {
+		retMatrix( rB, 0 ) = rowVec[rB] < 0 ? -1 : 1;
+		retMatrix( cB, 1 ) = columnVec[cB] < 0 ? -1 : 1;
+		retMatrix( sB, 2 ) =  sliceVec[sB] < 0 ? -1 : 1;
+	} else {
+		retMatrix( 0, rB ) = rowVec[rB] < 0 ? -1 : 1;
+		retMatrix( 1, cB ) =  columnVec[cB] < 0 ? -1 : 1;
+		retMatrix( 2, sB ) = sliceVec[sB] < 0 ? -1 : 1;
+	}
 	return retMatrix;
 }
 
@@ -158,6 +136,17 @@ bool ImageHolder::setImage( const data::Image &image, const ImageType &imageType
 	m_ImageProperties.interpolationType = nn;
 
 	m_ImageProperties.zmapThreshold = std::make_pair<double, double>( 0, 0 );
+
+	if( imageType == z_map ) {
+		m_PropMap.setPropertyAs<double>( "lowerThreshold", 0 );
+		m_PropMap.setPropertyAs<double>( "upperThreshold", 0 );
+	} else if( imageType == anatomical_image ) {
+		m_PropMap.setPropertyAs<double>( "lowerThreshold", getMinMax().first->as<double>() );
+		m_PropMap.setPropertyAs<double>( "upperThreshold", getMinMax().second->as<double>() );
+	}
+
+	m_PropMap.setPropertyAs<double>( "extent", fabs( getMinMax().second->as<double>() - getMinMax().first->as<double>() ) );
+
 
 	m_PropMap.setPropertyAs<util::ivector4>( "voxelCoords", util::ivector4( m_ImageSize[0] / 2, m_ImageSize[1] / 2, m_ImageSize[2] / 2, 0 ) );
 	m_PropMap.setPropertyAs<util::fvector4>( "physicalCoords", m_Image->getPhysicalCoordsFromIndex( m_PropMap.getPropertyAs<util::ivector4>( "voxelCoords" ) ) );

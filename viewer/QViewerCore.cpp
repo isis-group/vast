@@ -6,7 +6,9 @@ namespace isis
 namespace viewer
 {
 
-QViewerCore::QViewerCore( const std::string &appName, const std::string &orgName ): ViewerCoreBase( )
+QViewerCore::QViewerCore( const std::string &appName, const std::string &orgName, QWidget *parent )
+	: ViewerCoreBase( ),
+	m_Parent( parent )
 {
 	QCoreApplication::setApplicationName( QString( appName.c_str() ) );
 	QCoreApplication::setOrganizationName( QString( orgName.c_str() ) );
@@ -63,9 +65,11 @@ void QViewerCore::addImageList( const std::list< data::Image > imageList, const 
 				widget.second->addImage( data );
 			}
 		}
+		emitImagesChanged( getDataContainer() );
 	}
 
-	emitImagesChanged( getDataContainer() );
+	settingsChanged();
+
 }
 
 void QViewerCore::setImageList( const std::list< data::Image > imageList, const ImageHolder::ImageType &imageType, bool passToWidgets  )
@@ -78,9 +82,11 @@ void QViewerCore::setImageList( const std::list< data::Image > imageList, const 
 				widget.second->addImage( data.second );
 			}
 		}
+		emitImagesChanged( getDataContainer() );
 	}
 
-	emitImagesChanged( getDataContainer() );
+	settingsChanged();
+
 
 }
 
@@ -93,6 +99,16 @@ void QViewerCore::setShowLabels( bool l )
 	}
 }
 
+void QViewerCore::settingsChanged()
+{
+	getSettings()->beginGroup( "UserProfile" );
+	getCurrentImage()->getPropMap().setPropertyAs<unsigned short>( "lut", getSettings()->value( "lut", 0 ).toUInt() );
+	BOOST_FOREACH( WidgetMap::reference widget, m_WidgetMap ) {
+		widget.second->setInterpolationType( static_cast<InterpolationType>( getSettings()->value( "interpolationType", 0 ).toUInt() ) );
+	}
+	getSettings()->endGroup();
+}
+
 void QViewerCore::updateScene( bool center )
 {
 	emitUpdateScene( center );
@@ -101,12 +117,13 @@ void QViewerCore::updateScene( bool center )
 void QViewerCore::setAutomaticScaling( bool s )
 {
 	BOOST_FOREACH( WidgetMap::reference widget, m_WidgetMap ) {
-		if(s) {
+		if( s ) {
 			widget.second->setScalingType( automatic_scaling );
 		} else {
 			widget.second->setScalingType( no_scaling );
 		}
-		widget.second->updateScene(false);
+
+		widget.second->updateScene( false );
 	}
 }
 
@@ -117,6 +134,39 @@ void QViewerCore::zoomChanged( float zoomFactor )
 		emitZoomChanged( zoomFactor );
 	}
 }
+
+
+void QViewerCore::addPlugin( boost::shared_ptr< plugin::PluginInterface > plugin )
+{
+	if( !m_Parent && plugin->isGUI() ) {
+		LOG( Runtime, error ) 
+			<< "Core does not own a parent. Before calling addPlugin/addPlugins you have to use setParentWidget!";
+	} else {
+		plugin->setViewerCore( this );
+		plugin->setParentWidget( m_Parent );
+		m_PluginList.push_back( plugin );
+	}
+}
+
+void QViewerCore::addPlugins( isis::viewer::plugin::PluginLoader::PluginListType plugins )
+{
+	BOOST_FOREACH( PluginListType::const_reference plugin, plugins ) {
+		addPlugin( plugin );
+	}
+}
+
+
+bool QViewerCore::callPlugin( const std::string &name )
+{
+	BOOST_FOREACH( PluginListType::const_reference plugin, m_PluginList ) {
+		if( plugin->getName() == name ) {
+			return plugin->call();
+		}
+	}
+	return false;
+}
+
+
 
 }
 }

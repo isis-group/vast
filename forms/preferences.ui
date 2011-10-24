@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>502</width>
-    <height>424</height>
+    <height>446</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -80,7 +80,7 @@
           <item row="3" column="0">
            <widget class="QLabel" name="label_2">
             <property name="text">
-             <string>Standard Interploation:</string>
+             <string>Interpolation:</string>
             </property>
            </widget>
           </item>
@@ -132,24 +132,7 @@
            </widget>
           </item>
           <item row="5" column="1">
-           <widget class="QComboBox" name="comboBox">
-            <item>
-             <property name="text">
-              <string>Standard Zmap</string>
-             </property>
-             <property name="icon">
-              <iconset resource="../resources/viewer.qrc">
-               <normaloff>:/lut/lut_standard.png</normaloff>
-               <normalon>:/lut/lut_standard.png</normalon>
-               <disabledoff>:/lut/lut_standard.png</disabledoff>
-               <disabledon>:/lut/lut_standard.png</disabledon>
-               <activeoff>:/lut/lut_standard.png</activeoff>
-               <activeon>:/lut/lut_standard.png</activeon>
-               <selectedoff>:/lut/lut_standard.png</selectedoff>
-               <selectedon>:/lut/lut_standard.png</selectedon>:/lut/lut_standard.png</iconset>
-             </property>
-            </item>
-           </widget>
+           <widget class="QComboBox" name="comboBox"/>
           </item>
           <item row="5" column="0">
            <widget class="QLabel" name="label_4">
@@ -170,6 +153,13 @@
        </widget>
       </item>
      </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QPushButton" name="applyButton">
+     <property name="text">
+      <string>Apply</string>
+     </property>
     </widget>
    </item>
   </layout>

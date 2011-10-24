@@ -2,6 +2,13 @@ cmake_minimum_required(VERSION 2.6)
 
 PROJECT(vast)
 
+
+############################################################
+# set install infix for plugin installation path
+############################################################
+set(VAST_PLUGIN_INFIX lib/vast/plugins)
+
+
 # collecting files
 file (GLOB VIEWER_FILES_CPP viewer/*.c viewer/*.cpp)
 file (GLOB GLWIDGET_FILES_CPP GLWidget/*.cpp GLWidget/*.c)
@@ -15,7 +22,6 @@ set(VIEWER_FILES_HPP
 	viewer/MainWindowUIInterface.hpp
 	viewer/QViewerCore.hpp
 	viewer/QPreferencesDialog.hpp
-	viewer/QPlottingDialog.hpp
 )
 set(GLWIDGET_FILES_HPP
 	GLWidget/QGLWidgetImplementation.hpp
@@ -63,7 +69,7 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR} ${ISIS_INCLUDE_DIRS})
 # qt4 stuff
 ###########################################################
 
-FIND_PACKAGE(Qt4 COMPONENTS QtCore QtGui QtOpenGL Qwt REQUIRED)
+FIND_PACKAGE(Qt4 COMPONENTS QtCore QtGui QtOpenGL REQUIRED)
 
 set(QT_USE_QTUITOOLS TRUE)
 set(QT_USE_QTOPENGL TRUE)
@@ -75,17 +81,6 @@ QT4_ADD_RESOURCES(vast_rcc_files ${RESOURCE_FILES})
 
 qt4_wrap_cpp(vast_moc_files ${VIEWER_FILES_HPP} ${GLWIDGET_FILES_HPP})
 QT4_WRAP_UI(vast_UIS_H ${UI_FILES})
-
-###########################################################
-# qwt stuff
-###########################################################
-
-find_path( QWT5_include qwt.h PATH_SUFFIXES qwt-qt4 )
-find_library( QWT5_library qwt-qt4 )
-
-MESSAGE(STATUS "Qwt library: ${QWT5_library}")
-
-include_directories(${QWT5_include})
 
 
 ###########################################################
@@ -119,6 +114,14 @@ SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ftemplate-depth-100 -Wextra -Wfatal-err
 SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}  -Wextra -Wfatal-errors " )
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ftemplate-depth-100")
 
+############################################################
+# set the plugin directory and the system dependend shared
+# library naming conventions
+############################################################
+set_source_files_properties( "viewer/PluginLoader.cpp" PROPERTIES COMPILE_FLAGS
+	"-DPLUGIN_PATH=\\\"${CMAKE_INSTALL_PREFIX}/${VAST_PLUGIN_INFIX}\\\" -DDL_SUFFIX=\\\"${CMAKE_SHARED_LIBRARY_SUFFIX}\\\" -DDL_PREFIX=\\\"${CMAKE_SHARED_LIBRARY_PREFIX}\\\""
+)
+
 ###########################################################
 # CPack config
 ###########################################################
@@ -150,6 +153,9 @@ set(NEEDED_LIBS
 	${isisqt4_LIBRARY}
 	${QWT5_library} 
 	)
+
+#add the plugin directory
+add_subdirectory(plugins)
 
 target_link_libraries(vast ${NEEDED_LIBS})
 

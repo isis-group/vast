@@ -8,6 +8,7 @@
 #include "MainWindow.hpp"
 #include <common.hpp>
 #include <DataStorage/io_factory.hpp>
+#include <QMenuBar>
 
 
 namespace isis
@@ -19,7 +20,6 @@ MainWindow::MainWindow( QViewerCore *core, WidgetType wType )
 	: m_ViewerCore( core ),
 	  m_WidgetType( wType )
 {
-	m_PlottingDialog->setViewerCore( m_ViewerCore );
 	m_PreferencesDialog = new QPreferencesDialog( this, m_ViewerCore );
 	m_State = single;
 	actionMakeCurrent = new QAction( "Make current", this );
@@ -27,6 +27,7 @@ MainWindow::MainWindow( QViewerCore *core, WidgetType wType )
 	actionAsZMap->setCheckable( true );
 
 	m_Toolbar = new QToolBar( this );
+
 	switch( m_WidgetType ) {
 	case type_gl:
 		m_MasterWidget = new GL::QGLWidgetImplementation( core, 0, axial );
@@ -35,6 +36,7 @@ MainWindow::MainWindow( QViewerCore *core, WidgetType wType )
 		m_MasterWidget = new qt::QImageWidgetImplementation( core, 0, axial );
 		break;
 	}
+
 	m_AxialWidget =  m_MasterWidget->createSharedWidget( ui.axialWidget, axial );
 	m_ViewerCore->registerWidget( "axialView", m_AxialWidget );
 
@@ -77,7 +79,6 @@ void MainWindow::loadSettings()
 
 	m_ViewerCore->getSettings()->endGroup();
 	m_ViewerCore->getSettings()->beginGroup( "UserProfile" );
-	ui.interpolationType->setCurrentIndex( m_ViewerCore->getSettings()->value( "interpolation", 0 ).toUInt() );
 	ui.actionAutomatic_Scaling->setChecked( m_ViewerCore->getSettings()->value( "scaling", 0 ).toBool() );
 	ui.actionShow_labels->setChecked( m_ViewerCore->getSettings()->value( "labels", 0 ).toBool() );
 	m_ViewerCore->getOption()->propagateZooming = m_ViewerCore->getSettings()->value( "propagateZooming", false ).toBool();
@@ -118,11 +119,48 @@ void isis::viewer::MainWindow::setInitialState()
 	m_Toolbar->addAction( ui.actionCoronal_View );
 	m_Toolbar->addAction( ui.action_Controllpanel );
 	m_Toolbar->addSeparator();
-	m_Toolbar->addAction( ui.action_Plotting );
-	m_Toolbar->addSeparator();
-	m_Toolbar->addAction( ui.action_Exit );
+
+
 	m_ViewerCore->setCoordsTransformation( util::fvector4( -1, -1, 1, 1 ) );
 }
+
+void MainWindow::reloadPluginsToGUI()
+{
+	//adding all processes to the process (plugin) menu and connect the action to the respective call functions
+	QMenu *processMenu = new QMenu( tr( "Plugins" ) );
+
+	if( m_ViewerCore->getPlugins().size() ) {
+		ui.menubar->addMenu( processMenu );
+
+		QSignalMapper *signalMapper = new QSignalMapper( this );
+		BOOST_FOREACH( ViewerCoreBase::PluginListType::const_reference plugin, m_ViewerCore->getPlugins() ) {
+			std::list<std::string> sepName = isis::util::stringToList<std::string>( plugin->getName(), boost::regex( "/" ) );
+			QMenu *tmpMenu = processMenu;
+			std::list<std::string>::iterator iter = sepName.begin();
+
+			for ( unsigned short i = 0; i < sepName.size() - 1; iter++, i++ ) {
+				tmpMenu = tmpMenu->addMenu( iter->c_str() );
+
+			}
+			
+			QAction *processAction = new QAction( QString( ( --sepName.end() )->c_str() ), this );
+			
+			//optionally add plugin to the toolbar
+			if( !plugin->getToolbarIcon()->isNull() ) {
+				processAction->setIcon( *plugin->getToolbarIcon() );
+				m_Toolbar->addAction( processAction );
+			}
+			processAction->setStatusTip( QString( plugin->getTooltip().c_str() ) );
+			signalMapper->setMapping( processAction, QString( plugin->getName().c_str() ) );
+			tmpMenu->addAction( processAction );
+			connect( processAction, SIGNAL( triggered() ), signalMapper, SLOT( map() ) );
+
+		}
+		connect( signalMapper, SIGNAL( mapped( QString ) ), this, SLOT( callPlugin( QString ) ) );
+	}
+
+}
+
 
 void MainWindow::setVoxelPosition()
 {
@@ -193,9 +231,9 @@ void MainWindow::updateInterfaceValues()
 	} else {
 		double range = m_ViewerCore->getCurrentImage()->getMinMax().second->as<double>() - m_ViewerCore->getCurrentImage()->getMinMax().first->as<double>();
 		ui.lowerThreshold->setSliderPosition( 1000.0 / range *
-											  ( m_ViewerCore->getCurrentImage()->getPropMap().getPropertyAs<float>("lowerThreshold") - m_ViewerCore->getCurrentImage()->getMinMax().first->as<double>() ) );
+											  ( m_ViewerCore->getCurrentImage()->getPropMap().getPropertyAs<float>( "lowerThreshold" ) - m_ViewerCore->getCurrentImage()->getMinMax().first->as<double>() ) );
 		ui.upperThreshold->setSliderPosition( 1000.0 / range *
-											  ( m_ViewerCore->getCurrentImage()->getPropMap().getPropertyAs<float>("lowerThreshold") - m_ViewerCore->getCurrentImage()->getMinMax().first->as<double>() ) );
+											  ( m_ViewerCore->getCurrentImage()->getPropMap().getPropertyAs<float>( "lowerThreshold" ) - m_ViewerCore->getCurrentImage()->getMinMax().first->as<double>() ) );
 	}
 
 	m_ViewerCore->updateScene();
@@ -340,8 +378,6 @@ void MainWindow::imagesChanged( DataContainer images )
 	} else {
 		ui.action_Plotting->setEnabled( false );
 	}
-		//setting the interpolation type 
-	ui.interpolationType->setCurrentIndex( m_ViewerCore->getCurrentImage()->getImageProperties().interpolationType );
 }
 
 void MainWindow::openImageAs( ImageHolder::ImageType type )
@@ -381,16 +417,6 @@ void MainWindow::openImageAs( ImageHolder::ImageType type )
 		m_ViewerCore->addImageList( imgList, type, true );
 		m_ViewerCore->updateScene( isFirstImage );
 	}
-}
-
-void MainWindow::handImagesToPlotter()
-{
-	//hand all images to plotting instance
-	QPlottingDialog::ImageList tmpList;
-	BOOST_FOREACH( DataContainer::const_reference image, m_ViewerCore->getDataContainer() ) {
-		tmpList.push_back( image.second );
-	}
-	m_PlottingDialog->setImageHolderList( tmpList );
 }
 
 
@@ -439,21 +465,22 @@ void MainWindow::lowerThresholdChanged( int lowerThreshold )
 {
 
 	if( m_ViewerCore->getCurrentImage()->getImageProperties().imageType == ImageHolder::z_map ) {
-		m_ViewerCore->getCurrentImage()->getPropMap().setPropertyAs<float>( "lowerThreshold", ( m_ViewerCore->getCurrentImage()->getMinMax().first->as<double>() / 1000 ) * ( lowerThreshold  )  );
+		m_ViewerCore->getCurrentImage()->getPropMap().setPropertyAs<double>( "lowerThreshold", ( m_ViewerCore->getCurrentImage()->getMinMax().first->as<double>() / 1000 ) * ( lowerThreshold  )  );
 	} else {
 		double range = m_ViewerCore->getCurrentImage()->getMinMax().second->as<double>() - m_ViewerCore->getCurrentImage()->getMinMax().first->as<double>();
-		m_ViewerCore->getCurrentImage()->getPropMap().setPropertyAs<float>( "lowerThreshold", ( range / 1000 ) * ( lowerThreshold  ) + m_ViewerCore->getCurrentImage()->getMinMax().first->as<double>() );
+		m_ViewerCore->getCurrentImage()->getPropMap().setPropertyAs<double>( "lowerThreshold", ( range / 1000 ) * ( lowerThreshold  ) + m_ViewerCore->getCurrentImage()->getMinMax().first->as<double>() );
 	}
+
 	m_ViewerCore->updateScene();
 }
 
 void MainWindow::upperThresholdChanged( int upperThreshold )
 {
 	if( m_ViewerCore->getCurrentImage()->getImageProperties().imageType == ImageHolder::z_map ) {
-		m_ViewerCore->getCurrentImage()->getPropMap().setPropertyAs<float>( "upperThreshold", (  m_ViewerCore->getCurrentImage()->getMinMax().second->as<double>() / 1000 ) * ( upperThreshold  ) );
+		m_ViewerCore->getCurrentImage()->getPropMap().setPropertyAs<double>( "upperThreshold", (  m_ViewerCore->getCurrentImage()->getMinMax().second->as<double>() / 1000 ) * ( upperThreshold  ) );
 	} else {
 		double range = m_ViewerCore->getCurrentImage()->getMinMax().second->as<double>() - m_ViewerCore->getCurrentImage()->getMinMax().first->as<double>();
-		m_ViewerCore->getCurrentImage()->getPropMap().setPropertyAs<float>( "upperThreshold", ( range / 1000 ) * ( upperThreshold + 1 )  + m_ViewerCore->getCurrentImage()->getMinMax().first->as<double>() ) ;
+		m_ViewerCore->getCurrentImage()->getPropMap().setPropertyAs<double>( "upperThreshold", ( range / 1000 ) * ( upperThreshold + 1 )  + m_ViewerCore->getCurrentImage()->getMinMax().first->as<double>() ) ;
 	}
 
 	m_ViewerCore->updateScene();
@@ -463,8 +490,7 @@ void MainWindow::upperThresholdChanged( int upperThreshold )
 void MainWindow::interpolationChanged( int index )
 {
 	InterpolationType inter = static_cast<InterpolationType>( index );
-	BOOST_FOREACH( QViewerCore::WidgetMap::reference widget, m_ViewerCore->getWidgets() ) 
-	{
+	BOOST_FOREACH( QViewerCore::WidgetMap::reference widget, m_ViewerCore->getWidgets() ) {
 		widget.second->setInterpolationType( inter );
 	}
 	m_ViewerCore->getCurrentImage()->getImageProperties().interpolationType = inter;
@@ -580,6 +606,12 @@ QWidgetImplementationBase *MainWindow::createView( QDockWidget *widget, PlaneOri
 	return view;
 
 }
+
+void MainWindow::callPlugin( QString name )
+{
+	m_ViewerCore->callPlugin( name.toStdString() );
+}
+
 
 }
 } //end namespace

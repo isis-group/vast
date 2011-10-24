@@ -53,7 +53,7 @@
          <x>0</x>
          <y>0</y>
          <width>1503</width>
-         <height>732</height>
+         <height>723</height>
         </rect>
        </property>
        <layout class="QGridLayout" name="gridLayout_9">
@@ -342,46 +342,13 @@
                          <verstretch>0</verstretch>
                         </sizepolicy>
                        </property>
-                       <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="0,0">
+                       <layout class="QHBoxLayout" name="horizontalLayout_3">
                         <property name="spacing">
                          <number>2</number>
                         </property>
                         <property name="margin">
                          <number>2</number>
                         </property>
-                        <item>
-                         <widget class="QLabel" name="label_9">
-                          <property name="sizePolicy">
-                           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                            <horstretch>0</horstretch>
-                            <verstretch>0</verstretch>
-                           </sizepolicy>
-                          </property>
-                          <property name="text">
-                           <string>Interpolation:</string>
-                          </property>
-                         </widget>
-                        </item>
-                        <item>
-                         <widget class="QComboBox" name="interpolationType">
-                          <property name="sizePolicy">
-                           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                            <horstretch>0</horstretch>
-                            <verstretch>0</verstretch>
-                           </sizepolicy>
-                          </property>
-                          <item>
-                           <property name="text">
-                            <string>Nearest Neighbor </string>
-                           </property>
-                          </item>
-                          <item>
-                           <property name="text">
-                            <string>Linear </string>
-                           </property>
-                          </item>
-                         </widget>
-                        </item>
                        </layout>
                       </widget>
                      </item>
@@ -924,27 +891,6 @@
                <number>2</number>
               </property>
               <item>
-               <widget class="QLabel" name="label_10">
-                <property name="text">
-                 <string>Interpolation:</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QComboBox" name="comboBox">
-                <item>
-                 <property name="text">
-                  <string>Nearest Neighbor</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>Linear</string>
-                 </property>
-                </item>
-               </widget>
-              </item>
-              <item>
                <widget class="QFrame" name="frame_5">
                 <property name="frameShape">
                  <enum>QFrame::StyledPanel</enum>
@@ -1024,7 +970,7 @@
      <x>0</x>
      <y>0</y>
      <width>1507</width>
-     <height>25</height>
+     <height>27</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
@@ -1253,7 +1199,7 @@ This is needed if you want to open an entire DICOM directory.</string>
   </action>
   <action name="action_Plotting">
    <property name="icon">
-    <iconset resource="../resources/viewer.qrc">
+    <iconset>
      <normaloff>:/common/graph.gif</normaloff>:/common/graph.gif</iconset>
    </property>
    <property name="text">
@@ -1285,10 +1231,8 @@ This is needed if you want to open an entire DICOM directory.</string>
   <tabstop>y_value_2</tabstop>
   <tabstop>imageStack</tabstop>
   <tabstop>timestepSpinBox</tabstop>
-  <tabstop>interpolationType</tabstop>
   <tabstop>slice_value_2</tabstop>
   <tabstop>opacity</tabstop>
-  <tabstop>comboBox</tabstop>
   <tabstop>horizontalSlider</tabstop>
   <tabstop>horizontalSlider_2</tabstop>
   <tabstop>timestepSpinBox_2</tabstop>
