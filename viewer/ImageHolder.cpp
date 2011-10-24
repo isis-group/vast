@@ -11,43 +11,11 @@ ImageHolder::ImageHolder( )
 	  m_CutAwayPair( std::make_pair<double, double>( 0.03, 0.03 ) )
 {
 }
-
-/*
-bool
-ImageHolder::filterRelevantMetaInformation()
-{
-    std::vector<boost::shared_ptr< data::Chunk > > chunkList = m_Image->getChunksAsVector();
-
-    // in case we get more chunks than timesteps we should filter the chunk metadata
-    if( chunkList.size() > m_NumberOfTimeSteps ) {
-        if( chunkList.size() % m_NumberOfTimeSteps ) {
-            LOG( Runtime, warning ) << "Cannot filter the metadata for each timestep. Your image contains of "
-                                    << chunkList.size() << " chunks and " << m_NumberOfTimeSteps
-                                    << " timesteps. The number of chunks should be a multiple of number of timesteps!";
-            return false;
-        } else {
-            uint16_t factor = chunkList.size() / m_NumberOfTimeSteps;
-
-            for ( uint16_t t = 0; t < chunkList.size(); t += factor ) {
-                m_TimeStepProperties.push_back( *( chunkList.operator[]( t ) ) );
-            }
-
-            if( m_TimeStepProperties.size() != m_NumberOfTimeSteps ) {
-                LOG(  Runtime, warning ) << "Something went wrong while filtering the properties of each timestep. We got "
-                                         << m_TimeStepProperties.size() << " timestep properties for " << m_NumberOfTimeSteps << " timestep.";
-                return false;
-            }
-        }
-    }
-
-    return true;
-}*/
-
 boost::numeric::ublas::matrix< float > ImageHolder::getNormalizedImageOrientation( bool transposed ) const
 {
 	boost::numeric::ublas::matrix<float> retMatrix = boost::numeric::ublas::zero_matrix<float>( 4, 4 );
 	retMatrix( 3, 3 ) = 1;
-	float piHalf = sin((45.0 / 180) * M_PI);
+	float deg45 = sin((45.0 / 180) * M_PI);
 	util::fvector4 rowVec = m_Image->getPropertyAs<util::fvector4>( "rowVec" );
 	util::fvector4 columnVec = m_Image->getPropertyAs<util::fvector4>( "columnVec" );
 	util::fvector4 sliceVec = m_Image->getPropertyAs<util::fvector4>( "sliceVec" );
@@ -55,8 +23,12 @@ boost::numeric::ublas::matrix< float > ImageHolder::getNormalizedImageOrientatio
 	size_t cB = columnVec.getBiggestVecElemAbs();
 	size_t sB = sliceVec.getBiggestVecElemAbs();
 	//if image is rotated of 45 °
-	if( fabs(rowVec[0]) == piHalf || fabs(columnVec[1]) == piHalf || fabs(sliceVec[2]) == piHalf) {
-				
+	if( fabs(rowVec[0]) == deg45 || fabs(columnVec[1]) == deg45 || fabs(sliceVec[2]) == deg45) {
+		if( rB == sB || rB == cB) {
+			rB = (sB + cB + 1) > 2 ? 0 : sB + cB + 1;
+		} else if ( sB == cB ) {
+			sB = ( rB + cB + 1) > 2 ? 0 : rB + cB + 1;
+		}
 	}
 	if( !transposed ) {
 		retMatrix( rB, 0 ) = rowVec[rB] < 0 ? -1 : 1;

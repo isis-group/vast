@@ -436,6 +436,7 @@ void Color::update()
 
 	if( m_ImageHolder->getImageProperties().imageType == ImageHolder::z_map ) {
 		double normMin = fabs( m_ImageHolder->getMinMax().first->as<double>() ) / ( extent / 2 );
+		if ( normMin == 0 ) { normMin = 1; }
 
 		if( m_ImageHolder->getMinMax().first->as<double>() < 0 ) {
 			double scaleMin = 1 - fabs( m_ImageHolder->getPropMap().getPropertyAs<double>( "lowerThreshold" )  / m_ImageHolder->getMinMax().first->as<double>() );
@@ -449,7 +450,7 @@ void Color::update()
 			double scaleMax = fabs( m_ImageHolder->getPropMap().getPropertyAs<double>( "upperThreshold" ) / m_ImageHolder->getMinMax().second->as<double>() );
 			double offset = 0;
 
-			for ( unsigned short i = m_NumberOfElements / 2; i < m_NumberOfElements; i++ ) {
+			for ( unsigned short i = (m_NumberOfElements / 2) - 1; i < m_NumberOfElements; i++ ) {
 				offset = ( ( m_NumberOfElements / 2 ) * scaleMax ) * ( ( m_NumberOfElements - i ) / ( 0.5 * m_NumberOfElements ) );
 				m_ColorTable[i + offset] = tmpTable[i / normMin];
 			}

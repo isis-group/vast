@@ -29,9 +29,9 @@ OrientatioCorrectionDialog::OrientatioCorrectionDialog(QWidget* parent, QViewerC
 void OrientatioCorrectionDialog::flipPressed()
 {
 	boost::numeric::ublas::matrix<float> transform = boost::numeric::ublas::identity_matrix<float>(3,3);
-	transform(2,2) = ui.checkFlipAxial->isChecked() ? -1 : 1;
-	transform(0,0) = ui.checkFlipSagittal->isChecked() ? -1 : 1;
-	transform(1,1) = ui.checkFlipCoronal->isChecked() ? -1 : 1;
+	transform(2,2) = ui.checkFlipZ->isChecked() ? -1 : 1;
+	transform(0,0) = ui.checkFlipX->isChecked() ? -1 : 1;
+	transform(1,1) = ui.checkFlipY->isChecked() ? -1 : 1;
 	applyTransform( transform, ui.checkISO->isChecked() );
 }
 void OrientatioCorrectionDialog::applyPressed()
@@ -48,19 +48,22 @@ void OrientatioCorrectionDialog::applyPressed()
 void OrientatioCorrectionDialog::rotatePressed()
 {
 	util::DefaultMsgPrint::stopBelow(warning);
-	boost::numeric::ublas::matrix<float> transformX = boost::numeric::ublas::zero_matrix<float>(3,3);
-	boost::numeric::ublas::matrix<float> transformY = boost::numeric::ublas::zero_matrix<float>(3,3);
-	boost::numeric::ublas::matrix<float> transformZ = boost::numeric::ublas::zero_matrix<float>(3,3);
+	boost::numeric::ublas::matrix<float> transform = boost::numeric::ublas::zero_matrix<float>(3,3);
 	double normX = (ui.rotateX->text().toDouble() / 180) * M_PI;
 	double normY = (ui.rotateY->text().toDouble() / 180) * M_PI;
 	double normZ = (ui.rotateZ->text().toDouble() / 180) * M_PI;
-	transformX(0,0) = 1;
-	transformX(1,1) = cos( normX );
-	transformX(2,2) = cos( normX );
-	transformX(2,1) = -sin( normX );
-	transformX(1,2) = sin( normX );
-	std::cout << transformX << std::endl;
-	applyTransform( transformX, ui.checkISO->isChecked() );
+	transform(0,0) = cos( normY ) * cos( normZ );
+	transform(1,0) = -cos( normX ) * sin( normZ ) + sin( normX )* sin( normY ) * cos( normZ );
+	transform(2,0) = sin( normX ) * sin( normZ ) + cos( normX ) * sin( normY ) * cos( normZ );
+	transform(0,1) = cos( normY ) * sin( normZ );
+	transform(1,1) = cos( normX ) * cos( normZ ) + sin( normX ) * sin( normY )* sin( normZ );
+	transform(2,1) = -sin( normX ) * cos( normZ ) + cos( normX ) * sin( normY ) * sin( normZ );
+	transform(0,2) = -sin( normY );
+	transform(1,2) = sin( normX ) * cos( normY );
+	transform(2,2) = cos( normX ) * cos(normY);
+	
+	applyTransform( transform, ui.checkISO->isChecked() );
+	
 }
 bool OrientatioCorrectionDialog::applyTransform(const boost::numeric::ublas::matrix< float >& trans, bool center) const
 {

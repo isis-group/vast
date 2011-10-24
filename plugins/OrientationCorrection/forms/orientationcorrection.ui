@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>527</width>
-    <height>430</height>
+    <height>443</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -34,21 +34,21 @@
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_3">
              <item>
-              <widget class="QCheckBox" name="checkFlipAxial">
+              <widget class="QCheckBox" name="checkFlipX">
                <property name="text">
                 <string>X</string>
                </property>
               </widget>
              </item>
              <item>
-              <widget class="QCheckBox" name="checkFlipSagittal">
+              <widget class="QCheckBox" name="checkFlipY">
                <property name="text">
                 <string>Y</string>
                </property>
               </widget>
              </item>
              <item>
-              <widget class="QCheckBox" name="checkFlipCoronal">
+              <widget class="QCheckBox" name="checkFlipZ">
                <property name="text">
                 <string>Z</string>
                </property>
