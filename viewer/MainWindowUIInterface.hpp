@@ -29,6 +29,8 @@ public Q_SLOTS:
 	void openImageAsZMap();
 	void openImageAsAnatomicalImage();
 	void openPreferences();
+	void saveImage();
+	void saveImageAs();
 
 	void triggeredMakeCurrentImage( bool );
 	void doubleClickedMakeCurrentImage( QListWidgetItem * );

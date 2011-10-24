@@ -68,6 +68,7 @@ void OrientatioCorrectionDialog::rotatePressed()
 bool OrientatioCorrectionDialog::applyTransform(const boost::numeric::ublas::matrix< float >& trans, bool center) const
 {
 	bool ret = m_Core->getCurrentImage()->getISISImage()->transformCoords(trans, center );
+	m_Core->getCurrentImage()->addChangedAttribute( "Orientation Matrix" );
 	m_Core->updateScene();
 	return ret;
 

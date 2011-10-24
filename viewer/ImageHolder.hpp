@@ -56,6 +56,7 @@ public:
 	boost::numeric::ublas::matrix<float> getImageOrientation( bool transposed = false ) const;
 	std::pair<util::ValueReference, util::ValueReference> getMinMax() const { return m_MinMax; }
 	std::pair<util::ValueReference, util::ValueReference> getInternMinMax() const { return m_InternMinMax; }
+	void addChangedAttribute( const std::string &attribute );
 
 	/**offset, scaling**/
 	std::pair<double, double> getOptimalScalingPair() const { return m_OptimalScalingPair;  }

@@ -176,9 +176,18 @@ bool ImageHolder::setImage( const data::Image &image, const ImageType &imageType
 	m_PropMap.setPropertyAs<uint16_t>( "currentTimestep", 0 );
 	m_PropMap.setPropertyAs<util::ivector4>( "alignedSize32Bit", get32BitAlignedSize( m_ImageSize ) );
 	m_PropMap.setPropertyAs<bool>( "init", true );
+	m_PropMap.setPropertyAs<util::slist>( "changedAttributes", util::slist() );
 	m_Image->updateOrientationMatrices();
 	return true;
 }
+
+void ImageHolder::addChangedAttribute(const std::string& attribute)
+{
+	util::slist attributes = m_PropMap.getPropertyAs<util::slist>("changedAttributes");
+	attributes.push_back( attribute );
+	m_PropMap.setPropertyAs<util::slist>("changedAttributes", attributes );
+}
+
 
 }
 } //end namespace

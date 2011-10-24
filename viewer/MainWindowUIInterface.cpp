@@ -1,4 +1,5 @@
 #include "MainWindowUIInterface.hpp"
+#include "DataStorage/io_factory.hpp"
 
 namespace isis
 {
@@ -25,6 +26,8 @@ void MainWindowUIInterface::connectSignals()
 	connect( ui.imageStack, SIGNAL( itemClicked( QListWidgetItem * ) ), this, SLOT( checkImageStack( QListWidgetItem * ) ) );
 	connect( ui.imageStack, SIGNAL( itemDoubleClicked( QListWidgetItem * ) ), this, SLOT( doubleClickedMakeCurrentImage( QListWidgetItem * ) ) );
 	connect( ui.action_Open_Image, SIGNAL( triggered() ), this, SLOT( openImageAsAnatomicalImage() ) );
+	connect( ui.action_save_Image, SIGNAL( triggered()), this, SLOT( saveImage()));
+	connect( ui.actionSave_Image_As, SIGNAL( triggered()), this, SLOT( saveImageAs()));
 	connect( ui.actionOpen_DICOM, SIGNAL( triggered() ), this, SLOT( openDICOMDir() ) );
 	connect( ui.upperThreshold, SIGNAL( sliderMoved( int ) ), this, SLOT( upperThresholdChanged( int ) ) );
 	connect( ui.lowerThreshold, SIGNAL( sliderMoved( int ) ), this, SLOT( lowerThresholdChanged( int ) ) );
@@ -130,6 +133,56 @@ void MainWindowUIInterface::triggeredMakeCurrentImage( bool triggered )
 	m_ViewerCore->setCurrentImage( m_ViewerCore->getDataContainer().at( ui.imageStack->currentItem()->text().toStdString() ) );
 	imagesChanged( m_ViewerCore->getDataContainer() );
 	updateInterfaceValues();
+}
+
+void MainWindowUIInterface::saveImage()
+{
+	if( !m_ViewerCore->getCurrentImage()->getPropMap().getPropertyAs<util::slist>("changedAttributes").size() ) {
+		QMessageBox msgBox;
+		msgBox.setText( "The image that is currently selected has no changes! Won´t save anything." );
+		msgBox.exec();
+	} else {
+		QMessageBox msgBox;
+		msgBox.setIcon( QMessageBox::Information );
+		std::stringstream text;
+		text << "This will overwrite" << m_ViewerCore->getCurrentImage()->getFileNames().front() << " !";
+		msgBox.setText( text.str().c_str() );
+		msgBox.setInformativeText( "Do you want to proceed?" );
+		std::stringstream detailedText;
+		detailedText << "Changed attributes: " << std::endl;
+		BOOST_FOREACH( util::slist::const_reference attrChanged, m_ViewerCore->getCurrentImage()->getPropMap().getPropertyAs<util::slist>("changedAttributes") ) 
+		{
+			detailedText << " >> " << attrChanged << std::endl;
+		}
+		msgBox.setDetailedText( detailedText.str().c_str() );
+		msgBox.setStandardButtons( QMessageBox::Yes | QMessageBox::No );
+		msgBox.setDefaultButton( QMessageBox::No );
+		switch (msgBox.exec() ) {
+			case QMessageBox::No:
+				return;
+				break;
+			case QMessageBox::Yes:
+				isis::data::IOFactory::write( *m_ViewerCore->getCurrentImage()->getISISImage(), m_ViewerCore->getCurrentImage()->getFileNames().front(),"", "");
+				break;
+		}
+		
+	}
+	
+	
+}
+
+void MainWindowUIInterface::saveImageAs()
+{
+	std::stringstream fileFormats;
+	fileFormats << "Image files (" << getFileFormatsAsString( std::string( "*." ) ) << ")";
+	QString filename = QFileDialog::getSaveFileName( this,
+							tr( "Save Image As..." ),
+							m_CurrentPath,
+							tr( fileFormats.str().c_str() ) );
+	if( filename.size() ) {
+		isis::data::IOFactory::write( *m_ViewerCore->getCurrentImage()->getISISImage(), filename.toStdString(), "", "" );
+	}
+	
 }
 
 
