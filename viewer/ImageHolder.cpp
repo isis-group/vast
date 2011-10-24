@@ -23,11 +23,31 @@ boost::numeric::ublas::matrix< float > ImageHolder::getNormalizedImageOrientatio
 	size_t cB = columnVec.getBiggestVecElemAbs();
 	size_t sB = sliceVec.getBiggestVecElemAbs();
 	//if image is rotated of 45 °
-	if( fabs(rowVec[0]) == deg45 || fabs(columnVec[1]) == deg45 || fabs(sliceVec[2]) == deg45) {
-		if( rB == sB || rB == cB) {
-			rB = (sB + cB + 1) > 2 ? 0 : sB + cB + 1;
-		} else if ( sB == cB ) {
-			sB = ( rB + cB + 1) > 2 ? 0 : rB + cB + 1;
+	if( rB == cB ) {
+		if( sB == 0 ) {
+			rB = 1; cB = 2;
+		} else if ( sB == 1 ) {
+			rB = 0; cB = 2;
+		} else if ( sB = 2 ) {
+			rB = 0; rB = 1;
+		}
+	}
+	if( rB == sB ) {
+		if( cB == 0 ) {
+			rB = 1; sB = 2;
+		} else if ( cB == 1 ) {
+			rB = 0; sB = 2;
+		} else if ( cB = 2 ) {
+			rB = 0; sB = 1;
+		}
+	}
+	if( cB == sB ) {
+		if( rB == 0 ) {
+			cB = 1; sB = 2;
+		} else if ( rB == 1 ) {
+			cB = 0; sB = 2;
+		} else if ( rB = 2 ) {
+			cB = 0; sB = 1;
 		}
 	}
 	if( !transposed ) {
