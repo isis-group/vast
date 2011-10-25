@@ -45,6 +45,8 @@ public:
 
 	void setCoordsTransformation( const util::fvector4 &transformation ) { m_VoxelTransformation = transformation; }
 	util::fvector4 getTransformedCoords( const util::fvector4 &coords ) const;
+	
+	color::Color *getColorHandler() const { return m_ColorHandler; }
 
 private:
 	//this is the container which actually holds all the images
@@ -52,6 +54,7 @@ private:
 	boost::shared_ptr<ImageHolder>  m_CurrentImage;
 	size_t m_CurrentTimestep;
 	util::fvector4 m_VoxelTransformation;
+	color::Color *m_ColorHandler;
 
 protected:
 	OptionStruct *m_Options;

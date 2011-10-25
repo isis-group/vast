@@ -14,21 +14,18 @@
     <file>icon_check.png</file>
   </qresource>
   <qresource prefix="colormap">
-    <file>lut/colormap_1</file>
-  </qresource>
-  <qresource prefix="lut">
-    <file>colormap1.png</file>
-    <file>colormap2.png</file>
-    <file>colormap3.png</file>
-    <file>colormap4.png</file>
-    <file>colormap5.png</file>
-    <file>colormap6.png</file>
-    <file>colormap7.png</file>
-    <file>colormap8.png</file>
-    <file>colormap9.png</file>
-    <file>colormap10.png</file>
-    <file>colormap11.png</file>
-    <file>colormap12.png</file>
-    <file>lut_standard.png</file>
+    <file>lut/colormap3</file>
+    <file>lut/colormap4</file>
+    <file>lut/colormap5</file>
+    <file>lut/colormap6</file>
+    <file>lut/colormap7</file>
+    <file>lut/colormap8</file>
+    <file>lut/colormap9</file>
+    <file>lut/colormap10</file>
+    <file>lut/colormap11</file>
+    <file>lut/standard_grey_values</file>
+    <file>lut/standard_zmap</file>
+    <file>lut/colormap1</file>
+    <file>lut/colormap2</file>
   </qresource>
 </RCC>

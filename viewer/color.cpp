@@ -1,6 +1,8 @@
 #include "color.hpp"
 #include <QResource>
+#include <QFile>
 #include <fstream>
+#include <boost/iostreams/filter/newline.hpp>
 
 
 namespace isis
@@ -9,22 +11,41 @@ namespace viewer
 {
 namespace color 
 {
-	
-Color::Color()
+
+void Color::initStandardColormaps()
 {
-	
-	addLUTFromResource( std::string(":/colormap/lut/colormap_1") );
-	addLutFromFile( std::string("/buildfarm/resources/src/vast/resources/lut/colormap_1" ) );
+	addLUT( std::string(":/colormap/lut/colormap1" ) );
+	addLUT( std::string(":/colormap/lut/colormap2" ) );
+	addLUT( std::string(":/colormap/lut/colormap3" ) );
+	addLUT( std::string(":/colormap/lut/colormap4" ) );
+	addLUT( std::string(":/colormap/lut/colormap5" ) );
+	addLUT( std::string(":/colormap/lut/colormap6" ) );
+	addLUT( std::string(":/colormap/lut/colormap7" ) );
+	addLUT( std::string(":/colormap/lut/colormap8" ) );
+	addLUT( std::string(":/colormap/lut/colormap9" ) );
+	addLUT( std::string(":/colormap/lut/colormap10" ) );
+	addLUT( std::string(":/colormap/lut/colormap11" ) );
+	addLUT( std::string(":/colormap/lut/standard_zmap") );
+	addLUT( std::string(":/colormap/lut/standard_grey_values") );
 }
 
-bool Color::addLUTFromStringList( std::list< std::string > lines, const std::string &lutPath, const boost::regex& separator)
+bool Color::addLUT(const std::string &path, const boost::regex& separator)
 {
+	QFile lutFile( path.c_str() );
+	lutFile.open( QIODevice::ReadOnly );
+	if( !lutFile.isReadable() ) {
+		LOG( Runtime, warning ) << "The QResource \"" << path << "\" is not readable!";
+		return false;
+	}
+	std::string data( lutFile.readAll() );
+	lutFile.close();
+	std::list<std::string > lines = util::stringToList<std::string>(data, boost::regex("\n") );
 	QVector<QRgb> lutVec;
 	//get the name and colorspace
-	boost::regex descriptionRegex("^([[:word:]]*):([[:word:]]*)$");
+	boost::regex descriptionRegex("^([[:word:]]+):([[:word:]]{3,4})$");
 	boost::cmatch results;
 	if( !boost::regex_match(lines.front().c_str(), results, descriptionRegex ) ) {
-		LOG(Runtime, warning) << "Can not read colormap " << lutPath << " because header is missing or has wrong syntax!";
+		LOG(Runtime, warning) << "Can not read colormap " << path << " because header is missing or has wrong syntax!";
 		return false;
 	}
 	std::string lutTyp = boost::lexical_cast< std::string>( results.str(2) );
@@ -56,22 +77,22 @@ bool Color::addLUTFromStringList( std::list< std::string > lines, const std::str
 	return true;
 }
 
-bool Color::addLUTFromResource(const std::string& resPath, const boost::regex& separator)
-{
-	QResource lutRessource(resPath.c_str());
-	std::string data( reinterpret_cast<const char *> (lutRessource.data()) );
-	return addLUTFromStringList( util::stringToList<std::string>(data, boost::regex("\n") ), resPath, separator) ;
-}
 
-bool Color::addLutFromFile(const std::string& lutPath, const boost::regex& separator)
+QIcon Color::getIcon(const std::string& lutName, size_t w, size_t h) const
 {
-	std::list<std::string> lines;
-	std::ifstream lutFile( lutPath.c_str() );
-	std::string line;
-	while( getline(lutFile, line)) {
-		lines.push_back(line);
+	QVector<QRgb> lut = getLUTMap()[lutName];
+	data::ValuePtr<uint8_t> lutImage(256*3);
+	unsigned short index = 0;
+	for ( unsigned short i = 0; i < 256; i++ ) {
+		lutImage[index++] = QColor( lut[i] ).red();
+		lutImage[index++] = QColor( lut[i] ).green();
+		lutImage[index++] = QColor( lut[i] ).blue();
 	}
-	return addLUTFromStringList( lines, lutPath, separator);
+	QImage image( static_cast<uint8_t*>( lutImage.getRawAddress().get() ), 256, 1, QImage::Format_RGB888 );
+	QPixmap pixmap( QPixmap::fromImage( image ));
+	return QIcon( pixmap.scaled(w,h) );
+	
+	
 }
 
 

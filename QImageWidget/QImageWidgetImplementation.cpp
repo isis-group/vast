@@ -181,8 +181,9 @@ void QImageWidgetImplementation::paintImage( boost::shared_ptr< ImageHolder > im
 		break;
 	}
 
-	if( image->getImageProperties().imageType == ImageHolder::z_map ) {
-		imgProps.colorHandler.setLutType( static_cast<Color::LookUpTableType>( image->getPropMap().getPropertyAs<unsigned short>( "lut" ) ) );
+	if( image->getImageProperties().imageType == ImageHolder::anatomical_image) {
+		imgProps.colorHandler.setLutType( static_cast<Color::LookUpTableType>(13));
+// 		imgProps.colorHandler.setLutType( static_cast<Color::LookUpTableType>( image->getPropMap().getPropertyAs<unsigned short>( "lut" ) ) );
 		imgProps.colorHandler.setOmitZeros( true );
 	} else {
 		imgProps.colorHandler.setLutType( isis::viewer::Color::standard_grey_values );
@@ -205,8 +206,10 @@ void QImageWidgetImplementation::paintImage( boost::shared_ptr< ImageHolder > im
 
 	QImage qImage( ( InternalImageType * ) sliceChunk.asValuePtr<InternalImageType>().getRawAddress().get(),
 				   mappedSizeAligned[0], mappedSizeAligned[1], QImage::Format_Indexed8 );
-
 	qImage.setColorTable( imgProps.colorHandler.getColorTable() );
+	BOOST_FOREACH( QVector<QRgb>::const_reference colorRef, imgProps.colorHandler.getColorTable() ) {
+		std::cout << QColor( colorRef ).red() << " " << QColor( colorRef ).green() << " " << QColor( colorRef ).blue() << std::endl;
+	}
 
 	m_Painter->resetMatrix();
 

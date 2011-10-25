@@ -4,6 +4,7 @@
 #include "common.hpp"
 #include <QColor>
 #include <QVector>
+#include <QIcon>
 #include <QRgb>
 #include <boost/regex.h>
 
@@ -23,18 +24,17 @@ class Color
 public:
 	typedef std::map<std::string, QVector<QRgb> > LUTMapType;
 	
-	Color();
+	bool addLUT( const std::string &resPath, const boost::regex &separator 
+		= boost::regex("[[:space:]]+") );
 	
-	bool addLUTFromResource( const std::string &resPath, const boost::regex &separator 
-		= boost::regex("[[:space:]]") );
-	bool addLutFromFile( const std::string &lutPath, const boost::regex &separator 
-		= boost::regex("[[:space:]]") );
+	LUTMapType getLUTMap() const { return m_LutMap; }
+	void initStandardColormaps();
+	
+	QIcon getIcon( const std::string &lutName, size_t w, size_t h ) const;
+	
 	
 private:
-	bool addLUTFromStringList( std::list<std::string> stringList, const std::string &lutPath, const boost::regex &separator ); 
-	LUTMapType m_LutMap;
-	
-	
+	LUTMapType m_LutMap;	
 	
 };
 

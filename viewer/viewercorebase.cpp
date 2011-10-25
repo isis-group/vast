@@ -9,8 +9,10 @@ namespace viewer
 {
 
 ViewerCoreBase::ViewerCoreBase( )
-	: m_CurrentTimestep( 0 )
+	: m_CurrentTimestep( 0 ),
+	m_ColorHandler(new color::Color() )
 {
+	m_ColorHandler->initStandardColormaps();
 	m_Options = new OptionStruct;
 	m_Options->propagateZooming = false;
 	m_VoxelTransformation.fill( 1.0 );
