@@ -45,7 +45,7 @@ void QPreferencesDialog::loadSettings()
 	preferencesUi.comboScaling->setCurrentIndex( m_ViewerCore->getSettings()->value( "scaling", 0 ).toUInt() );
 	preferencesUi.checkShowLabels->setChecked( m_ViewerCore->getSettings()->value( "labels", false ).toBool() );
 	preferencesUi.checkPropagateZooming->setChecked( m_ViewerCore->getSettings()->value( "propagateZooming", false ).toBool() );
-	preferencesUi.comboBox->setCurrentIndex( m_ViewerCore->getSettings()->value( "lut", 0 ).toUInt() );
+	preferencesUi.comboBox->setCurrentIndex( preferencesUi.comboBox->findText( m_ViewerCore->getSettings()->value( "lut", 0 ).toString() ) );
 	m_ViewerCore->getSettings()->endGroup();
 }
 
@@ -54,7 +54,7 @@ void QPreferencesDialog::saveSettings()
 	m_ViewerCore->getSettings()->beginGroup( "UserProfile" );
 	m_ViewerCore->getSettings()->setValue( "showDesc", preferencesUi.checkShowDesc->isChecked() );
 	m_ViewerCore->getSettings()->setValue( "interpolationType", preferencesUi.comboInterpolation->currentIndex() );
-	m_ViewerCore->getSettings()->setValue( "lut", preferencesUi.comboBox->currentIndex() );
+	m_ViewerCore->getSettings()->setValue( "lut", preferencesUi.comboBox->currentText() );
 	m_ViewerCore->getSettings()->setValue( "scaling", preferencesUi.comboScaling->currentIndex() );
 	m_ViewerCore->getSettings()->setValue( "labels", preferencesUi.checkShowLabels->isChecked() );
 	m_ViewerCore->getSettings()->setValue( "propagateZooming", preferencesUi.checkPropagateZooming->isChecked() );

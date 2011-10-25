@@ -14,7 +14,7 @@ int main( int argc, char *argv[] )
 {
 	using namespace isis;
 	using namespace viewer;
-
+	util::DefaultMsgPrint::stopBelow(warning);
 	ENABLE_LOG( data::Runtime, util::DefaultMsgPrint, error );
 	std::string appName = "vast";
 	std::string orgName = "cbs.mpg.de";

@@ -102,7 +102,7 @@ void QViewerCore::setShowLabels( bool l )
 void QViewerCore::settingsChanged()
 {
 	getSettings()->beginGroup( "UserProfile" );
-	getCurrentImage()->getPropMap().setPropertyAs<unsigned short>( "lut", getSettings()->value( "lut", 0 ).toUInt() );
+// 	getCurrentImage()->getPropMap().setPropertyAs<std::string>( "lut", getSettings()->value( "lut", 0 ).toString().toStdString() );
 	BOOST_FOREACH( WidgetMap::reference widget, m_WidgetMap ) {
 		widget.second->setInterpolationType( static_cast<InterpolationType>( getSettings()->value( "interpolationType", 0 ).toUInt() ) );
 	}

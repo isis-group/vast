@@ -193,12 +193,6 @@ void QImageWidgetImplementation::paintImage( boost::shared_ptr< ImageHolder > im
 		imgProps.colorHandler.setOffsetAndScaling( image->getOptimalScalingPair() );
 	}
 
-	if( image->getPropMap().getPropertyAs<bool>( "colorMapChanged" ) ) {
-
-		imgProps.colorHandler.update();
-		//      image->getPropMap().setPropertyAs<bool>( "colorMapChanged", false );
-	}
-
 	util::ivector4 mappedSizeAligned = QOrienationHandler::mapCoordsToOrientation( image->getPropMap().getPropertyAs<util::ivector4>( "alignedSize32Bit" ), image, m_PlaneOrientation );
 	isis::data::MemChunk<InternalImageType> sliceChunk( mappedSizeAligned[0], mappedSizeAligned[1] );
 
@@ -206,11 +200,9 @@ void QImageWidgetImplementation::paintImage( boost::shared_ptr< ImageHolder > im
 
 	QImage qImage( ( InternalImageType * ) sliceChunk.asValuePtr<InternalImageType>().getRawAddress().get(),
 				   mappedSizeAligned[0], mappedSizeAligned[1], QImage::Format_Indexed8 );
-	qImage.setColorTable( imgProps.colorHandler.getColorTable() );
-	BOOST_FOREACH( QVector<QRgb>::const_reference colorRef, imgProps.colorHandler.getColorTable() ) {
-		std::cout << QColor( colorRef ).red() << " " << QColor( colorRef ).green() << " " << QColor( colorRef ).blue() << std::endl;
-	}
-
+	
+	qImage.setColorTable( m_ViewerCore->getColorHandler()->getLUTMap().at( image->getPropMap().getPropertyAs<std::string>("lut")) );
+	
 	m_Painter->resetMatrix();
 
 	if( image.get() != getWidgetSpecCurrentImage().get() ) {

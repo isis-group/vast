@@ -35,7 +35,6 @@ public:
 		ImageType imageType;
 		InterpolationType interpolationType;
 		std::pair<double, double> zmapThreshold;
-		Color::LookUpTableType lookUpTableType;
 
 	};
 	ImageHolder( );
