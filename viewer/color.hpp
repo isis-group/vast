@@ -5,6 +5,7 @@
 #include <QColor>
 #include <QVector>
 #include <QRgb>
+#include <boost/regex.h>
 
 namespace isis
 {
@@ -13,9 +14,34 @@ namespace viewer
 
 class ImageHolder;
 
-class Color
+namespace color 
 {
 
+
+class Color
+{
+public:
+	typedef std::map<std::string, QVector<QRgb> > LUTMapType;
+	
+	Color();
+	
+	bool addLUTFromResource( const std::string &resPath, const boost::regex &separator 
+		= boost::regex("[[:space:]]") );
+	bool addLutFromFile( const std::string &lutPath, const boost::regex &separator 
+		= boost::regex("[[:space:]]") );
+	
+private:
+	bool addLUTFromStringList( std::list<std::string> stringList, const std::string &lutPath, const boost::regex &separator ); 
+	LUTMapType m_LutMap;
+	
+	
+	
+};
+
+//*********************************************************OLD
+
+}
+class Color {
 public:
 	enum LookUpTableType { standard_grey_values = 0, zmap_standard, colormap1, colormap2, colormap3, colormap4, colormap5, colormap6, colormap7, colormap8, colormap9, colormap10, colormap11, colormap12 };
 	typedef QVector<QRgb> ColorMapType;
@@ -40,9 +66,9 @@ private:
 
 };
 
-}
-}
 
+}
+}
 
 #include "imageholder.hpp"
 

@@ -6,6 +6,7 @@
 #include <DataStorage/image.hpp>
 #include <CoreUtils/log.hpp>
 #include "pluginloader.hpp"
+#include "color.hpp"
 
 #include "common.hpp"
 
@@ -130,7 +131,8 @@ int main( int argc, char *argv[] )
 	if( assamble ) {
 		isisViewerMainWindow->assembleViewInRows();
 	}
-
+	color::Color test;
+	return 0;
 	isisViewerMainWindow->show();
 	return app.getQApplication().exec();
 }

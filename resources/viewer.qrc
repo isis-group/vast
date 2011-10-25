@@ -13,6 +13,9 @@
     <file>orient.gif</file>
     <file>icon_check.png</file>
   </qresource>
+  <qresource prefix="colormap">
+    <file>lut/colormap_1</file>
+  </qresource>
   <qresource prefix="lut">
     <file>colormap1.png</file>
     <file>colormap2.png</file>

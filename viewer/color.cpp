@@ -1,12 +1,82 @@
 #include "color.hpp"
-
+#include <QResource>
+#include <fstream>
 
 
 namespace isis
 {
 namespace viewer
 {
+namespace color 
+{
+	
+Color::Color()
+{
+	
+	addLUTFromResource( std::string(":/colormap/lut/colormap_1") );
+	addLutFromFile( std::string("/buildfarm/resources/src/vast/resources/lut/colormap_1" ) );
+}
 
+bool Color::addLUTFromStringList( std::list< std::string > lines, const std::string &lutPath, const boost::regex& separator)
+{
+	QVector<QRgb> lutVec;
+	//get the name and colorspace
+	boost::regex descriptionRegex("^([[:word:]]*):([[:word:]]*)$");
+	boost::cmatch results;
+	if( !boost::regex_match(lines.front().c_str(), results, descriptionRegex ) ) {
+		LOG(Runtime, warning) << "Can not read colormap " << lutPath << " because header is missing or has wrong syntax!";
+		return false;
+	}
+	std::string lutTyp = boost::lexical_cast< std::string>( results.str(2) );
+	std::string lutName = boost::lexical_cast< std::string>( results.str(1) );
+	lines.pop_front();
+	BOOST_FOREACH( std::list<std::string>::const_reference lineRef, lines )
+	{
+		std::list< unsigned short > values = util::stringToList< unsigned short >(lineRef, separator );
+		std::vector<unsigned short> colorVec( values.begin(), values.end() );
+		if(lutTyp == std::string("rgb") ) {
+			lutVec.push_back( QColor( colorVec[0], colorVec[1], colorVec[2], 255).rgba() );
+		} else if (lutTyp == std::string("rgba") ) {
+			lutVec.push_back( QColor( colorVec[0], colorVec[1], colorVec[2], colorVec[3]).rgba() );
+		} else if ( lutTyp == std::string("hsv") ) {
+			lutVec.push_back( QColor::fromHsv( colorVec[0], colorVec[1], colorVec[2] ).rgba() );
+		} else if ( lutTyp == std::string("hsva") ) {
+			lutVec.push_back( QColor::fromHsv( colorVec[0], colorVec[1], colorVec[2], colorVec[3] ).rgba() );
+		} else {
+			LOG( Runtime, warning ) << "Unknown lut type " << lutTyp << " !";
+			return false;
+		}
+	}
+	if( lutVec.size() != 256 ) {
+		LOG(Runtime, warning) << "The size of the colormap " << lutName 
+			<< " is " << lutVec.size() << " but has to be 256!";
+		return false;
+	}
+	m_LutMap[lutName] = lutVec;
+	return true;
+}
+
+bool Color::addLUTFromResource(const std::string& resPath, const boost::regex& separator)
+{
+	QResource lutRessource(resPath.c_str());
+	std::string data( reinterpret_cast<const char *> (lutRessource.data()) );
+	return addLUTFromStringList( util::stringToList<std::string>(data, boost::regex("\n") ), resPath, separator) ;
+}
+
+bool Color::addLutFromFile(const std::string& lutPath, const boost::regex& separator)
+{
+	std::list<std::string> lines;
+	std::ifstream lutFile( lutPath.c_str() );
+	std::string line;
+	while( getline(lutFile, line)) {
+		lines.push_back(line);
+	}
+	return addLUTFromStringList( lines, lutPath, separator);
+}
+
+
+//******************************************************************************OLD
+}
 Color::Color()
 	: m_NumberOfElements( 256 ),
 	  m_LutType( standard_grey_values ),
