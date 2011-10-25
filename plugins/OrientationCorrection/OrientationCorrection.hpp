@@ -2,7 +2,7 @@
 #define ORIENTATIONCORRECTION_HPP
 
 #include <QDialog>
-#include "QViewerCore.hpp"
+#include "qviewercore.hpp"
 #include "ui_orientationcorrection.h"
 
 namespace isis {

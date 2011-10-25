@@ -2,7 +2,7 @@
 #define QORIENTATIONHANDLER_HPP
 
 #include <QTransform>
-#include "ImageHolder.hpp"
+#include "imageholder.hpp"
 #include "common.hpp"
 #include "QtWidgetCommon.hpp"
 

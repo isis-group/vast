@@ -2,7 +2,7 @@
 #define QTWIDGETCOMMON_HPP
 
 #include "CoreUtils/vector.hpp"
-#include "ImageHolder.hpp"
+#include "imageholder.hpp"
 
 namespace isis
 {

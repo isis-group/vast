@@ -8,8 +8,8 @@
 #ifndef MAINWINDOW_CPP_
 #define MAINWINDOW_CPP_
 
-#include "MainWindowBase.hpp"
-#include "QViewerCore.hpp"
+#include "mainWindowBase.hpp"
+#include "qviewercore.hpp"
 
 #include "QGLWidgetImplementation.hpp"
 #include "QImageWidgetImplementation.hpp"

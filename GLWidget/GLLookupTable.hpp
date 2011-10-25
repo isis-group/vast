@@ -1,7 +1,7 @@
 #ifndef GLLOOKUPTABLE_HPP
 #define GLLOOKUPTABLE_HPP
 
-#include "Color.hpp"
+#include "color.hpp"
 #include "GLCommon.hpp"
 
 namespace isis

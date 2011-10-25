@@ -2,8 +2,8 @@
 #define GLMEMORYMANAGER_HPP
 
 #include "GLCommon.hpp"
-#include "DataContainer.hpp"
-#include "ViewerCoreBase.hpp"
+#include "datacontainer.hpp"
+#include "viewercorebase.hpp"
 #include <DataStorage/typeptr.hpp>
 #include <DataStorage/image.hpp>
 

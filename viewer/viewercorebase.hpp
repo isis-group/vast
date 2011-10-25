@@ -1,10 +1,9 @@
 #ifndef VIEWERCOREBASE_HPP
 #define VIEWERCOREBASE_HPP
 
-#include "DataContainer.hpp"
-#include "ImageOps.hpp"
+#include "datacontainer.hpp"
 #include <map>
-#include "PluginLoader.hpp"
+#include "pluginloader.hpp"
 
 namespace isis
 {

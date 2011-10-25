@@ -2,7 +2,7 @@
 #define QWIDGETIMPLEMENTATIONBASE_HPP
 
 #include "common.hpp"
-#include "ImageHolder.hpp"
+#include "imageholder.hpp"
 #include <QtGui>
 
 namespace isis

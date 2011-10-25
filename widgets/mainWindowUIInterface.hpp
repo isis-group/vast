@@ -1,7 +1,7 @@
 #ifndef MAINWINDOWUIINTERFACE_HPP
 #define MAINWINDOWUIINTERFACE_HPP
 
-#include "MainWindow.hpp"
+#include "mainWindow.hpp"
 
 namespace isis
 {
@@ -31,6 +31,7 @@ public Q_SLOTS:
 	void openPreferences();
 	void saveImage();
 	void saveImageAs();
+	void showPluginInformation();
 
 	void triggeredMakeCurrentImage( bool );
 	void doubleClickedMakeCurrentImage( QListWidgetItem * );

@@ -1,4 +1,4 @@
-#include "QWidgetImplementationBase.hpp"
+#include "widgetImplementationBase.hpp"
 
 namespace isis
 {

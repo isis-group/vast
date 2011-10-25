@@ -1,4 +1,4 @@
-#include "ViewerCoreBase.hpp"
+#include "viewercorebase.hpp"
 
 #define STR(s) _xstr_(s)
 #define _xstr_(s) std::string(#s)

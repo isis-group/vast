@@ -7,7 +7,7 @@
 #include <qwt_plot_curve.h>
 #include "ui_plotting.h"
 #include <iostream>
-#include "QViewerCore.hpp"
+#include "qviewercore.hpp"
 #include "DataStorage/typeptr.hpp"
 
 namespace isis {

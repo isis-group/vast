@@ -2,10 +2,10 @@
 #define QVIEWERCORE_HPP
 
 
-#include "ViewerCoreBase.hpp"
-#include "QWidgetImplementationBase.hpp"
+#include "viewercorebase.hpp"
+#include "widgetImplementationBase.hpp"
 #include <QtGui>
-#include "Color.hpp"
+#include "color.hpp"
 
 namespace isis
 {

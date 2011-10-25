@@ -5,10 +5,10 @@
 #include <QWidget>
 #include <QPainter>
 #include <QtGui>
-#include "QWidgetImplementationBase.hpp"
-#include "QViewerCore.hpp"
+#include "widgetImplementationBase.hpp"
+#include "qviewercore.hpp"
 #include "QMemoryHandler.hpp"
-#include "Color.hpp"
+#include "color.hpp"
 #include "QtWidgetCommon.hpp"
 
 namespace isis

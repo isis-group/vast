@@ -1,4 +1,4 @@
-#include "MainWindowBase.hpp"
+#include "mainWindowBase.hpp"
 #include <iostream>
 
 namespace isis

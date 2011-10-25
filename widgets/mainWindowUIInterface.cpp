@@ -1,4 +1,4 @@
-#include "MainWindowUIInterface.hpp"
+#include "mainWindowUIInterface.hpp"
 #include "DataStorage/io_factory.hpp"
 
 namespace isis
@@ -40,6 +40,7 @@ void MainWindowUIInterface::connectSignals()
 	connect( ui.actionSagittal_View, SIGNAL( triggered( bool ) ), this, SLOT( toggleSagittalView( bool ) ) );
 	connect( ui.actionOpenZmap, SIGNAL( triggered() ), this, SLOT( openImageAsZMap() ) );
 	connect( ui.action_Preferences, SIGNAL( triggered() ), this, SLOT( openPreferences() ) );
+	connect( ui.action_Pluginsinformation, SIGNAL( triggered()), this, SLOT( showPluginInformation()) );
 
 	//attach all textFields
 	connect( ui.row_value, SIGNAL( textChanged( QString ) ), ui.row_value_2, SLOT( setText( QString ) ) );
@@ -165,10 +166,7 @@ void MainWindowUIInterface::saveImage()
 				isis::data::IOFactory::write( *m_ViewerCore->getCurrentImage()->getISISImage(), m_ViewerCore->getCurrentImage()->getFileNames().front(),"", "");
 				break;
 		}
-		
 	}
-	
-	
 }
 
 void MainWindowUIInterface::saveImageAs()
@@ -182,6 +180,11 @@ void MainWindowUIInterface::saveImageAs()
 	if( filename.size() ) {
 		isis::data::IOFactory::write( *m_ViewerCore->getCurrentImage()->getISISImage(), filename.toStdString(), "", "" );
 	}
+	
+}
+
+void MainWindowUIInterface::showPluginInformation()
+{
 	
 }
 

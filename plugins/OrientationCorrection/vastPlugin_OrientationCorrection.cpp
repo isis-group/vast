@@ -1,4 +1,4 @@
-#include "PluginInterface.h"
+#include "plugininterface.h"
 #include "OrientationCorrection.hpp"
 
 namespace isis {

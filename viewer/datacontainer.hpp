@@ -1,7 +1,7 @@
 #ifndef DATACONTAINER_HPP
 #define DATACONTAINER_HPP
 
-#include "ImageHolder.hpp"
+#include "imageholder.hpp"
 #include <boost/filesystem/path.hpp>
 
 namespace isis

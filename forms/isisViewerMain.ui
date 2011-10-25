@@ -1016,9 +1016,16 @@
     <addaction name="menu_Show"/>
     <addaction name="action_Plotting"/>
    </widget>
+   <widget class="QMenu" name="menu_Help">
+    <property name="title">
+     <string>&amp;Help</string>
+    </property>
+    <addaction name="action_Pluginsinformation"/>
+   </widget>
    <addaction name="menu_File"/>
    <addaction name="menu_Preferences"/>
    <addaction name="menu_View"/>
+   <addaction name="menu_Help"/>
   </widget>
   <widget class="QStatusBar" name="statusbar">
    <property name="sizePolicy">
@@ -1229,6 +1236,14 @@ This is needed if you want to open an entire DICOM directory.</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+Shift+S</string>
+   </property>
+  </action>
+  <action name="action_Pluginsinformation">
+   <property name="text">
+    <string>&amp;Plugininformation</string>
+   </property>
+   <property name="shortcut">
+    <string>P, H, P</string>
    </property>
   </action>
  </widget>

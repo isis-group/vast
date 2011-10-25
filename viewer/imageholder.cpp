@@ -1,5 +1,5 @@
 
-#include "ImageHolder.hpp"
+#include "imageholder.hpp"
 
 namespace isis
 {

@@ -1,4 +1,4 @@
-#include "QViewerCore.hpp"
+#include "qviewercore.hpp"
 
 
 namespace isis

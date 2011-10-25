@@ -1,4 +1,4 @@
-#include "QPreferencesDialog.hpp"
+#include "preferenceDialog.hpp"
 
 namespace isis
 {

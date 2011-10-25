@@ -2,7 +2,7 @@
 #define QPREFERNCESDIALOG_HPP
 
 #include "ui_preferences.h"
-#include "QViewerCore.hpp"
+#include "qviewercore.hpp"
 
 namespace isis
 {

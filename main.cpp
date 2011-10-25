@@ -1,11 +1,11 @@
 #include <Adapter/qtapplication.hpp>
-#include "MainWindowUIInterface.hpp"
-#include "QViewerCore.hpp"
+#include "mainWindowUIInterface.hpp"
+#include "qviewercore.hpp"
 #include <iostream>
 #include <DataStorage/io_factory.hpp>
 #include <DataStorage/image.hpp>
 #include <CoreUtils/log.hpp>
-#include "PluginLoader.hpp"
+#include "pluginloader.hpp"
 
 #include "common.hpp"
 

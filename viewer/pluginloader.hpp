@@ -1,7 +1,7 @@
 #ifndef PLUGINLOADER_HPP
 #define PLUGINLOADER_HPP
 
-#include "PluginInterface.h"
+#include "plugininterface.h"
 #include <boost/filesystem.hpp>
 #include <boost/regex.h>
 #include <boost/shared_ptr.hpp>

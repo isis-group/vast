@@ -3,7 +3,7 @@
 
 #include <QtGui>
 #include "ui_isisViewerMain.h"
-#include "QPreferencesDialog.hpp"
+#include "preferenceDialog.hpp"
 
 namespace isis
 {

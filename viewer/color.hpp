@@ -44,7 +44,7 @@ private:
 }
 
 
-#include "ImageHolder.hpp"
+#include "imageholder.hpp"
 
 
 #endif

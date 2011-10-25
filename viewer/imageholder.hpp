@@ -7,8 +7,7 @@
 #include <CoreUtils/propmap.hpp>
 #include <DataStorage/image.hpp>
 #include "common.hpp"
-#include "Color.hpp"
-#include "ImageOps.hpp"
+#include "color.hpp"
 
 namespace isis
 {

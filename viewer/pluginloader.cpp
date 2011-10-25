@@ -1,4 +1,4 @@
-#include "PluginLoader.hpp"
+#include "pluginloader.hpp"
 #include <CoreUtils/message.hpp>
 #include "common.hpp"
 #ifdef WIN32

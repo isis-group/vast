@@ -1,10 +1,10 @@
 #ifndef TIMEPLOTTER_HPP
 #define TIMEPLOTTER_HPP
 
-#include "PluginInterface.h"
+#include "plugininterface.h"
 #include "PlotterDialog.hpp"
 #include "common.hpp"
-#include <QViewerCore.hpp>
+#include "viewercorebase.hpp"
 
 namespace isis {
 namespace viewer {

@@ -5,7 +5,7 @@
  *      Author: tuerke
  */
 
-#include "MainWindow.hpp"
+#include "mainWindow.hpp"
 #include <common.hpp>
 #include <DataStorage/io_factory.hpp>
 #include <QMenuBar>

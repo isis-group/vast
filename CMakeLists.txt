@@ -8,20 +8,22 @@ PROJECT(vast)
 ############################################################
 set(VAST_PLUGIN_INFIX lib/vast/plugins)
 
+include_directories(widgets)
 
 # collecting files
-file (GLOB VIEWER_FILES_CPP viewer/*.c viewer/*.cpp)
-file (GLOB GLWIDGET_FILES_CPP GLWidget/*.cpp GLWidget/*.c)
-file (GLOB QWIDGET_FILES_CPP QImageWidget/*.cpp QImageWidget/*.c)
+file (GLOB VIEWER_FILES_CPP  viewer/*.cpp)
+file (GLOB WIDGET_FILES_CPP widgets/*.cpp )
+file (GLOB GLWIDGET_FILES_CPP GLWidget/*.cpp )
+file (GLOB QWIDGET_FILES_CPP QImageWidget/*.cpp )
 file (GLOB UI_FILES forms/*.ui)
 file (GLOB RESOURCE_FILES resources/*.qrc)
 
 set(VIEWER_FILES_HPP
-	viewer/MainWindowBase.hpp
-	viewer/MainWindow.hpp
-	viewer/MainWindowUIInterface.hpp
-	viewer/QViewerCore.hpp
-	viewer/QPreferencesDialog.hpp
+	widgets/mainWindowBase.hpp
+	widgets/mainWindow.hpp
+	widgets/mainWindowUIInterface.hpp
+	viewer/qviewercore.hpp
+	widgets/preferenceDialog.hpp
 )
 set(GLWIDGET_FILES_HPP
 	GLWidget/QGLWidgetImplementation.hpp
@@ -118,7 +120,7 @@ SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ftemplate-depth-100")
 # set the plugin directory and the system dependend shared
 # library naming conventions
 ############################################################
-set_source_files_properties( "viewer/PluginLoader.cpp" PROPERTIES COMPILE_FLAGS
+set_source_files_properties( "viewer/pluginloader.cpp" PROPERTIES COMPILE_FLAGS
 	"-DPLUGIN_PATH=\\\"${CMAKE_INSTALL_PREFIX}/${VAST_PLUGIN_INFIX}\\\" -DDL_SUFFIX=\\\"${CMAKE_SHARED_LIBRARY_SUFFIX}\\\" -DDL_PREFIX=\\\"${CMAKE_SHARED_LIBRARY_PREFIX}\\\""
 )
 
@@ -141,7 +143,7 @@ INCLUDE(CPack)
 
 
 
-add_executable(vast main.cpp ${QWIDGET_FILES_CPP} ${GLWIDGET_FILES_CPP} ${VIEWER_FILES_CPP} ${vast_UIS_H} ${vast_moc_files} ${vast_rcc_files})
+add_executable(vast main.cpp ${QWIDGET_FILES_CPP} ${GLWIDGET_FILES_CPP} ${VIEWER_FILES_CPP} ${WIDGET_FILES_CPP} ${vast_UIS_H} ${vast_moc_files} ${vast_rcc_files})
 find_library(isisqt4_LIBRARY "isisAdapter_qt4")
 
 set(NEEDED_LIBS
