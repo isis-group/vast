@@ -15,41 +15,54 @@ boost::numeric::ublas::matrix< float > ImageHolder::getNormalizedImageOrientatio
 {
 	boost::numeric::ublas::matrix<float> retMatrix = boost::numeric::ublas::zero_matrix<float>( 4, 4 );
 	retMatrix( 3, 3 ) = 1;
-	float deg45 = sin((45.0 / 180) * M_PI);
+	float deg45 = sin( ( 45.0 / 180 ) * M_PI );
 	util::fvector4 rowVec = m_Image->getPropertyAs<util::fvector4>( "rowVec" );
 	util::fvector4 columnVec = m_Image->getPropertyAs<util::fvector4>( "columnVec" );
 	util::fvector4 sliceVec = m_Image->getPropertyAs<util::fvector4>( "sliceVec" );
 	size_t rB = rowVec.getBiggestVecElemAbs();
 	size_t cB = columnVec.getBiggestVecElemAbs();
 	size_t sB = sliceVec.getBiggestVecElemAbs();
+
 	//if image is rotated of 45 °
 	if( rB == cB ) {
 		if( sB == 0 ) {
-			rB = 1; cB = 2;
+			rB = 1;
+			cB = 2;
 		} else if ( sB == 1 ) {
-			rB = 0; cB = 2;
+			rB = 0;
+			cB = 2;
 		} else if ( sB = 2 ) {
-			rB = 0; rB = 1;
+			rB = 0;
+			rB = 1;
 		}
 	}
+
 	if( rB == sB ) {
 		if( cB == 0 ) {
-			rB = 1; sB = 2;
+			rB = 1;
+			sB = 2;
 		} else if ( cB == 1 ) {
-			rB = 0; sB = 2;
+			rB = 0;
+			sB = 2;
 		} else if ( cB = 2 ) {
-			rB = 0; sB = 1;
+			rB = 0;
+			sB = 1;
 		}
 	}
+
 	if( cB == sB ) {
 		if( rB == 0 ) {
-			cB = 1; sB = 2;
+			cB = 1;
+			sB = 2;
 		} else if ( rB == 1 ) {
-			cB = 0; sB = 2;
+			cB = 0;
+			sB = 2;
 		} else if ( rB = 2 ) {
-			cB = 0; sB = 1;
+			cB = 0;
+			sB = 1;
 		}
 	}
+
 	if( !transposed ) {
 		retMatrix( rB, 0 ) = rowVec[rB] < 0 ? -1 : 1;
 		retMatrix( cB, 1 ) = columnVec[cB] < 0 ? -1 : 1;
@@ -59,6 +72,7 @@ boost::numeric::ublas::matrix< float > ImageHolder::getNormalizedImageOrientatio
 		retMatrix( 1, cB ) =  columnVec[cB] < 0 ? -1 : 1;
 		retMatrix( 2, sB ) = sliceVec[sB] < 0 ? -1 : 1;
 	}
+
 	return retMatrix;
 }
 
@@ -159,12 +173,13 @@ bool ImageHolder::setImage( const data::Image &image, const ImageType &imageType
 	if( imageType == z_map ) {
 		m_PropMap.setPropertyAs<double>( "lowerThreshold", 0 );
 		m_PropMap.setPropertyAs<double>( "upperThreshold", 0 );
-		m_PropMap.setPropertyAs<std::string>("lut", std::string("standard_zmap") );
+		m_PropMap.setPropertyAs<std::string>( "lut", std::string( "standard_zmap" ) );
 	} else if( imageType == anatomical_image ) {
 		m_PropMap.setPropertyAs<double>( "lowerThreshold", getMinMax().first->as<double>() );
 		m_PropMap.setPropertyAs<double>( "upperThreshold", getMinMax().second->as<double>() );
-		m_PropMap.setPropertyAs<std::string>("lut", std::string("standard_grey_values") );
+		m_PropMap.setPropertyAs<std::string>( "lut", std::string( "standard_grey_values" ) );
 	}
+
 	m_PropMap.setPropertyAs<double>( "extent", fabs( getMinMax().second->as<double>() - getMinMax().first->as<double>() ) );
 	m_PropMap.setPropertyAs<util::ivector4>( "voxelCoords", util::ivector4( m_ImageSize[0] / 2, m_ImageSize[1] / 2, m_ImageSize[2] / 2, 0 ) );
 	m_PropMap.setPropertyAs<util::fvector4>( "physicalCoords", m_Image->getPhysicalCoordsFromIndex( m_PropMap.getPropertyAs<util::ivector4>( "voxelCoords" ) ) );
@@ -175,17 +190,17 @@ bool ImageHolder::setImage( const data::Image &image, const ImageType &imageType
 	m_PropMap.setPropertyAs<util::ivector4>( "alignedSize32Bit", get32BitAlignedSize( m_ImageSize ) );
 	m_PropMap.setPropertyAs<bool>( "init", true );
 	m_PropMap.setPropertyAs<util::slist>( "changedAttributes", util::slist() );
-	m_PropMap.setPropertyAs<double>("offset", 0.0);
-	m_PropMap.setPropertyAs<double>("scaling", 1.0);
+	m_PropMap.setPropertyAs<double>( "offset", 0.0 );
+	m_PropMap.setPropertyAs<double>( "scaling", 1.0 );
 	m_Image->updateOrientationMatrices();
 	return true;
 }
 
-void ImageHolder::addChangedAttribute(const std::string& attribute)
+void ImageHolder::addChangedAttribute( const std::string &attribute )
 {
-	util::slist attributes = m_PropMap.getPropertyAs<util::slist>("changedAttributes");
+	util::slist attributes = m_PropMap.getPropertyAs<util::slist>( "changedAttributes" );
 	attributes.push_back( attribute );
-	m_PropMap.setPropertyAs<util::slist>("changedAttributes", attributes );
+	m_PropMap.setPropertyAs<util::slist>( "changedAttributes", attributes );
 }
 
 

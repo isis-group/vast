@@ -55,7 +55,7 @@ public:
 	PluginListType getPlugins() const { return m_PluginList; }
 
 	bool callPlugin( const std::string &name );
-	
+
 	void setParentWidget( QWidget *parent ) { m_Parent = parent; }
 
 public Q_SLOTS:
@@ -82,7 +82,7 @@ private:
 	WidgetMap m_WidgetMap;
 	std::vector< util::fvector4 > m_RGBColorGradient;
 	QSettings *m_Settings;
-	
+
 	QWidget *m_Parent;
 	PluginListType m_PluginList;
 

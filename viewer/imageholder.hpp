@@ -138,7 +138,7 @@ private:
 	std::vector< data::Chunk > m_ChunkVector;
 
 	bool filterRelevantMetaInformation();
-	
+
 };
 
 }

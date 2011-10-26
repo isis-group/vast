@@ -14,7 +14,7 @@ int main( int argc, char *argv[] )
 {
 	using namespace isis;
 	using namespace viewer;
-	util::DefaultMsgPrint::stopBelow(warning);
+	util::DefaultMsgPrint::stopBelow( warning );
 	ENABLE_LOG( data::Runtime, util::DefaultMsgPrint, error );
 	std::string appName = "vast";
 	std::string orgName = "cbs.mpg.de";
@@ -31,7 +31,7 @@ int main( int argc, char *argv[] )
 	util::Selection image_types( "anatomical,zmap" );
 	image_types.set( "anatomical" );
 
-	qt4::IOQtApplication app( appName.c_str(), false, false, std::string("raster") );
+	qt4::IOQtApplication app( appName.c_str(), false, false, std::string( "raster" ) );
 
 	std::cout << "v" << core->getVersion() << " ( isis core: " << app.getCoreVersion() << " )" << std::endl;
 	app.parameters["in"] = util::slist();
@@ -105,7 +105,7 @@ int main( int argc, char *argv[] )
 	//scan for plugins and hand them to the core
 	core->addPlugins( plugin::PluginLoader::get().getPlugins() );
 	isisViewerMainWindow->reloadPluginsToGUI();
-	
+
 
 	if( app.parameters["zmap"].isSet() ) {
 		if( app.parameters["split"] && zImgList.size() > 1 ) {
@@ -131,6 +131,7 @@ int main( int argc, char *argv[] )
 	if( assamble ) {
 		isisViewerMainWindow->assembleViewInRows();
 	}
+
 	isisViewerMainWindow->show();
 	return app.getQApplication().exec();
 }

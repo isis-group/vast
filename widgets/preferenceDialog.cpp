@@ -11,15 +11,15 @@ QPreferencesDialog::QPreferencesDialog( QWidget *parent, QViewerCore *core ):
 	m_ViewerCore( core )
 {
 	preferencesUi.setupUi( this );
-	connect( preferencesUi.comboBox, SIGNAL( activated(int)), this, SLOT(apply(int)));
-	connect( preferencesUi.comboInterpolation, SIGNAL( activated(int)), this, SLOT( apply(int)));
-	QSize size( QSize( preferencesUi.comboBox->size().width() - 70, preferencesUi.comboBox->height() -10 ) );
+	connect( preferencesUi.comboBox, SIGNAL( activated( int ) ), this, SLOT( apply( int ) ) );
+	connect( preferencesUi.comboInterpolation, SIGNAL( activated( int ) ), this, SLOT( apply( int ) ) );
+	QSize size( QSize( preferencesUi.comboBox->size().width() - 70, preferencesUi.comboBox->height() - 10 ) );
 	preferencesUi.comboBox->setIconSize( size );
 
 
 }
 
-void QPreferencesDialog::apply(int dummy)
+void QPreferencesDialog::apply( int dummy )
 {
 	saveSettings();
 	m_ViewerCore->settingsChanged();
@@ -40,8 +40,8 @@ void QPreferencesDialog::loadSettings()
 	QSize size = preferencesUi.comboBox->iconSize();
 	unsigned short index = 0;
 	BOOST_FOREACH( color::Color::ColormapMapType::const_reference lut, m_ViewerCore->getColorHandler()->getColormapMap() ) {
-		if( lut.first != std::string("fallback") ) {
-			preferencesUi.comboBox->insertItem(index++, m_ViewerCore->getColorHandler()->getIcon( lut.first, size.width() ,size.height() ), QString( lut.first.c_str() ) ) ;
+		if( lut.first != std::string( "fallback" ) ) {
+			preferencesUi.comboBox->insertItem( index++, m_ViewerCore->getColorHandler()->getIcon( lut.first, size.width() , size.height() ), QString( lut.first.c_str() ) ) ;
 		}
 	}
 	m_ViewerCore->getSettings()->beginGroup( "UserProfile" );
@@ -50,7 +50,7 @@ void QPreferencesDialog::loadSettings()
 	preferencesUi.comboScaling->setCurrentIndex( m_ViewerCore->getSettings()->value( "scaling", 0 ).toUInt() );
 	preferencesUi.checkShowLabels->setChecked( m_ViewerCore->getSettings()->value( "labels", false ).toBool() );
 	preferencesUi.checkPropagateZooming->setChecked( m_ViewerCore->getSettings()->value( "propagateZooming", false ).toBool() );
-	preferencesUi.comboBox->setCurrentIndex( preferencesUi.comboBox->findText( m_ViewerCore->getCurrentImage()->getPropMap().getPropertyAs<std::string>("lut").c_str() ) );
+	preferencesUi.comboBox->setCurrentIndex( preferencesUi.comboBox->findText( m_ViewerCore->getCurrentImage()->getPropMap().getPropertyAs<std::string>( "lut" ).c_str() ) );
 	m_ViewerCore->getSettings()->endGroup();
 }
 

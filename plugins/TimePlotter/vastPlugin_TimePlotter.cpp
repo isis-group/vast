@@ -2,14 +2,17 @@
 
 
 
-namespace isis {
-namespace viewer {
-namespace plugin {
-	
-	
+namespace isis
+{
+namespace viewer
+{
+namespace plugin
+{
+
+
 bool TimePlotter::call()
 {
-	m_PlotterDialog = new PlotterDialog(parentWidget, viewerCore);
+	m_PlotterDialog = new PlotterDialog( parentWidget, viewerCore );
 	m_PlotterDialog->show();
 	return true;
 }
@@ -17,4 +20,6 @@ bool TimePlotter::call()
 
 
 
-}}}
+}
+}
+}

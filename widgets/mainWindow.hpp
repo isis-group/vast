@@ -61,7 +61,7 @@ public Q_SLOTS:
 	void callPlugin( QString );
 
 	void reloadPluginsToGUI();
-	
+
 	void upperThresholdChanged( int );
 	void lowerThresholdChanged( int );
 	void opacityChanged( int );

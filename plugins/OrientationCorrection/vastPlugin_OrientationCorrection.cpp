@@ -1,16 +1,19 @@
 #include "plugininterface.h"
 #include "OrientationCorrection.hpp"
 
-namespace isis {
-namespace viewer {
-namespace plugin {
-	
+namespace isis
+{
+namespace viewer
+{
+namespace plugin
+{
+
 class OrientationCorrection : public PluginInterface
 {
 public:
 	virtual std::string getName() { return std::string( "Tools/OrienationCorrection" ) ; }
 	virtual std::string getDescription() { return std::string( "" ); }
-	virtual std::string getTooltip() { return std::string(""); }
+	virtual std::string getTooltip() { return std::string( "" ); }
 	virtual bool isGUI() { return true; }
 	virtual bool call() {
 		m_OrienatationCorrectionDialog = new OrientatioCorrectionDialog( parentWidget, viewerCore );
@@ -21,8 +24,10 @@ public:
 private:
 	OrientatioCorrectionDialog *m_OrienatationCorrectionDialog;
 };
-	
-}}}
+
+}
+}
+}
 
 isis::viewer::plugin::PluginInterface *loadPlugin()
 {

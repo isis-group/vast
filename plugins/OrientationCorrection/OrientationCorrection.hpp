@@ -5,9 +5,12 @@
 #include "qviewercore.hpp"
 #include "ui_orientationcorrection.h"
 
-namespace isis {
-namespace viewer {
-namespace plugin {
+namespace isis
+{
+namespace viewer
+{
+namespace plugin
+{
 
 class OrientatioCorrectionDialog : public QDialog
 {
@@ -21,13 +24,15 @@ public Q_SLOTS:
 private:
 	QViewerCore *m_Core;
 	Ui::OrientationCorrection ui;
-	boost::numeric::ublas::matrix<QTableWidgetItem*> m_MatrixItems;
+	boost::numeric::ublas::matrix<QTableWidgetItem *> m_MatrixItems;
 	bool applyTransform ( const boost::numeric::ublas::matrix<float> &trans, bool center ) const ;
-	
+
 };
 
 
 
-}}}
+}
+}
+}
 
 #endif

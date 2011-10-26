@@ -45,7 +45,7 @@ public:
 
 	void setCoordsTransformation( const util::fvector4 &transformation ) { m_VoxelTransformation = transformation; }
 	util::fvector4 getTransformedCoords( const util::fvector4 &coords ) const;
-	
+
 	color::Color *getColorHandler() const { return m_ColorHandler; }
 
 private:

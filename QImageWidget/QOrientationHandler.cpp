@@ -58,6 +58,7 @@ util::fvector4 QOrienationHandler::mapCoordsToOrientation( const util::fvector4 
 		transformMatrix( 1, 2 ) = -1;
 		break;
 	}
+
 	if( back ) {
 		finVec = prod( trans( prod(  transformMatrix, image->getNormalizedImageOrientation() ) ), vec );
 	} else {

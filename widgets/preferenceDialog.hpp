@@ -23,7 +23,7 @@ public Q_SLOTS:
 	void closeEvent( QCloseEvent * );
 	void loadSettings();
 	void saveSettings();
-	void apply(int dummy = 0);
+	void apply( int dummy = 0 );
 	virtual void showEvent( QShowEvent * ) { loadSettings(); }
 
 private:

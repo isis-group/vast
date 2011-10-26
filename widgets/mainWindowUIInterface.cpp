@@ -26,8 +26,8 @@ void MainWindowUIInterface::connectSignals()
 	connect( ui.imageStack, SIGNAL( itemClicked( QListWidgetItem * ) ), this, SLOT( checkImageStack( QListWidgetItem * ) ) );
 	connect( ui.imageStack, SIGNAL( itemDoubleClicked( QListWidgetItem * ) ), this, SLOT( doubleClickedMakeCurrentImage( QListWidgetItem * ) ) );
 	connect( ui.action_Open_Image, SIGNAL( triggered() ), this, SLOT( openImageAsAnatomicalImage() ) );
-	connect( ui.action_save_Image, SIGNAL( triggered()), this, SLOT( saveImage()));
-	connect( ui.actionSave_Image_As, SIGNAL( triggered()), this, SLOT( saveImageAs()));
+	connect( ui.action_save_Image, SIGNAL( triggered() ), this, SLOT( saveImage() ) );
+	connect( ui.actionSave_Image_As, SIGNAL( triggered() ), this, SLOT( saveImageAs() ) );
 	connect( ui.actionOpen_DICOM, SIGNAL( triggered() ), this, SLOT( openDICOMDir() ) );
 	connect( ui.upperThreshold, SIGNAL( sliderMoved( int ) ), this, SLOT( upperThresholdChanged( int ) ) );
 	connect( ui.lowerThreshold, SIGNAL( sliderMoved( int ) ), this, SLOT( lowerThresholdChanged( int ) ) );
@@ -40,7 +40,7 @@ void MainWindowUIInterface::connectSignals()
 	connect( ui.actionSagittal_View, SIGNAL( triggered( bool ) ), this, SLOT( toggleSagittalView( bool ) ) );
 	connect( ui.actionOpenZmap, SIGNAL( triggered() ), this, SLOT( openImageAsZMap() ) );
 	connect( ui.action_Preferences, SIGNAL( triggered() ), this, SLOT( openPreferences() ) );
-	connect( ui.action_Pluginsinformation, SIGNAL( triggered()), this, SLOT( showPluginInformation()) );
+	connect( ui.action_Pluginsinformation, SIGNAL( triggered() ), this, SLOT( showPluginInformation() ) );
 
 	//attach all textFields
 	connect( ui.row_value, SIGNAL( textChanged( QString ) ), ui.row_value_2, SLOT( setText( QString ) ) );
@@ -138,7 +138,7 @@ void MainWindowUIInterface::triggeredMakeCurrentImage( bool triggered )
 
 void MainWindowUIInterface::saveImage()
 {
-	if( !m_ViewerCore->getCurrentImage()->getPropMap().getPropertyAs<util::slist>("changedAttributes").size() ) {
+	if( !m_ViewerCore->getCurrentImage()->getPropMap().getPropertyAs<util::slist>( "changedAttributes" ).size() ) {
 		QMessageBox msgBox;
 		msgBox.setText( "The image that is currently selected has no changes! Won´t save anything." );
 		msgBox.exec();
@@ -151,20 +151,20 @@ void MainWindowUIInterface::saveImage()
 		msgBox.setInformativeText( "Do you want to proceed?" );
 		std::stringstream detailedText;
 		detailedText << "Changed attributes: " << std::endl;
-		BOOST_FOREACH( util::slist::const_reference attrChanged, m_ViewerCore->getCurrentImage()->getPropMap().getPropertyAs<util::slist>("changedAttributes") ) 
-		{
+		BOOST_FOREACH( util::slist::const_reference attrChanged, m_ViewerCore->getCurrentImage()->getPropMap().getPropertyAs<util::slist>( "changedAttributes" ) ) {
 			detailedText << " >> " << attrChanged << std::endl;
 		}
 		msgBox.setDetailedText( detailedText.str().c_str() );
 		msgBox.setStandardButtons( QMessageBox::Yes | QMessageBox::No );
 		msgBox.setDefaultButton( QMessageBox::No );
-		switch (msgBox.exec() ) {
-			case QMessageBox::No:
-				return;
-				break;
-			case QMessageBox::Yes:
-				isis::data::IOFactory::write( *m_ViewerCore->getCurrentImage()->getISISImage(), m_ViewerCore->getCurrentImage()->getFileNames().front(),"", "");
-				break;
+
+		switch ( msgBox.exec() ) {
+		case QMessageBox::No:
+			return;
+			break;
+		case QMessageBox::Yes:
+			isis::data::IOFactory::write( *m_ViewerCore->getCurrentImage()->getISISImage(), m_ViewerCore->getCurrentImage()->getFileNames().front(), "", "" );
+			break;
 		}
 	}
 }
@@ -174,18 +174,19 @@ void MainWindowUIInterface::saveImageAs()
 	std::stringstream fileFormats;
 	fileFormats << "Image files (" << getFileFormatsAsString( std::string( "*." ) ) << ")";
 	QString filename = QFileDialog::getSaveFileName( this,
-							tr( "Save Image As..." ),
-							m_CurrentPath,
-							tr( fileFormats.str().c_str() ) );
+					   tr( "Save Image As..." ),
+					   m_CurrentPath,
+					   tr( fileFormats.str().c_str() ) );
+
 	if( filename.size() ) {
 		isis::data::IOFactory::write( *m_ViewerCore->getCurrentImage()->getISISImage(), filename.toStdString(), "", "" );
 	}
-	
+
 }
 
 void MainWindowUIInterface::showPluginInformation()
 {
-	
+
 }
 
 

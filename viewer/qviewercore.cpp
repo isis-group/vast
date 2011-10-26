@@ -8,7 +8,7 @@ namespace viewer
 
 QViewerCore::QViewerCore( const std::string &appName, const std::string &orgName, QWidget *parent )
 	: ViewerCoreBase( ),
-	m_Parent( parent )
+	  m_Parent( parent )
 {
 	QCoreApplication::setApplicationName( QString( appName.c_str() ) );
 	QCoreApplication::setOrganizationName( QString( orgName.c_str() ) );
@@ -102,9 +102,11 @@ void QViewerCore::setShowLabels( bool l )
 void QViewerCore::settingsChanged()
 {
 	getSettings()->beginGroup( "UserProfile" );
-	if(getCurrentImage()->getImageProperties().imageType == ImageHolder::z_map ) {
+
+	if( getCurrentImage()->getImageProperties().imageType == ImageHolder::z_map ) {
 		getCurrentImage()->getPropMap().setPropertyAs<std::string>( "lut", getSettings()->value( "lut", "fallback" ).toString().toStdString() );
 	}
+
 	BOOST_FOREACH( WidgetMap::reference widget, m_WidgetMap ) {
 		widget.second->setInterpolationType( static_cast<InterpolationType>( getSettings()->value( "interpolationType", "standard_grey_values" ).toUInt() ) );
 	}
@@ -133,8 +135,8 @@ void QViewerCore::zoomChanged( float zoomFactor )
 void QViewerCore::addPlugin( boost::shared_ptr< plugin::PluginInterface > plugin )
 {
 	if( !m_Parent && plugin->isGUI() ) {
-		LOG( Runtime, error ) 
-			<< "Core does not own a parent. Before calling addPlugin/addPlugins you have to use setParentWidget!";
+		LOG( Runtime, error )
+				<< "Core does not own a parent. Before calling addPlugin/addPlugins you have to use setParentWidget!";
 	} else {
 		plugin->setViewerCore( this );
 		plugin->setParentWidget( m_Parent );
