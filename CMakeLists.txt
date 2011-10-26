@@ -22,6 +22,7 @@ set(VIEWER_FILES_HPP
 	widgets/mainWindow.hpp
 	widgets/mainWindowUIInterface.hpp
 	viewer/qviewercore.hpp
+	viewer/mainwindow.hpp
 	widgets/preferenceDialog.hpp
 )
 set(GLWIDGET_FILES_HPP

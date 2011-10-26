@@ -54,7 +54,7 @@ public:
 	void addPlugins( plugin::PluginLoader::PluginListType plugins );
 	PluginListType getPlugins() const { return m_PluginList; }
 
-	bool callPlugin( const std::string &name );
+	
 
 	void setParentWidget( QWidget *parent ) { m_Parent = parent; }
 
@@ -67,6 +67,7 @@ public Q_SLOTS:
 	virtual void setShowLabels( bool );
 	virtual void updateScene( bool center = false );
 	virtual void setAutomaticScaling( bool );
+	virtual bool callPlugin( QString name );
 
 Q_SIGNALS:
 	void emitZoomChanged( float zoom );

@@ -595,7 +595,7 @@ QWidgetImplementationBase *MainWindow::createView( QDockWidget *widget, PlaneOri
 
 void MainWindow::callPlugin( QString name )
 {
-	m_ViewerCore->callPlugin( name.toStdString() );
+	m_ViewerCore->callPlugin( name );
 }
 
 

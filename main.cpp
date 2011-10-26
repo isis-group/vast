@@ -3,17 +3,22 @@
 #include "qviewercore.hpp"
 #include <iostream>
 #include <DataStorage/io_factory.hpp>
+#include "CoreUtils/singletons.hpp"
 #include <DataStorage/image.hpp>
 #include <CoreUtils/log.hpp>
 #include "pluginloader.hpp"
 #include "color.hpp"
+#include "uicore.hpp"
 
 #include "common.hpp"
 
 int main( int argc, char *argv[] )
 {
+	
 	using namespace isis;
 	using namespace viewer;
+
+	
 	util::DefaultMsgPrint::stopBelow( warning );
 	ENABLE_LOG( data::Runtime, util::DefaultMsgPrint, error );
 	std::string appName = "vast";
@@ -69,6 +74,12 @@ int main( int argc, char *argv[] )
 	data::IOFactory::setProgressFeedback( feedback );
 	//setting graphics mode
 	app.init( argc, argv, true );
+	
+	ui::UICore *uiCore = new ui::UICore(core);
+	uiCore->showMainWindow();
+	uiCore->appendWidget( "test", "test" );
+	uiCore->appendWidget( "test1", "test1", 0,1 );
+	
 	app.setLog<ViewerLog>( app.getLLMap()[app.parameters["dViewer"]->as<util::Selection>()] );
 	app.setLog<ViewerDebug>( app.getLLMap()[app.parameters["dViewer"]->as<util::Selection>()] );
 	util::slist fileList = app.parameters["in"];
@@ -80,10 +91,6 @@ int main( int argc, char *argv[] )
 	BOOST_FOREACH ( util::slist::const_reference fileName, fileList ) {
 		std::list< data::Image > tmpList = data::IOFactory::load( fileName, app.parameters["rf"].toString(), app.parameters["rdialect"].toString() );
 		BOOST_FOREACH( std::list< data::Image >::reference imageRef, tmpList ) {
-			//          if( app.parameters["old_lipsia"] ) {
-			//              setOrientationToIdentity( imageRef );
-			//          }
-
 			imgList.push_back( imageRef );
 		}
 	}
@@ -91,20 +98,16 @@ int main( int argc, char *argv[] )
 	BOOST_FOREACH ( util::slist::const_reference fileName, zmapFileList ) {
 		std::list< data::Image > tmpList = data::IOFactory::load( fileName, app.parameters["rf"].toString(), app.parameters["rdialect"].toString() );
 		BOOST_FOREACH( std::list< data::Image >::reference imageRef, tmpList ) {
-			//          if( app.parameters["old_lipsia"] ) {
-			//              setOrientationToIdentity( imageRef );
-			//          }
-
 			zImgList.push_back( imageRef );
 		}
 	}
 	bool assamble = false;
-	MainWindowUIInterface *isisViewerMainWindow = new MainWindowUIInterface( core, wTypeMap[app.parameters["wtype"].toString()] );
+// 	MainWindowUIInterface *isisViewerMainWindow = new MainWindowUIInterface( core, wTypeMap[app.parameters["wtype"].toString()] );
 	//because some plugins may use a gui we have to pass a parent
-	core->setParentWidget( isisViewerMainWindow );
+	core->setParentWidget( uiCore->getMainWindow() );
 	//scan for plugins and hand them to the core
 	core->addPlugins( plugin::PluginLoader::get().getPlugins() );
-	isisViewerMainWindow->reloadPluginsToGUI();
+	uiCore->reloadPluginsToGUI();
 
 
 	if( app.parameters["zmap"].isSet() ) {
@@ -116,22 +119,22 @@ int main( int argc, char *argv[] )
 		}
 	}
 
-	if( app.parameters["type"].toString() == "anatomical" && app.parameters["in"].isSet() ) {
-		if( imgList.size() > 1 && app.parameters["split"] ) {
-			core->addImageList( imgList, ImageHolder::anatomical_image, false );
-			isisViewerMainWindow->assembleViewInRows();
-		} else  {
-			core->addImageList( imgList, ImageHolder::anatomical_image, true );
-		}
-
-	} else if ( app.parameters["type"].toString() == "zmap" && app.parameters["in"].isSet() ) {
-		core->addImageList( imgList, ImageHolder::z_map, true );
-	}
-
-	if( assamble ) {
-		isisViewerMainWindow->assembleViewInRows();
-	}
-
-	isisViewerMainWindow->show();
+// 	if( app.parameters["type"].toString() == "anatomical" && app.parameters["in"].isSet() ) {
+// 		if( imgList.size() > 1 && app.parameters["split"] ) {
+// 			core->addImageList( imgList, ImageHolder::anatomical_image, false );
+// 			isisViewerMainWindow->assembleViewInRows();
+// 		} else  {
+// 			core->addImageList( imgList, ImageHolder::anatomical_image, true );
+// 		}
+// 
+// 	} else if ( app.parameters["type"].toString() == "zmap" && app.parameters["in"].isSet() ) {
+// 		core->addImageList( imgList, ImageHolder::z_map, true );
+// 	}
+// 
+// 	if( assamble ) {
+// 		isisViewerMainWindow->assembleViewInRows();
+// 	}
+// 
+// 	isisViewerMainWindow->show();
 	return app.getQApplication().exec();
 }

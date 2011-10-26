@@ -152,13 +152,14 @@ void QViewerCore::addPlugins( isis::viewer::plugin::PluginLoader::PluginListType
 }
 
 
-bool QViewerCore::callPlugin( const std::string &name )
+bool QViewerCore::callPlugin( QString name )
 {
 	BOOST_FOREACH( PluginListType::const_reference plugin, m_PluginList ) {
-		if( plugin->getName() == name ) {
+		if( plugin->getName() == name.toStdString() ) {
 			return plugin->call();
 		}
 	}
+	LOG( Runtime, error ) << "No such plugin " << name.toStdString() << "!";
 	return false;
 }
 
