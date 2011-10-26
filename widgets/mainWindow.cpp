@@ -29,9 +29,6 @@ MainWindow::MainWindow( QViewerCore *core, WidgetType wType )
 	m_Toolbar = new QToolBar( this );
 
 	switch( m_WidgetType ) {
-	case type_gl:
-		m_MasterWidget = new GL::QGLWidgetImplementation( core, 0, axial );
-		break;
 	case type_qt:
 		m_MasterWidget = new qt::QImageWidgetImplementation( core, 0, axial );
 		break;
@@ -330,8 +327,6 @@ void MainWindow::imagesChanged( DataContainer images )
 	}
 	double min = roundNumber<double>( m_ViewerCore->getCurrentImage()->getMinMax().first->as<double>(), 2 );
 	double max = roundNumber<double>( m_ViewerCore->getCurrentImage()->getMinMax().second->as<double>(), 2 );
-	ui.minValueLabel->setText( QString::number( min ) );
-	ui.maxValueLabel->setText( QString::number( max ) );
 
 	if( m_ViewerCore->getCurrentImage()->getISISImage()->getSizeAsVector()[3] > 1 ) {
 		ui.timestepSpinBox->setEnabled( true );
@@ -349,23 +344,13 @@ void MainWindow::imagesChanged( DataContainer images )
 	if( m_ViewerCore->getCurrentImage()->getImageProperties().imageType == ImageHolder::anatomical_image ) {
 		ui.upperThreshold->setVisible( false );
 		ui.lowerThreshold->setVisible( false );
-		ui.maxLabel->setVisible( false );
-		ui.minLabel->setVisible( false );
-		ui.maxValueLabel->setVisible( false );
-		ui.minValueLabel->setVisible( false );
 		ui.opacity->setVisible( true );
-		ui.labelOpacity->setVisible( true );
 		ui.frame_4->setVisible( false );
 		ui.opacity->setValue( ( ui.opacity->maximum() - ui.opacity->minimum() ) * m_ViewerCore->getCurrentImage()->getPropMap().getPropertyAs<float>( "opacity" ) );
 	} else if ( m_ViewerCore->getCurrentImage()->getImageProperties().imageType == ImageHolder::z_map ) {
 		ui.upperThreshold->setVisible( true );
 		ui.lowerThreshold->setVisible( true );
-		ui.maxLabel->setVisible( true );
-		ui.minLabel->setVisible( true );
-		ui.maxValueLabel->setVisible( true );
-		ui.minValueLabel->setVisible( true );
 		ui.opacity->setVisible( false );
-		ui.labelOpacity->setVisible( false );
 	}
 
 	/*if( m_ViewerCore->widgetsAreIntitialized() ) {

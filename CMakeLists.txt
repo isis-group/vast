@@ -13,7 +13,6 @@ include_directories(widgets)
 # collecting files
 file (GLOB VIEWER_FILES_CPP  viewer/*.cpp)
 file (GLOB WIDGET_FILES_CPP widgets/*.cpp )
-file (GLOB GLWIDGET_FILES_CPP GLWidget/*.cpp )
 file (GLOB QWIDGET_FILES_CPP QImageWidget/*.cpp )
 file (GLOB UI_FILES forms/*.ui)
 file (GLOB RESOURCE_FILES resources/*.qrc)
@@ -26,7 +25,6 @@ set(VIEWER_FILES_HPP
 	widgets/preferenceDialog.hpp
 )
 set(GLWIDGET_FILES_HPP
-	GLWidget/QGLWidgetImplementation.hpp
 	QImageWidget/QImageWidgetImplementation.hpp)
 
 ##########################################################
@@ -71,7 +69,7 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR} ${ISIS_INCLUDE_DIRS})
 # qt4 stuff
 ###########################################################
 
-FIND_PACKAGE(Qt4 COMPONENTS QtCore QtGui QtOpenGL REQUIRED)
+FIND_PACKAGE(Qt4 COMPONENTS QtCore QtGui REQUIRED)
 
 set(QT_USE_QTUITOOLS TRUE)
 set(QT_USE_QTOPENGL TRUE)
@@ -86,27 +84,12 @@ QT4_WRAP_UI(vast_UIS_H ${UI_FILES})
 
 
 ###########################################################
-# opengl stuff
-###########################################################
-
-find_package(OpenGL REQUIRED)
-
-if(NOT OpenGL)
-	find_library(OpenGL "GL" PATHS "/usr/lib" "/usr/local/lib" "/usr/lib/mesa" "/usr/local/lib/mesa")
-endif(NOT OpenGL)
-
-message(STATUS "openGL library: ${OPENGL_LIBRARY}")
-
-include_directories(${OPENGL_INCLUDE_DIR})
-
-###########################################################
 # boost and common stuff
 ###########################################################
 
 FIND_PACKAGE(Boost REQUIRED)
 
 INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIR})
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/GLWidget)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/QImageWidget)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/viewer)
 
@@ -147,7 +130,6 @@ add_executable(vast main.cpp ${QWIDGET_FILES_CPP} ${GLWIDGET_FILES_CPP} ${VIEWER
 find_library(isisqt4_LIBRARY "isisAdapter_qt4")
 
 set(NEEDED_LIBS
-	${OPENGL_LIBRARY} 
 	${QT_LIBRARIES}
 	${Boost_LIBRARIES}
 	${ISIS_LIB}

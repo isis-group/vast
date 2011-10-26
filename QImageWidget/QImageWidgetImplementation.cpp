@@ -67,8 +67,6 @@ QWidgetImplementationBase *QImageWidgetImplementation::createSharedWidget( QWidg
 void QImageWidgetImplementation::addImage( const boost::shared_ptr< ImageHolder > image )
 {
 	ImageProperties imgProperties;
-	image->getPropMap().setPropertyAs<bool>( "colorMapChanged", true );
-	imgProperties.colorHandler.setImage( image );
 	imgProperties.viewPort = ViewPortType();
 	m_ImageProperties.insert( std::make_pair<boost::shared_ptr<ImageHolder> , ImageProperties >( image, imgProperties ) );
 	m_ImageVector.push_back( image );
@@ -180,19 +178,6 @@ void QImageWidgetImplementation::paintImage( boost::shared_ptr< ImageHolder > im
 		m_Painter->setRenderHint( QPainter::SmoothPixmapTransform, true );
 		break;
 	}
-
-	if( image->getImageProperties().imageType == ImageHolder::anatomical_image) {
-		imgProps.colorHandler.setLutType( static_cast<Color::LookUpTableType>(13));
-// 		imgProps.colorHandler.setLutType( static_cast<Color::LookUpTableType>( image->getPropMap().getPropertyAs<unsigned short>( "lut" ) ) );
-		imgProps.colorHandler.setOmitZeros( true );
-	} else {
-		imgProps.colorHandler.setLutType( isis::viewer::Color::standard_grey_values );
-	}
-
-	if( m_ScalingType == automatic_scaling ) {
-		imgProps.colorHandler.setOffsetAndScaling( image->getOptimalScalingPair() );
-	}
-
 	util::ivector4 mappedSizeAligned = QOrienationHandler::mapCoordsToOrientation( image->getPropMap().getPropertyAs<util::ivector4>( "alignedSize32Bit" ), image, m_PlaneOrientation );
 	isis::data::MemChunk<InternalImageType> sliceChunk( mappedSizeAligned[0], mappedSizeAligned[1] );
 
@@ -201,7 +186,8 @@ void QImageWidgetImplementation::paintImage( boost::shared_ptr< ImageHolder > im
 	QImage qImage( ( InternalImageType * ) sliceChunk.asValuePtr<InternalImageType>().getRawAddress().get(),
 				   mappedSizeAligned[0], mappedSizeAligned[1], QImage::Format_Indexed8 );
 	
-	qImage.setColorTable( m_ViewerCore->getColorHandler()->getLUTMap().at( image->getPropMap().getPropertyAs<std::string>("lut")) );
+	qImage.setColorTable( color::Color::adaptColorMapToImage(
+			m_ViewerCore->getColorHandler()->getColormapMap().at( image->getPropMap().getPropertyAs<std::string>("lut")), image ) );
 	
 	m_Painter->resetMatrix();
 
@@ -357,21 +343,6 @@ void QImageWidgetImplementation::setWidgetName( const std::string &wName )
 	setWindowTitle( QString( wName.c_str() ) );
 	m_WidgetProperties.setPropertyAs<std::string>( "widgetName", wName );
 }
-
-void QImageWidgetImplementation::setScalingType( ScalingType scaling )
-{
-	m_ScalingType = scaling;
-	BOOST_FOREACH( ImageVectorType::reference imgRef, m_ImageVector ) {
-		if( m_ScalingType == no_scaling ) {
-			m_ImageProperties.at( imgRef ).colorHandler.resetOffsetAndScaling();
-		}
-
-		imgRef->getPropMap().setPropertyAs<bool>( "colorMapChanged", true );
-	}
-
-}
-
-
 
 }
 }

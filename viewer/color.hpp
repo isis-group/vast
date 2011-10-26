@@ -22,51 +22,28 @@ namespace color
 class Color
 {
 public:
-	typedef std::map<std::string, QVector<QRgb> > LUTMapType;
+	typedef QVector<QRgb> ColormapType;
+	typedef std::map<std::string, ColormapType > ColormapMapType;
 	
-	bool addLUT( const std::string &resPath, const boost::regex &separator 
+	bool addColormap( const std::string &path, const boost::regex &separator 
 		= boost::regex("[[:space:]]+") );
 	
-	LUTMapType getLUTMap() const { return m_LutMap; }
+	ColormapMapType getColormapMap() const { return m_ColormapMap; }
 	void initStandardColormaps();
 	
 	QIcon getIcon( const std::string &lutName, size_t w, size_t h ) const;
 	
+	bool hasColormap( const std::string &name ) const;
+	ColormapType getFallbackColormap() const;
+	
+	static ColormapType adaptColorMapToImage( ColormapType colorMap, const boost::shared_ptr<ImageHolder> image, bool split = true );
+	
 	
 private:
-	LUTMapType m_LutMap;	
-	
+	ColormapMapType m_ColormapMap;
 };
-
-//*********************************************************OLD
 
 }
-class Color {
-public:
-	enum LookUpTableType { standard_grey_values = 0, zmap_standard, colormap1, colormap2, colormap3, colormap4, colormap5, colormap6, colormap7, colormap8, colormap9, colormap10, colormap11, colormap12 };
-	typedef QVector<QRgb> ColorMapType;
-
-	Color();
-	ColorMapType getColorTable() const { return m_ColorTable; }
-	void setLutType( LookUpTableType type ) { m_LutType = type; }
-	void setNumberOfElements( size_t nE ) { m_NumberOfElements = nE; }
-	void setOffsetAndScaling( std::pair<double, double> offsetScaling ) { m_OffsetScaling = offsetScaling; }
-	void resetOffsetAndScaling();
-	void setImage( const boost::shared_ptr<ImageHolder> image ) { m_ImageHolder = image; }
-	void setOmitZeros( bool omit ) { m_OmitZeros = omit; }
-
-	void update();
-private:
-	ColorMapType m_ColorTable;
-	LookUpTableType m_LutType;
-	size_t m_NumberOfElements;
-	std::pair<double, double> m_OffsetScaling;
-	boost::shared_ptr<ImageHolder> m_ImageHolder;
-	bool m_OmitZeros;
-
-};
-
-
 }
 }
 

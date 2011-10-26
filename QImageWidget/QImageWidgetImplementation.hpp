@@ -26,7 +26,6 @@ class QImageWidgetImplementation : public QWidget, public QWidgetImplementationB
 	struct ImageProperties {
 		/**scaling, offset, size**/
 		ViewPortType viewPort;
-		Color colorHandler;
 	};
 	typedef std::map<boost::shared_ptr<ImageHolder>, ImageProperties> ImagePropertiesMapType;
 
@@ -43,7 +42,6 @@ public Q_SLOTS:
 	virtual bool removeImage( const boost::shared_ptr<ImageHolder> image );
 	virtual void paintImage( boost::shared_ptr< ImageHolder > image );
 	virtual void paintCrosshair() const;
-	virtual void setScalingType( ScalingType scaling );
 
 	virtual bool lookAtPhysicalCoords( const util::fvector4 &physicalCoords );
 	virtual bool lookAtVoxelCoords( const util::ivector4 &voxelCoords );

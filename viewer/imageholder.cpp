@@ -175,6 +175,8 @@ bool ImageHolder::setImage( const data::Image &image, const ImageType &imageType
 	m_PropMap.setPropertyAs<util::ivector4>( "alignedSize32Bit", get32BitAlignedSize( m_ImageSize ) );
 	m_PropMap.setPropertyAs<bool>( "init", true );
 	m_PropMap.setPropertyAs<util::slist>( "changedAttributes", util::slist() );
+	m_PropMap.setPropertyAs<double>("offset", 0.0);
+	m_PropMap.setPropertyAs<double>("scaling", 1.0);
 	m_Image->updateOrientationMatrices();
 	return true;
 }

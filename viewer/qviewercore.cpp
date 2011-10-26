@@ -102,9 +102,11 @@ void QViewerCore::setShowLabels( bool l )
 void QViewerCore::settingsChanged()
 {
 	getSettings()->beginGroup( "UserProfile" );
-// 	getCurrentImage()->getPropMap().setPropertyAs<std::string>( "lut", getSettings()->value( "lut", 0 ).toString().toStdString() );
+	if(getCurrentImage()->getImageProperties().imageType == ImageHolder::z_map ) {
+		getCurrentImage()->getPropMap().setPropertyAs<std::string>( "lut", getSettings()->value( "lut", "fallback" ).toString().toStdString() );
+	}
 	BOOST_FOREACH( WidgetMap::reference widget, m_WidgetMap ) {
-		widget.second->setInterpolationType( static_cast<InterpolationType>( getSettings()->value( "interpolationType", 0 ).toUInt() ) );
+		widget.second->setInterpolationType( static_cast<InterpolationType>( getSettings()->value( "interpolationType", "standard_grey_values" ).toUInt() ) );
 	}
 	getSettings()->endGroup();
 }
@@ -116,15 +118,7 @@ void QViewerCore::updateScene( bool center )
 
 void QViewerCore::setAutomaticScaling( bool s )
 {
-	BOOST_FOREACH( WidgetMap::reference widget, m_WidgetMap ) {
-		if( s ) {
-			widget.second->setScalingType( automatic_scaling );
-		} else {
-			widget.second->setScalingType( no_scaling );
-		}
-
-		widget.second->updateScene( false );
-	}
+#warning implement this
 }
 
 

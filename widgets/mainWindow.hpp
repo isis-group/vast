@@ -11,7 +11,6 @@
 #include "mainWindowBase.hpp"
 #include "qviewercore.hpp"
 
-#include "QGLWidgetImplementation.hpp"
 #include "QImageWidgetImplementation.hpp"
 
 #include <CoreUtils/type.hpp>
