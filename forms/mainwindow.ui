@@ -30,6 +30,12 @@
         </rect>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout">
+        <property name="spacing">
+         <number>0</number>
+        </property>
+        <property name="margin">
+         <number>0</number>
+        </property>
         <item>
          <layout class="QGridLayout" name="topScrollAreaGridLayout">
           <property name="horizontalSpacing">
@@ -38,8 +44,8 @@
          </layout>
         </item>
         <item>
-         <layout class="QGridLayout" name="widgetGridLayout">
-          <property name="horizontalSpacing">
+         <layout class="QGridLayout" name="centralGridLayout">
+          <property name="spacing">
            <number>0</number>
           </property>
          </layout>
@@ -57,7 +63,10 @@
     </item>
     <item row="2" column="1">
      <layout class="QGridLayout" name="bottomGridLayout">
-      <property name="horizontalSpacing">
+      <property name="sizeConstraint">
+       <enum>QLayout::SetDefaultConstraint</enum>
+      </property>
+      <property name="spacing">
        <number>0</number>
       </property>
      </layout>

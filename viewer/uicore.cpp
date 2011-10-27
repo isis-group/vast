@@ -9,7 +9,7 @@ namespace ui {
 	
 	
 UICore::UICore( QViewerCore *core )
-	: m_MainWindow( new MainWindow() ),
+	: m_MainWindow( new MainWindow( core ) ),
 	m_Core( core )
 {
 	m_UICoreProperties.setPropertyAs<uint16_t>("maxWidgetHeight", 200);
@@ -19,11 +19,36 @@ UICore::UICore( QViewerCore *core )
 	m_ImageStackWidget = new widget::ImageStackWidget( m_MainWindow, core );
 }
 
-	
+void UICore::setOptionPosition(UICore::OptionPosition pos)
+{
+	switch (pos) {
+	case bottom:
+		m_MainWindow->getUI().bottomGridLayout->addWidget( createDockingEnsemble( m_ImageStackWidget ), 0,1 );
+		m_MainWindow->getUI().bottomGridLayout->addWidget( createDockingEnsemble( m_VoxelInformationWidget ), 0,0 );
+		break;
+	case top:
+		m_MainWindow->getUI().topGridLayout->addWidget( createDockingEnsemble( m_ImageStackWidget ), 0,1 );
+		m_MainWindow->getUI().topGridLayout->addWidget( createDockingEnsemble( m_VoxelInformationWidget ), 0,0 );
+		break;
+	case central11:
+		QGridLayout *layout = new QGridLayout(  );
+		layout->setVerticalSpacing(0);
+		layout->setHorizontalSpacing(0);
+		layout->setMargin(0);
+		layout->setContentsMargins(0,0,0,0);
+		QFrame * frame = new QFrame( m_MainWindow );
+		frame->setLayout( layout );
+		m_MainWindow->getUI().centralGridLayout->addWidget( frame, 1, 1);
+		layout->addWidget( createDockingEnsemble( m_VoxelInformationWidget ), 0,0);
+		layout->addWidget( createDockingEnsemble( m_ImageStackWidget ), 1,0);
+		break;
+	}
+}
+
+
 void UICore::showMainWindow()
 {
-	m_MainWindow->getUI().bottomGridLayout->addWidget( createDockingEnsemble( m_ImageStackWidget ), 0,1 );
-	m_MainWindow->getUI().bottomGridLayout->addWidget( createDockingEnsemble( m_VoxelInformationWidget ), 0,0 );
+
 	m_MainWindow->show();
 
 } 
@@ -47,13 +72,13 @@ QDockWidget* UICore::createDockingEnsemble( QWidget* widget )
 UICore::RowType UICore::appendWidgetRow(const std::string& widgetType )
 {
 	RowType row;
-	int currentRow = m_MainWindow->getUI().widgetGridLayout->rowCount();
+	int currentRow = m_MainWindow->getUI().centralGridLayout->rowCount();
 	row[0] =  createWidgetEnsemble( widgetType, axial );
 	row[1] =  createWidgetEnsemble( widgetType, sagittal );
 	row[2] =  createWidgetEnsemble( widgetType, coronal );
-	m_MainWindow->getUI().widgetGridLayout->addWidget( row[0].dockWidget, currentRow, 0 );
-	m_MainWindow->getUI().widgetGridLayout->addWidget( row[1].dockWidget, currentRow, 1 );
-	m_MainWindow->getUI().widgetGridLayout->addWidget( row[2].dockWidget, currentRow, 2 );
+	m_MainWindow->getUI().centralGridLayout->addWidget( row[0].dockWidget, currentRow, 0 );
+	m_MainWindow->getUI().centralGridLayout->addWidget( row[1].dockWidget, currentRow, 1 );
+	m_MainWindow->getUI().centralGridLayout->addWidget( row[2].dockWidget, currentRow, 2 );
 	m_EnsembleMap[row[0].viewWidget] = row[0];
 	m_EnsembleMap[row[1].viewWidget] = row[1];
 	m_EnsembleMap[row[2].viewWidget] = row[2];
@@ -65,14 +90,14 @@ UICore::RowType UICore::appendWidgetRow(const std::string& widgetType )
 UICore::WidgetEnsemble UICore::appendWidget( const std::string& widgetType, PlaneOrientation planeOrientation)
 {
 	WidgetEnsemble ret = createWidgetEnsemble( widgetType, planeOrientation);
-	m_MainWindow->getUI().widgetGridLayout->addWidget( ret.dockWidget );
+	m_MainWindow->getUI().centralGridLayout->addWidget( ret.dockWidget );
 	return ret;
 }
 
 UICore::WidgetEnsemble UICore::appendWidget( const std::string& widgetType, int row, int column, PlaneOrientation planeOrientation, Qt::Alignment alignment )
 {
 	WidgetEnsemble ret = createWidgetEnsemble( widgetType, planeOrientation);
-	m_MainWindow->getUI().widgetGridLayout->addWidget( ret.dockWidget, row, column, alignment );
+	m_MainWindow->getUI().centralGridLayout->addWidget( ret.dockWidget, row, column, alignment );
 	return ret;
 }
 
@@ -81,7 +106,7 @@ bool UICore::removeWidget(const QWidgetImplementationBase *widget )
 {
 	EnsembleMapType::const_iterator iter = m_EnsembleMap.find( widget );
 	if( iter != m_EnsembleMap.end() ) {
-		m_MainWindow->getUI().widgetGridLayout->removeWidget( iter->second.dockWidget );
+		m_MainWindow->getUI().centralGridLayout->removeWidget( iter->second.dockWidget );
 		m_EnsembleMap.erase(widget);
 		m_ViewWidgetList.erase( std::find( m_ViewWidgetList.begin(), m_ViewWidgetList.end(), widget ) );
 		return true;
@@ -123,15 +148,14 @@ ui::UICore::WidgetEnsemble UICore::createWidgetEnsemble( const std::string& widg
 
 void UICore::reloadPluginsToGUI()
 {
-	m_MainWindow->reloadPluginsToGUI( m_Core );
+	m_MainWindow->reloadPluginsToGUI();
 }
 
 void UICore::synchronize()
 {
 	m_ImageStackWidget->updateImageStack( );
-	
+	m_VoxelInformationWidget->synchronize();
 
-	
 	
 }
 

@@ -97,10 +97,15 @@ int main( int argc, char *argv[] )
 			zImgList.push_back( imageRef );
 		}
 	}
+	
+//*****************************************************************************************
+//distribution of images
+//*****************************************************************************************
+
 	typedef std::list< boost::shared_ptr<ImageHolder > >::const_reference ImageListRef;
 	
 	//particular distribution of images in widgets
-	if( app.parameters["zmap"].isSet() && app.parameters["split"].isSet() ) {
+	if( app.parameters["zmap"].isSet() && zImgList.size() > 1 ) {
 		unsigned short index = 0;
 		BOOST_FOREACH( ImageListRef image, core->addImageList( zImgList, ImageHolder::z_map ) )
 		{
@@ -118,31 +123,45 @@ int main( int argc, char *argv[] )
 			}
 			index++;
 		}
-	
-			
-			
+		uiCore->setOptionPosition( isis::viewer::ui::UICore::bottom );
+	//only anatomical images with split option was specified
+	} else if ( app.parameters["in"].isSet() && app.parameters["split"].isSet() ) {
+		unsigned short index = 0;
+		BOOST_FOREACH( ImageListRef image, core->addImageList( imgList, ImageHolder::anatomical_image ) )
+		{
+			QWidgetImplementationBase *axialWidget = uiCore->appendWidget("", index, 0, axial).viewWidget;
+			QWidgetImplementationBase *sagittalWidget = uiCore->appendWidget("", index, 1, sagittal).viewWidget;
+			QWidgetImplementationBase *coronalWidget = uiCore->appendWidget("", index, 2, coronal).viewWidget;
+			core->attachImageToWidget( image, axialWidget );
+			core->attachImageToWidget( image, sagittalWidget );
+			core->attachImageToWidget( image, coronalWidget );
+			index++;
+		}
+		uiCore->setOptionPosition( isis::viewer::ui::UICore::bottom );
+	} else if ( app.parameters["in"].isSet() || app.parameters["zmap"].isSet() ) {
+		QWidgetImplementationBase *axialWidget = uiCore->appendWidget("", 0, 0, axial).viewWidget;
+		QWidgetImplementationBase *sagittalWidget = uiCore->appendWidget("", 0, 1, sagittal).viewWidget;
+		QWidgetImplementationBase *coronalWidget = uiCore->appendWidget("", 1, 0, coronal).viewWidget;
+		BOOST_FOREACH( ImageListRef image, core->addImageList( imgList, ImageHolder::anatomical_image ) )
+		{
+			core->attachImageToWidget( image, axialWidget );
+			core->attachImageToWidget( image, sagittalWidget );
+			core->attachImageToWidget( image, coronalWidget );
+		}
+		BOOST_FOREACH( ImageListRef image, core->addImageList( zImgList, ImageHolder::z_map	) )
+		{
+			core->attachImageToWidget( image, axialWidget );
+			core->attachImageToWidget( image, sagittalWidget );
+			core->attachImageToWidget( image, coronalWidget );
+		}
+		uiCore->setOptionPosition( isis::viewer::ui::UICore::central11 );
+		
 	}
+	
 	
 	
 	uiCore->synchronize();
 	uiCore->showMainWindow();
 
-// 	if( app.parameters["type"].toString() == "anatomical" && app.parameters["in"].isSet() ) {
-// 		if( imgList.size() > 1 && app.parameters["split"] ) {
-// 			core->addImageList( imgList, ImageHolder::anatomical_image, false );
-// 			isisViewerMainWindow->assembleViewInRows();
-// 		} else  {
-// 			core->addImageList( imgList, ImageHolder::anatomical_image, true );
-// 		}
-// 
-// 	} else if ( app.parameters["type"].toString() == "zmap" && app.parameters["in"].isSet() ) {
-// 		core->addImageList( imgList, ImageHolder::z_map, true );
-// 	}
-// 
-// 	if( assamble ) {
-// 		isisViewerMainWindow->assembleViewInRows();
-// 	}
-// 
-// 	isisViewerMainWindow->show();
 	return app.getQApplication().exec();
 }

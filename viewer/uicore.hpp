@@ -15,6 +15,7 @@ namespace ui {
 class UICore 
 {
 public:
+	enum OptionPosition { bottom, top, left, right, central11 };
 	struct WidgetEnsemble
 	{
 		QDockWidget *dockWidget;
@@ -31,7 +32,8 @@ public:
 	UICore( QViewerCore *core );
 	
 	void showMainWindow();
-	MainWindow *getMainWindow() const  { return m_MainWindow; }
+	const MainWindow *getMainWindow() const  { return m_MainWindow; }
+	MainWindow *getMainWindow() { return m_MainWindow; }
 	
 	RowListType getRowList() const { return m_RowList; }
 	
@@ -50,6 +52,9 @@ public:
 	
 	virtual bool removeWidget( const QWidgetImplementationBase *widget );
 	virtual ~UICore() {}
+	
+	virtual void setOptionPosition( OptionPosition pos = bottom );
+	
 	
 public Q_SLOTS:
 	virtual void reloadPluginsToGUI();

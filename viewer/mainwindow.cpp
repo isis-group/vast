@@ -7,8 +7,8 @@ namespace isis {
 namespace viewer {
 namespace ui {
 	
-MainWindow::MainWindow( QWidget *parent ) :
-	QMainWindow( parent )
+MainWindow::MainWindow( QViewerCore *core ) :
+	m_Core(core)
 {
 	m_UI.setupUi(this);
 	setupBasicElements();
@@ -22,16 +22,16 @@ void MainWindow::setupBasicElements()
 	
 }
 
-void MainWindow::reloadPluginsToGUI(QViewerCore* core)
+void MainWindow::reloadPluginsToGUI()
 {
 	//adding all processes to the process (plugin) menu and connect the action to the respective call functions
 	QMenu *processMenu = new QMenu( QString( "Plugins" ) );
 
-	if( core->getPlugins().size() ) {
+	if( m_Core->getPlugins().size() ) {
 		getUI().menubar->addMenu( processMenu );
 
 		QSignalMapper *signalMapper = new QSignalMapper( this );
-		BOOST_FOREACH( ViewerCoreBase::PluginListType::const_reference plugin, core->getPlugins() ) {
+		BOOST_FOREACH( ViewerCoreBase::PluginListType::const_reference plugin, m_Core->getPlugins() ) {
 			std::list<std::string> sepName = isis::util::stringToList<std::string>( plugin->getName(), boost::regex( "/" ) );
 			QMenu *tmpMenu = processMenu;
 			std::list<std::string>::iterator iter = sepName.begin();
@@ -56,7 +56,7 @@ void MainWindow::reloadPluginsToGUI(QViewerCore* core)
 			connect( processAction, SIGNAL( triggered() ), signalMapper, SLOT( map() ) );
 
 		}
-		connect( signalMapper, SIGNAL( mapped( QString ) ), core, SLOT( callPlugin( QString ) ) );
+		connect( signalMapper, SIGNAL( mapped( QString ) ), m_Core, SLOT( callPlugin( QString ) ) );
 	}
 }
 

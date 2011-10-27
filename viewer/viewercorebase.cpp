@@ -21,7 +21,6 @@ ViewerCoreBase::ViewerCoreBase( )
 ViewerCoreBase::ImageListType ViewerCoreBase::addImageList( const std::list< data::Image > imageList, const ImageHolder::ImageType &imageType )
 {
 	ImageListType retList;
-
 	if( !imageList.empty() ) {
 		BOOST_FOREACH( std::list< data::Image >::const_reference imageRef, imageList ) {
 			boost::shared_ptr< ImageHolder > imageHolder = m_DataContainer.addImage( imageRef, imageType );
@@ -30,7 +29,7 @@ ViewerCoreBase::ImageListType ViewerCoreBase::addImageList( const std::list< dat
 		}
 		setCurrentImage( m_DataContainer.begin()->second );
 	} else {
-		LOG( Runtime, warning ) << "The image list passed to the core is empty!";
+		LOG( Runtime, info ) << "The image list passed to the core is empty!";
 	}
 	return retList;
 }
