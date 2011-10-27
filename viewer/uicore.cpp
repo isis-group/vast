@@ -8,20 +8,40 @@ namespace viewer {
 namespace ui {
 	
 	
-	
 UICore::UICore( QViewerCore *core )
 	: m_MainWindow( new MainWindow() ),
 	m_Core( core )
 {
 	m_UICoreProperties.setPropertyAs<uint16_t>("maxWidgetHeight", 200);
 	m_UICoreProperties.setPropertyAs<uint16_t>("maxWidgetWidth", 200);
+	
+	m_VoxelInformationWidget = new widget::VoxelInformationWidget( m_MainWindow, core );
+	m_ImageStackWidget = new widget::ImageStackWidget( m_MainWindow, core );
 }
 
 	
 void UICore::showMainWindow()
 {
+	m_MainWindow->getUI().bottomGridLayout->addWidget( createDockingEnsemble( m_ImageStackWidget ), 0,1 );
+	m_MainWindow->getUI().bottomGridLayout->addWidget( createDockingEnsemble( m_VoxelInformationWidget ), 0,0 );
 	m_MainWindow->show();
+
 } 
+
+
+QDockWidget* UICore::createDockingEnsemble( QWidget* widget )
+{
+	QDockWidget *dockWidget = new QDockWidget( m_MainWindow );
+	dockWidget->setFloating( false );
+	widget->setContentsMargins(0,0,0,0);
+	dockWidget->setAllowedAreas( Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea | Qt::TopDockWidgetArea | Qt::BottomDockWidgetArea );
+	dockWidget->setFeatures( QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable );
+	dockWidget->setSizePolicy( QSizePolicy( QSizePolicy::Maximum, QSizePolicy::Maximum ) );
+	dockWidget->setWidget( widget );
+	dockWidget->setContentsMargins(0,0,0,0);
+	return dockWidget;
+	
+}
 
 
 UICore::RowType UICore::appendWidgetRow(const std::string& widgetType )
@@ -49,10 +69,10 @@ UICore::WidgetEnsemble UICore::appendWidget( const std::string& widgetType, Plan
 	return ret;
 }
 
-UICore::WidgetEnsemble UICore::appendWidget( const std::string& widgetType, int row, int column, PlaneOrientation planeOrientation)
+UICore::WidgetEnsemble UICore::appendWidget( const std::string& widgetType, int row, int column, PlaneOrientation planeOrientation, Qt::Alignment alignment )
 {
 	WidgetEnsemble ret = createWidgetEnsemble( widgetType, planeOrientation);
-	m_MainWindow->getUI().widgetGridLayout->addWidget( ret.dockWidget, row, column );
+	m_MainWindow->getUI().widgetGridLayout->addWidget( ret.dockWidget, row, column, alignment );
 	return ret;
 }
 
@@ -76,16 +96,14 @@ bool UICore::removeWidget(const QWidgetImplementationBase *widget )
 
 ui::UICore::WidgetEnsemble UICore::createWidgetEnsemble( const std::string& widgetType, PlaneOrientation planeOrientation )
 {
-	QDockWidget *dockWidget = new QDockWidget( m_MainWindow );
-	dockWidget->setFloating( false );
-	dockWidget->setAllowedAreas( Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea | Qt::TopDockWidgetArea | Qt::BottomDockWidgetArea );
-	dockWidget->setFeatures( QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable );
-	dockWidget->setSizePolicy( QSizePolicy( QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding ) );
+	
+	QFrame *frameWidget = new QFrame();
+	
+	QDockWidget *dockWidget = createDockingEnsemble(frameWidget);
 	dockWidget->setMinimumHeight( m_UICoreProperties.getPropertyAs<uint16_t>("maxWidgetHeight") );
 	dockWidget->setMinimumWidth( m_UICoreProperties.getPropertyAs<uint16_t>("maxWidgetWidth") );
-	
-	QFrame *frameWidget = new QFrame( dockWidget );
 	dockWidget->setWidget( frameWidget );
+	frameWidget->setParent( dockWidget );
 
 #warning this has to be done with the help of a widget factor. nasty this way
 	QWidgetImplementationBase *viewWidget = new qt::QImageWidgetImplementation(m_Core, frameWidget, planeOrientation );
@@ -107,6 +125,16 @@ void UICore::reloadPluginsToGUI()
 {
 	m_MainWindow->reloadPluginsToGUI( m_Core );
 }
+
+void UICore::synchronize()
+{
+	m_ImageStackWidget->updateImageStack( );
+	
+
+	
+	
+}
+
 
 	
 }}}

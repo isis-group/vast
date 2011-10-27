@@ -15,7 +15,7 @@
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout_2">
-    <item row="1" column="0">
+    <item row="1" column="1">
      <widget class="QScrollArea" name="scrollArea">
       <property name="widgetResizable">
        <bool>true</bool>
@@ -25,20 +25,51 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>778</width>
-         <height>521</height>
+         <width>762</width>
+         <height>513</height>
         </rect>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout">
         <item>
-         <layout class="QGridLayout" name="widgetGridLayout"/>
+         <layout class="QGridLayout" name="topScrollAreaGridLayout">
+          <property name="horizontalSpacing">
+           <number>0</number>
+          </property>
+         </layout>
+        </item>
+        <item>
+         <layout class="QGridLayout" name="widgetGridLayout">
+          <property name="horizontalSpacing">
+           <number>0</number>
+          </property>
+         </layout>
+        </item>
+        <item>
+         <layout class="QGridLayout" name="bottomScrollAreaGridLayout">
+          <property name="horizontalSpacing">
+           <number>0</number>
+          </property>
+         </layout>
         </item>
        </layout>
       </widget>
      </widget>
     </item>
-    <item row="2" column="0">
-     <layout class="QGridLayout" name="optionGridLayout"/>
+    <item row="2" column="1">
+     <layout class="QGridLayout" name="bottomGridLayout">
+      <property name="horizontalSpacing">
+       <number>0</number>
+      </property>
+     </layout>
+    </item>
+    <item row="0" column="1">
+     <layout class="QGridLayout" name="topGridLayout"/>
+    </item>
+    <item row="1" column="0">
+     <layout class="QGridLayout" name="leftGridLayout"/>
+    </item>
+    <item row="1" column="2">
+     <layout class="QGridLayout" name="rightGridLayout"/>
     </item>
    </layout>
   </widget>

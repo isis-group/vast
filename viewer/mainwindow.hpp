@@ -22,6 +22,8 @@ public:
 	
 	void reloadPluginsToGUI( QViewerCore *core );
 	
+	
+	
 protected:
 	virtual void setupBasicElements();
 private:

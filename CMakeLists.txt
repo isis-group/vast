@@ -24,7 +24,10 @@ set(VIEWER_FILES_HPP
 	viewer/qviewercore.hpp
 	viewer/mainwindow.hpp
 	widgets/preferenceDialog.hpp
+	widgets/voxelInformationWidget.hpp
+	widgets/imageStackWidget.hpp
 )
+
 set(GLWIDGET_FILES_HPP
 	QImageWidget/QImageWidgetImplementation.hpp)
 

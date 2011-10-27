@@ -97,21 +97,34 @@ int main( int argc, char *argv[] )
 			zImgList.push_back( imageRef );
 		}
 	}
+	typedef std::list< boost::shared_ptr<ImageHolder > >::const_reference ImageListRef;
 	
-	if( app.parameters["zmap"].isSet() ) {
-		typedef std::list< boost::shared_ptr<ImageHolder > >::const_reference ImageListRef;
+	//particular distribution of images in widgets
+	if( app.parameters["zmap"].isSet() && app.parameters["split"].isSet() ) {
 		unsigned short index = 0;
 		BOOST_FOREACH( ImageListRef image, core->addImageList( zImgList, ImageHolder::z_map ) )
 		{
-			core->attachImageToWidget( image, uiCore->appendWidget("", index, 0, axial).viewWidget );
-			core->attachImageToWidget( image, uiCore->appendWidget("", index, 1, sagittal).viewWidget );
-			core->attachImageToWidget( image, uiCore->appendWidget("", index, 2, coronal ).viewWidget );
+			QWidgetImplementationBase *axialWidget = uiCore->appendWidget("", index, 0, axial).viewWidget;
+			QWidgetImplementationBase *sagittalWidget = uiCore->appendWidget("", index, 1, sagittal).viewWidget;
+			QWidgetImplementationBase *coronalWidget = uiCore->appendWidget("", index, 2, coronal).viewWidget;
+			core->attachImageToWidget( image, axialWidget );
+			core->attachImageToWidget( image, sagittalWidget );
+			core->attachImageToWidget( image, coronalWidget );
+			if( app.parameters["in"].isSet() ) {	
+				boost::shared_ptr<ImageHolder> anatomicalImage = core->addImage( imgList.front(), ImageHolder::anatomical_image);
+				core->attachImageToWidget( anatomicalImage, axialWidget );
+				core->attachImageToWidget( anatomicalImage, sagittalWidget );
+				core->attachImageToWidget( anatomicalImage, coronalWidget );
+			}
 			index++;
 		}
+	
+			
+			
 	}
 	
 	
-	
+	uiCore->synchronize();
 	uiCore->showMainWindow();
 
 // 	if( app.parameters["type"].toString() == "anatomical" && app.parameters["in"].isSet() ) {

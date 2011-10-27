@@ -35,10 +35,12 @@ ViewerCoreBase::ImageListType ViewerCoreBase::addImageList( const std::list< dat
 	return retList;
 }
 
-void ViewerCoreBase::addImage( const isis::data::Image &image, const isis::viewer::ImageHolder::ImageType &imageType )
+boost::shared_ptr<ImageHolder> ViewerCoreBase::addImage( const isis::data::Image &image, const isis::viewer::ImageHolder::ImageType &imageType )
 {
-	m_ImageList.push_back( m_DataContainer.addImage( image, imageType ) );
+	boost::shared_ptr<ImageHolder> retImage = m_DataContainer.addImage( image, imageType );
+	m_ImageList.push_back(retImage );
 	setCurrentImage( m_DataContainer.begin()->second );
+	return retImage;
 }
 
 
