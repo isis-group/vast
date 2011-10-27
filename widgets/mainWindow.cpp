@@ -400,7 +400,7 @@ void MainWindow::openImageAs( ImageHolder::ImageType type )
 				imgList.push_back( image );
 			}
 		}
-		m_ViewerCore->addImageList( imgList, type, true );
+		m_ViewerCore->addImageList( imgList, type );
 		m_ViewerCore->updateScene( isFirstImage );
 	}
 }
@@ -413,7 +413,7 @@ void MainWindow::openDICOMDir()
 	if( dir.size() ) {
 		m_CurrentPath = dir;
 		bool isFirstImage = m_ViewerCore->getDataContainer().size() == 0;
-		m_ViewerCore->addImageList( data::IOFactory::load( dir.toStdString(), "", "" ), ImageHolder::anatomical_image, true );
+		m_ViewerCore->addImageList( data::IOFactory::load( dir.toStdString(), "", "" ), ImageHolder::anatomical_image);
 		m_ViewerCore->updateScene();
 
 	}

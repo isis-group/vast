@@ -54,37 +54,16 @@ void QViewerCore::timestepChanged( int timestep )
 }
 
 
-void QViewerCore::addImageList( const std::list< data::Image > imageList, const ImageHolder::ImageType &imageType, bool passToWidgets )
+void QViewerCore::addImageList( const std::list< data::Image > imageList, const ImageHolder::ImageType &imageType )
 {
-	std::list<boost::shared_ptr<ImageHolder> > imageHolderList =
-		isis::viewer::ViewerCoreBase::addImageList( imageList, imageType );
-
-	if( passToWidgets ) {
-		BOOST_FOREACH( WidgetMap::reference widget, m_WidgetMap ) {
-			BOOST_FOREACH( std::list<boost::shared_ptr<ImageHolder> >::const_reference data, imageHolderList ) {
-				widget.second->addImage( data );
-			}
-		}
-		emitImagesChanged( getDataContainer() );
-	}
-
+	isis::viewer::ViewerCoreBase::addImageList( imageList, imageType );
 	settingsChanged();
 
 }
 
-void QViewerCore::setImageList( const std::list< data::Image > imageList, const ImageHolder::ImageType &imageType, bool passToWidgets  )
+void QViewerCore::setImageList( const std::list< data::Image > imageList, const ImageHolder::ImageType &imageType  )
 {
 	isis::viewer::ViewerCoreBase::setImageList( imageList, imageType );
-
-	if( passToWidgets ) {
-		BOOST_FOREACH( WidgetMap::reference widget, m_WidgetMap ) {
-			BOOST_FOREACH( DataContainer::const_reference data, getDataContainer() ) {
-				widget.second->addImage( data.second );
-			}
-		}
-		emitImagesChanged( getDataContainer() );
-	}
-
 	settingsChanged();
 
 

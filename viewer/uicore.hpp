@@ -38,6 +38,8 @@ public:
 	virtual bool appendWidget( const std::string &name, const std::string &widgetType, PlaneOrientation planeOrientation = axial );
 	virtual bool appendWidget( const std::string &name, const std::string &widgetType, int row, int column, PlaneOrientation planeOrientation = axial );
 	
+	virtual bool appendWidgetRow( const std::string name, const std::string &widgetType );
+	
 	virtual bool removeWidget( const std::string &name );
 	
 	virtual void reloadPluginsToGUI();
@@ -51,7 +53,6 @@ private:
 	MainWindow *m_MainWindow;
 	
 	ViewWidgetMapType m_ViewWidgetMap;
-	
 	util::PropertyMap m_UICoreProperties;
 };
 	

@@ -23,6 +23,21 @@ void UICore::showMainWindow()
 	m_MainWindow->show();
 }
 
+bool UICore::appendWidgetRow(const std::string name, const std::string& widgetType)
+{
+	int currentRow = m_MainWindow->getUI().widgetGridLayout->rowCount();
+	std::stringstream nameAxial;
+	std::stringstream nameSagittal;
+	std::stringstream nameCoronal;
+	nameAxial << name << "_" << currentRow << "_axial";
+	nameSagittal << name << "_" << currentRow << "_sagittal";
+	nameCoronal << name << "_" << currentRow << "_coronal";
+	m_MainWindow->getUI().widgetGridLayout->addWidget( createWidgetEnsemble( nameAxial.str(), widgetType, axial ), currentRow, 0 );
+	m_MainWindow->getUI().widgetGridLayout->addWidget( createWidgetEnsemble( nameSagittal.str(), widgetType, sagittal ), currentRow, 1 );
+	m_MainWindow->getUI().widgetGridLayout->addWidget( createWidgetEnsemble( nameCoronal.str(), widgetType, coronal ), currentRow, 2 );
+	
+}
+
 
 bool UICore::appendWidget(const std::string& name, const std::string& widgetType, PlaneOrientation planeOrientation)
 {
@@ -33,6 +48,7 @@ bool UICore::appendWidget(const std::string& name, const std::string& widgetType
 {
 	m_MainWindow->getUI().widgetGridLayout->addWidget( createWidgetEnsemble( name, widgetType, planeOrientation ), row, column );
 }
+
 
 bool UICore::removeWidget(const std::string& name)
 {
@@ -49,7 +65,7 @@ bool UICore::removeWidget(const std::string& name)
 
 QDockWidget* UICore::createWidgetEnsemble( const std::string &name, const std::string& widgetType, PlaneOrientation planeOrientation )
 {
-	QDockWidget *dockWidget = new QDockWidget( QString(name.c_str()), m_MainWindow );
+	QDockWidget *dockWidget = new QDockWidget( m_MainWindow );
 	dockWidget->setFloating( false );
 	dockWidget->setAllowedAreas( Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea | Qt::TopDockWidgetArea | Qt::BottomDockWidgetArea );
 	dockWidget->setFeatures( QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable );

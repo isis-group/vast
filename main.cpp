@@ -33,9 +33,6 @@ int main( int argc, char *argv[] )
 	wTypeMap.insert( std::make_pair<std::string, WidgetType>( "qt", type_qt ) );
 	wTypes.set( "qt" );
 	dbg_levels.set( "warning" );
-	util::Selection image_types( "anatomical,zmap" );
-	image_types.set( "anatomical" );
-
 	qt4::IOQtApplication app( appName.c_str(), false, false, std::string( "raster" ) );
 
 	std::cout << "v" << core->getVersion() << " ( isis core: " << app.getCoreVersion() << " )" << std::endl;
@@ -45,9 +42,6 @@ int main( int argc, char *argv[] )
 	app.parameters["zmap"] = util::slist();
 	app.parameters["zmap"].needed() = false;
 	app.parameters["zmap"].setDescription( "The input image file list is interpreted as zmaps. " );
-	app.parameters["type"] = image_types;
-	app.parameters["type"].needed() = false;
-	app.parameters["type"].setDescription( "The type as what the image should be interpreted." );
 	app.parameters["dViewer"] = dbg_levels;
 	app.parameters["dViewer"].setDescription( "Debugging level for the Viewer module" );
 	app.parameters["dViewer"].hidden() = true;
@@ -76,10 +70,12 @@ int main( int argc, char *argv[] )
 	app.init( argc, argv, true );
 	
 	ui::UICore *uiCore = new ui::UICore(core);
-	uiCore->showMainWindow();
-	uiCore->appendWidget( "test", "test" );
-	uiCore->appendWidget( "test1", "test1", 0,1 );
-	
+	//because some plugins may use a gui we have to pass a parent
+	core->setParentWidget( uiCore->getMainWindow() );
+	//scan for plugins and hand them to the core
+	core->addPlugins( plugin::PluginLoader::get().getPlugins() );
+	uiCore->reloadPluginsToGUI();
+
 	app.setLog<ViewerLog>( app.getLLMap()[app.parameters["dViewer"]->as<util::Selection>()] );
 	app.setLog<ViewerDebug>( app.getLLMap()[app.parameters["dViewer"]->as<util::Selection>()] );
 	util::slist fileList = app.parameters["in"];
@@ -102,22 +98,14 @@ int main( int argc, char *argv[] )
 		}
 	}
 	bool assamble = false;
-// 	MainWindowUIInterface *isisViewerMainWindow = new MainWindowUIInterface( core, wTypeMap[app.parameters["wtype"].toString()] );
-	//because some plugins may use a gui we have to pass a parent
-	core->setParentWidget( uiCore->getMainWindow() );
-	//scan for plugins and hand them to the core
-	core->addPlugins( plugin::PluginLoader::get().getPlugins() );
-	uiCore->reloadPluginsToGUI();
-
-
+	
 	if( app.parameters["zmap"].isSet() ) {
-		if( app.parameters["split"] && zImgList.size() > 1 ) {
-			core->addImageList( zImgList, ImageHolder::z_map, false );
-			assamble = true;
-		} else {
-			core->addImageList( zImgList, ImageHolder::z_map, true );
+		BOOST_FOREACH( std::list< data::Image >::const_reference image, zImgList ) {
+			uiCore->appendWidgetRow( "zmap", "" );
 		}
+		core->addImageList( zImgList, ImageHolder::z_map );
 	}
+	uiCore->showMainWindow();
 
 // 	if( app.parameters["type"].toString() == "anatomical" && app.parameters["in"].isSet() ) {
 // 		if( imgList.size() > 1 && app.parameters["split"] ) {
