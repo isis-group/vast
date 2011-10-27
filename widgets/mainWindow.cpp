@@ -35,13 +35,13 @@ MainWindow::MainWindow( QViewerCore *core, WidgetType wType )
 	}
 
 	m_AxialWidget =  m_MasterWidget->createSharedWidget( ui.axialWidget, axial );
-	m_ViewerCore->registerWidget( "axialView", m_AxialWidget );
+	m_ViewerCore->registerWidget( m_AxialWidget );
 
 	m_CoronalWidget = m_MasterWidget->createSharedWidget( ui.coronalWidget, coronal );
-	m_ViewerCore->registerWidget( "coronalView", m_CoronalWidget );
+	m_ViewerCore->registerWidget( m_CoronalWidget );
 
 	m_SagittalWidget = m_MasterWidget->createSharedWidget( ui.sagittalWidget, sagittal );
-	m_ViewerCore->registerWidget( "sagittalView", m_SagittalWidget );
+	m_ViewerCore->registerWidget( m_SagittalWidget );
 
 	setInitialState();
 	loadSettings();
@@ -476,8 +476,8 @@ void MainWindow::upperThresholdChanged( int upperThreshold )
 void MainWindow::interpolationChanged( int index )
 {
 	InterpolationType inter = static_cast<InterpolationType>( index );
-	BOOST_FOREACH( QViewerCore::WidgetMap::reference widget, m_ViewerCore->getWidgets() ) {
-		widget.second->setInterpolationType( inter );
+	BOOST_FOREACH( QViewerCore::WidgetList::reference widget, m_ViewerCore->getWidgets() ) {
+		widget->setInterpolationType( inter );
 	}
 	m_ViewerCore->getCurrentImage()->getImageProperties().interpolationType = inter;
 	m_ViewerCore->updateScene();
@@ -588,7 +588,7 @@ QWidgetImplementationBase *MainWindow::createView( QDockWidget *widget, PlaneOri
 		break;
 	}
 
-	m_ViewerCore->registerWidget( name.str(), view );
+	m_ViewerCore->registerWidget( view );
 	return view;
 
 }

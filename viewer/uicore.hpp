@@ -11,6 +11,9 @@ namespace ui {
 	
 class UICore 
 {
+
+	
+public:
 	struct WidgetEnsemble
 	{
 		QDockWidget *dockWidget;
@@ -18,14 +21,18 @@ class UICore
 		QWidgetImplementationBase *viewWidget;
 		PlaneOrientation planeOrientation;
 		std::string widgetType;
+		size_t ID;
 	};
-	
-public:
-	typedef std::map<std::string, WidgetEnsemble> ViewWidgetMapType;
+	typedef util::FixedVector<WidgetEnsemble, 3> RowType;
+	typedef std::list< RowType > RowListType;
+	typedef std::list<QWidgetImplementationBase *> ViewWidgetListType;
+	typedef std::map< const QWidgetImplementationBase *, WidgetEnsemble > EnsembleMapType;
 	UICore( QViewerCore *core );
 	
 	void showMainWindow();
 	MainWindow *getMainWindow() const  { return m_MainWindow; }
+	
+	RowListType getRowList() const { return m_RowList; }
 	
 	/**
 	 * Append a widget to the main widget area.
@@ -35,25 +42,26 @@ public:
 	 *\return returns if the widget was successfuly appended
 	 */
 	
-	virtual bool appendWidget( const std::string &name, const std::string &widgetType, PlaneOrientation planeOrientation = axial );
-	virtual bool appendWidget( const std::string &name, const std::string &widgetType, int row, int column, PlaneOrientation planeOrientation = axial );
+	virtual WidgetEnsemble appendWidget( const std::string &widgetType, PlaneOrientation planeOrientation = axial );
+	virtual WidgetEnsemble appendWidget( const std::string &widgetType, int row, int column, PlaneOrientation planeOrientation = axial );
 	
-	virtual bool appendWidgetRow( const std::string name, const std::string &widgetType );
+	virtual RowType appendWidgetRow( const std::string &widgetType );
 	
-	virtual bool removeWidget( const std::string &name );
+	virtual bool removeWidget( const QWidgetImplementationBase *widget );
 	
 	virtual void reloadPluginsToGUI();
 	virtual ~UICore() {}
 	
 private:
 	
-	QDockWidget *createWidgetEnsemble( const std::string &name, const std::string& widgetType, PlaneOrientation planeOrientation );
+	WidgetEnsemble createWidgetEnsemble( const std::string& widgetType, PlaneOrientation planeOrientation );
 	
 	QViewerCore *m_Core;
 	MainWindow *m_MainWindow;
-	
-	ViewWidgetMapType m_ViewWidgetMap;
+	EnsembleMapType m_EnsembleMap;
+	ViewWidgetListType m_ViewWidgetList;
 	util::PropertyMap m_UICoreProperties;
+	RowListType m_RowList;
 };
 	
 	

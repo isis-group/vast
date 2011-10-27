@@ -18,24 +18,26 @@ ViewerCoreBase::ViewerCoreBase( )
 	m_VoxelTransformation.fill( 1.0 );
 }
 
-void ViewerCoreBase::addImageList( const std::list< data::Image > imageList, const ImageHolder::ImageType &imageType )
+ViewerCoreBase::ImageListType ViewerCoreBase::addImageList( const std::list< data::Image > imageList, const ImageHolder::ImageType &imageType )
 {
-	std::list<boost::shared_ptr<ImageHolder> > retList;
+	ImageListType retList;
 
 	if( !imageList.empty() ) {
 		BOOST_FOREACH( std::list< data::Image >::const_reference imageRef, imageList ) {
-			m_DataContainer.addImage( imageRef, imageType );
+			boost::shared_ptr< ImageHolder > imageHolder = m_DataContainer.addImage( imageRef, imageType );
+			retList.push_back( imageHolder );
+			m_ImageList.push_back( imageHolder );
 		}
 		setCurrentImage( m_DataContainer.begin()->second );
 	} else {
 		LOG( Runtime, warning ) << "The image list passed to the core is empty!";
 	}
-
+	return retList;
 }
 
 void ViewerCoreBase::addImage( const isis::data::Image &image, const isis::viewer::ImageHolder::ImageType &imageType )
 {
-	m_DataContainer.addImage( image, imageType );
+	m_ImageList.push_back( m_DataContainer.addImage( image, imageType ) );
 	setCurrentImage( m_DataContainer.begin()->second );
 }
 

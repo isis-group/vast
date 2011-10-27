@@ -21,49 +21,60 @@ UICore::UICore( QViewerCore *core )
 void UICore::showMainWindow()
 {
 	m_MainWindow->show();
-}
+} 
 
-bool UICore::appendWidgetRow(const std::string name, const std::string& widgetType)
+
+UICore::RowType UICore::appendWidgetRow(const std::string& widgetType )
 {
+	RowType row;
 	int currentRow = m_MainWindow->getUI().widgetGridLayout->rowCount();
-	std::stringstream nameAxial;
-	std::stringstream nameSagittal;
-	std::stringstream nameCoronal;
-	nameAxial << name << "_" << currentRow << "_axial";
-	nameSagittal << name << "_" << currentRow << "_sagittal";
-	nameCoronal << name << "_" << currentRow << "_coronal";
-	m_MainWindow->getUI().widgetGridLayout->addWidget( createWidgetEnsemble( nameAxial.str(), widgetType, axial ), currentRow, 0 );
-	m_MainWindow->getUI().widgetGridLayout->addWidget( createWidgetEnsemble( nameSagittal.str(), widgetType, sagittal ), currentRow, 1 );
-	m_MainWindow->getUI().widgetGridLayout->addWidget( createWidgetEnsemble( nameCoronal.str(), widgetType, coronal ), currentRow, 2 );
-	
+	row[0] =  createWidgetEnsemble( widgetType, axial );
+	row[1] =  createWidgetEnsemble( widgetType, sagittal );
+	row[2] =  createWidgetEnsemble( widgetType, coronal );
+	m_MainWindow->getUI().widgetGridLayout->addWidget( row[0].dockWidget, currentRow, 0 );
+	m_MainWindow->getUI().widgetGridLayout->addWidget( row[1].dockWidget, currentRow, 1 );
+	m_MainWindow->getUI().widgetGridLayout->addWidget( row[2].dockWidget, currentRow, 2 );
+	m_EnsembleMap[row[0].viewWidget] = row[0];
+	m_EnsembleMap[row[1].viewWidget] = row[1];
+	m_EnsembleMap[row[2].viewWidget] = row[2];
+	m_RowList.push_back(row);
+	return row;	
 }
 
 
-bool UICore::appendWidget(const std::string& name, const std::string& widgetType, PlaneOrientation planeOrientation)
+UICore::WidgetEnsemble UICore::appendWidget( const std::string& widgetType, PlaneOrientation planeOrientation)
 {
-	m_MainWindow->getUI().widgetGridLayout->addWidget( createWidgetEnsemble( name, widgetType, planeOrientation) );
+	WidgetEnsemble ret = createWidgetEnsemble( widgetType, planeOrientation);
+	m_MainWindow->getUI().widgetGridLayout->addWidget( ret.dockWidget );
+	return ret;
 }
 
-bool UICore::appendWidget(const std::string& name, const std::string& widgetType, int row, int column, PlaneOrientation planeOrientation)
+UICore::WidgetEnsemble UICore::appendWidget( const std::string& widgetType, int row, int column, PlaneOrientation planeOrientation)
 {
-	m_MainWindow->getUI().widgetGridLayout->addWidget( createWidgetEnsemble( name, widgetType, planeOrientation ), row, column );
+	WidgetEnsemble ret = createWidgetEnsemble( widgetType, planeOrientation);
+	m_MainWindow->getUI().widgetGridLayout->addWidget( ret.dockWidget, row, column );
+	return ret;
 }
 
 
-bool UICore::removeWidget(const std::string& name)
+bool UICore::removeWidget(const QWidgetImplementationBase *widget )
 {
-	if( m_ViewWidgetMap.find( name) != m_ViewWidgetMap.end() ) {
-		m_MainWindow->getUI().widgetGridLayout->removeWidget( m_ViewWidgetMap.at(name).dockWidget );
+	EnsembleMapType::const_iterator iter = m_EnsembleMap.find( widget );
+	if( iter != m_EnsembleMap.end() ) {
+		m_MainWindow->getUI().widgetGridLayout->removeWidget( iter->second.dockWidget );
+		m_EnsembleMap.erase(widget);
+		m_ViewWidgetList.erase( std::find( m_ViewWidgetList.begin(), m_ViewWidgetList.end(), widget ) );
 		return true;
 	} else {
-		LOG( Runtime, error ) << "Tried to remove widget " << name << ". But there is no such widget!";
+		LOG( Runtime, error ) << "Tried to remove widget " << widget 
+			<< " of type " << widget->getWidgetName() << ". But there is no such widget!";
 		return false;
 	}
 }
 
 
 
-QDockWidget* UICore::createWidgetEnsemble( const std::string &name, const std::string& widgetType, PlaneOrientation planeOrientation )
+ui::UICore::WidgetEnsemble UICore::createWidgetEnsemble( const std::string& widgetType, PlaneOrientation planeOrientation )
 {
 	QDockWidget *dockWidget = new QDockWidget( m_MainWindow );
 	dockWidget->setFloating( false );
@@ -78,15 +89,17 @@ QDockWidget* UICore::createWidgetEnsemble( const std::string &name, const std::s
 
 #warning this has to be done with the help of a widget factor. nasty this way
 	QWidgetImplementationBase *viewWidget = new qt::QImageWidgetImplementation(m_Core, frameWidget, planeOrientation );
-	m_Core->registerWidget(name, viewWidget );
+	m_Core->registerWidget( viewWidget );
 	WidgetEnsemble ensemble;
 	ensemble.dockWidget = dockWidget;
 	ensemble.frame = frameWidget;
 	ensemble.viewWidget = viewWidget;
 	ensemble.planeOrientation = planeOrientation;
 	ensemble.widgetType = widgetType;
-	m_ViewWidgetMap[name] = ensemble;
-	return dockWidget;
+	ensemble.ID = m_ViewWidgetList.size();
+	m_ViewWidgetList.push_back( ensemble.viewWidget );
+	m_EnsembleMap[ensemble.viewWidget] = ensemble;
+	return ensemble;
 
 }
 
@@ -94,7 +107,6 @@ void UICore::reloadPluginsToGUI()
 {
 	m_MainWindow->reloadPluginsToGUI( m_Core );
 }
-
 
 	
 }}}

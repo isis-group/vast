@@ -18,7 +18,7 @@ class DataContainer : public std::map<std::string, boost::shared_ptr<ImageHolder
 {
 public:
 	///simply adds an isis image to the vector
-	void addImage( const data::Image &image, const ImageHolder::ImageType &imageType );
+	boost::shared_ptr<ImageHolder> addImage( const data::Image &image, const ImageHolder::ImageType &imageType );
 
 	boost::shared_ptr<ImageHolder> getImageByID( unsigned short id ) const;
 

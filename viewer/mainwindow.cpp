@@ -24,7 +24,7 @@ void MainWindow::setupBasicElements()
 
 void MainWindow::reloadPluginsToGUI(QViewerCore* core)
 {
-		//adding all processes to the process (plugin) menu and connect the action to the respective call functions
+	//adding all processes to the process (plugin) menu and connect the action to the respective call functions
 	QMenu *processMenu = new QMenu( QString( "Plugins" ) );
 
 	if( core->getPlugins().size() ) {

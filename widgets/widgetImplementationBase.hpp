@@ -30,7 +30,6 @@ public:
 	virtual QWidget *getParent( ) const { return m_Parent; }
 	virtual PlaneOrientation getPlaneOrientation() { return m_PlaneOrientation; }
 
-
 protected:
 	QWidgetImplementationBase( QViewerCore *core, QWidget *parent, PlaneOrientation orientation );
 

@@ -18,15 +18,14 @@ QViewerCore::QViewerCore( const std::string &appName, const std::string &orgName
 
 
 bool
-QViewerCore::registerWidget( std::string key, QWidgetImplementationBase *widget, QViewerCore::Actions action )
+QViewerCore::registerWidget( QWidgetImplementationBase *widget )
 {
-	if( m_WidgetMap.find( key ) == m_WidgetMap.end() ) {
-		widget->setWidgetName( key );
-		m_WidgetMap.insert( std::make_pair< std::string,  QWidgetImplementationBase * >( key, widget ) );
-	} else {
-		LOG( Runtime, error ) << "A widget with the name " << key << " already exists! Wont add this";
+	if( std::find( m_WidgetList.begin(), m_WidgetList.end(), widget ) != m_WidgetList.end() ) {
+		LOG( Runtime, warning ) << "Widget with id" << widget->getWidgetName() << "!";
 		return false;
 	}
+	m_WidgetList.push_back(widget);
+	return true;
 }
 
 void QViewerCore::voxelCoordsChanged( util::ivector4 voxelCoords )
@@ -54,10 +53,11 @@ void QViewerCore::timestepChanged( int timestep )
 }
 
 
-void QViewerCore::addImageList( const std::list< data::Image > imageList, const ImageHolder::ImageType &imageType )
+std::list<boost::shared_ptr<ImageHolder> > QViewerCore::addImageList( const std::list< data::Image > imageList, const ImageHolder::ImageType &imageType )
 {
-	isis::viewer::ViewerCoreBase::addImageList( imageList, imageType );
+	std::list<boost::shared_ptr<ImageHolder> > retList = isis::viewer::ViewerCoreBase::addImageList( imageList, imageType );
 	settingsChanged();
+	return retList;
 
 }
 
@@ -86,8 +86,8 @@ void QViewerCore::settingsChanged()
 		getCurrentImage()->getPropMap().setPropertyAs<std::string>( "lut", getSettings()->value( "lut", "fallback" ).toString().toStdString() );
 	}
 
-	BOOST_FOREACH( WidgetMap::reference widget, m_WidgetMap ) {
-		widget.second->setInterpolationType( static_cast<InterpolationType>( getSettings()->value( "interpolationType", "standard_grey_values" ).toUInt() ) );
+	BOOST_FOREACH( WidgetList::const_reference widget, m_WidgetList ) {
+		widget->setInterpolationType( static_cast<InterpolationType>( getSettings()->value( "interpolationType", "standard_grey_values" ).toUInt() ) );
 	}
 	getSettings()->endGroup();
 }
@@ -140,6 +140,23 @@ bool QViewerCore::callPlugin( QString name )
 	}
 	LOG( Runtime, error ) << "No such plugin " << name.toStdString() << "!";
 	return false;
+}
+
+bool QViewerCore::attachImageToWidget( boost::shared_ptr<ImageHolder> image, QWidgetImplementationBase * widget)
+{
+	if ( std::find( m_WidgetList.begin(), m_WidgetList.end(), widget ) == m_WidgetList.end() ) {
+		LOG( Runtime, error ) << "There is no such widget " 
+			<< widget << ", so will not add image " << image->getFileNames().front() << " to it.";
+		return false;
+	}
+	if( std::find( m_ImageList.begin(), m_ImageList.end(), image) == m_ImageList.end()  ) {
+		LOG( Runtime, error ) << "There is no such image " 
+			<< image->getFileNames().front() << ", so will not add it to widget " << widget << ".";
+		return false;
+	}
+
+	widget->addImage( image );
+	return true;
 }
 
 

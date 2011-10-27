@@ -97,14 +97,21 @@ int main( int argc, char *argv[] )
 			zImgList.push_back( imageRef );
 		}
 	}
-	bool assamble = false;
 	
 	if( app.parameters["zmap"].isSet() ) {
-		BOOST_FOREACH( std::list< data::Image >::const_reference image, zImgList ) {
-			uiCore->appendWidgetRow( "zmap", "" );
+		typedef std::list< boost::shared_ptr<ImageHolder > >::const_reference ImageListRef;
+		unsigned short index = 0;
+		BOOST_FOREACH( ImageListRef image, core->addImageList( zImgList, ImageHolder::z_map ) )
+		{
+			core->attachImageToWidget( image, uiCore->appendWidget("", index, 0, axial).viewWidget );
+			core->attachImageToWidget( image, uiCore->appendWidget("", index, 1, sagittal).viewWidget );
+			core->attachImageToWidget( image, uiCore->appendWidget("", index, 2, coronal ).viewWidget );
+			index++;
 		}
-		core->addImageList( zImgList, ImageHolder::z_map );
 	}
+	
+	
+	
 	uiCore->showMainWindow();
 
 // 	if( app.parameters["type"].toString() == "anatomical" && app.parameters["in"].isSet() ) {

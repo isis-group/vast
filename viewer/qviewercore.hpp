@@ -15,18 +15,17 @@ class QViewerCore : public QObject, public ViewerCoreBase
 {
 	Q_OBJECT
 public:
-	enum Actions {not_specified, timestep_changed, show_labels};
-	typedef std::map<std::string, QWidgetImplementationBase * > WidgetMap;
+	typedef std::list<QWidgetImplementationBase * > WidgetList;
 	QViewerCore( const std::string &appName = std::string(), const std::string &orgName = std::string(), QWidget *parent = 0 );
 
 
-	bool registerWidget( std::string key, QWidgetImplementationBase *widget, Actions = not_specified );
+	bool registerWidget( QWidgetImplementationBase *widget );
 
-	virtual void addImageList( const std::list< data::Image > imageList, const ImageHolder::ImageType &imageType);
+	virtual std::list<boost::shared_ptr<ImageHolder> > addImageList( const std::list< data::Image > imageList, const ImageHolder::ImageType &imageType);
 	virtual void setImageList( const std::list< data::Image > imageList, const ImageHolder::ImageType &imageType);
 
-	const WidgetMap &getWidgets() const { return m_WidgetMap; }
-	WidgetMap &getWidgets() { return m_WidgetMap; }
+	const WidgetList &getWidgets() const { return m_WidgetList; }
+	WidgetList &getWidgets() { return m_WidgetList; }
 	const QSettings *getSettings() const { return m_Settings; }
 	QSettings *getSettings() { return m_Settings; }
 
@@ -34,28 +33,14 @@ public:
 
 	std::vector< util::fvector4 > getRGBColorGradient() const { return m_RGBColorGradient; }
 
-	template<typename T>
-	T *getWidgetAs( std::string key ) {
-		if( m_WidgetMap.find( key ) == m_WidgetMap.end() ) {
-			LOG( Runtime, error ) << "A widget with the name " << key << " is not registered!";
-			return 0;
-		}
-
-		if( dynamic_cast<T *>( m_WidgetMap[key] ) != 0 ) {
-			return dynamic_cast<T *>( m_WidgetMap[key] );
-		} else {
-			LOG( Runtime, error ) << "Error while converting widget " << key << " !";
-		}
-	};
-
 	//plugin stuff
 
 	void addPlugin( boost::shared_ptr< plugin::PluginInterface > plugin );
 	void addPlugins( plugin::PluginLoader::PluginListType plugins );
 	PluginListType getPlugins() const { return m_PluginList; }
 
+	virtual bool attachImageToWidget( boost::shared_ptr<ImageHolder> image, QWidgetImplementationBase * widget );
 	
-
 	void setParentWidget( QWidget *parent ) { m_Parent = parent; }
 
 public Q_SLOTS:
@@ -68,6 +53,7 @@ public Q_SLOTS:
 	virtual void updateScene( bool center = false );
 	virtual void setAutomaticScaling( bool );
 	virtual bool callPlugin( QString name );
+	
 
 Q_SIGNALS:
 	void emitZoomChanged( float zoom );
@@ -80,7 +66,7 @@ Q_SIGNALS:
 
 private:
 	//this map holds the widgets associated with a given name
-	WidgetMap m_WidgetMap;
+	WidgetList m_WidgetList;
 	std::vector< util::fvector4 > m_RGBColorGradient;
 	QSettings *m_Settings;
 

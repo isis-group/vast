@@ -5,7 +5,7 @@ namespace isis
 namespace viewer
 {
 
-void DataContainer::addImage( const data::Image &image, const ImageHolder::ImageType &imageType )
+boost::shared_ptr<ImageHolder> DataContainer::addImage( const data::Image &image, const ImageHolder::ImageType &imageType )
 {
 	std::string fileName;
 
@@ -32,6 +32,7 @@ void DataContainer::addImage( const data::Image &image, const ImageHolder::Image
 	tmpHolder->setImage( image, imageType, newFileName );
 	tmpHolder->setID( size()  );
 	insert( std::make_pair<std::string, boost::shared_ptr<ImageHolder> >( newFileName, tmpHolder ) );
+	return tmpHolder;
 }
 
 boost::shared_ptr< ImageHolder > DataContainer::getImageByID( short unsigned int id ) const
