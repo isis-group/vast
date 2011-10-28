@@ -4,6 +4,8 @@
 #include "common.hpp"
 #include "imageholder.hpp"
 #include <QtGui>
+#include <boost/uuid/uuid.hpp>
+#include <boost/uuid/uuid_generators.hpp>
 
 namespace isis
 {
@@ -30,12 +32,15 @@ public:
 	virtual QWidget *getParent( ) const { return m_Parent; }
 	virtual PlaneOrientation getPlaneOrientation() { return m_PlaneOrientation; }
 
+	boost::uuids::uuid getID() const { return m_ID; }
+
 protected:
 	QWidgetImplementationBase( QViewerCore *core, QWidget *parent, PlaneOrientation orientation );
 
 	QViewerCore *m_ViewerCore;
 	PlaneOrientation m_PlaneOrientation;
 	QWidget *m_Parent;
+	boost::uuids::uuid m_ID;
 };
 
 

@@ -41,8 +41,11 @@ public:
 	const MainWindow *getMainWindow() const  { return m_MainWindow; }
 	MainWindow *getMainWindow() { return m_MainWindow; }
 
-	virtual ViewWidgetEnsembleType appendViewWidgetEnsemble( const std::string &widgetType );
-	virtual ViewWidgetEnsembleType appendViewWidgetEnsemble( const std::string &widgetType, boost::shared_ptr< ImageHolder > image );
+	virtual ViewWidgetEnsembleType createViewWidgetEnsemble( const std::string &widgetType, bool show = true  );
+	virtual ViewWidgetEnsembleType createViewWidgetEnsemble( const std::string &widgetType, boost::shared_ptr< ImageHolder > image, bool show = true );
+	
+	virtual ViewWidgetEnsembleType removeViewWidgetEnsemble( QWidgetImplementationBase* widgetImplementation );
+	virtual ViewWidgetEnsembleType removeViewWidgetEnsemble( ViewWidgetEnsembleType ensemble );
 	
 	virtual ~UICore() {}
 	

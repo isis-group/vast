@@ -5,6 +5,8 @@
 #include <iostream>
 #include <QObject>
 #include <QIcon>
+#include <boost/uuid/uuid.hpp>
+#include <boost/uuid/uuid_generators.hpp>
 
 namespace isis {
 namespace viewer {
@@ -18,7 +20,7 @@ namespace plugin {
 class PluginInterface
 {
 public:
-	PluginInterface() {};
+	PluginInterface() : m_ID( boost::uuids::random_generator()() ) {};
 	void setViewerCore( isis::viewer::QViewerCore *core) { viewerCore = core; }
 	void setParentWidget( QWidget *p ) { parentWidget = p; }
 	
@@ -47,10 +49,13 @@ public:
 	virtual QIcon *getToolbarIcon() { return new QIcon(); }
 	virtual ~PluginInterface() {}
 	
+	boost::uuids::uuid getID() const { return m_ID; }
+	
 	std::string plugin_file;
 protected:
 	QViewerCore *viewerCore;
 	QWidget *parentWidget;
+	boost::uuids::uuid m_ID;
 	
 	
 };

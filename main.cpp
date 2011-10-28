@@ -113,7 +113,7 @@ int main( int argc, char *argv[] )
 		core->getUI()->setViewWidgetArrangement( UICore::InRow );
 		BOOST_FOREACH( ImageListRef image, core->addImageList( zImgList, ImageHolder::z_map ) )
 		{
-			UICore::ViewWidgetEnsembleType ensemble = core->getUI()->appendViewWidgetEnsemble( "", image );
+			UICore::ViewWidgetEnsembleType ensemble = core->getUI()->createViewWidgetEnsemble( "", image );
 			if( app.parameters["in"].isSet() ) {	
 				boost::shared_ptr<ImageHolder> anatomicalImage = core->addImage( imgList.front(), ImageHolder::anatomical_image);
 				ensemble[0].widgetImplementation->addImage( anatomicalImage );
@@ -127,12 +127,12 @@ int main( int argc, char *argv[] )
 		core->getUI()->setViewWidgetArrangement( UICore::InRow );
 		BOOST_FOREACH( ImageListRef image, core->addImageList( imgList, ImageHolder::anatomical_image ) )
 		{
-			core->getUI()->appendViewWidgetEnsemble( "", image );
+			core->getUI()->createViewWidgetEnsemble( "", image );
 		}
 		core->getUI()->setOptionPosition( isis::viewer::UICore::bottom );
 	} else if ( app.parameters["in"].isSet() || app.parameters["zmap"].isSet() ) {
 		core->getUI()->setViewWidgetArrangement( UICore::Default );
-		UICore::ViewWidgetEnsembleType ensemble = core->getUI()->appendViewWidgetEnsemble( "" );
+		UICore::ViewWidgetEnsembleType ensemble = core->getUI()->createViewWidgetEnsemble( "" );
 		BOOST_FOREACH( ImageListRef image, core->addImageList( imgList, ImageHolder::anatomical_image ) )
 		{
 			core->attachImageToWidget( image, ensemble[0]. widgetImplementation );

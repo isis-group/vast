@@ -68,50 +68,74 @@ QDockWidget* UICore::createDockingEnsemble( QWidget* widget )
 	
 }
 
-UICore::ViewWidgetEnsembleType UICore::appendViewWidgetEnsemble(const std::string& widgetType, boost::shared_ptr< ImageHolder > image)
+UICore::ViewWidgetEnsembleType UICore::createViewWidgetEnsemble(const std::string& widgetType, boost::shared_ptr< ImageHolder > image, bool show)
 {
-	ViewWidgetEnsembleType ensemble = appendViewWidgetEnsemble( widgetType );
+	ViewWidgetEnsembleType ensemble = createViewWidgetEnsemble( widgetType, show );
 	ensemble[0].widgetImplementation->addImage( image );
 	ensemble[1].widgetImplementation->addImage( image );
 	ensemble[2].widgetImplementation->addImage( image );
 	return ensemble;
 }
 
-UICore::ViewWidgetEnsembleType UICore::appendViewWidgetEnsemble(const std::string& widgetType)
+
+UICore::ViewWidgetEnsembleType UICore::createViewWidgetEnsemble(const std::string& widgetType, bool show )
 {
 	ViewWidgetEnsembleType ensemble;
 	ensemble[0] =  createViewWidget( widgetType, axial );
 	ensemble[1] =  createViewWidget( widgetType, sagittal );
 	ensemble[2] =  createViewWidget( widgetType, coronal );
-	switch ( m_ViewWidgetArrangement ) {
-		case Default: {
-			if( m_EnsembleList.size() > 0 ) {
+	if( show ) {
+		switch ( m_ViewWidgetArrangement ) {
+			case Default: {
+				if( m_EnsembleList.size() > 0 ) {
+					int currentRow = m_MainWindow->getUI().centralGridLayout->rowCount();
+					m_MainWindow->getUI().centralGridLayout->addWidget( ensemble[0].dockWidget, currentRow, 0 );
+					m_MainWindow->getUI().centralGridLayout->addWidget( ensemble[1].dockWidget, currentRow, 1 );
+					m_MainWindow->getUI().centralGridLayout->addWidget( ensemble[2].dockWidget, currentRow, 2 );
+				} else {
+					m_MainWindow->getUI().centralGridLayout->addWidget( ensemble[0].dockWidget, 0, 0 );
+					m_MainWindow->getUI().centralGridLayout->addWidget( ensemble[1].dockWidget, 0, 1 );
+					m_MainWindow->getUI().centralGridLayout->addWidget( ensemble[2].dockWidget, 1, 0 );
+				}
+				break;
+			} case InRow: {
 				int currentRow = m_MainWindow->getUI().centralGridLayout->rowCount();
 				m_MainWindow->getUI().centralGridLayout->addWidget( ensemble[0].dockWidget, currentRow, 0 );
 				m_MainWindow->getUI().centralGridLayout->addWidget( ensemble[1].dockWidget, currentRow, 1 );
 				m_MainWindow->getUI().centralGridLayout->addWidget( ensemble[2].dockWidget, currentRow, 2 );
-			} else {
-				m_MainWindow->getUI().centralGridLayout->addWidget( ensemble[0].dockWidget, 0, 0 );
-				m_MainWindow->getUI().centralGridLayout->addWidget( ensemble[1].dockWidget, 0, 1 );
-				m_MainWindow->getUI().centralGridLayout->addWidget( ensemble[2].dockWidget, 1, 0 );
+				break;
+			} case InColumn: {
+				int currentColumn = m_MainWindow->getUI().centralGridLayout->columnCount();
+				m_MainWindow->getUI().centralGridLayout->addWidget( ensemble[0].dockWidget, 0, currentColumn );
+				m_MainWindow->getUI().centralGridLayout->addWidget( ensemble[1].dockWidget, 1, currentColumn );
+				m_MainWindow->getUI().centralGridLayout->addWidget( ensemble[2].dockWidget, 2, currentColumn );
 			}
-			break;
-		} case InRow: {
-			int currentRow = m_MainWindow->getUI().centralGridLayout->rowCount();
-			m_MainWindow->getUI().centralGridLayout->addWidget( ensemble[0].dockWidget, currentRow, 0 );
-			m_MainWindow->getUI().centralGridLayout->addWidget( ensemble[1].dockWidget, currentRow, 1 );
-			m_MainWindow->getUI().centralGridLayout->addWidget( ensemble[2].dockWidget, currentRow, 2 );
-			break;
-		} case InColumn: {
-			int currentColumn = m_MainWindow->getUI().centralGridLayout->columnCount();
-			m_MainWindow->getUI().centralGridLayout->addWidget( ensemble[0].dockWidget, 0, currentColumn );
-			m_MainWindow->getUI().centralGridLayout->addWidget( ensemble[1].dockWidget, 1, currentColumn );
-			m_MainWindow->getUI().centralGridLayout->addWidget( ensemble[2].dockWidget, 2, currentColumn );
 		}
 	}
 	m_EnsembleList.push_back( ensemble );
 	return ensemble;	
 }
+
+UICore::ViewWidgetEnsembleType UICore::removeViewWidgetEnsemble( isis::viewer::QWidgetImplementationBase* widgetImplementation )
+{
+	BOOST_FOREACH( ViewWidgetEnsembleListType::reference ref, m_EnsembleList ) {
+		if( ref[0].widgetImplementation == widgetImplementation 
+			|| ref[1].widgetImplementation == widgetImplementation
+			|| ref[2].widgetImplementation == widgetImplementation ) {
+			return removeViewWidgetEnsemble( ref );
+		}
+	}
+}
+
+UICore::ViewWidgetEnsembleType UICore::removeViewWidgetEnsemble(UICore::ViewWidgetEnsembleType ensemble)
+{
+	for( unsigned short i = 0; i < 3; i++ ) {
+		m_MainWindow->getUI().centralGridLayout->removeWidget( ensemble[i].dockWidget );
+	}
+	return ensemble;
+}
+
+
 
 
 
