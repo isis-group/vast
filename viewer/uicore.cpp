@@ -19,18 +19,21 @@ UICore::UICore( QViewerCore *core )
 	m_VoxelInformationWidget = new widget::VoxelInformationWidget( m_MainWindow, core );
 	m_ImageStackWidget = new widget::ImageStackWidget( m_MainWindow, core );
 	m_ViewWidgetArrangement = Default;
+	m_VoxelInformationDockWidget = createDockingEnsemble( m_VoxelInformationWidget );
+	m_ImageStackDockWidget = createDockingEnsemble( m_ImageStackWidget );
+	m_RowCount = m_MainWindow->getUI().centralGridLayout->rowCount();
 }
 
 void UICore::setOptionPosition( UICore::OptionPosition pos )
 {
 	switch ( pos ) {
 	case bottom:
-		m_MainWindow->getUI().bottomGridLayout->addWidget( createDockingEnsemble( m_ImageStackWidget ), 0, 1 );
-		m_MainWindow->getUI().bottomGridLayout->addWidget( createDockingEnsemble( m_VoxelInformationWidget ), 0, 0 );
+		m_MainWindow->getUI().bottomGridLayout->addWidget( m_VoxelInformationDockWidget, 0, 1 );
+		m_MainWindow->getUI().bottomGridLayout->addWidget( m_ImageStackDockWidget, 0, 0 );
 		break;
 	case top:
-		m_MainWindow->getUI().topGridLayout->addWidget( createDockingEnsemble( m_ImageStackWidget ), 0, 1 );
-		m_MainWindow->getUI().topGridLayout->addWidget( createDockingEnsemble( m_VoxelInformationWidget ), 0, 0 );
+		m_MainWindow->getUI().topGridLayout->addWidget( m_ImageStackDockWidget, 0, 1 );
+		m_MainWindow->getUI().topGridLayout->addWidget( m_VoxelInformationDockWidget, 0, 0 );
 		break;
 	case central11:
 		QGridLayout *layout = new QGridLayout(  );
@@ -41,8 +44,8 @@ void UICore::setOptionPosition( UICore::OptionPosition pos )
 		QFrame *frame = new QFrame( m_MainWindow );
 		frame->setLayout( layout );
 		m_MainWindow->getUI().centralGridLayout->addWidget( frame, 1, 1 );
-		layout->addWidget( createDockingEnsemble( m_VoxelInformationWidget ), 0, 0 );
-		layout->addWidget( createDockingEnsemble( m_ImageStackWidget ), 1, 0 );
+		layout->addWidget( m_VoxelInformationDockWidget, 0, 0 );
+		layout->addWidget( m_ImageStackDockWidget, 1, 0 );
 		break;
 	}
 }
@@ -86,67 +89,95 @@ UICore::ViewWidgetEnsembleType UICore::createViewWidgetEnsemble( const std::stri
 	ensemble[0] =  createViewWidget( widgetType, axial );
 	ensemble[1] =  createViewWidget( widgetType, sagittal );
 	ensemble[2] =  createViewWidget( widgetType, coronal );
-
 	if( show ) {
-		switch ( m_ViewWidgetArrangement ) {
-		case Default: {
-			if( m_EnsembleList.size() > 0 ) {
-				int currentRow = m_MainWindow->getUI().centralGridLayout->rowCount();
-				m_MainWindow->getUI().centralGridLayout->addWidget( ensemble[0].dockWidget, currentRow, 0 );
-				m_MainWindow->getUI().centralGridLayout->addWidget( ensemble[1].dockWidget, currentRow, 1 );
-				m_MainWindow->getUI().centralGridLayout->addWidget( ensemble[2].dockWidget, currentRow, 2 );
-			} else {
-				m_MainWindow->getUI().centralGridLayout->addWidget( ensemble[0].dockWidget, 0, 0 );
-				m_MainWindow->getUI().centralGridLayout->addWidget( ensemble[1].dockWidget, 0, 1 );
-				m_MainWindow->getUI().centralGridLayout->addWidget( ensemble[2].dockWidget, 1, 0 );
-			}
-
-			break;
-		}
-		case InRow: {
-			int currentRow = m_MainWindow->getUI().centralGridLayout->rowCount();
-			m_MainWindow->getUI().centralGridLayout->addWidget( ensemble[0].dockWidget, currentRow, 0 );
-			m_MainWindow->getUI().centralGridLayout->addWidget( ensemble[1].dockWidget, currentRow, 1 );
-			m_MainWindow->getUI().centralGridLayout->addWidget( ensemble[2].dockWidget, currentRow, 2 );
-			break;
-		}
-		case InColumn: {
-			int currentColumn = m_MainWindow->getUI().centralGridLayout->columnCount();
-			m_MainWindow->getUI().centralGridLayout->addWidget( ensemble[0].dockWidget, 0, currentColumn );
-			m_MainWindow->getUI().centralGridLayout->addWidget( ensemble[1].dockWidget, 1, currentColumn );
-			m_MainWindow->getUI().centralGridLayout->addWidget( ensemble[2].dockWidget, 2, currentColumn );
-		}
-		}
+		attachViewWidgetEnsemble(ensemble);
 	}
-
 	m_EnsembleList.push_back( ensemble );
 	return ensemble;
 }
 
-UICore::ViewWidgetEnsembleType UICore::removeViewWidgetEnsemble( isis::viewer::QWidgetImplementationBase *widgetImplementation )
+void UICore::removeViewWidgetEnsemble( isis::viewer::QWidgetImplementationBase *widgetImplementation )
 {
 	BOOST_FOREACH( ViewWidgetEnsembleListType::reference ref, m_EnsembleList ) {
 		if( ref[0].widgetImplementation == widgetImplementation
 			|| ref[1].widgetImplementation == widgetImplementation
 			|| ref[2].widgetImplementation == widgetImplementation ) {
-			return removeViewWidgetEnsemble( ref );
+			removeViewWidgetEnsemble( ref );
 		}
 	}
 }
 
-UICore::ViewWidgetEnsembleType UICore::removeViewWidgetEnsemble( UICore::ViewWidgetEnsembleType ensemble )
+void UICore::removeViewWidgetEnsemble( UICore::ViewWidgetEnsembleType ensemble )
 {
 	for( unsigned short i = 0; i < 3; i++ ) {
 		m_MainWindow->getUI().centralGridLayout->removeWidget( ensemble[i].dockWidget );
 	}
+	m_EnsembleList.erase( std::find( m_EnsembleList.begin(), m_EnsembleList.end(), ensemble) );
+}
 
+UICore::ViewWidgetEnsembleType UICore::detachViewWidgetEnsemble(QWidgetImplementationBase* widgetImplementation)
+{
+		BOOST_FOREACH( ViewWidgetEnsembleListType::reference ref, m_EnsembleList ) {
+		if( ref[0].widgetImplementation == widgetImplementation
+			|| ref[1].widgetImplementation == widgetImplementation
+			|| ref[2].widgetImplementation == widgetImplementation ) {
+			return detachViewWidgetEnsemble( ref );
+		}
+	}
+}
+
+UICore::ViewWidgetEnsembleType  UICore::detachViewWidgetEnsemble(UICore::ViewWidgetEnsembleType ensemble)
+{
+	for( unsigned short i = 0; i < 3; i++ ) {
+		m_MainWindow->getUI().centralGridLayout->removeWidget( ensemble[i].dockWidget );
+	}
 	return ensemble;
 }
 
+void UICore::attachViewWidgetEnsemble(UICore::ViewWidgetEnsembleType ensemble)
+{
+	switch ( m_ViewWidgetArrangement ) {
+		case Default: {
+			if( m_EnsembleList.size() > 0 ) {
+				m_MainWindow->getUI().centralGridLayout->addWidget( ensemble[0].dockWidget, m_RowCount, 0 );
+				m_MainWindow->getUI().centralGridLayout->addWidget( ensemble[1].dockWidget, m_RowCount, 1 );
+				m_MainWindow->getUI().centralGridLayout->addWidget( ensemble[2].dockWidget, m_RowCount, 2 );
+			} else {
+				m_MainWindow->getUI().centralGridLayout->addWidget( ensemble[0].dockWidget, 0, 0 );
+				m_MainWindow->getUI().centralGridLayout->addWidget( ensemble[1].dockWidget, 0, 1 );
+				m_MainWindow->getUI().centralGridLayout->addWidget( ensemble[2].dockWidget, 1, 0 );
+			}
+			break;
+		}
+		case InRow: {
+			m_MainWindow->getUI().centralGridLayout->addWidget( ensemble[0].dockWidget, m_RowCount, 0 );
+			m_MainWindow->getUI().centralGridLayout->addWidget( ensemble[1].dockWidget, m_RowCount, 1 );
+			m_MainWindow->getUI().centralGridLayout->addWidget( ensemble[2].dockWidget, m_RowCount, 2 );
+			break;
+		}
+		case InColumn: {
+			int currentColumn = m_MainWindow->getUI().centralGridLayout->columnCount() ;
+			m_MainWindow->getUI().centralGridLayout->addWidget( ensemble[0].dockWidget, 0, currentColumn );
+			m_MainWindow->getUI().centralGridLayout->addWidget( ensemble[1].dockWidget, 1, currentColumn );
+			m_MainWindow->getUI().centralGridLayout->addWidget( ensemble[2].dockWidget, 2, currentColumn );
+		}
+	}
+	m_RowCount++;
+}
 
-
-
-
+void UICore::rearrangeViewWidgets()
+{
+	m_RowCount = 0;
+	BOOST_FOREACH( ViewWidgetEnsembleListType::const_reference ensemble, m_EnsembleList ) 
+	{
+		attachViewWidgetEnsemble( detachViewWidgetEnsemble( ensemble ) );
+	}
+	if( m_EnsembleList.size() > 1 ) {
+		setOptionPosition( bottom );
+	} else {
+		setOptionPosition( central11 );
+	}
+}
 
 UICore::ViewWidget UICore::createViewWidget( const std::string &widgetType, PlaneOrientation planeOrientation )
 {

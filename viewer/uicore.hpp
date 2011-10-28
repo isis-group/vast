@@ -29,6 +29,7 @@ public:
 		QWidgetImplementationBase *widgetImplementation;
 		PlaneOrientation planeOrientation;
 		std::string widgetType;
+		bool operator==( const ViewWidget& other ) const { return widgetImplementation == other.widgetImplementation; }
 	};
 
 	typedef util::FixedVector<ViewWidget, 3> ViewWidgetEnsembleType;
@@ -45,15 +46,24 @@ public:
 	virtual ViewWidgetEnsembleType createViewWidgetEnsemble( const std::string &widgetType, bool show = true  );
 	virtual ViewWidgetEnsembleType createViewWidgetEnsemble( const std::string &widgetType, boost::shared_ptr< ImageHolder > image, bool show = true );
 
-	virtual ViewWidgetEnsembleType removeViewWidgetEnsemble( QWidgetImplementationBase *widgetImplementation );
-	virtual ViewWidgetEnsembleType removeViewWidgetEnsemble( ViewWidgetEnsembleType ensemble );
-
+	virtual void removeViewWidgetEnsemble( QWidgetImplementationBase *widgetImplementation );
+	virtual void removeViewWidgetEnsemble( ViewWidgetEnsembleType ensemble );	
+	
+	virtual ViewWidgetEnsembleType detachViewWidgetEnsemble( QWidgetImplementationBase *widgetImplementation );
+	virtual ViewWidgetEnsembleType detachViewWidgetEnsemble( ViewWidgetEnsembleType ensemble );	
+	
+	virtual void attachViewWidgetEnsemble( ViewWidgetEnsembleType ensemble );
+	
 	virtual ~UICore() {}
 
 	virtual void setOptionPosition( OptionPosition pos = bottom );
 
 	void setViewWidgetArrangement( ViewWidgetArragment arrangement ) { m_ViewWidgetArrangement = arrangement; }
 	ViewWidgetArragment getViewWidgetArrangement() const { return m_ViewWidgetArrangement; }
+	
+	ViewWidgetEnsembleListType getEnsembleList() const { return m_EnsembleList; }
+	
+	void rearrangeViewWidgets();
 
 public Q_SLOTS:
 	virtual void reloadPluginsToGUI();
@@ -75,9 +85,13 @@ private:
 	util::PropertyMap m_UICoreProperties;
 
 	widget::VoxelInformationWidget *m_VoxelInformationWidget;
+	QDockWidget *m_VoxelInformationDockWidget;
 	widget::ImageStackWidget *m_ImageStackWidget;
+	QDockWidget *m_ImageStackDockWidget;
 	ViewWidgetArragment m_ViewWidgetArrangement;
 
+	unsigned short m_RowCount;
+	
 	WidgetList m_WidgetList;
 
 };

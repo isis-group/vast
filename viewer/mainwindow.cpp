@@ -2,6 +2,7 @@
 #include <iostream>
 #include <QGridLayout>
 #include "DataStorage/io_factory.hpp"
+#include "uicore.hpp"
 
 
 namespace isis
@@ -37,14 +38,22 @@ void MainWindow::openImage()
 		bool isFirstImage = m_Core->getDataContainer().size() == 0;
 		std::list<data::Image> imgList;
 		util::slist pathList;
+		
+		if( (m_Core->getDataContainer().size() + filenames.size()) > 1 ) {
+			m_Core->getUI()->setViewWidgetArrangement( isis::viewer::UICore::InRow );
+		} else {
+			m_Core->getUI()->setViewWidgetArrangement( isis::viewer::UICore::Default );
+		}
+		
 		BOOST_FOREACH( QStringList::const_reference filename, filenames ) {
 			std::list<data::Image> tempImgList = isis::data::IOFactory::load( filename.toStdString() , "", "" );
 			pathList.push_back( filename.toStdString() );
 			BOOST_FOREACH( std::list<data::Image>::const_reference image, tempImgList ) {
 				imgList.push_back( image );
+				m_Core->getUI()->createViewWidgetEnsemble("", m_Core->addImage( image, ImageHolder::anatomical_image ) );
 			}
 		}
-
+		m_Core->getUI()->rearrangeViewWidgets();
 		m_Core->updateScene( isFirstImage );
 	}
 }
