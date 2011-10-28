@@ -7,7 +7,6 @@
 
 namespace isis {
 namespace viewer {
-namespace ui {
 	
 class MainWindow : public QMainWindow
 {
@@ -23,6 +22,8 @@ public:
 	void reloadPluginsToGUI( );
 	
 	
+public Q_SLOTS:
+	void openImage();
 	
 protected:
 	virtual void setupBasicElements();
@@ -30,11 +31,10 @@ private:
 	Ui::vastMainWindow m_UI;
 	QViewerCore *m_Core;
 	
-	
 };
 	
 	
-}}}
+}}
 
 
 

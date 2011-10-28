@@ -5,7 +5,6 @@
 
 namespace isis {
 namespace viewer {
-namespace ui {
 	
 	
 UICore::UICore( QViewerCore *core )
@@ -45,6 +44,11 @@ void UICore::setOptionPosition(UICore::OptionPosition pos)
 	}
 }
 
+void UICore::reensembleViewWidgets()
+{
+	BOOST_FOREACH( EnsembleMapType::const_reference ref, m_EnsembleMap ) {
+	}
+}
 
 void UICore::showMainWindow()
 {
@@ -119,7 +123,7 @@ bool UICore::removeWidget(const QWidgetImplementationBase *widget )
 
 
 
-ui::UICore::WidgetEnsemble UICore::createWidgetEnsemble( const std::string& widgetType, PlaneOrientation planeOrientation )
+UICore::WidgetEnsemble UICore::createWidgetEnsemble( const std::string& widgetType, PlaneOrientation planeOrientation )
 {
 	
 	QFrame *frameWidget = new QFrame();
@@ -161,4 +165,4 @@ void UICore::synchronize()
 
 
 	
-}}}
+}}

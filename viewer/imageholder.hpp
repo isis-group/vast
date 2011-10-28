@@ -25,7 +25,7 @@ class ImageHolder
 
 
 public:
-
+	typedef std::list<boost::shared_ptr< ImageHolder > > ImageListType;
 	typedef data::_internal::ValuePtrBase::Reference ImagePointerType;
 
 	enum ImageType { anatomical_image, z_map };

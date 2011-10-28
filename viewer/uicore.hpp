@@ -10,10 +10,12 @@
 
 namespace isis {
 namespace viewer {
-namespace ui {
+
+class MainWindow;
 	
 class UICore 
 {
+
 public:
 	enum OptionPosition { bottom, top, left, right, central11 };
 	struct WidgetEnsemble
@@ -29,7 +31,8 @@ public:
 	typedef std::list< RowType > RowListType;
 	typedef std::list<QWidgetImplementationBase *> ViewWidgetListType;
 	typedef std::map< const QWidgetImplementationBase *, WidgetEnsemble > EnsembleMapType;
-	UICore( QViewerCore *core );
+
+
 	
 	void showMainWindow();
 	const MainWindow *getMainWindow() const  { return m_MainWindow; }
@@ -55,13 +58,15 @@ public:
 	
 	virtual void setOptionPosition( OptionPosition pos = bottom );
 	
+	virtual void reensembleViewWidgets();
 	
 public Q_SLOTS:
 	virtual void reloadPluginsToGUI();
 	virtual void synchronize();
-
 	
-	
+	friend class QViewerCore;
+protected:
+	UICore( QViewerCore *core );
 	
 private:
 	
@@ -83,7 +88,7 @@ private:
 	
 	
 	
-}}}
+}}
 
 
 

@@ -16,13 +16,13 @@ class ViewerCoreBase
 		bool propagateZooming;
 	};
 public:
-	typedef std::list<boost::shared_ptr< ImageHolder > > ImageListType;
+
 	typedef std::list<boost::shared_ptr< plugin::PluginInterface > > PluginListType;
 	ViewerCoreBase( );
 
 	std::string getVersion() const;
 
-	virtual ImageListType addImageList( const std::list< data::Image > imageList, const ImageHolder::ImageType &imageType );
+	virtual ImageHolder::ImageListType addImageList( const std::list< data::Image > imageList, const ImageHolder::ImageType &imageType );
 	virtual void setImageList( const std::list< data::Image > imageList, const ImageHolder::ImageType &imageType );
 	virtual boost::shared_ptr<ImageHolder> addImage( const data::Image &image, const ImageHolder::ImageType &imageType );
 
@@ -39,7 +39,7 @@ public:
 
 	const DataContainer &getDataContainer() const { return m_DataContainer; }
 	DataContainer &getDataContainer() { return m_DataContainer; }
-	ImageListType getImageList() const { return m_ImageList; }
+	ImageHolder::ImageListType getImageList() const { return m_ImageList; }
 
 	const OptionStruct *getOption() const { return m_Options; }
 	OptionStruct *getOption() { return m_Options; }
@@ -61,7 +61,7 @@ private:
 protected:
 	OptionStruct *m_Options;
 	//additional imagelist for finding purpose
-	ImageListType m_ImageList;
+	ImageHolder::ImageListType m_ImageList;
 
 
 

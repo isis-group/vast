@@ -17,7 +17,6 @@ int main( int argc, char *argv[] )
 	
 	using namespace isis;
 	using namespace viewer;
-
 	
 	util::DefaultMsgPrint::stopBelow( warning );
 	ENABLE_LOG( data::Runtime, util::DefaultMsgPrint, error );
@@ -25,7 +24,7 @@ int main( int argc, char *argv[] )
 	std::string orgName = "cbs.mpg.de";
 	std::map<std::string, WidgetType> wTypeMap;
 
-	QViewerCore *core = new QViewerCore( appName, orgName );
+
 
 	util::Selection dbg_levels( "error,warning,info,verbose_info" );
 	util::Selection wTypes( "gl,qt" );
@@ -35,7 +34,7 @@ int main( int argc, char *argv[] )
 	dbg_levels.set( "warning" );
 	qt4::IOQtApplication app( appName.c_str(), false, false, std::string( "raster" ) );
 
-	std::cout << "v" << core->getVersion() << " ( isis core: " << app.getCoreVersion() << " )" << std::endl;
+
 	app.parameters["in"] = util::slist();
 	app.parameters["in"].needed() = false;
 	app.parameters["in"].setDescription( "The input image file list." );
@@ -66,15 +65,14 @@ int main( int argc, char *argv[] )
 	app.parameters["wtype"].setDescription( "Sets the type of the widgets" );
 	boost::shared_ptr< util::ProgressFeedback > feedback = boost::shared_ptr<util::ProgressFeedback>( new util::ConsoleFeedback );
 	data::IOFactory::setProgressFeedback( feedback );
-	//setting graphics mode
 	app.init( argc, argv, true );
 	
-	ui::UICore *uiCore = new ui::UICore(core);
-	//because some plugins may use a gui we have to pass a parent
-	core->setParentWidget( uiCore->getMainWindow() );
+	
+	QViewerCore *core = new QViewerCore( appName, orgName );
+	std::cout << "v" << core->getVersion() << " ( isis core: " << app.getCoreVersion() << " )" << std::endl;
 	//scan for plugins and hand them to the core
 	core->addPlugins( plugin::PluginLoader::get().getPlugins() );
-	uiCore->reloadPluginsToGUI();
+	core->getUI()->reloadPluginsToGUI();
 
 	app.setLog<ViewerLog>( app.getLLMap()[app.parameters["dViewer"]->as<util::Selection>()] );
 	app.setLog<ViewerDebug>( app.getLLMap()[app.parameters["dViewer"]->as<util::Selection>()] );
@@ -87,6 +85,9 @@ int main( int argc, char *argv[] )
 	BOOST_FOREACH ( util::slist::const_reference fileName, fileList ) {
 		std::list< data::Image > tmpList = data::IOFactory::load( fileName, app.parameters["rf"].toString(), app.parameters["rdialect"].toString() );
 		BOOST_FOREACH( std::list< data::Image >::reference imageRef, tmpList ) {
+			if( app.parameters["old_lipsia"] ) {
+				setOrientationToIdentity( imageRef );
+			}
 			imgList.push_back( imageRef );
 		}
 	}
@@ -94,6 +95,9 @@ int main( int argc, char *argv[] )
 	BOOST_FOREACH ( util::slist::const_reference fileName, zmapFileList ) {
 		std::list< data::Image > tmpList = data::IOFactory::load( fileName, app.parameters["rf"].toString(), app.parameters["rdialect"].toString() );
 		BOOST_FOREACH( std::list< data::Image >::reference imageRef, tmpList ) {
+			if( app.parameters["old_lipsia"] ) {
+				setOrientationToIdentity( imageRef );
+			}
 			zImgList.push_back( imageRef );
 		}
 	}
@@ -109,9 +113,9 @@ int main( int argc, char *argv[] )
 		unsigned short index = 0;
 		BOOST_FOREACH( ImageListRef image, core->addImageList( zImgList, ImageHolder::z_map ) )
 		{
-			QWidgetImplementationBase *axialWidget = uiCore->appendWidget("", index, 0, axial).viewWidget;
-			QWidgetImplementationBase *sagittalWidget = uiCore->appendWidget("", index, 1, sagittal).viewWidget;
-			QWidgetImplementationBase *coronalWidget = uiCore->appendWidget("", index, 2, coronal).viewWidget;
+			QWidgetImplementationBase *axialWidget = core->getUI()->appendWidget("", index, 0, axial).viewWidget;
+			QWidgetImplementationBase *sagittalWidget = core->getUI()->appendWidget("", index, 1, sagittal).viewWidget;
+			QWidgetImplementationBase *coronalWidget = core->getUI()->appendWidget("", index, 2, coronal).viewWidget;
 			core->attachImageToWidget( image, axialWidget );
 			core->attachImageToWidget( image, sagittalWidget );
 			core->attachImageToWidget( image, coronalWidget );
@@ -123,25 +127,25 @@ int main( int argc, char *argv[] )
 			}
 			index++;
 		}
-		uiCore->setOptionPosition( isis::viewer::ui::UICore::bottom );
+		core->getUI()->setOptionPosition( isis::viewer::UICore::bottom );
 	//only anatomical images with split option was specified
 	} else if ( app.parameters["in"].isSet() && app.parameters["split"].isSet() ) {
 		unsigned short index = 0;
 		BOOST_FOREACH( ImageListRef image, core->addImageList( imgList, ImageHolder::anatomical_image ) )
 		{
-			QWidgetImplementationBase *axialWidget = uiCore->appendWidget("", index, 0, axial).viewWidget;
-			QWidgetImplementationBase *sagittalWidget = uiCore->appendWidget("", index, 1, sagittal).viewWidget;
-			QWidgetImplementationBase *coronalWidget = uiCore->appendWidget("", index, 2, coronal).viewWidget;
+			QWidgetImplementationBase *axialWidget = core->getUI()->appendWidget("", index, 0, axial).viewWidget;
+			QWidgetImplementationBase *sagittalWidget = core->getUI()->appendWidget("", index, 1, sagittal).viewWidget;
+			QWidgetImplementationBase *coronalWidget = core->getUI()->appendWidget("", index, 2, coronal).viewWidget;
 			core->attachImageToWidget( image, axialWidget );
 			core->attachImageToWidget( image, sagittalWidget );
 			core->attachImageToWidget( image, coronalWidget );
 			index++;
 		}
-		uiCore->setOptionPosition( isis::viewer::ui::UICore::bottom );
+		core->getUI()->setOptionPosition( isis::viewer::UICore::bottom );
 	} else if ( app.parameters["in"].isSet() || app.parameters["zmap"].isSet() ) {
-		QWidgetImplementationBase *axialWidget = uiCore->appendWidget("", 0, 0, axial).viewWidget;
-		QWidgetImplementationBase *sagittalWidget = uiCore->appendWidget("", 0, 1, sagittal).viewWidget;
-		QWidgetImplementationBase *coronalWidget = uiCore->appendWidget("", 1, 0, coronal).viewWidget;
+		QWidgetImplementationBase *axialWidget = core->getUI()->appendWidget("", 0, 0, axial).viewWidget;
+		QWidgetImplementationBase *sagittalWidget = core->getUI()->appendWidget("", 0, 1, sagittal).viewWidget;
+		QWidgetImplementationBase *coronalWidget = core->getUI()->appendWidget("", 1, 0, coronal).viewWidget;
 		BOOST_FOREACH( ImageListRef image, core->addImageList( imgList, ImageHolder::anatomical_image ) )
 		{
 			core->attachImageToWidget( image, axialWidget );
@@ -154,14 +158,11 @@ int main( int argc, char *argv[] )
 			core->attachImageToWidget( image, sagittalWidget );
 			core->attachImageToWidget( image, coronalWidget );
 		}
-		uiCore->setOptionPosition( isis::viewer::ui::UICore::central11 );
+		core->getUI()->setOptionPosition( isis::viewer::UICore::central11 );
 		
 	}
-	
-	
-	
-	uiCore->synchronize();
-	uiCore->showMainWindow();
+	core->getUI()->synchronize();
+	core->getUI()->showMainWindow();
 
 	return app.getQApplication().exec();
 }

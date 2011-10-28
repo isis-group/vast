@@ -6,11 +6,14 @@
 #include "widgetImplementationBase.hpp"
 #include <QtGui>
 #include "color.hpp"
+#include "uicore.hpp"
 
 namespace isis
 {
 namespace viewer
 {
+class UICore;
+
 class QViewerCore : public QObject, public ViewerCoreBase
 {
 	Q_OBJECT
@@ -42,6 +45,12 @@ public:
 	virtual bool attachImageToWidget( boost::shared_ptr<ImageHolder> image, QWidgetImplementationBase * widget );
 	
 	void setParentWidget( QWidget *parent ) { m_Parent = parent; }
+	
+	const std::string &getCurrentPath() const  { return m_CurrentPath; }
+	void setCurrentPath( const std::string &path) { m_CurrentPath = path; }
+	
+	const UICore *getUI() const { return m_UI; }
+	UICore *getUI() { return m_UI; }
 
 public Q_SLOTS:
 	virtual void settingsChanged();
@@ -72,7 +81,9 @@ private:
 
 	QWidget *m_Parent;
 	PluginListType m_PluginList;
-
+	std::string m_CurrentPath;
+	UICore *m_UI;
+	
 };
 
 

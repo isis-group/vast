@@ -18,9 +18,9 @@ ViewerCoreBase::ViewerCoreBase( )
 	m_VoxelTransformation.fill( 1.0 );
 }
 
-ViewerCoreBase::ImageListType ViewerCoreBase::addImageList( const std::list< data::Image > imageList, const ImageHolder::ImageType &imageType )
+ImageHolder::ImageListType ViewerCoreBase::addImageList( const std::list< data::Image > imageList, const ImageHolder::ImageType &imageType )
 {
-	ImageListType retList;
+	ImageHolder::ImageListType retList;
 	if( !imageList.empty() ) {
 		BOOST_FOREACH( std::list< data::Image >::const_reference imageRef, imageList ) {
 			boost::shared_ptr< ImageHolder > imageHolder = m_DataContainer.addImage( imageRef, imageType );

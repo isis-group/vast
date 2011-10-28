@@ -1,18 +1,62 @@
 #include "mainwindow.hpp"
 #include <iostream>
 #include <QGridLayout>
+#include "DataStorage/io_factory.hpp"
 
 
 namespace isis {
 namespace viewer {
-namespace ui {
 	
 MainWindow::MainWindow( QViewerCore *core ) :
 	m_Core(core)
 {
 	m_UI.setupUi(this);
 	setupBasicElements();
+	
+	connect( m_UI.action_Open_image, SIGNAL(triggered()), this, SLOT(openImage() ) );
+	
 }
+
+void MainWindow::openImage()
+{
+	ImageHolder::ImageType type = ImageHolder::anatomical_image;
+	std::string title("Open Image");
+	std::stringstream fileFormats;
+	fileFormats << "Image files (" << getFileFormatsAsString( std::string( "*." ) ) << ")";
+	QStringList filenames = QFileDialog::getOpenFileNames( this,
+							tr( title.c_str() ),
+							m_Core->getCurrentPath().c_str(),
+							tr( fileFormats.str().c_str() ) );
+
+
+	if( !filenames.empty() ) {
+		QDir dir;
+		m_Core->setCurrentPath( dir.absoluteFilePath( filenames.front() ).toStdString() );
+		bool isFirstImage = m_Core->getDataContainer().size() == 0;
+		std::list<data::Image> imgList;
+		util::slist pathList;
+		BOOST_FOREACH( QStringList::const_reference filename, filenames ) {
+			std::list<data::Image> tempImgList = isis::data::IOFactory::load( filename.toStdString() , "", "" );
+			pathList.push_back( filename.toStdString() );
+			BOOST_FOREACH( std::list<data::Image>::const_reference image, tempImgList ) {
+				imgList.push_back( image );
+			}
+		}
+		BOOST_FOREACH( ImageHolder::ImageListType::const_reference image, m_Core->addImageList( imgList, type ) )
+		{
+			UICore::RowType row = m_Core->getUI()->appendWidgetRow("");
+			m_Core->attachImageToWidget( image, row[0].viewWidget );
+			m_Core->attachImageToWidget( image, row[1].viewWidget );
+			m_Core->attachImageToWidget( image, row[2].viewWidget );
+		}
+		if( m_Core->getUI()->getRowList().size() ) {
+			m_Core->getUI()->setOptionPosition( isis::viewer::UICore::bottom );
+		}
+		m_Core->updateScene( isFirstImage );
+	}
+}
+
+
 
 
 void MainWindow::setupBasicElements()
@@ -61,4 +105,4 @@ void MainWindow::reloadPluginsToGUI()
 }
 
 	
-}}}
+}}
