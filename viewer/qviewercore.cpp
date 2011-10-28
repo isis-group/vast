@@ -10,7 +10,7 @@ QViewerCore::QViewerCore( const std::string &appName, const std::string &orgName
 	: ViewerCoreBase( ),
 	  m_Parent( parent ),
 	  m_CurrentPath( QDir::currentPath().toStdString() ),
-	  m_UI( new isis::viewer::UICore(this) )
+	  m_UI( new isis::viewer::UICore( this ) )
 {
 	QCoreApplication::setApplicationName( QString( appName.c_str() ) );
 	QCoreApplication::setOrganizationName( QString( orgName.c_str() ) );
@@ -135,16 +135,17 @@ bool QViewerCore::callPlugin( QString name )
 	return false;
 }
 
-bool QViewerCore::attachImageToWidget( boost::shared_ptr<ImageHolder> image, QWidgetImplementationBase * widget)
+bool QViewerCore::attachImageToWidget( boost::shared_ptr<ImageHolder> image, QWidgetImplementationBase *widget )
 {
 	if ( std::find( getUI()->getWidgets().begin(), getUI()->getWidgets().end(), widget ) == getUI()->getWidgets().end() ) {
-		LOG( Runtime, error ) << "There is no such widget " 
-			<< widget << ", so will not add image " << image->getFileNames().front() << " to it.";
+		LOG( Runtime, error ) << "There is no such widget "
+							  << widget << ", so will not add image " << image->getFileNames().front() << " to it.";
 		return false;
 	}
-	if( std::find( m_ImageList.begin(), m_ImageList.end(), image) == m_ImageList.end()  ) {
-		LOG( Runtime, error ) << "There is no such image " 
-			<< image->getFileNames().front() << ", so will not add it to widget " << widget << ".";
+
+	if( std::find( m_ImageList.begin(), m_ImageList.end(), image ) == m_ImageList.end()  ) {
+		LOG( Runtime, error ) << "There is no such image "
+							  << image->getFileNames().front() << ", so will not add it to widget " << widget << ".";
 		return false;
 	}
 

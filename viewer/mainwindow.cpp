@@ -4,23 +4,25 @@
 #include "DataStorage/io_factory.hpp"
 
 
-namespace isis {
-namespace viewer {
-	
-MainWindow::MainWindow( QViewerCore *core ) :
-	m_Core(core)
+namespace isis
 {
-	m_UI.setupUi(this);
+namespace viewer
+{
+
+MainWindow::MainWindow( QViewerCore *core ) :
+	m_Core( core )
+{
+	m_UI.setupUi( this );
 	setupBasicElements();
-	
-	connect( m_UI.action_Open_image, SIGNAL(triggered()), this, SLOT(openImage() ) );
-	
+
+	connect( m_UI.action_Open_image, SIGNAL( triggered() ), this, SLOT( openImage() ) );
+
 }
 
 void MainWindow::openImage()
 {
 	ImageHolder::ImageType type = ImageHolder::anatomical_image;
-	std::string title("Open Image");
+	std::string title( "Open Image" );
 	std::stringstream fileFormats;
 	fileFormats << "Image files (" << getFileFormatsAsString( std::string( "*." ) ) << ")";
 	QStringList filenames = QFileDialog::getOpenFileNames( this,
@@ -42,7 +44,7 @@ void MainWindow::openImage()
 				imgList.push_back( image );
 			}
 		}
-	
+
 		m_Core->updateScene( isFirstImage );
 	}
 }
@@ -53,8 +55,8 @@ void MainWindow::openImage()
 void MainWindow::setupBasicElements()
 {
 	//here we setup the basic elements of the viewer
-	
-	
+
+
 }
 
 void MainWindow::reloadPluginsToGUI()
@@ -79,11 +81,11 @@ void MainWindow::reloadPluginsToGUI()
 			QAction *processAction = new QAction( QString( ( --sepName.end() )->c_str() ), this );
 
 #warning add plugin icon to toolbar
-// 			//optionally add plugin to the toolbar
-// 			if( !plugin->getToolbarIcon()->isNull() ) {
-// 				processAction->setIcon( *plugin->getToolbarIcon() );
-// 				m_Toolbar->addAction( processAction );
-// 			}
+			//          //optionally add plugin to the toolbar
+			//          if( !plugin->getToolbarIcon()->isNull() ) {
+			//              processAction->setIcon( *plugin->getToolbarIcon() );
+			//              m_Toolbar->addAction( processAction );
+			//          }
 
 			processAction->setStatusTip( QString( plugin->getTooltip().c_str() ) );
 			signalMapper->setMapping( processAction, QString( plugin->getName().c_str() ) );
@@ -95,5 +97,6 @@ void MainWindow::reloadPluginsToGUI()
 	}
 }
 
-	
-}}
+
+}
+}

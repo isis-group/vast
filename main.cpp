@@ -14,10 +14,10 @@
 
 int main( int argc, char *argv[] )
 {
-	
+
 	using namespace isis;
 	using namespace viewer;
-	
+
 	util::DefaultMsgPrint::stopBelow( warning );
 	ENABLE_LOG( data::Runtime, util::DefaultMsgPrint, error );
 	std::string appName = "vast";
@@ -66,8 +66,8 @@ int main( int argc, char *argv[] )
 	boost::shared_ptr< util::ProgressFeedback > feedback = boost::shared_ptr<util::ProgressFeedback>( new util::ConsoleFeedback );
 	data::IOFactory::setProgressFeedback( feedback );
 	app.init( argc, argv, true );
-	
-	
+
+
 	QViewerCore *core = new QViewerCore( appName, orgName );
 	std::cout << "v" << core->getVersion() << " ( isis core: " << app.getCoreVersion() << " )" << std::endl;
 	//scan for plugins and hand them to the core
@@ -88,6 +88,7 @@ int main( int argc, char *argv[] )
 			if( app.parameters["old_lipsia"] ) {
 				setOrientationToIdentity( imageRef );
 			}
+
 			imgList.push_back( imageRef );
 		}
 	}
@@ -98,56 +99,55 @@ int main( int argc, char *argv[] )
 			if( app.parameters["old_lipsia"] ) {
 				setOrientationToIdentity( imageRef );
 			}
+
 			zImgList.push_back( imageRef );
 		}
 	}
-	
-//*****************************************************************************************
-//distribution of images
-//*****************************************************************************************
+
+	//*****************************************************************************************
+	//distribution of images
+	//*****************************************************************************************
 
 	typedef std::list< boost::shared_ptr<ImageHolder > >::const_reference ImageListRef;
-	
+
 	//particular distribution of images in widgets
 	if( app.parameters["zmap"].isSet() && zImgList.size() > 1 ) {
 		core->getUI()->setViewWidgetArrangement( UICore::InRow );
-		BOOST_FOREACH( ImageListRef image, core->addImageList( zImgList, ImageHolder::z_map ) )
-		{
+		BOOST_FOREACH( ImageListRef image, core->addImageList( zImgList, ImageHolder::z_map ) ) {
 			UICore::ViewWidgetEnsembleType ensemble = core->getUI()->createViewWidgetEnsemble( "", image );
-			if( app.parameters["in"].isSet() ) {	
-				boost::shared_ptr<ImageHolder> anatomicalImage = core->addImage( imgList.front(), ImageHolder::anatomical_image);
+
+			if( app.parameters["in"].isSet() ) {
+				boost::shared_ptr<ImageHolder> anatomicalImage = core->addImage( imgList.front(), ImageHolder::anatomical_image );
 				ensemble[0].widgetImplementation->addImage( anatomicalImage );
 				ensemble[1].widgetImplementation->addImage( anatomicalImage );
 				ensemble[2].widgetImplementation->addImage( anatomicalImage );
 			}
 		}
 		core->getUI()->setOptionPosition( isis::viewer::UICore::bottom );
-	//only anatomical images with split option was specified
+		//only anatomical images with split option was specified
 	} else if ( app.parameters["in"].isSet() && app.parameters["split"].isSet() ) {
 		core->getUI()->setViewWidgetArrangement( UICore::InRow );
-		BOOST_FOREACH( ImageListRef image, core->addImageList( imgList, ImageHolder::anatomical_image ) )
-		{
+		BOOST_FOREACH( ImageListRef image, core->addImageList( imgList, ImageHolder::anatomical_image ) ) {
 			core->getUI()->createViewWidgetEnsemble( "", image );
 		}
 		core->getUI()->setOptionPosition( isis::viewer::UICore::bottom );
 	} else if ( app.parameters["in"].isSet() || app.parameters["zmap"].isSet() ) {
 		core->getUI()->setViewWidgetArrangement( UICore::Default );
 		UICore::ViewWidgetEnsembleType ensemble = core->getUI()->createViewWidgetEnsemble( "" );
-		BOOST_FOREACH( ImageListRef image, core->addImageList( imgList, ImageHolder::anatomical_image ) )
-		{
+		BOOST_FOREACH( ImageListRef image, core->addImageList( imgList, ImageHolder::anatomical_image ) ) {
 			core->attachImageToWidget( image, ensemble[0]. widgetImplementation );
 			core->attachImageToWidget( image, ensemble[1]. widgetImplementation );
 			core->attachImageToWidget( image, ensemble[2]. widgetImplementation );
 		}
-		BOOST_FOREACH( ImageListRef image, core->addImageList( zImgList, ImageHolder::z_map	) )
-		{
+		BOOST_FOREACH( ImageListRef image, core->addImageList( zImgList, ImageHolder::z_map ) ) {
 			core->attachImageToWidget( image, ensemble[0]. widgetImplementation );
 			core->attachImageToWidget( image, ensemble[1]. widgetImplementation );
 			core->attachImageToWidget( image, ensemble[2]. widgetImplementation );
 		}
 		core->getUI()->setOptionPosition( isis::viewer::UICore::central11 );
-		
+
 	}
+
 	core->getUI()->synchronize();
 	core->getUI()->showMainWindow();
 
