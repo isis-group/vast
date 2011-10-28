@@ -47,6 +47,7 @@ void UICore::setOptionPosition(UICore::OptionPosition pos)
 void UICore::reensembleViewWidgets()
 {
 	BOOST_FOREACH( EnsembleMapType::const_reference ref, m_EnsembleMap ) {
+		
 	}
 }
 
