@@ -42,16 +42,7 @@ void MainWindow::openImage()
 				imgList.push_back( image );
 			}
 		}
-		BOOST_FOREACH( ImageHolder::ImageListType::const_reference image, m_Core->addImageList( imgList, type ) )
-		{
-			UICore::RowType row = m_Core->getUI()->appendWidgetRow("");
-			m_Core->attachImageToWidget( image, row[0].viewWidget );
-			m_Core->attachImageToWidget( image, row[1].viewWidget );
-			m_Core->attachImageToWidget( image, row[2].viewWidget );
-		}
-		if( m_Core->getUI()->getRowList().size() ) {
-			m_Core->getUI()->setOptionPosition( isis::viewer::UICore::bottom );
-		}
+	
 		m_Core->updateScene( isFirstImage );
 	}
 }

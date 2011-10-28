@@ -18,23 +18,19 @@ class QViewerCore : public QObject, public ViewerCoreBase
 {
 	Q_OBJECT
 public:
-	typedef std::list<QWidgetImplementationBase * > WidgetList;
+
 	QViewerCore( const std::string &appName = std::string(), const std::string &orgName = std::string(), QWidget *parent = 0 );
-
-
-	bool registerWidget( QWidgetImplementationBase *widget );
 
 	virtual std::list<boost::shared_ptr<ImageHolder> > addImageList( const std::list< data::Image > imageList, const ImageHolder::ImageType &imageType);
 	virtual void setImageList( const std::list< data::Image > imageList, const ImageHolder::ImageType &imageType);
 
-	const WidgetList &getWidgets() const { return m_WidgetList; }
-	WidgetList &getWidgets() { return m_WidgetList; }
+
 	const QSettings *getSettings() const { return m_Settings; }
 	QSettings *getSettings() { return m_Settings; }
 
 	//  bool widgetsAreIntitialized() const;
 
-	std::vector< util::fvector4 > getRGBColorGradient() const { return m_RGBColorGradient; }
+// 	std::vector< util::fvector4 > getRGBColorGradient() const { return m_RGBColorGradient; }
 
 	//plugin stuff
 
@@ -74,9 +70,8 @@ Q_SIGNALS:
 	void emitUpdateScene( bool center );
 
 private:
-	//this map holds the widgets associated with a given name
-	WidgetList m_WidgetList;
-	std::vector< util::fvector4 > m_RGBColorGradient;
+
+// 	std::vector< util::fvector4 > m_RGBColorGradient;
 	QSettings *m_Settings;
 
 	QWidget *m_Parent;

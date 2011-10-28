@@ -16,6 +16,7 @@ UICore::UICore( QViewerCore *core )
 	
 	m_VoxelInformationWidget = new widget::VoxelInformationWidget( m_MainWindow, core );
 	m_ImageStackWidget = new widget::ImageStackWidget( m_MainWindow, core );
+	m_ViewWidgetArrangement = Default;
 }
 
 void UICore::setOptionPosition(UICore::OptionPosition pos)
@@ -44,12 +45,6 @@ void UICore::setOptionPosition(UICore::OptionPosition pos)
 	}
 }
 
-void UICore::reensembleViewWidgets()
-{
-	BOOST_FOREACH( EnsembleMapType::const_reference ref, m_EnsembleMap ) {
-		
-	}
-}
 
 void UICore::showMainWindow()
 {
@@ -73,58 +68,55 @@ QDockWidget* UICore::createDockingEnsemble( QWidget* widget )
 	
 }
 
-
-UICore::RowType UICore::appendWidgetRow(const std::string& widgetType )
+UICore::ViewWidgetEnsembleType UICore::appendViewWidgetEnsemble(const std::string& widgetType, boost::shared_ptr< ImageHolder > image)
 {
-	RowType row;
-	int currentRow = m_MainWindow->getUI().centralGridLayout->rowCount();
-	row[0] =  createWidgetEnsemble( widgetType, axial );
-	row[1] =  createWidgetEnsemble( widgetType, sagittal );
-	row[2] =  createWidgetEnsemble( widgetType, coronal );
-	m_MainWindow->getUI().centralGridLayout->addWidget( row[0].dockWidget, currentRow, 0 );
-	m_MainWindow->getUI().centralGridLayout->addWidget( row[1].dockWidget, currentRow, 1 );
-	m_MainWindow->getUI().centralGridLayout->addWidget( row[2].dockWidget, currentRow, 2 );
-	m_EnsembleMap[row[0].viewWidget] = row[0];
-	m_EnsembleMap[row[1].viewWidget] = row[1];
-	m_EnsembleMap[row[2].viewWidget] = row[2];
-	m_RowList.push_back(row);
-	return row;	
+	ViewWidgetEnsembleType ensemble = appendViewWidgetEnsemble( widgetType );
+	ensemble[0].widgetImplementation->addImage( image );
+	ensemble[1].widgetImplementation->addImage( image );
+	ensemble[2].widgetImplementation->addImage( image );
+	return ensemble;
 }
 
-
-UICore::WidgetEnsemble UICore::appendWidget( const std::string& widgetType, PlaneOrientation planeOrientation)
+UICore::ViewWidgetEnsembleType UICore::appendViewWidgetEnsemble(const std::string& widgetType)
 {
-	WidgetEnsemble ret = createWidgetEnsemble( widgetType, planeOrientation);
-	m_MainWindow->getUI().centralGridLayout->addWidget( ret.dockWidget );
-	return ret;
-}
-
-UICore::WidgetEnsemble UICore::appendWidget( const std::string& widgetType, int row, int column, PlaneOrientation planeOrientation, Qt::Alignment alignment )
-{
-	WidgetEnsemble ret = createWidgetEnsemble( widgetType, planeOrientation);
-	m_MainWindow->getUI().centralGridLayout->addWidget( ret.dockWidget, row, column, alignment );
-	return ret;
-}
-
-
-bool UICore::removeWidget(const QWidgetImplementationBase *widget )
-{
-	EnsembleMapType::const_iterator iter = m_EnsembleMap.find( widget );
-	if( iter != m_EnsembleMap.end() ) {
-		m_MainWindow->getUI().centralGridLayout->removeWidget( iter->second.dockWidget );
-		m_EnsembleMap.erase(widget);
-		m_ViewWidgetList.erase( std::find( m_ViewWidgetList.begin(), m_ViewWidgetList.end(), widget ) );
-		return true;
-	} else {
-		LOG( Runtime, error ) << "Tried to remove widget " << widget 
-			<< " of type " << widget->getWidgetName() << ". But there is no such widget!";
-		return false;
+	ViewWidgetEnsembleType ensemble;
+	ensemble[0] =  createViewWidget( widgetType, axial );
+	ensemble[1] =  createViewWidget( widgetType, sagittal );
+	ensemble[2] =  createViewWidget( widgetType, coronal );
+	switch ( m_ViewWidgetArrangement ) {
+		case Default: {
+			if( m_EnsembleList.size() > 0 ) {
+				int currentRow = m_MainWindow->getUI().centralGridLayout->rowCount();
+				m_MainWindow->getUI().centralGridLayout->addWidget( ensemble[0].dockWidget, currentRow, 0 );
+				m_MainWindow->getUI().centralGridLayout->addWidget( ensemble[1].dockWidget, currentRow, 1 );
+				m_MainWindow->getUI().centralGridLayout->addWidget( ensemble[2].dockWidget, currentRow, 2 );
+			} else {
+				m_MainWindow->getUI().centralGridLayout->addWidget( ensemble[0].dockWidget, 0, 0 );
+				m_MainWindow->getUI().centralGridLayout->addWidget( ensemble[1].dockWidget, 0, 1 );
+				m_MainWindow->getUI().centralGridLayout->addWidget( ensemble[2].dockWidget, 1, 0 );
+			}
+			break;
+		} case InRow: {
+			int currentRow = m_MainWindow->getUI().centralGridLayout->rowCount();
+			m_MainWindow->getUI().centralGridLayout->addWidget( ensemble[0].dockWidget, currentRow, 0 );
+			m_MainWindow->getUI().centralGridLayout->addWidget( ensemble[1].dockWidget, currentRow, 1 );
+			m_MainWindow->getUI().centralGridLayout->addWidget( ensemble[2].dockWidget, currentRow, 2 );
+			break;
+		} case InColumn: {
+			int currentColumn = m_MainWindow->getUI().centralGridLayout->columnCount();
+			m_MainWindow->getUI().centralGridLayout->addWidget( ensemble[0].dockWidget, 0, currentColumn );
+			m_MainWindow->getUI().centralGridLayout->addWidget( ensemble[1].dockWidget, 1, currentColumn );
+			m_MainWindow->getUI().centralGridLayout->addWidget( ensemble[2].dockWidget, 2, currentColumn );
+		}
 	}
+	m_EnsembleList.push_back( ensemble );
+	return ensemble;	
 }
 
 
 
-UICore::WidgetEnsemble UICore::createWidgetEnsemble( const std::string& widgetType, PlaneOrientation planeOrientation )
+
+UICore::ViewWidget UICore::createViewWidget( const std::string& widgetType, PlaneOrientation planeOrientation )
 {
 	
 	QFrame *frameWidget = new QFrame();
@@ -136,18 +128,15 @@ UICore::WidgetEnsemble UICore::createWidgetEnsemble( const std::string& widgetTy
 	frameWidget->setParent( dockWidget );
 
 #warning this has to be done with the help of a widget factor. nasty this way
-	QWidgetImplementationBase *viewWidget = new qt::QImageWidgetImplementation(m_Core, frameWidget, planeOrientation );
-	m_Core->registerWidget( viewWidget );
-	WidgetEnsemble ensemble;
-	ensemble.dockWidget = dockWidget;
-	ensemble.frame = frameWidget;
-	ensemble.viewWidget = viewWidget;
-	ensemble.planeOrientation = planeOrientation;
-	ensemble.widgetType = widgetType;
-	ensemble.ID = m_ViewWidgetList.size();
-	m_ViewWidgetList.push_back( ensemble.viewWidget );
-	m_EnsembleMap[ensemble.viewWidget] = ensemble;
-	return ensemble;
+	QWidgetImplementationBase *widgetImpl = new qt::QImageWidgetImplementation(m_Core, frameWidget, planeOrientation );
+	registerWidget( widgetImpl );
+	ViewWidget viewWidget;
+	viewWidget.dockWidget = dockWidget;
+	viewWidget.frame = frameWidget;
+	viewWidget.widgetImplementation = widgetImpl;
+	viewWidget.planeOrientation = planeOrientation;
+	viewWidget.widgetType = widgetType;
+	return viewWidget;
 
 }
 
@@ -165,5 +154,15 @@ void UICore::synchronize()
 }
 
 
+bool UICore::registerWidget(QWidgetImplementationBase* widget)
+{
+	if( std::find( m_WidgetList.begin(), m_WidgetList.end(), widget ) != m_WidgetList.end() ) {
+		LOG( Runtime, warning ) << "Widget with id" << widget->getWidgetName() << "!";
+		return false;
+	}
+	m_WidgetList.push_back(widget);
+	return true;
+
+}
 	
 }}

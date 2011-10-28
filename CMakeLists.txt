@@ -18,9 +18,9 @@ file (GLOB UI_FILES forms/*.ui)
 file (GLOB RESOURCE_FILES resources/*.qrc)
 
 set(VIEWER_FILES_HPP
-	widgets/mainWindowBase.hpp
-	widgets/mainWindow.hpp
-	widgets/mainWindowUIInterface.hpp
+# 	widgets/mainWindowBase.hpp
+# 	widgets/mainWindow.hpp
+# 	widgets/mainWindowUIInterface.hpp
 	viewer/qviewercore.hpp
 	viewer/mainwindow.hpp
 	widgets/preferenceDialog.hpp

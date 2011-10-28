@@ -17,48 +17,39 @@ class UICore
 {
 
 public:
+	typedef std::list<QWidgetImplementationBase * > WidgetList;
+	
 	enum OptionPosition { bottom, top, left, right, central11 };
-	struct WidgetEnsemble
+	enum ViewWidgetArragment { Default, InRow, InColumn };
+	struct ViewWidget
 	{
 		QDockWidget *dockWidget;
 		QFrame *frame;
-		QWidgetImplementationBase *viewWidget;
+		QWidgetImplementationBase *widgetImplementation;
 		PlaneOrientation planeOrientation;
 		std::string widgetType;
-		size_t ID;
 	};
-	typedef util::FixedVector<WidgetEnsemble, 3> RowType;
-	typedef std::list< RowType > RowListType;
-	typedef std::list<QWidgetImplementationBase *> ViewWidgetListType;
-	typedef std::map< const QWidgetImplementationBase *, WidgetEnsemble > EnsembleMapType;
-
-
+	
+	typedef util::FixedVector<ViewWidget, 3> ViewWidgetEnsembleType;
+	typedef std::list< ViewWidgetEnsembleType > ViewWidgetEnsembleListType;
+	
+	bool registerWidget( QWidgetImplementationBase *widget );
+	const WidgetList &getWidgets() const { return m_WidgetList; }
+	WidgetList &getWidgets() { return m_WidgetList; }
 	
 	void showMainWindow();
 	const MainWindow *getMainWindow() const  { return m_MainWindow; }
 	MainWindow *getMainWindow() { return m_MainWindow; }
+
+	virtual ViewWidgetEnsembleType appendViewWidgetEnsemble( const std::string &widgetType );
+	virtual ViewWidgetEnsembleType appendViewWidgetEnsemble( const std::string &widgetType, boost::shared_ptr< ImageHolder > image );
 	
-	RowListType getRowList() const { return m_RowList; }
-	
-	/**
-	 * Append a widget to the main widget area.
-	 *\param name Name of the widget.
-	 *\param widgetType Type of the widget.
-	 *\param planeOrientation The planeOrientation of the widget (axial, sagittal, coronal)
-	 *\return returns if the widget was successfuly appended
-	 */
-	
-	virtual WidgetEnsemble appendWidget( const std::string &widgetType, PlaneOrientation planeOrientation = axial );
-	virtual WidgetEnsemble appendWidget( const std::string &widgetType, int row, int column, PlaneOrientation planeOrientation = axial, Qt::Alignment = 0 );
-	
-	virtual RowType appendWidgetRow( const std::string &widgetType );
-	
-	virtual bool removeWidget( const QWidgetImplementationBase *widget );
 	virtual ~UICore() {}
 	
 	virtual void setOptionPosition( OptionPosition pos = bottom );
 	
-	virtual void reensembleViewWidgets();
+	void setViewWidgetArrangement( ViewWidgetArragment arrangement ) { m_ViewWidgetArrangement = arrangement; }
+	ViewWidgetArragment getViewWidgetArrangement() const { return m_ViewWidgetArrangement; }
 	
 public Q_SLOTS:
 	virtual void reloadPluginsToGUI();
@@ -70,19 +61,20 @@ protected:
 	
 private:
 	
-	WidgetEnsemble createWidgetEnsemble( const std::string& widgetType, PlaneOrientation planeOrientation );
+	ViewWidget createViewWidget( const std::string& widgetType, PlaneOrientation planeOrientation );
 	
 	QDockWidget *createDockingEnsemble( QWidget *widget );
 	
 	QViewerCore *m_Core;
 	MainWindow *m_MainWindow;
-	EnsembleMapType m_EnsembleMap;
-	ViewWidgetListType m_ViewWidgetList;
+	ViewWidgetEnsembleListType m_EnsembleList;
 	util::PropertyMap m_UICoreProperties;
-	RowListType m_RowList;
 	
 	widget::VoxelInformationWidget *m_VoxelInformationWidget;
 	widget::ImageStackWidget * m_ImageStackWidget;
+	ViewWidgetArragment m_ViewWidgetArrangement;
+	
+	WidgetList m_WidgetList;
 	
 };
 	

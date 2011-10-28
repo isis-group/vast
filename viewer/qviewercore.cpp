@@ -20,16 +20,6 @@ QViewerCore::QViewerCore( const std::string &appName, const std::string &orgName
 
 
 
-bool
-QViewerCore::registerWidget( QWidgetImplementationBase *widget )
-{
-	if( std::find( m_WidgetList.begin(), m_WidgetList.end(), widget ) != m_WidgetList.end() ) {
-		LOG( Runtime, warning ) << "Widget with id" << widget->getWidgetName() << "!";
-		return false;
-	}
-	m_WidgetList.push_back(widget);
-	return true;
-}
 
 void QViewerCore::voxelCoordsChanged( util::ivector4 voxelCoords )
 {
@@ -89,7 +79,7 @@ void QViewerCore::settingsChanged()
 		getCurrentImage()->getPropMap().setPropertyAs<std::string>( "lut", getSettings()->value( "lut", "fallback" ).toString().toStdString() );
 	}
 
-	BOOST_FOREACH( WidgetList::const_reference widget, m_WidgetList ) {
+	BOOST_FOREACH( UICore::WidgetList::const_reference widget, getUI()->getWidgets() ) {
 		widget->setInterpolationType( static_cast<InterpolationType>( getSettings()->value( "interpolationType", "standard_grey_values" ).toUInt() ) );
 	}
 	getSettings()->endGroup();
@@ -147,7 +137,7 @@ bool QViewerCore::callPlugin( QString name )
 
 bool QViewerCore::attachImageToWidget( boost::shared_ptr<ImageHolder> image, QWidgetImplementationBase * widget)
 {
-	if ( std::find( m_WidgetList.begin(), m_WidgetList.end(), widget ) == m_WidgetList.end() ) {
+	if ( std::find( getUI()->getWidgets().begin(), getUI()->getWidgets().end(), widget ) == getUI()->getWidgets().end() ) {
 		LOG( Runtime, error ) << "There is no such widget " 
 			<< widget << ", so will not add image " << image->getFileNames().front() << " to it.";
 		return false;

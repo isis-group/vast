@@ -110,53 +110,40 @@ int main( int argc, char *argv[] )
 	
 	//particular distribution of images in widgets
 	if( app.parameters["zmap"].isSet() && zImgList.size() > 1 ) {
-		unsigned short index = 0;
+		core->getUI()->setViewWidgetArrangement( UICore::InRow );
 		BOOST_FOREACH( ImageListRef image, core->addImageList( zImgList, ImageHolder::z_map ) )
 		{
-			QWidgetImplementationBase *axialWidget = core->getUI()->appendWidget("", index, 0, axial).viewWidget;
-			QWidgetImplementationBase *sagittalWidget = core->getUI()->appendWidget("", index, 1, sagittal).viewWidget;
-			QWidgetImplementationBase *coronalWidget = core->getUI()->appendWidget("", index, 2, coronal).viewWidget;
-			core->attachImageToWidget( image, axialWidget );
-			core->attachImageToWidget( image, sagittalWidget );
-			core->attachImageToWidget( image, coronalWidget );
+			UICore::ViewWidgetEnsembleType ensemble = core->getUI()->appendViewWidgetEnsemble( "", image );
 			if( app.parameters["in"].isSet() ) {	
 				boost::shared_ptr<ImageHolder> anatomicalImage = core->addImage( imgList.front(), ImageHolder::anatomical_image);
-				core->attachImageToWidget( anatomicalImage, axialWidget );
-				core->attachImageToWidget( anatomicalImage, sagittalWidget );
-				core->attachImageToWidget( anatomicalImage, coronalWidget );
+				ensemble[0].widgetImplementation->addImage( anatomicalImage );
+				ensemble[1].widgetImplementation->addImage( anatomicalImage );
+				ensemble[2].widgetImplementation->addImage( anatomicalImage );
 			}
-			index++;
 		}
 		core->getUI()->setOptionPosition( isis::viewer::UICore::bottom );
 	//only anatomical images with split option was specified
 	} else if ( app.parameters["in"].isSet() && app.parameters["split"].isSet() ) {
-		unsigned short index = 0;
+		core->getUI()->setViewWidgetArrangement( UICore::InRow );
 		BOOST_FOREACH( ImageListRef image, core->addImageList( imgList, ImageHolder::anatomical_image ) )
 		{
-			QWidgetImplementationBase *axialWidget = core->getUI()->appendWidget("", index, 0, axial).viewWidget;
-			QWidgetImplementationBase *sagittalWidget = core->getUI()->appendWidget("", index, 1, sagittal).viewWidget;
-			QWidgetImplementationBase *coronalWidget = core->getUI()->appendWidget("", index, 2, coronal).viewWidget;
-			core->attachImageToWidget( image, axialWidget );
-			core->attachImageToWidget( image, sagittalWidget );
-			core->attachImageToWidget( image, coronalWidget );
-			index++;
+			core->getUI()->appendViewWidgetEnsemble( "", image );
 		}
 		core->getUI()->setOptionPosition( isis::viewer::UICore::bottom );
 	} else if ( app.parameters["in"].isSet() || app.parameters["zmap"].isSet() ) {
-		QWidgetImplementationBase *axialWidget = core->getUI()->appendWidget("", 0, 0, axial).viewWidget;
-		QWidgetImplementationBase *sagittalWidget = core->getUI()->appendWidget("", 0, 1, sagittal).viewWidget;
-		QWidgetImplementationBase *coronalWidget = core->getUI()->appendWidget("", 1, 0, coronal).viewWidget;
+		core->getUI()->setViewWidgetArrangement( UICore::Default );
+		UICore::ViewWidgetEnsembleType ensemble = core->getUI()->appendViewWidgetEnsemble( "" );
 		BOOST_FOREACH( ImageListRef image, core->addImageList( imgList, ImageHolder::anatomical_image ) )
 		{
-			core->attachImageToWidget( image, axialWidget );
-			core->attachImageToWidget( image, sagittalWidget );
-			core->attachImageToWidget( image, coronalWidget );
+			core->attachImageToWidget( image, ensemble[0]. widgetImplementation );
+			core->attachImageToWidget( image, ensemble[1]. widgetImplementation );
+			core->attachImageToWidget( image, ensemble[2]. widgetImplementation );
 		}
 		BOOST_FOREACH( ImageListRef image, core->addImageList( zImgList, ImageHolder::z_map	) )
 		{
-			core->attachImageToWidget( image, axialWidget );
-			core->attachImageToWidget( image, sagittalWidget );
-			core->attachImageToWidget( image, coronalWidget );
+			core->attachImageToWidget( image, ensemble[0]. widgetImplementation );
+			core->attachImageToWidget( image, ensemble[1]. widgetImplementation );
+			core->attachImageToWidget( image, ensemble[2]. widgetImplementation );
 		}
 		core->getUI()->setOptionPosition( isis::viewer::UICore::central11 );
 		
