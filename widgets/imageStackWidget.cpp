@@ -7,7 +7,7 @@ namespace viewer
 namespace widget
 {
 
-ImageStackWidget::ImageStackWidget( QWidget *parent, ViewerCoreBase *core )
+ImageStackWidget::ImageStackWidget( QWidget *parent, QViewerCore *core )
 	: QWidget( parent ), m_Core( core )
 {
 	m_Interface.setupUi( this );

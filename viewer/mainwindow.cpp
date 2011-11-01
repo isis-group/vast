@@ -54,6 +54,7 @@ void MainWindow::openImage()
 			}
 		}
 		m_Core->getUI()->rearrangeViewWidgets();
+		m_Core->getUI()->synchronize();
 		m_Core->updateScene( isFirstImage );
 	}
 }

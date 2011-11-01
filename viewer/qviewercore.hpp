@@ -6,7 +6,7 @@
 #include "widgetImplementationBase.hpp"
 #include <QtGui>
 #include "color.hpp"
-#include "uicore.hpp"
+
 
 namespace isis
 {
@@ -28,11 +28,6 @@ public:
 	const QSettings *getSettings() const { return m_Settings; }
 	QSettings *getSettings() { return m_Settings; }
 
-	//  bool widgetsAreIntitialized() const;
-
-	//  std::vector< util::fvector4 > getRGBColorGradient() const { return m_RGBColorGradient; }
-
-	//plugin stuff
 
 	void addPlugin( boost::shared_ptr< plugin::PluginInterface > plugin );
 	void addPlugins( plugin::PluginLoader::PluginListType plugins );
@@ -87,7 +82,7 @@ private:
 
 
 
-
+#include "uicore.hpp"
 
 
 #endif

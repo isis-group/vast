@@ -22,6 +22,8 @@ UICore::UICore( QViewerCore *core )
 	m_VoxelInformationDockWidget = createDockingEnsemble( m_VoxelInformationWidget );
 	m_ImageStackDockWidget = createDockingEnsemble( m_ImageStackWidget );
 	m_RowCount = m_MainWindow->getUI().centralGridLayout->rowCount();
+	
+	
 }
 
 void UICore::setOptionPosition( UICore::OptionPosition pos )
@@ -212,8 +214,6 @@ void UICore::synchronize()
 {
 	m_ImageStackWidget->updateImageStack( );
 	m_VoxelInformationWidget->synchronize();
-
-
 }
 
 
@@ -228,6 +228,8 @@ bool UICore::registerWidget( QWidgetImplementationBase *widget )
 	return true;
 
 }
+
+
 
 }
 }

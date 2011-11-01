@@ -31,6 +31,9 @@ public:
 
 	virtual QWidget *getParent( ) const { return m_Parent; }
 	virtual PlaneOrientation getPlaneOrientation() { return m_PlaneOrientation; }
+	
+	virtual bool lookAtPhysicalCoords( const util::fvector4 &physicalCoords ) = 0;
+	virtual bool lookAtVoxelCoords( const util::ivector4 &voxelCoords ) = 0;
 
 	boost::uuids::uuid getID() const { return m_ID; }
 

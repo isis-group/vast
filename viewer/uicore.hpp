@@ -1,18 +1,19 @@
 #ifndef UICORE_HPP
 #define UICORE_HPP
 
-#include "qviewercore.hpp"
+#include <list>
+#include <widgetImplementationBase.hpp>
 #include "mainwindow.hpp"
-#include "qviewercore.hpp"
-
-#include "voxelInformationWidget.hpp"
-#include "imageStackWidget.hpp"
 
 namespace isis
 {
 namespace viewer
 {
 
+namespace widget {
+	class VoxelInformationWidget;
+	class ImageStackWidget;
+}
 class MainWindow;
 
 class UICore
@@ -101,8 +102,7 @@ private:
 }
 }
 
-
-
-
+#include "voxelInformationWidget.hpp"
+#include "imageStackWidget.hpp"
 
 #endif
