@@ -15,7 +15,6 @@ VoxelInformationWidget::VoxelInformationWidget( QWidget *parent, QViewerCore *co
 	m_Interface.spinBox->setMinimum(0);
 	m_Interface.spinBox_2->setMinimum(0);
 	m_Interface.spinBox_3->setMinimum(0);
-	m_Interface.labelTypeName->setPalette(QPalette(Qt::darkGray));
 	connect( m_Core, SIGNAL( emitVoxelCoordChanged(util::ivector4)), this, SLOT(synchronizePos(util::ivector4)));
 }
 
