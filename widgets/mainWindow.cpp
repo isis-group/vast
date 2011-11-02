@@ -52,37 +52,10 @@
 //  saveSettings();
 // }
 //
-// void MainWindow::saveSettings()
-// {
-//  //saving the preferences to the profile file
-//  m_ViewerCore->getSettings()->beginGroup( "MainWindow" );
-//  m_ViewerCore->getSettings()->setValue( "size", size() );
-//  m_ViewerCore->getSettings()->setValue( "maximized", isMaximized() );
-//  m_ViewerCore->getSettings()->setValue( "pos", pos() );
-//  m_ViewerCore->getSettings()->endGroup();
-//  m_ViewerCore->getSettings()->sync();
-// }
+
 //
 //
-// void MainWindow::loadSettings()
-// {
-//  m_ViewerCore->getSettings()->beginGroup( "MainWindow" );
-//  resize( m_ViewerCore->getSettings()->value( "size", QSize( 900, 900 ) ).toSize() );
-//  move( m_ViewerCore->getSettings()->value( "pos", QPoint( 0, 0 ) ).toPoint() );
-//
-//  if( m_ViewerCore->getSettings()->value( "maximized", false ).toBool() ) {
-//      showMaximized();
-//  }
-//
-//  m_ViewerCore->getSettings()->endGroup();
-//  m_ViewerCore->getSettings()->beginGroup( "UserProfile" );
-//  ui.actionAutomatic_Scaling->setChecked( m_ViewerCore->getSettings()->value( "scaling", 0 ).toBool() );
-//  ui.actionShow_labels->setChecked( m_ViewerCore->getSettings()->value( "labels", 0 ).toBool() );
-//  m_ViewerCore->getOption()->propagateZooming = m_ViewerCore->getSettings()->value( "propagateZooming", false ).toBool();
-//  m_ViewerCore->getSettings()->endGroup();
-//
-//
-// }
+
 //
 //
 //

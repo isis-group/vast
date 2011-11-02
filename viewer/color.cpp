@@ -52,7 +52,6 @@ bool Color::addColormap( const std::string &path, const boost::regex &separator 
 		LOG( Runtime, warning ) << "Can not read colormap " << path << " because header is missing or has wrong syntax (name:type)!";
 		return false;
 	}
-
 	std::string lutTyp = boost::lexical_cast< std::string>( results.str( 2 ) );
 	std::string lutName = boost::lexical_cast< std::string>( results.str( 1 ) );
 	lines.pop_front();
@@ -73,13 +72,11 @@ bool Color::addColormap( const std::string &path, const boost::regex &separator 
 			return false;
 		}
 	}
-
 	if( lutVec.size() != 256 ) {
 		LOG( Runtime, warning ) << "The size of the colormap " << lutName
 								<< " is " << lutVec.size() << " but has to be 256!";
 		return false;
 	}
-
 	m_ColormapMap[lutName] = lutVec;
 	return true;
 }
@@ -87,7 +84,7 @@ bool Color::addColormap( const std::string &path, const boost::regex &separator 
 
 QIcon Color::getIcon( const std::string &colormapName, size_t w, size_t h ) const
 {
-	ColormapType lut = getColormapMap()[colormapName];
+	const ColormapType lut = getColormapMap()[colormapName];
 	data::ValuePtr<uint8_t> lutImage( 256 * 3 );
 	unsigned short index = 0;
 
@@ -100,8 +97,6 @@ QIcon Color::getIcon( const std::string &colormapName, size_t w, size_t h ) cons
 	QImage image( static_cast<uint8_t *>( lutImage.getRawAddress().get() ), 256, 1, QImage::Format_RGB888 );
 	QPixmap pixmap( QPixmap::fromImage( image ) );
 	return QIcon( pixmap.scaled( w, h ) );
-
-
 }
 
 
@@ -125,17 +120,17 @@ color::Color::ColormapType Color::getFallbackColormap() const
 
 color::Color::ColormapType color::Color::adaptColorMapToImage( color::Color::ColormapType colorMap, const boost::shared_ptr< ImageHolder > image, bool split )
 {
-	assert( colorMap.size() == 256 );
+	LOG_IF(colorMap.size() != 256, Runtime, error ) << "The colormap is of size " << colorMap.size() << " but has to be of size 256!";
 	color::Color::ColormapType retMap = colorMap;
-	double extent = image->getPropMap().getPropertyAs<double>( "extent" );
-	double min = image->getMinMax().first->as<double>();
-	double max = image->getMinMax().second->as<double>();
-	double lowerThreshold = image->getPropMap().getPropertyAs<double>( "lowerThreshold" );
-	double upperThreshold = image->getPropMap().getPropertyAs<double>( "upperThreshold" );
-	double offset = image->getPropMap().getPropertyAs<double>( "offset" );
-	double scaling = image->getPropMap().getPropertyAs<double>( "scaling" );
-	double norm = 256.0 / extent;
-	unsigned short mid = norm * fabs( min );
+	const double extent = image->getPropMap().getPropertyAs<double>( "extent" );
+	const double min = image->getMinMax().first->as<double>();
+	const double max = image->getMinMax().second->as<double>();
+	const double lowerThreshold = image->getPropMap().getPropertyAs<double>( "lowerThreshold" );
+	const double upperThreshold = image->getPropMap().getPropertyAs<double>( "upperThreshold" );
+	const double offset = image->getPropMap().getPropertyAs<double>( "offset" );
+	const double scaling = image->getPropMap().getPropertyAs<double>( "scaling" );
+	const double norm = 256.0 / extent;
+	const unsigned short mid = norm * fabs( min );
 	unsigned short scaledVal;
 
 	for ( unsigned short i = 0; i < 256; i++ ) {

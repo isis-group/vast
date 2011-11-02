@@ -9,12 +9,13 @@ namespace viewer
 QViewerCore::QViewerCore( const std::string &appName, const std::string &orgName, QWidget *parent )
 	: ViewerCoreBase( ),
 	  m_Parent( parent ),
+	  m_Settings( new QSettings( appName.c_str(), orgName.c_str() ) ),
 	  m_CurrentPath( QDir::currentPath().toStdString() ),
 	  m_UI( new isis::viewer::UICore( this ) )
 {
 	QCoreApplication::setApplicationName( QString( appName.c_str() ) );
 	QCoreApplication::setOrganizationName( QString( orgName.c_str() ) );
-	m_Settings = new QSettings( appName.c_str(), orgName.c_str() );
+	
 	setParentWidget( m_UI->getMainWindow() );
 }
 
@@ -79,8 +80,8 @@ void QViewerCore::settingsChanged()
 		getCurrentImage()->getPropMap().setPropertyAs<std::string>( "lut", getSettings()->value( "lut", "fallback" ).toString().toStdString() );
 	}
 
-	BOOST_FOREACH( UICore::WidgetList::const_reference widget, getUI()->getWidgets() ) {
-		widget->setInterpolationType( static_cast<InterpolationType>( getSettings()->value( "interpolationType", "standard_grey_values" ).toUInt() ) );
+	BOOST_FOREACH( UICore::WidgetMap::const_reference widget, getUI()->getWidgets() ) {
+		widget.first->setInterpolationType( static_cast<InterpolationType>( getSettings()->value( "interpolationType", "standard_grey_values" ).toUInt() ) );
 	}
 	getSettings()->endGroup();
 }
@@ -137,7 +138,7 @@ bool QViewerCore::callPlugin( QString name )
 
 bool QViewerCore::attachImageToWidget( boost::shared_ptr<ImageHolder> image, QWidgetImplementationBase *widget )
 {
-	if ( std::find( getUI()->getWidgets().begin(), getUI()->getWidgets().end(), widget ) == getUI()->getWidgets().end() ) {
+	if ( getUI()->getWidgets().find( widget ) == getUI()->getWidgets().end() ) {
 		LOG( Runtime, error ) << "There is no such widget "
 							  << widget << ", so will not add image " << image->getFileNames().front() << " to it.";
 		return false;

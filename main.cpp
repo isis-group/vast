@@ -67,7 +67,6 @@ int main( int argc, char *argv[] )
 	data::IOFactory::setProgressFeedback( feedback );
 	app.init( argc, argv, true );
 
-
 	QViewerCore *core = new QViewerCore( appName, orgName );
 	std::cout << "v" << core->getVersion() << " ( isis core: " << app.getCoreVersion() << " )" << std::endl;
 	//scan for plugins and hand them to the core
@@ -132,7 +131,7 @@ int main( int argc, char *argv[] )
 		}
 		core->getUI()->setOptionPosition( isis::viewer::UICore::bottom );
 	} else if ( app.parameters["in"].isSet() || app.parameters["zmap"].isSet() ) {
-		core->getUI()->setViewWidgetArrangement( UICore::Default );
+		core->getUI()->setViewWidgetArrangement( UICore::InRow );
 		UICore::ViewWidgetEnsembleType ensemble = core->getUI()->createViewWidgetEnsemble( "" );
 		BOOST_FOREACH( ImageListRef image, core->addImageList( imgList, ImageHolder::anatomical_image ) ) {
 			core->attachImageToWidget( image, ensemble[0]. widgetImplementation );
@@ -144,11 +143,11 @@ int main( int argc, char *argv[] )
 			core->attachImageToWidget( image, ensemble[1]. widgetImplementation );
 			core->attachImageToWidget( image, ensemble[2]. widgetImplementation );
 		}
-		core->getUI()->setOptionPosition( isis::viewer::UICore::central11 );
+		core->getUI()->setOptionPosition( isis::viewer::UICore::bottom );
 
 	}
 
-	core->getUI()->synchronize();
+	core->getUI()->refreshUI();
 	core->getUI()->showMainWindow();
 
 	return app.getQApplication().exec();

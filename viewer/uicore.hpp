@@ -13,6 +13,7 @@ namespace viewer
 namespace widget {
 	class VoxelInformationWidget;
 	class ImageStackWidget;
+	class SliderWidget;
 }
 class MainWindow;
 
@@ -20,7 +21,7 @@ class UICore
 {
 
 public:
-	typedef std::list<QWidgetImplementationBase * > WidgetList;
+
 
 	enum OptionPosition { bottom, top, left, right, central11 };
 	enum ViewWidgetArragment { Default, InRow, InColumn };
@@ -32,13 +33,13 @@ public:
 		std::string widgetType;
 		bool operator==( const ViewWidget& other ) const { return widgetImplementation == other.widgetImplementation; }
 	};
-
+	typedef std::map<QWidgetImplementationBase *, ViewWidget > WidgetMap;
 	typedef util::FixedVector<ViewWidget, 3> ViewWidgetEnsembleType;
 	typedef std::list< ViewWidgetEnsembleType > ViewWidgetEnsembleListType;
 
-	bool registerWidget( QWidgetImplementationBase *widget );
-	const WidgetList &getWidgets() const { return m_WidgetList; }
-	WidgetList &getWidgets() { return m_WidgetList; }
+	bool registerWidget( ViewWidget widget );
+	const WidgetMap &getWidgets() const { return m_WidgetMap; }
+	WidgetMap &getWidgets() { return m_WidgetMap; }
 
 	void showMainWindow();
 	const MainWindow *getMainWindow() const  { return m_MainWindow; }
@@ -65,10 +66,10 @@ public:
 	ViewWidgetEnsembleListType getEnsembleList() const { return m_EnsembleList; }
 	
 	void rearrangeViewWidgets();
-
+	
 public Q_SLOTS:
 	virtual void reloadPluginsToGUI();
-	virtual void synchronize();
+	virtual void refreshUI();
 
 	friend class QViewerCore;
 protected:
@@ -89,11 +90,13 @@ private:
 	QDockWidget *m_VoxelInformationDockWidget;
 	widget::ImageStackWidget *m_ImageStackWidget;
 	QDockWidget *m_ImageStackDockWidget;
+	widget::SliderWidget *m_SliderWidget;
+	
 	ViewWidgetArragment m_ViewWidgetArrangement;
 
 	unsigned short m_RowCount;
 	
-	WidgetList m_WidgetList;
+	WidgetMap m_WidgetMap;
 
 };
 
@@ -104,5 +107,6 @@ private:
 
 #include "voxelInformationWidget.hpp"
 #include "imageStackWidget.hpp"
+#include "sliderwidget.hpp"
 
 #endif

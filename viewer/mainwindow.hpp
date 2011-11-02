@@ -26,6 +26,9 @@ public:
 
 public Q_SLOTS:
 	void openImage();
+	void loadSettings();
+	void saveSettings();
+	void closeEvent( QCloseEvent * );
 
 protected:
 	virtual void setupBasicElements();

@@ -1,4 +1,5 @@
 #include "imageStackWidget.hpp"
+#include <viewercorebase.hpp>
 
 namespace isis
 {
@@ -11,9 +12,14 @@ ImageStackWidget::ImageStackWidget( QWidget *parent, QViewerCore *core )
 	: QWidget( parent ), m_Core( core )
 {
 	m_Interface.setupUi( this );
+	
+	m_Interface.imageStack->setEditTriggers(QAbstractItemView::NoEditTriggers);
+	connect( m_Interface.imageStack, SIGNAL( itemActivated(QListWidgetItem*) ), this, SLOT( itemSelected(QListWidgetItem*)));
+	connect( m_Interface.imageStack, SIGNAL( itemChanged(QListWidgetItem*)), this, SLOT(itemClicked(QListWidgetItem*)));
+
 }
 
-void ImageStackWidget::updateImageStack()
+void ImageStackWidget::synchronize()
 {
 	m_Interface.imageStack->clear();
 	BOOST_FOREACH( DataContainer::const_reference imageRef, m_Core->getDataContainer() ) {
@@ -36,6 +42,26 @@ void ImageStackWidget::updateImageStack()
 	}
 }
 
+
+void ImageStackWidget::itemClicked( QListWidgetItem *item )
+{
+	if( item->checkState() == Qt::Checked ) {
+		m_Core->getDataContainer().at( item->text().toStdString() )->getPropMap().setPropertyAs<bool>("isVisible", true ) ;
+	} else {
+		m_Core->getDataContainer().at( item->text().toStdString() )->getPropMap().setPropertyAs<bool>("isVisible", false ) ;
+	}
+	m_Core->getUI()->refreshUI();
+	m_Core->updateScene();
+		
+}
+
+void ImageStackWidget::itemSelected(QListWidgetItem *item )
+{
+	m_Core->setCurrentImage( m_Core->getDataContainer().at( item->text().toStdString() ) );
+	synchronize();
+	m_Core->getUI()->refreshUI();
+	m_Core->updateScene();
+}
 
 
 }

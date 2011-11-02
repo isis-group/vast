@@ -286,7 +286,7 @@
          <x>0</x>
          <y>0</y>
          <width>1328</width>
-         <height>723</height>
+         <height>725</height>
         </rect>
        </property>
        <layout class="QGridLayout" name="gridLayout_9">
@@ -1062,7 +1062,7 @@
   </action>
   <action name="actionOpen_DICOM">
    <property name="icon">
-    <iconset>
+    <iconset resource="../resources/viewer.qrc">
      <normaloff>:/common/openimage.png</normaloff>:/common/openimage.png</iconset>
    </property>
    <property name="text">
@@ -1096,7 +1096,7 @@ This is needed if you want to open an entire DICOM directory.</string>
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset>
+    <iconset resource="../resources/viewer.qrc">
      <normaloff>:/common/axial.png</normaloff>:/common/axial.png</iconset>
    </property>
    <property name="text">
@@ -1114,7 +1114,7 @@ This is needed if you want to open an entire DICOM directory.</string>
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset>
+    <iconset resource="../resources/viewer.qrc">
      <normaloff>:/common/sagittal.png</normaloff>:/common/sagittal.png</iconset>
    </property>
    <property name="text">
@@ -1132,7 +1132,7 @@ This is needed if you want to open an entire DICOM directory.</string>
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset>
+    <iconset resource="../resources/viewer.qrc">
      <normaloff>:/common/coronal.png</normaloff>:/common/coronal.png</iconset>
    </property>
    <property name="text">
@@ -1162,7 +1162,7 @@ This is needed if you want to open an entire DICOM directory.</string>
   </action>
   <action name="action_Preferences">
    <property name="icon">
-    <iconset>
+    <iconset resource="../resources/viewer.qrc">
      <normaloff>:/common/preferences_settings.png</normaloff>:/common/preferences_settings.png</iconset>
    </property>
    <property name="text">

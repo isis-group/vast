@@ -82,8 +82,6 @@ private:
 	QPainter *m_Painter;
 	InternalImageType m_InterpolationType;
 	ScalingType m_ScalingType;
-	ImageVectorType m_ImageVector;
-
 
 };
 

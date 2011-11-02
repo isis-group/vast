@@ -21,9 +21,14 @@ public:
 
 	Ui::imageStackWidget &getInterface() { return m_Interface; }
 
-	void updateImageStack();
+	void synchronize();
+
+public Q_SLOTS:
+	void itemClicked( QListWidgetItem *);
+	void itemSelected( QListWidgetItem * );
+	
 private:
-	ViewerCoreBase *m_Core;
+	QViewerCore *m_Core;
 	Ui::imageStackWidget m_Interface;
 
 };

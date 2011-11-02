@@ -17,13 +17,12 @@ UICore::UICore( QViewerCore *core )
 	m_UICoreProperties.setPropertyAs<uint16_t>( "maxWidgetWidth", 200 );
 
 	m_VoxelInformationWidget = new widget::VoxelInformationWidget( m_MainWindow, core );
+	m_SliderWidget = new widget::SliderWidget( m_MainWindow, core );
 	m_ImageStackWidget = new widget::ImageStackWidget( m_MainWindow, core );
-	m_ViewWidgetArrangement = Default;
+	m_ViewWidgetArrangement = InRow;
 	m_VoxelInformationDockWidget = createDockingEnsemble( m_VoxelInformationWidget );
 	m_ImageStackDockWidget = createDockingEnsemble( m_ImageStackWidget );
 	m_RowCount = m_MainWindow->getUI().centralGridLayout->rowCount();
-	
-	
 }
 
 void UICore::setOptionPosition( UICore::OptionPosition pos )
@@ -55,7 +54,7 @@ void UICore::setOptionPosition( UICore::OptionPosition pos )
 
 void UICore::showMainWindow()
 {
-
+	m_MainWindow->getUI().rightGridLayout->addWidget( m_SliderWidget );
 	m_MainWindow->show();
 
 }
@@ -194,13 +193,14 @@ UICore::ViewWidget UICore::createViewWidget( const std::string &widgetType, Plan
 
 #warning this has to be done with the help of a widget factor. nasty this way
 	QWidgetImplementationBase *widgetImpl = new qt::QImageWidgetImplementation( m_Core, frameWidget, planeOrientation );
-	registerWidget( widgetImpl );
+	
 	ViewWidget viewWidget;
 	viewWidget.dockWidget = dockWidget;
 	viewWidget.frame = frameWidget;
 	viewWidget.widgetImplementation = widgetImpl;
 	viewWidget.planeOrientation = planeOrientation;
 	viewWidget.widgetType = widgetType;
+	registerWidget( viewWidget );
 	return viewWidget;
 
 }
@@ -210,21 +210,30 @@ void UICore::reloadPluginsToGUI()
 	m_MainWindow->reloadPluginsToGUI();
 }
 
-void UICore::synchronize()
+void UICore::refreshUI()
 {
-	m_ImageStackWidget->updateImageStack( );
+	m_SliderWidget->synchronize();
+	m_ImageStackWidget->synchronize();
 	m_VoxelInformationWidget->synchronize();
+	BOOST_FOREACH( WidgetMap::reference widget, getWidgets() ) 
+	{
+		if( !widget.second.widgetImplementation->getImageVector().size() ) 
+		{
+			widget.second.dockWidget->setVisible(false);
+		} else {
+			widget.second.dockWidget->setVisible( true );
+		}
+	}
 }
 
 
-bool UICore::registerWidget( QWidgetImplementationBase *widget )
+bool UICore::registerWidget( ViewWidget widget )
 {
-	if( std::find( m_WidgetList.begin(), m_WidgetList.end(), widget ) != m_WidgetList.end() ) {
-		LOG( Runtime, warning ) << "Widget with id" << widget->getWidgetName() << "!";
+	if( m_WidgetMap.find( widget.widgetImplementation ) != m_WidgetMap.end() ) {
+		LOG( Runtime, warning ) << "Widget with id" << widget.widgetImplementation->getWidgetName() << "!";
 		return false;
 	}
-
-	m_WidgetList.push_back( widget );
+	m_WidgetMap[widget.widgetImplementation] = widget;
 	return true;
 
 }

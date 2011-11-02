@@ -11,7 +11,7 @@ namespace viewer
 namespace qt
 {
 
-typedef std::vector<boost::shared_ptr<ImageHolder> > ImageVectorType;
+
 typedef  util::FixedVector<float, 6 > ViewPortType;
 
 

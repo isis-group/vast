@@ -66,7 +66,6 @@ Q_SIGNALS:
 
 private:
 
-	//  std::vector< util::fvector4 > m_RGBColorGradient;
 	QSettings *m_Settings;
 
 	QWidget *m_Parent;
