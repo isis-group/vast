@@ -1,5 +1,4 @@
 #include <Adapter/qtapplication.hpp>
-#include "mainWindowUIInterface.hpp"
 #include "qviewercore.hpp"
 #include <iostream>
 #include <DataStorage/io_factory.hpp>
@@ -23,8 +22,6 @@ int main( int argc, char *argv[] )
 	std::string appName = "vast";
 	std::string orgName = "cbs.mpg.de";
 	std::map<std::string, WidgetType> wTypeMap;
-
-
 
 	util::Selection dbg_levels( "error,warning,info,verbose_info" );
 	util::Selection wTypes( "gl,qt" );
