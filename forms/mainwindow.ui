@@ -104,7 +104,14 @@
     <addaction name="separator"/>
     <addaction name="action_Exit"/>
    </widget>
+   <widget class="QMenu" name="menu_Preferences">
+    <property name="title">
+     <string>&amp;Options</string>
+    </property>
+    <addaction name="action_Preferences"/>
+   </widget>
    <addaction name="menu_File"/>
+   <addaction name="menu_Preferences"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="action_Open_image">
@@ -173,6 +180,18 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+C</string>
+   </property>
+  </action>
+  <action name="action_Preferences">
+   <property name="icon">
+    <iconset resource="../resources/viewer.qrc">
+     <normaloff>:/common/preferences_settings.png</normaloff>:/common/preferences_settings.png</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Preferences</string>
+   </property>
+   <property name="shortcut">
+    <string>S, P</string>
    </property>
   </action>
  </widget>

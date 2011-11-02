@@ -36,7 +36,7 @@ void QImageWidgetImplementation::commonInit()
 
 	connect( this, SIGNAL( zoomChanged( float ) ), m_ViewerCore, SLOT( zoomChanged( float ) ) );
 	connect( this, SIGNAL( voxelCoordsChanged( util::ivector4 ) ), m_ViewerCore, SLOT( voxelCoordsChanged ( util::ivector4 ) ) );
-	connect( this, SIGNAL( physicalCoordsChanged(util::fvector4)), m_ViewerCore, SLOT( physicalCoordsChanged(util::fvector4)));
+	connect( this, SIGNAL( physicalCoordsChanged( util::fvector4 ) ), m_ViewerCore, SLOT( physicalCoordsChanged( util::fvector4 ) ) );
 	connect( m_ViewerCore, SIGNAL( emitUpdateScene( bool ) ), this, SLOT( updateScene( bool ) ) );
 	connect( m_ViewerCore, SIGNAL( emitPhysicalCoordsChanged( util::fvector4 ) ), this, SLOT( lookAtPhysicalCoords( util::fvector4 ) ) );
 	connect( m_ViewerCore, SIGNAL( emitVoxelCoordChanged( util::ivector4 ) ), this, SLOT( lookAtVoxelCoords( util::ivector4 ) ) );
@@ -181,6 +181,7 @@ void QImageWidgetImplementation::paintImage( boost::shared_ptr< ImageHolder > im
 	}
 
 	const util::ivector4 mappedSizeAligned = QOrienationHandler::mapCoordsToOrientation( image->getPropMap().getPropertyAs<util::ivector4>( "alignedSize32Bit" ), image, m_PlaneOrientation );
+
 	isis::data::MemChunk<InternalImageType> sliceChunk( mappedSizeAligned[0], mappedSizeAligned[1] );
 
 	m_MemoryHandler.fillSliceChunk( sliceChunk, image, m_PlaneOrientation, image->getPropMap().getPropertyAs<uint16_t>( "currentTimestep" ) );
@@ -245,7 +246,7 @@ void QImageWidgetImplementation::emitMousePressEvent( QMouseEvent *e )
 	if( isInViewPort( imgProps.viewPort, e ) ) {
 		uint16_t slice = QOrienationHandler::mapCoordsToOrientation( image->getPropMap().getPropertyAs<util::ivector4>( "voxelCoords" ), image, m_PlaneOrientation )[2];
 		util::ivector4 coords = QOrienationHandler::convertWindow2VoxelCoords( imgProps.viewPort, m_WidgetProperties, image, e->x(), e->y(), slice, m_PlaneOrientation );
-		physicalCoordsChanged( m_ViewerCore->getCurrentImage()->getISISImage()->getPhysicalCoordsFromIndex( coords ));
+		physicalCoordsChanged( m_ViewerCore->getCurrentImage()->getISISImage()->getPhysicalCoordsFromIndex( coords ) );
 	}
 }
 

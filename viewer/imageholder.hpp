@@ -70,8 +70,8 @@ public:
 
 	const ImageProperties &getImageProperties() const { return m_ImageProperties; }
 	ImageProperties &getImageProperties() { return m_ImageProperties; }
-	
-	void addWidget( QWidgetImplementationBase * widget ) { m_WidgetList.push_back( widget ); }
+
+	void addWidget( QWidgetImplementationBase *widget ) { m_WidgetList.push_back( widget ); }
 	std::list< QWidgetImplementationBase * > getWidgetList() { return m_WidgetList; }
 
 	/**offset, scaling**/
@@ -125,7 +125,7 @@ public:
 
 private:
 
-	
+
 	size_t m_NumberOfTimeSteps;
 	util::FixedVector<size_t, 4> m_ImageSize;
 	util::PropertyMap m_PropMap;
@@ -140,7 +140,7 @@ private:
 
 	std::vector< ImagePointerType > m_ImageVector;
 	std::vector< data::Chunk > m_ChunkVector;
-	
+
 	bool filterRelevantMetaInformation();
 
 	std::list<QWidgetImplementationBase *> m_WidgetList;

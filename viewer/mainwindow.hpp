@@ -4,11 +4,16 @@
 #include <QMainWindow>
 #include "ui_mainwindow.h"
 #include "qviewercore.hpp"
+#include "preferenceDialog.hpp"
 
 namespace isis
 {
 namespace viewer
 {
+namespace widget
+{
+class PreferencesDialog;
+}
 
 class MainWindow : public QMainWindow
 {
@@ -25,7 +30,7 @@ public:
 
 
 public Q_SLOTS:
-// 	void clearStatusbar();
+	void showPreferences();
 	void openImage();
 	void openDir();
 	void saveImage();
@@ -39,8 +44,9 @@ protected:
 private:
 	Ui::vastMainWindow m_UI;
 	QViewerCore *m_Core;
-	
+
 	QToolBar *m_Toolbar;
+	isis::viewer::widget::PreferencesDialog *m_PreferencesDialog;
 
 };
 

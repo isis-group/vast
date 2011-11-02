@@ -5,8 +5,10 @@ namespace isis
 {
 namespace viewer
 {
+namespace widget
+{
 
-QPreferencesDialog::QPreferencesDialog( QWidget *parent, QViewerCore *core ):
+PreferencesDialog::PreferencesDialog( QWidget *parent, QViewerCore *core ):
 	QDialog( parent ),
 	m_ViewerCore( core )
 {
@@ -19,22 +21,23 @@ QPreferencesDialog::QPreferencesDialog( QWidget *parent, QViewerCore *core ):
 
 }
 
-void QPreferencesDialog::apply( int dummy )
+void PreferencesDialog::apply( int dummy )
+{
+	saveSettings();
+	m_ViewerCore->getUI()->refreshUI();
+	m_ViewerCore->settingsChanged();
+	m_ViewerCore->updateScene();
+}
+
+
+void PreferencesDialog::closeEvent( QCloseEvent * )
 {
 	saveSettings();
 	m_ViewerCore->settingsChanged();
 	m_ViewerCore->updateScene();
 }
 
-
-void QPreferencesDialog::closeEvent( QCloseEvent * )
-{
-	saveSettings();
-	m_ViewerCore->settingsChanged();
-	m_ViewerCore->updateScene();
-}
-
-void QPreferencesDialog::loadSettings()
+void PreferencesDialog::loadSettings()
 {
 	preferencesUi.comboBox->clear();
 	QSize size = preferencesUi.comboBox->iconSize();
@@ -54,7 +57,7 @@ void QPreferencesDialog::loadSettings()
 	m_ViewerCore->getSettings()->endGroup();
 }
 
-void QPreferencesDialog::saveSettings()
+void PreferencesDialog::saveSettings()
 {
 	m_ViewerCore->getSettings()->beginGroup( "UserProfile" );
 	m_ViewerCore->getSettings()->setValue( "showDesc", preferencesUi.checkShowDesc->isChecked() );
@@ -65,9 +68,10 @@ void QPreferencesDialog::saveSettings()
 	m_ViewerCore->getSettings()->setValue( "propagateZooming", preferencesUi.checkPropagateZooming->isChecked() );
 	m_ViewerCore->getSettings()->endGroup();
 	m_ViewerCore->getSettings()->sync();
+	m_ViewerCore->getCurrentImage()->getPropMap().setPropertyAs<std::string>( "lut", preferencesUi.comboBox->currentText().toStdString() ) ;
 }
 
 
-
+}
 }
 }

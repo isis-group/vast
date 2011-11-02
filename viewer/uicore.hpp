@@ -10,10 +10,11 @@ namespace isis
 namespace viewer
 {
 
-namespace widget {
-	class VoxelInformationWidget;
-	class ImageStackWidget;
-	class SliderWidget;
+namespace widget
+{
+class VoxelInformationWidget;
+class ImageStackWidget;
+class SliderWidget;
 }
 class MainWindow;
 
@@ -25,7 +26,7 @@ public:
 
 	enum OptionPosition { bottom, top, left, right, central11 };
 	enum ViewWidgetArragment { Default, InRow, InColumn };
-	
+
 	enum StatusTyp { Info, Warning, Error };
 	struct ViewWidget {
 		QDockWidget *dockWidget;
@@ -33,7 +34,7 @@ public:
 		QWidgetImplementationBase *widgetImplementation;
 		PlaneOrientation planeOrientation;
 		std::string widgetType;
-		bool operator==( const ViewWidget& other ) const { return widgetImplementation == other.widgetImplementation; }
+		bool operator==( const ViewWidget &other ) const { return widgetImplementation == other.widgetImplementation; }
 	};
 	typedef std::map<QWidgetImplementationBase *, ViewWidget > WidgetMap;
 	typedef util::FixedVector<ViewWidget, 3> ViewWidgetEnsembleType;
@@ -51,29 +52,29 @@ public:
 	virtual ViewWidgetEnsembleType createViewWidgetEnsemble( const std::string &widgetType, boost::shared_ptr< ImageHolder > image, bool show = true );
 
 	virtual void removeViewWidgetEnsemble( QWidgetImplementationBase *widgetImplementation );
-	virtual void removeViewWidgetEnsemble( ViewWidgetEnsembleType ensemble );	
-	
+	virtual void removeViewWidgetEnsemble( ViewWidgetEnsembleType ensemble );
+
 	virtual ViewWidgetEnsembleType detachViewWidgetEnsemble( QWidgetImplementationBase *widgetImplementation );
-	virtual ViewWidgetEnsembleType detachViewWidgetEnsemble( ViewWidgetEnsembleType ensemble );	
-	
+	virtual ViewWidgetEnsembleType detachViewWidgetEnsemble( ViewWidgetEnsembleType ensemble );
+
 	virtual void attachViewWidgetEnsemble( ViewWidgetEnsembleType ensemble );
-	
+
 	virtual ~UICore() {}
 
 	virtual void setOptionPosition( OptionPosition pos = bottom );
 
 	void setViewWidgetArrangement( ViewWidgetArragment arrangement ) { m_ViewWidgetArrangement = arrangement; }
 	ViewWidgetArragment getViewWidgetArrangement() const { return m_ViewWidgetArrangement; }
-	
+
 	ViewWidgetEnsembleListType getEnsembleList() const { return m_EnsembleList; }
-	
+
 	void rearrangeViewWidgets();
-	
+
 public Q_SLOTS:
 	virtual void reloadPluginsToGUI();
 	virtual void refreshUI();
 	void showStatus( const std::string &status, StatusTyp = Info );
-	
+
 	friend class QViewerCore;
 protected:
 	UICore( QViewerCore *core );
@@ -94,11 +95,11 @@ private:
 	widget::ImageStackWidget *m_ImageStackWidget;
 	QDockWidget *m_ImageStackDockWidget;
 	widget::SliderWidget *m_SliderWidget;
-	
+
 	ViewWidgetArragment m_ViewWidgetArrangement;
 
 	unsigned short m_RowCount;
-	
+
 	WidgetMap m_WidgetMap;
 
 };

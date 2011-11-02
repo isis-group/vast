@@ -8,13 +8,15 @@ namespace isis
 {
 namespace viewer
 {
+namespace widget
+{
 
-class QPreferencesDialog : public QDialog
+class PreferencesDialog : public QDialog
 {
 	Q_OBJECT;
 
 public:
-	QPreferencesDialog( QWidget *parent, QViewerCore *core );
+	PreferencesDialog( QWidget *parent, QViewerCore *core );
 protected:
 	Ui::preferencesDialog preferencesUi;
 
@@ -31,7 +33,7 @@ private:
 
 };
 
-
+}
 }
 }
 

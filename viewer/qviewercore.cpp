@@ -15,7 +15,7 @@ QViewerCore::QViewerCore( const std::string &appName, const std::string &orgName
 {
 	QCoreApplication::setApplicationName( QString( appName.c_str() ) );
 	QCoreApplication::setOrganizationName( QString( orgName.c_str() ) );
-	
+
 	setParentWidget( m_UI->getMainWindow() );
 }
 
@@ -50,7 +50,7 @@ void QViewerCore::timestepChanged( int timestep )
 std::list<boost::shared_ptr<ImageHolder> > QViewerCore::addImageList( const std::list< data::Image > imageList, const ImageHolder::ImageType &imageType )
 {
 	std::list<boost::shared_ptr<ImageHolder> > retList = isis::viewer::ViewerCoreBase::addImageList( imageList, imageType );
-	settingsChanged();
+	//  settingsChanged();
 	return retList;
 
 }
@@ -58,7 +58,7 @@ std::list<boost::shared_ptr<ImageHolder> > QViewerCore::addImageList( const std:
 void QViewerCore::setImageList( const std::list< data::Image > imageList, const ImageHolder::ImageType &imageType  )
 {
 	isis::viewer::ViewerCoreBase::setImageList( imageList, imageType );
-	settingsChanged();
+	//  settingsChanged();
 
 
 }

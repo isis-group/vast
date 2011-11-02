@@ -12,11 +12,11 @@ ImageStackWidget::ImageStackWidget( QWidget *parent, QViewerCore *core )
 	: QWidget( parent ), m_Core( core )
 {
 	m_Interface.setupUi( this );
-	
-	m_Interface.imageStack->setEditTriggers(QAbstractItemView::NoEditTriggers);
-	connect( m_Interface.imageStack, SIGNAL( itemActivated(QListWidgetItem*) ), this, SLOT( itemSelected(QListWidgetItem*)));
-	connect( m_Interface.imageStack, SIGNAL( itemChanged(QListWidgetItem*)), this, SLOT(itemClicked(QListWidgetItem*)));
-	connect( m_Interface.buttonRemoveImage, SIGNAL(clicked()), this, SLOT( removeButtonClicked()));
+
+	m_Interface.imageStack->setEditTriggers( QAbstractItemView::NoEditTriggers );
+	connect( m_Interface.imageStack, SIGNAL( itemActivated( QListWidgetItem * ) ), this, SLOT( itemSelected( QListWidgetItem * ) ) );
+	connect( m_Interface.imageStack, SIGNAL( itemChanged( QListWidgetItem * ) ), this, SLOT( itemClicked( QListWidgetItem * ) ) );
+	connect( m_Interface.buttonRemoveImage, SIGNAL( clicked() ), this, SLOT( removeButtonClicked() ) );
 
 }
 
@@ -47,16 +47,17 @@ void ImageStackWidget::synchronize()
 void ImageStackWidget::itemClicked( QListWidgetItem *item )
 {
 	if( item->checkState() == Qt::Checked ) {
-		m_Core->getDataContainer().at( item->text().toStdString() )->getPropMap().setPropertyAs<bool>("isVisible", true ) ;
+		m_Core->getDataContainer().at( item->text().toStdString() )->getPropMap().setPropertyAs<bool>( "isVisible", true ) ;
 	} else {
-		m_Core->getDataContainer().at( item->text().toStdString() )->getPropMap().setPropertyAs<bool>("isVisible", false ) ;
+		m_Core->getDataContainer().at( item->text().toStdString() )->getPropMap().setPropertyAs<bool>( "isVisible", false ) ;
 	}
+
 	m_Core->getUI()->refreshUI();
 	m_Core->updateScene();
-		
+
 }
 
-void ImageStackWidget::itemSelected(QListWidgetItem *item )
+void ImageStackWidget::itemSelected( QListWidgetItem *item )
 {
 	m_Core->setCurrentImage( m_Core->getDataContainer().at( item->text().toStdString() ) );
 	synchronize();
@@ -67,11 +68,10 @@ void ImageStackWidget::itemSelected(QListWidgetItem *item )
 void ImageStackWidget::removeButtonClicked()
 {
 	boost::shared_ptr<ImageHolder> image = m_Core->getDataContainer().at( m_Interface.imageStack->currentItem()->text().toStdString() );
-	BOOST_FOREACH( std::list< QWidgetImplementationBase *>::const_reference widget, image->getWidgetList() ) 
-	{
-		widget->removeImage(image);
+	BOOST_FOREACH( std::list< QWidgetImplementationBase *>::const_reference widget, image->getWidgetList() ) {
+		widget->removeImage( image );
 	}
-	m_Core->getDataContainer().erase(m_Interface.imageStack->currentItem()->text().toStdString());
+	m_Core->getDataContainer().erase( m_Interface.imageStack->currentItem()->text().toStdString() );
 	m_Core->getUI()->refreshUI();
 	m_Core->updateScene();
 }

@@ -24,10 +24,10 @@ public:
 	void synchronize();
 
 public Q_SLOTS:
-	void itemClicked( QListWidgetItem *);
+	void itemClicked( QListWidgetItem * );
 	void itemSelected( QListWidgetItem * );
 	void removeButtonClicked();
-	
+
 private:
 	QViewerCore *m_Core;
 	Ui::imageStackWidget m_Interface;

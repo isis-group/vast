@@ -12,26 +12,29 @@ namespace viewer
 
 MainWindow::MainWindow( QViewerCore *core ) :
 	m_Core( core ),
-	m_Toolbar( new QToolBar(this) )
+	m_Toolbar( new QToolBar( this ) ),
+	m_PreferencesDialog( new widget::PreferencesDialog( this, core ) )
 {
 	m_UI.setupUi( this );
 	setupBasicElements();
-	
+
 	connect( m_UI.action_Open_image, SIGNAL( triggered() ), this, SLOT( openImage() ) );
-	connect( m_UI.action_Save_Image, SIGNAL( triggered()), this, SLOT(saveImage()));
-	connect( m_UI.actionSave_Image, SIGNAL( triggered()), this, SLOT( saveImageAs()));
-	connect( m_UI.actionOpen_directory, SIGNAL( triggered()), this, SLOT( openDir()));
-		
+	connect( m_UI.action_Save_Image, SIGNAL( triggered() ), this, SLOT( saveImage() ) );
+	connect( m_UI.actionSave_Image, SIGNAL( triggered() ), this, SLOT( saveImageAs() ) );
+	connect( m_UI.actionOpen_directory, SIGNAL( triggered() ), this, SLOT( openDir() ) );
+	connect( m_UI.action_Preferences, SIGNAL( triggered() ), this, SLOT( showPreferences() ) );
+
 	//toolbar stuff
 	m_Toolbar->setOrientation( Qt::Horizontal );
 	m_Toolbar->setMinimumHeight( 20 );
 	m_Toolbar->setMaximumHeight( 30 );
 	addToolBar( Qt::TopToolBarArea, m_Toolbar );
 	m_Toolbar->addAction( m_UI.action_Open_image );
-	m_Toolbar->addAction( m_UI.actionOpen_directory);
-	m_Toolbar->addAction( m_UI.action_Save_Image);
-	m_Toolbar->addAction( m_UI.actionSave_Image);
+	m_Toolbar->addAction( m_UI.actionOpen_directory );
+	m_Toolbar->addAction( m_UI.action_Save_Image );
+	m_Toolbar->addAction( m_UI.actionSave_Image );
 	m_Toolbar->addSeparator();
+	m_Toolbar->addAction( m_UI.action_Preferences );
 }
 
 void MainWindow::openImage()
@@ -51,14 +54,14 @@ void MainWindow::openImage()
 		bool isFirstImage = m_Core->getDataContainer().size() == 0;
 		std::list<data::Image> imgList;
 		util::slist pathList;
-		
-		if( (m_Core->getDataContainer().size() + filenames.size()) > 1 ) {
+
+		if( ( m_Core->getDataContainer().size() + filenames.size() ) > 1 ) {
 			m_Core->getUI()->setViewWidgetArrangement( isis::viewer::UICore::InRow );
 		} else {
 			m_Core->getUI()->setViewWidgetArrangement( isis::viewer::UICore::Default );
 		}
 
-		UICore::ViewWidgetEnsembleType ensemble = m_Core->getUI()->createViewWidgetEnsemble("");
+		UICore::ViewWidgetEnsembleType ensemble = m_Core->getUI()->createViewWidgetEnsemble( "" );
 		BOOST_FOREACH( QStringList::const_reference filename, filenames ) {
 			std::stringstream ss;
 			ss << "Loading image " << filename.toStdString() << "...";
@@ -91,6 +94,7 @@ void MainWindow::openDir()
 		m_Core->getUI()->showStatus( ss.str() );
 		std::list<data::Image> imageList = data::IOFactory::load( dir.toStdString(), "", "" );
 		m_Core->getUI()->showStatus( "Done." );
+
 		if( imageList.size() ) {
 			m_Core->addImageList( imageList, ImageHolder::anatomical_image );
 			m_Core->getUI()->showStatus( "Loading images..." );
@@ -98,7 +102,7 @@ void MainWindow::openDir()
 		} else {
 			m_Core->getUI()->showStatus( "No images to load" );
 		}
-		
+
 	}
 }
 
@@ -126,7 +130,7 @@ void MainWindow::saveImage()
 		msgBox.setDefaultButton( QMessageBox::No );
 
 		switch ( msgBox.exec() ) {
-			case QMessageBox::No:
+		case QMessageBox::No:
 			return;
 			break;
 		case QMessageBox::Yes:
@@ -134,7 +138,7 @@ void MainWindow::saveImage()
 			ss << "Saving image to " << m_Core->getCurrentImage()->getFileNames().front() << "...";
 			m_Core->getUI()->showStatus( ss.str() );
 			isis::data::IOFactory::write( *m_Core->getCurrentImage()->getISISImage(), m_Core->getCurrentImage()->getFileNames().front(), "", "" );
-			m_Core->getUI()->showStatus("Done.");
+			m_Core->getUI()->showStatus( "Done." );
 			break;
 		}
 	}
@@ -145,15 +149,15 @@ void MainWindow::saveImageAs()
 	std::stringstream fileFormats;
 	fileFormats << "Image files (" << getFileFormatsAsString( std::string( "*." ) ) << ")";
 	QString filename = QFileDialog::getSaveFileName( this,
-					tr( "Save Image As..." ),
-					m_Core->getCurrentPath().c_str(),
-					tr( fileFormats.str().c_str() ) );
+					   tr( "Save Image As..." ),
+					   m_Core->getCurrentPath().c_str(),
+					   tr( fileFormats.str().c_str() ) );
 
 	if( filename.size() ) {
 		std::stringstream ss;
 		ss << "Saving image to " << filename.toStdString() << "...";
 		isis::data::IOFactory::write( *m_Core->getCurrentImage()->getISISImage(), filename.toStdString(), "", "" );
-		m_Core->getUI()->showStatus("Done.");
+		m_Core->getUI()->showStatus( "Done." );
 	}
 
 }
@@ -209,16 +213,18 @@ void MainWindow::loadSettings()
 	m_Core->getSettings()->beginGroup( "MainWindow" );
 	resize( m_Core->getSettings()->value( "size", QSize( 900, 900 ) ).toSize() );
 	move( m_Core->getSettings()->value( "pos", QPoint( 0, 0 ) ).toPoint() );
+
 	if( m_Core->getSettings()->value( "maximized", false ).toBool() ) {
 		showMaximized();
 	}
+
 	m_Core->getSettings()->endGroup();
 	m_Core->getSettings()->beginGroup( "UserProfile" );
 	m_Core->getOption()->propagateZooming = m_Core->getSettings()->value( "propagateZooming", false ).toBool();
 	m_Core->getSettings()->endGroup();
 }
 
-void MainWindow::closeEvent(QCloseEvent* )
+void MainWindow::closeEvent( QCloseEvent * )
 {
 	saveSettings();
 }
@@ -232,6 +238,11 @@ void MainWindow::saveSettings()
 	m_Core->getSettings()->setValue( "pos", pos() );
 	m_Core->getSettings()->endGroup();
 	m_Core->getSettings()->sync();
+}
+
+void MainWindow::showPreferences()
+{
+	m_PreferencesDialog->show();
 }
 
 

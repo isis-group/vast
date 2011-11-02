@@ -52,6 +52,7 @@ bool Color::addColormap( const std::string &path, const boost::regex &separator 
 		LOG( Runtime, warning ) << "Can not read colormap " << path << " because header is missing or has wrong syntax (name:type)!";
 		return false;
 	}
+
 	std::string lutTyp = boost::lexical_cast< std::string>( results.str( 2 ) );
 	std::string lutName = boost::lexical_cast< std::string>( results.str( 1 ) );
 	lines.pop_front();
@@ -72,11 +73,13 @@ bool Color::addColormap( const std::string &path, const boost::regex &separator 
 			return false;
 		}
 	}
+
 	if( lutVec.size() != 256 ) {
 		LOG( Runtime, warning ) << "The size of the colormap " << lutName
 								<< " is " << lutVec.size() << " but has to be 256!";
 		return false;
 	}
+
 	m_ColormapMap[lutName] = lutVec;
 	return true;
 }
@@ -120,7 +123,7 @@ color::Color::ColormapType Color::getFallbackColormap() const
 
 color::Color::ColormapType color::Color::adaptColorMapToImage( color::Color::ColormapType colorMap, const boost::shared_ptr< ImageHolder > image, bool split )
 {
-	LOG_IF(colorMap.size() != 256, Runtime, error ) << "The colormap is of size " << colorMap.size() << " but has to be of size 256!";
+	LOG_IF( colorMap.size() != 256, Runtime, error ) << "The colormap is of size " << colorMap.size() << " but has to be of size 256!";
 	color::Color::ColormapType retMap = colorMap;
 	const double extent = image->getPropMap().getPropertyAs<double>( "extent" );
 	const double min = image->getMinMax().first->as<double>();

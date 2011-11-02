@@ -34,18 +34,22 @@ OrientatioCorrectionDialog::OrientatioCorrectionDialog( QWidget *parent, QViewer
 void OrientatioCorrectionDialog::flipPressed()
 {
 	boost::numeric::ublas::matrix<float> transform = boost::numeric::ublas::identity_matrix<float>( 3, 3 );
+
 	if( ui.checkFlipZ->isChecked() ) {
-		transform( 2,2 ) = -1;
+		transform( 2, 2 ) = -1;
 		m_Core->getCurrentImage()->addChangedAttribute( "Flip Z" );
-	} 
+	}
+
 	if( ui.checkFlipY->isChecked() ) {
-		transform( 0,0 ) = -1;
+		transform( 0, 0 ) = -1;
 		m_Core->getCurrentImage()->addChangedAttribute( "Flip Y" );
 	}
+
 	if( ui.checkFlipY->isChecked() ) {
-		transform(1,1) = -1;
+		transform( 1, 1 ) = -1;
 		m_Core->getCurrentImage()->addChangedAttribute( "Flip X" );
 	}
+
 	applyTransform( transform, ui.checkISO->isChecked() );
 }
 void OrientatioCorrectionDialog::applyPressed()
@@ -57,11 +61,12 @@ void OrientatioCorrectionDialog::applyPressed()
 			transform( i, j ) = m_MatrixItems( i, j )->text().toFloat();
 		}
 	}
+
 	std::stringstream desc;
-	desc << "Transformation matrix: " << std::endl << transform(0,0) << " " << transform(1,0) << " " << transform(2,0) << std::endl << 
-		transform(0,1) << " " << transform(1,1) << " " << transform(2,1) << std::endl <<
-		transform(0,2) << " " << transform(1,2) << " " << transform(2,2) << std::endl;
-	m_Core->getCurrentImage()->addChangedAttribute(desc.str());
+	desc << "Transformation matrix: " << std::endl << transform( 0, 0 ) << " " << transform( 1, 0 ) << " " << transform( 2, 0 ) << std::endl <<
+		 transform( 0, 1 ) << " " << transform( 1, 1 ) << " " << transform( 2, 1 ) << std::endl <<
+		 transform( 0, 2 ) << " " << transform( 1, 2 ) << " " << transform( 2, 2 ) << std::endl;
+	m_Core->getCurrentImage()->addChangedAttribute( desc.str() );
 	applyTransform( transform, ui.checkISO->isChecked() );
 }
 
@@ -81,17 +86,21 @@ void OrientatioCorrectionDialog::rotatePressed()
 	transform( 0, 2 ) = -sin( normY );
 	transform( 1, 2 ) = sin( normX ) * cos( normY );
 	transform( 2, 2 ) = cos( normX ) * cos( normY );
-	
+
 	std::stringstream desc;
-	if( ui.rotateX->text().toDouble() != 0) {
+
+	if( ui.rotateX->text().toDouble() != 0 ) {
 		desc << "X Rotation: " << ui.rotateX->text().toDouble() << std::endl;
 	}
-	if( ui.rotateY->text().toDouble() != 0) {
+
+	if( ui.rotateY->text().toDouble() != 0 ) {
 		desc << "Y Rotation: " << ui.rotateY->text().toDouble() << std::endl;
 	}
-	if( ui.rotateZ->text().toDouble() != 0) {
+
+	if( ui.rotateZ->text().toDouble() != 0 ) {
 		desc << "Z Rotation: " << ui.rotateZ->text().toDouble() << std::endl;
 	}
+
 	m_Core->getCurrentImage()->addChangedAttribute( desc.str() );
 	applyTransform( transform, ui.checkISO->isChecked() );
 
