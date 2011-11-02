@@ -70,6 +70,7 @@ void QImageWidgetImplementation::addImage( const boost::shared_ptr< ImageHolder 
 	imgProperties.viewPort = ViewPortType();
 	m_ImageProperties.insert( std::make_pair<boost::shared_ptr<ImageHolder> , ImageProperties >( image, imgProperties ) );
 	m_ImageVector.push_back( image );
+	image->addWidget( this );
 }
 
 bool QImageWidgetImplementation::removeImage( const boost::shared_ptr< ImageHolder > image )

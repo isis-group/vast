@@ -23,6 +23,9 @@ public:
 public Q_SLOTS:
 	void synchronize();
 	void synchronizePos( util::ivector4 voxelCoords );
+	void synchronizePos( util::fvector4 physicalCoords );
+	void voxPosChanged(int dummy );
+	void physPosChanged(double dummy);
 
 private:
 	isis::viewer::QViewerCore *m_Core;

@@ -16,6 +16,7 @@ ImageStackWidget::ImageStackWidget( QWidget *parent, QViewerCore *core )
 	m_Interface.imageStack->setEditTriggers(QAbstractItemView::NoEditTriggers);
 	connect( m_Interface.imageStack, SIGNAL( itemActivated(QListWidgetItem*) ), this, SLOT( itemSelected(QListWidgetItem*)));
 	connect( m_Interface.imageStack, SIGNAL( itemChanged(QListWidgetItem*)), this, SLOT(itemClicked(QListWidgetItem*)));
+	connect( m_Interface.buttonRemoveImage, SIGNAL(clicked()), this, SLOT( removeButtonClicked()));
 
 }
 
@@ -63,6 +64,17 @@ void ImageStackWidget::itemSelected(QListWidgetItem *item )
 	m_Core->updateScene();
 }
 
+void ImageStackWidget::removeButtonClicked()
+{
+	boost::shared_ptr<ImageHolder> image = m_Core->getDataContainer().at( m_Interface.imageStack->currentItem()->text().toStdString() );
+	BOOST_FOREACH( std::list< QWidgetImplementationBase *>::const_reference widget, image->getWidgetList() ) 
+	{
+		widget->removeImage(image);
+	}
+	m_Core->getDataContainer().erase(m_Interface.imageStack->currentItem()->text().toStdString());
+	m_Core->getUI()->refreshUI();
+	m_Core->updateScene();
+}
 
 }
 }

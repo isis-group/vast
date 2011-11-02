@@ -1,19 +1,22 @@
 <RCC>
   <qresource prefix="common">
-    <file>preferences_settings.png</file>
-    <file>control.gif</file>
-    <file>sagittal.png</file>
-    <file>currentImage.gif</file>
-    <file>coronal.png</file>
-    <file>axial.png</file>
-    <file>autoscale.gif</file>
-    <file>openzmap.gif</file>
+    <file>saveimage.gif</file>
+    <file>saveimageas.gif</file>
     <file>open_image.gif</file>
     <file>openimage.png</file>
+    <file>openzmap.gif</file>
     <file>orient.gif</file>
-    <file>icon_check.png</file>
+    <file>preferences_settings.png</file>
+    <file>control.gif</file>
+    <file>axial.png</file>
+    <file>coronal.png</file>
+    <file>autoscale.gif</file>
+    <file>sagittal.png</file>
+    <file>currentImage.gif</file>
   </qresource>
   <qresource prefix="colormap">
+    <file>lut/colormap1</file>
+    <file>lut/colormap2</file>
     <file>lut/colormap3</file>
     <file>lut/colormap4</file>
     <file>lut/colormap5</file>
@@ -25,7 +28,5 @@
     <file>lut/colormap11</file>
     <file>lut/standard_grey_values</file>
     <file>lut/standard_zmap</file>
-    <file>lut/colormap1</file>
-    <file>lut/colormap2</file>
   </qresource>
 </RCC>

@@ -84,6 +84,14 @@ void SliderWidget::synchronize()
 		setVisible( UpperThreshold, false );
 		setVisible( Opacity, true );
 	}
+	const unsigned short lowerThreshold = 1000 - abs((1000 / m_ViewerCore->getCurrentImage()->getMinMax().first->as<double>()) 
+		* m_ViewerCore->getCurrentImage()->getPropMap().getPropertyAs<double>("lowerThreshold"));
+	const unsigned short upperThreshold = 1000 - abs((1000 / m_ViewerCore->getCurrentImage()->getMinMax().second->as<double>())
+		* m_ViewerCore->getCurrentImage()->getPropMap().getPropertyAs<double>("upperThreshold"));
+	m_Interface.opacitySlider->setSliderPosition( m_ViewerCore->getCurrentImage()->getPropMap().getPropertyAs<float>("opacity") * 1000 );
+	m_Interface.minSlider->setSliderPosition( lowerThreshold );
+	m_Interface.maxSlider->setSliderPosition( upperThreshold );
+	
 }
 
 

@@ -8,12 +8,13 @@
 #include <DataStorage/image.hpp>
 #include "common.hpp"
 #include "color.hpp"
+#include "widgetImplementationBase.hpp"
 
 namespace isis
 {
 namespace viewer
 {
-
+class QWidgetImplementationBase;
 /**
  * Class that holds one image in a vector of data::ValuePtr's
  * It ensures the data is hold in continuous memory and only consists of one type.
@@ -69,6 +70,9 @@ public:
 
 	const ImageProperties &getImageProperties() const { return m_ImageProperties; }
 	ImageProperties &getImageProperties() { return m_ImageProperties; }
+	
+	void addWidget( QWidgetImplementationBase * widget ) { m_WidgetList.push_back( widget ); }
+	std::list< QWidgetImplementationBase * > getWidgetList() { return m_WidgetList; }
 
 	/**offset, scaling**/
 	template<typename TYPE>
@@ -121,7 +125,7 @@ public:
 
 private:
 
-
+	
 	size_t m_NumberOfTimeSteps;
 	util::FixedVector<size_t, 4> m_ImageSize;
 	util::PropertyMap m_PropMap;
@@ -136,9 +140,10 @@ private:
 
 	std::vector< ImagePointerType > m_ImageVector;
 	std::vector< data::Chunk > m_ChunkVector;
-
+	
 	bool filterRelevantMetaInformation();
 
+	std::list<QWidgetImplementationBase *> m_WidgetList;
 };
 
 }

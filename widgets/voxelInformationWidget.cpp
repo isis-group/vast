@@ -16,31 +16,66 @@ VoxelInformationWidget::VoxelInformationWidget( QWidget *parent, QViewerCore *co
 	m_Interface.spinBox_2->setMinimum(0);
 	m_Interface.spinBox_3->setMinimum(0);
 	connect( m_Core, SIGNAL( emitVoxelCoordChanged(util::ivector4)), this, SLOT(synchronizePos(util::ivector4)));
+	connect( m_Core, SIGNAL( emitPhysicalCoordsChanged(util::fvector4)), this, SLOT(synchronizePos(util::fvector4)));
+	connect( m_Interface.spinBox, SIGNAL( valueChanged(int)), this, SLOT( voxPosChanged( int )));
+	connect( m_Interface.spinBox_2, SIGNAL( valueChanged(int)), this, SLOT( voxPosChanged( int )));
+	connect( m_Interface.spinBox_3, SIGNAL( valueChanged(int)), this, SLOT( voxPosChanged( int )));
+	connect( m_Interface.doubleSpinBox, SIGNAL( valueChanged(double)), this, SLOT( physPosChanged(double)));
+	connect( m_Interface.doubleSpinBox_2, SIGNAL( valueChanged(double)), this, SLOT( physPosChanged(double)));
+	connect( m_Interface.doubleSpinBox_3, SIGNAL( valueChanged(double)), this, SLOT( physPosChanged(double)));
 }
+
+void VoxelInformationWidget::physPosChanged(double dummy)
+{
+	util::fvector4 physicalCoord ( m_Interface.doubleSpinBox->text().toFloat(), 
+								   m_Interface.doubleSpinBox_2->text().toFloat(),
+								   m_Interface.doubleSpinBox_3->text().toFloat() );
+	m_Core->physicalCoordsChanged(physicalCoord);
+}
+
+void VoxelInformationWidget::voxPosChanged(int dummy)
+{
+
+}
+
 
 void VoxelInformationWidget::synchronize()
 {
+	const boost::shared_ptr<ImageHolder> image = m_Core->getCurrentImage();
 	QSize size = m_Interface.colromapLabel->size();
-	const std::string lutName = m_Core->getCurrentImage()->getPropMap().getPropertyAs<std::string>( "lut" );
+	const std::string lutName = image->getPropMap().getPropertyAs<std::string>( "lut" );
 	m_Interface.colromapLabel->setPixmap(
 		m_Core->getColorHandler()->getIcon( lutName, size.width(), size.height() - 10 ).pixmap( size.width(), size.height() - 10 ) );
-	m_Interface.labelMin->setText( m_Core->getCurrentImage()->getMinMax().first->as<std::string>().c_str() );
-	m_Interface.labelMax->setText( m_Core->getCurrentImage()->getMinMax().second->as<std::string>().c_str() );
-	synchronizePos( m_Core->getCurrentImage()->getPropMap().getPropertyAs<util::ivector4>("voxelCoords"));
-	const util::ivector4 outerCorner = util::ivector4( m_Core->getCurrentImage()->getImageSize()[0] - 1, m_Core->getCurrentImage()->getImageSize()[1] - 1, m_Core->getCurrentImage()->getImageSize()[2] - 1 );
+	m_Interface.labelMin->setText( image->getMinMax().first->as<std::string>().c_str() );
+	m_Interface.labelMax->setText(image->getMinMax().second->as<std::string>().c_str() );
+	synchronizePos( image->getPropMap().getPropertyAs<util::ivector4>("voxelCoords"));
+	const util::ivector4 outerCorner = util::ivector4( image->getImageSize()[0] - 1, image->getImageSize()[1] - 1, image->getImageSize()[2] - 1 );
 	m_Interface.spinBox->setMaximum( outerCorner[0] );
 	m_Interface.spinBox_2->setMaximum( outerCorner[1] );
 	m_Interface.spinBox_3->setMaximum( outerCorner[2] );
-	const util::fvector4 physicalBegin = m_Core->getCurrentImage()->getISISImage()->getPhysicalCoordsFromIndex( util::ivector4() );
-	const util::fvector4 physicalEnd = m_Core->getCurrentImage()->getISISImage()->getPhysicalCoordsFromIndex( outerCorner );
+	const util::fvector4 physicalBegin = image->getISISImage()->getPhysicalCoordsFromIndex( util::ivector4() );
+	const util::fvector4 physicalEnd = image->getISISImage()->getPhysicalCoordsFromIndex( outerCorner );
 	m_Interface.doubleSpinBox->setMinimum( physicalBegin[0] < physicalEnd[0] ? physicalBegin[0] : physicalEnd[0] );
 	m_Interface.doubleSpinBox->setMaximum( physicalBegin[0] > physicalEnd[0] ? physicalBegin[0] : physicalEnd[0] );
 	m_Interface.doubleSpinBox_2->setMinimum( physicalBegin[1] < physicalEnd[1] ? physicalBegin[1] : physicalEnd[1] );
 	m_Interface.doubleSpinBox_2->setMaximum( physicalBegin[1] > physicalEnd[1] ? physicalBegin[1] : physicalEnd[1] );
 	m_Interface.doubleSpinBox_3->setMinimum( physicalBegin[2] < physicalEnd[2] ? physicalBegin[2] : physicalEnd[2] );
 	m_Interface.doubleSpinBox_3->setMaximum( physicalBegin[2] > physicalEnd[2] ? physicalBegin[2] : physicalEnd[2] );
+	const util::fvector4 voxelSpacing = image->getISISImage()->getPropertyAs<util::fvector4>("voxelSize") + image->getISISImage()->getPropertyAs<util::fvector4>("voxelGap");
+	boost::numeric::ublas::vector<float> vSpacing = boost::numeric::ublas::vector<float>(4);
+	for( unsigned short i = 0; i< 4; i++ ) {
+		vSpacing(i) = voxelSpacing[i];
+	}
+	boost::numeric::ublas::vector<float> transformedVec = boost::numeric::ublas::prod( image->getNormalizedImageOrientation(), vSpacing );
+	m_Interface.doubleSpinBox->setSingleStep( fabs( transformedVec(0) ) );
+	m_Interface.doubleSpinBox_2->setSingleStep( fabs( transformedVec(1) ) );
+	m_Interface.doubleSpinBox_3->setSingleStep( fabs( transformedVec(2) ) );
 }
 
+void VoxelInformationWidget::synchronizePos(util::fvector4 physicalCoords)
+{
+	synchronizePos( m_Core->getCurrentImage()->getISISImage()->getIndexFromPhysicalCoords( physicalCoords ));
+}
 
 void VoxelInformationWidget::synchronizePos( util::ivector4 voxelCoords )
 {

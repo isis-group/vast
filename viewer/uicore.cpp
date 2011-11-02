@@ -51,6 +51,23 @@ void UICore::setOptionPosition( UICore::OptionPosition pos )
 	}
 }
 
+void UICore::showStatus(const std::string& status, UICore::StatusTyp statusTyp)
+{
+	switch( statusTyp ) {
+		case Info:
+			m_MainWindow->getUI().statusbar->setPalette( QPalette( ) );
+			break;
+		case Warning:
+			m_MainWindow->getUI().statusbar->setPalette( QPalette( Qt::yellow ) );
+			break;
+		case Error:
+			m_MainWindow->getUI().statusbar->setPalette( QPalette( Qt::red ) );
+			break;
+	}
+	m_MainWindow->getUI().statusbar->showMessage( status.c_str() );
+
+}
+
 
 void UICore::showMainWindow()
 {

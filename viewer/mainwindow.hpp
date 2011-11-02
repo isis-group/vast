@@ -25,7 +25,11 @@ public:
 
 
 public Q_SLOTS:
+// 	void clearStatusbar();
 	void openImage();
+	void openDir();
+	void saveImage();
+	void saveImageAs();
 	void loadSettings();
 	void saveSettings();
 	void closeEvent( QCloseEvent * );
@@ -35,6 +39,8 @@ protected:
 private:
 	Ui::vastMainWindow m_UI;
 	QViewerCore *m_Core;
+	
+	QToolBar *m_Toolbar;
 
 };
 

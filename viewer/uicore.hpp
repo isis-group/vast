@@ -25,6 +25,8 @@ public:
 
 	enum OptionPosition { bottom, top, left, right, central11 };
 	enum ViewWidgetArragment { Default, InRow, InColumn };
+	
+	enum StatusTyp { Info, Warning, Error };
 	struct ViewWidget {
 		QDockWidget *dockWidget;
 		QFrame *frame;
@@ -70,7 +72,8 @@ public:
 public Q_SLOTS:
 	virtual void reloadPluginsToGUI();
 	virtual void refreshUI();
-
+	void showStatus( const std::string &status, StatusTyp = Info );
+	
 	friend class QViewerCore;
 protected:
 	UICore( QViewerCore *core );

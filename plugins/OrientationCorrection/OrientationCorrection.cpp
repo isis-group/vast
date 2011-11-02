@@ -34,9 +34,18 @@ OrientatioCorrectionDialog::OrientatioCorrectionDialog( QWidget *parent, QViewer
 void OrientatioCorrectionDialog::flipPressed()
 {
 	boost::numeric::ublas::matrix<float> transform = boost::numeric::ublas::identity_matrix<float>( 3, 3 );
-	transform( 2, 2 ) = ui.checkFlipZ->isChecked() ? -1 : 1;
-	transform( 0, 0 ) = ui.checkFlipX->isChecked() ? -1 : 1;
-	transform( 1, 1 ) = ui.checkFlipY->isChecked() ? -1 : 1;
+	if( ui.checkFlipZ->isChecked() ) {
+		transform( 2,2 ) = -1;
+		m_Core->getCurrentImage()->addChangedAttribute( "Flip Z" );
+	} 
+	if( ui.checkFlipY->isChecked() ) {
+		transform( 0,0 ) = -1;
+		m_Core->getCurrentImage()->addChangedAttribute( "Flip Y" );
+	}
+	if( ui.checkFlipY->isChecked() ) {
+		transform(1,1) = -1;
+		m_Core->getCurrentImage()->addChangedAttribute( "Flip X" );
+	}
 	applyTransform( transform, ui.checkISO->isChecked() );
 }
 void OrientatioCorrectionDialog::applyPressed()
@@ -48,7 +57,11 @@ void OrientatioCorrectionDialog::applyPressed()
 			transform( i, j ) = m_MatrixItems( i, j )->text().toFloat();
 		}
 	}
-
+	std::stringstream desc;
+	desc << "Transformation matrix: " << std::endl << transform(0,0) << " " << transform(1,0) << " " << transform(2,0) << std::endl << 
+		transform(0,1) << " " << transform(1,1) << " " << transform(2,1) << std::endl <<
+		transform(0,2) << " " << transform(1,2) << " " << transform(2,2) << std::endl;
+	m_Core->getCurrentImage()->addChangedAttribute(desc.str());
 	applyTransform( transform, ui.checkISO->isChecked() );
 }
 
@@ -68,14 +81,24 @@ void OrientatioCorrectionDialog::rotatePressed()
 	transform( 0, 2 ) = -sin( normY );
 	transform( 1, 2 ) = sin( normX ) * cos( normY );
 	transform( 2, 2 ) = cos( normX ) * cos( normY );
-
+	
+	std::stringstream desc;
+	if( ui.rotateX->text().toDouble() != 0) {
+		desc << "X Rotation: " << ui.rotateX->text().toDouble() << std::endl;
+	}
+	if( ui.rotateY->text().toDouble() != 0) {
+		desc << "Y Rotation: " << ui.rotateY->text().toDouble() << std::endl;
+	}
+	if( ui.rotateZ->text().toDouble() != 0) {
+		desc << "Z Rotation: " << ui.rotateZ->text().toDouble() << std::endl;
+	}
+	m_Core->getCurrentImage()->addChangedAttribute( desc.str() );
 	applyTransform( transform, ui.checkISO->isChecked() );
 
 }
 bool OrientatioCorrectionDialog::applyTransform( const boost::numeric::ublas::matrix< float >& trans, bool center ) const
 {
 	bool ret = m_Core->getCurrentImage()->getISISImage()->transformCoords( trans, center );
-	m_Core->getCurrentImage()->addChangedAttribute( "Orientation Matrix" );
 	m_Core->updateScene();
 	return ret;
 
