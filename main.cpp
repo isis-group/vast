@@ -21,15 +21,17 @@ int main( int argc, char *argv[] )
 	ENABLE_LOG( data::Runtime, util::DefaultMsgPrint, error );
 	std::string appName = "vast";
 	std::string orgName = "cbs.mpg.de";
-	std::map<std::string, WidgetType> wTypeMap;
 
 	util::Selection dbg_levels( "error,warning,info,verbose_info" );
-	util::Selection wTypes( "gl,qt" );
-	wTypeMap.insert( std::make_pair<std::string, WidgetType>( "gl", type_gl ) );
-	wTypeMap.insert( std::make_pair<std::string, WidgetType>( "qt", type_qt ) );
-	wTypes.set( "qt" );
 	dbg_levels.set( "warning" );
-	QApplication::setGraphicsSystem( "raster" );
+	
+	const char *graphics_system = getenv( "VAST_GRAPHICS_SYSTEM" );
+	if( graphics_system && (!strcmp( graphics_system, "raster" ) || !strcmp( graphics_system, "opengl") || !strcmp(graphics_system, "native")))
+	{
+		QApplication::setGraphicsSystem( graphics_system );
+	} else {
+		QApplication::setGraphicsSystem( "raster" );
+	}
 	qt4::IOQtApplication app( appName.c_str(), false, false );
 
 	app.parameters["in"] = util::slist();
@@ -56,10 +58,6 @@ int main( int argc, char *argv[] )
 	app.parameters["old_lipsia"] = false;
 	app.parameters["old_lipsia"].needed() = false;
 	app.parameters["old_lipsia"].setDescription( "Ignore orientation information and treat files as old lipsia files." );
-	app.parameters["wtype"] = wTypes;
-	app.parameters["wtype"].needed() = false;
-	app.parameters["wtype"].hidden() = true;
-	app.parameters["wtype"].setDescription( "Sets the type of the widgets" );
 	boost::shared_ptr< util::ProgressFeedback > feedback = boost::shared_ptr<util::ProgressFeedback>( new util::ConsoleFeedback );
 	data::IOFactory::setProgressFeedback( feedback );
 	app.init( argc, argv, true );
@@ -70,8 +68,8 @@ int main( int argc, char *argv[] )
 	core->addPlugins( plugin::PluginLoader::get().getPlugins() );
 	core->getUI()->reloadPluginsToGUI();
 
-	app.setLog<ViewerLog>( app.getLLMap()[app.parameters["dViewer"]->as<util::Selection>()] );
-	app.setLog<ViewerDebug>( app.getLLMap()[app.parameters["dViewer"]->as<util::Selection>()] );
+	app.setLog<ViewerLog>( static_cast<LogLevel>( static_cast <unsigned short>(app.parameters["dViewer"]->as<util::Selection>()) ));
+	app.setLog<ViewerDebug>( static_cast<LogLevel>( static_cast <unsigned short>(app.parameters["dViewer"]->as<util::Selection>()) ) );
 	util::slist fileList = app.parameters["in"];
 	util::slist zmapFileList = app.parameters["zmap"];
 	std::list< data::Image > imgList;

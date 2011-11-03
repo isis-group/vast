@@ -255,6 +255,7 @@ void QImageWidgetImplementation::emitMousePressEvent( QMouseEvent *e )
 
 void QImageWidgetImplementation::showLabels() const
 {
+	m_Painter->resetMatrix();
 	m_Painter->setFont( QFont("Chicago", 13) );
 	switch( m_PlaneOrientation ) {
 		case axial:

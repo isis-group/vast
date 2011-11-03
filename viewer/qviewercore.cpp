@@ -77,17 +77,20 @@ void QViewerCore::setShowLabels( bool l )
 }
 
 void QViewerCore::settingsChanged()
-{
+{	
 	getSettings()->beginGroup( "UserProfile" );
-	if( getCurrentImage()->getImageProperties().imageType == ImageHolder::z_map ) {
-		getCurrentImage()->getPropMap().setPropertyAs<std::string>( "lut", getSettings()->value( "lut", "fallback" ).toString().toStdString() );
+	if( getCurrentImage().get() ) {
+	
+		if( getCurrentImage()->getImageProperties().imageType == ImageHolder::z_map ) {
+			getCurrentImage()->getPropMap().setPropertyAs<std::string>( "lut", getSettings()->value( "lut", "fallback" ).toString().toStdString() );
+		}
 	}
-
 	BOOST_FOREACH( UICore::WidgetMap::const_reference widget, getUI()->getWidgets() ) {
 		widget.first->setInterpolationType( static_cast<InterpolationType>( getSettings()->value( "interpolationType", 0 ).toUInt() ) );
 	}
 	emitShowLabels( getSettings()->value("showLabels", false).toBool());
 	getSettings()->endGroup();
+	
 }
 
 void QViewerCore::updateScene( bool center )

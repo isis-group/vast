@@ -94,11 +94,16 @@ void VoxelInformationWidget::synchronize()
 			connectSignals();
 		}
 		if( m_ViewerCore->getCurrentImage()->getImageSize()[3] > 1 ) {
+			std::stringstream tooltip;
+			tooltip << "Number of timesteps: " << m_ViewerCore->getCurrentImage()->getImageSize()[3];
 			m_Interface.timeStepFrame->setVisible(true);
 			m_Interface.timestepSlider->setMaximum( m_ViewerCore->getCurrentImage()->getImageSize()[3] - 1 );
 			m_Interface.timestepSlider->setMinimum(0);
 			m_Interface.timestepSpinBox->setMaximum( m_ViewerCore->getCurrentImage()->getImageSize()[3] - 1 );
 			m_Interface.timestepSpinBox->setMinimum(0);
+			m_Interface.timeStepFrame->setToolTip(tooltip.str().c_str());
+			m_Interface.timestepSlider->setToolTip(tooltip.str().c_str());
+			m_Interface.timestepSpinBox->setToolTip(tooltip.str().c_str());
 		} else {
 			m_Interface.timeStepFrame->setVisible( false );
 		}
