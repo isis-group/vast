@@ -13,7 +13,8 @@ namespace viewer
 MainWindow::MainWindow( QViewerCore *core ) :
 	m_ViewerCore( core ),
 	m_Toolbar( new QToolBar( this ) ),
-	m_PreferencesDialog( new widget::PreferencesDialog( this, core ) )
+	m_PreferencesDialog( new widget::PreferencesDialog( this, core ) ),
+	m_RadiusSpin(new QSpinBox(this))
 {
 	m_UI.setupUi( this );
 	loadSettings();
@@ -26,6 +27,7 @@ MainWindow::MainWindow( QViewerCore *core ) :
 	connect( m_UI.actionFind_Global_Min, SIGNAL( triggered()), this, SLOT( findGlobalMin()));
 	connect( m_UI.actionFind_Global_Max, SIGNAL( triggered()), this, SLOT( findGlobalMax()));
 	connect( m_UI.actionShow_Labels, SIGNAL( triggered(bool)), m_ViewerCore, SLOT( setShowLabels(bool)));
+	connect( m_RadiusSpin, SIGNAL(valueChanged(int)), this, SLOT( spinRadiusChanged(int)));
 
 	//toolbar stuff
 	m_Toolbar->setOrientation( Qt::Horizontal );
@@ -39,15 +41,24 @@ MainWindow::MainWindow( QViewerCore *core ) :
 	m_Toolbar->addSeparator();
 	m_Toolbar->addAction( m_UI.actionShow_Labels );
 	m_Toolbar->addAction( m_UI.action_Preferences );
+	m_Toolbar->addWidget( m_RadiusSpin );
 	m_Toolbar->addSeparator();
 	m_Toolbar->addAction( m_UI.actionFind_Global_Min );
 	m_Toolbar->addAction( m_UI.actionFind_Global_Max );
 	m_Toolbar->addSeparator();
-	
+	m_RadiusSpin->setMinimum(0);
+	m_RadiusSpin->setMaximum(500);
+	m_RadiusSpin->setToolTip("Search radius for finding local minimum/maximum. If radius is 0 it will search the entire image.");
 	m_UI.statusbar->addPermanentWidget( m_ViewerCore->getProgressFeedback()->getProgressBar() );
 
 }
 
+void MainWindow::spinRadiusChanged(int radius)
+{
+	m_ViewerCore->getSettings()->beginGroup("UserProfile");
+	m_ViewerCore->getSettings()->setValue("searchRadius", radius);
+	m_ViewerCore->getSettings()->endGroup();
+}
 
 void MainWindow::openImage()
 {
@@ -226,6 +237,7 @@ void MainWindow::loadSettings()
 	m_ViewerCore->getSettings()->beginGroup( "UserProfile" );
 	m_ViewerCore->getOption()->propagateZooming = m_ViewerCore->getSettings()->value( "propagateZooming", false ).toBool();
 	m_UI.actionShow_Labels->setChecked( m_ViewerCore->getSettings()->value("showLabels", false).toBool() );
+	m_RadiusSpin->setValue( m_ViewerCore->getSettings()->value("searchRadius", 10).toInt());
 	m_ViewerCore->getSettings()->endGroup();
 }
 
@@ -253,7 +265,9 @@ void MainWindow::showPreferences()
 void MainWindow::findGlobalMin()
 {
 	m_ViewerCore->getUI()->showStatus( "Searching for global minimum..." );
-	const util::ivector4 minVoxel = operation::NativeImageOps::getGlobalMin( m_ViewerCore->getCurrentImage() );
+	const util::ivector4 minVoxel = operation::NativeImageOps::getGlobalMin( m_ViewerCore->getCurrentImage(), 
+																			 m_ViewerCore->getCurrentImage()->getPropMap().getPropertyAs<util::ivector4>("voxelCoords"), 
+																			 m_RadiusSpin->value());
 	m_ViewerCore->physicalCoordsChanged( m_ViewerCore->getCurrentImage()->getISISImage()->getPhysicalCoordsFromIndex( minVoxel ) );
 	std::stringstream ss;
 	ss << "Found global minimum at " << minVoxel;
@@ -263,7 +277,9 @@ void MainWindow::findGlobalMin()
 void MainWindow::findGlobalMax()
 {
 	m_ViewerCore->getUI()->showStatus( "Searching for global maximum..." );
-	const util::ivector4 maxVoxel = operation::NativeImageOps::getGlobalMax( m_ViewerCore->getCurrentImage() );
+	const util::ivector4 maxVoxel = operation::NativeImageOps::getGlobalMax( m_ViewerCore->getCurrentImage(), 
+																			 m_ViewerCore->getCurrentImage()->getPropMap().getPropertyAs<util::ivector4>("voxelCoords"), 
+																			 m_RadiusSpin->value() );
 	m_ViewerCore->physicalCoordsChanged( m_ViewerCore->getCurrentImage()->getISISImage()->getPhysicalCoordsFromIndex( maxVoxel ) );
 	std::stringstream ss;
 	ss << "Found global maximum at " << maxVoxel;

@@ -42,6 +42,7 @@ public Q_SLOTS:
 	void closeEvent( QCloseEvent * );
 	void findGlobalMin();
 	void findGlobalMax();
+	void spinRadiusChanged(int);
 
 private:
 	Ui::vastMainWindow m_UI;
@@ -49,6 +50,7 @@ private:
 
 	QToolBar *m_Toolbar;
 	isis::viewer::widget::PreferencesDialog *m_PreferencesDialog;
+	QSpinBox *m_RadiusSpin;
 
 };
 
