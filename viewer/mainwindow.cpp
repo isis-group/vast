@@ -41,10 +41,10 @@ MainWindow::MainWindow( QViewerCore *core ) :
 	m_Toolbar->addSeparator();
 	m_Toolbar->addAction( m_UI.actionShow_Labels );
 	m_Toolbar->addAction( m_UI.action_Preferences );
-	m_Toolbar->addWidget( m_RadiusSpin );
 	m_Toolbar->addSeparator();
 	m_Toolbar->addAction( m_UI.actionFind_Global_Min );
 	m_Toolbar->addAction( m_UI.actionFind_Global_Max );
+	m_Toolbar->addWidget( m_RadiusSpin );
 	m_Toolbar->addSeparator();
 	m_RadiusSpin->setMinimum(0);
 	m_RadiusSpin->setMaximum(500);
