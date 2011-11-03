@@ -24,19 +24,21 @@ public Q_SLOTS:
 	void synchronize();
 	void synchronizePos( util::ivector4 voxelCoords );
 	void synchronizePos( util::fvector4 physicalCoords );
-	void voxPosChanged( int dummy );
-	void physPosChanged( double dummy );
+	void voxPosChanged();
+	void physPosChanged();
 
 private:
-	isis::viewer::QViewerCore *m_Core;
+	isis::viewer::QViewerCore *m_ViewerCore;
 	Ui::voxelInformationWidget m_Interface;
+	bool isConnected;
+	void connectSignals();
 
 	template<typename TYPE>
 	void displayIntensity( util::ivector4 coords ) {
-		util::Value<TYPE> vIntensity ( m_Core->getCurrentImage()->getISISImage()->voxel<TYPE>( coords[0], coords[1], coords[2], coords[3] ) );
-		double intensity = roundNumber<double>( vIntensity, 2 );
+		util::Value<TYPE> vIntensity ( m_ViewerCore->getCurrentImage()->getISISImage()->voxel<TYPE>( coords[0], coords[1], coords[2], coords[3] ) );
+		double intensity = roundNumber<double>( vIntensity, 4 );
 		m_Interface.intensityValue->setText( QString::number( intensity ) );
-		m_Core->getCurrentImage()->getPropMap().setPropertyAs<double>( "currentIntensity", intensity );
+		m_ViewerCore->getCurrentImage()->getPropMap().setPropertyAs<double>( "currentIntensity", intensity );
 	}
 };
 

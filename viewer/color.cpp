@@ -172,7 +172,7 @@ color::Color::ColormapType color::Color::adaptColorMapToImage( color::Color::Col
 		}
 	}
 
-	retMap[0] = QColor( 0, 0, 0, 0 ).rgba();
+// 	retMap[0] = QColor( 0, 0, 0, 0 ).rgba();
 	//kill the zero value
 	retMap[mid] = QColor( 0, 0, 0, 0 ).rgba();
 	return retMap;

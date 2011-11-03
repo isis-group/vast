@@ -69,7 +69,7 @@ public:
 	ViewWidgetEnsembleListType getEnsembleList() const { return m_EnsembleList; }
 
 	void rearrangeViewWidgets();
-
+	
 public Q_SLOTS:
 	virtual void reloadPluginsToGUI();
 	virtual void refreshUI();
@@ -85,7 +85,7 @@ private:
 
 	QDockWidget *createDockingEnsemble( QWidget *widget );
 
-	QViewerCore *m_Core;
+	QViewerCore *m_ViewerCore;
 	MainWindow *m_MainWindow;
 	ViewWidgetEnsembleListType m_EnsembleList;
 	util::PropertyMap m_UICoreProperties;
@@ -97,7 +97,7 @@ private:
 	widget::SliderWidget *m_SliderWidget;
 
 	ViewWidgetArragment m_ViewWidgetArrangement;
-
+	
 	unsigned short m_RowCount;
 
 	WidgetMap m_WidgetMap;

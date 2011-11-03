@@ -47,6 +47,7 @@ public Q_SLOTS:
 	virtual bool lookAtVoxelCoords( const util::ivector4 &voxelCoords );
 	virtual void updateScene( bool center );
 	virtual void setInterpolationType( InterpolationType interType ) { m_InterpolationType = interType; }
+	virtual void setShowLabels( bool show ) { m_ShowLabels = show; m_Border = show ? 15 : 0; }
 
 	virtual std::string getWidgetName() const;
 	virtual void setWidgetName( const std::string &wName );
@@ -72,6 +73,7 @@ private:
 	void emitMousePressEvent( QMouseEvent *e );
 	bool isInViewPort( const ViewPortType &viewPort, QMouseEvent *e ) const;
 	void recalculateTranslation();
+	void showLabels() const ;
 
 	boost::shared_ptr<ImageHolder> getWidgetSpecCurrentImage() const;
 
@@ -82,6 +84,8 @@ private:
 	QPainter *m_Painter;
 	InternalImageType m_InterpolationType;
 	ScalingType m_ScalingType;
+	bool m_ShowLabels;
+	unsigned short m_Border;
 
 };
 

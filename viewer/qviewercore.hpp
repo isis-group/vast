@@ -6,6 +6,7 @@
 #include "widgetImplementationBase.hpp"
 #include <QtGui>
 #include "color.hpp"
+#include "qprogressfeedback.hpp"
 
 
 namespace isis
@@ -42,7 +43,9 @@ public:
 
 	const UICore *getUI() const { return m_UI; }
 	UICore *getUI() { return m_UI; }
-
+	
+	const boost::shared_ptr< QProgressFeedback > getProgressFeedback() const { return m_ProgressFeedback; }
+	
 public Q_SLOTS:
 	virtual void settingsChanged();
 	virtual void zoomChanged( float zoomFactor );
@@ -71,7 +74,9 @@ private:
 	QWidget *m_Parent;
 	PluginListType m_PluginList;
 	std::string m_CurrentPath;
+	boost::shared_ptr< QProgressFeedback > m_ProgressFeedback;
 	UICore *m_UI;
+
 
 };
 

@@ -1,5 +1,6 @@
 #include "qviewercore.hpp"
-
+#include "DataStorage/io_factory.hpp"
+#include "nativeimageops.hpp"
 
 namespace isis
 {
@@ -11,12 +12,16 @@ QViewerCore::QViewerCore( const std::string &appName, const std::string &orgName
 	  m_Parent( parent ),
 	  m_Settings( new QSettings( appName.c_str(), orgName.c_str() ) ),
 	  m_CurrentPath( QDir::currentPath().toStdString() ),
+	  m_ProgressFeedback( boost::shared_ptr<QProgressFeedback>( new QProgressFeedback() )),
 	  m_UI( new isis::viewer::UICore( this ) )
 {
 	QCoreApplication::setApplicationName( QString( appName.c_str() ) );
 	QCoreApplication::setOrganizationName( QString( orgName.c_str() ) );
+	
 
 	setParentWidget( m_UI->getMainWindow() );
+	data::IOFactory::setProgressFeedback( m_ProgressFeedback );
+	operation::NativeImageOps::setProgressFeedBack( m_ProgressFeedback );
 }
 
 
@@ -65,11 +70,8 @@ void QViewerCore::setImageList( const std::list< data::Image > imageList, const 
 
 void QViewerCore::setShowLabels( bool l )
 {
-	if( l ) {
-		emitShowLabels( true );
-	} else {
-		emitShowLabels( false );
-	}
+		emitShowLabels( l );
+		updateScene();
 }
 
 void QViewerCore::settingsChanged()

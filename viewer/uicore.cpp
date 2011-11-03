@@ -11,7 +11,7 @@ namespace viewer
 
 UICore::UICore( QViewerCore *core )
 	: m_MainWindow( new MainWindow( core ) ),
-	  m_Core( core )
+	  m_ViewerCore( core )
 {
 	m_UICoreProperties.setPropertyAs<uint16_t>( "maxWidgetHeight", 200 );
 	m_UICoreProperties.setPropertyAs<uint16_t>( "maxWidgetWidth", 200 );
@@ -23,6 +23,7 @@ UICore::UICore( QViewerCore *core )
 	m_VoxelInformationDockWidget = createDockingEnsemble( m_VoxelInformationWidget );
 	m_ImageStackDockWidget = createDockingEnsemble( m_ImageStackWidget );
 	m_RowCount = m_MainWindow->getUI().centralGridLayout->rowCount();
+
 }
 
 void UICore::setOptionPosition( UICore::OptionPosition pos )
@@ -216,7 +217,7 @@ UICore::ViewWidget UICore::createViewWidget( const std::string &widgetType, Plan
 	frameWidget->setParent( dockWidget );
 
 #warning this has to be done with the help of a widget factor. nasty this way
-	QWidgetImplementationBase *widgetImpl = new qt::QImageWidgetImplementation( m_Core, frameWidget, planeOrientation );
+	QWidgetImplementationBase *widgetImpl = new qt::QImageWidgetImplementation( m_ViewerCore, frameWidget, planeOrientation );
 
 	ViewWidget viewWidget;
 	viewWidget.dockWidget = dockWidget;
@@ -255,13 +256,10 @@ bool UICore::registerWidget( ViewWidget widget )
 		LOG( Runtime, warning ) << "Widget with id" << widget.widgetImplementation->getWidgetName() << "!";
 		return false;
 	}
-
 	m_WidgetMap[widget.widgetImplementation] = widget;
 	return true;
 
 }
-
-
 
 }
 }

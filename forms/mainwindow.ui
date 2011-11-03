@@ -109,6 +109,10 @@
      <string>&amp;Options</string>
     </property>
     <addaction name="action_Preferences"/>
+    <addaction name="separator"/>
+    <addaction name="actionFind_Global_Min"/>
+    <addaction name="actionFind_Global_Max"/>
+    <addaction name="actionShow_Labels"/>
    </widget>
    <addaction name="menu_File"/>
    <addaction name="menu_Preferences"/>
@@ -192,6 +196,45 @@
    </property>
    <property name="shortcut">
     <string>S, P</string>
+   </property>
+  </action>
+  <action name="actionFind_Global_Min">
+   <property name="icon">
+    <iconset resource="../resources/viewer.qrc">
+     <normaloff>:/common/arrow_left.png</normaloff>:/common/arrow_left.png</iconset>
+   </property>
+   <property name="text">
+    <string>Find Global Min</string>
+   </property>
+   <property name="shortcut">
+    <string>F, M, I</string>
+   </property>
+  </action>
+  <action name="actionFind_Global_Max">
+   <property name="icon">
+    <iconset resource="../resources/viewer.qrc">
+     <normaloff>:/common/arrow_right.png</normaloff>:/common/arrow_right.png</iconset>
+   </property>
+   <property name="text">
+    <string>Find Global Max</string>
+   </property>
+   <property name="shortcut">
+    <string>F, M, A</string>
+   </property>
+  </action>
+  <action name="actionShow_Labels">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../resources/viewer.qrc">
+     <normaloff>:/common/orient.gif</normaloff>:/common/orient.gif</iconset>
+   </property>
+   <property name="text">
+    <string>Show Labels</string>
+   </property>
+   <property name="shortcut">
+    <string>S, L</string>
    </property>
   </action>
  </widget>

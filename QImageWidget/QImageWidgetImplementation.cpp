@@ -14,7 +14,9 @@ QImageWidgetImplementation::QImageWidgetImplementation( QViewerCore *core, QWidg
 	: QWidget( parent ),
 	  QWidgetImplementationBase( core, parent, orientation ),
 	  m_MemoryHandler( core ),
-	  m_Painter( new QPainter() )
+	  m_Painter( new QPainter() ),
+	  m_ShowLabels( false ),
+	  m_Border(0)
 {
 	( new QVBoxLayout( parent ) )->addWidget( this );
 	commonInit();
@@ -41,6 +43,7 @@ void QImageWidgetImplementation::commonInit()
 	connect( m_ViewerCore, SIGNAL( emitPhysicalCoordsChanged( util::fvector4 ) ), this, SLOT( lookAtPhysicalCoords( util::fvector4 ) ) );
 	connect( m_ViewerCore, SIGNAL( emitVoxelCoordChanged( util::ivector4 ) ), this, SLOT( lookAtVoxelCoords( util::ivector4 ) ) );
 	connect( m_ViewerCore, SIGNAL( emitZoomChanged( float ) ), this, SLOT( setZoom( float ) ) );
+	connect( m_ViewerCore, SIGNAL( emitShowLabels(bool)), this, SLOT(setShowLabels(bool)));
 	setAutoFillBackground( true );
 	setPalette( QPalette( Qt::black ) );
 	m_WidgetProperties.setPropertyAs<bool>( "mousePressedRight", false );
@@ -109,8 +112,8 @@ void QImageWidgetImplementation::paintEvent( QPaintEvent *event )
 										   getWidgetSpecCurrentImage(),
 										   width(),
 										   height(),
-										   m_PlaneOrientation
-
+										   m_PlaneOrientation,
+											m_Border
 										 );
 
 		boost::shared_ptr<ImageHolder> cImage =  getWidgetSpecCurrentImage();
@@ -196,7 +199,7 @@ void QImageWidgetImplementation::paintImage( boost::shared_ptr< ImageHolder > im
 
 	if( image.get() != getWidgetSpecCurrentImage().get() ) {
 		imgProps.viewPort =  QOrienationHandler::getViewPort( m_WidgetProperties, image, width(), height(),
-							 m_PlaneOrientation );
+							 m_PlaneOrientation, m_Border );
 	}
 
 	if( !m_WidgetProperties.getPropertyAs<bool>( "mousePressedLeft" ) || m_WidgetProperties.getPropertyAs<bool>( "mousePressedRight" ) || m_WidgetProperties.getPropertyAs<bool>( "zoomEvent" ) ) {
@@ -250,18 +253,52 @@ void QImageWidgetImplementation::emitMousePressEvent( QMouseEvent *e )
 	}
 }
 
+void QImageWidgetImplementation::showLabels() const
+{
+	m_Painter->setFont( QFont("Chicago", 13) );
+	switch( m_PlaneOrientation ) {
+		case axial:
+			m_Painter->setPen( QColor( 255,0,0) );
+			m_Painter->drawText(0, height() / 2 + 7, "L");
+			m_Painter->drawText(width()-15, height() / 2 + 7, "R");
+			m_Painter->setPen( QColor( 0,255,0) );
+			m_Painter->drawText(width() / 2 - 7, 15, "A");
+			m_Painter->drawText(width() / 2 - 7, height()-2, "P");
+			break;
+		case sagittal:
+			m_Painter->setPen( QColor( 0,255,0) );
+			m_Painter->drawText(0, height() / 2 + 7, "A");
+			m_Painter->drawText(width()-15, height() / 2 + 7, "P");
+			m_Painter->setPen( QColor( 0,0,255) );
+			m_Painter->drawText(width() / 2 - 7, 15, "S");
+			m_Painter->drawText(width() / 2 - 7, height()-2, "I");
+			break;
+		case coronal:
+			m_Painter->setPen( QColor( 255,0,0) );
+			m_Painter->drawText(0, height() / 2 + 10, "L");
+			m_Painter->drawText(width()-15, height() / 2 + 7, "R");
+			m_Painter->setPen( QColor( 0,0,255) );
+			m_Painter->drawText(width() / 2 - 7, 15, "S");
+			m_Painter->drawText(width() / 2 - 7, height()-2, "I");
+			break;
+	}
+	
+	
+	
+}
+
+
 void QImageWidgetImplementation::paintCrosshair() const
 {
 	const boost::shared_ptr< ImageHolder > image = getWidgetSpecCurrentImage();
 	const ImageProperties &imgProps = m_ImageProperties.at( image );
 	std::pair<size_t, size_t> coords = QOrienationHandler::convertVoxel2WindowCoords( imgProps.viewPort, m_WidgetProperties, getWidgetSpecCurrentImage(), m_PlaneOrientation  );
-	size_t border = 500;
 
-	const QLine xline1( coords.first, -border , coords.first, coords.second - 15 );
-	const QLine xline2( coords.first, coords.second + 15, coords.first, height() + border );
+	const QLine xline1( coords.first, m_Border , coords.first, coords.second - 15 );
+	const QLine xline2( coords.first, coords.second + 15, coords.first, height() - m_Border );
 
-	const QLine yline1( -border, coords.second, coords.first - 15, coords.second );
-	const QLine yline2( coords.first + 15, coords.second,  width() + border, coords.second  );
+	const QLine yline1( m_Border, coords.second, coords.first - 15, coords.second );
+	const QLine yline2( coords.first + 15, coords.second,  width() - m_Border, coords.second  );
 
 	QPen pen;
 	pen.setColor( QColor( 255, 102, 0 ) );
@@ -276,8 +313,11 @@ void QImageWidgetImplementation::paintCrosshair() const
 	m_Painter->drawLine( xline2 );
 	m_Painter->drawLine( yline1 );
 	m_Painter->drawLine( yline2 );
-	pen.setWidth( 2 );;
+	pen.setWidth( 2 );
 	m_Painter->drawPoint( coords.first, coords.second );
+	if( m_ShowLabels ) {
+		showLabels();
+	}
 }
 
 bool QImageWidgetImplementation::lookAtPhysicalCoords( const isis::util::fvector4 &physicalCoords )
@@ -294,8 +334,9 @@ bool QImageWidgetImplementation::lookAtVoxelCoords( const isis::util::ivector4 &
 {
 	m_WidgetProperties.setPropertyAs<uint16_t>( "currentTimeStep", voxelCoords[3] );
 	BOOST_FOREACH( DataContainer::reference image, m_ViewerCore->getDataContainer() ) {
-		image.second->getPropMap().setPropertyAs<util::ivector4>( "voxelCoords", voxelCoords );
 		image.second->getPropMap().setPropertyAs<util::fvector4>( "physicalCoords", image.second->getISISImage()->getPhysicalCoordsFromIndex( voxelCoords ) );
+		image.second->getPropMap().setPropertyAs<util::ivector4>( "voxelCoords", image.second->getISISImage()->getIndexFromPhysicalCoords( 
+			image.second->getPropMap().getPropertyAs<util::fvector4>("physicalCoords")));
 	}
 	update();
 }

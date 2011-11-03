@@ -82,7 +82,7 @@
           </widget>
          </item>
          <item row="0" column="1">
-          <widget class="QSpinBox" name="spinBox"/>
+          <widget class="QSpinBox" name="rowBox"/>
          </item>
          <item row="1" column="0">
           <widget class="QLabel" name="labelColumn">
@@ -92,7 +92,7 @@
           </widget>
          </item>
          <item row="1" column="1">
-          <widget class="QSpinBox" name="spinBox_2"/>
+          <widget class="QSpinBox" name="columnBox"/>
          </item>
          <item row="2" column="0">
           <widget class="QLabel" name="labelSlice">
@@ -102,7 +102,7 @@
           </widget>
          </item>
          <item row="2" column="1">
-          <widget class="QSpinBox" name="spinBox_3"/>
+          <widget class="QSpinBox" name="sliceBox"/>
          </item>
         </layout>
        </widget>
@@ -130,7 +130,7 @@
           </widget>
          </item>
          <item row="0" column="1">
-          <widget class="QDoubleSpinBox" name="doubleSpinBox"/>
+          <widget class="QDoubleSpinBox" name="xBox"/>
          </item>
          <item row="1" column="0">
           <widget class="QLabel" name="labelY">
@@ -140,7 +140,7 @@
           </widget>
          </item>
          <item row="1" column="1">
-          <widget class="QDoubleSpinBox" name="doubleSpinBox_2"/>
+          <widget class="QDoubleSpinBox" name="yBox"/>
          </item>
          <item row="2" column="0">
           <widget class="QLabel" name="labelZ">
@@ -150,7 +150,7 @@
           </widget>
          </item>
          <item row="2" column="1">
-          <widget class="QDoubleSpinBox" name="doubleSpinBox_3"/>
+          <widget class="QDoubleSpinBox" name="zBox"/>
          </item>
         </layout>
        </widget>

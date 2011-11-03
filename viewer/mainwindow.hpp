@@ -5,6 +5,8 @@
 #include "ui_mainwindow.h"
 #include "qviewercore.hpp"
 #include "preferenceDialog.hpp"
+#include "nativeimageops.hpp"
+#include "CoreUtils/progressfeedback.hpp"
 
 namespace isis
 {
@@ -38,12 +40,12 @@ public Q_SLOTS:
 	void loadSettings();
 	void saveSettings();
 	void closeEvent( QCloseEvent * );
+	void findGlobalMin();
+	void findGlobalMax();
 
-protected:
-	virtual void setupBasicElements();
 private:
 	Ui::vastMainWindow m_UI;
-	QViewerCore *m_Core;
+	QViewerCore *m_ViewerCore;
 
 	QToolBar *m_Toolbar;
 	isis::viewer::widget::PreferencesDialog *m_PreferencesDialog;
