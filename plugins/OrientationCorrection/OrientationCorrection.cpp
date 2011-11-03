@@ -45,7 +45,7 @@ void OrientatioCorrectionDialog::flipPressed()
 		m_Core->getCurrentImage()->addChangedAttribute( "Flip Y" );
 	}
 
-	if( ui.checkFlipY->isChecked() ) {
+	if( ui.checkFlipX->isChecked() ) {
 		transform( 1, 1 ) = -1;
 		m_Core->getCurrentImage()->addChangedAttribute( "Flip X" );
 	}
