@@ -44,7 +44,6 @@ MainWindow::MainWindow( QViewerCore *core ) :
 	m_Toolbar->addAction( m_UI.actionFind_Global_Max );
 	m_Toolbar->addSeparator();
 	
-	
 	m_UI.statusbar->addPermanentWidget( m_ViewerCore->getProgressFeedback()->getProgressBar() );
 
 }
@@ -55,7 +54,7 @@ void MainWindow::openImage()
 	ImageHolder::ImageType type = ImageHolder::anatomical_image;
 	std::string title( "Open Image" );
 	std::stringstream fileFormats;
-	fileFormats << "Image files (" << getFileFormatsAsString( std::string( "*." ) ) << ")";
+	fileFormats << "Image files (" << getFileFormatsAsString(isis::image_io::FileFormat::read_only, std::string( "*." ) ) << ")";
 	QStringList filenames = QFileDialog::getOpenFileNames( this,
 							tr( title.c_str() ),
 							m_ViewerCore->getCurrentPath().c_str(),
@@ -161,7 +160,7 @@ void MainWindow::saveImage()
 void MainWindow::saveImageAs()
 {
 	std::stringstream fileFormats;
-	fileFormats << "Image files (" << getFileFormatsAsString( std::string( "*." ) ) << ")";
+	fileFormats << "Image files (" << getFileFormatsAsString(isis::image_io::FileFormat::write_only, std::string( "*." ) ) << ")";
 	QString filename = QFileDialog::getSaveFileName( this,
 					   tr( "Save Image As..." ),
 					   m_ViewerCore->getCurrentPath().c_str(),
@@ -226,6 +225,7 @@ void MainWindow::loadSettings()
 	m_ViewerCore->getSettings()->endGroup();
 	m_ViewerCore->getSettings()->beginGroup( "UserProfile" );
 	m_ViewerCore->getOption()->propagateZooming = m_ViewerCore->getSettings()->value( "propagateZooming", false ).toBool();
+	m_UI.actionShow_Labels->setChecked( m_ViewerCore->getSettings()->value("showLabels", false).toBool() );
 	m_ViewerCore->getSettings()->endGroup();
 }
 

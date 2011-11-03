@@ -78,28 +78,29 @@ void SliderWidget::upperThresholdChanged( int sliderPos )
 
 void SliderWidget::synchronize()
 {
-	if( m_ViewerCore->getCurrentImage()->getImageProperties().imageType == ImageHolder::z_map ) {
-		setVisible( LowerThreshold, true );
-		setVisible( UpperThreshold, true );
-		setVisible( Opacity, true );
-	} else if ( m_ViewerCore->getCurrentImage()->getImageProperties().imageType == ImageHolder::anatomical_image ) {
-		setVisible( LowerThreshold, false );
-		setVisible( UpperThreshold, false );
-		setVisible( Opacity, true );
+	if( m_ViewerCore->getCurrentImage().get() ) {
+		if( m_ViewerCore->getCurrentImage()->getImageProperties().imageType == ImageHolder::z_map ) {
+			setVisible( LowerThreshold, true );
+			setVisible( UpperThreshold, true );
+			setVisible( Opacity, true );
+		} else if ( m_ViewerCore->getCurrentImage()->getImageProperties().imageType == ImageHolder::anatomical_image ) {
+			setVisible( LowerThreshold, false );
+			setVisible( UpperThreshold, false );
+			setVisible( Opacity, true );
+		}
+
+		const unsigned short lowerThreshold = 1000 - abs( ( 1000 / m_ViewerCore->getCurrentImage()->getMinMax().first->as<double>() )
+											* m_ViewerCore->getCurrentImage()->getPropMap().getPropertyAs<double>( "lowerThreshold" ) );
+
+		const unsigned short upperThreshold = 1000 - abs( ( 1000 / m_ViewerCore->getCurrentImage()->getMinMax().second->as<double>() )
+											* m_ViewerCore->getCurrentImage()->getPropMap().getPropertyAs<double>( "upperThreshold" ) );
+
+		m_Interface.opacitySlider->setSliderPosition( m_ViewerCore->getCurrentImage()->getPropMap().getPropertyAs<float>( "opacity" ) * 1000 );
+
+		m_Interface.minSlider->setSliderPosition( lowerThreshold );
+
+		m_Interface.maxSlider->setSliderPosition( upperThreshold );
 	}
-
-	const unsigned short lowerThreshold = 1000 - abs( ( 1000 / m_ViewerCore->getCurrentImage()->getMinMax().first->as<double>() )
-										  * m_ViewerCore->getCurrentImage()->getPropMap().getPropertyAs<double>( "lowerThreshold" ) );
-
-	const unsigned short upperThreshold = 1000 - abs( ( 1000 / m_ViewerCore->getCurrentImage()->getMinMax().second->as<double>() )
-										  * m_ViewerCore->getCurrentImage()->getPropMap().getPropertyAs<double>( "upperThreshold" ) );
-
-	m_Interface.opacitySlider->setSliderPosition( m_ViewerCore->getCurrentImage()->getPropMap().getPropertyAs<float>( "opacity" ) * 1000 );
-
-	m_Interface.minSlider->setSliderPosition( lowerThreshold );
-
-	m_Interface.maxSlider->setSliderPosition( upperThreshold );
-
 }
 
 

@@ -26,7 +26,6 @@ QViewerCore::QViewerCore( const std::string &appName, const std::string &orgName
 
 
 
-
 void QViewerCore::voxelCoordsChanged( util::ivector4 voxelCoords )
 {
 	emitVoxelCoordChanged( voxelCoords );
@@ -55,7 +54,7 @@ void QViewerCore::timestepChanged( int timestep )
 std::list<boost::shared_ptr<ImageHolder> > QViewerCore::addImageList( const std::list< data::Image > imageList, const ImageHolder::ImageType &imageType )
 {
 	std::list<boost::shared_ptr<ImageHolder> > retList = isis::viewer::ViewerCoreBase::addImageList( imageList, imageType );
-	//  settingsChanged();
+	settingsChanged();
 	return retList;
 
 }
@@ -70,21 +69,24 @@ void QViewerCore::setImageList( const std::list< data::Image > imageList, const 
 
 void QViewerCore::setShowLabels( bool l )
 {
-		emitShowLabels( l );
-		updateScene();
+	getSettings()->beginGroup( "UserProfile" );
+	getSettings()->setValue("showLabels",l);
+	getSettings()->endGroup();
+	emitShowLabels( l );
+	updateScene();
 }
 
 void QViewerCore::settingsChanged()
 {
 	getSettings()->beginGroup( "UserProfile" );
-
 	if( getCurrentImage()->getImageProperties().imageType == ImageHolder::z_map ) {
 		getCurrentImage()->getPropMap().setPropertyAs<std::string>( "lut", getSettings()->value( "lut", "fallback" ).toString().toStdString() );
 	}
 
 	BOOST_FOREACH( UICore::WidgetMap::const_reference widget, getUI()->getWidgets() ) {
-		widget.first->setInterpolationType( static_cast<InterpolationType>( getSettings()->value( "interpolationType", "standard_grey_values" ).toUInt() ) );
+		widget.first->setInterpolationType( static_cast<InterpolationType>( getSettings()->value( "interpolationType", 0 ).toUInt() ) );
 	}
+	emitShowLabels( getSettings()->value("showLabels", false).toBool());
 	getSettings()->endGroup();
 }
 

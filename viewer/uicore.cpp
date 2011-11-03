@@ -197,12 +197,7 @@ void UICore::rearrangeViewWidgets()
 	BOOST_FOREACH( ViewWidgetEnsembleListType::const_reference ensemble, m_EnsembleList ) {
 		attachViewWidgetEnsemble( detachViewWidgetEnsemble( ensemble ) );
 	}
-
-	if( m_EnsembleList.size() > 1 ) {
-		setOptionPosition( bottom );
-	} else {
-		setOptionPosition( central11 );
-	}
+	setOptionPosition( bottom );
 }
 
 UICore::ViewWidget UICore::createViewWidget( const std::string &widgetType, PlaneOrientation planeOrientation )

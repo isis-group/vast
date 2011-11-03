@@ -29,6 +29,10 @@ void VoxelInformationWidget::connectSignals()
 	connect( m_Interface.xBox, SIGNAL( editingFinished()), this, SLOT( physPosChanged() ) );
 	connect( m_Interface.yBox, SIGNAL( editingFinished()), this, SLOT( physPosChanged() ) );
 	connect( m_Interface.zBox, SIGNAL( editingFinished()), this, SLOT( physPosChanged() ) );
+	connect( m_Interface.timestepSlider, SIGNAL(sliderMoved(int)), m_ViewerCore, SLOT( timestepChanged(int)));
+	connect( m_Interface.timestepSpinBox, SIGNAL(valueChanged(int)), m_ViewerCore, SLOT( timestepChanged(int)));
+	connect( m_Interface.timestepSlider, SIGNAL(sliderMoved(int)), m_Interface.timestepSpinBox, SLOT(setValue(int)));
+	connect( m_Interface.timestepSpinBox, SIGNAL( valueChanged(int)), m_Interface.timestepSlider, SLOT( setValue(int)));
 	isConnected = true;
 }
 
@@ -54,39 +58,50 @@ void VoxelInformationWidget::voxPosChanged()
 
 void VoxelInformationWidget::synchronize()
 {
-	const boost::shared_ptr<ImageHolder> image = m_ViewerCore->getCurrentImage();
-	QSize size = m_Interface.colromapLabel->size();
-	const std::string lutName = image->getPropMap().getPropertyAs<std::string>( "lut" );
-	m_Interface.colromapLabel->setPixmap(
-		m_ViewerCore->getColorHandler()->getIcon( lutName, size.width(), size.height() - 10 ).pixmap( size.width(), size.height() - 10 ) );
-	m_Interface.labelMin->setText( image->getMinMax().first->as<std::string>().c_str() );
-	m_Interface.labelMax->setText( image->getMinMax().second->as<std::string>().c_str() );
-	const util::ivector4 outerCorner = util::ivector4( image->getImageSize()[0] - 1, image->getImageSize()[1] - 1, image->getImageSize()[2] - 1 );
-	m_Interface.rowBox->setMaximum( outerCorner[0] );
-	m_Interface.columnBox->setMaximum( outerCorner[1] );
-	m_Interface.sliceBox->setMaximum( outerCorner[2] );
-	const util::fvector4 physicalBegin = image->getISISImage()->getPhysicalCoordsFromIndex( util::ivector4() );
-	const util::fvector4 physicalEnd = image->getISISImage()->getPhysicalCoordsFromIndex( outerCorner );
-	m_Interface.xBox->setMinimum( physicalBegin[0] < physicalEnd[0] ? physicalBegin[0] : physicalEnd[0] );
-	m_Interface.xBox->setMaximum( physicalBegin[0] > physicalEnd[0] ? physicalBegin[0] : physicalEnd[0] );
-	m_Interface.yBox->setMinimum( physicalBegin[1] < physicalEnd[1] ? physicalBegin[1] : physicalEnd[1] );
-	m_Interface.yBox->setMaximum( physicalBegin[1] > physicalEnd[1] ? physicalBegin[1] : physicalEnd[1] );
-	m_Interface.zBox->setMinimum( physicalBegin[2] < physicalEnd[2] ? physicalBegin[2] : physicalEnd[2] );
-	m_Interface.zBox->setMaximum( physicalBegin[2] > physicalEnd[2] ? physicalBegin[2] : physicalEnd[2] );
-	synchronizePos( image->getPropMap().getPropertyAs<util::ivector4>( "voxelCoords" ) );
-	const util::fvector4 voxelSpacing = image->getISISImage()->getPropertyAs<util::fvector4>( "voxelSize" ) + image->getISISImage()->getPropertyAs<util::fvector4>( "voxelGap" );
-	boost::numeric::ublas::vector<float> vSpacing = boost::numeric::ublas::vector<float>( 4 );
+	if( m_ViewerCore->getCurrentImage().get() ) {
+		const boost::shared_ptr<ImageHolder> image = m_ViewerCore->getCurrentImage();
+		QSize size = m_Interface.colromapLabel->size();
+		const std::string lutName = image->getPropMap().getPropertyAs<std::string>( "lut" );
+		m_Interface.colromapLabel->setPixmap(
+			m_ViewerCore->getColorHandler()->getIcon( lutName, size.width(), size.height() - 10 ).pixmap( size.width(), size.height() - 10 ) );
+		m_Interface.labelMin->setText( image->getMinMax().first->as<std::string>().c_str() );
+		m_Interface.labelMax->setText( image->getMinMax().second->as<std::string>().c_str() );
+		const util::ivector4 outerCorner = util::ivector4( image->getImageSize()[0] - 1, image->getImageSize()[1] - 1, image->getImageSize()[2] - 1 );
+		m_Interface.rowBox->setMaximum( outerCorner[0] );
+		m_Interface.columnBox->setMaximum( outerCorner[1] );
+		m_Interface.sliceBox->setMaximum( outerCorner[2] );
+		const util::fvector4 physicalBegin = image->getISISImage()->getPhysicalCoordsFromIndex( util::ivector4() );
+		const util::fvector4 physicalEnd = image->getISISImage()->getPhysicalCoordsFromIndex( outerCorner );
+		m_Interface.xBox->setMinimum( physicalBegin[0] < physicalEnd[0] ? physicalBegin[0] : physicalEnd[0] );
+		m_Interface.xBox->setMaximum( physicalBegin[0] > physicalEnd[0] ? physicalBegin[0] : physicalEnd[0] );
+		m_Interface.yBox->setMinimum( physicalBegin[1] < physicalEnd[1] ? physicalBegin[1] : physicalEnd[1] );
+		m_Interface.yBox->setMaximum( physicalBegin[1] > physicalEnd[1] ? physicalBegin[1] : physicalEnd[1] );
+		m_Interface.zBox->setMinimum( physicalBegin[2] < physicalEnd[2] ? physicalBegin[2] : physicalEnd[2] );
+		m_Interface.zBox->setMaximum( physicalBegin[2] > physicalEnd[2] ? physicalBegin[2] : physicalEnd[2] );
+		synchronizePos( image->getPropMap().getPropertyAs<util::ivector4>( "voxelCoords" ) );
+		const util::fvector4 voxelSpacing = image->getISISImage()->getPropertyAs<util::fvector4>( "voxelSize" ) + image->getISISImage()->getPropertyAs<util::fvector4>( "voxelGap" );
+		boost::numeric::ublas::vector<float> vSpacing = boost::numeric::ublas::vector<float>( 4 );
 
-	for( unsigned short i = 0; i < 4; i++ ) {
-		vSpacing( i ) = voxelSpacing[i];
-	}
+		for( unsigned short i = 0; i < 4; i++ ) {
+			vSpacing( i ) = voxelSpacing[i];
+		}
 
-	boost::numeric::ublas::vector<float> transformedVec = boost::numeric::ublas::prod( image->getNormalizedImageOrientation(), vSpacing );
-	m_Interface.xBox->setSingleStep( fabs( transformedVec( 0 ) ) );
-	m_Interface.yBox->setSingleStep( fabs( transformedVec( 1 ) ) );
-	m_Interface.zBox->setSingleStep( fabs( transformedVec( 2 ) ) );
-	if( !isConnected) {
-		connectSignals();
+		boost::numeric::ublas::vector<float> transformedVec = boost::numeric::ublas::prod( image->getNormalizedImageOrientation(), vSpacing );
+		m_Interface.xBox->setSingleStep( fabs( transformedVec( 0 ) ) );
+		m_Interface.yBox->setSingleStep( fabs( transformedVec( 1 ) ) );
+		m_Interface.zBox->setSingleStep( fabs( transformedVec( 2 ) ) );
+		if( !isConnected) {
+			connectSignals();
+		}
+		if( m_ViewerCore->getCurrentImage()->getImageSize()[3] > 1 ) {
+			m_Interface.timeStepFrame->setVisible(true);
+			m_Interface.timestepSlider->setMaximum( m_ViewerCore->getCurrentImage()->getImageSize()[3] - 1 );
+			m_Interface.timestepSlider->setMinimum(0);
+			m_Interface.timestepSpinBox->setMaximum( m_ViewerCore->getCurrentImage()->getImageSize()[3] - 1 );
+			m_Interface.timestepSpinBox->setMinimum(0);
+		} else {
+			m_Interface.timeStepFrame->setVisible( false );
+		}
 	}
 }
 

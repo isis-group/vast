@@ -9,7 +9,7 @@ namespace widget
 {
 
 ImageStackWidget::ImageStackWidget( QWidget *parent, QViewerCore *core )
-	: QWidget( parent ), m_Core( core )
+	: QWidget( parent ), m_ViewerCore( core )
 {
 	m_Interface.setupUi( this );
 
@@ -23,7 +23,7 @@ ImageStackWidget::ImageStackWidget( QWidget *parent, QViewerCore *core )
 void ImageStackWidget::synchronize()
 {
 	m_Interface.imageStack->clear();
-	BOOST_FOREACH( DataContainer::const_reference imageRef, m_Core->getDataContainer() ) {
+	BOOST_FOREACH( DataContainer::const_reference imageRef, m_ViewerCore->getDataContainer() ) {
 		QListWidgetItem *item = new QListWidgetItem;
 		QString sD = imageRef.second->getPropMap().getPropertyAs<std::string>( "sequenceDescription" ).c_str();
 		item->setText( QString( imageRef.second->getFileNames().front().c_str() ) );
@@ -35,7 +35,7 @@ void ImageStackWidget::synchronize()
 			item->setCheckState( Qt::Unchecked );
 		}
 
-		if( m_Core->getCurrentImage().get() == imageRef.second.get() ) {
+		if( m_ViewerCore->getCurrentImage().get() == imageRef.second.get() ) {
 			item->setIcon( QIcon( ":/common/currentImage.gif" ) );
 		}
 
@@ -47,33 +47,47 @@ void ImageStackWidget::synchronize()
 void ImageStackWidget::itemClicked( QListWidgetItem *item )
 {
 	if( item->checkState() == Qt::Checked ) {
-		m_Core->getDataContainer().at( item->text().toStdString() )->getPropMap().setPropertyAs<bool>( "isVisible", true ) ;
+		m_ViewerCore->getDataContainer().at( item->text().toStdString() )->getPropMap().setPropertyAs<bool>( "isVisible", true ) ;
 	} else {
-		m_Core->getDataContainer().at( item->text().toStdString() )->getPropMap().setPropertyAs<bool>( "isVisible", false ) ;
+		m_ViewerCore->getDataContainer().at( item->text().toStdString() )->getPropMap().setPropertyAs<bool>( "isVisible", false ) ;
 	}
 
-	m_Core->getUI()->refreshUI();
-	m_Core->updateScene();
+	m_ViewerCore->getUI()->refreshUI();
+	m_ViewerCore->updateScene();
 
 }
 
 void ImageStackWidget::itemSelected( QListWidgetItem *item )
 {
-	m_Core->setCurrentImage( m_Core->getDataContainer().at( item->text().toStdString() ) );
+	m_ViewerCore->setCurrentImage( m_ViewerCore->getDataContainer().at( item->text().toStdString() ) );
 	synchronize();
-	m_Core->getUI()->refreshUI();
-	m_Core->updateScene();
+	m_ViewerCore->getUI()->refreshUI();
+	m_ViewerCore->updateScene();
 }
 
 void ImageStackWidget::removeButtonClicked()
 {
-	boost::shared_ptr<ImageHolder> image = m_Core->getDataContainer().at( m_Interface.imageStack->currentItem()->text().toStdString() );
+	boost::shared_ptr<ImageHolder> image = m_ViewerCore->getDataContainer().at( m_Interface.imageStack->currentItem()->text().toStdString() );
 	BOOST_FOREACH( std::list< QWidgetImplementationBase *>::const_reference widget, image->getWidgetList() ) {
 		widget->removeImage( image );
 	}
-	m_Core->getDataContainer().erase( m_Interface.imageStack->currentItem()->text().toStdString() );
-	m_Core->getUI()->refreshUI();
-	m_Core->updateScene();
+	
+	if( m_ViewerCore->getCurrentImage().get() == m_ViewerCore->getDataContainer().at( m_Interface.imageStack->currentItem()->text().toStdString() ).get() ) {
+		std::list<std::string> tmpList;
+		BOOST_FOREACH( DataContainer::const_reference image, m_ViewerCore->getDataContainer() )
+		{
+			tmpList.push_back( image.first );
+		}
+		tmpList.erase( std::find( tmpList.begin(), tmpList.end(), m_Interface.imageStack->currentItem()->text().toStdString() ) );
+		if( tmpList.size() ) {
+			m_ViewerCore->setCurrentImage( m_ViewerCore->getDataContainer().at( tmpList.front() ) );
+		} else {
+			m_ViewerCore->setCurrentImage(boost::shared_ptr<ImageHolder>());
+		}
+	}
+	m_ViewerCore->getDataContainer().erase( m_Interface.imageStack->currentItem()->text().toStdString() );
+	m_ViewerCore->getUI()->refreshUI();
+	m_ViewerCore->updateScene();
 }
 
 }

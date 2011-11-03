@@ -29,7 +29,7 @@ public Q_SLOTS:
 	void removeButtonClicked();
 
 private:
-	QViewerCore *m_Core;
+	QViewerCore *m_ViewerCore;
 	Ui::imageStackWidget m_Interface;
 
 };

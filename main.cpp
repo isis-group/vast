@@ -29,8 +29,8 @@ int main( int argc, char *argv[] )
 	wTypeMap.insert( std::make_pair<std::string, WidgetType>( "qt", type_qt ) );
 	wTypes.set( "qt" );
 	dbg_levels.set( "warning" );
-	qt4::IOQtApplication app( appName.c_str(), false, false, std::string( "raster" ) );
-
+	QApplication::setGraphicsSystem( "raster" );
+	qt4::IOQtApplication app( appName.c_str(), false, false );
 
 	app.parameters["in"] = util::slist();
 	app.parameters["in"].needed() = false;
@@ -79,6 +79,9 @@ int main( int argc, char *argv[] )
 
 	//load the anatomical images
 	BOOST_FOREACH ( util::slist::const_reference fileName, fileList ) {
+		std::stringstream ss;
+		ss << "Open image " << fileName << " ...";
+		core->getUI()->showStatus(ss.str());
 		std::list< data::Image > tmpList = data::IOFactory::load( fileName, app.parameters["rf"].toString(), app.parameters["rdialect"].toString() );
 		BOOST_FOREACH( std::list< data::Image >::reference imageRef, tmpList ) {
 			if( app.parameters["old_lipsia"] ) {
@@ -90,6 +93,9 @@ int main( int argc, char *argv[] )
 	}
 	//load the zmap images
 	BOOST_FOREACH ( util::slist::const_reference fileName, zmapFileList ) {
+		std::stringstream ss;
+		ss << "Open image " << fileName << " as zmap...";
+		core->getUI()->showStatus(ss.str());
 		std::list< data::Image > tmpList = data::IOFactory::load( fileName, app.parameters["rf"].toString(), app.parameters["rdialect"].toString() );
 		BOOST_FOREACH( std::list< data::Image >::reference imageRef, tmpList ) {
 			if( app.parameters["old_lipsia"] ) {
@@ -143,7 +149,7 @@ int main( int argc, char *argv[] )
 		core->getUI()->setOptionPosition( isis::viewer::UICore::bottom );
 
 	}
-
+	core->getUI()->showStatus("Welcome to vast ;-)");
 	core->getUI()->refreshUI();
 	core->getUI()->showMainWindow();
 
