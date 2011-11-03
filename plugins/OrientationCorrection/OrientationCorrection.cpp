@@ -41,12 +41,12 @@ void OrientatioCorrectionDialog::flipPressed()
 	}
 
 	if( ui.checkFlipY->isChecked() ) {
-		transform( 0, 0 ) = -1;
+		transform( 1, 1 ) = -1;
 		m_Core->getCurrentImage()->addChangedAttribute( "Flip Y" );
 	}
 
 	if( ui.checkFlipX->isChecked() ) {
-		transform( 1, 1 ) = -1;
+		transform( 0, 0 ) = -1;
 		m_Core->getCurrentImage()->addChangedAttribute( "Flip X" );
 	}
 
