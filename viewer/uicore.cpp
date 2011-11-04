@@ -211,7 +211,7 @@ UICore::ViewWidget UICore::createViewWidget( const std::string &widgetType, Plan
 	dockWidget->setWidget( frameWidget );
 	frameWidget->setParent( dockWidget );
 
-#warning this has to be done with the help of a widget factor. nasty this way
+#warning this has to be done with the help of a widget factory. nasty this way
 	QWidgetImplementationBase *widgetImpl = new qt::QImageWidgetImplementation( m_ViewerCore, frameWidget, planeOrientation );
 
 	ViewWidget viewWidget;

@@ -1,5 +1,5 @@
 #include "qviewercore.hpp"
-#include "DataStorage/io_factory.hpp"
+#include <DataStorage/io_factory.hpp>
 #include "nativeimageops.hpp"
 
 namespace isis
@@ -97,12 +97,6 @@ void QViewerCore::updateScene( bool center )
 {
 	emitUpdateScene( center );
 }
-
-void QViewerCore::setAutomaticScaling( bool s )
-{
-#warning implement this
-}
-
 
 void QViewerCore::zoomChanged( float zoomFactor )
 {

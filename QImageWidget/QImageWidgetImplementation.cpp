@@ -194,7 +194,6 @@ void QImageWidgetImplementation::paintImage( boost::shared_ptr< ImageHolder > im
 
 	qImage.setColorTable( color::Color::adaptColorMapToImage(
 							  m_ViewerCore->getColorHandler()->getColormapMap().at( image->getPropMap().getPropertyAs<std::string>( "lut" ) ), image ) );
-
 	m_Painter->resetMatrix();
 
 	if( image.get() != getWidgetSpecCurrentImage().get() ) {

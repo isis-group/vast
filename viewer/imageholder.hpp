@@ -77,13 +77,12 @@ public:
 	/**offset, scaling**/
 	template<typename TYPE>
 	std::pair<double, double> getOptimalScalingToForType( const std::pair<double, double> &cutAway ) const {
-		size_t volume = getImageSize()[0] * getImageSize()[1] * getImageSize()[2];
-		TYPE maxTypeValue = std::numeric_limits<TYPE>::max();
-		TYPE minTypeValue = std::numeric_limits<TYPE>::min();
-		TYPE minImage = getInternMinMax().first->as<TYPE>();
-		TYPE maxImage = getInternMinMax().second->as<TYPE>();
-		TYPE extent = maxImage - minImage;
-		//      double histogram[extent];
+		const size_t volume = getImageSize()[0] * getImageSize()[1] * getImageSize()[2];
+		const TYPE maxTypeValue = std::numeric_limits<TYPE>::max();
+		const TYPE minTypeValue = std::numeric_limits<TYPE>::min();
+		const TYPE minImage = getInternMinMax().first->as<TYPE>();
+		const TYPE maxImage = getInternMinMax().second->as<TYPE>();
+		const TYPE extent = maxImage - minImage;
 		double *histogram = ( double * ) calloc( extent + 1, sizeof( double ) );
 		size_t stepSize = 2;
 		size_t numberOfVoxels = volume / stepSize;

@@ -17,8 +17,6 @@ PreferencesDialog::PreferencesDialog( QWidget *parent, QViewerCore *core ):
 	connect( preferencesUi.comboInterpolation, SIGNAL( activated( int ) ), this, SLOT( apply( int ) ) );
 	QSize size( QSize( preferencesUi.comboBox->size().width() - 70, preferencesUi.comboBox->height() - 10 ) );
 	preferencesUi.comboBox->setIconSize( size );
-
-
 }
 
 void PreferencesDialog::apply( int dummy )

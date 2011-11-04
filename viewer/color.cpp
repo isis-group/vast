@@ -150,7 +150,6 @@ color::Color::ColormapType color::Color::adaptColorMapToImage( color::Color::Col
 	const double norm = 256.0 / extent;
 	const unsigned short mid = norm * fabs( min );
 	unsigned short scaledVal;
-
 	for ( unsigned short i = 0; i < 256; i++ ) {
 		scaledVal = i * scaling + offset * norm > 255 ? 255 : i * scaling + offset * norm;
 		retMap[i] = colorMap[scaledVal];
@@ -165,8 +164,8 @@ color::Color::ColormapType color::Color::adaptColorMapToImage( color::Color::Col
 
 			//fill negVec
 			if( min < 0 ) {
-				double scaleMin = 1 - fabs( lowerThreshold / min );
-				double normMin = 128.0 / mid;
+				const double scaleMin = 1 - fabs( lowerThreshold / min );
+				const double normMin = 128.0 / mid;
 
 				for ( unsigned short i = 0; i < mid; i++ ) {
 					negVec[i * scaleMin] = retMap[i * normMin];
@@ -174,9 +173,9 @@ color::Color::ColormapType color::Color::adaptColorMapToImage( color::Color::Col
 			}
 
 			if( max > 0 ) {
-				double normMax = 128.0 / ( 256 - mid );
-				double scaleMax = fabs( upperThreshold / max );
-				double offset = ( 256 - mid ) * scaleMax;
+				const double normMax = 128.0 / ( 256 - mid );
+				const double scaleMax = fabs( upperThreshold / max );
+				const double offset = ( 256 - mid ) * scaleMax;
 
 				for( unsigned short i = 0; i < 256 - mid; i++ ) {
 					posVec[i * ( 1 - scaleMax ) + offset] = retMap[128 + i * normMax];

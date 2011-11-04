@@ -54,7 +54,6 @@ public Q_SLOTS:
 	virtual void timestepChanged( int );
 	virtual void setShowLabels( bool );
 	virtual void updateScene( bool center = false );
-	virtual void setAutomaticScaling( bool );
 	virtual bool callPlugin( QString name );
 
 

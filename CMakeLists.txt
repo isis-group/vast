@@ -24,6 +24,7 @@ set(VIEWER_FILES_HPP
 	widgets/voxelInformationWidget.hpp
 	widgets/imageStackWidget.hpp
 	widgets/sliderwidget.hpp
+	widgets/scalingWidget.hpp
 )
 
 set(GLWIDGET_FILES_HPP

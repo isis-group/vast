@@ -243,6 +243,21 @@
     <string>S, L</string>
    </property>
   </action>
+  <action name="actionShow_scaling_option">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../resources/viewer.qrc">
+     <normaloff>:/common/autoscale.gif</normaloff>:/common/autoscale.gif</iconset>
+   </property>
+   <property name="text">
+    <string>Show scaling option</string>
+   </property>
+   <property name="shortcut">
+    <string>S, S, O</string>
+   </property>
+  </action>
  </widget>
  <resources>
   <include location="../resources/viewer.qrc"/>

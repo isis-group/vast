@@ -6,7 +6,8 @@
 #include "qviewercore.hpp"
 #include "preferenceDialog.hpp"
 #include "nativeimageops.hpp"
-#include "CoreUtils/progressfeedback.hpp"
+#include <CoreUtils/progressfeedback.hpp>
+#include "scalingWidget.hpp"
 
 namespace isis
 {
@@ -15,6 +16,7 @@ namespace viewer
 namespace widget
 {
 class PreferencesDialog;
+class ScalingWidget;
 }
 
 class MainWindow : public QMainWindow
@@ -43,6 +45,7 @@ public Q_SLOTS:
 	void findGlobalMin();
 	void findGlobalMax();
 	void spinRadiusChanged(int);
+	void showScalingOption();
 
 private:
 	Ui::vastMainWindow m_UI;
@@ -50,7 +53,10 @@ private:
 
 	QToolBar *m_Toolbar;
 	isis::viewer::widget::PreferencesDialog *m_PreferencesDialog;
+	widget::ScalingWidget *m_ScalingWidget;
 	QSpinBox *m_RadiusSpin;
+	
+	
 
 };
 

@@ -192,6 +192,8 @@ bool ImageHolder::setImage( const data::Image &image, const ImageType &imageType
 	m_PropMap.setPropertyAs<util::slist>( "changedAttributes", util::slist() );
 	m_PropMap.setPropertyAs<double>( "offset", 0.0 );
 	m_PropMap.setPropertyAs<double>( "scaling", 1.0 );
+	m_PropMap.setPropertyAs<double>( "scalingMinValue", m_MinMax.first->as<double>());
+	m_PropMap.setPropertyAs<double>( "scalingMaxValue", m_MinMax.second->as<double>());
 	m_Image->updateOrientationMatrices();
 	return true;
 }

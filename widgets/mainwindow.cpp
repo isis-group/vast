@@ -14,6 +14,7 @@ MainWindow::MainWindow( QViewerCore *core ) :
 	m_ViewerCore( core ),
 	m_Toolbar( new QToolBar( this ) ),
 	m_PreferencesDialog( new widget::PreferencesDialog( this, core ) ),
+	m_ScalingWidget( new widget::ScalingWidget( this, core ) ),
 	m_RadiusSpin(new QSpinBox(this))
 {
 	m_UI.setupUi( this );
@@ -28,6 +29,7 @@ MainWindow::MainWindow( QViewerCore *core ) :
 	connect( m_UI.actionFind_Global_Max, SIGNAL( triggered()), this, SLOT( findGlobalMax()));
 	connect( m_UI.actionShow_Labels, SIGNAL( triggered(bool)), m_ViewerCore, SLOT( setShowLabels(bool)));
 	connect( m_RadiusSpin, SIGNAL(valueChanged(int)), this, SLOT( spinRadiusChanged(int)));
+	connect( m_UI.actionShow_scaling_option, SIGNAL( triggered()), this, SLOT( showScalingOption()));
 
 	//toolbar stuff
 	m_Toolbar->setOrientation( Qt::Horizontal );
@@ -41,6 +43,7 @@ MainWindow::MainWindow( QViewerCore *core ) :
 	m_Toolbar->addSeparator();
 	m_Toolbar->addAction( m_UI.actionShow_Labels );
 	m_Toolbar->addAction( m_UI.action_Preferences );
+	m_Toolbar->addAction( m_UI.actionShow_scaling_option );
 	m_Toolbar->addSeparator();
 	m_Toolbar->addAction( m_UI.actionFind_Global_Min );
 	m_Toolbar->addAction( m_UI.actionFind_Global_Max );
@@ -50,8 +53,19 @@ MainWindow::MainWindow( QViewerCore *core ) :
 	m_RadiusSpin->setMaximum(500);
 	m_RadiusSpin->setToolTip("Search radius for finding local minimum/maximum. If radius is 0 it will search the entire image.");
 	m_UI.statusbar->addPermanentWidget( m_ViewerCore->getProgressFeedback()->getProgressBar() );
+	m_ScalingWidget->setVisible(false);
 
 }
+
+void MainWindow::showScalingOption()
+{
+	m_ScalingWidget->move( QCursor::pos().x() + m_Toolbar->height() / 2, QCursor::pos().y() + m_Toolbar->height() / 2 );
+	if( m_UI.actionShow_scaling_option->isChecked() ) {
+		m_ScalingWidget->synchronize();
+	}
+	m_ScalingWidget->setVisible( m_UI.actionShow_scaling_option->isChecked() );
+}
+
 
 void MainWindow::spinRadiusChanged(int radius)
 {
