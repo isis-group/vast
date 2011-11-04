@@ -1,4 +1,5 @@
 #include "voxelInformationWidget.hpp"
+#include <color.hpp>
 
 namespace isis
 {
@@ -16,6 +17,8 @@ VoxelInformationWidget::VoxelInformationWidget( QWidget *parent, QViewerCore *co
 	m_Interface.rowBox->setMinimum( 0 );
 	m_Interface.columnBox->setMinimum( 0 );
 	m_Interface.sliceBox->setMinimum( 0 );
+	m_Interface.upperHalfColormapLabel->setMaximumHeight( 20 );
+	
 }
 
 
@@ -23,6 +26,7 @@ void VoxelInformationWidget::connectSignals()
 {
 	connect( m_ViewerCore, SIGNAL( emitVoxelCoordChanged( util::ivector4 ) ), this, SLOT( synchronizePos( util::ivector4 ) ) );
 	connect( m_ViewerCore, SIGNAL( emitPhysicalCoordsChanged( util::fvector4 ) ), this, SLOT( synchronizePos( util::fvector4 ) ) );
+	connect( m_ViewerCore, SIGNAL( emitUpdateScene(bool)), this, SLOT( updateLowerUpperThreshold(bool)));
 	connect( m_Interface.rowBox, SIGNAL( editingFinished()), this, SLOT( voxPosChanged() ) );
 	connect( m_Interface.columnBox, SIGNAL( editingFinished()), this, SLOT( voxPosChanged() ) );
 	connect( m_Interface.sliceBox, SIGNAL( editingFinished()), this, SLOT( voxPosChanged() ) );
@@ -34,6 +38,14 @@ void VoxelInformationWidget::connectSignals()
 	connect( m_Interface.timestepSlider, SIGNAL(sliderMoved(int)), m_Interface.timestepSpinBox, SLOT(setValue(int)));
 	connect( m_Interface.timestepSpinBox, SIGNAL( valueChanged(int)), m_Interface.timestepSlider, SLOT( setValue(int)));
 	isConnected = true;
+}
+
+void VoxelInformationWidget::updateLowerUpperThreshold(bool)
+{
+	if( m_ViewerCore->getCurrentImage().get() ) {
+		m_Interface.lowerThresholdLabel->setText( QString::number( m_ViewerCore->getCurrentImage()->getPropMap().getPropertyAs<double>("lowerThreshold"), 'g', 4 ) );
+		m_Interface.upperThresholdLabel->setText( QString::number( m_ViewerCore->getCurrentImage()->getPropMap().getPropertyAs<double>("upperThreshold"), 'g', 4 ) );
+	}
 }
 
 
@@ -60,12 +72,36 @@ void VoxelInformationWidget::synchronize()
 {
 	if( m_ViewerCore->getCurrentImage().get() ) {
 		const boost::shared_ptr<ImageHolder> image = m_ViewerCore->getCurrentImage();
-		QSize size = m_Interface.colromapLabel->size();
+		QSize size = m_Interface.upperHalfColormapLabel->size();
 		const std::string lutName = image->getPropMap().getPropertyAs<std::string>( "lut" );
-		m_Interface.colromapLabel->setPixmap(
-			m_ViewerCore->getColorHandler()->getIcon( lutName, size.width(), size.height() - 10 ).pixmap( size.width(), size.height() - 10 ) );
-		m_Interface.labelMin->setText( image->getMinMax().first->as<std::string>().c_str() );
-		m_Interface.labelMax->setText( image->getMinMax().second->as<std::string>().c_str() );
+		if( image->getImageProperties().imageType == ImageHolder::anatomical_image ) {
+			m_Interface.upperHalfColormapLabel->setPixmap(
+				m_ViewerCore->getColorHandler()->getIcon( lutName, size.width(), size.height() - 10 ).pixmap( size.width(), size.height() - 10 ) );
+			m_Interface.colormapGrid->addWidget( m_Interface.labelMin, 0, 0);
+			m_Interface.colormapGrid->addWidget( m_Interface.upperHalfColormapLabel, 0, 1);
+			m_Interface.colormapGrid->addWidget( m_Interface.labelMax, 0, 2);
+			m_Interface.lowerHalfColormapLabel->setVisible( false );
+			m_Interface.lowerThresholdLabel->setVisible( false );
+			m_Interface.upperThresholdLabel->setVisible( false );
+		} else if ( image->getImageProperties().imageType == ImageHolder::z_map ) {
+			m_Interface.upperHalfColormapLabel->setPixmap( 
+				m_ViewerCore->getColorHandler()->getIcon( lutName, size.width(), size.height() - 10, color::Color::upper_half ).pixmap( size.width(), size.height() - 10 ) );
+			m_Interface.lowerHalfColormapLabel->setPixmap(
+				m_ViewerCore->getColorHandler()->getIcon( lutName, size.width(), size.height() - 10, color::Color::lower_half ).pixmap( size.width(), size.height() - 10 ) );
+			m_Interface.colormapGrid->addWidget( m_Interface.upperThresholdLabel, 0, 0 );
+			m_Interface.colormapGrid->addWidget( m_Interface.upperHalfColormapLabel, 0, 1 );
+			m_Interface.colormapGrid->addWidget( m_Interface.labelMax, 0, 2 );
+			m_Interface.colormapGrid->addWidget( m_Interface.lowerThresholdLabel, 1, 0 );
+			m_Interface.colormapGrid->addWidget( m_Interface.lowerHalfColormapLabel, 1, 1 );
+			m_Interface.colormapGrid->addWidget( m_Interface.labelMin, 1, 2 );
+			m_Interface.lowerHalfColormapLabel->setVisible( true );
+			m_Interface.lowerThresholdLabel->setVisible( true );
+			m_Interface.upperThresholdLabel->setVisible( true );
+			m_Interface.lowerThresholdLabel->setText( QString::number( image->getPropMap().getPropertyAs<double>("lowerThreshold"), 'g', 4 ) );
+			m_Interface.upperThresholdLabel->setText( QString::number( image->getPropMap().getPropertyAs<double>("upperThreshold"), 'g', 4 ) );
+		}
+		m_Interface.labelMin->setText( QString::number( image->getMinMax().first->as<double>(), 'g', 4 ) );
+		m_Interface.labelMax->setText( QString::number( image->getMinMax().second->as<double>(), 'g', 4 ) );
 		const util::ivector4 outerCorner = util::ivector4( image->getImageSize()[0] - 1, image->getImageSize()[1] - 1, image->getImageSize()[2] - 1 );
 		m_Interface.rowBox->setMaximum( outerCorner[0] );
 		m_Interface.columnBox->setMaximum( outerCorner[1] );

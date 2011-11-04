@@ -17,6 +17,7 @@
     <file>currentImage.gif</file>
   </qresource>
   <qresource prefix="colormap">
+    <file>lut/standard_grey_values_inverted</file>
     <file>lut/colormap1</file>
     <file>lut/colormap2</file>
     <file>lut/colormap3</file>

@@ -24,6 +24,7 @@ class Color
 public:
 	typedef QVector<QRgb> ColormapType;
 	typedef std::map<std::string, ColormapType > ColormapMapType;
+	enum icon_type { lower_half, upper_half, both };
 
 	bool addColormap( const std::string &path, const boost::regex &separator
 					  = boost::regex( "[[:space:]]+" ) );
@@ -31,7 +32,7 @@ public:
 	ColormapMapType getColormapMap() const { return m_ColormapMap; }
 	void initStandardColormaps();
 
-	QIcon getIcon( const std::string &lutName, size_t w, size_t h ) const;
+	QIcon getIcon( const std::string &lutName, size_t w, size_t h, icon_type = both ) const;
 
 	bool hasColormap( const std::string &name ) const;
 	ColormapType getFallbackColormap() const;

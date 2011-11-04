@@ -10,6 +10,7 @@ QProgressFeedback::QProgressFeedback()
 	m_CurrentVal(0)
 {
 	m_ProgressBar->setMaximumHeight(20);
+	m_ProgressBar->setVisible(false);
 }
 
 		

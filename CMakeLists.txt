@@ -19,7 +19,7 @@ file (GLOB RESOURCE_FILES resources/*.qrc)
 
 set(VIEWER_FILES_HPP
 	viewer/qviewercore.hpp
-	viewer/mainwindow.hpp
+	widgets/mainwindow.hpp
 	widgets/preferenceDialog.hpp
 	widgets/voxelInformationWidget.hpp
 	widgets/imageStackWidget.hpp

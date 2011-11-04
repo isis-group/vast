@@ -264,25 +264,37 @@ void MainWindow::showPreferences()
 
 void MainWindow::findGlobalMin()
 {
-	m_ViewerCore->getUI()->showStatus( "Searching for global minimum..." );
+	std::string attr;
+	if ( m_RadiusSpin->text().toUInt() ) {
+		attr = "local";
+	} else {
+		attr = "global";
+	}
+	m_ViewerCore->getUI()->showStatus( std::string("Searching for ") + attr + std::string("  minimum...") );
 	const util::ivector4 minVoxel = operation::NativeImageOps::getGlobalMin( m_ViewerCore->getCurrentImage(), 
 																			 m_ViewerCore->getCurrentImage()->getPropMap().getPropertyAs<util::ivector4>("voxelCoords"), 
 																			 m_RadiusSpin->value());
 	m_ViewerCore->physicalCoordsChanged( m_ViewerCore->getCurrentImage()->getISISImage()->getPhysicalCoordsFromIndex( minVoxel ) );
 	std::stringstream ss;
-	ss << "Found global minimum at " << minVoxel;
+	ss << "Found " << attr << " minimum at " << minVoxel;
 	m_ViewerCore->getUI()->showStatus( ss.str() );
 }
 
 void MainWindow::findGlobalMax()
 {
-	m_ViewerCore->getUI()->showStatus( "Searching for global maximum..." );
+	std::string attr;
+	if ( m_RadiusSpin->text().toUInt() ) {
+		attr = "local";
+	} else {
+		attr = "global";
+	}
+	m_ViewerCore->getUI()->showStatus( std::string("Searching for ") + attr + std::string("  maximum...") );
 	const util::ivector4 maxVoxel = operation::NativeImageOps::getGlobalMax( m_ViewerCore->getCurrentImage(), 
 																			 m_ViewerCore->getCurrentImage()->getPropMap().getPropertyAs<util::ivector4>("voxelCoords"), 
 																			 m_RadiusSpin->value() );
 	m_ViewerCore->physicalCoordsChanged( m_ViewerCore->getCurrentImage()->getISISImage()->getPhysicalCoordsFromIndex( maxVoxel ) );
 	std::stringstream ss;
-	ss << "Found global maximum at " << maxVoxel;
+	ss << "Found " << attr << " maximum at " << maxVoxel;
 	m_ViewerCore->getUI()->showStatus( ss.str() );
 }
 

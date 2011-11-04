@@ -27,6 +27,7 @@ void Color::initStandardColormaps()
 	addColormap( std::string( ":/colormap/lut/colormap11" ) );
 	addColormap( std::string( ":/colormap/lut/standard_zmap" ) );
 	addColormap( std::string( ":/colormap/lut/standard_grey_values" ) );
+	addColormap( std::string( ":/colormap/lut/standard_grey_values_inverted" ) );
 	m_ColormapMap["fallback"] = getFallbackColormap();
 }
 
@@ -85,19 +86,33 @@ bool Color::addColormap( const std::string &path, const boost::regex &separator 
 }
 
 
-QIcon Color::getIcon( const std::string &colormapName, size_t w, size_t h ) const
+QIcon Color::getIcon( const std::string &colormapName, size_t w, size_t h, icon_type type ) const
 {
 	const ColormapType lut = getColormapMap()[colormapName];
-	data::ValuePtr<uint8_t> lutImage( 256 * 3 );
-	unsigned short index = 0;
 
-	for ( unsigned short i = 0; i < 256; i++ ) {
+	unsigned short index = 0;
+	unsigned short start = 0;
+	unsigned short end = 0;
+	switch( type) {
+		case both:
+			start = 0;
+			end = 256;
+			break;
+		case lower_half:
+			start = 0;
+			end = 128;
+			break;
+		case upper_half:
+			start = 128;
+			end = 256;
+	}
+	data::ValuePtr<uint8_t> lutImage( ( end - start) * 3 );
+	for ( unsigned short i = start; i < end; i++ ) {
 		lutImage[index++] = QColor( lut[i] ).red();
 		lutImage[index++] = QColor( lut[i] ).green();
 		lutImage[index++] = QColor( lut[i] ).blue();
 	}
-
-	QImage image( static_cast<uint8_t *>( lutImage.getRawAddress().get() ), 256, 1, QImage::Format_RGB888 );
+	QImage image( static_cast<uint8_t *>( lutImage.getRawAddress().get() ), (end - start), 1, QImage::Format_RGB888 );
 	QPixmap pixmap( QPixmap::fromImage( image ) );
 	return QIcon( pixmap.scaled( w, h ) );
 }
