@@ -258,11 +258,9 @@ void QImageWidgetImplementation::emitMousePressEvent( QMouseEvent *e )
 	boost::shared_ptr<ImageHolder> image = getWidgetSpecCurrentImage();
 	ImageProperties &imgProps = m_ImageProperties.at( image );
 
-	if( isInViewPort( imgProps.viewPort, e ) ) {
-		uint16_t slice = QOrienationHandler::mapCoordsToOrientation( image->getPropMap().getPropertyAs<util::ivector4>( "voxelCoords" ), image, m_PlaneOrientation )[2];
-		util::ivector4 coords = QOrienationHandler::convertWindow2VoxelCoords( imgProps.viewPort, m_WidgetProperties, image, e->x(), e->y(), slice, m_PlaneOrientation );
-		physicalCoordsChanged( m_ViewerCore->getCurrentImage()->getISISImage()->getPhysicalCoordsFromIndex( coords ) );
-	}
+	uint16_t slice = QOrienationHandler::mapCoordsToOrientation( image->getPropMap().getPropertyAs<util::ivector4>( "voxelCoords" ), image, m_PlaneOrientation )[2];
+	util::ivector4 coords = QOrienationHandler::convertWindow2VoxelCoords( imgProps.viewPort, m_WidgetProperties, image, e->x(), e->y(), slice, m_PlaneOrientation );
+	physicalCoordsChanged( m_ViewerCore->getCurrentImage()->getISISImage()->getPhysicalCoordsFromIndex( coords ) );
 }
 
 void QImageWidgetImplementation::showLabels() const

@@ -60,10 +60,7 @@ MainWindow::MainWindow( QViewerCore *core ) :
 void MainWindow::showScalingOption()
 {
 	m_ScalingWidget->move( QCursor::pos().x() + m_Toolbar->height() / 2, QCursor::pos().y() + m_Toolbar->height() / 2 );
-	if( m_UI.actionShow_scaling_option->isChecked() ) {
-		m_ScalingWidget->synchronize();
-	}
-	m_ScalingWidget->setVisible( m_UI.actionShow_scaling_option->isChecked() );
+	m_ScalingWidget->showMe( m_UI.actionShow_scaling_option->isChecked() );
 }
 
 

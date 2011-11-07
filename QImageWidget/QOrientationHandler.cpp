@@ -150,8 +150,10 @@ util::ivector4 QOrienationHandler::convertWindow2VoxelCoords( const ViewPortType
 
 	for ( size_t i = 0; i < 2; i++ ) {
 		coords[i] = mappedSize[i] < 0 ? abs( mappedSize[i] ) - coords[i] - 1 : coords[i];
+		coords[i] = coords[i] < 0 ? 0 : coords[i];
+		coords[i] = coords[i] >= mappedSize[i] ? mappedSize[i] - 1 : coords[i];
 	}
-
+	
 	return QOrienationHandler::mapCoordsToOrientation( coords, image, orientation, true );
 }
 

@@ -104,6 +104,7 @@ void SliderWidget::synchronize()
 }
 
 
+
 }
 }
 }

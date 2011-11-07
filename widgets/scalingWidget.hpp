@@ -15,7 +15,8 @@ class ScalingWidget :public QDialog
 	Q_OBJECT
 public:
 	ScalingWidget( QWidget *parent, QViewerCore *core );
-
+	virtual void keyPressEvent( QKeyEvent * event );
+	
 public Q_SLOTS:
 	void synchronize();
 	void minChanged(double);
@@ -24,6 +25,7 @@ public Q_SLOTS:
 	void offsetChanged(double);
 	void reset();
 	void autoScale();
+	void showMe( bool visible );
 	
 	
 private:

@@ -123,19 +123,34 @@ std::pair< double, double > ScalingWidget::getMinMaxFromScalingOffset(const std:
 {
 	std::pair<double, double> retMinMax;
 	retMinMax.first = image->getMinMax().first->as<double>() + scalingOffset.second;
-	retMinMax.second = image->getPropMap().getPropertyAs<double>("extent") * scalingOffset.first + retMinMax.first;
+	retMinMax.second = image->getPropMap().getPropertyAs<double>("extent") / scalingOffset.first + retMinMax.first;
 	return retMinMax;
-
 }
 
 std::pair< double, double > ScalingWidget::getScalingOffsetFromMinMax(const std::pair< double, double >& minMax, boost::shared_ptr<ImageHolder> image )
 {
 	std::pair<double, double> retScalingOffset;
 	retScalingOffset.second = minMax.first - image->getMinMax().first->as<double>();
-	retScalingOffset.first =  (minMax.second - minMax.first) / image->getPropMap().getPropertyAs<double>("extent");
+	retScalingOffset.first =  image->getPropMap().getPropertyAs<double>("extent") / (minMax.second - minMax.first);
 	return retScalingOffset;
 
 }
+void ScalingWidget::keyPressEvent(QKeyEvent* event)
+{	
+	if( event->key() == Qt::Key_Escape ) {
+		showMe( false );
+	}
+}
+
+void ScalingWidget::showMe(bool visible)
+{
+	setVisible( visible );
+	m_ViewerCore->getUI()->getMainWindow()->getUI().actionShow_scaling_option->setChecked( visible );
+	if( visible ) {
+		synchronize();
+	}
+}
+
 
 
 
