@@ -87,7 +87,7 @@ void VoxelInformationWidget::synchronize()
 			m_Interface.upperHalfColormapLabel->setPixmap( 
 				m_ViewerCore->getColorHandler()->getIcon( lutName, size.width(), size.height() - 10, color::Color::upper_half ).pixmap( size.width(), size.height() - 10 ) );
 			m_Interface.lowerHalfColormapLabel->setPixmap(
-				m_ViewerCore->getColorHandler()->getIcon( lutName, size.width(), size.height() - 10, color::Color::lower_half ).pixmap( size.width(), size.height() - 10 ) );
+				m_ViewerCore->getColorHandler()->getIcon( lutName, size.width(), size.height() - 10, color::Color::lower_half, true ).pixmap( size.width(), size.height() - 10 ) );
 			m_Interface.colormapGrid->addWidget( m_Interface.upperThresholdLabel, 0, 0 );
 			m_Interface.colormapGrid->addWidget( m_Interface.upperHalfColormapLabel, 0, 1 );
 			m_Interface.colormapGrid->addWidget( m_Interface.labelMax, 0, 2 );

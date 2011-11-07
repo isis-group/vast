@@ -36,6 +36,7 @@ QImageWidgetImplementation::QImageWidgetImplementation( QViewerCore *core, QWidg
 void QImageWidgetImplementation::commonInit()
 {
 
+
 	connect( this, SIGNAL( zoomChanged( float ) ), m_ViewerCore, SLOT( zoomChanged( float ) ) );
 	connect( this, SIGNAL( voxelCoordsChanged( util::ivector4 ) ), m_ViewerCore, SLOT( voxelCoordsChanged ( util::ivector4 ) ) );
 	connect( this, SIGNAL( physicalCoordsChanged( util::fvector4 ) ), m_ViewerCore, SLOT( physicalCoordsChanged( util::fvector4 ) ) );
@@ -107,6 +108,8 @@ void QImageWidgetImplementation::paintEvent( QPaintEvent *event )
 {
 	if( m_ImageVector.size() ) {
 		m_Painter->begin( this );
+		m_Painter->setBackground( QBrush(Qt::black) );
+		m_Painter->setBackgroundMode(Qt::OpaqueMode);
 		m_ImageProperties.at( getWidgetSpecCurrentImage() ).viewPort
 		= QOrienationHandler::getViewPort( m_WidgetProperties,
 										   getWidgetSpecCurrentImage(),
@@ -146,6 +149,7 @@ void QImageWidgetImplementation::paintEvent( QPaintEvent *event )
 		}
 
 		paintCrosshair();
+
 		m_Painter->end();
 	}
 
@@ -172,6 +176,7 @@ void QImageWidgetImplementation::recalculateTranslation()
 
 void QImageWidgetImplementation::paintImage( boost::shared_ptr< ImageHolder > image )
 {
+
 	ImageProperties &imgProps = m_ImageProperties.at( image );
 
 	switch( m_InterpolationType ) {
@@ -192,8 +197,7 @@ void QImageWidgetImplementation::paintImage( boost::shared_ptr< ImageHolder > im
 	QImage qImage( ( InternalImageType * ) sliceChunk.asValuePtr<InternalImageType>().getRawAddress().get(),
 				   mappedSizeAligned[0], mappedSizeAligned[1], QImage::Format_Indexed8 );
 
-	qImage.setColorTable( color::Color::adaptColorMapToImage(
-							  m_ViewerCore->getColorHandler()->getColormapMap().at( image->getPropMap().getPropertyAs<std::string>( "lut" ) ), image ) );
+
 	m_Painter->resetMatrix();
 
 	if( image.get() != getWidgetSpecCurrentImage().get() ) {
@@ -207,10 +211,19 @@ void QImageWidgetImplementation::paintImage( boost::shared_ptr< ImageHolder > im
 
 	imgProps.viewPort[2] += m_WidgetProperties.getPropertyAs<float>( "translationX" );
 	imgProps.viewPort[3] += m_WidgetProperties.getPropertyAs<float>( "translationY" );
+	
 	m_Painter->setTransform( QOrienationHandler::getTransform( imgProps.viewPort, image, width(), height(), m_PlaneOrientation ) );
 
 	m_Painter->setOpacity( image->getPropMap().getPropertyAs<float>( "opacity" ) );
+	
+	qImage.setColorTable( color::Color::adaptColorMapToImage(
+							m_ViewerCore->getColorHandler()->getColormapMap().at( image->getPropMap().getPropertyAs<std::string>( "lut" ) ), image ) );
+	
 	m_Painter->drawImage( 0, 0, qImage );
+	
+	m_Painter->resetMatrix();
+	m_Painter->fillRect(imgProps.viewPort[4] + imgProps.viewPort[2], -1, width(), height(), Qt::black);
+	m_Painter->fillRect( -1, imgProps.viewPort[5] + imgProps.viewPort[3], width(), height(), Qt::black );
 }
 
 

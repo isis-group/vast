@@ -32,7 +32,7 @@ public:
 	ColormapMapType getColormapMap() const { return m_ColormapMap; }
 	void initStandardColormaps();
 
-	QIcon getIcon( const std::string &lutName, size_t w, size_t h, icon_type = both ) const;
+	QIcon getIcon( const std::string &lutName, size_t w, size_t h, icon_type = both, bool flipped = false ) const;
 
 	bool hasColormap( const std::string &name ) const;
 	ColormapType getFallbackColormap() const;
