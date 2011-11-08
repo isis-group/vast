@@ -35,8 +35,6 @@ QImageWidgetImplementation::QImageWidgetImplementation( QViewerCore *core, QWidg
 
 void QImageWidgetImplementation::commonInit()
 {
-
-
 	connect( this, SIGNAL( zoomChanged( float ) ), m_ViewerCore, SLOT( zoomChanged( float ) ) );
 	connect( this, SIGNAL( voxelCoordsChanged( util::ivector4 ) ), m_ViewerCore, SLOT( voxelCoordsChanged ( util::ivector4 ) ) );
 	connect( this, SIGNAL( physicalCoordsChanged( util::fvector4 ) ), m_ViewerCore, SLOT( physicalCoordsChanged( util::fvector4 ) ) );
@@ -47,9 +45,10 @@ void QImageWidgetImplementation::commonInit()
 	connect( m_ViewerCore, SIGNAL( emitShowLabels(bool)), this, SLOT(setShowLabels(bool)));
 	setAutoFillBackground( true );
 	setPalette( QPalette( Qt::black ) );
-	m_WidgetProperties.setPropertyAs<bool>( "mousePressedRight", false );
-	m_WidgetProperties.setPropertyAs<bool>( "mousePressedLeft", false );
-
+	m_LeftMouseButtonPressed = false;
+	m_RightMouseButtonPressed = false;
+	m_ShowScalingOffset = false;
+	
 	m_WidgetProperties.setPropertyAs<bool>( "zoomEvent", false );
 	m_WidgetProperties.setPropertyAs<float>( "currentZoom", 1.0 );
 	m_WidgetProperties.setPropertyAs<float>( "zoomFactorIn", 1.5 );
@@ -148,7 +147,15 @@ void QImageWidgetImplementation::paintEvent( QPaintEvent *event )
 		}
 
 		paintCrosshair();
-
+		if( m_ShowScalingOffset ) {
+			m_Painter->setFont( QFont("Chicago", 10) );
+			m_Painter->setPen( Qt::white );
+			std::stringstream scalingOffset;
+			scalingOffset << "Scaling: " << m_ViewerCore->getCurrentImage()->getPropMap().getPropertyAs<double>("scaling")
+				<< " Offset: " << m_ViewerCore->getCurrentImage()->getPropMap().getPropertyAs<double>("offset");
+			m_Painter->drawText( 10, 30, scalingOffset.str().c_str() );
+		}
+		m_ShowScalingOffset = false;
 		m_Painter->end();
 	}
 
@@ -204,7 +211,7 @@ void QImageWidgetImplementation::paintImage( boost::shared_ptr< ImageHolder > im
 							 m_PlaneOrientation, m_Border );
 	}
 
-	if( !m_WidgetProperties.getPropertyAs<bool>( "mousePressedLeft" ) || m_WidgetProperties.getPropertyAs<bool>( "mousePressedRight" ) || m_WidgetProperties.getPropertyAs<bool>( "zoomEvent" ) ) {
+	if( !m_LeftMouseButtonPressed || m_RightMouseButtonPressed || m_WidgetProperties.getPropertyAs<bool>( "zoomEvent" ) ) {
 		recalculateTranslation();
 	}
 
@@ -229,9 +236,9 @@ void QImageWidgetImplementation::paintImage( boost::shared_ptr< ImageHolder > im
 void QImageWidgetImplementation::mousePressEvent( QMouseEvent *e )
 {
 	if( e->button() == Qt::RightButton ) {
-		m_WidgetProperties.setPropertyAs<bool>( "mousePressedRight", true );
+		m_RightMouseButtonPressed = true;
 	} else if ( e->button() == Qt::LeftButton ) {
-		m_WidgetProperties.setPropertyAs<bool>( "mousePressedLeft", true );
+		m_LeftMouseButtonPressed = true;
 	}
 
 	emitMousePressEvent( e );
@@ -239,9 +246,22 @@ void QImageWidgetImplementation::mousePressEvent( QMouseEvent *e )
 
 void QImageWidgetImplementation::mouseMoveEvent( QMouseEvent *e )
 {
-	if( m_WidgetProperties.getPropertyAs<bool>( "mousePressedRight" ) || m_WidgetProperties.getPropertyAs<bool>( "mousePressedLeft" ) ) {
+	if(m_RightMouseButtonPressed && m_LeftMouseButtonPressed )
+	{
+		boost::shared_ptr<ImageHolder> image = m_ViewerCore->getCurrentImage();
+		const double offset =  image->getMinMax().first->as<double>() + ((height()/2 - e->y()) / (float)height()) * image->getPropMap().getPropertyAs<double>("extent");
+		const double scaling = (float)width() / (float)(width() - e->x()) / 2.0;
+		m_ViewerCore->getCurrentImage()->getPropMap().setPropertyAs<double>("offset", offset);
+		m_ViewerCore->getCurrentImage()->getPropMap().setPropertyAs<double>("scaling", scaling);
+		m_ShowScalingOffset = true;
+		m_ViewerCore->updateScene();
+	}else if( m_RightMouseButtonPressed || m_LeftMouseButtonPressed ) {
 		emitMousePressEvent( e );
+		m_ShowScalingOffset = false;
+	} else {
+		m_ShowScalingOffset = false;
 	}
+
 }
 
 bool QImageWidgetImplementation::isInViewPort( const ViewPortType &viewPort, QMouseEvent *e ) const
@@ -355,11 +375,11 @@ bool QImageWidgetImplementation::lookAtVoxelCoords( const isis::util::ivector4 &
 void QImageWidgetImplementation::mouseReleaseEvent( QMouseEvent *e )
 {
 	if( e->button() == Qt::RightButton ) {
-		m_WidgetProperties.setPropertyAs<bool>( "mousePressedRight", false );
+		m_RightMouseButtonPressed = false;
 	}
 
 	if ( e->button() == Qt::LeftButton ) {
-		m_WidgetProperties.setPropertyAs<bool>( "mousePressedLeft", false );
+		m_LeftMouseButtonPressed = false;
 	}
 }
 

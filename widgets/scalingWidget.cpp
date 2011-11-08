@@ -30,10 +30,13 @@ void ScalingWidget::synchronize()
 		m_Interface.min->setMaximum( std::numeric_limits<double>::max() );
 		m_Interface.max->setMinimum( std::numeric_limits<double>::min() );
 		m_Interface.max->setMaximum( std::numeric_limits<double>::max() );
-		m_Interface.min->setValue( image->getPropMap().getPropertyAs<double>("scalingMinValue") );
-		m_Interface.max->setValue( image->getPropMap().getPropertyAs<double>("scalingMaxValue") );
+
 		m_Interface.offset->setValue( image->getPropMap().getPropertyAs<double>("offset" ) );
 		m_Interface.scaling->setValue( image->getPropMap().getPropertyAs<double>("scaling" ) );
+		std::pair<double, double> minMax = getMinMaxFromScalingOffset( std::make_pair<double,double>(
+			image->getPropMap().getPropertyAs<double>("scaling" ), image->getPropMap().getPropertyAs<double>("offset" )	), image );
+		m_Interface.min->setValue( minMax.first );
+		m_Interface.max->setValue( minMax.second );
 
 		m_Interface.offset->setSingleStep( image->getPropMap().getPropertyAs<double>("extent") / 100 );
 	}

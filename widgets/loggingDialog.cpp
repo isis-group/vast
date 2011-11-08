@@ -53,9 +53,10 @@ void isis::viewer::widget::LoggingDialog::synchronize()
 					item->setTextColor( Qt::black );
 					m_Interface.logList->addItem( item );
 				}
+				break;
 			case notice:
 				if( m_Interface.noticeCheck->checkState() == Qt::Checked ) {
-					item->setTextColor( Qt::green );
+					item->setTextColor( QColor(34,139,34) );
 					m_Interface.logList->addItem( item );
 				}
 				break;

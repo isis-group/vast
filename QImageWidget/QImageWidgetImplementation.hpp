@@ -86,6 +86,9 @@ private:
 	ScalingType m_ScalingType;
 	bool m_ShowLabels;
 	unsigned short m_Border;
+	bool m_LeftMouseButtonPressed;
+	bool m_RightMouseButtonPressed;
+	bool m_ShowScalingOffset;
 
 };
 
