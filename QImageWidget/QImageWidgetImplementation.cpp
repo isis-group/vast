@@ -257,11 +257,7 @@ void QImageWidgetImplementation::mouseMoveEvent( QMouseEvent *e )
 		m_ViewerCore->updateScene();
 	}else if( m_RightMouseButtonPressed || m_LeftMouseButtonPressed ) {
 		emitMousePressEvent( e );
-		m_ShowScalingOffset = false;
-	} else {
-		m_ShowScalingOffset = false;
 	}
-
 }
 
 bool QImageWidgetImplementation::isInViewPort( const ViewPortType &viewPort, QMouseEvent *e ) const
