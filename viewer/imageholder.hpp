@@ -72,6 +72,7 @@ public:
 	ImageProperties &getImageProperties() { return m_ImageProperties; }
 
 	void addWidget( QWidgetImplementationBase *widget ) { m_WidgetList.push_back( widget ); }
+	void removeWidget( QWidgetImplementationBase *widget ) { m_WidgetList.erase( std::find(m_WidgetList.begin(), m_WidgetList.end(), widget ) ) ; }
 	std::list< QWidgetImplementationBase * > getWidgetList() { return m_WidgetList; }
 
 	/**offset, scaling**/

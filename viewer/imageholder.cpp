@@ -194,6 +194,10 @@ bool ImageHolder::setImage( const data::Image &image, const ImageType &imageType
 	m_PropMap.setPropertyAs<double>( "scaling", 1.0 );
 	m_PropMap.setPropertyAs<double>( "scalingMinValue", m_MinMax.first->as<double>());
 	m_PropMap.setPropertyAs<double>( "scalingMaxValue", m_MinMax.second->as<double>());
+	m_PropMap.setPropertyAs<util::fvector4>("originalColumnVec", image.getPropertyAs<util::fvector4>("columnVec"));
+	m_PropMap.setPropertyAs<util::fvector4>("originalRowVec", image.getPropertyAs<util::fvector4>("rowVec"));
+	m_PropMap.setPropertyAs<util::fvector4>("originalSliceVec", image.getPropertyAs<util::fvector4>("sliceVec"));
+	m_PropMap.setPropertyAs<util::fvector4>("originalIndexOrigin", image.getPropertyAs<util::fvector4>("indexOrigin"));
 	m_Image->updateOrientationMatrices();
 	return true;
 }

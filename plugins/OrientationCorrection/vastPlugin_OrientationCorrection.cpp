@@ -11,7 +11,7 @@ namespace plugin
 class OrientationCorrection : public PluginInterface
 {
 public:
-	virtual std::string getName() { return std::string( "Tools/OrienationCorrection" ) ; }
+	virtual std::string getName() { return std::string( "OrienationCorrection" ) ; }
 	virtual std::string getDescription() { return std::string( "" ); }
 	virtual std::string getTooltip() { return std::string( "" ); }
 	virtual bool isGUI() { return true; }

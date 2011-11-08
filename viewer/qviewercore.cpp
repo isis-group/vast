@@ -22,8 +22,20 @@ QViewerCore::QViewerCore( const std::string &appName, const std::string &orgName
 	setParentWidget( m_UI->getMainWindow() );
 	data::IOFactory::setProgressFeedback( m_ProgressFeedback );
 	operation::NativeImageOps::setProgressFeedBack( m_ProgressFeedback );
+	
 }
 
+
+void QViewerCore::addMessageHandler( qt4::QDefaultMessagePrint *handler )
+{
+	connect( handler, SIGNAL( commitMessage(qt4::QMessage)) , this, SLOT(receiveMessage(qt4::QMessage )));
+}
+
+void QViewerCore::receiveMessage( qt4::QMessage message)
+{
+	m_MessageLog.push_back( message );
+	getUI()->showMessage( message );
+}
 
 
 void QViewerCore::voxelCoordsChanged( util::ivector4 voxelCoords )
@@ -100,7 +112,7 @@ void QViewerCore::updateScene( bool center )
 
 void QViewerCore::zoomChanged( float zoomFactor )
 {
-	if( m_Options->propagateZooming ) {
+	if( m_OptionsMap.getPropertyAs<bool>("propagateZooming" ) ) {
 		emitZoomChanged( zoomFactor );
 	}
 }

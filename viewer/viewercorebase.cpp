@@ -13,9 +13,8 @@ ViewerCoreBase::ViewerCoreBase( )
 	  m_ColorHandler( new color::Color() )
 {
 	m_ColorHandler->initStandardColormaps();
-	m_Options = new OptionStruct;
-	m_Options->propagateZooming = false;
 	m_VoxelTransformation.fill( 1.0 );
+	setCommonViewerOptions();
 }
 
 ImageHolder::ImageListType ViewerCoreBase::addImageList( const std::list< data::Image > imageList, const ImageHolder::ImageType &imageType )
@@ -69,6 +68,18 @@ util::fvector4 ViewerCoreBase::getTransformedCoords( const isis::util::fvector4 
 						   coords[3] * m_VoxelTransformation[3] );
 }
 
+void ViewerCoreBase::setCommonViewerOptions()
+{
+
+	m_OptionsMap.setPropertyAs<bool>("propagateZooming", false);
+	//logging
+	m_OptionsMap.setPropertyAs<uint16_t>("logDelayTime", 4000);
+	m_OptionsMap.setPropertyAs<bool>("showErrorMessages", true );
+	m_OptionsMap.setPropertyAs<bool>("showNoticeMessages", true );
+	m_OptionsMap.setPropertyAs<bool>("showWarningMessages", false );
+	m_OptionsMap.setPropertyAs<bool>("showInfoMessages", false );
+	m_OptionsMap.setPropertyAs<bool>("showVerboseInfoMessages", false );
+}
 
 
 

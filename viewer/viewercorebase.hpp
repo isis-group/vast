@@ -12,9 +12,7 @@ namespace viewer
 
 class ViewerCoreBase
 {
-	struct OptionStruct {
-		bool propagateZooming;
-	};
+
 public:
 
 	typedef std::list<boost::shared_ptr< plugin::PluginInterface > > PluginListType;
@@ -41,8 +39,7 @@ public:
 	DataContainer &getDataContainer() { return m_DataContainer; }
 	ImageHolder::ImageListType getImageList() const { return m_ImageList; }
 
-	const OptionStruct *getOption() const { return m_Options; }
-	OptionStruct *getOption() { return m_Options; }
+	util::PropertyMap getOptionMap() { return m_OptionsMap; }
 
 	void setCoordsTransformation( const util::fvector4 &transformation ) { m_VoxelTransformation = transformation; }
 	util::fvector4 getTransformedCoords( const util::fvector4 &coords ) const;
@@ -56,10 +53,11 @@ private:
 	size_t m_CurrentTimestep;
 	util::fvector4 m_VoxelTransformation;
 	color::Color *m_ColorHandler;
+	void setCommonViewerOptions();
 
 
 protected:
-	OptionStruct *m_Options;
+	util::PropertyMap m_OptionsMap;
 	//additional imagelist for finding purpose
 	ImageHolder::ImageListType m_ImageList;
 

@@ -52,24 +52,52 @@ void UICore::setOptionPosition( UICore::OptionPosition pos )
 	}
 }
 
-void UICore::showStatus( const std::string &status, UICore::StatusTyp statusTyp )
+void UICore::showMessage( const qt4::QMessage &message  )
 {
-	switch( statusTyp ) {
-	case Info:
-		m_MainWindow->getUI().statusbar->setPalette( QPalette( ) );
-		break;
-	case Warning:
-		m_MainWindow->getUI().statusbar->setPalette( QPalette( Qt::yellow ) );
-		break;
-	case Error:
-		m_MainWindow->getUI().statusbar->setPalette( QPalette( Qt::red ) );
-		break;
+	QPalette pal;
+	std::stringstream logStream;
+	logStream << message.m_module << "(" << message.time_str << ") -> " << message.message ;
+	m_MainWindow->getUI().statusbar->setFont( QFont( "", 12 ));
+	const uint16_t logTime = m_ViewerCore->getOptionMap().getPropertyAs<uint16_t>("logDelayTime");
+	switch( message.m_level ) {
+		case verbose_info:
+			if( m_ViewerCore->getOptionMap().getPropertyAs<bool>("showVerboseInfoMessages") ) {
+				pal.setColor( QPalette::Foreground, Qt::black );
+				m_MainWindow->getUI().statusbar->setPalette( pal );	
+				m_MainWindow->getUI().statusbar->showMessage( logStream.str().c_str(), logTime );
+			}
+			break;
+		case info:
+			if( m_ViewerCore->getOptionMap().getPropertyAs<bool>("showInfoMessages") ) {
+				pal.setColor( QPalette::Foreground, Qt::black );
+				m_MainWindow->getUI().statusbar->setPalette( pal );	
+				m_MainWindow->getUI().statusbar->showMessage( logStream.str().c_str(), logTime );
+			}			
+			break;
+		case warning:
+			if( m_ViewerCore->getOptionMap().getPropertyAs<bool>("showWarningMessages") ) {
+				pal.setColor( QPalette::Foreground, QColor(184,134,11)  );
+				m_MainWindow->getUI().statusbar->setPalette( pal );	
+				m_MainWindow->getUI().statusbar->showMessage( logStream.str().c_str(), logTime );
+			}			
+			break;
+		case error:
+			if( m_ViewerCore->getOptionMap().getPropertyAs<bool>("showErrorMessages") ) {
+				pal.setColor( QPalette::Foreground, Qt::red  );
+				m_MainWindow->getUI().statusbar->setPalette( pal );	
+				m_MainWindow->getUI().statusbar->showMessage( logStream.str().c_str(), logTime );
+			}			
+			break;
+		case notice:
+			if( m_ViewerCore->getOptionMap().getPropertyAs<bool>("showNoticeMessages") ) {
+				pal.setColor( QPalette::Foreground, Qt::green  );
+				m_MainWindow->getUI().statusbar->setPalette( pal );	
+				m_MainWindow->getUI().statusbar->showMessage( logStream.str().c_str(), logTime );
+			}			
+			break;
+		
 	}
-
-	m_MainWindow->getUI().statusbar->showMessage( status.c_str() );
-
 }
-
 
 void UICore::showMainWindow()
 {
@@ -255,6 +283,14 @@ bool UICore::registerWidget( ViewWidget widget )
 	return true;
 
 }
+
+void UICore::setShowWorkingLabel(const std::string& message, bool show)
+{
+	m_MainWindow->getWorkignInformationLabel()->move( m_MainWindow->x() + m_MainWindow->width() / 2 - 100, m_MainWindow->y() + m_MainWindow->height() / 2 -50 );
+	m_MainWindow->getWorkignInformationLabel()->setText( message.c_str() );
+	m_MainWindow->getWorkignInformationLabel()->setVisible( show );
+}
+
 
 }
 }

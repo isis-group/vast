@@ -1,4 +1,5 @@
 #include <Adapter/qtapplication.hpp>
+#include <Adapter/qdefaultmessageprint.hpp>
 #include "qviewercore.hpp"
 #include <iostream>
 #include <DataStorage/io_factory.hpp>
@@ -16,9 +17,11 @@ int main( int argc, char *argv[] )
 
 	using namespace isis;
 	using namespace viewer;
-
-	util::DefaultMsgPrint::stopBelow( warning );
-	ENABLE_LOG( data::Runtime, util::DefaultMsgPrint, error );
+	qt4::QDefaultMessagePrint *viewer_handler = new qt4::QDefaultMessagePrint(info);
+	qt4::QDefaultMessagePrint *isis_handler = new qt4::QDefaultMessagePrint(verbose_info);
+	util::_internal::Log<viewer::Runtime>::setHandler(boost::shared_ptr<qt4::QDefaultMessagePrint>( viewer_handler ));
+	util::_internal::Log<data::Runtime>::setHandler(boost::shared_ptr<qt4::QDefaultMessagePrint>( isis_handler));
+	
 	std::string appName = "vast";
 	std::string orgName = "cbs.mpg.de";
 
@@ -55,14 +58,13 @@ int main( int argc, char *argv[] )
 	app.parameters["split"] = false;
 	app.parameters["split"].needed() = false;
 	app.parameters["split"].setDescription( "Show each image in a separate view" );
-	app.parameters["old_lipsia"] = false;
-	app.parameters["old_lipsia"].needed() = false;
-	app.parameters["old_lipsia"].setDescription( "Ignore orientation information and treat files as old lipsia files." );
 	boost::shared_ptr< util::ProgressFeedback > feedback = boost::shared_ptr<util::ProgressFeedback>( new util::ConsoleFeedback );
 	data::IOFactory::setProgressFeedback( feedback );
 	app.init( argc, argv, true );
 
 	QViewerCore *core = new QViewerCore( appName, orgName );
+// 	core->addMessageHandler( viewer_handler );
+	core->addMessageHandler( isis_handler );
 	std::cout << "v" << core->getVersion() << " ( isis core: " << app.getCoreVersion() << " )" << std::endl;
 	//scan for plugins and hand them to the core
 	core->addPlugins( plugin::PluginLoader::get().getPlugins() );
@@ -74,36 +76,29 @@ int main( int argc, char *argv[] )
 	util::slist zmapFileList = app.parameters["zmap"];
 	std::list< data::Image > imgList;
 	std::list< data::Image > zImgList;
-
+	core->getUI()->setShowWorkingLabel( "Loading images..." );
+	
 	//load the anatomical images
 	BOOST_FOREACH ( util::slist::const_reference fileName, fileList ) {
-		std::stringstream ss;
-		ss << "Open image " << fileName << " ...";
-		core->getUI()->showStatus(ss.str());
 		std::list< data::Image > tmpList = data::IOFactory::load( fileName, app.parameters["rf"].toString(), app.parameters["rdialect"].toString() );
 		BOOST_FOREACH( std::list< data::Image >::reference imageRef, tmpList ) {
-			if( app.parameters["old_lipsia"] ) {
-				setOrientationToIdentity( imageRef );
-			}
-
 			imgList.push_back( imageRef );
 		}
 	}
 	//load the zmap images
 	BOOST_FOREACH ( util::slist::const_reference fileName, zmapFileList ) {
-		std::stringstream ss;
-		ss << "Open image " << fileName << " as zmap...";
-		core->getUI()->showStatus(ss.str());
-		std::list< data::Image > tmpList = data::IOFactory::load( fileName, app.parameters["rf"].toString(), app.parameters["rdialect"].toString() );
+		std::string dialect;
+		if( app.parameters["rdialect"].toString().size() ) {
+			dialect = app.parameters["rdialect"].toString();
+		} else {
+			dialect = std::string("onlyfirst");
+		}
+		std::list< data::Image > tmpList = data::IOFactory::load( fileName, app.parameters["rf"].toString(), dialect );
 		BOOST_FOREACH( std::list< data::Image >::reference imageRef, tmpList ) {
-			if( app.parameters["old_lipsia"] ) {
-				setOrientationToIdentity( imageRef );
-			}
-
 			zImgList.push_back( imageRef );
 		}
 	}
-
+	core->getUI()->setShowWorkingLabel("", false );
 	//*****************************************************************************************
 	//distribution of images
 	//*****************************************************************************************
@@ -147,9 +142,10 @@ int main( int argc, char *argv[] )
 		core->getUI()->setOptionPosition( isis::viewer::UICore::bottom );
 
 	}
-	core->getUI()->showStatus("Welcome to vast ;-)");
+	LOG( isis::viewer::Runtime, info) << "Welcome to vast ;-)";
 	core->getUI()->refreshUI();
 	core->getUI()->showMainWindow();
+	
 
 	return app.getQApplication().exec();
 }

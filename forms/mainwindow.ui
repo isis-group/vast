@@ -110,12 +110,19 @@
     </property>
     <addaction name="action_Preferences"/>
     <addaction name="separator"/>
+    <addaction name="actionShow_Labels"/>
+    <addaction name="actionIgnore_Orientation"/>
+   </widget>
+   <widget class="QMenu" name="menu_Tools">
+    <property name="title">
+     <string>&amp;Tools</string>
+    </property>
     <addaction name="actionFind_Global_Min"/>
     <addaction name="actionFind_Global_Max"/>
-    <addaction name="actionShow_Labels"/>
    </widget>
    <addaction name="menu_File"/>
    <addaction name="menu_Preferences"/>
+   <addaction name="menu_Tools"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="action_Open_image">
@@ -204,7 +211,7 @@
      <normaloff>:/common/min.gif</normaloff>:/common/min.gif</iconset>
    </property>
    <property name="text">
-    <string>Find Global Min</string>
+    <string>Find local min</string>
    </property>
    <property name="toolTip">
     <string>Find local min</string>
@@ -219,7 +226,7 @@
      <normaloff>:/common/max.gif</normaloff>:/common/max.gif</iconset>
    </property>
    <property name="text">
-    <string>Find Global Max</string>
+    <string>Find local max</string>
    </property>
    <property name="toolTip">
     <string>Find local max</string>
@@ -256,6 +263,14 @@
    </property>
    <property name="shortcut">
     <string>S, S, O</string>
+   </property>
+  </action>
+  <action name="actionIgnore_Orientation">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Ignore Orientation</string>
    </property>
   </action>
  </widget>

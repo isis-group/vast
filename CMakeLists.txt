@@ -25,6 +25,7 @@ set(VIEWER_FILES_HPP
 	widgets/imageStackWidget.hpp
 	widgets/sliderwidget.hpp
 	widgets/scalingWidget.hpp
+	widgets/loggingDialog.hpp
 )
 
 set(GLWIDGET_FILES_HPP

@@ -7,6 +7,7 @@
 #include <QtGui>
 #include "color.hpp"
 #include "qprogressfeedback.hpp"
+#include <Adapter/qtapplication.hpp>
 
 
 namespace isis
@@ -46,6 +47,10 @@ public:
 	
 	const boost::shared_ptr< QProgressFeedback > getProgressFeedback() const { return m_ProgressFeedback; }
 	
+	void addMessageHandler( qt4::QDefaultMessagePrint * );
+	
+	std::list< qt4::QMessage> getMessageLog() const { return m_MessageLog; }
+	
 public Q_SLOTS:
 	virtual void settingsChanged();
 	virtual void zoomChanged( float zoomFactor );
@@ -55,7 +60,7 @@ public Q_SLOTS:
 	virtual void setShowLabels( bool );
 	virtual void updateScene( bool center = false );
 	virtual bool callPlugin( QString name );
-
+	virtual void receiveMessage( qt4::QMessage message );
 
 Q_SIGNALS:
 	void emitZoomChanged( float zoom );
@@ -69,13 +74,13 @@ Q_SIGNALS:
 private:
 
 	QSettings *m_Settings;
+	std::list< qt4::QMessage > m_MessageLog;
 
 	QWidget *m_Parent;
 	PluginListType m_PluginList;
 	std::string m_CurrentPath;
 	boost::shared_ptr< QProgressFeedback > m_ProgressFeedback;
 	UICore *m_UI;
-
 
 };
 

@@ -26,7 +26,8 @@ public:
 public Q_SLOTS:
 	void itemClicked( QListWidgetItem * );
 	void itemSelected( QListWidgetItem * );
-	void removeButtonClicked();
+	void closeButtonClicked();
+	void distributeImages();
 
 private:
 	QViewerCore *m_ViewerCore;

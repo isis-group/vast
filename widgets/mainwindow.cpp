@@ -15,7 +15,9 @@ MainWindow::MainWindow( QViewerCore *core ) :
 	m_Toolbar( new QToolBar( this ) ),
 	m_PreferencesDialog( new widget::PreferencesDialog( this, core ) ),
 	m_ScalingWidget( new widget::ScalingWidget( this, core ) ),
-	m_RadiusSpin(new QSpinBox(this))
+	m_RadiusSpin(new QSpinBox(this)),
+	m_LogButton( new QPushButton( this ) ),
+	m_LoggingDialog( new widget::LoggingDialog( this, core ) )
 {
 	m_UI.setupUi( this );
 	loadSettings();
@@ -30,6 +32,9 @@ MainWindow::MainWindow( QViewerCore *core ) :
 	connect( m_UI.actionShow_Labels, SIGNAL( triggered(bool)), m_ViewerCore, SLOT( setShowLabels(bool)));
 	connect( m_RadiusSpin, SIGNAL(valueChanged(int)), this, SLOT( spinRadiusChanged(int)));
 	connect( m_UI.actionShow_scaling_option, SIGNAL( triggered()), this, SLOT( showScalingOption()));
+	connect( m_UI.actionIgnore_Orientation, SIGNAL( triggered(bool)), this, SLOT( ignoreOrientation(bool)));
+	connect( m_UI.action_Exit, SIGNAL( triggered()), this, SLOT( close()));
+	connect( m_LogButton, SIGNAL( clicked()), this, SLOT( showLoggingDialog()) );
 
 	//toolbar stuff
 	m_Toolbar->setOrientation( Qt::Horizontal );
@@ -53,9 +58,42 @@ MainWindow::MainWindow( QViewerCore *core ) :
 	m_RadiusSpin->setMaximum(500);
 	m_RadiusSpin->setToolTip("Search radius for finding local minimum/maximum. If radius is 0 it will search the entire image.");
 	m_UI.statusbar->addPermanentWidget( m_ViewerCore->getProgressFeedback()->getProgressBar() );
+	
+	m_LogButton->setText( "Show log" );
+	m_UI.statusbar->addPermanentWidget( m_LogButton );
+	
 	m_ScalingWidget->setVisible(false);
+	m_WorkingInformationLabel = new QLabel( this );
+	m_WorkingInformationLabel->setFrameShape(QFrame::Box);
+	m_WorkingInformationLabel->setAlignment(Qt::AlignCenter);
+	m_WorkingInformationLabel->setFixedSize(200,100);
+	m_WorkingInformationLabel->setFont( QFont("Times", 20 ) );
+	m_WorkingInformationLabel->setVisible( false );
 
 }
+
+void MainWindow::showLoggingDialog()
+{
+	m_LoggingDialog->synchronize();
+	m_LoggingDialog->setVisible( true );
+}
+
+
+void MainWindow::ignoreOrientation(bool ignore)
+{
+	BOOST_FOREACH( DataContainer::reference image, m_ViewerCore->getDataContainer() ) {
+		if( ignore ) {
+			setOrientationToIdentity( *image.second->getISISImage() );
+		} else {
+			image.second->getISISImage()->setPropertyAs<util::fvector4>("rowVec", image.second->getPropMap().getPropertyAs<util::fvector4>("originalRowVec"));
+			image.second->getISISImage()->setPropertyAs<util::fvector4>("columnVec", image.second->getPropMap().getPropertyAs<util::fvector4>("originalColumnVec"));
+			image.second->getISISImage()->setPropertyAs<util::fvector4>("sliceVec", image.second->getPropMap().getPropertyAs<util::fvector4>("originalSliceVec"));
+			image.second->getISISImage()->setPropertyAs<util::fvector4>("indexOrigin", image.second->getPropMap().getPropertyAs<util::fvector4>("originalIndexOrigin"));
+		}
+	}
+	m_ViewerCore->updateScene();
+}
+
 
 void MainWindow::showScalingOption()
 {
@@ -97,9 +135,7 @@ void MainWindow::openImage()
 
 		UICore::ViewWidgetEnsembleType ensemble = m_ViewerCore->getUI()->createViewWidgetEnsemble( "" );
 		BOOST_FOREACH( QStringList::const_reference filename, filenames ) {
-			std::stringstream ss;
-			ss << "Loading image " << filename.toStdString() << "...";
-			m_ViewerCore->getUI()->showStatus( ss.str() );
+
 			std::list<data::Image> tempImgList = isis::data::IOFactory::load( filename.toStdString() , "", "" );
 			pathList.push_back( filename.toStdString() );
 			BOOST_FOREACH( std::list<data::Image>::const_reference image, tempImgList ) {
@@ -110,7 +146,6 @@ void MainWindow::openImage()
 				m_ViewerCore->attachImageToWidget( imageHolder, ensemble[2].widgetImplementation );
 			}
 		}
-		m_ViewerCore->getUI()->showStatus( "Done." );
 		m_ViewerCore->getUI()->rearrangeViewWidgets();
 		m_ViewerCore->getUI()->refreshUI();
 		m_ViewerCore->updateScene( isFirstImage );
@@ -123,9 +158,7 @@ void MainWindow::openDir()
 	if( dir.size() ) {
 		m_ViewerCore->setCurrentPath( dir.toStdString() );
 		bool isFirstImage = m_ViewerCore->getDataContainer().size() == 0;
-		std::stringstream ss;
-		ss << "Opening directory " << dir.toStdString() << "...";
-		m_ViewerCore->getUI()->showStatus( ss.str() );
+
 		std::list<data::Image> imageList = data::IOFactory::load( dir.toStdString(), "", "" );
 
 		if( imageList.size() ) {
@@ -135,7 +168,6 @@ void MainWindow::openDir()
 			}
 			m_ViewerCore->getUI()->refreshUI();
 			m_ViewerCore->updateScene();
-			m_ViewerCore->getUI()->showStatus( "Done." );
 		}
 
 	}
@@ -169,11 +201,7 @@ void MainWindow::saveImage()
 			return;
 			break;
 		case QMessageBox::Yes:
-			std::stringstream ss;
-			ss << "Saving image to " << m_ViewerCore->getCurrentImage()->getFileNames().front() << "...";
-			m_ViewerCore->getUI()->showStatus( ss.str() );
 			isis::data::IOFactory::write( *m_ViewerCore->getCurrentImage()->getISISImage(), m_ViewerCore->getCurrentImage()->getFileNames().front(), "", "" );
-			m_ViewerCore->getUI()->showStatus( "Done." );
 			break;
 		}
 	}
@@ -192,7 +220,6 @@ void MainWindow::saveImageAs()
 		std::stringstream ss;
 		ss << "Saving image to " << filename.toStdString() << "...";
 		isis::data::IOFactory::write( *m_ViewerCore->getCurrentImage()->getISISImage(), filename.toStdString(), "", "" );
-		m_ViewerCore->getUI()->showStatus( "Done." );
 	}
 
 }
@@ -204,7 +231,8 @@ void MainWindow::reloadPluginsToGUI()
 	QMenu *processMenu = new QMenu( QString( "Plugins" ) );
 
 	if( m_ViewerCore->getPlugins().size() ) {
-		getUI().menubar->addMenu( processMenu );
+		getUI().menu_Tools->addSeparator();
+		getUI().menu_Tools->addMenu( processMenu );
 
 		QSignalMapper *signalMapper = new QSignalMapper( this );
 		BOOST_FOREACH( ViewerCoreBase::PluginListType::const_reference plugin, m_ViewerCore->getPlugins() ) {
@@ -246,7 +274,7 @@ void MainWindow::loadSettings()
 
 	m_ViewerCore->getSettings()->endGroup();
 	m_ViewerCore->getSettings()->beginGroup( "UserProfile" );
-	m_ViewerCore->getOption()->propagateZooming = m_ViewerCore->getSettings()->value( "propagateZooming", false ).toBool();
+	m_ViewerCore->getOptionMap().setPropertyAs<bool>("propagateZooming", m_ViewerCore->getSettings()->value( "propagateZooming", false ).toBool() );
 	m_UI.actionShow_Labels->setChecked( m_ViewerCore->getSettings()->value("showLabels", false).toBool() );
 	m_RadiusSpin->setValue( m_ViewerCore->getSettings()->value("searchRadius", 10).toInt());
 	m_ViewerCore->getSettings()->endGroup();
@@ -275,38 +303,19 @@ void MainWindow::showPreferences()
 
 void MainWindow::findGlobalMin()
 {
-	std::string attr;
-	if ( m_RadiusSpin->text().toUInt() ) {
-		attr = "local";
-	} else {
-		attr = "global";
-	}
-	m_ViewerCore->getUI()->showStatus( std::string("Searching for ") + attr + std::string("  minimum...") );
 	const util::ivector4 minVoxel = operation::NativeImageOps::getGlobalMin( m_ViewerCore->getCurrentImage(), 
 																			 m_ViewerCore->getCurrentImage()->getPropMap().getPropertyAs<util::ivector4>("voxelCoords"), 
 																			 m_RadiusSpin->value());
 	m_ViewerCore->physicalCoordsChanged( m_ViewerCore->getCurrentImage()->getISISImage()->getPhysicalCoordsFromIndex( minVoxel ) );
-	std::stringstream ss;
-	ss << "Found " << attr << " minimum at " << minVoxel;
-	m_ViewerCore->getUI()->showStatus( ss.str() );
+
 }
 
 void MainWindow::findGlobalMax()
 {
-	std::string attr;
-	if ( m_RadiusSpin->text().toUInt() ) {
-		attr = "local";
-	} else {
-		attr = "global";
-	}
-	m_ViewerCore->getUI()->showStatus( std::string("Searching for ") + attr + std::string("  maximum...") );
 	const util::ivector4 maxVoxel = operation::NativeImageOps::getGlobalMax( m_ViewerCore->getCurrentImage(), 
 																			 m_ViewerCore->getCurrentImage()->getPropMap().getPropertyAs<util::ivector4>("voxelCoords"), 
 																			 m_RadiusSpin->value() );
 	m_ViewerCore->physicalCoordsChanged( m_ViewerCore->getCurrentImage()->getISISImage()->getPhysicalCoordsFromIndex( maxVoxel ) );
-	std::stringstream ss;
-	ss << "Found " << attr << " maximum at " << maxVoxel;
-	m_ViewerCore->getUI()->showStatus( ss.str() );
 }
 
 

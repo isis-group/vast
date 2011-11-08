@@ -83,11 +83,33 @@
          <property name="spacing">
           <number>2</number>
          </property>
+         <item row="0" column="0">
+          <widget class="QListWidget" name="imageStack"/>
+         </item>
          <item row="0" column="1">
-          <widget class="QListWidget" name="imageStack">
-           <property name="editTriggers">
-            <set>QAbstractItemView::AllEditTriggers</set>
+          <widget class="QFrame" name="frame_4">
+           <property name="frameShape">
+            <enum>QFrame::NoFrame</enum>
            </property>
+           <property name="frameShadow">
+            <enum>QFrame::Raised</enum>
+           </property>
+           <layout class="QVBoxLayout" name="verticalLayout_2">
+            <item>
+             <widget class="QPushButton" name="buttonCloseImage">
+              <property name="text">
+               <string>Close image</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="buttonDistributeImages">
+              <property name="text">
+               <string>Distribute</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
           </widget>
          </item>
         </layout>
@@ -114,13 +136,6 @@
          <property name="spacing">
           <number>2</number>
          </property>
-         <item row="0" column="0">
-          <widget class="QPushButton" name="buttonRemoveImage">
-           <property name="text">
-            <string>Close Image</string>
-           </property>
-          </widget>
-         </item>
         </layout>
        </widget>
       </item>

@@ -8,6 +8,7 @@
 #include "nativeimageops.hpp"
 #include <CoreUtils/progressfeedback.hpp>
 #include "scalingWidget.hpp"
+#include "loggingDialog.hpp"
 
 namespace isis
 {
@@ -17,6 +18,7 @@ namespace widget
 {
 class PreferencesDialog;
 class ScalingWidget;
+class LoggingDialog;
 }
 
 class MainWindow : public QMainWindow
@@ -31,7 +33,8 @@ public:
 	Ui::vastMainWindow &getUI() { return m_UI; }
 
 	void reloadPluginsToGUI( );
-
+	QLabel *getWorkignInformationLabel() { return m_WorkingInformationLabel; }
+	
 
 public Q_SLOTS:
 	void showPreferences();
@@ -46,6 +49,8 @@ public Q_SLOTS:
 	void findGlobalMax();
 	void spinRadiusChanged(int);
 	void showScalingOption();
+	void ignoreOrientation(bool);
+	void showLoggingDialog();
 
 private:
 	Ui::vastMainWindow m_UI;
@@ -53,8 +58,12 @@ private:
 
 	QToolBar *m_Toolbar;
 	isis::viewer::widget::PreferencesDialog *m_PreferencesDialog;
+	isis::viewer::widget::LoggingDialog *m_LoggingDialog;
+
 	widget::ScalingWidget *m_ScalingWidget;
 	QSpinBox *m_RadiusSpin;
+	QLabel *m_WorkingInformationLabel;
+	QPushButton *m_LogButton;
 	
 	
 

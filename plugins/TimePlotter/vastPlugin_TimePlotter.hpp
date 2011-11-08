@@ -18,7 +18,7 @@ class TimePlotter : public PluginInterface
 {
 public:
 
-	virtual std::string getName() { return std::string( "Plotter/TimePlotter" ) ; }
+	virtual std::string getName() { return std::string( "TimePlotter" ) ; }
 	virtual std::string getDescription() { return std::string( "Plots a timeseries" ); }
 	virtual std::string getTooltip() { return std::string( "" ); }
 	virtual QIcon *getToolbarIcon() { return new QIcon( ":/common/graph.gif" ); }

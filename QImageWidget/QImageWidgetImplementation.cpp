@@ -79,6 +79,7 @@ void QImageWidgetImplementation::addImage( const boost::shared_ptr< ImageHolder 
 
 bool QImageWidgetImplementation::removeImage( const boost::shared_ptr< ImageHolder > image )
 {
+	image->removeWidget( this );
 	m_ImageProperties.erase( image );
 	m_ImageVector.erase( std::find( m_ImageVector.begin(), m_ImageVector.end(), image ) );
 }
@@ -375,7 +376,7 @@ void QImageWidgetImplementation::wheelEvent( QWheelEvent *e )
 
 	}
 
-	if( m_ViewerCore->getOption()->propagateZooming ) {
+	if( m_ViewerCore->getOptionMap().getPropertyAs<bool>("propagateZooming")) {
 		zoomChanged( oldZoom );
 	} else {
 		setZoom( oldZoom );
