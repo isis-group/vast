@@ -39,7 +39,7 @@ public:
 	DataContainer &getDataContainer() { return m_DataContainer; }
 	ImageHolder::ImageListType getImageList() const { return m_ImageList; }
 
-	util::PropertyMap getOptionMap() { return m_OptionsMap; }
+	boost::shared_ptr<util::PropertyMap>  getOptionMap() { return m_OptionsMap; }
 
 	void setCoordsTransformation( const util::fvector4 &transformation ) { m_VoxelTransformation = transformation; }
 	util::fvector4 getTransformedCoords( const util::fvector4 &coords ) const;
@@ -57,7 +57,7 @@ private:
 
 
 protected:
-	util::PropertyMap m_OptionsMap;
+	boost::shared_ptr<util::PropertyMap> m_OptionsMap;
 	//additional imagelist for finding purpose
 	ImageHolder::ImageListType m_ImageList;
 

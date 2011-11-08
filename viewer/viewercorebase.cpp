@@ -10,7 +10,8 @@ namespace viewer
 
 ViewerCoreBase::ViewerCoreBase( )
 	: m_CurrentTimestep( 0 ),
-	  m_ColorHandler( new color::Color() )
+	  m_ColorHandler( new color::Color() ),
+	  m_OptionsMap( boost::shared_ptr< util::PropertyMap >( new util::PropertyMap ) )
 {
 	m_ColorHandler->initStandardColormaps();
 	m_VoxelTransformation.fill( 1.0 );
@@ -71,14 +72,16 @@ util::fvector4 ViewerCoreBase::getTransformedCoords( const isis::util::fvector4 
 void ViewerCoreBase::setCommonViewerOptions()
 {
 
-	m_OptionsMap.setPropertyAs<bool>("propagateZooming", false);
+	m_OptionsMap->setPropertyAs<bool>("propagateZooming", false);
+	m_OptionsMap->setPropertyAs<bool>("showLables", false );
+	m_OptionsMap->setPropertyAs<uint8_t>("minMaxSearchRadius", 20);
 	//logging
-	m_OptionsMap.setPropertyAs<uint16_t>("logDelayTime", 4000);
-	m_OptionsMap.setPropertyAs<bool>("showErrorMessages", true );
-	m_OptionsMap.setPropertyAs<bool>("showNoticeMessages", true );
-	m_OptionsMap.setPropertyAs<bool>("showWarningMessages", false );
-	m_OptionsMap.setPropertyAs<bool>("showInfoMessages", false );
-	m_OptionsMap.setPropertyAs<bool>("showVerboseInfoMessages", false );
+	m_OptionsMap->setPropertyAs<uint16_t>("logDelayTime", 5000);
+	m_OptionsMap->setPropertyAs<bool>("showErrorMessages", true );
+	m_OptionsMap->setPropertyAs<bool>("showNoticeMessages", true );
+	m_OptionsMap->setPropertyAs<bool>("showWarningMessages", false );
+	m_OptionsMap->setPropertyAs<bool>("showInfoMessages", false );
+	m_OptionsMap->setPropertyAs<bool>("showVerboseInfoMessages", false );
 }
 
 

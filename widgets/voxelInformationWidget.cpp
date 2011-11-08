@@ -21,18 +21,28 @@ VoxelInformationWidget::VoxelInformationWidget( QWidget *parent, QViewerCore *co
 	
 }
 
+void VoxelInformationWidget::disconnectSignals()
+{
+	disconnect( m_Interface.rowBox, SIGNAL( valueChanged(int)), this, SLOT( voxPosChanged() ) );
+	disconnect( m_Interface.columnBox, SIGNAL( valueChanged(int)), this, SLOT( voxPosChanged() ) );
+	disconnect( m_Interface.sliceBox, SIGNAL( valueChanged(int)), this, SLOT( voxPosChanged() ) );
+	disconnect( m_Interface.xBox, SIGNAL( valueChanged(double)), this, SLOT( physPosChanged() ) );
+	disconnect( m_Interface.yBox, SIGNAL( valueChanged(double)), this, SLOT( physPosChanged() ) );
+	disconnect( m_Interface.zBox, SIGNAL( valueChanged(double)), this, SLOT( physPosChanged() ) );
+
+}
 
 void VoxelInformationWidget::connectSignals()
 {
 	connect( m_ViewerCore, SIGNAL( emitVoxelCoordChanged( util::ivector4 ) ), this, SLOT( synchronizePos( util::ivector4 ) ) );
 	connect( m_ViewerCore, SIGNAL( emitPhysicalCoordsChanged( util::fvector4 ) ), this, SLOT( synchronizePos( util::fvector4 ) ) );
 	connect( m_ViewerCore, SIGNAL( emitUpdateScene(bool)), this, SLOT( updateLowerUpperThreshold(bool)));
-	connect( m_Interface.rowBox, SIGNAL( editingFinished()), this, SLOT( voxPosChanged() ) );
-	connect( m_Interface.columnBox, SIGNAL( editingFinished()), this, SLOT( voxPosChanged() ) );
-	connect( m_Interface.sliceBox, SIGNAL( editingFinished()), this, SLOT( voxPosChanged() ) );
-	connect( m_Interface.xBox, SIGNAL( editingFinished()), this, SLOT( physPosChanged() ) );
-	connect( m_Interface.yBox, SIGNAL( editingFinished()), this, SLOT( physPosChanged() ) );
-	connect( m_Interface.zBox, SIGNAL( editingFinished()), this, SLOT( physPosChanged() ) );
+	connect( m_Interface.rowBox, SIGNAL( valueChanged(int)), this, SLOT( voxPosChanged() ) );
+	connect( m_Interface.columnBox, SIGNAL( valueChanged(int)), this, SLOT( voxPosChanged() ) );
+	connect( m_Interface.sliceBox, SIGNAL( valueChanged(int)), this, SLOT( voxPosChanged() ) );
+	connect( m_Interface.xBox, SIGNAL( valueChanged(double)), this, SLOT( physPosChanged() ) );
+	connect( m_Interface.yBox, SIGNAL( valueChanged(double)), this, SLOT( physPosChanged() ) );
+	connect( m_Interface.zBox, SIGNAL( valueChanged(double)), this, SLOT( physPosChanged() ) );
 	connect( m_Interface.timestepSlider, SIGNAL(sliderMoved(int)), m_ViewerCore, SLOT( timestepChanged(int)));
 	connect( m_Interface.timestepSpinBox, SIGNAL(valueChanged(int)), m_ViewerCore, SLOT( timestepChanged(int)));
 	connect( m_Interface.timestepSlider, SIGNAL(sliderMoved(int)), m_Interface.timestepSpinBox, SLOT(setValue(int)));
@@ -62,7 +72,7 @@ void VoxelInformationWidget::voxPosChanged()
 	util::ivector4 voxelCoords( m_Interface.rowBox->text().toInt(),
 								m_Interface.columnBox->text().toInt(),
 								m_Interface.sliceBox->text().toInt() );
-	m_ViewerCore->voxelCoordsChanged( voxelCoords ) ;
+	m_ViewerCore->physicalCoordsChanged( m_ViewerCore->getCurrentImage()->getISISImage()->getPhysicalCoordsFromIndex( voxelCoords ) ) ;
 
 }
 
@@ -70,6 +80,7 @@ void VoxelInformationWidget::voxPosChanged()
 
 void VoxelInformationWidget::synchronize()
 {
+
 	if( m_ViewerCore->getCurrentImage().get() ) {
 		const boost::shared_ptr<ImageHolder> image = m_ViewerCore->getCurrentImage();
 		QSize size = m_Interface.upperHalfColormapLabel->size();
@@ -144,6 +155,7 @@ void VoxelInformationWidget::synchronize()
 			m_Interface.timeStepFrame->setVisible( false );
 		}
 	}
+
 }
 
 void VoxelInformationWidget::synchronizePos( util::fvector4 physicalCoords )
@@ -153,6 +165,7 @@ void VoxelInformationWidget::synchronizePos( util::fvector4 physicalCoords )
 
 void VoxelInformationWidget::synchronizePos( util::ivector4 voxelCoords )
 {
+	disconnectSignals();
 	const std::string typeName = m_ViewerCore->getCurrentImage()->getISISImage()->getChunk( voxelCoords[0], voxelCoords[1], voxelCoords[2], voxelCoords[3], false ).getTypeName();
 	m_Interface.intensityValue->setToolTip( typeName.substr( 0, typeName.length() - 1 ).c_str() );
 
@@ -196,6 +209,12 @@ void VoxelInformationWidget::synchronizePos( util::ivector4 voxelCoords )
 	m_Interface.xBox->setValue( physCoords[0] );
 	m_Interface.yBox->setValue( physCoords[1] );
 	m_Interface.zBox->setValue( physCoords[2] );
+	connect( m_Interface.rowBox, SIGNAL( valueChanged(int)), this, SLOT( voxPosChanged() ) );
+	connect( m_Interface.columnBox, SIGNAL( valueChanged(int)), this, SLOT( voxPosChanged() ) );
+	connect( m_Interface.sliceBox, SIGNAL( valueChanged(int)), this, SLOT( voxPosChanged() ) );
+	connect( m_Interface.xBox, SIGNAL( valueChanged(double)), this, SLOT( physPosChanged() ) );
+	connect( m_Interface.yBox, SIGNAL( valueChanged(double)), this, SLOT( physPosChanged() ) );
+	connect( m_Interface.zBox, SIGNAL( valueChanged(double)), this, SLOT( physPosChanged() ) );
 
 }
 

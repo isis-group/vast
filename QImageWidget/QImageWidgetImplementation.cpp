@@ -109,8 +109,6 @@ void QImageWidgetImplementation::paintEvent( QPaintEvent *event )
 {
 	if( m_ImageVector.size() ) {
 		m_Painter->begin( this );
-		m_Painter->setBackground( QBrush(Qt::black) );
-		m_Painter->setBackgroundMode(Qt::OpaqueMode);
 		m_ImageProperties.at( getWidgetSpecCurrentImage() ).viewPort
 		= QOrienationHandler::getViewPort( m_WidgetProperties,
 										   getWidgetSpecCurrentImage(),
@@ -376,7 +374,7 @@ void QImageWidgetImplementation::wheelEvent( QWheelEvent *e )
 
 	}
 
-	if( m_ViewerCore->getOptionMap().getPropertyAs<bool>("propagateZooming")) {
+	if( m_ViewerCore->getOptionMap()->getPropertyAs<bool>("propagateZooming")) {
 		zoomChanged( oldZoom );
 	} else {
 		setZoom( oldZoom );

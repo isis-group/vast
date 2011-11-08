@@ -58,38 +58,38 @@ void UICore::showMessage( const qt4::QMessage &message  )
 	std::stringstream logStream;
 	logStream << message.m_module << "(" << message.time_str << ") -> " << message.message ;
 	m_MainWindow->getUI().statusbar->setFont( QFont( "", 12 ));
-	const uint16_t logTime = m_ViewerCore->getOptionMap().getPropertyAs<uint16_t>("logDelayTime");
+	const uint16_t logTime = m_ViewerCore->getOptionMap()->getPropertyAs<uint16_t>("logDelayTime");
 	switch( message.m_level ) {
 		case verbose_info:
-			if( m_ViewerCore->getOptionMap().getPropertyAs<bool>("showVerboseInfoMessages") ) {
+			if( m_ViewerCore->getOptionMap()->getPropertyAs<bool>("showVerboseInfoMessages") ) {
 				pal.setColor( QPalette::Foreground, Qt::black );
 				m_MainWindow->getUI().statusbar->setPalette( pal );	
 				m_MainWindow->getUI().statusbar->showMessage( logStream.str().c_str(), logTime );
 			}
 			break;
 		case info:
-			if( m_ViewerCore->getOptionMap().getPropertyAs<bool>("showInfoMessages") ) {
+			if( m_ViewerCore->getOptionMap()->getPropertyAs<bool>("showInfoMessages") ) {
 				pal.setColor( QPalette::Foreground, Qt::black );
 				m_MainWindow->getUI().statusbar->setPalette( pal );	
 				m_MainWindow->getUI().statusbar->showMessage( logStream.str().c_str(), logTime );
 			}			
 			break;
 		case warning:
-			if( m_ViewerCore->getOptionMap().getPropertyAs<bool>("showWarningMessages") ) {
+			if( m_ViewerCore->getOptionMap()->getPropertyAs<bool>("showWarningMessages") ) {
 				pal.setColor( QPalette::Foreground, QColor(184,134,11)  );
 				m_MainWindow->getUI().statusbar->setPalette( pal );	
 				m_MainWindow->getUI().statusbar->showMessage( logStream.str().c_str(), logTime );
 			}			
 			break;
 		case error:
-			if( m_ViewerCore->getOptionMap().getPropertyAs<bool>("showErrorMessages") ) {
+			if( m_ViewerCore->getOptionMap()->getPropertyAs<bool>("showErrorMessages") ) {
 				pal.setColor( QPalette::Foreground, Qt::red  );
 				m_MainWindow->getUI().statusbar->setPalette( pal );	
 				m_MainWindow->getUI().statusbar->showMessage( logStream.str().c_str(), logTime );
 			}			
 			break;
 		case notice:
-			if( m_ViewerCore->getOptionMap().getPropertyAs<bool>("showNoticeMessages") ) {
+			if( m_ViewerCore->getOptionMap()->getPropertyAs<bool>("showNoticeMessages") ) {
 				pal.setColor( QPalette::Foreground, Qt::green  );
 				m_MainWindow->getUI().statusbar->setPalette( pal );	
 				m_MainWindow->getUI().statusbar->showMessage( logStream.str().c_str(), logTime );
@@ -270,6 +270,7 @@ void UICore::refreshUI()
 			widget.second.dockWidget->setVisible( true );
 		}
 	}
+	m_MainWindow->refreshUI();
 }
 
 

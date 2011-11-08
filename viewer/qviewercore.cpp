@@ -101,6 +101,7 @@ void QViewerCore::settingsChanged()
 		widget.first->setInterpolationType( static_cast<InterpolationType>( getSettings()->value( "interpolationType", 0 ).toUInt() ) );
 	}
 	emitShowLabels( getSettings()->value("showLabels", false).toBool());
+	m_UI->getMainWindow()->getUI().actionPropagate_Zooming->setChecked( getOptionMap()->getPropertyAs<bool>("propagateZooming") );
 	getSettings()->endGroup();
 	
 }
@@ -112,7 +113,7 @@ void QViewerCore::updateScene( bool center )
 
 void QViewerCore::zoomChanged( float zoomFactor )
 {
-	if( m_OptionsMap.getPropertyAs<bool>("propagateZooming" ) ) {
+	if( m_OptionsMap->getPropertyAs<bool>("propagateZooming" ) ) {
 		emitZoomChanged( zoomFactor );
 	}
 }

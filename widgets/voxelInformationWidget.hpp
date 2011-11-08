@@ -33,6 +33,7 @@ private:
 	Ui::voxelInformationWidget m_Interface;
 	bool isConnected;
 	void connectSignals();
+	void disconnectSignals();
 
 	template<typename TYPE>
 	void displayIntensity( util::ivector4 coords ) {

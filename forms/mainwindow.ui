@@ -112,6 +112,7 @@
     <addaction name="separator"/>
     <addaction name="actionShow_Labels"/>
     <addaction name="actionIgnore_Orientation"/>
+    <addaction name="actionPropagate_Zooming"/>
    </widget>
    <widget class="QMenu" name="menu_Tools">
     <property name="title">
@@ -271,6 +272,14 @@
    </property>
    <property name="text">
     <string>Ignore Orientation</string>
+   </property>
+  </action>
+  <action name="actionPropagate_Zooming">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Propagate Zooming</string>
    </property>
   </action>
  </widget>

@@ -21,7 +21,6 @@ MainWindow::MainWindow( QViewerCore *core ) :
 {
 	m_UI.setupUi( this );
 	loadSettings();
-	
 	connect( m_UI.action_Open_image, SIGNAL( triggered() ), this, SLOT( openImage() ) );
 	connect( m_UI.action_Save_Image, SIGNAL( triggered() ), this, SLOT( saveImage() ) );
 	connect( m_UI.actionSave_Image, SIGNAL( triggered() ), this, SLOT( saveImageAs() ) );
@@ -35,6 +34,7 @@ MainWindow::MainWindow( QViewerCore *core ) :
 	connect( m_UI.actionIgnore_Orientation, SIGNAL( triggered(bool)), this, SLOT( ignoreOrientation(bool)));
 	connect( m_UI.action_Exit, SIGNAL( triggered()), this, SLOT( close()));
 	connect( m_LogButton, SIGNAL( clicked()), this, SLOT( showLoggingDialog()) );
+	connect( m_UI.actionPropagate_Zooming, SIGNAL(triggered(bool)), this, SLOT(propagateZooming(bool)));
 
 	//toolbar stuff
 	m_Toolbar->setOrientation( Qt::Horizontal );
@@ -71,6 +71,13 @@ MainWindow::MainWindow( QViewerCore *core ) :
 	m_WorkingInformationLabel->setVisible( false );
 
 }
+
+void MainWindow::propagateZooming(bool propagate)
+{
+	m_ViewerCore->getOptionMap()->setPropertyAs<bool>("propagateZooming", propagate);
+	m_ViewerCore->updateScene();
+}
+
 
 void MainWindow::showLoggingDialog()
 {
@@ -271,14 +278,24 @@ void MainWindow::loadSettings()
 	if( m_ViewerCore->getSettings()->value( "maximized", false ).toBool() ) {
 		showMaximized();
 	}
-
 	m_ViewerCore->getSettings()->endGroup();
+	
 	m_ViewerCore->getSettings()->beginGroup( "UserProfile" );
-	m_ViewerCore->getOptionMap().setPropertyAs<bool>("propagateZooming", m_ViewerCore->getSettings()->value( "propagateZooming", false ).toBool() );
-	m_UI.actionShow_Labels->setChecked( m_ViewerCore->getSettings()->value("showLabels", false).toBool() );
-	m_RadiusSpin->setValue( m_ViewerCore->getSettings()->value("searchRadius", 10).toInt());
+	
+	m_ViewerCore->getOptionMap()->setPropertyAs<bool>("propagateZooming", m_ViewerCore->getSettings()->value( "propagateZooming", false ).toBool() );
+	m_ViewerCore->getOptionMap()->setPropertyAs<bool>("showLabels", m_ViewerCore->getSettings()->value("showLabels", false).toBool() );
+	m_ViewerCore->getOptionMap()->setPropertyAs<uint8_t>("minMaxSearchRadius", m_ViewerCore->getSettings()->value("minMaxSearchRadius", false).toBool() );
 	m_ViewerCore->getSettings()->endGroup();
 }
+
+void MainWindow::refreshUI()
+{
+	m_UI.actionShow_Labels->setChecked( m_ViewerCore->getOptionMap()->getPropertyAs<bool>("showLabels") );
+	m_ViewerCore->setShowLabels(m_UI.actionShow_Labels->isChecked());
+	m_UI.actionPropagate_Zooming->setChecked( m_ViewerCore->getOptionMap()->getPropertyAs<bool>("propagateZooming"));
+	m_RadiusSpin->setValue( m_ViewerCore->getOptionMap()->getPropertyAs<uint8_t>("minMaxSearchRadius"));
+}
+
 
 void MainWindow::closeEvent( QCloseEvent * )
 {
@@ -292,6 +309,11 @@ void MainWindow::saveSettings()
 	m_ViewerCore->getSettings()->setValue( "size", size() );
 	m_ViewerCore->getSettings()->setValue( "maximized", isMaximized() );
 	m_ViewerCore->getSettings()->setValue( "pos", pos() );
+	m_ViewerCore->getSettings()->endGroup();
+	m_ViewerCore->getSettings()->beginGroup( "UserProfile" );
+	m_ViewerCore->getSettings()->setValue( "propagateZooming", m_UI.actionPropagate_Zooming->isChecked() );
+	m_ViewerCore->getSettings()->setValue( "searchRadius", m_RadiusSpin->value() );
+	m_ViewerCore->getSettings()->setValue( "showLabels", m_UI.actionShow_Labels->isChecked() );
 	m_ViewerCore->getSettings()->endGroup();
 	m_ViewerCore->getSettings()->sync();
 }

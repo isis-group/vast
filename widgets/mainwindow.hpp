@@ -50,7 +50,9 @@ public Q_SLOTS:
 	void spinRadiusChanged(int);
 	void showScalingOption();
 	void ignoreOrientation(bool);
+	void propagateZooming(bool);
 	void showLoggingDialog();
+	void refreshUI();
 
 private:
 	Ui::vastMainWindow m_UI;
