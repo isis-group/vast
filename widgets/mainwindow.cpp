@@ -111,9 +111,7 @@ void MainWindow::showScalingOption()
 
 void MainWindow::spinRadiusChanged(int radius)
 {
-	m_ViewerCore->getSettings()->beginGroup("UserProfile");
-	m_ViewerCore->getSettings()->setValue("searchRadius", radius);
-	m_ViewerCore->getSettings()->endGroup();
+	m_ViewerCore->getOptionMap()->setPropertyAs<uint16_t>("minMaxSearchRadius", radius);
 }
 
 void MainWindow::openImage()
@@ -284,7 +282,8 @@ void MainWindow::loadSettings()
 	
 	m_ViewerCore->getOptionMap()->setPropertyAs<bool>("propagateZooming", m_ViewerCore->getSettings()->value( "propagateZooming", false ).toBool() );
 	m_ViewerCore->getOptionMap()->setPropertyAs<bool>("showLabels", m_ViewerCore->getSettings()->value("showLabels", false).toBool() );
-	m_ViewerCore->getOptionMap()->setPropertyAs<uint8_t>("minMaxSearchRadius", m_ViewerCore->getSettings()->value("minMaxSearchRadius", false).toBool() );
+	m_ViewerCore->getOptionMap()->setPropertyAs<uint16_t>("minMaxSearchRadius", 
+		m_ViewerCore->getSettings()->value("minMaxSearchRadius", m_ViewerCore->getOptionMap()->getPropertyAs<uint16_t>("minMaxSearchRadius") ).toInt() );
 	m_ViewerCore->getSettings()->endGroup();
 }
 
@@ -293,7 +292,7 @@ void MainWindow::refreshUI()
 	m_UI.actionShow_Labels->setChecked( m_ViewerCore->getOptionMap()->getPropertyAs<bool>("showLabels") );
 	m_ViewerCore->setShowLabels(m_UI.actionShow_Labels->isChecked());
 	m_UI.actionPropagate_Zooming->setChecked( m_ViewerCore->getOptionMap()->getPropertyAs<bool>("propagateZooming"));
-	m_RadiusSpin->setValue( m_ViewerCore->getOptionMap()->getPropertyAs<uint8_t>("minMaxSearchRadius"));
+	m_RadiusSpin->setValue( m_ViewerCore->getOptionMap()->getPropertyAs<uint16_t>("minMaxSearchRadius"));
 }
 
 
@@ -312,7 +311,7 @@ void MainWindow::saveSettings()
 	m_ViewerCore->getSettings()->endGroup();
 	m_ViewerCore->getSettings()->beginGroup( "UserProfile" );
 	m_ViewerCore->getSettings()->setValue( "propagateZooming", m_UI.actionPropagate_Zooming->isChecked() );
-	m_ViewerCore->getSettings()->setValue( "searchRadius", m_RadiusSpin->value() );
+	m_ViewerCore->getSettings()->setValue( "minMaxSearchRadius", m_RadiusSpin->value() );
 	m_ViewerCore->getSettings()->setValue( "showLabels", m_UI.actionShow_Labels->isChecked() );
 	m_ViewerCore->getSettings()->endGroup();
 	m_ViewerCore->getSettings()->sync();
