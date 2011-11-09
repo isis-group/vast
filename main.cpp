@@ -19,8 +19,10 @@ int main( int argc, char *argv[] )
 	using namespace viewer;
 	qt4::QDefaultMessagePrint *viewer_handler = new qt4::QDefaultMessagePrint(info);
 	qt4::QDefaultMessagePrint *isis_handler = new qt4::QDefaultMessagePrint(verbose_info);
+	qt4::QDefaultMessagePrint *imageio_handler = new qt4::QDefaultMessagePrint(verbose_info);
 	util::_internal::Log<viewer::Runtime>::setHandler(boost::shared_ptr<qt4::QDefaultMessagePrint>( viewer_handler ));
 	util::_internal::Log<data::Runtime>::setHandler(boost::shared_ptr<qt4::QDefaultMessagePrint>( isis_handler));
+	util::_internal::Log<image_io::Runtime>::setHandler(boost::shared_ptr<qt4::QDefaultMessagePrint>( imageio_handler));
 	
 	std::string appName = "vast";
 	std::string orgName = "cbs.mpg.de";
@@ -63,8 +65,9 @@ int main( int argc, char *argv[] )
 	app.init( argc, argv, true );
 
 	QViewerCore *core = new QViewerCore( appName, orgName );
-// 	core->addMessageHandler( viewer_handler );
+	core->addMessageHandler( viewer_handler );
 	core->addMessageHandler( isis_handler );
+	core->addMessageHandler( imageio_handler);
 	std::cout << "v" << core->getVersion() << " ( isis core: " << app.getCoreVersion() << " )" << std::endl;
 	//scan for plugins and hand them to the core
 	core->addPlugins( plugin::PluginLoader::get().getPlugins() );

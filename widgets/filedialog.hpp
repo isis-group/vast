@@ -6,6 +6,7 @@
 #include <QFileDialog>
 #include <boost/filesystem.hpp>
 #include "qviewercore.hpp"
+#include <QCompleter>
 
 namespace isis {
 namespace viewer {
@@ -24,13 +25,13 @@ public Q_SLOTS:
 	void browse();
 	void parsePath();
 	void openPath();
-	void saveToFile();
 	void imageTypeChanged(int);
 	void rfChanged(int);
 	virtual void closeEvent( QCloseEvent *);
 	virtual void showEvent( QShowEvent *);
 	void modeChanged();
 	void setup();
+	void advancedChecked(bool);
 	
 	bool checkIfPathIsValid( QString path, unsigned short &validFiles, bool acceptNoSuffix = false );
 	
@@ -44,7 +45,7 @@ private:
 	std::string m_Dialect;
 	ImageHolder::ImageType m_ImageType;
 	util::slist m_FileFormatList;
-	
+	QCompleter *m_Completer;
 	
 };
 	

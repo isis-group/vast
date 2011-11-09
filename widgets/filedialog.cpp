@@ -5,10 +5,16 @@
 isis::viewer::widget::FileDialog::FileDialog(QWidget* parent, QViewerCore *core )
 	: QDialog (parent),
 	m_ViewerCore( core ),
-	m_ImageType( ImageHolder::anatomical_image )
+	m_ImageType( ImageHolder::anatomical_image ),
+	m_Completer( new QCompleter( this ))
 	
 {
+	
 	m_Interface.setupUi(this);
+	m_Completer->setModel( new QDirModel( m_Completer ) );
+	m_Completer->setCompletionMode(QCompleter::PopupCompletion);
+	m_Interface.fileDirEdit->setCompleter( m_Completer );
+	
 	std::stringstream fileFormats;
 	fileFormats << "Image files (" << getFileFormatsAsString(isis::image_io::FileFormat::read_only, std::string( "*." ) ) << ")";
 	m_FileDialog.setNameFilter( fileFormats.str().c_str());
@@ -17,7 +23,7 @@ isis::viewer::widget::FileDialog::FileDialog(QWidget* parent, QViewerCore *core 
 	m_Interface.typeComboBox->addItem( "zmap" );
 	connect( m_Interface.browseButton, SIGNAL( clicked()), this, SLOT( browse()));
 	connect( m_Interface.fileDirEdit, SIGNAL(textChanged(QString)),this, SLOT( parsePath()));
-	connect( m_Interface.advancedOptionsCheck, SIGNAL(clicked(bool)), m_Interface.advancedOptionsFrame, SLOT( setVisible(bool)));
+	connect( m_Interface.advancedOptionsCheck, SIGNAL(clicked(bool)),this, SLOT( advancedChecked(bool)));
 	connect( m_Interface.openSaveButton, SIGNAL( clicked()), this, SLOT( openPath()));
 	connect( m_Interface.cancelButton, SIGNAL( clicked()), this, SLOT( close()));
 	connect( m_Interface.imageRadio, SIGNAL(clicked()), this, SLOT( modeChanged())) ;
@@ -40,6 +46,7 @@ void isis::viewer::widget::FileDialog::imageTypeChanged(int imageType)
 void isis::viewer::widget::FileDialog::rfChanged(int rfIndex)
 {
 	m_Suffix = m_Interface.rfComboBox->itemText(rfIndex).toStdString();
+	parsePath();
 }
 
 
@@ -56,6 +63,7 @@ void isis::viewer::widget::FileDialog::setup()
 			m_Interface.fileDirLabel->setText( "Directory: " );
 			m_Interface.openSaveButton->setText( "Open Directory" );
 			m_FileFormatList = getFileFormatsAsList( isis::image_io::FileFormat::read_only );
+			m_Interface.dirRadio->setChecked(true);
 			break;
 		case OPEN_FILE:
 			m_FileDialog.setWindowTitle( "Open File(s)" );
@@ -63,6 +71,7 @@ void isis::viewer::widget::FileDialog::setup()
 			m_Interface.fileDirLabel->setText( "File(s): " );			
 			m_Interface.openSaveButton->setText( "Open File(s)" );
 			m_FileFormatList = getFileFormatsAsList( isis::image_io::FileFormat::read_only );
+			m_Interface.imageRadio->setChecked(true);
 			break;
 	}
 	
@@ -183,14 +192,16 @@ void isis::viewer::widget::FileDialog::openPath()
 	m_ViewerCore->openPath( m_PathList, m_ImageType, m_Dialect, m_Suffix, m_Interface.distributeCheck->isChecked() );
 }
 
-void isis::viewer::widget::FileDialog::saveToFile()
+void isis::viewer::widget::FileDialog::advancedChecked(bool advanced)
 {
-
+	m_ViewerCore->getOptionMap()->setPropertyAs<bool>("showAdvancedFileDialogOptions", advanced );
+	m_Interface.advancedOptionsFrame->setVisible(advanced);
 }
+
 
 void isis::viewer::widget::FileDialog::closeEvent(QCloseEvent* )
 {
-	m_ViewerCore->getOptionMap()->setPropertyAs<bool>("showAdvancedFileDialogOptions", m_Interface.advancedOptionsCheck->isChecked() );
+	
 }
 
 void isis::viewer::widget::FileDialog::modeChanged()

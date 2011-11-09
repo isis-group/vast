@@ -197,6 +197,11 @@ void QViewerCore::openPath(QStringList fileList, ImageHolder::ImageType imageTyp
 		getUI()->setShowWorkingLabel( msg.str() );
 		std::list<data::Image> tempImgList = isis::data::IOFactory::load( filename.toStdString() , rf, rdialect );
 		pathList.push_back( filename.toStdString() );
+		if( tempImgList.size() > 1 ) {
+			msg.clear();
+			msg << "Found " << tempImgList.size() << " images. Loading...";
+			getUI()->setShowWorkingLabel( msg.str() );
+		}
 		BOOST_FOREACH( std::list<data::Image>::const_reference image, tempImgList ) {
 			imgList.push_back( image );
 			boost::shared_ptr<ImageHolder> imageHolder = addImage( image, imageType );
