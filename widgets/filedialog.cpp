@@ -11,6 +11,7 @@ isis::viewer::widget::FileDialog::FileDialog(QWidget* parent, QViewerCore *core 
 {
 	
 	m_Interface.setupUi(this);
+	setMinimumWidth(500);
 	m_Completer->setModel( new QDirModel( m_Completer ) );
 	m_Completer->setCompletionMode(QCompleter::PopupCompletion);
 	m_Interface.fileDirEdit->setCompleter( m_Completer );
@@ -83,6 +84,7 @@ void isis::viewer::widget::FileDialog::setup()
 		m_Interface.advancedOptionsCheck->setCheckState( Qt::Unchecked );
 		m_Interface.advancedOptionsFrame->setVisible( false );
 	}
+	adjustSize();
 	m_Interface.openSaveButton->setEnabled( false );
 	m_PathList.clear();
 	m_Interface.fileDirEdit->clear();
@@ -196,6 +198,7 @@ void isis::viewer::widget::FileDialog::advancedChecked(bool advanced)
 {
 	m_ViewerCore->getOptionMap()->setPropertyAs<bool>("showAdvancedFileDialogOptions", advanced );
 	m_Interface.advancedOptionsFrame->setVisible(advanced);
+	adjustSize();
 }
 
 
