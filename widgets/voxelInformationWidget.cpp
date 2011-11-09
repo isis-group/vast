@@ -36,7 +36,7 @@ void VoxelInformationWidget::connectSignals()
 {
 	connect( m_ViewerCore, SIGNAL( emitVoxelCoordChanged( util::ivector4 ) ), this, SLOT( synchronizePos( util::ivector4 ) ) );
 	connect( m_ViewerCore, SIGNAL( emitPhysicalCoordsChanged( util::fvector4 ) ), this, SLOT( synchronizePos( util::fvector4 ) ) );
-	connect( m_ViewerCore, SIGNAL( emitUpdateScene(bool)), this, SLOT( updateLowerUpperThreshold(bool)));
+	connect( m_ViewerCore, SIGNAL( emitUpdateScene()), this, SLOT( updateLowerUpperThreshold()));
 	connect( m_Interface.rowBox, SIGNAL( valueChanged(int)), this, SLOT( voxPosChanged() ) );
 	connect( m_Interface.columnBox, SIGNAL( valueChanged(int)), this, SLOT( voxPosChanged() ) );
 	connect( m_Interface.sliceBox, SIGNAL( valueChanged(int)), this, SLOT( voxPosChanged() ) );
@@ -50,7 +50,7 @@ void VoxelInformationWidget::connectSignals()
 	isConnected = true;
 }
 
-void VoxelInformationWidget::updateLowerUpperThreshold(bool)
+void VoxelInformationWidget::updateLowerUpperThreshold()
 {
 	if( m_ViewerCore->getCurrentImage().get() ) {
 		m_Interface.lowerThresholdLabel->setText( QString::number( m_ViewerCore->getCurrentImage()->getPropMap().getPropertyAs<double>("lowerThreshold"), 'g', 4 ) );

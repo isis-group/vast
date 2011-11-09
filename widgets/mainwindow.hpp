@@ -54,6 +54,8 @@ public Q_SLOTS:
 	void propagateZooming(bool);
 	void showLoggingDialog();
 	void refreshUI();
+	void resetScaling();
+	virtual void keyPressEvent( QKeyEvent *);
 
 private:
 	Ui::vastMainWindow m_UI;
@@ -68,6 +70,8 @@ private:
 	QSpinBox *m_RadiusSpin;
 	QLabel *m_WorkingInformationLabel;
 	QPushButton *m_LogButton;
+	
+	QAction *m_ActionReset_Scaling;
 	
 	
 

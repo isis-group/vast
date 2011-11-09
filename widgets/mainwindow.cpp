@@ -21,7 +21,11 @@ MainWindow::MainWindow( QViewerCore *core ) :
 	m_FileDialog( new widget::FileDialog( this, core ) )
 {
 	m_UI.setupUi( this );
+	setWindowIcon( QIcon(":/common/vast.jpg") );
 	loadSettings();
+	m_ActionReset_Scaling = new QAction(this);
+	m_ActionReset_Scaling->setShortcut(QKeySequence(tr("Ctrl+R, Ctrl+S") ) );
+	m_ActionReset_Scaling->setEnabled(true);
 	connect( m_UI.action_Save_Image, SIGNAL( triggered() ), this, SLOT( saveImage() ) );
 	connect( m_UI.actionSave_Image, SIGNAL( triggered()), this, SLOT( saveImageAs() ) );
 	connect( m_UI.actionOpen_image, SIGNAL( triggered()), this, SLOT( openImage()));
@@ -35,6 +39,7 @@ MainWindow::MainWindow( QViewerCore *core ) :
 	connect( m_UI.action_Exit, SIGNAL( triggered()), this, SLOT( close()));
 	connect( m_LogButton, SIGNAL( clicked()), this, SLOT( showLoggingDialog()) );
 	connect( m_UI.actionPropagate_Zooming, SIGNAL(triggered(bool)), this, SLOT(propagateZooming(bool)));
+	connect( m_ActionReset_Scaling, SIGNAL( triggered()), this, SLOT(resetScaling()));
 
 	//toolbar stuff
 	m_Toolbar->setOrientation( Qt::Horizontal );
@@ -69,6 +74,33 @@ MainWindow::MainWindow( QViewerCore *core ) :
 	m_WorkingInformationLabel->setVisible( false );
 
 }
+
+void MainWindow::keyPressEvent(QKeyEvent* e )
+{
+	if( e->key() == Qt::Key_Space ) {
+		if( m_ViewerCore->hasImage() ) {
+			const util::ivector4 size = m_ViewerCore->getCurrentImage()->getImageSize();
+			const util::ivector4 center( size[0] / 2, size[1] / 2, size[2] / 2, 
+						     m_ViewerCore->getCurrentImage()->getPropMap().getPropertyAs<util::ivector4>("voxelCoords")[3] );
+			m_ViewerCore->getCurrentImage()->getPropMap().setPropertyAs<util::ivector4>("voxelCoords",
+				center );
+			m_ViewerCore->updateScene();
+		}
+		m_ViewerCore->updateScene();
+	}
+}
+
+
+void MainWindow::resetScaling()
+{
+	if( m_ViewerCore->hasImage() ) {
+		m_ViewerCore->getCurrentImage()->getPropMap().setPropertyAs<double>("scaling", 1.0);
+		m_ViewerCore->getCurrentImage()->getPropMap().setPropertyAs<double>("offset", 0.0 );
+		m_ViewerCore->updateScene();
+		m_ScalingWidget->synchronize();
+	}
+}
+
 
 void MainWindow::propagateZooming(bool propagate)
 {

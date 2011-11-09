@@ -16,6 +16,12 @@ isis::viewer::widget::LoggingDialog::LoggingDialog(QWidget* parent, isis::viewer
 	connect( m_Interface.warningCheck, SIGNAL(clicked()), this, SLOT( synchronize()));
 	connect( m_Interface.errorCheck, SIGNAL(clicked()), this, SLOT( synchronize()));
 	connect( m_Interface.noticeCheck, SIGNAL( clicked()), this, SLOT( synchronize()));
+	QPalette pal;
+	pal.setBrush( QPalette::Base, Qt::red);
+	m_Interface.errorCheck->setPalette( pal );
+// 	pal.setColor( QPalette::WindowText, QColor(218,165,32 ) );
+// 	m_Interface.warningCheck->setPalette( pal );
+	
 	
 }
 
@@ -44,7 +50,7 @@ void isis::viewer::widget::LoggingDialog::synchronize()
 				break;
 			case info:
 				if( m_Interface.infoCheck->checkState() == Qt::Checked ) {
-					item->setTextColor( Qt::black );
+					item->setTextColor( Qt::darkBlue );
 					m_Interface.logList->addItem( item );
 				}
 				break;

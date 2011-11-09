@@ -58,7 +58,7 @@ public Q_SLOTS:
 	virtual void physicalCoordsChanged( util::fvector4 );
 	virtual void timestepChanged( int );
 	virtual void setShowLabels( bool );
-	virtual void updateScene( bool center = false );
+	virtual void updateScene( );
 	virtual bool callPlugin( QString name );
 	virtual void receiveMessage( qt4::QMessage message );
 	virtual void openPath( QStringList fileList, ImageHolder::ImageType imageType, const std::string &rdialect = "", const std::string &rf = "", bool distribute = false );
@@ -70,7 +70,7 @@ Q_SIGNALS:
 	void emitTimeStepChange( unsigned int );
 	void emitImagesChanged( DataContainer );
 	void emitShowLabels( bool );
-	void emitUpdateScene( bool center );
+	void emitUpdateScene( );
 
 private:
 

@@ -1,5 +1,6 @@
 <RCC>
   <qresource prefix="common">
+    <file>vast.jpg</file>
     <file>saveimage.gif</file>
     <file>max.gif</file>
     <file>min.gif</file>

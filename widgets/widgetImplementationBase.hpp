@@ -22,7 +22,7 @@ public:
 	typedef std::vector<boost::shared_ptr<ImageHolder> > ImageVectorType;
 	virtual QWidgetImplementationBase *createSharedWidget( QWidget *parent, PlaneOrientation orienation ) = 0;
 
-	virtual void updateScene( bool center ) = 0;
+	virtual void updateScene() = 0;
 	virtual void setZoom( float zoom ) = 0;
 	virtual void addImage( const boost::shared_ptr<ImageHolder> image ) = 0;
 	virtual bool removeImage( const boost::shared_ptr< ImageHolder > image ) = 0;

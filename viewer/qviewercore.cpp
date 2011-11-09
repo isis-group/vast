@@ -106,9 +106,9 @@ void QViewerCore::settingsChanged()
 	
 }
 
-void QViewerCore::updateScene( bool center )
+void QViewerCore::updateScene()
 {
-	emitUpdateScene( center );
+	emitUpdateScene();
 }
 
 void QViewerCore::zoomChanged( float zoomFactor )
@@ -173,7 +173,6 @@ void QViewerCore::openPath(QStringList fileList, ImageHolder::ImageType imageTyp
 	if( !fileList.empty() ) {
 	QDir dir;
 	setCurrentPath( dir.absoluteFilePath( fileList.front() ).toStdString() );
-	bool isFirstImage = getDataContainer().size() == 0;
 	std::list<data::Image> imgList;
 	util::slist pathList;
 	if( ( getDataContainer().size() + fileList.size() ) > 1 ) {
@@ -216,7 +215,7 @@ void QViewerCore::openPath(QStringList fileList, ImageHolder::ImageType imageTyp
 	getUI()->setShowWorkingLabel("", false );
 	getUI()->rearrangeViewWidgets();
 	getUI()->refreshUI();
-	updateScene( isFirstImage );
+	updateScene( );
 	}
 }
 
