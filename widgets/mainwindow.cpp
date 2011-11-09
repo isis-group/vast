@@ -226,6 +226,7 @@ void MainWindow::loadSettings()
 	m_ViewerCore->getOptionMap()->setPropertyAs<bool>("showLabels", m_ViewerCore->getSettings()->value("showLabels", false).toBool() );
 	m_ViewerCore->getOptionMap()->setPropertyAs<uint16_t>("minMaxSearchRadius", 
 		m_ViewerCore->getSettings()->value("minMaxSearchRadius", m_ViewerCore->getOptionMap()->getPropertyAs<uint16_t>("minMaxSearchRadius") ).toInt() );
+	m_ViewerCore->getOptionMap()->setPropertyAs<bool>("showAdvancedFileDialogOptions", m_ViewerCore->getSettings()->value("showAdvancedFileDialogOptions", false).toBool() );
 	m_ViewerCore->getSettings()->endGroup();
 }
 
@@ -255,6 +256,7 @@ void MainWindow::saveSettings()
 	m_ViewerCore->getSettings()->setValue( "propagateZooming", m_UI.actionPropagate_Zooming->isChecked() );
 	m_ViewerCore->getSettings()->setValue( "minMaxSearchRadius", m_RadiusSpin->value() );
 	m_ViewerCore->getSettings()->setValue( "showLabels", m_UI.actionShow_Labels->isChecked() );
+	m_ViewerCore->getSettings()->setValue( "showAdvancedFileDialogOptions", m_ViewerCore->getOptionMap()->getPropertyAs<bool>("showAdvancedFileDialogOptions") );
 	m_ViewerCore->getSettings()->endGroup();
 	m_ViewerCore->getSettings()->sync();
 }

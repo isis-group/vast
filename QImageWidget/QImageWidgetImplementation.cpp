@@ -148,11 +148,19 @@ void QImageWidgetImplementation::paintEvent( QPaintEvent *event )
 
 		paintCrosshair();
 		if( m_ShowScalingOffset ) {
+			m_Painter->resetMatrix();
 			m_Painter->setFont( QFont("Chicago", 10) );
 			m_Painter->setPen( Qt::white );
 			std::stringstream scalingOffset;
-			scalingOffset << "Scaling: " << m_ViewerCore->getCurrentImage()->getPropMap().getPropertyAs<double>("scaling")
-				<< " Offset: " << m_ViewerCore->getCurrentImage()->getPropMap().getPropertyAs<double>("offset");
+			boost::shared_ptr<ImageHolder> image;
+			if( std::find(m_ImageVector.begin(), m_ImageVector.end(), m_ViewerCore->getCurrentImage()) != m_ImageVector.end() )
+			{
+				image = m_ViewerCore->getCurrentImage();
+			} else {
+				image = m_ImageVector.front();
+			}
+			scalingOffset << "Scaling: " << image->getPropMap().getPropertyAs<double>("scaling")
+				<< " Offset: " << image->getPropMap().getPropertyAs<double>("offset");
 			m_Painter->drawText( 10, 30, scalingOffset.str().c_str() );
 		}
 		m_ShowScalingOffset = false;
@@ -248,11 +256,17 @@ void QImageWidgetImplementation::mouseMoveEvent( QMouseEvent *e )
 {
 	if(m_RightMouseButtonPressed && m_LeftMouseButtonPressed )
 	{
-		boost::shared_ptr<ImageHolder> image = m_ViewerCore->getCurrentImage();
+		boost::shared_ptr<ImageHolder> image;
+		if( std::find(m_ImageVector.begin(), m_ImageVector.end(), m_ViewerCore->getCurrentImage()) != m_ImageVector.end() )
+		{
+			image = m_ViewerCore->getCurrentImage();
+		} else {
+			image = m_ImageVector.front();
+		}
 		const double offset =  image->getMinMax().first->as<double>() + ((height()/2 - e->y()) / (float)height()) * image->getPropMap().getPropertyAs<double>("extent");
 		const double scaling = (float)width() / (float)(width() - e->x()) / 2.0;
-		m_ViewerCore->getCurrentImage()->getPropMap().setPropertyAs<double>("offset", offset);
-		m_ViewerCore->getCurrentImage()->getPropMap().setPropertyAs<double>("scaling", scaling);
+		image->getPropMap().setPropertyAs<double>("offset", offset);
+		image->getPropMap().setPropertyAs<double>("scaling", scaling);
 		m_ShowScalingOffset = true;
 		m_ViewerCore->updateScene();
 	}else if( m_RightMouseButtonPressed || m_LeftMouseButtonPressed ) {

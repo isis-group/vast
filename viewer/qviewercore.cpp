@@ -168,7 +168,7 @@ bool QViewerCore::attachImageToWidget( boost::shared_ptr<ImageHolder> image, QWi
 	return true;
 }
 
-void QViewerCore::openPath(QStringList fileList, ImageHolder::ImageType imageType, const std::string& rdialect, const std::string& rf)
+void QViewerCore::openPath(QStringList fileList, ImageHolder::ImageType imageType, const std::string& rdialect, const std::string& rf, bool distribute )
 {
 	if( !fileList.empty() ) {
 	QDir dir;
@@ -182,17 +182,27 @@ void QViewerCore::openPath(QStringList fileList, ImageHolder::ImageType imageTyp
 		getUI()->setViewWidgetArrangement( isis::viewer::UICore::Default );
 	}
 	
-	UICore::ViewWidgetEnsembleType ensemble = getUI()->createViewWidgetEnsemble( "" );
+	UICore::ViewWidgetEnsembleType ensemble;
+	if( !distribute ) {
+		ensemble = getUI()->createViewWidgetEnsemble( "" );
+	}
 	BOOST_FOREACH( QStringList::const_reference filename, fileList ) {
 		std::stringstream msg;
 		boost::filesystem::path p( filename.toStdString() );
-		msg << "Loading image " << p.filename() << "...";
+		if( boost::filesystem::is_directory( p ) ) {
+			msg << "Loading images from directory \"" << p.filename() << "\"...";
+		} else {
+			msg << "Loading image \"" << p.filename() << "\"...";
+		}
 		getUI()->setShowWorkingLabel( msg.str() );
 		std::list<data::Image> tempImgList = isis::data::IOFactory::load( filename.toStdString() , rf, rdialect );
 		pathList.push_back( filename.toStdString() );
 		BOOST_FOREACH( std::list<data::Image>::const_reference image, tempImgList ) {
 			imgList.push_back( image );
 			boost::shared_ptr<ImageHolder> imageHolder = addImage( image, imageType );
+			if( distribute ) {
+				ensemble = getUI()->createViewWidgetEnsemble( "" );	
+			} 
 			attachImageToWidget( imageHolder, ensemble[0].widgetImplementation );
 			attachImageToWidget( imageHolder, ensemble[1].widgetImplementation );
 			attachImageToWidget( imageHolder, ensemble[2].widgetImplementation );

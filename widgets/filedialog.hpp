@@ -22,7 +22,7 @@ public:
 	
 public Q_SLOTS:
 	void browse();
-	void parsePath(QString path);
+	void parsePath();
 	void openPath();
 	void saveToFile();
 	void imageTypeChanged(int);

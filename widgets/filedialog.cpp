@@ -9,11 +9,14 @@ isis::viewer::widget::FileDialog::FileDialog(QWidget* parent, QViewerCore *core 
 	
 {
 	m_Interface.setupUi(this);
-
+	std::stringstream fileFormats;
+	fileFormats << "Image files (" << getFileFormatsAsString(isis::image_io::FileFormat::read_only, std::string( "*." ) ) << ")";
+	m_FileDialog.setNameFilter( fileFormats.str().c_str());
+	m_Interface.distributeCheck->setEnabled( false );
 	m_Interface.typeComboBox->addItem( "structural image" );
 	m_Interface.typeComboBox->addItem( "zmap" );
 	connect( m_Interface.browseButton, SIGNAL( clicked()), this, SLOT( browse()));
-	connect( m_Interface.fileDirEdit, SIGNAL(textChanged(QString)), SLOT( parsePath(QString)));
+	connect( m_Interface.fileDirEdit, SIGNAL(textChanged(QString)),this, SLOT( parsePath()));
 	connect( m_Interface.advancedOptionsCheck, SIGNAL(clicked(bool)), m_Interface.advancedOptionsFrame, SLOT( setVisible(bool)));
 	connect( m_Interface.openSaveButton, SIGNAL( clicked()), this, SLOT( openPath()));
 	connect( m_Interface.cancelButton, SIGNAL( clicked()), this, SLOT( close()));
@@ -21,6 +24,7 @@ isis::viewer::widget::FileDialog::FileDialog(QWidget* parent, QViewerCore *core 
 	connect( m_Interface.dirRadio, SIGNAL(clicked()), this, SLOT( modeChanged())) ;
 	connect( m_Interface.typeComboBox, SIGNAL( currentIndexChanged(int)), this, SLOT(imageTypeChanged(int)));
 	connect( m_Interface.rfComboBox, SIGNAL( currentIndexChanged(int)), this, SLOT( rfChanged(int)));
+	
 }
 
 void isis::viewer::widget::FileDialog::showEvent(QShowEvent* )
@@ -82,14 +86,14 @@ void isis::viewer::widget::FileDialog::setup()
 }
 
 
-void isis::viewer::widget::FileDialog::parsePath(QString /*path*/)
+void isis::viewer::widget::FileDialog::parsePath()
 {
 	unsigned short validFiles = 0;
 	QPalette pal;
 	pal.setColor(QPalette::Text, Qt::black );
 	if( m_Interface.fileDirEdit->count() > 1 ) {
+		m_PathList.clear();
 		for( unsigned short i = 0; i < m_Interface.fileDirEdit->count(); i++ ) {
-			m_PathList.clear();
 			if( checkIfPathIsValid( m_Interface.fileDirEdit->itemText(i), validFiles ) ) {
 				m_PathList.push_back( m_Interface.fileDirEdit->itemText(i) );
 			}	
@@ -111,6 +115,11 @@ void isis::viewer::widget::FileDialog::parsePath(QString /*path*/)
 	ss << "Open " << validFiles << " images";
 	m_Interface.openSaveButton->setText( ss.str().c_str() );
 	m_Interface.fileDirEdit->setPalette(pal);	
+	if( validFiles > 1 ) {
+		m_Interface.distributeCheck->setEnabled(true);
+	}else {
+		m_Interface.distributeCheck->setEnabled( false );
+	}
 }
 
 bool isis::viewer::widget::FileDialog::checkIfPathIsValid(QString path, unsigned short &validFiles, bool acceptNoSuffix)
@@ -149,34 +158,29 @@ bool isis::viewer::widget::FileDialog::checkIfPathIsValid(QString path, unsigned
 
 void isis::viewer::widget::FileDialog::browse()
 {
+	boost::filesystem::path p( m_Interface.fileDirEdit->currentText().toStdString() );
+	if ( boost::filesystem::is_directory(  boost::filesystem::path(p.directory_string()) ) ) {
+		m_FileDialog.setDirectory( p.directory_string().c_str() );
+	}
 	QStringList files;
 	if( m_FileDialog.exec() ) {
 		files = m_FileDialog.selectedFiles();
 	}
 	m_Interface.fileDirEdit->clear();
-	if( files.size() > 1 ) {
-		m_Interface.fileDirEdit->clear();
-		m_PathList.clear();
-		unsigned short validImages=0;
-		BOOST_FOREACH( QStringList::reference file, files ) {
-			if( checkIfPathIsValid( file, validImages ) ) {
-				m_Interface.fileDirEdit->addItem( file );
-				m_PathList.push_back( file );
-			}
-		}
-	} else if ( files.size() ) {
-		m_PathList.clear();
-		m_PathList.push_back( files.first() );
-		m_Interface.fileDirEdit->addItem( files.first() );
+	m_PathList.clear();
+	disconnect( m_Interface.fileDirEdit, SIGNAL(textChanged(QString)), this, SLOT( parsePath()));
+	BOOST_FOREACH( QStringList::reference file, files ) {
+		m_Interface.fileDirEdit->addItem( file );
 	}
-
+	connect( m_Interface.fileDirEdit, SIGNAL(textChanged(QString)),this, SLOT( parsePath()));
+	parsePath();
 }
 
 void isis::viewer::widget::FileDialog::openPath()
 {
 //TODO check if valid
 	close();
-	m_ViewerCore->openPath( m_PathList, m_ImageType, m_Dialect, m_Suffix );
+	m_ViewerCore->openPath( m_PathList, m_ImageType, m_Dialect, m_Suffix, m_Interface.distributeCheck->isChecked() );
 }
 
 void isis::viewer::widget::FileDialog::saveToFile()
@@ -186,11 +190,7 @@ void isis::viewer::widget::FileDialog::saveToFile()
 
 void isis::viewer::widget::FileDialog::closeEvent(QCloseEvent* )
 {
-	if( m_Interface.advancedOptionsCheck->checkState() == Qt::Checked ) {
-		m_ViewerCore->getOptionMap()->setPropertyAs<bool>("showAdvancedFileDialogOptions", true );
-	}else {
-		m_ViewerCore->getOptionMap()->setPropertyAs<bool>("showAdvancedFileDialogOptions", false );
-	}
+	m_ViewerCore->getOptionMap()->setPropertyAs<bool>("showAdvancedFileDialogOptions", m_Interface.advancedOptionsCheck->isChecked() );
 }
 
 void isis::viewer::widget::FileDialog::modeChanged()
