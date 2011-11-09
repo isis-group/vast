@@ -80,10 +80,8 @@ void QViewerCore::setImageList( const std::list< data::Image > imageList, const 
 }
 
 void QViewerCore::setShowLabels( bool l )
-{
-	getSettings()->beginGroup( "UserProfile" );
-	getSettings()->setValue("showLabels",l);
-	getSettings()->endGroup();
+{	
+	getOptionMap()->setPropertyAs<bool>("showLabels", l);
 	emitShowLabels( l );
 	updateScene();
 }
@@ -100,7 +98,7 @@ void QViewerCore::settingsChanged()
 	BOOST_FOREACH( UICore::WidgetMap::const_reference widget, getUI()->getWidgets() ) {
 		widget.first->setInterpolationType( static_cast<InterpolationType>( getSettings()->value( "interpolationType", 0 ).toUInt() ) );
 	}
-	emitShowLabels( getSettings()->value("showLabels", false).toBool());
+	emitShowLabels( getOptionMap()->getPropertyAs<bool>("showLabels"));
 	m_UI->getMainWindow()->getUI().actionPropagate_Zooming->setChecked( getOptionMap()->getPropertyAs<bool>("propagateZooming") );
 	getSettings()->endGroup();
 	

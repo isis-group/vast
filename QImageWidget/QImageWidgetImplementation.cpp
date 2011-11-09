@@ -54,6 +54,7 @@ void QImageWidgetImplementation::commonInit()
 	m_WidgetProperties.setPropertyAs<float>( "zoomFactorIn", 1.5 );
 	m_WidgetProperties.setPropertyAs<float>( "zoomFactorOut", 1.5 );
 	m_WidgetProperties.setPropertyAs<float>( "maxZoom", 20 );
+	m_WidgetProperties.setPropertyAs<float>( "minZoom", 1.0);
 
 	m_WidgetProperties.setPropertyAs<float>( "translationX", 0 );
 	m_WidgetProperties.setPropertyAs<float>( "translationY", 0 );
@@ -95,9 +96,9 @@ boost::shared_ptr< ImageHolder > QImageWidgetImplementation::getWidgetSpecCurren
 
 void QImageWidgetImplementation::setZoom( float zoom )
 {
-	if( zoom <= m_WidgetProperties.getPropertyAs<float>( "maxZoom" ) ) {
+	if( zoom <= m_WidgetProperties.getPropertyAs<float>( "maxZoom" ) && zoom >= m_WidgetProperties.getPropertyAs<float>( "minZoom" ) ) {
 		m_WidgetProperties.setPropertyAs<bool>( "zoomEvent", true );
-		m_WidgetProperties.setPropertyAs<float>( "currentZoom", zoom >= 1.0 ? zoom : 1.0 );
+		m_WidgetProperties.setPropertyAs<float>( "currentZoom", zoom );
 		update();
 		m_WidgetProperties.setPropertyAs<bool>( "zoomEvent", false );
 	}

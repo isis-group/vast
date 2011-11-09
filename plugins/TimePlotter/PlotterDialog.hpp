@@ -29,17 +29,13 @@ public:
 		plot->setAxisTitle( 2, tr( "Timestep" ) );
 		plot->setAxisTitle( 0, tr( "Intensity" ) );
 		plot->setBackgroundRole( QPalette::Light );
-		connect( m_Core, SIGNAL( emitPhysicalCoordsChanged( util::fvector4 ) ), this, ( SLOT( refresh( util::fvector4 ) ) ) );
-		if( m_Core->getCurrentImage().get() ) {
-			refresh( m_Core->getCurrentImage()->getPropMap().getPropertyAs<util::fvector4>( "physicalCoords" ) );
-		}
+		connect( m_Core, SIGNAL( emitVoxelCoordChanged(util::ivector4)), this, ( SLOT( refresh( util::ivector4 ) ) ) );
 
 	};
 public Q_SLOTS:
-	virtual void refresh( util::fvector4 physCoords ) {
+	virtual void refresh( util::ivector4 voxCoords ) {
 		if( !ui.checkLock->isChecked() ) {
 			if( m_Core->getCurrentImage()->getImageSize()[3] > 1 && m_Core->getCurrentImage()->getPropMap().getPropertyAs<bool>( "isVisible" ) ) {
-				util::ivector4 voxCoords = m_Core->getCurrentImage()->getISISImage()->getIndexFromPhysicalCoords( physCoords );
 				std::stringstream title;
 				std::stringstream coordsAsString;
 				title << "Timecourse for " << m_Core->getCurrentImage()->getFileNames().front();
@@ -52,7 +48,7 @@ public Q_SLOTS:
 					repTime = ( float )m_Core->getCurrentImage()->getISISImage()->getPropertyAs<uint16_t>( "repetitionTime" ) / 1000;
 					plot->setAxisTitle( 2, tr( "t / s" ) );
 				} else {
-					plot->setAxisTitle( 2, tr( "Repetition (missint TR)" ) );
+					plot->setAxisTitle( 2, tr( "Repetition (missing TR)" ) );
 				}
 
 				QVector<double> timeSteps;
@@ -61,7 +57,7 @@ public Q_SLOTS:
 
 				for ( size_t t = 0; t < m_Core->getCurrentImage()->getImageSize()[3]; t++ ) {
 					timeSteps.push_back( t * repTime );
-
+					
 					switch( m_Core->getCurrentImage()->getISISImage()->getChunk( voxCoords[0], voxCoords[1], voxCoords[2], t ).getTypeID() ) {
 					case ValuePtr<int8_t>::staticID:
 						fillVector<int8_t>( intensityValues, t, voxCoords );
