@@ -30,7 +30,9 @@ public:
 		plot->setAxisTitle( 0, tr( "Intensity" ) );
 		plot->setBackgroundRole( QPalette::Light );
 		connect( m_Core, SIGNAL( emitPhysicalCoordsChanged( util::fvector4 ) ), this, ( SLOT( refresh( util::fvector4 ) ) ) );
-		refresh( m_Core->getCurrentImage()->getPropMap().getPropertyAs<util::fvector4>( "physicalCoords" ) );
+		if( m_Core->getCurrentImage().get() ) {
+			refresh( m_Core->getCurrentImage()->getPropMap().getPropertyAs<util::fvector4>( "physicalCoords" ) );
+		}
 
 	};
 public Q_SLOTS:

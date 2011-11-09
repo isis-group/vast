@@ -263,7 +263,7 @@ void QImageWidgetImplementation::mouseMoveEvent( QMouseEvent *e )
 		} else {
 			image = m_ImageVector.front();
 		}
-		const double offset =  image->getMinMax().first->as<double>() + ((height()/2 - e->y()) / (float)height()) * image->getPropMap().getPropertyAs<double>("extent");
+		const double offset =  (height() - e->y()) / (float)height() * image->getPropMap().getPropertyAs<double>("extent");
 		const double scaling = (float)width() / (float)(width() - e->x()) / 2.0;
 		image->getPropMap().setPropertyAs<double>("offset", offset);
 		image->getPropMap().setPropertyAs<double>("scaling", scaling);
