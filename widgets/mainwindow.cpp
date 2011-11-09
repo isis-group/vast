@@ -17,14 +17,14 @@ MainWindow::MainWindow( QViewerCore *core ) :
 	m_ScalingWidget( new widget::ScalingWidget( this, core ) ),
 	m_RadiusSpin(new QSpinBox(this)),
 	m_LogButton( new QPushButton( this ) ),
-	m_LoggingDialog( new widget::LoggingDialog( this, core ) )
+	m_LoggingDialog( new widget::LoggingDialog( this, core ) ),
+	m_FileDialog( new widget::FileDialog( this, core ) )
 {
 	m_UI.setupUi( this );
 	loadSettings();
-	connect( m_UI.action_Open_image, SIGNAL( triggered() ), this, SLOT( openImage() ) );
 	connect( m_UI.action_Save_Image, SIGNAL( triggered() ), this, SLOT( saveImage() ) );
-	connect( m_UI.actionSave_Image, SIGNAL( triggered() ), this, SLOT( saveImageAs() ) );
-	connect( m_UI.actionOpen_directory, SIGNAL( triggered() ), this, SLOT( openDir() ) );
+	connect( m_UI.actionSave_Image, SIGNAL( triggered()), this, SLOT( saveImageAs() ) );
+	connect( m_UI.actionOpen_image, SIGNAL( triggered()), this, SLOT( openImage()));
 	connect( m_UI.action_Preferences, SIGNAL( triggered() ), this, SLOT( showPreferences() ) );
 	connect( m_UI.actionFind_Global_Min, SIGNAL( triggered()), this, SLOT( findGlobalMin()));
 	connect( m_UI.actionFind_Global_Max, SIGNAL( triggered()), this, SLOT( findGlobalMax()));
@@ -41,8 +41,7 @@ MainWindow::MainWindow( QViewerCore *core ) :
 	m_Toolbar->setMinimumHeight( 20 );
 	m_Toolbar->setMaximumHeight( 30 );
 	addToolBar( Qt::TopToolBarArea, m_Toolbar );
-	m_Toolbar->addAction( m_UI.action_Open_image );
-	m_Toolbar->addAction( m_UI.actionOpen_directory );
+	m_Toolbar->addAction( m_UI.actionOpen_image );
 	m_Toolbar->addAction( m_UI.action_Save_Image );
 	m_Toolbar->addAction( m_UI.actionSave_Image );
 	m_Toolbar->addSeparator();
@@ -66,8 +65,7 @@ MainWindow::MainWindow( QViewerCore *core ) :
 	m_WorkingInformationLabel = new QLabel( this );
 	m_WorkingInformationLabel->setFrameShape(QFrame::Box);
 	m_WorkingInformationLabel->setAlignment(Qt::AlignCenter);
-	m_WorkingInformationLabel->setFixedSize(200,100);
-	m_WorkingInformationLabel->setFont( QFont("Times", 20 ) );
+	m_WorkingInformationLabel->setFont( QFont("Times", 15 ) );
 	m_WorkingInformationLabel->setVisible( false );
 
 }
@@ -116,68 +114,12 @@ void MainWindow::spinRadiusChanged(int radius)
 
 void MainWindow::openImage()
 {
-	ImageHolder::ImageType type = ImageHolder::anatomical_image;
-	std::string title( "Open Image" );
-	std::stringstream fileFormats;
-	fileFormats << "Image files (" << getFileFormatsAsString(isis::image_io::FileFormat::read_only, std::string( "*." ) ) << ")";
-	QStringList filenames = QFileDialog::getOpenFileNames( this,
-							tr( title.c_str() ),
-							m_ViewerCore->getCurrentPath().c_str(),
-							tr( fileFormats.str().c_str() ) );
+	
+	m_FileDialog->setMode( isis::viewer::widget::FileDialog::OPEN_FILE );
+	m_FileDialog->show();
+	
 
-	if( !filenames.empty() ) {
-		QDir dir;
-		m_ViewerCore->setCurrentPath( dir.absoluteFilePath( filenames.front() ).toStdString() );
-		bool isFirstImage = m_ViewerCore->getDataContainer().size() == 0;
-		std::list<data::Image> imgList;
-		util::slist pathList;
-
-		if( ( m_ViewerCore->getDataContainer().size() + filenames.size() ) > 1 ) {
-			m_ViewerCore->getUI()->setViewWidgetArrangement( isis::viewer::UICore::InRow );
-		} else {
-			m_ViewerCore->getUI()->setViewWidgetArrangement( isis::viewer::UICore::Default );
-		}
-
-		UICore::ViewWidgetEnsembleType ensemble = m_ViewerCore->getUI()->createViewWidgetEnsemble( "" );
-		BOOST_FOREACH( QStringList::const_reference filename, filenames ) {
-
-			std::list<data::Image> tempImgList = isis::data::IOFactory::load( filename.toStdString() , "", "" );
-			pathList.push_back( filename.toStdString() );
-			BOOST_FOREACH( std::list<data::Image>::const_reference image, tempImgList ) {
-				imgList.push_back( image );
-				boost::shared_ptr<ImageHolder> imageHolder = m_ViewerCore->addImage( image, ImageHolder::anatomical_image );
-				m_ViewerCore->attachImageToWidget( imageHolder, ensemble[0].widgetImplementation );
-				m_ViewerCore->attachImageToWidget( imageHolder, ensemble[1].widgetImplementation );
-				m_ViewerCore->attachImageToWidget( imageHolder, ensemble[2].widgetImplementation );
-			}
-		}
-		m_ViewerCore->getUI()->rearrangeViewWidgets();
-		m_ViewerCore->getUI()->refreshUI();
-		m_ViewerCore->updateScene( isFirstImage );
-	}
 }
-void MainWindow::openDir()
-{
-	QString dir = QFileDialog::getExistingDirectory( this, tr( "Open directory" ), m_ViewerCore->getCurrentPath().c_str() );
-
-	if( dir.size() ) {
-		m_ViewerCore->setCurrentPath( dir.toStdString() );
-		bool isFirstImage = m_ViewerCore->getDataContainer().size() == 0;
-
-		std::list<data::Image> imageList = data::IOFactory::load( dir.toStdString(), "", "" );
-
-		if( imageList.size() ) {
-			BOOST_FOREACH( std::list<data::Image>::const_reference image, imageList )
-			{
-				m_ViewerCore->getUI()->createViewWidgetEnsemble("",	m_ViewerCore->addImage( image, ImageHolder::anatomical_image ) );
-			}
-			m_ViewerCore->getUI()->refreshUI();
-			m_ViewerCore->updateScene();
-		}
-
-	}
-}
-
 
 void MainWindow::saveImage()
 {

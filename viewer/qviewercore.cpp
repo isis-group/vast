@@ -168,6 +168,44 @@ bool QViewerCore::attachImageToWidget( boost::shared_ptr<ImageHolder> image, QWi
 	return true;
 }
 
+void QViewerCore::openPath(QStringList fileList, ImageHolder::ImageType imageType, const std::string& rdialect, const std::string& rf)
+{
+	if( !fileList.empty() ) {
+	QDir dir;
+	setCurrentPath( dir.absoluteFilePath( fileList.front() ).toStdString() );
+	bool isFirstImage = getDataContainer().size() == 0;
+	std::list<data::Image> imgList;
+	util::slist pathList;
+	if( ( getDataContainer().size() + fileList.size() ) > 1 ) {
+		getUI()->setViewWidgetArrangement( isis::viewer::UICore::InRow );
+	} else {
+		getUI()->setViewWidgetArrangement( isis::viewer::UICore::Default );
+	}
+	
+	UICore::ViewWidgetEnsembleType ensemble = getUI()->createViewWidgetEnsemble( "" );
+	BOOST_FOREACH( QStringList::const_reference filename, fileList ) {
+		std::stringstream msg;
+		boost::filesystem::path p( filename.toStdString() );
+		msg << "Loading image " << p.filename() << "...";
+		getUI()->setShowWorkingLabel( msg.str() );
+		std::list<data::Image> tempImgList = isis::data::IOFactory::load( filename.toStdString() , rf, rdialect );
+		pathList.push_back( filename.toStdString() );
+		BOOST_FOREACH( std::list<data::Image>::const_reference image, tempImgList ) {
+			imgList.push_back( image );
+			boost::shared_ptr<ImageHolder> imageHolder = addImage( image, imageType );
+			attachImageToWidget( imageHolder, ensemble[0].widgetImplementation );
+			attachImageToWidget( imageHolder, ensemble[1].widgetImplementation );
+			attachImageToWidget( imageHolder, ensemble[2].widgetImplementation );
+		}
+	}
+	getUI()->setShowWorkingLabel("", false );
+	getUI()->rearrangeViewWidgets();
+	getUI()->refreshUI();
+	updateScene( isFirstImage );
+	}
+}
+
+
 
 
 }

@@ -9,6 +9,7 @@
 #include <CoreUtils/progressfeedback.hpp>
 #include "scalingWidget.hpp"
 #include "loggingDialog.hpp"
+#include "filedialog.hpp"
 
 namespace isis
 {
@@ -19,6 +20,7 @@ namespace widget
 class PreferencesDialog;
 class ScalingWidget;
 class LoggingDialog;
+class FileDialog;
 }
 
 class MainWindow : public QMainWindow
@@ -39,7 +41,6 @@ public:
 public Q_SLOTS:
 	void showPreferences();
 	void openImage();
-	void openDir();
 	void saveImage();
 	void saveImageAs();
 	void loadSettings();
@@ -61,6 +62,7 @@ private:
 	QToolBar *m_Toolbar;
 	isis::viewer::widget::PreferencesDialog *m_PreferencesDialog;
 	isis::viewer::widget::LoggingDialog *m_LoggingDialog;
+	isis::viewer::widget::FileDialog *m_FileDialog;
 
 	widget::ScalingWidget *m_ScalingWidget;
 	QSpinBox *m_RadiusSpin;

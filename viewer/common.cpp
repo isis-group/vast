@@ -27,6 +27,17 @@ std::string getFileFormatsAsString( image_io::FileFormat::io_modes mode, const s
 
 }
 
+std::list<std::string> getFileFormatsAsList( image_io::FileFormat::io_modes mode ) 
+{
+	std::list<std::string> retList;
+	BOOST_FOREACH( isis::data::IOFactory::FileFormatList::const_reference formatList, isis::data::IOFactory::getFormats() ) {
+		BOOST_FOREACH( std::list<util::istring>::const_reference format, formatList->getSuffixes(mode) ) {
+			retList.push_back(format.c_str());
+		}
+	}
+	return retList;
+}
+
 util::ivector4 get32BitAlignedSize( const util::ivector4 &origSize )
 {
 	util::ivector4 retSize;

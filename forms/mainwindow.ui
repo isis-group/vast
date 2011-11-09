@@ -95,9 +95,7 @@
     <property name="title">
      <string>&amp;File</string>
     </property>
-    <addaction name="action_Open_image"/>
-    <addaction name="actionOpen_directory"/>
-    <addaction name="actionOpen_Zmap"/>
+    <addaction name="actionOpen_image"/>
     <addaction name="separator"/>
     <addaction name="action_Save_Image"/>
     <addaction name="actionSave_Image"/>
@@ -126,40 +124,16 @@
    <addaction name="menu_Tools"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
-  <action name="action_Open_image">
-   <property name="icon">
-    <iconset resource="../resources/viewer.qrc">
-     <normaloff>:/common/open_image.gif</normaloff>:/common/open_image.gif</iconset>
-   </property>
-   <property name="text">
-    <string>&amp;Open Image</string>
-   </property>
-   <property name="shortcut">
-    <string>O, I</string>
-   </property>
-  </action>
-  <action name="actionOpen_directory">
+  <action name="actionOpen_image">
    <property name="icon">
     <iconset resource="../resources/viewer.qrc">
      <normaloff>:/common/openimage.png</normaloff>:/common/openimage.png</iconset>
    </property>
    <property name="text">
-    <string>Open &amp;Directory</string>
+    <string>&amp;Open Image(s)...</string>
    </property>
    <property name="shortcut">
-    <string>O, D</string>
-   </property>
-  </action>
-  <action name="actionOpen_Zmap">
-   <property name="icon">
-    <iconset resource="../resources/viewer.qrc">
-     <normaloff>:/common/openzmap.gif</normaloff>:/common/openzmap.gif</iconset>
-   </property>
-   <property name="text">
-    <string>Open &amp;Zmap</string>
-   </property>
-   <property name="shortcut">
-    <string>O, Z</string>
+    <string>O, I</string>
    </property>
   </action>
   <action name="action_Save_Image">

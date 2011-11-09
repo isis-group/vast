@@ -61,6 +61,7 @@ public Q_SLOTS:
 	virtual void updateScene( bool center = false );
 	virtual bool callPlugin( QString name );
 	virtual void receiveMessage( qt4::QMessage message );
+	virtual void openPath( QStringList fileList, ImageHolder::ImageType imageType, const std::string &rdialect = "", const std::string &rf = "" );
 
 Q_SIGNALS:
 	void emitZoomChanged( float zoom );
