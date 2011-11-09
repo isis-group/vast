@@ -25,7 +25,8 @@ MainWindow::MainWindow( QViewerCore *core ) :
 	loadSettings();
 	m_ActionReset_Scaling = new QAction(this);
 	m_ActionReset_Scaling->setShortcut(QKeySequence(tr("Ctrl+R, Ctrl+S") ) );
-	m_ActionReset_Scaling->setEnabled(true);
+	addAction(m_ActionReset_Scaling);
+	
 	connect( m_UI.action_Save_Image, SIGNAL( triggered() ), this, SLOT( saveImage() ) );
 	connect( m_UI.actionSave_Image, SIGNAL( triggered()), this, SLOT( saveImageAs() ) );
 	connect( m_UI.actionOpen_image, SIGNAL( triggered()), this, SLOT( openImage()));

@@ -22,7 +22,7 @@ public:
 	static util::ivector4 getGlobalMin( const boost::shared_ptr<ImageHolder> image, const util::ivector4 &startPos, const unsigned short &radius );
 	static util::ivector4 getGlobalMax( const boost::shared_ptr<ImageHolder> image, const util::ivector4 &startPos, const unsigned short &radius );
 	
-	static void setProgressFeedBack( boost::shared_ptr< QProgressFeedback > progressFeedback );
+	static void setProgressFeedBack( boost::shared_ptr< QProgressFeedback > progressFeedback );	
 	
 private:
 	
