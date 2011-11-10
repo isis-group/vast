@@ -17,26 +17,27 @@ int main( int argc, char *argv[] )
 
 	using namespace isis;
 	using namespace viewer;
-	qt4::QDefaultMessagePrint *viewer_handler = new qt4::QDefaultMessagePrint(info);
-	qt4::QDefaultMessagePrint *isis_handler = new qt4::QDefaultMessagePrint(verbose_info);
-	qt4::QDefaultMessagePrint *imageio_handler = new qt4::QDefaultMessagePrint(verbose_info);
-	util::_internal::Log<viewer::Runtime>::setHandler(boost::shared_ptr<qt4::QDefaultMessagePrint>( viewer_handler ));
-	util::_internal::Log<data::Runtime>::setHandler(boost::shared_ptr<qt4::QDefaultMessagePrint>( isis_handler));
-	util::_internal::Log<image_io::Runtime>::setHandler(boost::shared_ptr<qt4::QDefaultMessagePrint>( imageio_handler));
-	
+	qt4::QDefaultMessagePrint *viewer_handler = new qt4::QDefaultMessagePrint( info );
+	qt4::QDefaultMessagePrint *isis_handler = new qt4::QDefaultMessagePrint( verbose_info );
+	qt4::QDefaultMessagePrint *imageio_handler = new qt4::QDefaultMessagePrint( verbose_info );
+	util::_internal::Log<viewer::Runtime>::setHandler( boost::shared_ptr<qt4::QDefaultMessagePrint>( viewer_handler ) );
+	util::_internal::Log<data::Runtime>::setHandler( boost::shared_ptr<qt4::QDefaultMessagePrint>( isis_handler ) );
+	util::_internal::Log<image_io::Runtime>::setHandler( boost::shared_ptr<qt4::QDefaultMessagePrint>( imageio_handler ) );
+
 	std::string appName = "vast";
 	std::string orgName = "cbs.mpg.de";
 
 	util::Selection dbg_levels( "error,warning,info,verbose_info" );
 	dbg_levels.set( "warning" );
-	
+
 	const char *graphics_system = getenv( "VAST_GRAPHICS_SYSTEM" );
-	if( graphics_system && (!strcmp( graphics_system, "raster" ) || !strcmp( graphics_system, "opengl") || !strcmp(graphics_system, "native")))
-	{
+
+	if( graphics_system && ( !strcmp( graphics_system, "raster" ) || !strcmp( graphics_system, "opengl" ) || !strcmp( graphics_system, "native" ) ) ) {
 		QApplication::setGraphicsSystem( graphics_system );
 	} else {
 		QApplication::setGraphicsSystem( "raster" );
 	}
+
 	qt4::IOQtApplication app( appName.c_str(), false, false );
 
 	app.parameters["in"] = util::slist();
@@ -67,20 +68,20 @@ int main( int argc, char *argv[] )
 	QViewerCore *core = new QViewerCore( appName, orgName );
 	core->addMessageHandler( viewer_handler );
 	core->addMessageHandler( isis_handler );
-	core->addMessageHandler( imageio_handler);
+	core->addMessageHandler( imageio_handler );
 	std::cout << "v" << core->getVersion() << " ( isis core: " << app.getCoreVersion() << " )" << std::endl;
 	//scan for plugins and hand them to the core
 	core->addPlugins( plugin::PluginLoader::get().getPlugins() );
 	core->getUI()->reloadPluginsToGUI();
 
-	app.setLog<ViewerLog>( static_cast<LogLevel>( static_cast <unsigned short>(app.parameters["dViewer"]->as<util::Selection>()) ));
-	app.setLog<ViewerDebug>( static_cast<LogLevel>( static_cast <unsigned short>(app.parameters["dViewer"]->as<util::Selection>()) ) );
+	app.setLog<ViewerLog>( static_cast<LogLevel>( static_cast <unsigned short>( app.parameters["dViewer"]->as<util::Selection>() ) ) );
+	app.setLog<ViewerDebug>( static_cast<LogLevel>( static_cast <unsigned short>( app.parameters["dViewer"]->as<util::Selection>() ) ) );
 	util::slist fileList = app.parameters["in"];
 	util::slist zmapFileList = app.parameters["zmap"];
 	std::list< data::Image > imgList;
 	std::list< data::Image > zImgList;
 	core->getUI()->setShowWorkingLabel( "Loading images..." );
-	
+
 	//load the anatomical images
 	BOOST_FOREACH ( util::slist::const_reference fileName, fileList ) {
 		std::list< data::Image > tmpList = data::IOFactory::load( fileName, app.parameters["rf"].toString(), app.parameters["rdialect"].toString() );
@@ -91,17 +92,19 @@ int main( int argc, char *argv[] )
 	//load the zmap images
 	BOOST_FOREACH ( util::slist::const_reference fileName, zmapFileList ) {
 		std::string dialect;
+
 		if( app.parameters["rdialect"].toString().size() ) {
 			dialect = app.parameters["rdialect"].toString();
 		} else {
-			dialect = std::string("onlyfirst");
+			dialect = std::string( "onlyfirst" );
 		}
+
 		std::list< data::Image > tmpList = data::IOFactory::load( fileName, app.parameters["rf"].toString(), dialect );
 		BOOST_FOREACH( std::list< data::Image >::reference imageRef, tmpList ) {
 			zImgList.push_back( imageRef );
 		}
 	}
-	core->getUI()->setShowWorkingLabel("", false );
+	core->getUI()->setShowWorkingLabel( "", false );
 	//*****************************************************************************************
 	//distribution of images
 	//*****************************************************************************************
@@ -145,10 +148,11 @@ int main( int argc, char *argv[] )
 		core->getUI()->setOptionPosition( isis::viewer::UICore::bottom );
 
 	}
-	LOG( isis::viewer::Runtime, info) << "Welcome to vast ;-)";
+
+	LOG( isis::viewer::Runtime, info ) << "Welcome to vast ;-)";
 	core->getUI()->refreshUI();
 	core->getUI()->showMainWindow();
-	
+
 
 	return app.getQApplication().exec();
 }

@@ -192,12 +192,12 @@ bool ImageHolder::setImage( const data::Image &image, const ImageType &imageType
 	m_PropMap.setPropertyAs<util::slist>( "changedAttributes", util::slist() );
 	m_PropMap.setPropertyAs<double>( "offset", 0.0 );
 	m_PropMap.setPropertyAs<double>( "scaling", 1.0 );
-	m_PropMap.setPropertyAs<double>( "scalingMinValue", m_MinMax.first->as<double>());
-	m_PropMap.setPropertyAs<double>( "scalingMaxValue", m_MinMax.second->as<double>());
-	m_PropMap.setPropertyAs<util::fvector4>("originalColumnVec", image.getPropertyAs<util::fvector4>("columnVec"));
-	m_PropMap.setPropertyAs<util::fvector4>("originalRowVec", image.getPropertyAs<util::fvector4>("rowVec"));
-	m_PropMap.setPropertyAs<util::fvector4>("originalSliceVec", image.getPropertyAs<util::fvector4>("sliceVec"));
-	m_PropMap.setPropertyAs<util::fvector4>("originalIndexOrigin", image.getPropertyAs<util::fvector4>("indexOrigin"));
+	m_PropMap.setPropertyAs<double>( "scalingMinValue", m_MinMax.first->as<double>() );
+	m_PropMap.setPropertyAs<double>( "scalingMaxValue", m_MinMax.second->as<double>() );
+	m_PropMap.setPropertyAs<util::fvector4>( "originalColumnVec", image.getPropertyAs<util::fvector4>( "columnVec" ) );
+	m_PropMap.setPropertyAs<util::fvector4>( "originalRowVec", image.getPropertyAs<util::fvector4>( "rowVec" ) );
+	m_PropMap.setPropertyAs<util::fvector4>( "originalSliceVec", image.getPropertyAs<util::fvector4>( "sliceVec" ) );
+	m_PropMap.setPropertyAs<util::fvector4>( "originalIndexOrigin", image.getPropertyAs<util::fvector4>( "indexOrigin" ) );
 	m_Image->updateOrientationMatrices();
 	return true;
 }
@@ -210,19 +210,20 @@ void ImageHolder::addChangedAttribute( const std::string &attribute )
 }
 
 
-bool ImageHolder::isInsideImage(const isis::util::ivector4& voxelCoords) const
+bool ImageHolder::isInsideImage( const isis::util::ivector4 &voxelCoords ) const
 {
-	for( unsigned short i = 0; i<4; i++ ) {
+	for( unsigned short i = 0; i < 4; i++ ) {
 		if( voxelCoords[i] >= getImageSize()[i] || voxelCoords[i] < 0 ) {
 			return false;
 		}
 	}
+
 	return true;
 }
 
-bool ImageHolder::isInsideImage(const isis::util::fvector4& physicalCoords) const
+bool ImageHolder::isInsideImage( const isis::util::fvector4 &physicalCoords ) const
 {
-	return isInsideImage( getISISImage()->getIndexFromPhysicalCoords( physicalCoords));
+	return isInsideImage( getISISImage()->getIndexFromPhysicalCoords( physicalCoords ) );
 }
 
 

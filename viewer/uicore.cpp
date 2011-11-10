@@ -57,45 +57,56 @@ void UICore::showMessage( const qt4::QMessage &message  )
 	QPalette pal;
 	std::stringstream logStream;
 	logStream << message.m_module << "(" << message.time_str << ") -> " << message.message ;
-	m_MainWindow->getUI().statusbar->setFont( QFont( "", 12 ));
-	const uint16_t logTime = m_ViewerCore->getOptionMap()->getPropertyAs<uint16_t>("logDelayTime");
+	m_MainWindow->getUI().statusbar->setFont( QFont( "", 12 ) );
+	const uint16_t logTime = m_ViewerCore->getOptionMap()->getPropertyAs<uint16_t>( "logDelayTime" );
+
 	switch( message.m_level ) {
-		case verbose_info:
-			if( m_ViewerCore->getOptionMap()->getPropertyAs<bool>("showVerboseInfoMessages") ) {
-				pal.setColor( QPalette::Foreground, Qt::black );
-				m_MainWindow->getUI().statusbar->setPalette( pal );	
-				m_MainWindow->getUI().statusbar->showMessage( logStream.str().c_str(), logTime );
-			}
-			break;
-		case info:
-			if( m_ViewerCore->getOptionMap()->getPropertyAs<bool>("showInfoMessages") ) {
-				pal.setColor( QPalette::Foreground, Qt::black );
-				m_MainWindow->getUI().statusbar->setPalette( pal );	
-				m_MainWindow->getUI().statusbar->showMessage( logStream.str().c_str(), logTime );
-			}			
-			break;
-		case warning:
-			if( m_ViewerCore->getOptionMap()->getPropertyAs<bool>("showWarningMessages") ) {
-				pal.setColor( QPalette::Foreground, QColor(184,134,11)  );
-				m_MainWindow->getUI().statusbar->setPalette( pal );	
-				m_MainWindow->getUI().statusbar->showMessage( logStream.str().c_str(), logTime );
-			}			
-			break;
-		case error:
-			if( m_ViewerCore->getOptionMap()->getPropertyAs<bool>("showErrorMessages") ) {
-				pal.setColor( QPalette::Foreground, Qt::red  );
-				m_MainWindow->getUI().statusbar->setPalette( pal );	
-				m_MainWindow->getUI().statusbar->showMessage( logStream.str().c_str(), logTime );
-			}			
-			break;
-		case notice:
-			if( m_ViewerCore->getOptionMap()->getPropertyAs<bool>("showNoticeMessages") ) {
-				pal.setColor( QPalette::Foreground, Qt::green  );
-				m_MainWindow->getUI().statusbar->setPalette( pal );	
-				m_MainWindow->getUI().statusbar->showMessage( logStream.str().c_str(), logTime );
-			}			
-			break;
-		
+	case verbose_info:
+
+		if( m_ViewerCore->getOptionMap()->getPropertyAs<bool>( "showVerboseInfoMessages" ) ) {
+			pal.setColor( QPalette::Foreground, Qt::black );
+			m_MainWindow->getUI().statusbar->setPalette( pal );
+			m_MainWindow->getUI().statusbar->showMessage( logStream.str().c_str(), logTime );
+		}
+
+		break;
+	case info:
+
+		if( m_ViewerCore->getOptionMap()->getPropertyAs<bool>( "showInfoMessages" ) ) {
+			pal.setColor( QPalette::Foreground, Qt::black );
+			m_MainWindow->getUI().statusbar->setPalette( pal );
+			m_MainWindow->getUI().statusbar->showMessage( logStream.str().c_str(), logTime );
+		}
+
+		break;
+	case warning:
+
+		if( m_ViewerCore->getOptionMap()->getPropertyAs<bool>( "showWarningMessages" ) ) {
+			pal.setColor( QPalette::Foreground, QColor( 184, 134, 11 )  );
+			m_MainWindow->getUI().statusbar->setPalette( pal );
+			m_MainWindow->getUI().statusbar->showMessage( logStream.str().c_str(), logTime );
+		}
+
+		break;
+	case error:
+
+		if( m_ViewerCore->getOptionMap()->getPropertyAs<bool>( "showErrorMessages" ) ) {
+			pal.setColor( QPalette::Foreground, Qt::red  );
+			m_MainWindow->getUI().statusbar->setPalette( pal );
+			m_MainWindow->getUI().statusbar->showMessage( logStream.str().c_str(), logTime );
+		}
+
+		break;
+	case notice:
+
+		if( m_ViewerCore->getOptionMap()->getPropertyAs<bool>( "showNoticeMessages" ) ) {
+			pal.setColor( QPalette::Foreground, Qt::green  );
+			m_MainWindow->getUI().statusbar->setPalette( pal );
+			m_MainWindow->getUI().statusbar->showMessage( logStream.str().c_str(), logTime );
+		}
+
+		break;
+
 	}
 }
 
@@ -280,17 +291,18 @@ bool UICore::registerWidget( ViewWidget widget )
 		LOG( Runtime, warning ) << "Widget with id" << widget.widgetImplementation->getWidgetName() << "!";
 		return false;
 	}
+
 	m_WidgetMap[widget.widgetImplementation] = widget;
 	return true;
 
 }
 
-void UICore::setShowWorkingLabel(const std::string& message, bool show)
+void UICore::setShowWorkingLabel( const std::string &message, bool show )
 {
 	m_MainWindow->getWorkignInformationLabel()->setText( message.c_str() );
 	m_MainWindow->getWorkignInformationLabel()->setFixedWidth( message.length() * 10 );
-	m_MainWindow->getWorkignInformationLabel()->move( m_MainWindow->x() + m_MainWindow->width() / 2 - m_MainWindow->getWorkignInformationLabel()->width() / 2, m_MainWindow->y() + m_MainWindow->height() / 2 -50 );
-	
+	m_MainWindow->getWorkignInformationLabel()->move( m_MainWindow->x() + m_MainWindow->width() / 2 - m_MainWindow->getWorkignInformationLabel()->width() / 2, m_MainWindow->y() + m_MainWindow->height() / 2 - 50 );
+
 	m_MainWindow->getWorkignInformationLabel()->setVisible( show );
 }
 

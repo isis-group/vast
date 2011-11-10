@@ -44,13 +44,13 @@ public:
 
 	const UICore *getUI() const { return m_UI; }
 	UICore *getUI() { return m_UI; }
-	
+
 	const boost::shared_ptr< QProgressFeedback > getProgressFeedback() const { return m_ProgressFeedback; }
-	
+
 	void addMessageHandler( qt4::QDefaultMessagePrint * );
-	
+
 	std::list< qt4::QMessage> getMessageLog() const { return m_MessageLog; }
-	
+
 public Q_SLOTS:
 	virtual void settingsChanged();
 	virtual void zoomChanged( float zoomFactor );

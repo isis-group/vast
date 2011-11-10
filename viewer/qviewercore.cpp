@@ -12,26 +12,26 @@ QViewerCore::QViewerCore( const std::string &appName, const std::string &orgName
 	  m_Parent( parent ),
 	  m_Settings( new QSettings( appName.c_str(), orgName.c_str() ) ),
 	  m_CurrentPath( QDir::currentPath().toStdString() ),
-	  m_ProgressFeedback( boost::shared_ptr<QProgressFeedback>( new QProgressFeedback() )),
+	  m_ProgressFeedback( boost::shared_ptr<QProgressFeedback>( new QProgressFeedback() ) ),
 	  m_UI( new isis::viewer::UICore( this ) )
 {
 	QCoreApplication::setApplicationName( QString( appName.c_str() ) );
 	QCoreApplication::setOrganizationName( QString( orgName.c_str() ) );
-	
+
 
 	setParentWidget( m_UI->getMainWindow() );
 	data::IOFactory::setProgressFeedback( m_ProgressFeedback );
 	operation::NativeImageOps::setProgressFeedBack( m_ProgressFeedback );
-	
+
 }
 
 
 void QViewerCore::addMessageHandler( qt4::QDefaultMessagePrint *handler )
 {
-	connect( handler, SIGNAL( commitMessage(qt4::QMessage)) , this, SLOT(receiveMessage(qt4::QMessage )));
+	connect( handler, SIGNAL( commitMessage( qt4::QMessage ) ) , this, SLOT( receiveMessage( qt4::QMessage ) ) );
 }
 
-void QViewerCore::receiveMessage( qt4::QMessage message)
+void QViewerCore::receiveMessage( qt4::QMessage message )
 {
 	m_MessageLog.push_back( message );
 	getUI()->showMessage( message );
@@ -80,28 +80,30 @@ void QViewerCore::setImageList( const std::list< data::Image > imageList, const 
 }
 
 void QViewerCore::setShowLabels( bool l )
-{	
-	getOptionMap()->setPropertyAs<bool>("showLabels", l);
+{
+	getOptionMap()->setPropertyAs<bool>( "showLabels", l );
 	emitShowLabels( l );
 	updateScene();
 }
 
 void QViewerCore::settingsChanged()
-{	
+{
 	getSettings()->beginGroup( "UserProfile" );
+
 	if( getCurrentImage().get() ) {
-	
+
 		if( getCurrentImage()->getImageProperties().imageType == ImageHolder::z_map ) {
 			getCurrentImage()->getPropMap().setPropertyAs<std::string>( "lut", getSettings()->value( "lut", "fallback" ).toString().toStdString() );
 		}
 	}
+
 	BOOST_FOREACH( UICore::WidgetMap::const_reference widget, getUI()->getWidgets() ) {
 		widget.first->setInterpolationType( static_cast<InterpolationType>( getSettings()->value( "interpolationType", 0 ).toUInt() ) );
 	}
-	emitShowLabels( getOptionMap()->getPropertyAs<bool>("showLabels"));
-	m_UI->getMainWindow()->getUI().actionPropagate_Zooming->setChecked( getOptionMap()->getPropertyAs<bool>("propagateZooming") );
+	emitShowLabels( getOptionMap()->getPropertyAs<bool>( "showLabels" ) );
+	m_UI->getMainWindow()->getUI().actionPropagate_Zooming->setChecked( getOptionMap()->getPropertyAs<bool>( "propagateZooming" ) );
 	getSettings()->endGroup();
-	
+
 }
 
 void QViewerCore::updateScene()
@@ -111,7 +113,7 @@ void QViewerCore::updateScene()
 
 void QViewerCore::zoomChanged( float zoomFactor )
 {
-	if( m_OptionsMap->getPropertyAs<bool>("propagateZooming" ) ) {
+	if( m_OptionsMap->getPropertyAs<bool>( "propagateZooming" ) ) {
 		emitZoomChanged( zoomFactor );
 	}
 }
@@ -166,54 +168,63 @@ bool QViewerCore::attachImageToWidget( boost::shared_ptr<ImageHolder> image, QWi
 	return true;
 }
 
-void QViewerCore::openPath(QStringList fileList, ImageHolder::ImageType imageType, const std::string& rdialect, const std::string& rf, bool distribute )
+void QViewerCore::openPath( QStringList fileList, ImageHolder::ImageType imageType, const std::string &rdialect, const std::string &rf, bool distribute )
 {
 	if( !fileList.empty() ) {
-	QDir dir;
-	setCurrentPath( dir.absoluteFilePath( fileList.front() ).toStdString() );
-	std::list<data::Image> imgList;
-	util::slist pathList;
-	if( ( getDataContainer().size() + fileList.size() ) > 1 ) {
-		getUI()->setViewWidgetArrangement( isis::viewer::UICore::InRow );
-	} else {
-		getUI()->setViewWidgetArrangement( isis::viewer::UICore::Default );
-	}
-	
-	UICore::ViewWidgetEnsembleType ensemble;
-	if( !distribute ) {
-		ensemble = getUI()->createViewWidgetEnsemble( "" );
-	}
-	BOOST_FOREACH( QStringList::const_reference filename, fileList ) {
-		std::stringstream msg;
-		boost::filesystem::path p( filename.toStdString() );
-		if( boost::filesystem::is_directory( p ) ) {
-			msg << "Loading images from directory \"" << p.filename() << "\"...";
+		QDir dir;
+		setCurrentPath( dir.absoluteFilePath( fileList.front() ).toStdString() );
+		std::list<data::Image> imgList;
+		util::slist pathList;
+
+		if( ( getDataContainer().size() + fileList.size() ) > 1 ) {
+			getUI()->setViewWidgetArrangement( isis::viewer::UICore::InRow );
 		} else {
-			msg << "Loading image \"" << p.filename() << "\"...";
+			getUI()->setViewWidgetArrangement( isis::viewer::UICore::Default );
 		}
-		getUI()->setShowWorkingLabel( msg.str() );
-		std::list<data::Image> tempImgList = isis::data::IOFactory::load( filename.toStdString() , rf, rdialect );
-		pathList.push_back( filename.toStdString() );
-		if( tempImgList.size() > 1 ) {
-			msg.clear();
-			msg << "Found " << tempImgList.size() << " images. Loading...";
+
+		UICore::ViewWidgetEnsembleType ensemble;
+
+		if( !distribute ) {
+			ensemble = getUI()->createViewWidgetEnsemble( "" );
+		}
+
+		BOOST_FOREACH( QStringList::const_reference filename, fileList ) {
+			std::stringstream msg;
+			boost::filesystem::path p( filename.toStdString() );
+
+			if( boost::filesystem::is_directory( p ) ) {
+				msg << "Loading images from directory \"" << p.filename() << "\"...";
+			} else {
+				msg << "Loading image \"" << p.filename() << "\"...";
+			}
+
 			getUI()->setShowWorkingLabel( msg.str() );
+			std::list<data::Image> tempImgList = isis::data::IOFactory::load( filename.toStdString() , rf, rdialect );
+			pathList.push_back( filename.toStdString() );
+
+			if( tempImgList.size() > 1 ) {
+				msg.clear();
+				msg << "Found " << tempImgList.size() << " images. Loading...";
+				getUI()->setShowWorkingLabel( msg.str() );
+			}
+
+			BOOST_FOREACH( std::list<data::Image>::const_reference image, tempImgList ) {
+				imgList.push_back( image );
+				boost::shared_ptr<ImageHolder> imageHolder = addImage( image, imageType );
+
+				if( distribute ) {
+					ensemble = getUI()->createViewWidgetEnsemble( "" );
+				}
+
+				attachImageToWidget( imageHolder, ensemble[0].widgetImplementation );
+				attachImageToWidget( imageHolder, ensemble[1].widgetImplementation );
+				attachImageToWidget( imageHolder, ensemble[2].widgetImplementation );
+			}
 		}
-		BOOST_FOREACH( std::list<data::Image>::const_reference image, tempImgList ) {
-			imgList.push_back( image );
-			boost::shared_ptr<ImageHolder> imageHolder = addImage( image, imageType );
-			if( distribute ) {
-				ensemble = getUI()->createViewWidgetEnsemble( "" );	
-			} 
-			attachImageToWidget( imageHolder, ensemble[0].widgetImplementation );
-			attachImageToWidget( imageHolder, ensemble[1].widgetImplementation );
-			attachImageToWidget( imageHolder, ensemble[2].widgetImplementation );
-		}
-	}
-	getUI()->setShowWorkingLabel("", false );
-	getUI()->rearrangeViewWidgets();
-	getUI()->refreshUI();
-	updateScene( );
+		getUI()->setShowWorkingLabel( "", false );
+		getUI()->rearrangeViewWidgets();
+		getUI()->refreshUI();
+		updateScene( );
 	}
 }
 

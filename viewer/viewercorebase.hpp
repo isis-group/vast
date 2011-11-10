@@ -45,7 +45,7 @@ public:
 	util::fvector4 getTransformedCoords( const util::fvector4 &coords ) const;
 
 	color::Color *getColorHandler() const { return m_ColorHandler; }
-	
+
 	bool hasImage() const { return getDataContainer().size(); }
 
 private:

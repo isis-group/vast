@@ -73,20 +73,21 @@ void ImageStackWidget::closeButtonClicked()
 		BOOST_FOREACH( std::list< QWidgetImplementationBase *>::const_reference widget, image->getWidgetList() ) {
 			widget->removeImage( image );
 		}
-		
+
 		if( m_ViewerCore->getCurrentImage().get() == m_ViewerCore->getDataContainer().at( m_Interface.imageStack->currentItem()->text().toStdString() ).get() ) {
 			std::list<std::string> tmpList;
-			BOOST_FOREACH( DataContainer::const_reference image, m_ViewerCore->getDataContainer() )
-			{
+			BOOST_FOREACH( DataContainer::const_reference image, m_ViewerCore->getDataContainer() ) {
 				tmpList.push_back( image.first );
 			}
 			tmpList.erase( std::find( tmpList.begin(), tmpList.end(), m_Interface.imageStack->currentItem()->text().toStdString() ) );
+
 			if( tmpList.size() ) {
 				m_ViewerCore->setCurrentImage( m_ViewerCore->getDataContainer().at( tmpList.front() ) );
 			} else {
-				m_ViewerCore->setCurrentImage(boost::shared_ptr<ImageHolder>());
+				m_ViewerCore->setCurrentImage( boost::shared_ptr<ImageHolder>() );
 			}
 		}
+
 		m_ViewerCore->getDataContainer().erase( m_Interface.imageStack->currentItem()->text().toStdString() );
 		m_ViewerCore->getUI()->refreshUI();
 		m_ViewerCore->updateScene();
@@ -97,7 +98,7 @@ void ImageStackWidget::distributeImages()
 {
 	DataContainer tmpContainer;
 	BOOST_FOREACH( DataContainer::reference image, m_ViewerCore->getDataContainer() ) {
-		
+
 		tmpContainer.insert( image );
 		m_ViewerCore->getDataContainer().erase( image.first );
 		BOOST_FOREACH( std::list< QWidgetImplementationBase *>::const_reference widget, image.second->getWidgetList() ) {

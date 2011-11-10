@@ -8,33 +8,36 @@
 #include "qviewercore.hpp"
 #include <QCompleter>
 
-namespace isis {
-namespace viewer {
-namespace widget {
-	
+namespace isis
+{
+namespace viewer
+{
+namespace widget
+{
+
 class FileDialog : public QDialog
 {
 	Q_OBJECT
 public:
 	enum FileMode { OPEN_FILE, OPEN_DIR, SAVE_AS };
 	FileDialog( QWidget *parent, QViewerCore *core  );
-	
+
 	void setMode( FileMode mode ) { m_Mode = mode;  }
-	
+
 public Q_SLOTS:
 	void browse();
 	void parsePath();
 	void openPath();
-	void imageTypeChanged(int);
-	void rfChanged(int);
-	virtual void closeEvent( QCloseEvent *);
-	virtual void showEvent( QShowEvent *);
+	void imageTypeChanged( int );
+	void rfChanged( int );
+	virtual void closeEvent( QCloseEvent * );
+	virtual void showEvent( QShowEvent * );
 	void modeChanged();
 	void setup();
-	void advancedChecked(bool);
-	
+	void advancedChecked( bool );
+
 	bool checkIfPathIsValid( QString path, unsigned short &validFiles, bool acceptNoSuffix = false );
-	
+
 private:
 	FileMode m_Mode;
 	QFileDialog m_FileDialog;
@@ -46,11 +49,13 @@ private:
 	ImageHolder::ImageType m_ImageType;
 	util::slist m_FileFormatList;
 	QCompleter *m_Completer;
-	
+
 };
-	
-	
-}}}
+
+
+}
+}
+}
 
 
 

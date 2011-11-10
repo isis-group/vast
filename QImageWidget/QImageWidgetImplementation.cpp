@@ -16,7 +16,7 @@ QImageWidgetImplementation::QImageWidgetImplementation( QViewerCore *core, QWidg
 	  m_MemoryHandler( core ),
 	  m_Painter( new QPainter() ),
 	  m_ShowLabels( false ),
-	  m_Border(0)
+	  m_Border( 0 )
 {
 	( new QVBoxLayout( parent ) )->addWidget( this );
 	commonInit();
@@ -42,19 +42,19 @@ void QImageWidgetImplementation::commonInit()
 	connect( m_ViewerCore, SIGNAL( emitPhysicalCoordsChanged( util::fvector4 ) ), this, SLOT( lookAtPhysicalCoords( util::fvector4 ) ) );
 	connect( m_ViewerCore, SIGNAL( emitVoxelCoordChanged( util::ivector4 ) ), this, SLOT( lookAtVoxelCoords( util::ivector4 ) ) );
 	connect( m_ViewerCore, SIGNAL( emitZoomChanged( float ) ), this, SLOT( setZoom( float ) ) );
-	connect( m_ViewerCore, SIGNAL( emitShowLabels(bool)), this, SLOT(setShowLabels(bool)));
+	connect( m_ViewerCore, SIGNAL( emitShowLabels( bool ) ), this, SLOT( setShowLabels( bool ) ) );
 	setAutoFillBackground( true );
 	setPalette( QPalette( Qt::black ) );
 	m_LeftMouseButtonPressed = false;
 	m_RightMouseButtonPressed = false;
 	m_ShowScalingOffset = false;
-	
+
 	m_WidgetProperties.setPropertyAs<bool>( "zoomEvent", false );
 	m_WidgetProperties.setPropertyAs<float>( "currentZoom", 1.0 );
 	m_WidgetProperties.setPropertyAs<float>( "zoomFactorIn", 1.5 );
 	m_WidgetProperties.setPropertyAs<float>( "zoomFactorOut", 1.5 );
 	m_WidgetProperties.setPropertyAs<float>( "maxZoom", 20 );
-	m_WidgetProperties.setPropertyAs<float>( "minZoom", 1.0);
+	m_WidgetProperties.setPropertyAs<float>( "minZoom", 1.0 );
 
 	m_WidgetProperties.setPropertyAs<float>( "translationX", 0 );
 	m_WidgetProperties.setPropertyAs<float>( "translationY", 0 );
@@ -89,6 +89,7 @@ boost::shared_ptr< ImageHolder > QImageWidgetImplementation::getWidgetSpecCurren
 	if( std::find( m_ImageVector.begin(), m_ImageVector.end(), m_ViewerCore->getCurrentImage() ) != m_ImageVector.end() ) {
 		return m_ViewerCore->getCurrentImage();
 	}
+
 	return m_ImageVector.front();
 
 }
@@ -114,7 +115,7 @@ void QImageWidgetImplementation::paintEvent( QPaintEvent *event )
 										   width(),
 										   height(),
 										   m_PlaneOrientation,
-											m_Border
+										   m_Border
 										 );
 
 		boost::shared_ptr<ImageHolder> cImage =  getWidgetSpecCurrentImage();
@@ -147,16 +148,18 @@ void QImageWidgetImplementation::paintEvent( QPaintEvent *event )
 		}
 
 		paintCrosshair();
+
 		if( m_ShowScalingOffset ) {
 			m_Painter->resetMatrix();
-			m_Painter->setFont( QFont("Chicago", 10) );
+			m_Painter->setFont( QFont( "Chicago", 10 ) );
 			m_Painter->setPen( Qt::white );
 			std::stringstream scalingOffset;
 			boost::shared_ptr<ImageHolder> image = getWidgetSpecCurrentImage();
-			scalingOffset << "Scaling: " << image->getPropMap().getPropertyAs<double>("scaling")
-				<< " Offset: " << image->getPropMap().getPropertyAs<double>("offset");
+			scalingOffset << "Scaling: " << image->getPropMap().getPropertyAs<double>( "scaling" )
+						  << " Offset: " << image->getPropMap().getPropertyAs<double>( "offset" );
 			m_Painter->drawText( 10, 30, scalingOffset.str().c_str() );
 		}
+
 		m_ShowScalingOffset = false;
 		m_Painter->end();
 	}
@@ -219,18 +222,18 @@ void QImageWidgetImplementation::paintImage( boost::shared_ptr< ImageHolder > im
 
 	imgProps.viewPort[2] += m_WidgetProperties.getPropertyAs<float>( "translationX" );
 	imgProps.viewPort[3] += m_WidgetProperties.getPropertyAs<float>( "translationY" );
-	
+
 	m_Painter->setTransform( QOrienationHandler::getTransform( imgProps.viewPort, image, width(), height(), m_PlaneOrientation ) );
 
 	m_Painter->setOpacity( image->getPropMap().getPropertyAs<float>( "opacity" ) );
-	
+
 	qImage.setColorTable( color::Color::adaptColorMapToImage(
-							m_ViewerCore->getColorHandler()->getColormapMap().at( image->getPropMap().getPropertyAs<std::string>( "lut" ) ), image ) );
-	
+							  m_ViewerCore->getColorHandler()->getColormapMap().at( image->getPropMap().getPropertyAs<std::string>( "lut" ) ), image ) );
+
 	m_Painter->drawImage( 0, 0, qImage );
-	
+
 	m_Painter->resetMatrix();
-	m_Painter->fillRect(imgProps.viewPort[4] + imgProps.viewPort[2], -1, width(), height(), Qt::black);
+	m_Painter->fillRect( imgProps.viewPort[4] + imgProps.viewPort[2], -1, width(), height(), Qt::black );
 	m_Painter->fillRect( -1, imgProps.viewPort[5] + imgProps.viewPort[3], width(), height(), Qt::black );
 }
 
@@ -242,26 +245,26 @@ void QImageWidgetImplementation::mousePressEvent( QMouseEvent *e )
 	} else if ( e->button() == Qt::LeftButton ) {
 		m_LeftMouseButtonPressed = true;
 	}
+
 	if( m_LeftMouseButtonPressed && m_RightMouseButtonPressed ) {
 		m_StartCoordsPair.first = e->x();
 		m_StartCoordsPair.second = e->y();
-	} 
+	}
 
 	emitMousePressEvent( e );
 }
 
 void QImageWidgetImplementation::mouseMoveEvent( QMouseEvent *e )
 {
-	if(m_RightMouseButtonPressed && m_LeftMouseButtonPressed )
-	{
+	if( m_RightMouseButtonPressed && m_LeftMouseButtonPressed ) {
 		boost::shared_ptr<ImageHolder> image = getWidgetSpecCurrentImage();
-		const double offset =  (m_StartCoordsPair.second - e->y()) / (float)height() * image->getPropMap().getPropertyAs<double>("extent");
-		const double scaling = 1.0 - (m_StartCoordsPair.first - e->x()) / (float)width() * 5;
-		image->getPropMap().setPropertyAs<double>("offset", offset);
-		image->getPropMap().setPropertyAs<double>("scaling", scaling < 0.0 ? 0.0 : scaling);
+		const double offset =  ( m_StartCoordsPair.second - e->y() ) / ( float )height() * image->getPropMap().getPropertyAs<double>( "extent" );
+		const double scaling = 1.0 - ( m_StartCoordsPair.first - e->x() ) / ( float )width() * 5;
+		image->getPropMap().setPropertyAs<double>( "offset", offset );
+		image->getPropMap().setPropertyAs<double>( "scaling", scaling < 0.0 ? 0.0 : scaling );
 		m_ShowScalingOffset = true;
 		m_ViewerCore->updateScene();
-	}else if( m_RightMouseButtonPressed || m_LeftMouseButtonPressed ) {
+	} else if( m_RightMouseButtonPressed || m_LeftMouseButtonPressed ) {
 		emitMousePressEvent( e );
 	}
 }
@@ -287,36 +290,37 @@ void QImageWidgetImplementation::emitMousePressEvent( QMouseEvent *e )
 void QImageWidgetImplementation::showLabels() const
 {
 	m_Painter->resetMatrix();
-	m_Painter->setFont( QFont("Chicago", 13) );
+	m_Painter->setFont( QFont( "Chicago", 13 ) );
+
 	switch( m_PlaneOrientation ) {
-		case axial:
-			m_Painter->setPen( QColor( 255,0,0) );
-			m_Painter->drawText(0, height() / 2 + 7, "L");
-			m_Painter->drawText(width()-15, height() / 2 + 7, "R");
-			m_Painter->setPen( QColor( 0,255,0) );
-			m_Painter->drawText(width() / 2 - 7, 15, "A");
-			m_Painter->drawText(width() / 2 - 7, height()-2, "P");
-			break;
-		case sagittal:
-			m_Painter->setPen( QColor( 0,255,0) );
-			m_Painter->drawText(0, height() / 2 + 7, "A");
-			m_Painter->drawText(width()-15, height() / 2 + 7, "P");
-			m_Painter->setPen( QColor( 0,0,255) );
-			m_Painter->drawText(width() / 2 - 7, 15, "S");
-			m_Painter->drawText(width() / 2 - 7, height()-2, "I");
-			break;
-		case coronal:
-			m_Painter->setPen( QColor( 255,0,0) );
-			m_Painter->drawText(0, height() / 2 + 10, "L");
-			m_Painter->drawText(width()-15, height() / 2 + 7, "R");
-			m_Painter->setPen( QColor( 0,0,255) );
-			m_Painter->drawText(width() / 2 - 7, 15, "S");
-			m_Painter->drawText(width() / 2 - 7, height()-2, "I");
-			break;
+	case axial:
+		m_Painter->setPen( QColor( 255, 0, 0 ) );
+		m_Painter->drawText( 0, height() / 2 + 7, "L" );
+		m_Painter->drawText( width() - 15, height() / 2 + 7, "R" );
+		m_Painter->setPen( QColor( 0, 255, 0 ) );
+		m_Painter->drawText( width() / 2 - 7, 15, "A" );
+		m_Painter->drawText( width() / 2 - 7, height() - 2, "P" );
+		break;
+	case sagittal:
+		m_Painter->setPen( QColor( 0, 255, 0 ) );
+		m_Painter->drawText( 0, height() / 2 + 7, "A" );
+		m_Painter->drawText( width() - 15, height() / 2 + 7, "P" );
+		m_Painter->setPen( QColor( 0, 0, 255 ) );
+		m_Painter->drawText( width() / 2 - 7, 15, "S" );
+		m_Painter->drawText( width() / 2 - 7, height() - 2, "I" );
+		break;
+	case coronal:
+		m_Painter->setPen( QColor( 255, 0, 0 ) );
+		m_Painter->drawText( 0, height() / 2 + 10, "L" );
+		m_Painter->drawText( width() - 15, height() / 2 + 7, "R" );
+		m_Painter->setPen( QColor( 0, 0, 255 ) );
+		m_Painter->drawText( width() / 2 - 7, 15, "S" );
+		m_Painter->drawText( width() / 2 - 7, height() - 2, "I" );
+		break;
 	}
-	
-	
-	
+
+
+
 }
 
 
@@ -347,6 +351,7 @@ void QImageWidgetImplementation::paintCrosshair() const
 	m_Painter->drawLine( yline2 );
 	pen.setWidth( 2 );
 	m_Painter->drawPoint( coords.first, coords.second );
+
 	if( m_ShowLabels ) {
 		showLabels();
 	}
@@ -367,8 +372,8 @@ bool QImageWidgetImplementation::lookAtVoxelCoords( const isis::util::ivector4 &
 	m_WidgetProperties.setPropertyAs<uint16_t>( "currentTimeStep", voxelCoords[3] );
 	BOOST_FOREACH( DataContainer::reference image, m_ViewerCore->getDataContainer() ) {
 		image.second->getPropMap().setPropertyAs<util::fvector4>( "physicalCoords", image.second->getISISImage()->getPhysicalCoordsFromIndex( voxelCoords ) );
-		image.second->getPropMap().setPropertyAs<util::ivector4>( "voxelCoords", image.second->getISISImage()->getIndexFromPhysicalCoords( 
-			image.second->getPropMap().getPropertyAs<util::fvector4>("physicalCoords")));
+		image.second->getPropMap().setPropertyAs<util::ivector4>( "voxelCoords", image.second->getISISImage()->getIndexFromPhysicalCoords(
+					image.second->getPropMap().getPropertyAs<util::fvector4>( "physicalCoords" ) ) );
 	}
 	update();
 }
@@ -396,7 +401,7 @@ void QImageWidgetImplementation::wheelEvent( QWheelEvent *e )
 
 	}
 
-	if( m_ViewerCore->getOptionMap()->getPropertyAs<bool>("propagateZooming")) {
+	if( m_ViewerCore->getOptionMap()->getPropertyAs<bool>( "propagateZooming" ) ) {
 		zoomChanged( oldZoom );
 	} else {
 		setZoom( oldZoom );

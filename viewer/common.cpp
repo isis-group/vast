@@ -18,7 +18,7 @@ std::string getFileFormatsAsString( image_io::FileFormat::io_modes mode, const s
 {
 	std::stringstream fileFormats;
 	BOOST_FOREACH( isis::data::IOFactory::FileFormatList::const_reference formatList, isis::data::IOFactory::getFormats() ) {
-		BOOST_FOREACH( std::list<util::istring>::const_reference format, formatList->getSuffixes(mode) ) {
+		BOOST_FOREACH( std::list<util::istring>::const_reference format, formatList->getSuffixes( mode ) ) {
 			fileFormats << preSeparator << format << postSeparator;
 		}
 	}
@@ -27,12 +27,12 @@ std::string getFileFormatsAsString( image_io::FileFormat::io_modes mode, const s
 
 }
 
-std::list<std::string> getFileFormatsAsList( image_io::FileFormat::io_modes mode ) 
+std::list<std::string> getFileFormatsAsList( image_io::FileFormat::io_modes mode )
 {
 	std::list<std::string> retList;
 	BOOST_FOREACH( isis::data::IOFactory::FileFormatList::const_reference formatList, isis::data::IOFactory::getFormats() ) {
-		BOOST_FOREACH( std::list<util::istring>::const_reference format, formatList->getSuffixes(mode) ) {
-			retList.push_back(format.c_str());
+		BOOST_FOREACH( std::list<util::istring>::const_reference format, formatList->getSuffixes( mode ) ) {
+			retList.push_back( format.c_str() );
 		}
 	}
 	return retList;

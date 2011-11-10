@@ -12,24 +12,24 @@ namespace widget
 VoxelInformationWidget::VoxelInformationWidget( QWidget *parent, QViewerCore *core )
 	: QWidget( parent ),
 	  m_ViewerCore( core ),
-	  isConnected(false)
+	  isConnected( false )
 {
 	m_Interface.setupUi( this );
 	m_Interface.rowBox->setMinimum( 0 );
 	m_Interface.columnBox->setMinimum( 0 );
 	m_Interface.sliceBox->setMinimum( 0 );
 	m_Interface.upperHalfColormapLabel->setMaximumHeight( 20 );
-	
+
 }
 
 void VoxelInformationWidget::disconnectSignals()
 {
-	disconnect( m_Interface.rowBox, SIGNAL( valueChanged(int)), this, SLOT( voxPosChanged() ) );
-	disconnect( m_Interface.columnBox, SIGNAL( valueChanged(int)), this, SLOT( voxPosChanged() ) );
-	disconnect( m_Interface.sliceBox, SIGNAL( valueChanged(int)), this, SLOT( voxPosChanged() ) );
-	disconnect( m_Interface.xBox, SIGNAL( valueChanged(double)), this, SLOT( physPosChanged() ) );
-	disconnect( m_Interface.yBox, SIGNAL( valueChanged(double)), this, SLOT( physPosChanged() ) );
-	disconnect( m_Interface.zBox, SIGNAL( valueChanged(double)), this, SLOT( physPosChanged() ) );
+	disconnect( m_Interface.rowBox, SIGNAL( valueChanged( int ) ), this, SLOT( voxPosChanged() ) );
+	disconnect( m_Interface.columnBox, SIGNAL( valueChanged( int ) ), this, SLOT( voxPosChanged() ) );
+	disconnect( m_Interface.sliceBox, SIGNAL( valueChanged( int ) ), this, SLOT( voxPosChanged() ) );
+	disconnect( m_Interface.xBox, SIGNAL( valueChanged( double ) ), this, SLOT( physPosChanged() ) );
+	disconnect( m_Interface.yBox, SIGNAL( valueChanged( double ) ), this, SLOT( physPosChanged() ) );
+	disconnect( m_Interface.zBox, SIGNAL( valueChanged( double ) ), this, SLOT( physPosChanged() ) );
 
 }
 
@@ -37,25 +37,25 @@ void VoxelInformationWidget::connectSignals()
 {
 	connect( m_ViewerCore, SIGNAL( emitVoxelCoordChanged( util::ivector4 ) ), this, SLOT( synchronizePos( util::ivector4 ) ) );
 	connect( m_ViewerCore, SIGNAL( emitPhysicalCoordsChanged( util::fvector4 ) ), this, SLOT( synchronizePos( util::fvector4 ) ) );
-	connect( m_ViewerCore, SIGNAL( emitUpdateScene()), this, SLOT( updateLowerUpperThreshold()));
-	connect( m_Interface.rowBox, SIGNAL( valueChanged(int)), this, SLOT( voxPosChanged() ) );
-	connect( m_Interface.columnBox, SIGNAL( valueChanged(int)), this, SLOT( voxPosChanged() ) );
-	connect( m_Interface.sliceBox, SIGNAL( valueChanged(int)), this, SLOT( voxPosChanged() ) );
-	connect( m_Interface.xBox, SIGNAL( valueChanged(double)), this, SLOT( physPosChanged() ) );
-	connect( m_Interface.yBox, SIGNAL( valueChanged(double)), this, SLOT( physPosChanged() ) );
-	connect( m_Interface.zBox, SIGNAL( valueChanged(double)), this, SLOT( physPosChanged() ) );
-	connect( m_Interface.timestepSlider, SIGNAL(sliderMoved(int)), m_ViewerCore, SLOT( timestepChanged(int)));
-	connect( m_Interface.timestepSpinBox, SIGNAL(valueChanged(int)), m_ViewerCore, SLOT( timestepChanged(int)));
-	connect( m_Interface.timestepSlider, SIGNAL(sliderMoved(int)), m_Interface.timestepSpinBox, SLOT(setValue(int)));
-	connect( m_Interface.timestepSpinBox, SIGNAL( valueChanged(int)), m_Interface.timestepSlider, SLOT( setValue(int)));
+	connect( m_ViewerCore, SIGNAL( emitUpdateScene() ), this, SLOT( updateLowerUpperThreshold() ) );
+	connect( m_Interface.rowBox, SIGNAL( valueChanged( int ) ), this, SLOT( voxPosChanged() ) );
+	connect( m_Interface.columnBox, SIGNAL( valueChanged( int ) ), this, SLOT( voxPosChanged() ) );
+	connect( m_Interface.sliceBox, SIGNAL( valueChanged( int ) ), this, SLOT( voxPosChanged() ) );
+	connect( m_Interface.xBox, SIGNAL( valueChanged( double ) ), this, SLOT( physPosChanged() ) );
+	connect( m_Interface.yBox, SIGNAL( valueChanged( double ) ), this, SLOT( physPosChanged() ) );
+	connect( m_Interface.zBox, SIGNAL( valueChanged( double ) ), this, SLOT( physPosChanged() ) );
+	connect( m_Interface.timestepSlider, SIGNAL( sliderMoved( int ) ), m_ViewerCore, SLOT( timestepChanged( int ) ) );
+	connect( m_Interface.timestepSpinBox, SIGNAL( valueChanged( int ) ), m_ViewerCore, SLOT( timestepChanged( int ) ) );
+	connect( m_Interface.timestepSlider, SIGNAL( sliderMoved( int ) ), m_Interface.timestepSpinBox, SLOT( setValue( int ) ) );
+	connect( m_Interface.timestepSpinBox, SIGNAL( valueChanged( int ) ), m_Interface.timestepSlider, SLOT( setValue( int ) ) );
 	isConnected = true;
 }
 
 void VoxelInformationWidget::updateLowerUpperThreshold()
 {
 	if( m_ViewerCore->getCurrentImage().get() ) {
-		m_Interface.lowerThresholdLabel->setText( QString::number( m_ViewerCore->getCurrentImage()->getPropMap().getPropertyAs<double>("lowerThreshold"), 'g', 4 ) );
-		m_Interface.upperThresholdLabel->setText( QString::number( m_ViewerCore->getCurrentImage()->getPropMap().getPropertyAs<double>("upperThreshold"), 'g', 4 ) );
+		m_Interface.lowerThresholdLabel->setText( QString::number( m_ViewerCore->getCurrentImage()->getPropMap().getPropertyAs<double>( "lowerThreshold" ), 'g', 4 ) );
+		m_Interface.upperThresholdLabel->setText( QString::number( m_ViewerCore->getCurrentImage()->getPropMap().getPropertyAs<double>( "upperThreshold" ), 'g', 4 ) );
 	}
 }
 
@@ -86,17 +86,18 @@ void VoxelInformationWidget::synchronize()
 		const boost::shared_ptr<ImageHolder> image = m_ViewerCore->getCurrentImage();
 		QSize size = m_Interface.upperHalfColormapLabel->size();
 		const std::string lutName = image->getPropMap().getPropertyAs<std::string>( "lut" );
+
 		if( image->getImageProperties().imageType == ImageHolder::anatomical_image ) {
 			m_Interface.upperHalfColormapLabel->setPixmap(
 				m_ViewerCore->getColorHandler()->getIcon( lutName, size.width(), size.height() - 10 ).pixmap( size.width(), size.height() - 10 ) );
-			m_Interface.colormapGrid->addWidget( m_Interface.labelMin, 0, 0);
-			m_Interface.colormapGrid->addWidget( m_Interface.upperHalfColormapLabel, 0, 1);
-			m_Interface.colormapGrid->addWidget( m_Interface.labelMax, 0, 2);
+			m_Interface.colormapGrid->addWidget( m_Interface.labelMin, 0, 0 );
+			m_Interface.colormapGrid->addWidget( m_Interface.upperHalfColormapLabel, 0, 1 );
+			m_Interface.colormapGrid->addWidget( m_Interface.labelMax, 0, 2 );
 			m_Interface.lowerHalfColormapLabel->setVisible( false );
 			m_Interface.lowerThresholdLabel->setVisible( false );
 			m_Interface.upperThresholdLabel->setVisible( false );
 		} else if ( image->getImageProperties().imageType == ImageHolder::z_map ) {
-			m_Interface.upperHalfColormapLabel->setPixmap( 
+			m_Interface.upperHalfColormapLabel->setPixmap(
 				m_ViewerCore->getColorHandler()->getIcon( lutName, size.width(), size.height() - 10, color::Color::upper_half ).pixmap( size.width(), size.height() - 10 ) );
 			m_Interface.lowerHalfColormapLabel->setPixmap(
 				m_ViewerCore->getColorHandler()->getIcon( lutName, size.width(), size.height() - 10, color::Color::lower_half, true ).pixmap( size.width(), size.height() - 10 ) );
@@ -109,9 +110,10 @@ void VoxelInformationWidget::synchronize()
 			m_Interface.lowerHalfColormapLabel->setVisible( true );
 			m_Interface.lowerThresholdLabel->setVisible( true );
 			m_Interface.upperThresholdLabel->setVisible( true );
-			m_Interface.lowerThresholdLabel->setText( QString::number( image->getPropMap().getPropertyAs<double>("lowerThreshold"), 'g', 4 ) );
-			m_Interface.upperThresholdLabel->setText( QString::number( image->getPropMap().getPropertyAs<double>("upperThreshold"), 'g', 4 ) );
+			m_Interface.lowerThresholdLabel->setText( QString::number( image->getPropMap().getPropertyAs<double>( "lowerThreshold" ), 'g', 4 ) );
+			m_Interface.upperThresholdLabel->setText( QString::number( image->getPropMap().getPropertyAs<double>( "upperThreshold" ), 'g', 4 ) );
 		}
+
 		m_Interface.labelMin->setText( QString::number( image->getMinMax().first->as<double>(), 'g', 4 ) );
 		m_Interface.labelMax->setText( QString::number( image->getMinMax().second->as<double>(), 'g', 4 ) );
 		const util::ivector4 outerCorner = util::ivector4( image->getImageSize()[0] - 1, image->getImageSize()[1] - 1, image->getImageSize()[2] - 1 );
@@ -138,20 +140,22 @@ void VoxelInformationWidget::synchronize()
 		m_Interface.xBox->setSingleStep( fabs( transformedVec( 0 ) ) );
 		m_Interface.yBox->setSingleStep( fabs( transformedVec( 1 ) ) );
 		m_Interface.zBox->setSingleStep( fabs( transformedVec( 2 ) ) );
-		if( !isConnected) {
+
+		if( !isConnected ) {
 			connectSignals();
 		}
+
 		if( m_ViewerCore->getCurrentImage()->getImageSize()[3] > 1 ) {
 			std::stringstream tooltip;
 			tooltip << "Number of timesteps: " << m_ViewerCore->getCurrentImage()->getImageSize()[3];
-			m_Interface.timeStepFrame->setVisible(true);
+			m_Interface.timeStepFrame->setVisible( true );
 			m_Interface.timestepSlider->setMaximum( m_ViewerCore->getCurrentImage()->getImageSize()[3] - 1 );
-			m_Interface.timestepSlider->setMinimum(0);
+			m_Interface.timestepSlider->setMinimum( 0 );
 			m_Interface.timestepSpinBox->setMaximum( m_ViewerCore->getCurrentImage()->getImageSize()[3] - 1 );
-			m_Interface.timestepSpinBox->setMinimum(0);
-			m_Interface.timeStepFrame->setToolTip(tooltip.str().c_str());
-			m_Interface.timestepSlider->setToolTip(tooltip.str().c_str());
-			m_Interface.timestepSpinBox->setToolTip(tooltip.str().c_str());
+			m_Interface.timestepSpinBox->setMinimum( 0 );
+			m_Interface.timeStepFrame->setToolTip( tooltip.str().c_str() );
+			m_Interface.timestepSlider->setToolTip( tooltip.str().c_str() );
+			m_Interface.timestepSpinBox->setToolTip( tooltip.str().c_str() );
 		} else {
 			m_Interface.timeStepFrame->setVisible( false );
 		}
@@ -168,8 +172,9 @@ void VoxelInformationWidget::synchronizePos( util::ivector4 voxelCoords )
 {
 	disconnectSignals();
 	boost::shared_ptr<ImageHolder> image = m_ViewerCore->getCurrentImage();
+
 	if( !image->isInsideImage( voxelCoords ) ) return;
-	
+
 	const std::string typeName = image->getISISImage()->getChunk( voxelCoords[0], voxelCoords[1], voxelCoords[2], voxelCoords[3], false ).getTypeName();
 	m_Interface.intensityValue->setToolTip( typeName.substr( 0, typeName.length() - 1 ).c_str() );
 
@@ -213,12 +218,12 @@ void VoxelInformationWidget::synchronizePos( util::ivector4 voxelCoords )
 	m_Interface.xBox->setValue( physCoords[0] );
 	m_Interface.yBox->setValue( physCoords[1] );
 	m_Interface.zBox->setValue( physCoords[2] );
-	connect( m_Interface.rowBox, SIGNAL( valueChanged(int)), this, SLOT( voxPosChanged() ) );
-	connect( m_Interface.columnBox, SIGNAL( valueChanged(int)), this, SLOT( voxPosChanged() ) );
-	connect( m_Interface.sliceBox, SIGNAL( valueChanged(int)), this, SLOT( voxPosChanged() ) );
-	connect( m_Interface.xBox, SIGNAL( valueChanged(double)), this, SLOT( physPosChanged() ) );
-	connect( m_Interface.yBox, SIGNAL( valueChanged(double)), this, SLOT( physPosChanged() ) );
-	connect( m_Interface.zBox, SIGNAL( valueChanged(double)), this, SLOT( physPosChanged() ) );
+	connect( m_Interface.rowBox, SIGNAL( valueChanged( int ) ), this, SLOT( voxPosChanged() ) );
+	connect( m_Interface.columnBox, SIGNAL( valueChanged( int ) ), this, SLOT( voxPosChanged() ) );
+	connect( m_Interface.sliceBox, SIGNAL( valueChanged( int ) ), this, SLOT( voxPosChanged() ) );
+	connect( m_Interface.xBox, SIGNAL( valueChanged( double ) ), this, SLOT( physPosChanged() ) );
+	connect( m_Interface.yBox, SIGNAL( valueChanged( double ) ), this, SLOT( physPosChanged() ) );
+	connect( m_Interface.zBox, SIGNAL( valueChanged( double ) ), this, SLOT( physPosChanged() ) );
 
 }
 

@@ -4,9 +4,11 @@
 #include <CoreUtils/progressfeedback.hpp>
 #include <QProgressBar>
 
-namespace isis {
-namespace viewer {
-	
+namespace isis
+{
+namespace viewer
+{
+
 class QProgressFeedback : public util::ProgressFeedback
 {
 public:
@@ -14,17 +16,18 @@ public:
 	virtual size_t progress( const std::string message = "", size_t step = 1 );
 	virtual void close();
 	virtual size_t getMax();
-	
+
 	QProgressFeedback();
-	
+
 	QProgressBar *getProgressBar() const { return m_ProgressBar; }
 private:
 	QProgressBar *m_ProgressBar;
 	size_t m_CurrentVal;
 };
-	
-	
-}}
+
+
+}
+}
 
 
 

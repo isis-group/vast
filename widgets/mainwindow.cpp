@@ -15,32 +15,32 @@ MainWindow::MainWindow( QViewerCore *core ) :
 	m_Toolbar( new QToolBar( this ) ),
 	m_PreferencesDialog( new widget::PreferencesDialog( this, core ) ),
 	m_ScalingWidget( new widget::ScalingWidget( this, core ) ),
-	m_RadiusSpin(new QSpinBox(this)),
+	m_RadiusSpin( new QSpinBox( this ) ),
 	m_LogButton( new QPushButton( this ) ),
 	m_LoggingDialog( new widget::LoggingDialog( this, core ) ),
 	m_FileDialog( new widget::FileDialog( this, core ) )
 {
 	m_UI.setupUi( this );
-	setWindowIcon( QIcon(":/common/vast.jpg") );
+	setWindowIcon( QIcon( ":/common/vast.jpg" ) );
 	loadSettings();
-	m_ActionReset_Scaling = new QAction(this);
-	m_ActionReset_Scaling->setShortcut(QKeySequence(tr("Ctrl+R, Ctrl+S") ) );
-	addAction(m_ActionReset_Scaling);
-	
+	m_ActionReset_Scaling = new QAction( this );
+	m_ActionReset_Scaling->setShortcut( QKeySequence( tr( "Ctrl+R, Ctrl+S" ) ) );
+	addAction( m_ActionReset_Scaling );
+
 	connect( m_UI.action_Save_Image, SIGNAL( triggered() ), this, SLOT( saveImage() ) );
-	connect( m_UI.actionSave_Image, SIGNAL( triggered()), this, SLOT( saveImageAs() ) );
-	connect( m_UI.actionOpen_image, SIGNAL( triggered()), this, SLOT( openImage()));
+	connect( m_UI.actionSave_Image, SIGNAL( triggered() ), this, SLOT( saveImageAs() ) );
+	connect( m_UI.actionOpen_image, SIGNAL( triggered() ), this, SLOT( openImage() ) );
 	connect( m_UI.action_Preferences, SIGNAL( triggered() ), this, SLOT( showPreferences() ) );
-	connect( m_UI.actionFind_Global_Min, SIGNAL( triggered()), this, SLOT( findGlobalMin()));
-	connect( m_UI.actionFind_Global_Max, SIGNAL( triggered()), this, SLOT( findGlobalMax()));
-	connect( m_UI.actionShow_Labels, SIGNAL( triggered(bool)), m_ViewerCore, SLOT( setShowLabels(bool)));
-	connect( m_RadiusSpin, SIGNAL(valueChanged(int)), this, SLOT( spinRadiusChanged(int)));
-	connect( m_UI.actionShow_scaling_option, SIGNAL( triggered()), this, SLOT( showScalingOption()));
-	connect( m_UI.actionIgnore_Orientation, SIGNAL( triggered(bool)), this, SLOT( ignoreOrientation(bool)));
-	connect( m_UI.action_Exit, SIGNAL( triggered()), this, SLOT( close()));
-	connect( m_LogButton, SIGNAL( clicked()), this, SLOT( showLoggingDialog()) );
-	connect( m_UI.actionPropagate_Zooming, SIGNAL(triggered(bool)), this, SLOT(propagateZooming(bool)));
-	connect( m_ActionReset_Scaling, SIGNAL( triggered()), this, SLOT(resetScaling()));
+	connect( m_UI.actionFind_Global_Min, SIGNAL( triggered() ), this, SLOT( findGlobalMin() ) );
+	connect( m_UI.actionFind_Global_Max, SIGNAL( triggered() ), this, SLOT( findGlobalMax() ) );
+	connect( m_UI.actionShow_Labels, SIGNAL( triggered( bool ) ), m_ViewerCore, SLOT( setShowLabels( bool ) ) );
+	connect( m_RadiusSpin, SIGNAL( valueChanged( int ) ), this, SLOT( spinRadiusChanged( int ) ) );
+	connect( m_UI.actionShow_scaling_option, SIGNAL( triggered() ), this, SLOT( showScalingOption() ) );
+	connect( m_UI.actionIgnore_Orientation, SIGNAL( triggered( bool ) ), this, SLOT( ignoreOrientation( bool ) ) );
+	connect( m_UI.action_Exit, SIGNAL( triggered() ), this, SLOT( close() ) );
+	connect( m_LogButton, SIGNAL( clicked() ), this, SLOT( showLoggingDialog() ) );
+	connect( m_UI.actionPropagate_Zooming, SIGNAL( triggered( bool ) ), this, SLOT( propagateZooming( bool ) ) );
+	connect( m_ActionReset_Scaling, SIGNAL( triggered() ), this, SLOT( resetScaling() ) );
 
 	//toolbar stuff
 	m_Toolbar->setOrientation( Qt::Horizontal );
@@ -59,34 +59,35 @@ MainWindow::MainWindow( QViewerCore *core ) :
 	m_Toolbar->addAction( m_UI.actionFind_Global_Max );
 	m_Toolbar->addWidget( m_RadiusSpin );
 	m_Toolbar->addSeparator();
-	m_RadiusSpin->setMinimum(0);
-	m_RadiusSpin->setMaximum(500);
-	m_RadiusSpin->setToolTip("Search radius for finding local minimum/maximum. If radius is 0 it will search the entire image.");
+	m_RadiusSpin->setMinimum( 0 );
+	m_RadiusSpin->setMaximum( 500 );
+	m_RadiusSpin->setToolTip( "Search radius for finding local minimum/maximum. If radius is 0 it will search the entire image." );
 	m_UI.statusbar->addPermanentWidget( m_ViewerCore->getProgressFeedback()->getProgressBar() );
-	
+
 	m_LogButton->setText( "Show log" );
 	m_UI.statusbar->addPermanentWidget( m_LogButton );
-	
-	m_ScalingWidget->setVisible(false);
+
+	m_ScalingWidget->setVisible( false );
 	m_WorkingInformationLabel = new QLabel( this );
-	m_WorkingInformationLabel->setFrameShape(QFrame::Box);
-	m_WorkingInformationLabel->setAlignment(Qt::AlignCenter);
-	m_WorkingInformationLabel->setFont( QFont("Times", 15 ) );
+	m_WorkingInformationLabel->setFrameShape( QFrame::Box );
+	m_WorkingInformationLabel->setAlignment( Qt::AlignCenter );
+	m_WorkingInformationLabel->setFont( QFont( "Times", 15 ) );
 	m_WorkingInformationLabel->setVisible( false );
 
 }
 
-void MainWindow::keyPressEvent(QKeyEvent* e )
+void MainWindow::keyPressEvent( QKeyEvent *e )
 {
 	if( e->key() == Qt::Key_Space ) {
 		if( m_ViewerCore->hasImage() ) {
 			const util::ivector4 size = m_ViewerCore->getCurrentImage()->getImageSize();
-			const util::ivector4 center( size[0] / 2, size[1] / 2, size[2] / 2, 
-						     m_ViewerCore->getCurrentImage()->getPropMap().getPropertyAs<util::ivector4>("voxelCoords")[3] );
-			m_ViewerCore->getCurrentImage()->getPropMap().setPropertyAs<util::ivector4>("voxelCoords",
-				center );
+			const util::ivector4 center( size[0] / 2, size[1] / 2, size[2] / 2,
+										 m_ViewerCore->getCurrentImage()->getPropMap().getPropertyAs<util::ivector4>( "voxelCoords" )[3] );
+			m_ViewerCore->getCurrentImage()->getPropMap().setPropertyAs<util::ivector4>( "voxelCoords",
+					center );
 			m_ViewerCore->updateScene();
 		}
+
 		m_ViewerCore->updateScene();
 	}
 }
@@ -94,19 +95,18 @@ void MainWindow::keyPressEvent(QKeyEvent* e )
 
 void MainWindow::resetScaling()
 {
-	BOOST_FOREACH( DataContainer::reference image, m_ViewerCore->getDataContainer()) 
-	{
-		image.second->getPropMap().setPropertyAs<double>("scaling", 1.0);
-		image.second->getPropMap().setPropertyAs<double>("offset", 0.0 );
+	BOOST_FOREACH( DataContainer::reference image, m_ViewerCore->getDataContainer() ) {
+		image.second->getPropMap().setPropertyAs<double>( "scaling", 1.0 );
+		image.second->getPropMap().setPropertyAs<double>( "offset", 0.0 );
 	}
 	m_ViewerCore->updateScene();
 	m_ScalingWidget->synchronize();
 }
 
 
-void MainWindow::propagateZooming(bool propagate)
+void MainWindow::propagateZooming( bool propagate )
 {
-	m_ViewerCore->getOptionMap()->setPropertyAs<bool>("propagateZooming", propagate);
+	m_ViewerCore->getOptionMap()->setPropertyAs<bool>( "propagateZooming", propagate );
 	m_ViewerCore->updateScene();
 }
 
@@ -118,16 +118,16 @@ void MainWindow::showLoggingDialog()
 }
 
 
-void MainWindow::ignoreOrientation(bool ignore)
+void MainWindow::ignoreOrientation( bool ignore )
 {
 	BOOST_FOREACH( DataContainer::reference image, m_ViewerCore->getDataContainer() ) {
 		if( ignore ) {
 			setOrientationToIdentity( *image.second->getISISImage() );
 		} else {
-			image.second->getISISImage()->setPropertyAs<util::fvector4>("rowVec", image.second->getPropMap().getPropertyAs<util::fvector4>("originalRowVec"));
-			image.second->getISISImage()->setPropertyAs<util::fvector4>("columnVec", image.second->getPropMap().getPropertyAs<util::fvector4>("originalColumnVec"));
-			image.second->getISISImage()->setPropertyAs<util::fvector4>("sliceVec", image.second->getPropMap().getPropertyAs<util::fvector4>("originalSliceVec"));
-			image.second->getISISImage()->setPropertyAs<util::fvector4>("indexOrigin", image.second->getPropMap().getPropertyAs<util::fvector4>("originalIndexOrigin"));
+			image.second->getISISImage()->setPropertyAs<util::fvector4>( "rowVec", image.second->getPropMap().getPropertyAs<util::fvector4>( "originalRowVec" ) );
+			image.second->getISISImage()->setPropertyAs<util::fvector4>( "columnVec", image.second->getPropMap().getPropertyAs<util::fvector4>( "originalColumnVec" ) );
+			image.second->getISISImage()->setPropertyAs<util::fvector4>( "sliceVec", image.second->getPropMap().getPropertyAs<util::fvector4>( "originalSliceVec" ) );
+			image.second->getISISImage()->setPropertyAs<util::fvector4>( "indexOrigin", image.second->getPropMap().getPropertyAs<util::fvector4>( "originalIndexOrigin" ) );
 		}
 	}
 	m_ViewerCore->updateScene();
@@ -141,17 +141,17 @@ void MainWindow::showScalingOption()
 }
 
 
-void MainWindow::spinRadiusChanged(int radius)
+void MainWindow::spinRadiusChanged( int radius )
 {
-	m_ViewerCore->getOptionMap()->setPropertyAs<uint16_t>("minMaxSearchRadius", radius);
+	m_ViewerCore->getOptionMap()->setPropertyAs<uint16_t>( "minMaxSearchRadius", radius );
 }
 
 void MainWindow::openImage()
 {
-	
+
 	m_FileDialog->setMode( isis::viewer::widget::FileDialog::OPEN_FILE );
 	m_FileDialog->show();
-	
+
 
 }
 
@@ -191,7 +191,7 @@ void MainWindow::saveImage()
 void MainWindow::saveImageAs()
 {
 	std::stringstream fileFormats;
-	fileFormats << "Image files (" << getFileFormatsAsString(isis::image_io::FileFormat::write_only, std::string( "*." ) ) << ")";
+	fileFormats << "Image files (" << getFileFormatsAsString( isis::image_io::FileFormat::write_only, std::string( "*." ) ) << ")";
 	QString filename = QFileDialog::getSaveFileName( this,
 					   tr( "Save Image As..." ),
 					   m_ViewerCore->getCurrentPath().c_str(),
@@ -252,24 +252,25 @@ void MainWindow::loadSettings()
 	if( m_ViewerCore->getSettings()->value( "maximized", false ).toBool() ) {
 		showMaximized();
 	}
+
 	m_ViewerCore->getSettings()->endGroup();
-	
+
 	m_ViewerCore->getSettings()->beginGroup( "UserProfile" );
-	
-	m_ViewerCore->getOptionMap()->setPropertyAs<bool>("propagateZooming", m_ViewerCore->getSettings()->value( "propagateZooming", false ).toBool() );
-	m_ViewerCore->getOptionMap()->setPropertyAs<bool>("showLabels", m_ViewerCore->getSettings()->value("showLabels", false).toBool() );
-	m_ViewerCore->getOptionMap()->setPropertyAs<uint16_t>("minMaxSearchRadius", 
-		m_ViewerCore->getSettings()->value("minMaxSearchRadius", m_ViewerCore->getOptionMap()->getPropertyAs<uint16_t>("minMaxSearchRadius") ).toInt() );
-	m_ViewerCore->getOptionMap()->setPropertyAs<bool>("showAdvancedFileDialogOptions", m_ViewerCore->getSettings()->value("showAdvancedFileDialogOptions", false).toBool() );
+
+	m_ViewerCore->getOptionMap()->setPropertyAs<bool>( "propagateZooming", m_ViewerCore->getSettings()->value( "propagateZooming", false ).toBool() );
+	m_ViewerCore->getOptionMap()->setPropertyAs<bool>( "showLabels", m_ViewerCore->getSettings()->value( "showLabels", false ).toBool() );
+	m_ViewerCore->getOptionMap()->setPropertyAs<uint16_t>( "minMaxSearchRadius",
+			m_ViewerCore->getSettings()->value( "minMaxSearchRadius", m_ViewerCore->getOptionMap()->getPropertyAs<uint16_t>( "minMaxSearchRadius" ) ).toInt() );
+	m_ViewerCore->getOptionMap()->setPropertyAs<bool>( "showAdvancedFileDialogOptions", m_ViewerCore->getSettings()->value( "showAdvancedFileDialogOptions", false ).toBool() );
 	m_ViewerCore->getSettings()->endGroup();
 }
 
 void MainWindow::refreshUI()
 {
-	m_UI.actionShow_Labels->setChecked( m_ViewerCore->getOptionMap()->getPropertyAs<bool>("showLabels") );
-	m_ViewerCore->setShowLabels(m_UI.actionShow_Labels->isChecked());
-	m_UI.actionPropagate_Zooming->setChecked( m_ViewerCore->getOptionMap()->getPropertyAs<bool>("propagateZooming"));
-	m_RadiusSpin->setValue( m_ViewerCore->getOptionMap()->getPropertyAs<uint16_t>("minMaxSearchRadius"));
+	m_UI.actionShow_Labels->setChecked( m_ViewerCore->getOptionMap()->getPropertyAs<bool>( "showLabels" ) );
+	m_ViewerCore->setShowLabels( m_UI.actionShow_Labels->isChecked() );
+	m_UI.actionPropagate_Zooming->setChecked( m_ViewerCore->getOptionMap()->getPropertyAs<bool>( "propagateZooming" ) );
+	m_RadiusSpin->setValue( m_ViewerCore->getOptionMap()->getPropertyAs<uint16_t>( "minMaxSearchRadius" ) );
 }
 
 
@@ -290,7 +291,7 @@ void MainWindow::saveSettings()
 	m_ViewerCore->getSettings()->setValue( "propagateZooming", m_UI.actionPropagate_Zooming->isChecked() );
 	m_ViewerCore->getSettings()->setValue( "minMaxSearchRadius", m_RadiusSpin->value() );
 	m_ViewerCore->getSettings()->setValue( "showLabels", m_UI.actionShow_Labels->isChecked() );
-	m_ViewerCore->getSettings()->setValue( "showAdvancedFileDialogOptions", m_ViewerCore->getOptionMap()->getPropertyAs<bool>("showAdvancedFileDialogOptions") );
+	m_ViewerCore->getSettings()->setValue( "showAdvancedFileDialogOptions", m_ViewerCore->getOptionMap()->getPropertyAs<bool>( "showAdvancedFileDialogOptions" ) );
 	m_ViewerCore->getSettings()->endGroup();
 	m_ViewerCore->getSettings()->sync();
 }
@@ -302,18 +303,18 @@ void MainWindow::showPreferences()
 
 void MainWindow::findGlobalMin()
 {
-	const util::ivector4 minVoxel = operation::NativeImageOps::getGlobalMin( m_ViewerCore->getCurrentImage(), 
-																			 m_ViewerCore->getCurrentImage()->getPropMap().getPropertyAs<util::ivector4>("voxelCoords"), 
-																			 m_RadiusSpin->value());
+	const util::ivector4 minVoxel = operation::NativeImageOps::getGlobalMin( m_ViewerCore->getCurrentImage(),
+									m_ViewerCore->getCurrentImage()->getPropMap().getPropertyAs<util::ivector4>( "voxelCoords" ),
+									m_RadiusSpin->value() );
 	m_ViewerCore->physicalCoordsChanged( m_ViewerCore->getCurrentImage()->getISISImage()->getPhysicalCoordsFromIndex( minVoxel ) );
 
 }
 
 void MainWindow::findGlobalMax()
 {
-	const util::ivector4 maxVoxel = operation::NativeImageOps::getGlobalMax( m_ViewerCore->getCurrentImage(), 
-																			 m_ViewerCore->getCurrentImage()->getPropMap().getPropertyAs<util::ivector4>("voxelCoords"), 
-																			 m_RadiusSpin->value() );
+	const util::ivector4 maxVoxel = operation::NativeImageOps::getGlobalMax( m_ViewerCore->getCurrentImage(),
+									m_ViewerCore->getCurrentImage()->getPropMap().getPropertyAs<util::ivector4>( "voxelCoords" ),
+									m_RadiusSpin->value() );
 	m_ViewerCore->physicalCoordsChanged( m_ViewerCore->getCurrentImage()->getISISImage()->getPhysicalCoordsFromIndex( maxVoxel ) );
 }
 

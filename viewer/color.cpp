@@ -93,21 +93,24 @@ QIcon Color::getIcon( const std::string &colormapName, size_t w, size_t h, icon_
 	unsigned short index = 0;
 	unsigned short start = 0;
 	unsigned short end = 0;
-	switch( type) {
-		case both:
-			start = 0;
-			end = 256;
-			break;
-		case lower_half:
-			start = 0;
-			end = 128;
-			break;
-		case upper_half:
-			start = 128;
-			end = 256;
-			break;
+
+	switch( type ) {
+	case both:
+		start = 0;
+		end = 256;
+		break;
+	case lower_half:
+		start = 0;
+		end = 128;
+		break;
+	case upper_half:
+		start = 128;
+		end = 256;
+		break;
 	}
-	data::ValuePtr<uint8_t> lutImage( ( end - start) * 3 );
+
+	data::ValuePtr<uint8_t> lutImage( ( end - start ) * 3 );
+
 	if( !flipped ) {
 		for ( unsigned short i = start; i < end; i++ ) {
 			lutImage[index++] = QColor( lut[i] ).red();
@@ -121,7 +124,8 @@ QIcon Color::getIcon( const std::string &colormapName, size_t w, size_t h, icon_
 			lutImage[index++] = QColor( lut[i] ).blue();
 		}
 	}
-	QImage image( static_cast<uint8_t *>( lutImage.getRawAddress().get() ), (end - start), 1, QImage::Format_RGB888 );
+
+	QImage image( static_cast<uint8_t *>( lutImage.getRawAddress().get() ), ( end - start ), 1, QImage::Format_RGB888 );
 	QPixmap pixmap( QPixmap::fromImage( image ) );
 	return QIcon( pixmap.scaled( w, h ) );
 }
@@ -159,6 +163,7 @@ color::Color::ColormapType color::Color::adaptColorMapToImage( color::Color::Col
 	const double norm = 256.0 / extent;
 	const unsigned short mid = norm * fabs( min );
 	unsigned short scaledVal;
+
 	for ( unsigned short i = 0; i < 256; i++ ) {
 		scaledVal = i * scaling + offset * norm > 255 ? 255 : i * scaling + offset * norm;
 		retMap[i] = colorMap[scaledVal];

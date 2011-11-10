@@ -108,11 +108,13 @@ void OrientatioCorrectionDialog::rotatePressed()
 bool OrientatioCorrectionDialog::applyTransform( const boost::numeric::ublas::matrix< float >& trans, bool center ) const
 {
 	bool ret = m_Core->getCurrentImage()->getISISImage()->transformCoords( trans, center );
+
 	if( ret ) {
-		m_Core->getCurrentImage()->getPropMap().setPropertyAs<util::fvector4>("originalRowVec", m_Core->getCurrentImage()->getISISImage()->getPropertyAs<util::fvector4>("rowVec"));
-		m_Core->getCurrentImage()->getPropMap().setPropertyAs<util::fvector4>("originalColumnVec", m_Core->getCurrentImage()->getISISImage()->getPropertyAs<util::fvector4>("columnVec"));
-		m_Core->getCurrentImage()->getPropMap().setPropertyAs<util::fvector4>("originalSliceVec", m_Core->getCurrentImage()->getISISImage()->getPropertyAs<util::fvector4>("sliceVec"));
+		m_Core->getCurrentImage()->getPropMap().setPropertyAs<util::fvector4>( "originalRowVec", m_Core->getCurrentImage()->getISISImage()->getPropertyAs<util::fvector4>( "rowVec" ) );
+		m_Core->getCurrentImage()->getPropMap().setPropertyAs<util::fvector4>( "originalColumnVec", m_Core->getCurrentImage()->getISISImage()->getPropertyAs<util::fvector4>( "columnVec" ) );
+		m_Core->getCurrentImage()->getPropMap().setPropertyAs<util::fvector4>( "originalSliceVec", m_Core->getCurrentImage()->getISISImage()->getPropertyAs<util::fvector4>( "sliceVec" ) );
 	}
+
 	m_Core->updateScene();
 	return ret;
 

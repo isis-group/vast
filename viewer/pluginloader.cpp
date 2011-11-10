@@ -58,9 +58,11 @@ unsigned int PluginLoader::findPlugins( std::list< std::string > paths )
 			LOG( Runtime, warning ) << util::MSubject( p.native_file_string() ) << " is not a directory!";
 			pathOk = false;
 		}
+
 		LOG( Runtime, info ) << "Scanning " << util::MSubject( p ) << " for plugins...";
 
 		boost::regex pluginFilter( std::string( "^" ) + DL_PREFIX + "vastPlugin" + "[[:word:]]+" + DL_SUFFIX + "$" );
+
 		if( pathOk ) {
 			for ( boost::filesystem::directory_iterator itr( p ); itr != boost::filesystem::directory_iterator(); ++itr ) {
 				if ( boost::filesystem::is_directory( *itr ) )continue;
