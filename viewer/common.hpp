@@ -16,6 +16,7 @@
 #include <CoreUtils/common.hpp>
 #include <DataStorage/io_interface.h>
 
+
 namespace isis
 {
 
@@ -24,7 +25,7 @@ struct ViewerDebug {static const char *name() {return "ViewerDebug";}; enum {use
 
 namespace viewer
 {
-
+class ImageHolder;
 typedef uint8_t InternalImageType;
 
 // just some helper typedefs which we will need regularly
@@ -40,6 +41,7 @@ TYPE roundNumber( TYPE number, unsigned  short placesOfDec )
 }
 
 void setOrientationToIdentity( data::Image &image );
+void checkForCaCp( boost::shared_ptr<ImageHolder> );
 std::string getFileFormatsAsString( image_io::FileFormat::io_modes mode, const std::string preSeparator, const std::string postSeparator = std::string( " " ) );
 std::list<std::string> getFileFormatsAsList( image_io::FileFormat::io_modes mode );
 
@@ -55,5 +57,5 @@ template<typename HANDLE> void enable_log( LogLevel level )
 
 }
 }
-
+#include "imageholder.hpp"
 #endif /* VIEWER_COMMON_HPP_ */

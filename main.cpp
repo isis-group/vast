@@ -87,6 +87,7 @@ int main( int argc, char *argv[] )
 		std::list< data::Image > tmpList = data::IOFactory::load( fileName, app.parameters["rf"].toString(), app.parameters["rdialect"].toString() );
 		BOOST_FOREACH( std::list< data::Image >::reference imageRef, tmpList ) {
 			imgList.push_back( imageRef );
+			
 		}
 	}
 	//load the zmap images
@@ -102,6 +103,7 @@ int main( int argc, char *argv[] )
 		std::list< data::Image > tmpList = data::IOFactory::load( fileName, app.parameters["rf"].toString(), dialect );
 		BOOST_FOREACH( std::list< data::Image >::reference imageRef, tmpList ) {
 			zImgList.push_back( imageRef );
+			
 		}
 	}
 	core->getUI()->setShowWorkingLabel( "", false );
