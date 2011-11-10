@@ -235,6 +235,7 @@ void QImageWidgetImplementation::paintImage( boost::shared_ptr< ImageHolder > im
 	m_Painter->resetMatrix();
 	m_Painter->fillRect( imgProps.viewPort[4] + imgProps.viewPort[2], -1, width(), height(), Qt::black );
 	m_Painter->fillRect( -1, imgProps.viewPort[5] + imgProps.viewPort[3], width(), height(), Qt::black );
+	m_Painter->fillRect( 0, -1, imgProps.viewPort[2], height(), Qt::black );
 }
 
 

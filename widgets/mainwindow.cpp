@@ -128,6 +128,7 @@ void MainWindow::ignoreOrientation( bool ignore )
 			image.second->getISISImage()->setPropertyAs<util::fvector4>( "columnVec", image.second->getPropMap().getPropertyAs<util::fvector4>( "originalColumnVec" ) );
 			image.second->getISISImage()->setPropertyAs<util::fvector4>( "sliceVec", image.second->getPropMap().getPropertyAs<util::fvector4>( "originalSliceVec" ) );
 			image.second->getISISImage()->setPropertyAs<util::fvector4>( "indexOrigin", image.second->getPropMap().getPropertyAs<util::fvector4>( "originalIndexOrigin" ) );
+			image.second->getISISImage()->updateOrientationMatrices();
 		}
 	}
 	m_ViewerCore->updateScene();
