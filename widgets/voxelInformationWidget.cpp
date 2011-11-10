@@ -1,5 +1,6 @@
 #include "voxelInformationWidget.hpp"
 #include <color.hpp>
+#include <imageholder.hpp>
 
 namespace isis
 {
@@ -166,10 +167,13 @@ void VoxelInformationWidget::synchronizePos( util::fvector4 physicalCoords )
 void VoxelInformationWidget::synchronizePos( util::ivector4 voxelCoords )
 {
 	disconnectSignals();
-	const std::string typeName = m_ViewerCore->getCurrentImage()->getISISImage()->getChunk( voxelCoords[0], voxelCoords[1], voxelCoords[2], voxelCoords[3], false ).getTypeName();
+	boost::shared_ptr<ImageHolder> image = m_ViewerCore->getCurrentImage();
+	if( !image->isInsideImage( voxelCoords ) ) return;
+	
+	const std::string typeName = image->getISISImage()->getChunk( voxelCoords[0], voxelCoords[1], voxelCoords[2], voxelCoords[3], false ).getTypeName();
 	m_Interface.intensityValue->setToolTip( typeName.substr( 0, typeName.length() - 1 ).c_str() );
 
-	switch( m_ViewerCore->getCurrentImage()->getISISImage()->getChunk( voxelCoords[0], voxelCoords[1], voxelCoords[2], voxelCoords[3], false ).getTypeID() ) {
+	switch( image->getISISImage()->getChunk( voxelCoords[0], voxelCoords[1], voxelCoords[2], voxelCoords[3], false ).getTypeID() ) {
 	case isis::data::ValuePtr<int8_t>::staticID:
 		displayIntensity<int8_t>( voxelCoords );
 		break;
@@ -205,7 +209,7 @@ void VoxelInformationWidget::synchronizePos( util::ivector4 voxelCoords )
 	m_Interface.rowBox->setValue( voxelCoords[0] );
 	m_Interface.columnBox->setValue( voxelCoords[1] );
 	m_Interface.sliceBox->setValue( voxelCoords[2] );
-	const util::fvector4 physCoords = m_ViewerCore->getCurrentImage()->getISISImage()->getPhysicalCoordsFromIndex( voxelCoords );
+	const util::fvector4 physCoords = image->getISISImage()->getPhysicalCoordsFromIndex( voxelCoords );
 	m_Interface.xBox->setValue( physCoords[0] );
 	m_Interface.yBox->setValue( physCoords[1] );
 	m_Interface.zBox->setValue( physCoords[2] );

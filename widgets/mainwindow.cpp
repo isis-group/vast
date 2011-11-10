@@ -94,12 +94,13 @@ void MainWindow::keyPressEvent(QKeyEvent* e )
 
 void MainWindow::resetScaling()
 {
-	if( m_ViewerCore->hasImage() ) {
-		m_ViewerCore->getCurrentImage()->getPropMap().setPropertyAs<double>("scaling", 1.0);
-		m_ViewerCore->getCurrentImage()->getPropMap().setPropertyAs<double>("offset", 0.0 );
-		m_ViewerCore->updateScene();
-		m_ScalingWidget->synchronize();
+	BOOST_FOREACH( DataContainer::reference image, m_ViewerCore->getDataContainer()) 
+	{
+		image.second->getPropMap().setPropertyAs<double>("scaling", 1.0);
+		image.second->getPropMap().setPropertyAs<double>("offset", 0.0 );
 	}
+	m_ViewerCore->updateScene();
+	m_ScalingWidget->synchronize();
 }
 
 

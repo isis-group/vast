@@ -89,7 +89,6 @@ boost::shared_ptr< ImageHolder > QImageWidgetImplementation::getWidgetSpecCurren
 	if( std::find( m_ImageVector.begin(), m_ImageVector.end(), m_ViewerCore->getCurrentImage() ) != m_ImageVector.end() ) {
 		return m_ViewerCore->getCurrentImage();
 	}
-
 	return m_ImageVector.front();
 
 }
@@ -153,13 +152,7 @@ void QImageWidgetImplementation::paintEvent( QPaintEvent *event )
 			m_Painter->setFont( QFont("Chicago", 10) );
 			m_Painter->setPen( Qt::white );
 			std::stringstream scalingOffset;
-			boost::shared_ptr<ImageHolder> image;
-			if( std::find(m_ImageVector.begin(), m_ImageVector.end(), m_ViewerCore->getCurrentImage()) != m_ImageVector.end() )
-			{
-				image = m_ViewerCore->getCurrentImage();
-			} else {
-				image = m_ImageVector.front();
-			}
+			boost::shared_ptr<ImageHolder> image = getWidgetSpecCurrentImage();
 			scalingOffset << "Scaling: " << image->getPropMap().getPropertyAs<double>("scaling")
 				<< " Offset: " << image->getPropMap().getPropertyAs<double>("offset");
 			m_Painter->drawText( 10, 30, scalingOffset.str().c_str() );
@@ -249,6 +242,10 @@ void QImageWidgetImplementation::mousePressEvent( QMouseEvent *e )
 	} else if ( e->button() == Qt::LeftButton ) {
 		m_LeftMouseButtonPressed = true;
 	}
+	if( m_LeftMouseButtonPressed && m_RightMouseButtonPressed ) {
+		m_StartCoordsPair.first = e->x();
+		m_StartCoordsPair.second = e->y();
+	} 
 
 	emitMousePressEvent( e );
 }
@@ -257,17 +254,11 @@ void QImageWidgetImplementation::mouseMoveEvent( QMouseEvent *e )
 {
 	if(m_RightMouseButtonPressed && m_LeftMouseButtonPressed )
 	{
-		boost::shared_ptr<ImageHolder> image;
-		if( std::find(m_ImageVector.begin(), m_ImageVector.end(), m_ViewerCore->getCurrentImage()) != m_ImageVector.end() )
-		{
-			image = m_ViewerCore->getCurrentImage();
-		} else {
-			image = m_ImageVector.front();
-		}
-		const double offset =  (height() - e->y()) / (float)height() * image->getPropMap().getPropertyAs<double>("extent");
-		const double scaling = (float)width() / (float)(width() - e->x()) / 2.0;
+		boost::shared_ptr<ImageHolder> image = getWidgetSpecCurrentImage();
+		const double offset =  (m_StartCoordsPair.second - e->y()) / (float)height() * image->getPropMap().getPropertyAs<double>("extent");
+		const double scaling = 1.0 - (m_StartCoordsPair.first - e->x()) / (float)width() * 5;
 		image->getPropMap().setPropertyAs<double>("offset", offset);
-		image->getPropMap().setPropertyAs<double>("scaling", scaling);
+		image->getPropMap().setPropertyAs<double>("scaling", scaling < 0.0 ? 0.0 : scaling);
 		m_ShowScalingOffset = true;
 		m_ViewerCore->updateScene();
 	}else if( m_RightMouseButtonPressed || m_LeftMouseButtonPressed ) {
@@ -290,7 +281,7 @@ void QImageWidgetImplementation::emitMousePressEvent( QMouseEvent *e )
 
 	uint16_t slice = QOrienationHandler::mapCoordsToOrientation( image->getPropMap().getPropertyAs<util::ivector4>( "voxelCoords" ), image, m_PlaneOrientation )[2];
 	util::ivector4 coords = QOrienationHandler::convertWindow2VoxelCoords( imgProps.viewPort, m_WidgetProperties, image, e->x(), e->y(), slice, m_PlaneOrientation );
-	physicalCoordsChanged( m_ViewerCore->getCurrentImage()->getISISImage()->getPhysicalCoordsFromIndex( coords ) );
+	physicalCoordsChanged( image->getISISImage()->getPhysicalCoordsFromIndex( coords ) );
 }
 
 void QImageWidgetImplementation::showLabels() const

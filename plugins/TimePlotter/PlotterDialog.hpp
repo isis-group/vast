@@ -29,23 +29,29 @@ public:
 		plot->setAxisTitle( 2, tr( "Timestep" ) );
 		plot->setAxisTitle( 0, tr( "Intensity" ) );
 		plot->setBackgroundRole( QPalette::Light );
-		connect( m_Core, SIGNAL( emitVoxelCoordChanged(util::ivector4)), this, ( SLOT( refresh( util::ivector4 ) ) ) );
+		connect( m_Core, SIGNAL( emitPhysicalCoordsChanged(util::fvector4)), this, ( SLOT( refresh( util::fvector4 ) ) ) );
+		if( m_Core->hasImage() ) {
+			refresh( m_Core->getCurrentImage()->getPropMap().getPropertyAs<util::fvector4>("physicalCoords") );
+		}
 
 	};
 public Q_SLOTS:
-	virtual void refresh( util::ivector4 voxCoords ) {
+	virtual void refresh( util::fvector4 physicalCoords ) {
 		if( !ui.checkLock->isChecked() ) {
-			if( m_Core->getCurrentImage()->getImageSize()[3] > 1 && m_Core->getCurrentImage()->getPropMap().getPropertyAs<bool>( "isVisible" ) ) {
+			boost::shared_ptr<ImageHolder> image = m_Core->getCurrentImage();
+			if( image->getImageSize()[3] > 1 && image->getPropMap().getPropertyAs<bool>( "isVisible" ) ) {
 				std::stringstream title;
 				std::stringstream coordsAsString;
+				util::ivector4 voxCoords = image->getISISImage()->getIndexFromPhysicalCoords(physicalCoords);
+				if ( !image->isInsideImage( voxCoords )) return;
 				title << "Timecourse for " << m_Core->getCurrentImage()->getFileNames().front();
 				coordsAsString << voxCoords[0] << " : " << voxCoords[1] << " : " << voxCoords[2];
 				plot->setTitle( coordsAsString.str().c_str() );
 				setWindowTitle( title.str().c_str() );
 				uint16_t repTime = 1;
 
-				if ( m_Core->getCurrentImage()->getISISImage()->hasProperty( "repetitionTime" ) ) {
-					repTime = ( float )m_Core->getCurrentImage()->getISISImage()->getPropertyAs<uint16_t>( "repetitionTime" ) / 1000;
+				if (image->getISISImage()->hasProperty( "repetitionTime" ) ) {
+					repTime = ( float )image->getISISImage()->getPropertyAs<uint16_t>( "repetitionTime" ) / 1000;
 					plot->setAxisTitle( 2, tr( "t / s" ) );
 				} else {
 					plot->setAxisTitle( 2, tr( "Repetition (missing TR)" ) );
@@ -55,10 +61,10 @@ public Q_SLOTS:
 				QVector<double> intensityValues;
 				using namespace isis::data;
 
-				for ( size_t t = 0; t < m_Core->getCurrentImage()->getImageSize()[3]; t++ ) {
+				for ( size_t t = 0; t < image->getImageSize()[3]; t++ ) {
 					timeSteps.push_back( t * repTime );
 					
-					switch( m_Core->getCurrentImage()->getISISImage()->getChunk( voxCoords[0], voxCoords[1], voxCoords[2], t ).getTypeID() ) {
+					switch( image->getISISImage()->getChunk( voxCoords[0], voxCoords[1], voxCoords[2], t ).getTypeID() ) {
 					case ValuePtr<int8_t>::staticID:
 						fillVector<int8_t>( intensityValues, t, voxCoords );
 						break;

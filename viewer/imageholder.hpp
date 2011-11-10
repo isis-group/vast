@@ -74,6 +74,9 @@ public:
 	void addWidget( QWidgetImplementationBase *widget ) { m_WidgetList.push_back( widget ); }
 	void removeWidget( QWidgetImplementationBase *widget ) { m_WidgetList.erase( std::find(m_WidgetList.begin(), m_WidgetList.end(), widget ) ) ; }
 	std::list< QWidgetImplementationBase * > getWidgetList() { return m_WidgetList; }
+	
+	bool isInsideImage( const util::ivector4 &voxelCoords ) const;
+	bool isInsideImage( const util::fvector4 &physicalCoords ) const;
 
 	/**offset, scaling**/
 	template<typename TYPE>

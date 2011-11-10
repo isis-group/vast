@@ -210,6 +210,23 @@ void ImageHolder::addChangedAttribute( const std::string &attribute )
 }
 
 
+bool ImageHolder::isInsideImage(const isis::util::ivector4& voxelCoords) const
+{
+	for( unsigned short i = 0; i<4; i++ ) {
+		if( voxelCoords[i] >= getImageSize()[i] || voxelCoords[i] < 0 ) {
+			return false;
+		}
+	}
+	return true;
+}
+
+bool ImageHolder::isInsideImage(const isis::util::fvector4& physicalCoords) const
+{
+	return isInsideImage( getISISImage()->getIndexFromPhysicalCoords( physicalCoords));
+}
+
+
+
 }
 } //end namespace
 

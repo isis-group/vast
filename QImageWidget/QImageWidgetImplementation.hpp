@@ -89,6 +89,8 @@ private:
 	bool m_LeftMouseButtonPressed;
 	bool m_RightMouseButtonPressed;
 	bool m_ShowScalingOffset;
+	
+	std::pair<int,int> m_StartCoordsPair;
 
 };
 
