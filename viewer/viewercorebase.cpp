@@ -1,4 +1,5 @@
 #include "viewercorebase.hpp"
+#include "common.hpp"
 
 #define STR(s) _xstr_(s)
 #define _xstr_(s) std::string(#s)
@@ -25,6 +26,7 @@ ImageHolder::ImageListType ViewerCoreBase::addImageList( const std::list< data::
 	if( !imageList.empty() ) {
 		BOOST_FOREACH( std::list< data::Image >::const_reference imageRef, imageList ) {
 			boost::shared_ptr< ImageHolder > imageHolder = m_DataContainer.addImage( imageRef, imageType );
+			checkForCaCp( imageHolder );
 			retList.push_back( imageHolder );
 			m_ImageList.push_back( imageHolder );
 		}
@@ -39,6 +41,7 @@ ImageHolder::ImageListType ViewerCoreBase::addImageList( const std::list< data::
 boost::shared_ptr<ImageHolder> ViewerCoreBase::addImage( const isis::data::Image &image, const isis::viewer::ImageHolder::ImageType &imageType )
 {
 	boost::shared_ptr<ImageHolder> retImage = m_DataContainer.addImage( image, imageType );
+	checkForCaCp(retImage);
 	m_ImageList.push_back( retImage );
 	setCurrentImage( m_DataContainer.begin()->second );
 	return retImage;

@@ -65,7 +65,7 @@ void VoxelInformationWidget::physPosChanged()
 	util::fvector4 physicalCoord ( m_Interface.xBox->text().toFloat(),
 								   m_Interface.yBox->text().toFloat(),
 								   m_Interface.zBox->text().toFloat() );
-	m_ViewerCore->physicalCoordsChanged( physicalCoord );
+	m_ViewerCore->physicalCoordsChanged( physicalCoord - m_ViewerCore->getCurrentImage()->getPropMap().getPropertyAs<util::fvector4>("originTransformation") );
 }
 
 void VoxelInformationWidget::voxPosChanged()
@@ -120,7 +120,7 @@ void VoxelInformationWidget::synchronize()
 		m_Interface.rowBox->setMaximum( outerCorner[0] );
 		m_Interface.columnBox->setMaximum( outerCorner[1] );
 		m_Interface.sliceBox->setMaximum( outerCorner[2] );
-		const util::fvector4 physicalBegin = image->getISISImage()->getPhysicalCoordsFromIndex( util::ivector4() );
+		const util::fvector4 physicalBegin = image->getISISImage()->getPhysicalCoordsFromIndex( util::ivector4() ) + image->getPropMap().getPropertyAs<util::fvector4>("originTransformation");
 		const util::fvector4 physicalEnd = image->getISISImage()->getPhysicalCoordsFromIndex( outerCorner );
 		m_Interface.xBox->setMinimum( physicalBegin[0] < physicalEnd[0] ? physicalBegin[0] : physicalEnd[0] );
 		m_Interface.xBox->setMaximum( physicalBegin[0] > physicalEnd[0] ? physicalBegin[0] : physicalEnd[0] );
@@ -214,7 +214,7 @@ void VoxelInformationWidget::synchronizePos( util::ivector4 voxelCoords )
 	m_Interface.rowBox->setValue( voxelCoords[0] );
 	m_Interface.columnBox->setValue( voxelCoords[1] );
 	m_Interface.sliceBox->setValue( voxelCoords[2] );
-	const util::fvector4 physCoords = image->getISISImage()->getPhysicalCoordsFromIndex( voxelCoords );
+	const util::fvector4 physCoords = image->getISISImage()->getPhysicalCoordsFromIndex( voxelCoords ) + image->getPropMap().getPropertyAs<util::fvector4>("originTransformation");
 	m_Interface.xBox->setValue( physCoords[0] );
 	m_Interface.yBox->setValue( physCoords[1] );
 	m_Interface.zBox->setValue( physCoords[2] );
