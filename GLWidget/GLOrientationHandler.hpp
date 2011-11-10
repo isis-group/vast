@@ -2,7 +2,7 @@
 #define ORIENTATIONHANDLER_HPP
 
 #include "GLCommon.hpp"
-#include "ImageHolder.hpp"
+#include "imageholder.hpp"
 #include "common.hpp"
 #include <boost/numeric/ublas/matrix.hpp>
 #include <boost/numeric/ublas/io.hpp>

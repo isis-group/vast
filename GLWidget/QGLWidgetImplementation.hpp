@@ -3,7 +3,7 @@
 
 #include "GLCommon.hpp"
 #include <QtOpenGL>
-#include "QViewerCore.hpp"
+#include "qviewercore.hpp"
 #include "GLTextureHandler.hpp"
 #include <iostream>
 #include <DataStorage/chunk.hpp>
@@ -11,7 +11,7 @@
 #include "GLOrientationHandler.hpp"
 #include "GLShaderHandler.hpp"
 #include "GLLookupTable.hpp"
-#include "QWidgetImplementationBase.hpp"
+#include "widgetImplementationBase.hpp"
 
 namespace isis
 {

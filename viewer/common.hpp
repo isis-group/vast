@@ -14,6 +14,7 @@
 #include <boost/shared_ptr.hpp>
 #include <DataStorage/common.hpp>
 #include <CoreUtils/common.hpp>
+#include <DataStorage/io_interface.h>
 
 namespace isis
 {
@@ -39,7 +40,8 @@ TYPE roundNumber( TYPE number, unsigned  short placesOfDec )
 }
 
 void setOrientationToIdentity( data::Image &image );
-std::string getFileFormatsAsString( const std::string preSeparator, const std::string postSeparator = std::string( " " ) );
+std::string getFileFormatsAsString( image_io::FileFormat::io_modes mode, const std::string preSeparator, const std::string postSeparator = std::string( " " ) );
+std::list<std::string> getFileFormatsAsList( image_io::FileFormat::io_modes mode );
 
 util::ivector4 get32BitAlignedSize( const util::ivector4 &origSize );
 

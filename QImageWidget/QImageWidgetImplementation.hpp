@@ -5,10 +5,10 @@
 #include <QWidget>
 #include <QPainter>
 #include <QtGui>
-#include "QWidgetImplementationBase.hpp"
-#include "QViewerCore.hpp"
+#include "widgetImplementationBase.hpp"
+#include "qviewercore.hpp"
 #include "QMemoryHandler.hpp"
-#include "Color.hpp"
+#include "color.hpp"
 #include "QtWidgetCommon.hpp"
 
 namespace isis
@@ -26,7 +26,6 @@ class QImageWidgetImplementation : public QWidget, public QWidgetImplementationB
 	struct ImageProperties {
 		/**scaling, offset, size**/
 		ViewPortType viewPort;
-		Color colorHandler;
 	};
 	typedef std::map<boost::shared_ptr<ImageHolder>, ImageProperties> ImagePropertiesMapType;
 
@@ -43,12 +42,12 @@ public Q_SLOTS:
 	virtual bool removeImage( const boost::shared_ptr<ImageHolder> image );
 	virtual void paintImage( boost::shared_ptr< ImageHolder > image );
 	virtual void paintCrosshair() const;
-	virtual void setScalingType( ScalingType scaling );
 
 	virtual bool lookAtPhysicalCoords( const util::fvector4 &physicalCoords );
 	virtual bool lookAtVoxelCoords( const util::ivector4 &voxelCoords );
-	virtual void updateScene( bool center );
+	virtual void updateScene();
 	virtual void setInterpolationType( InterpolationType interType ) { m_InterpolationType = interType; }
+	virtual void setShowLabels( bool show ) { m_ShowLabels = show; m_Border = show ? 18 : 0; }
 
 	virtual std::string getWidgetName() const;
 	virtual void setWidgetName( const std::string &wName );
@@ -74,6 +73,7 @@ private:
 	void emitMousePressEvent( QMouseEvent *e );
 	bool isInViewPort( const ViewPortType &viewPort, QMouseEvent *e ) const;
 	void recalculateTranslation();
+	void showLabels() const ;
 
 	boost::shared_ptr<ImageHolder> getWidgetSpecCurrentImage() const;
 
@@ -84,8 +84,13 @@ private:
 	QPainter *m_Painter;
 	InternalImageType m_InterpolationType;
 	ScalingType m_ScalingType;
-	ImageVectorType m_ImageVector;
+	bool m_ShowLabels;
+	unsigned short m_Border;
+	bool m_LeftMouseButtonPressed;
+	bool m_RightMouseButtonPressed;
+	bool m_ShowScalingOffset;
 
+	std::pair<int, int> m_StartCoordsPair;
 
 };
 

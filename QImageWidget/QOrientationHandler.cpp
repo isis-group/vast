@@ -58,6 +58,7 @@ util::fvector4 QOrienationHandler::mapCoordsToOrientation( const util::fvector4 
 		transformMatrix( 1, 2 ) = -1;
 		break;
 	}
+
 	if( back ) {
 		finVec = prod( trans( prod(  transformMatrix, image->getNormalizedImageOrientation() ) ), vec );
 	} else {
@@ -94,7 +95,7 @@ util::ivector4 QOrienationHandler::getMappedCoords( const boost::shared_ptr< Ima
 
 
 
-ViewPortType QOrienationHandler::getViewPort(  util::PropertyMap &properties, const boost::shared_ptr< ImageHolder > image, const size_t &w, const size_t &h, PlaneOrientation orientation )
+ViewPortType QOrienationHandler::getViewPort(  util::PropertyMap &properties, const boost::shared_ptr< ImageHolder > image, const size_t &w, const size_t &h, PlaneOrientation orientation, unsigned short border )
 {
 	ViewPortType viewPort;
 	float zoom = properties.getPropertyAs<float>( "currentZoom" );
@@ -102,17 +103,16 @@ ViewPortType QOrienationHandler::getViewPort(  util::PropertyMap &properties, co
 	util::fvector4 mappedScaling = QOrienationHandler::mapCoordsToOrientation( image->getISISImage()->getPropertyAs<util::fvector4>( "voxelSize" ), image, orientation );
 	mappedScaling += QOrienationHandler::mapCoordsToOrientation( image->getISISImage()->getPropertyAs<util::fvector4>( "voxelGap" ), image, orientation );
 	util::fvector4 physSize = mappedScaling * mappedSize;
-
-	float scalew = w / float( physSize[0] );
-	float scaleh = h / float( physSize[1] );
+	float scalew = ( w - border * 2 ) / float( physSize[0] );
+	float scaleh = ( h - border * 2 ) / float( physSize[1] );
 
 	float scale = scaleh < scalew ? scaleh : scalew;
 
 	viewPort[0] =  mappedScaling[0] * zoom * scale;
 	viewPort[1] =  mappedScaling[1] * zoom * scale;
 
-	float offsetX = ( w - ( mappedSize[0] * viewPort[0] ) ) / 2;
-	float offsetY = ( h - ( mappedSize[1] * viewPort[1] ) ) / 2;
+	float offsetX = ( ( w - border * 2 ) - ( mappedSize[0] * viewPort[0] ) ) / 2 + border;
+	float offsetY = ( ( h - border * 2 ) - ( mappedSize[1] * viewPort[1] ) ) / 2 + border;
 	viewPort[2] = offsetX ;
 	viewPort[3] = offsetY ;
 	viewPort[4] = round( mappedSize[0] * viewPort[0] );
@@ -150,6 +150,8 @@ util::ivector4 QOrienationHandler::convertWindow2VoxelCoords( const ViewPortType
 
 	for ( size_t i = 0; i < 2; i++ ) {
 		coords[i] = mappedSize[i] < 0 ? abs( mappedSize[i] ) - coords[i] - 1 : coords[i];
+		coords[i] = coords[i] < 0 ? 0 : coords[i];
+		coords[i] = coords[i] >= abs( mappedSize[i] ) ? abs( mappedSize[i] ) - 1 : coords[i];
 	}
 
 	return QOrienationHandler::mapCoordsToOrientation( coords, image, orientation, true );

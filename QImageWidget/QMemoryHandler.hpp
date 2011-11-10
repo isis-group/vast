@@ -1,7 +1,7 @@
 #ifndef QMEMORYHANDLER_HPP
 #define QMEMORYHANDLER_HPP
 
-#include "QViewerCore.hpp"
+#include "qviewercore.hpp"
 
 namespace isis
 {

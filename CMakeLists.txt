@@ -8,23 +8,28 @@ PROJECT(vast)
 ############################################################
 set(VAST_PLUGIN_INFIX lib/vast/plugins)
 
+include_directories(widgets)
 
 # collecting files
-file (GLOB VIEWER_FILES_CPP viewer/*.c viewer/*.cpp)
-file (GLOB GLWIDGET_FILES_CPP GLWidget/*.cpp GLWidget/*.c)
-file (GLOB QWIDGET_FILES_CPP QImageWidget/*.cpp QImageWidget/*.c)
+file (GLOB VIEWER_FILES_CPP  viewer/*.cpp)
+file (GLOB WIDGET_FILES_CPP widgets/*.cpp )
+file (GLOB QWIDGET_FILES_CPP QImageWidget/*.cpp )
 file (GLOB UI_FILES forms/*.ui)
 file (GLOB RESOURCE_FILES resources/*.qrc)
 
 set(VIEWER_FILES_HPP
-	viewer/MainWindowBase.hpp
-	viewer/MainWindow.hpp
-	viewer/MainWindowUIInterface.hpp
-	viewer/QViewerCore.hpp
-	viewer/QPreferencesDialog.hpp
+	viewer/qviewercore.hpp
+	widgets/mainwindow.hpp
+	widgets/preferenceDialog.hpp
+	widgets/voxelInformationWidget.hpp
+	widgets/imageStackWidget.hpp
+	widgets/sliderwidget.hpp
+	widgets/scalingWidget.hpp
+	widgets/loggingDialog.hpp
+	widgets/filedialog.hpp
 )
+
 set(GLWIDGET_FILES_HPP
-	GLWidget/QGLWidgetImplementation.hpp
 	QImageWidget/QImageWidgetImplementation.hpp)
 
 ##########################################################
@@ -32,7 +37,7 @@ set(GLWIDGET_FILES_HPP
 ##########################################################
 set(ISIS_VIEWER_VERSION_MAJOR "0")
 set(ISIS_VIEWER_VERSION_MINOR "1")
-set(ISIS_VIEWER_VERSION_PATCH "2")
+set(ISIS_VIEWER_VERSION_PATCH "3")
 
 add_definitions(-D_ISIS_VIEWER_VERSION_MAJOR=${ISIS_VIEWER_VERSION_MAJOR})
 add_definitions(-D_ISIS_VIEWER_VERSION_MINOR=${ISIS_VIEWER_VERSION_MINOR})
@@ -69,7 +74,7 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR} ${ISIS_INCLUDE_DIRS})
 # qt4 stuff
 ###########################################################
 
-FIND_PACKAGE(Qt4 COMPONENTS QtCore QtGui QtOpenGL REQUIRED)
+FIND_PACKAGE(Qt4 COMPONENTS QtCore QtGui REQUIRED)
 
 set(QT_USE_QTUITOOLS TRUE)
 set(QT_USE_QTOPENGL TRUE)
@@ -84,27 +89,12 @@ QT4_WRAP_UI(vast_UIS_H ${UI_FILES})
 
 
 ###########################################################
-# opengl stuff
-###########################################################
-
-find_package(OpenGL REQUIRED)
-
-if(NOT OpenGL)
-	find_library(OpenGL "GL" PATHS "/usr/lib" "/usr/local/lib" "/usr/lib/mesa" "/usr/local/lib/mesa")
-endif(NOT OpenGL)
-
-message(STATUS "openGL library: ${OPENGL_LIBRARY}")
-
-include_directories(${OPENGL_INCLUDE_DIR})
-
-###########################################################
 # boost and common stuff
 ###########################################################
 
 FIND_PACKAGE(Boost REQUIRED)
 
 INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIR})
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/GLWidget)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/QImageWidget)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/viewer)
 
@@ -118,7 +108,7 @@ SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ftemplate-depth-100")
 # set the plugin directory and the system dependend shared
 # library naming conventions
 ############################################################
-set_source_files_properties( "viewer/PluginLoader.cpp" PROPERTIES COMPILE_FLAGS
+set_source_files_properties( "viewer/pluginloader.cpp" PROPERTIES COMPILE_FLAGS
 	"-DPLUGIN_PATH=\\\"${CMAKE_INSTALL_PREFIX}/${VAST_PLUGIN_INFIX}\\\" -DDL_SUFFIX=\\\"${CMAKE_SHARED_LIBRARY_SUFFIX}\\\" -DDL_PREFIX=\\\"${CMAKE_SHARED_LIBRARY_PREFIX}\\\""
 )
 
@@ -141,11 +131,10 @@ INCLUDE(CPack)
 
 
 
-add_executable(vast main.cpp ${QWIDGET_FILES_CPP} ${GLWIDGET_FILES_CPP} ${VIEWER_FILES_CPP} ${vast_UIS_H} ${vast_moc_files} ${vast_rcc_files})
+add_executable(vast main.cpp ${QWIDGET_FILES_CPP} ${GLWIDGET_FILES_CPP} ${VIEWER_FILES_CPP} ${WIDGET_FILES_CPP} ${vast_UIS_H} ${vast_moc_files} ${vast_rcc_files})
 find_library(isisqt4_LIBRARY "isisAdapter_qt4")
 
 set(NEEDED_LIBS
-	${OPENGL_LIBRARY} 
 	${QT_LIBRARIES}
 	${Boost_LIBRARIES}
 	${ISIS_LIB}

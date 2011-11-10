@@ -155,13 +155,6 @@
      </layout>
     </widget>
    </item>
-   <item>
-    <widget class="QPushButton" name="applyButton">
-     <property name="text">
-      <string>Apply</string>
-     </property>
-    </widget>
-   </item>
   </layout>
  </widget>
  <resources>
