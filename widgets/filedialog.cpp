@@ -129,7 +129,7 @@ void isis::viewer::widget::FileDialog::parsePath()
 	}
 
 	std::stringstream ss;
-	ss << "Open " << validFiles << " images";
+	ss << "Open " << validFiles << " file(s)";
 	m_Interface.openSaveButton->setText( ss.str().c_str() );
 	m_Interface.fileDirEdit->setPalette( pal );
 

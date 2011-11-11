@@ -257,7 +257,7 @@ void QImageWidgetImplementation::mouseMoveEvent( QMouseEvent *e )
 		boost::shared_ptr<ImageHolder> image = getWidgetSpecCurrentImage();
 		const double offset =  ( m_StartCoordsPair.second - e->y() ) / ( float )height() * image->extent;
 		const double scaling = 1.0 - ( m_StartCoordsPair.first - e->x() ) / ( float )width() * 5;
-		image->offset = offset;
+		image->offset = offset < 0 ? 0 : offset;
 		image->scaling = scaling < 0.0 ? 0.0 : scaling;
 		m_ShowScalingOffset = true;
 		m_ViewerCore->updateScene();
