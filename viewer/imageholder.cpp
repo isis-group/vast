@@ -108,7 +108,7 @@ bool ImageHolder::setImage( const data::Image &image, const ImageType &imageType
 		return false;
 	}
 
-	m_Image.reset( new data::Image( image ) );
+	m_Image.reset( new data::Image( image ) );	
 
 	//if no filename was specified we have to search for the filename by ourselfes
 	if( filename.empty() ) {
@@ -171,27 +171,25 @@ bool ImageHolder::setImage( const data::Image &image, const ImageType &imageType
 	m_ImageProperties.zmapThreshold = std::make_pair<double, double>( 0, 0 );
 
 	if( imageType == z_map ) {
-		m_PropMap.setPropertyAs<double>( "lowerThreshold", 0 );
-		m_PropMap.setPropertyAs<double>( "upperThreshold", 0 );
-		m_PropMap.setPropertyAs<std::string>( "lut", std::string( "standard_zmap" ) );
+		lowerThreshold = 0;
+		upperThreshold = 0;
+		lut = std::string( "standard_zmap" );
 	} else if( imageType == anatomical_image ) {
-		m_PropMap.setPropertyAs<double>( "lowerThreshold", getMinMax().first->as<double>() );
-		m_PropMap.setPropertyAs<double>( "upperThreshold", getMinMax().second->as<double>() );
-		m_PropMap.setPropertyAs<std::string>( "lut", std::string( "standard_grey_values" ) );
+		lowerThreshold = getMinMax().first->as<double>() ;
+		lowerThreshold = getMinMax().second->as<double>();
+		lut = std::string( "standard_grey_values" );
 	}
 
-	m_PropMap.setPropertyAs<double>( "extent", fabs( getMinMax().second->as<double>() - getMinMax().first->as<double>() ) );
-	m_PropMap.setPropertyAs<util::ivector4>( "voxelCoords", util::ivector4( m_ImageSize[0] / 2, m_ImageSize[1] / 2, m_ImageSize[2] / 2, 0 ) );
-	m_PropMap.setPropertyAs<util::fvector4>( "physicalCoords", m_Image->getPhysicalCoordsFromIndex( m_PropMap.getPropertyAs<util::ivector4>( "voxelCoords" ) ) );
-
-	m_PropMap.setPropertyAs<bool>( "isVisible", true );
-	m_PropMap.setPropertyAs<float>( "opacity", 1.0 );
-	m_PropMap.setPropertyAs<uint16_t>( "currentTimestep", 0 );
-	m_PropMap.setPropertyAs<util::ivector4>( "alignedSize32Bit", get32BitAlignedSize( m_ImageSize ) );
+	extent = fabs( getMinMax().second->as<double>() - getMinMax().first->as<double>() );
+	voxelCoords = util::ivector4( m_ImageSize[0] / 2, m_ImageSize[1] / 2, m_ImageSize[2] / 2, 0 );
+	physicalCoords = m_Image->getPhysicalCoordsFromIndex( voxelCoords );
+	isVisible = true;
+	opacity = 1.0;
+	scaling = 1.0;
+	offset = 0.0;
+	alignedSize32 = get32BitAlignedSize( m_ImageSize );
 	m_PropMap.setPropertyAs<bool>( "init", true );
 	m_PropMap.setPropertyAs<util::slist>( "changedAttributes", util::slist() );
-	m_PropMap.setPropertyAs<double>( "offset", 0.0 );
-	m_PropMap.setPropertyAs<double>( "scaling", 1.0 );
 	m_PropMap.setPropertyAs<double>( "scalingMinValue", m_MinMax.first->as<double>() );
 	m_PropMap.setPropertyAs<double>( "scalingMaxValue", m_MinMax.second->as<double>() );
 	m_PropMap.setPropertyAs<util::fvector4>( "originalColumnVec", image.getPropertyAs<util::fvector4>( "columnVec" ) );

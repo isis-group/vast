@@ -32,7 +32,7 @@ public:
 		connect( m_Core, SIGNAL( emitPhysicalCoordsChanged( util::fvector4 ) ), this, ( SLOT( refresh( util::fvector4 ) ) ) );
 
 		if( m_Core->hasImage() ) {
-			refresh( m_Core->getCurrentImage()->getPropMap().getPropertyAs<util::fvector4>( "physicalCoords" ) );
+			refresh( m_Core->getCurrentImage()->physicalCoords );
 		}
 
 	};
@@ -41,7 +41,7 @@ public Q_SLOTS:
 		if( !ui.checkLock->isChecked() ) {
 			boost::shared_ptr<ImageHolder> image = m_Core->getCurrentImage();
 
-			if( image->getImageSize()[3] > 1 && image->getPropMap().getPropertyAs<bool>( "isVisible" ) ) {
+			if( image->getImageSize()[3] > 1 && image->isVisible ) {
 				std::stringstream title;
 				std::stringstream coordsAsString;
 				util::ivector4 voxCoords = image->getISISImage()->getIndexFromPhysicalCoords( physicalCoords );

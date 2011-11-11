@@ -152,8 +152,9 @@ int main( int argc, char *argv[] )
 	}
 
 	LOG( isis::viewer::Runtime, info ) << "Welcome to vast ;-)";
-	core->getUI()->refreshUI();
 	core->getUI()->showMainWindow();
+	core->settingsChanged();
+	core->getUI()->refreshUI();
 
 
 	return app.getQApplication().exec();

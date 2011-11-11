@@ -54,7 +54,6 @@ public:
 public Q_SLOTS:
 	virtual void settingsChanged();
 	virtual void zoomChanged( float zoomFactor );
-	virtual void voxelCoordsChanged( util::ivector4 );
 	virtual void physicalCoordsChanged( util::fvector4 );
 	virtual void timestepChanged( int );
 	virtual void setShowLabels( bool );
@@ -62,6 +61,7 @@ public Q_SLOTS:
 	virtual bool callPlugin( QString name );
 	virtual void receiveMessage( qt4::QMessage message );
 	virtual void openPath( QStringList fileList, ImageHolder::ImageType imageType, const std::string &rdialect = "", const std::string &rf = "", bool distribute = false );
+	virtual void centerImages();
 
 Q_SIGNALS:
 	void emitZoomChanged( float zoom );

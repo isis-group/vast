@@ -37,12 +37,6 @@ void QViewerCore::receiveMessage( qt4::QMessage message )
 	getUI()->showMessage( message );
 }
 
-
-void QViewerCore::voxelCoordsChanged( util::ivector4 voxelCoords )
-{
-	emitVoxelCoordChanged( voxelCoords );
-}
-
 void QViewerCore::physicalCoordsChanged( util::fvector4 physicalCoords )
 {
 	emitPhysicalCoordsChanged( physicalCoords );
@@ -54,11 +48,7 @@ void QViewerCore::timestepChanged( int timestep )
 	if( !getCurrentImage()->getImageSize()[3] > timestep ) {
 		timestep = getCurrentImage()->getImageSize()[3] - 1;
 	}
-
-	util::ivector4 voxelCoords = getCurrentImage()->getPropMap().getPropertyAs<util::ivector4>( "voxelCoords" );
-	voxelCoords[3] = timestep;
-	getCurrentImage()->getPropMap().setPropertyAs<util::ivector4>( "voxelCoords", voxelCoords );
-	getCurrentImage()->getPropMap().setPropertyAs<uint16_t>( "currentTimestep", timestep );
+	getCurrentImage()->voxelCoords[3] = timestep;
 	updateScene();
 }
 
@@ -66,7 +56,6 @@ void QViewerCore::timestepChanged( int timestep )
 std::list<boost::shared_ptr<ImageHolder> > QViewerCore::addImageList( const std::list< data::Image > imageList, const ImageHolder::ImageType &imageType )
 {
 	std::list<boost::shared_ptr<ImageHolder> > retList = isis::viewer::ViewerCoreBase::addImageList( imageList, imageType );
-	settingsChanged();
 	return retList;
 
 }
@@ -74,10 +63,21 @@ std::list<boost::shared_ptr<ImageHolder> > QViewerCore::addImageList( const std:
 void QViewerCore::setImageList( const std::list< data::Image > imageList, const ImageHolder::ImageType &imageType  )
 {
 	isis::viewer::ViewerCoreBase::setImageList( imageList, imageType );
-	//  settingsChanged();
 
 
 }
+void QViewerCore::centerImages()
+{
+	if( hasImage() ) {
+		const util::ivector4 size = getCurrentImage()->getImageSize();
+		const util::ivector4 center( size[0] / 2, size[1] / 2, size[2] / 2,
+										 getCurrentImage()->getPropMap().getPropertyAs<util::ivector4>( "voxelCoords" )[3] );
+		getCurrentImage()->getPropMap().setPropertyAs<util::ivector4>( "voxelCoords", center );
+		m_UI->refreshUI();
+		updateScene();
+	}
+}
+
 
 void QViewerCore::setShowLabels( bool l )
 {
@@ -90,10 +90,9 @@ void QViewerCore::settingsChanged()
 {
 	getSettings()->beginGroup( "UserProfile" );
 
-	if( getCurrentImage().get() ) {
-
+	if( hasImage() ) {
 		if( getCurrentImage()->getImageProperties().imageType == ImageHolder::z_map ) {
-			getCurrentImage()->getPropMap().setPropertyAs<std::string>( "lut", getSettings()->value( "lut", "fallback" ).toString().toStdString() );
+			getCurrentImage()->lut = getSettings()->value( "lut", "fallback" ).toString().toStdString();
 		}
 	}
 
@@ -103,7 +102,7 @@ void QViewerCore::settingsChanged()
 	emitShowLabels( getOptionMap()->getPropertyAs<bool>( "showLabels" ) );
 	m_UI->getMainWindow()->getUI().actionPropagate_Zooming->setChecked( getOptionMap()->getPropertyAs<bool>( "propagateZooming" ) );
 	getSettings()->endGroup();
-
+	m_UI->refreshUI();
 }
 
 void QViewerCore::updateScene()

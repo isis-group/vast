@@ -44,7 +44,6 @@ public Q_SLOTS:
 	virtual void paintCrosshair() const;
 
 	virtual bool lookAtPhysicalCoords( const util::fvector4 &physicalCoords );
-	virtual bool lookAtVoxelCoords( const util::ivector4 &voxelCoords );
 	virtual void updateScene();
 	virtual void setInterpolationType( InterpolationType interType ) { m_InterpolationType = interType; }
 	virtual void setShowLabels( bool show ) { m_ShowLabels = show; m_Border = show ? 18 : 0; }
@@ -89,6 +88,10 @@ private:
 	bool m_LeftMouseButtonPressed;
 	bool m_RightMouseButtonPressed;
 	bool m_ShowScalingOffset;
+	
+	float translationX;
+	float translationY;
+	float currentZoom;
 
 	std::pair<int, int> m_StartCoordsPair;
 

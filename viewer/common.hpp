@@ -41,7 +41,7 @@ TYPE roundNumber( TYPE number, unsigned  short placesOfDec )
 }
 
 void setOrientationToIdentity( data::Image &image );
-void checkForCaCp( boost::shared_ptr<ImageHolder> );
+void checkForCaCp( boost::shared_ptr<ImageHolder> image );
 std::string getFileFormatsAsString( image_io::FileFormat::io_modes mode, const std::string preSeparator, const std::string postSeparator = std::string( " " ) );
 std::list<std::string> getFileFormatsAsList( image_io::FileFormat::io_modes mode );
 
