@@ -54,8 +54,8 @@ void VoxelInformationWidget::connectSignals()
 void VoxelInformationWidget::updateLowerUpperThreshold()
 {
 	if( m_ViewerCore->getCurrentImage().get() ) {
-		m_Interface.lowerThresholdLabel->setText( QString::number( m_ViewerCore->getCurrentImage()->getPropMap().getPropertyAs<double>( "lowerThreshold" ), 'g', 4 ) );
-		m_Interface.upperThresholdLabel->setText( QString::number( m_ViewerCore->getCurrentImage()->getPropMap().getPropertyAs<double>( "upperThreshold" ), 'g', 4 ) );
+		m_Interface.lowerThresholdLabel->setText( QString::number( m_ViewerCore->getCurrentImage()->lowerThreshold, 'g', 4 ) );
+		m_Interface.upperThresholdLabel->setText( QString::number( m_ViewerCore->getCurrentImage()->upperThreshold, 'g', 4 ) );
 	}
 }
 
@@ -85,11 +85,10 @@ void VoxelInformationWidget::synchronize()
 	if( m_ViewerCore->getCurrentImage().get() ) {
 		const boost::shared_ptr<ImageHolder> image = m_ViewerCore->getCurrentImage();
 		QSize size = m_Interface.upperHalfColormapLabel->size();
-		const std::string lutName = image->getPropMap().getPropertyAs<std::string>( "lut" );
 
 		if( image->getImageProperties().imageType == ImageHolder::anatomical_image ) {
 			m_Interface.upperHalfColormapLabel->setPixmap(
-				m_ViewerCore->getColorHandler()->getIcon( lutName, size.width(), size.height() - 10 ).pixmap( size.width(), size.height() - 10 ) );
+				m_ViewerCore->getColorHandler()->getIcon( image->lut, size.width(), size.height() - 10 ).pixmap( size.width(), size.height() - 10 ) );
 			m_Interface.colormapGrid->addWidget( m_Interface.labelMin, 0, 0 );
 			m_Interface.colormapGrid->addWidget( m_Interface.upperHalfColormapLabel, 0, 1 );
 			m_Interface.colormapGrid->addWidget( m_Interface.labelMax, 0, 2 );
@@ -98,9 +97,9 @@ void VoxelInformationWidget::synchronize()
 			m_Interface.upperThresholdLabel->setVisible( false );
 		} else if ( image->getImageProperties().imageType == ImageHolder::z_map ) {
 			m_Interface.upperHalfColormapLabel->setPixmap(
-				m_ViewerCore->getColorHandler()->getIcon( lutName, size.width(), size.height() - 10, color::Color::upper_half ).pixmap( size.width(), size.height() - 10 ) );
+				m_ViewerCore->getColorHandler()->getIcon( image->lut, size.width(), size.height() - 10, color::Color::upper_half ).pixmap( size.width(), size.height() - 10 ) );
 			m_Interface.lowerHalfColormapLabel->setPixmap(
-				m_ViewerCore->getColorHandler()->getIcon( lutName, size.width(), size.height() - 10, color::Color::lower_half, true ).pixmap( size.width(), size.height() - 10 ) );
+				m_ViewerCore->getColorHandler()->getIcon( image->lut, size.width(), size.height() - 10, color::Color::lower_half, true ).pixmap( size.width(), size.height() - 10 ) );
 			m_Interface.colormapGrid->addWidget( m_Interface.upperThresholdLabel, 0, 0 );
 			m_Interface.colormapGrid->addWidget( m_Interface.upperHalfColormapLabel, 0, 1 );
 			m_Interface.colormapGrid->addWidget( m_Interface.labelMax, 0, 2 );
@@ -110,8 +109,8 @@ void VoxelInformationWidget::synchronize()
 			m_Interface.lowerHalfColormapLabel->setVisible( true );
 			m_Interface.lowerThresholdLabel->setVisible( true );
 			m_Interface.upperThresholdLabel->setVisible( true );
-			m_Interface.lowerThresholdLabel->setText( QString::number( image->getPropMap().getPropertyAs<double>( "lowerThreshold" ), 'g', 4 ) );
-			m_Interface.upperThresholdLabel->setText( QString::number( image->getPropMap().getPropertyAs<double>( "upperThreshold" ), 'g', 4 ) );
+			m_Interface.lowerThresholdLabel->setText( QString::number( image->lowerThreshold, 'g', 4 ) );
+			m_Interface.upperThresholdLabel->setText( QString::number( image->upperThreshold, 'g', 4 ) );
 		}
 
 		m_Interface.labelMin->setText( QString::number( image->getMinMax().first->as<double>(), 'g', 4 ) );
@@ -120,7 +119,7 @@ void VoxelInformationWidget::synchronize()
 		m_Interface.rowBox->setMaximum( outerCorner[0] );
 		m_Interface.columnBox->setMaximum( outerCorner[1] );
 		m_Interface.sliceBox->setMaximum( outerCorner[2] );
-		const util::fvector4 physicalBegin = image->getISISImage()->getPhysicalCoordsFromIndex( util::ivector4() ) + image->getPropMap().getPropertyAs<util::fvector4>("originTransformation");
+		const util::fvector4 physicalBegin = image->getISISImage()->getPhysicalCoordsFromIndex( util::ivector4() );
 		const util::fvector4 physicalEnd = image->getISISImage()->getPhysicalCoordsFromIndex( outerCorner );
 		m_Interface.xBox->setMinimum( physicalBegin[0] < physicalEnd[0] ? physicalBegin[0] : physicalEnd[0] );
 		m_Interface.xBox->setMaximum( physicalBegin[0] > physicalEnd[0] ? physicalBegin[0] : physicalEnd[0] );
@@ -128,10 +127,15 @@ void VoxelInformationWidget::synchronize()
 		m_Interface.yBox->setMaximum( physicalBegin[1] > physicalEnd[1] ? physicalBegin[1] : physicalEnd[1] );
 		m_Interface.zBox->setMinimum( physicalBegin[2] < physicalEnd[2] ? physicalBegin[2] : physicalEnd[2] );
 		m_Interface.zBox->setMaximum( physicalBegin[2] > physicalEnd[2] ? physicalBegin[2] : physicalEnd[2] );
-		synchronizePos( image->getPropMap().getPropertyAs<util::ivector4>( "voxelCoords" ) );
-		const util::fvector4 voxelSpacing = image->getISISImage()->getPropertyAs<util::fvector4>( "voxelSize" ) + image->getISISImage()->getPropertyAs<util::fvector4>( "voxelGap" );
+		synchronizePos( image->voxelCoords );
+		util::fvector4 voxelSpacing;
+		if( image->getISISImage()->hasProperty("voxelGap" ) ){
+			voxelSpacing = image->getISISImage()->getPropertyAs<util::fvector4>( "voxelSize" ) + image->getISISImage()->getPropertyAs<util::fvector4>( "voxelGap" );
+		} else {
+			voxelSpacing = image->getISISImage()->getPropertyAs<util::fvector4>( "voxelSize" );
+		}
+		
 		boost::numeric::ublas::vector<float> vSpacing = boost::numeric::ublas::vector<float>( 4 );
-
 		for( unsigned short i = 0; i < 4; i++ ) {
 			vSpacing( i ) = voxelSpacing[i];
 		}
@@ -214,7 +218,7 @@ void VoxelInformationWidget::synchronizePos( util::ivector4 voxelCoords )
 	m_Interface.rowBox->setValue( voxelCoords[0] );
 	m_Interface.columnBox->setValue( voxelCoords[1] );
 	m_Interface.sliceBox->setValue( voxelCoords[2] );
-	const util::fvector4 physCoords = image->getISISImage()->getPhysicalCoordsFromIndex( voxelCoords ) + image->getPropMap().getPropertyAs<util::fvector4>("originTransformation");
+	const util::fvector4 physCoords = image->getISISImage()->getPhysicalCoordsFromIndex( voxelCoords );
 	m_Interface.xBox->setValue( physCoords[0] );
 	m_Interface.yBox->setValue( physCoords[1] );
 	m_Interface.zBox->setValue( physCoords[2] );

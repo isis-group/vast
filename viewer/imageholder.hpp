@@ -125,6 +125,17 @@ public:
 	}
 
 	void setImageType( ImageType imageType ) { m_ImageProperties.imageType = imageType; }
+	util::ivector4 voxelCoords;
+	util::fvector4 physicalCoords;
+	bool isVisible;
+	float opacity;
+	util::ivector4 alignedSize32;
+	double offset;
+	double scaling;
+	double extent;
+	double lowerThreshold;
+	double upperThreshold;
+	std::string lut;
 
 private:
 
@@ -147,6 +158,8 @@ private:
 	bool filterRelevantMetaInformation();
 
 	std::list<QWidgetImplementationBase *> m_WidgetList;
+	
+
 };
 
 }

@@ -30,7 +30,7 @@ void ImageStackWidget::synchronize()
 		item->setText( QString( imageRef.second->getFileNames().front().c_str() ) );
 		item->setFlags( Qt::ItemIsEnabled | Qt::ItemIsUserCheckable | Qt::ItemIsSelectable );
 
-		if( imageRef.second->getPropMap().getPropertyAs<bool>( "isVisible" ) ) {
+		if( imageRef.second->isVisible ) {
 			item->setCheckState( Qt::Checked );
 		} else {
 			item->setCheckState( Qt::Unchecked );
@@ -48,9 +48,9 @@ void ImageStackWidget::synchronize()
 void ImageStackWidget::itemClicked( QListWidgetItem *item )
 {
 	if( item->checkState() == Qt::Checked ) {
-		m_ViewerCore->getDataContainer().at( item->text().toStdString() )->getPropMap().setPropertyAs<bool>( "isVisible", true ) ;
+		m_ViewerCore->getDataContainer().at( item->text().toStdString() )->isVisible = true ;
 	} else {
-		m_ViewerCore->getDataContainer().at( item->text().toStdString() )->getPropMap().setPropertyAs<bool>( "isVisible", false ) ;
+		m_ViewerCore->getDataContainer().at( item->text().toStdString() )->isVisible = false ;
 	}
 
 	m_ViewerCore->getUI()->refreshUI();

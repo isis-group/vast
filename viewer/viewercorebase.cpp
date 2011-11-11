@@ -54,7 +54,7 @@ void ViewerCoreBase::setImageList( std::list< data::Image > imgList, const Image
 	if( !imgList.empty() ) {
 		m_DataContainer.clear();
 	}
-
+	
 	ViewerCoreBase::addImageList( imgList, imageType );
 }
 

@@ -23,11 +23,15 @@ UICore::UICore( QViewerCore *core )
 	m_VoxelInformationDockWidget = createDockingEnsemble( m_VoxelInformationWidget );
 	m_ImageStackDockWidget = createDockingEnsemble( m_ImageStackWidget );
 	m_RowCount = m_MainWindow->getUI().centralGridLayout->rowCount();
+	m_ImageStackDockWidget->setVisible( false );
+	m_VoxelInformationDockWidget->setVisible( false );
 
 }
 
 void UICore::setOptionPosition( UICore::OptionPosition pos )
 {
+	m_ImageStackDockWidget->setVisible( true );
+	m_VoxelInformationDockWidget->setVisible( true );
 	switch ( pos ) {
 	case bottom:
 		m_MainWindow->getUI().bottomGridLayout->addWidget( m_VoxelInformationDockWidget, 0, 1 );

@@ -3,6 +3,7 @@
 #include <QGridLayout>
 #include "DataStorage/io_factory.hpp"
 #include "uicore.hpp"
+#include <qviewercore.hpp>
 
 
 namespace isis
@@ -79,16 +80,7 @@ MainWindow::MainWindow( QViewerCore *core ) :
 void MainWindow::keyPressEvent( QKeyEvent *e )
 {
 	if( e->key() == Qt::Key_Space ) {
-		if( m_ViewerCore->hasImage() ) {
-			const util::ivector4 size = m_ViewerCore->getCurrentImage()->getImageSize();
-			const util::ivector4 center( size[0] / 2, size[1] / 2, size[2] / 2,
-										 m_ViewerCore->getCurrentImage()->getPropMap().getPropertyAs<util::ivector4>( "voxelCoords" )[3] );
-			m_ViewerCore->getCurrentImage()->getPropMap().setPropertyAs<util::ivector4>( "voxelCoords",
-					center );
-			m_ViewerCore->updateScene();
-		}
-
-		m_ViewerCore->updateScene();
+		m_ViewerCore->centerImages();
 	}
 }
 
@@ -96,8 +88,8 @@ void MainWindow::keyPressEvent( QKeyEvent *e )
 void MainWindow::resetScaling()
 {
 	BOOST_FOREACH( DataContainer::reference image, m_ViewerCore->getDataContainer() ) {
-		image.second->getPropMap().setPropertyAs<double>( "scaling", 1.0 );
-		image.second->getPropMap().setPropertyAs<double>( "offset", 0.0 );
+		image.second->scaling = 1.0;
+		image.second->offset = 0.0;
 	}
 	m_ViewerCore->updateScene();
 	m_ScalingWidget->synchronize();
@@ -123,15 +115,21 @@ void MainWindow::ignoreOrientation( bool ignore )
 	BOOST_FOREACH( DataContainer::reference image, m_ViewerCore->getDataContainer() ) {
 		if( ignore ) {
 			setOrientationToIdentity( *image.second->getISISImage() );
+			checkForCaCp( image.second );
 		} else {
 			image.second->getISISImage()->setPropertyAs<util::fvector4>( "rowVec", image.second->getPropMap().getPropertyAs<util::fvector4>( "originalRowVec" ) );
 			image.second->getISISImage()->setPropertyAs<util::fvector4>( "columnVec", image.second->getPropMap().getPropertyAs<util::fvector4>( "originalColumnVec" ) );
 			image.second->getISISImage()->setPropertyAs<util::fvector4>( "sliceVec", image.second->getPropMap().getPropertyAs<util::fvector4>( "originalSliceVec" ) );
 			image.second->getISISImage()->setPropertyAs<util::fvector4>( "indexOrigin", image.second->getPropMap().getPropertyAs<util::fvector4>( "originalIndexOrigin" ) );
 			image.second->getISISImage()->updateOrientationMatrices();
+			checkForCaCp( image.second );
 		}
+		image.second->physicalCoords = image.second->getISISImage()->getPhysicalCoordsFromIndex( image.second->voxelCoords );
 	}
-	m_ViewerCore->updateScene();
+	
+	m_ViewerCore->getUI()->refreshUI();
+	m_ViewerCore->centerImages();
+	
 }
 
 
@@ -305,7 +303,7 @@ void MainWindow::showPreferences()
 void MainWindow::findGlobalMin()
 {
 	const util::ivector4 minVoxel = operation::NativeImageOps::getGlobalMin( m_ViewerCore->getCurrentImage(),
-									m_ViewerCore->getCurrentImage()->getPropMap().getPropertyAs<util::ivector4>( "voxelCoords" ),
+									m_ViewerCore->getCurrentImage()->voxelCoords,
 									m_RadiusSpin->value() );
 	m_ViewerCore->physicalCoordsChanged( m_ViewerCore->getCurrentImage()->getISISImage()->getPhysicalCoordsFromIndex( minVoxel ) );
 
@@ -314,7 +312,7 @@ void MainWindow::findGlobalMin()
 void MainWindow::findGlobalMax()
 {
 	const util::ivector4 maxVoxel = operation::NativeImageOps::getGlobalMax( m_ViewerCore->getCurrentImage(),
-									m_ViewerCore->getCurrentImage()->getPropMap().getPropertyAs<util::ivector4>( "voxelCoords" ),
+									m_ViewerCore->getCurrentImage()->voxelCoords,
 									m_RadiusSpin->value() );
 	m_ViewerCore->physicalCoordsChanged( m_ViewerCore->getCurrentImage()->getISISImage()->getPhysicalCoordsFromIndex( maxVoxel ) );
 }
