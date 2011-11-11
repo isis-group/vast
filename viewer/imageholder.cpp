@@ -99,7 +99,7 @@ boost::numeric::ublas::matrix< float > ImageHolder::getImageOrientation( bool tr
 	return retMatrix;
 }
 
-bool ImageHolder::setImage( const data::Image &image, const ImageType &imageType, const std::string &filename )
+bool ImageHolder::setImage( const data::Image &image, const ImageType &_imageType, const std::string &filename )
 {
 
 	//some checks
@@ -165,10 +165,8 @@ bool ImageHolder::setImage( const data::Image &image, const ImageType &imageType
 	//image seems to be ok...i guess
 
 	//add some more properties
-	m_ImageProperties.imageType = imageType;
-	m_ImageProperties.interpolationType = nn;
-
-	m_ImageProperties.zmapThreshold = std::make_pair<double, double>( 0, 0 );
+	imageType = _imageType;
+	interpolationType = nn;
 
 	if( imageType == z_map ) {
 		lowerThreshold = 0;

@@ -31,13 +31,6 @@ public:
 
 	enum ImageType { anatomical_image, z_map };
 
-	//here we store only properties which can not be stored as isis::PropertyValue
-	struct ImageProperties {
-		ImageType imageType;
-		InterpolationType interpolationType;
-		std::pair<double, double> zmapThreshold;
-
-	};
 	ImageHolder( );
 
 	bool setImage( const data::Image &image, const ImageType &imageType, const std::string &filename = "" );
@@ -68,8 +61,6 @@ public:
 
 	bool operator<( const ImageHolder &ref ) const { return m_ID < ref.getID(); }
 
-	const ImageProperties &getImageProperties() const { return m_ImageProperties; }
-	ImageProperties &getImageProperties() { return m_ImageProperties; }
 
 	void addWidget( QWidgetImplementationBase *widget ) { m_WidgetList.push_back( widget ); }
 	void removeWidget( QWidgetImplementationBase *widget ) { m_WidgetList.erase( std::find( m_WidgetList.begin(), m_WidgetList.end(), widget ) ) ; }
@@ -124,7 +115,6 @@ public:
 		return retPair;
 	}
 
-	void setImageType( ImageType imageType ) { m_ImageProperties.imageType = imageType; }
 	util::ivector4 voxelCoords;
 	util::fvector4 physicalCoords;
 	bool isVisible;
@@ -136,6 +126,8 @@ public:
 	double lowerThreshold;
 	double upperThreshold;
 	std::string lut;
+	ImageType imageType;
+	InterpolationType interpolationType;
 
 private:
 
@@ -150,7 +142,6 @@ private:
 	size_t m_ID;
 	std::pair<double, double> m_OptimalScalingPair;
 	std::pair<double, double> m_CutAwayPair;
-	ImageProperties m_ImageProperties;
 
 	std::vector< ImagePointerType > m_ImageVector;
 	std::vector< data::Chunk > m_ChunkVector;

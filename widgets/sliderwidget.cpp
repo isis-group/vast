@@ -77,11 +77,11 @@ void SliderWidget::upperThresholdChanged( int sliderPos )
 void SliderWidget::synchronize()
 {
 	if( m_ViewerCore->getCurrentImage().get() ) {
-		if( m_ViewerCore->getCurrentImage()->getImageProperties().imageType == ImageHolder::z_map ) {
+		if( m_ViewerCore->getCurrentImage()->imageType == ImageHolder::z_map ) {
 			setVisible( LowerThreshold, true );
 			setVisible( UpperThreshold, true );
 			setVisible( Opacity, true );
-		} else if ( m_ViewerCore->getCurrentImage()->getImageProperties().imageType == ImageHolder::anatomical_image ) {
+		} else if ( m_ViewerCore->getCurrentImage()->imageType == ImageHolder::anatomical_image ) {
 			setVisible( LowerThreshold, false );
 			setVisible( UpperThreshold, false );
 			setVisible( Opacity, true );
