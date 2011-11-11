@@ -170,7 +170,7 @@ color::Color::ColormapType color::Color::adaptColorMapToImage( color::Color::Col
 	}
 
 	//only stuff necessary for colormaps
-	if( image->getImageProperties().imageType == ImageHolder::z_map ) {
+	if( image->imageType == ImageHolder::z_map ) {
 		if( split ) {
 			color::Color::ColormapType negVec( mid );
 			color::Color::ColormapType posVec( 256 - mid );

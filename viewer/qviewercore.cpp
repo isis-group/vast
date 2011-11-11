@@ -91,7 +91,7 @@ void QViewerCore::settingsChanged()
 	getSettings()->beginGroup( "UserProfile" );
 
 	if( hasImage() ) {
-		if( getCurrentImage()->getImageProperties().imageType == ImageHolder::z_map ) {
+		if( getCurrentImage()->imageType == ImageHolder::z_map ) {
 			getCurrentImage()->lut = getSettings()->value( "lut", "fallback" ).toString().toStdString();
 		}
 	}

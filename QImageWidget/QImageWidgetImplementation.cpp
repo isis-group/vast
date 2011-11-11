@@ -120,12 +120,12 @@ void QImageWidgetImplementation::paintEvent( QPaintEvent *event )
 		BOOST_FOREACH( ImageVectorType::const_reference image, m_ImageVector ) {
 			if( image.get() != cImage.get()
 				&& image->isVisible
-				&& image->getImageProperties().imageType == ImageHolder::anatomical_image ) {
+				&& image->imageType == ImageHolder::anatomical_image ) {
 				paintImage( image );
 			}
 		}
 
-		if( cImage->getImageProperties().imageType == ImageHolder::anatomical_image
+		if( cImage->imageType == ImageHolder::anatomical_image
 			&& cImage->isVisible ) {
 			paintImage( cImage );
 		}
@@ -134,12 +134,12 @@ void QImageWidgetImplementation::paintEvent( QPaintEvent *event )
 		BOOST_FOREACH( ImageVectorType::const_reference image, m_ImageVector ) {
 			if( image.get() != cImage.get()
 				&& image->isVisible
-				&& image->getImageProperties().imageType == ImageHolder::z_map ) {
+				&& image->imageType == ImageHolder::z_map ) {
 				paintImage( image );
 			}
 		}
 
-		if( cImage->getImageProperties().imageType == ImageHolder::z_map
+		if( cImage->imageType == ImageHolder::z_map
 			&& cImage->isVisible ) {
 			paintImage( cImage );
 		}
@@ -325,19 +325,19 @@ void QImageWidgetImplementation::paintCrosshair() const
 {
 	const boost::shared_ptr< ImageHolder > image = getWidgetSpecCurrentImage();
 	const ImageProperties &imgProps = m_ImageProperties.at( image );
-	std::pair<size_t, size_t> coords = QOrienationHandler::convertVoxel2WindowCoords( imgProps.viewPort, m_WidgetProperties, getWidgetSpecCurrentImage(), m_PlaneOrientation  );
+	std::pair<int, int> coords = QOrienationHandler::convertVoxel2WindowCoords( imgProps.viewPort, image, m_PlaneOrientation );
+#warning adopt border
+	short border = -5000; 
+	
+	const QLine xline1( coords.first, border, coords.first, coords.second - 15 );
+	const QLine xline2( coords.first, coords.second + 15, coords.first, height() - border  );
 
-	const QLine xline1( coords.first, m_Border , coords.first, coords.second - 15 );
-	const QLine xline2( coords.first, coords.second + 15, coords.first, height() - m_Border );
-
-	const QLine yline1( m_Border, coords.second, coords.first - 15, coords.second );
-	const QLine yline2( coords.first + 15, coords.second,  width() - m_Border, coords.second  );
+	const QLine yline1( border, coords.second, coords.first - 15, coords.second );
+	const QLine yline2( coords.first + 15, coords.second,  width() - border, coords.second  );
 
 	QPen pen;
 	pen.setColor( QColor( 255, 102, 0 ) );
 	m_Painter->setOpacity( 1.0 );
-	m_Painter->resetMatrix();
-	m_Painter->resetTransform();
 	m_Painter->setTransform( QOrienationHandler::getTransform( imgProps.viewPort, image, width(), height(), m_PlaneOrientation ) );
 	m_Painter->scale( 1.0 / imgProps.viewPort[0], 1.0 / imgProps.viewPort[1] );
 	m_Painter->translate( -imgProps.viewPort[2], -imgProps.viewPort[3] );

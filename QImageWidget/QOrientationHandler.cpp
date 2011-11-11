@@ -156,15 +156,14 @@ util::ivector4 QOrienationHandler::convertWindow2VoxelCoords( const ViewPortType
 	return QOrienationHandler::mapCoordsToOrientation( coords, image, orientation, true );
 }
 
-std::pair< size_t, size_t > QOrienationHandler::convertVoxel2WindowCoords( const ViewPortType &viewPort, const isis::util::PropertyMap &properties, const boost::shared_ptr< ImageHolder > image, PlaneOrientation orientation )
+std::pair< int, int > QOrienationHandler::convertVoxel2WindowCoords( const ViewPortType &viewPort, const boost::shared_ptr< ImageHolder > image, PlaneOrientation orientation )
 {
 	util::ivector4 mappedVoxelCoords = QOrienationHandler::mapCoordsToOrientation( image->voxelCoords, image, orientation );
 	float halfVoxelX = viewPort[0] / 2;
 	float halfVoxelY = viewPort[1] / 2;
-
 	float x = mappedVoxelCoords[0] * viewPort[0] + viewPort[2] + halfVoxelX;
 	float y = mappedVoxelCoords[1] * viewPort[1] + viewPort[3] + halfVoxelY;
-	return std::make_pair<size_t, size_t>( round( x ), round( y ) );
+	return std::make_pair<int, int>( round( x ), round( y ) );
 }
 
 }

@@ -65,7 +65,7 @@ void VoxelInformationWidget::physPosChanged()
 	util::fvector4 physicalCoord ( m_Interface.xBox->text().toFloat(),
 								   m_Interface.yBox->text().toFloat(),
 								   m_Interface.zBox->text().toFloat() );
-	m_ViewerCore->physicalCoordsChanged( physicalCoord - m_ViewerCore->getCurrentImage()->getPropMap().getPropertyAs<util::fvector4>("originTransformation") );
+	m_ViewerCore->physicalCoordsChanged( physicalCoord );
 }
 
 void VoxelInformationWidget::voxPosChanged()
@@ -86,7 +86,7 @@ void VoxelInformationWidget::synchronize()
 		const boost::shared_ptr<ImageHolder> image = m_ViewerCore->getCurrentImage();
 		QSize size = m_Interface.upperHalfColormapLabel->size();
 
-		if( image->getImageProperties().imageType == ImageHolder::anatomical_image ) {
+		if( image->imageType == ImageHolder::anatomical_image ) {
 			m_Interface.upperHalfColormapLabel->setPixmap(
 				m_ViewerCore->getColorHandler()->getIcon( image->lut, size.width(), size.height() - 10 ).pixmap( size.width(), size.height() - 10 ) );
 			m_Interface.colormapGrid->addWidget( m_Interface.labelMin, 0, 0 );
@@ -95,7 +95,7 @@ void VoxelInformationWidget::synchronize()
 			m_Interface.lowerHalfColormapLabel->setVisible( false );
 			m_Interface.lowerThresholdLabel->setVisible( false );
 			m_Interface.upperThresholdLabel->setVisible( false );
-		} else if ( image->getImageProperties().imageType == ImageHolder::z_map ) {
+		} else if ( image->imageType == ImageHolder::z_map ) {
 			m_Interface.upperHalfColormapLabel->setPixmap(
 				m_ViewerCore->getColorHandler()->getIcon( image->lut, size.width(), size.height() - 10, color::Color::upper_half ).pixmap( size.width(), size.height() - 10 ) );
 			m_Interface.lowerHalfColormapLabel->setPixmap(
