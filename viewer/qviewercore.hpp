@@ -60,7 +60,7 @@ public Q_SLOTS:
 	virtual void updateScene( );
 	virtual bool callPlugin( QString name );
 	virtual void receiveMessage( qt4::QMessage message );
-	virtual void openPath( QStringList fileList, ImageHolder::ImageType imageType, const std::string &rdialect = "", const std::string &rf = "", bool distribute = false );
+	virtual void openPath( QStringList fileList, ImageHolder::ImageType imageType, const std::string &rdialect = "", const std::string &rf = "", bool newWidget = false );
 	virtual void centerImages();
 
 Q_SIGNALS:

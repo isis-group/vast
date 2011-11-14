@@ -26,7 +26,7 @@ public:
 
 	void setCurrentImage( const boost::shared_ptr<ImageHolder> image ) { m_CurrentImage = image; }
 
-	boost::shared_ptr<ImageHolder> getCurrentImage() { return m_CurrentImage; }
+	boost::shared_ptr<ImageHolder> getCurrentImage();
 	size_t getCurrentTimestep() const { return m_CurrentTimestep; }
 	bool setCurrentTimestep( size_t timestep ) {
 		if(  m_CurrentImage->getImageSize()[3] > timestep ) {

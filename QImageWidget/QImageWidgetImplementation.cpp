@@ -183,7 +183,6 @@ void QImageWidgetImplementation::recalculateTranslation()
 
 void QImageWidgetImplementation::paintImage( boost::shared_ptr< ImageHolder > image )
 {
-
 	ImageProperties &imgProps = m_ImageProperties.at( image );
 
 	switch( m_InterpolationType ) {
