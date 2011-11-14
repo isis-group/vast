@@ -34,6 +34,7 @@ private:
 	bool isConnected;
 	void connectSignals();
 	void disconnectSignals();
+	void reconnectSignals();
 
 	template<typename TYPE>
 	void displayIntensity( util::ivector4 coords ) {

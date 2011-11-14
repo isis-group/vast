@@ -34,6 +34,17 @@ void VoxelInformationWidget::disconnectSignals()
 
 }
 
+void VoxelInformationWidget::reconnectSignals()
+{
+	connect( m_Interface.rowBox, SIGNAL( valueChanged( int ) ), this, SLOT( voxPosChanged() ) );
+	connect( m_Interface.columnBox, SIGNAL( valueChanged( int ) ), this, SLOT( voxPosChanged() ) );
+	connect( m_Interface.sliceBox, SIGNAL( valueChanged( int ) ), this, SLOT( voxPosChanged() ) );
+	connect( m_Interface.xBox, SIGNAL( valueChanged( double ) ), this, SLOT( physPosChanged() ) );
+	connect( m_Interface.yBox, SIGNAL( valueChanged( double ) ), this, SLOT( physPosChanged() ) );
+	connect( m_Interface.zBox, SIGNAL( valueChanged( double ) ), this, SLOT( physPosChanged() ) );
+}
+
+
 void VoxelInformationWidget::connectSignals()
 {
 	connect( m_ViewerCore, SIGNAL( emitVoxelCoordChanged( util::ivector4 ) ), this, SLOT( synchronizePos( util::ivector4 ) ) );
@@ -65,7 +76,7 @@ void VoxelInformationWidget::physPosChanged()
 {
 	util::fvector4 physicalCoord ( m_Interface.xBox->text().toFloat(),
 								   m_Interface.yBox->text().toFloat(),
-								   m_Interface.zBox->text().toFloat() );
+								   m_Interface.zBox->text().toFloat());
 	m_ViewerCore->physicalCoordsChanged( physicalCoord );
 }
 
@@ -73,7 +84,8 @@ void VoxelInformationWidget::voxPosChanged()
 {
 	util::ivector4 voxelCoords( m_Interface.rowBox->text().toInt(),
 								m_Interface.columnBox->text().toInt(),
-								m_Interface.sliceBox->text().toInt() );
+								m_Interface.sliceBox->text().toInt(),
+								m_ViewerCore->getCurrentImage()->voxelCoords[3]	);
 	m_ViewerCore->physicalCoordsChanged( m_ViewerCore->getCurrentImage()->getISISImage()->getPhysicalCoordsFromIndex( voxelCoords ) ) ;
 
 }
@@ -84,7 +96,7 @@ void VoxelInformationWidget::synchronize()
 {
 	if( m_ViewerCore->hasImage() ) {
 		const boost::shared_ptr<ImageHolder> image = m_ViewerCore->getCurrentImage();
-
+		disconnectSignals();
 
 		if( image->imageType == ImageHolder::anatomical_image ) {
 			m_Interface.colormapGrid->addWidget( m_Interface.labelMin, 0, 0 );
@@ -131,7 +143,7 @@ void VoxelInformationWidget::synchronize()
 		m_Interface.yBox->setMaximum( physicalBegin[1] > physicalEnd[1] ? physicalBegin[1] : physicalEnd[1] );
 		m_Interface.zBox->setMinimum( physicalBegin[2] < physicalEnd[2] ? physicalBegin[2] : physicalEnd[2] );
 		m_Interface.zBox->setMaximum( physicalBegin[2] > physicalEnd[2] ? physicalBegin[2] : physicalEnd[2] );
-		synchronizePos( image->voxelCoords );
+		synchronizePos( image->physicalCoords );
 		util::fvector4 voxelSpacing;
 		if( image->getISISImage()->hasProperty("voxelGap" ) ){
 			voxelSpacing = image->getISISImage()->getPropertyAs<util::fvector4>( "voxelSize" ) + image->getISISImage()->getPropertyAs<util::fvector4>( "voxelGap" );
@@ -167,8 +179,8 @@ void VoxelInformationWidget::synchronize()
 		} else {
 			m_Interface.timeStepFrame->setVisible( false );
 		}
+		reconnectSignals();
 	}
-
 }
 
 void VoxelInformationWidget::synchronizePos( util::fvector4 physicalCoords )
@@ -178,7 +190,7 @@ void VoxelInformationWidget::synchronizePos( util::fvector4 physicalCoords )
 
 void VoxelInformationWidget::synchronizePos( util::ivector4 voxelCoords )
 {
-	disconnectSignals();
+
 	boost::shared_ptr<ImageHolder> image = m_ViewerCore->getCurrentImage();
 
 	if( !image->isInsideImage( voxelCoords ) ) return;
@@ -218,7 +230,7 @@ void VoxelInformationWidget::synchronizePos( util::ivector4 voxelCoords )
 		displayIntensity<double>( voxelCoords );
 		break;
 	}
-
+	disconnectSignals();
 	m_Interface.rowBox->setValue( voxelCoords[0] );
 	m_Interface.columnBox->setValue( voxelCoords[1] );
 	m_Interface.sliceBox->setValue( voxelCoords[2] );
@@ -226,16 +238,9 @@ void VoxelInformationWidget::synchronizePos( util::ivector4 voxelCoords )
 	m_Interface.xBox->setValue( physCoords[0] );
 	m_Interface.yBox->setValue( physCoords[1] );
 	m_Interface.zBox->setValue( physCoords[2] );
-	connect( m_Interface.rowBox, SIGNAL( valueChanged( int ) ), this, SLOT( voxPosChanged() ) );
-	connect( m_Interface.columnBox, SIGNAL( valueChanged( int ) ), this, SLOT( voxPosChanged() ) );
-	connect( m_Interface.sliceBox, SIGNAL( valueChanged( int ) ), this, SLOT( voxPosChanged() ) );
-	connect( m_Interface.xBox, SIGNAL( valueChanged( double ) ), this, SLOT( physPosChanged() ) );
-	connect( m_Interface.yBox, SIGNAL( valueChanged( double ) ), this, SLOT( physPosChanged() ) );
-	connect( m_Interface.zBox, SIGNAL( valueChanged( double ) ), this, SLOT( physPosChanged() ) );
+	reconnectSignals();
 
 }
-
-
 
 }
 }
