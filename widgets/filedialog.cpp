@@ -1,13 +1,12 @@
 #include "filedialog.hpp"
-#include <sys/stat.h>
-
+#include "common.hpp"
 
 isis::viewer::widget::FileDialog::FileDialog( QWidget *parent, QViewerCore *core )
 	: QDialog ( parent ),
 	  m_ViewerCore( core ),
 	  m_ImageType( ImageHolder::anatomical_image ),
-	  m_Completer( new QCompleter( this ) )
-
+	  m_Completer( new QCompleter( this ) ),
+	  m_Mode( OPEN_FILE )
 {
 
 	m_Interface.setupUi( this );
@@ -90,11 +89,17 @@ void isis::viewer::widget::FileDialog::setup()
 	m_PathList.clear();
 	m_Interface.fileDirEdit->clear();
 	m_Interface.rfComboBox->clear();
-	m_Interface.rfComboBox->addItem( "" );
+	m_Interface.rfComboBox->addItem( "auto" );
 	BOOST_FOREACH( std::list<std::string>::const_reference suffix, m_FileFormatList ) {
 		m_Interface.rfComboBox->addItem( suffix.c_str() );
 	}
 	m_Interface.rfComboBox->setCurrentIndex( 0 );
+	if( !m_ViewerCore->hasImage() ) {
+		m_Interface.widgetInsertFrame->setVisible( false );
+		m_Interface.newWidgetCheck->setChecked( true );
+	} else {
+		m_Interface.widgetInsertFrame->setVisible( true );
+	}
 }
 
 
@@ -131,12 +136,7 @@ void isis::viewer::widget::FileDialog::parsePath()
 	ss << "Open " << validFiles << " file(s)";
 	m_Interface.openSaveButton->setText( ss.str().c_str() );
 	m_Interface.fileDirEdit->setPalette( pal );
-	if( !m_ViewerCore->hasImage() ) {
-		m_Interface.widgetInsertFrame->setVisible( false );
-		m_Interface.newWidgetCheck->setChecked( true );
-	} else {
-		m_Interface.widgetInsertFrame->setVisible( true );
-	}
+
 
 }
 
@@ -159,7 +159,7 @@ bool isis::viewer::widget::FileDialog::checkIfPathIsValid( QString path, unsigne
 			}
 
 			//
-		} else {
+		} else if ( !boost::filesystem::is_directory(p) ) {
 			std::string extension = boost::filesystem::extension( p );
 			//lstrip "."
 			extension.erase( 0, 1 );
@@ -208,7 +208,7 @@ void isis::viewer::widget::FileDialog::openPath()
 {
 	//TODO check if valid
 	close();
-	m_ViewerCore->openPath( m_PathList, m_ImageType, m_Dialect, m_Suffix, m_Interface.newWidgetCheck->isChecked() );
+	m_ViewerCore->openPath( m_PathList, m_ImageType, m_Dialect, m_Suffix == "auto" ? "" : m_Suffix, m_Interface.newWidgetCheck->isChecked() );
 }
 
 void isis::viewer::widget::FileDialog::advancedChecked( bool advanced )
