@@ -35,6 +35,10 @@ public Q_SLOTS:
 	void modeChanged();
 	void setup();
 	void advancedChecked( bool );
+	void favoritesChecked( bool );
+	void addToFavList();
+	void removeFromFavList();
+	void onFavListClicked();
 
 	bool checkIfPathIsValid( QString path, unsigned short &validFiles, bool acceptNoSuffix = false );
 

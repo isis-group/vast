@@ -37,6 +37,8 @@ public:
 
 public Q_SLOTS:
 
+	virtual void setEnableCrosshair( bool enable ) { m_ShowCrosshair = enable; }
+	
 	virtual void setZoom( float zoom );
 	virtual void addImage( const boost::shared_ptr<ImageHolder> image );
 	virtual bool removeImage( const boost::shared_ptr<ImageHolder> image );
@@ -88,6 +90,7 @@ private:
 	bool m_LeftMouseButtonPressed;
 	bool m_RightMouseButtonPressed;
 	bool m_ShowScalingOffset;
+	bool m_ShowCrosshair;
 	
 	float translationX;
 	float translationY;

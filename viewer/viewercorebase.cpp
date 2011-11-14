@@ -87,8 +87,10 @@ void ViewerCoreBase::setCommonViewerOptions()
 
 	m_OptionsMap->setPropertyAs<bool>( "propagateZooming", false );
 	m_OptionsMap->setPropertyAs<bool>( "showLables", false );
+	m_OptionsMap->setPropertyAs<bool>( "showCrosshair", true );
 	m_OptionsMap->setPropertyAs<uint16_t>( "minMaxSearchRadius", 20 );
 	m_OptionsMap->setPropertyAs<bool>( "showAdvancedFileDialogOptions", false );
+	m_OptionsMap->setPropertyAs<bool>( "showFavoriteFileList", false );
 	//logging
 	m_OptionsMap->setPropertyAs<uint16_t>( "logDelayTime", 5000 );
 	m_OptionsMap->setPropertyAs<bool>( "showErrorMessages", true );

@@ -1,6 +1,7 @@
 #include "voxelInformationWidget.hpp"
 #include <color.hpp>
 #include <imageholder.hpp>
+#include <qviewercore.hpp>
 
 namespace isis
 {
@@ -81,25 +82,22 @@ void VoxelInformationWidget::voxPosChanged()
 
 void VoxelInformationWidget::synchronize()
 {
-
-	if( m_ViewerCore->getCurrentImage().get() ) {
+	if( m_ViewerCore->hasImage() ) {
 		const boost::shared_ptr<ImageHolder> image = m_ViewerCore->getCurrentImage();
-		QSize size = m_Interface.upperHalfColormapLabel->size();
+
 
 		if( image->imageType == ImageHolder::anatomical_image ) {
-			m_Interface.upperHalfColormapLabel->setPixmap(
-				m_ViewerCore->getColorHandler()->getIcon( image->lut, size.width(), size.height() - 10 ).pixmap( size.width(), size.height() - 10 ) );
 			m_Interface.colormapGrid->addWidget( m_Interface.labelMin, 0, 0 );
 			m_Interface.colormapGrid->addWidget( m_Interface.upperHalfColormapLabel, 0, 1 );
 			m_Interface.colormapGrid->addWidget( m_Interface.labelMax, 0, 2 );
 			m_Interface.lowerHalfColormapLabel->setVisible( false );
 			m_Interface.lowerThresholdLabel->setVisible( false );
 			m_Interface.upperThresholdLabel->setVisible( false );
-		} else if ( image->imageType == ImageHolder::z_map ) {
+			m_Interface.upperHalfColormapLabel->adjustSize();
+			QSize size = m_Interface.upperHalfColormapLabel->size();
 			m_Interface.upperHalfColormapLabel->setPixmap(
-				m_ViewerCore->getColorHandler()->getIcon( image->lut, size.width(), size.height() - 10, color::Color::upper_half ).pixmap( size.width(), size.height() - 10 ) );
-			m_Interface.lowerHalfColormapLabel->setPixmap(
-				m_ViewerCore->getColorHandler()->getIcon( image->lut, size.width(), size.height() - 10, color::Color::lower_half, true ).pixmap( size.width(), size.height() - 10 ) );
+				m_ViewerCore->getColorHandler()->getIcon( image->lut, size.width(), size.height() - 10 ).pixmap( size.width(), size.height() - 10 ) );
+		} else if ( image->imageType == ImageHolder::z_map ) {
 			m_Interface.colormapGrid->addWidget( m_Interface.upperThresholdLabel, 0, 0 );
 			m_Interface.colormapGrid->addWidget( m_Interface.upperHalfColormapLabel, 0, 1 );
 			m_Interface.colormapGrid->addWidget( m_Interface.labelMax, 0, 2 );
@@ -111,6 +109,12 @@ void VoxelInformationWidget::synchronize()
 			m_Interface.upperThresholdLabel->setVisible( true );
 			m_Interface.lowerThresholdLabel->setText( QString::number( image->lowerThreshold, 'g', 4 ) );
 			m_Interface.upperThresholdLabel->setText( QString::number( image->upperThreshold, 'g', 4 ) );
+			m_Interface.upperHalfColormapLabel->adjustSize();
+			QSize size = m_Interface.upperHalfColormapLabel->size();
+			m_Interface.upperHalfColormapLabel->setPixmap(
+				m_ViewerCore->getColorHandler()->getIcon( image->lut, size.width(), size.height() - 10, color::Color::upper_half ).pixmap( size.width(), size.height() - 10 ) );
+			m_Interface.lowerHalfColormapLabel->setPixmap(
+				m_ViewerCore->getColorHandler()->getIcon( image->lut, size.width(), size.height() - 10, color::Color::lower_half, true ).pixmap( size.width(), size.height() - 10 ) );
 		}
 
 		m_Interface.labelMin->setText( QString::number( image->getMinMax().first->as<double>(), 'g', 4 ) );

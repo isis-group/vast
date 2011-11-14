@@ -1,6 +1,7 @@
 #include "qviewercore.hpp"
 #include <DataStorage/io_factory.hpp>
 #include "nativeimageops.hpp"
+#include "uicore.hpp"
 
 namespace isis
 {
@@ -71,9 +72,8 @@ void QViewerCore::centerImages()
 	if( hasImage() ) {
 		const util::ivector4 size = getCurrentImage()->getImageSize();
 		const util::ivector4 center( size[0] / 2, size[1] / 2, size[2] / 2,
-										 getCurrentImage()->getPropMap().getPropertyAs<util::ivector4>( "voxelCoords" )[3] );
-		getCurrentImage()->getPropMap().setPropertyAs<util::ivector4>( "voxelCoords", center );
-		m_UI->refreshUI();
+										 getCurrentImage()->voxelCoords[3] );
+		getCurrentImage()->voxelCoords = center;
 		updateScene();
 	}
 }
@@ -85,6 +85,14 @@ void QViewerCore::setShowLabels( bool l )
 	emitShowLabels( l );
 	updateScene();
 }
+
+void QViewerCore::setShowCrosshair(bool c )
+{
+	getOptionMap()->setPropertyAs<bool>( "showCrosshair", c );
+	emitSetEnableCrosshair( c );
+	updateScene();
+}
+
 
 void QViewerCore::settingsChanged()
 {
