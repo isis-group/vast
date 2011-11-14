@@ -88,7 +88,7 @@ bool Color::addColormap( const std::string &path, const boost::regex &separator 
 
 QIcon Color::getIcon( const std::string &colormapName, size_t w, size_t h, icon_type type, bool flipped ) const
 {
-	const ColormapType lut = getColormapMap()[colormapName];
+	const ColormapType lut = getColormapMap().at(colormapName);
 
 	unsigned short index = 0;
 	unsigned short start = 0;

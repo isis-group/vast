@@ -92,12 +92,13 @@ int main( int argc, char *argv[] )
 	}
 	//load the zmap images
 	BOOST_FOREACH ( util::slist::const_reference fileName, zmapFileList ) {
-		std::string dialect;
+		std::string dialect = app.parameters["rdialect"].toString();
 
-		if( app.parameters["rdialect"].toString().size() ) {
-			dialect = app.parameters["rdialect"].toString();
-		} else {
-			dialect = std::string( "onlyfirst" );
+		//what a nasty hack :-( but necessary, since only vista understands the onlyfirst dialect
+		if( boost::filesystem::extension( boost::filesystem::path(fileName) ) == std::string(".v") ) {
+			if( !dialect.size() ) {
+				dialect = std::string( "onlyfirst" );
+			}
 		}
 
 		std::list< data::Image > tmpList = data::IOFactory::load( fileName, app.parameters["rf"].toString(), dialect );
@@ -154,7 +155,6 @@ int main( int argc, char *argv[] )
 	LOG( isis::viewer::Runtime, info ) << "Welcome to vast ;-)";
 	core->getUI()->showMainWindow();
 	core->settingsChanged();
-	core->getUI()->refreshUI();
 
 
 	return app.getQApplication().exec();
