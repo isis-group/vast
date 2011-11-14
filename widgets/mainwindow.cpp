@@ -39,6 +39,7 @@ MainWindow::MainWindow( QViewerCore *core ) :
 	m_UI.actionShow_scaling_option->setShortcut( QKeySequence( tr("S, S" ) ) );
 	m_UI.actionPropagate_Zooming->setShortcut( QKeySequence( tr("P, Z" ) ) );
 	m_UI.actionShow_Labels->setShortcut( QKeySequence( tr("S, L" ) ) );
+	m_UI.actionShow_Crosshair->setShortcut( QKeySequence( tr("S, C" ) ) );
 
 	connect( m_UI.action_Save_Image, SIGNAL( triggered() ), this, SLOT( saveImage() ) );
 	connect( m_UI.actionSave_Image, SIGNAL( triggered() ), this, SLOT( saveImageAs() ) );
@@ -54,6 +55,7 @@ MainWindow::MainWindow( QViewerCore *core ) :
 	connect( m_LogButton, SIGNAL( clicked() ), this, SLOT( showLoggingDialog() ) );
 	connect( m_UI.actionPropagate_Zooming, SIGNAL( triggered( bool ) ), this, SLOT( propagateZooming( bool ) ) );
 	connect( m_ActionReset_Scaling, SIGNAL( triggered() ), this, SLOT( resetScaling() ) );
+	connect( m_UI.actionShow_Crosshair, SIGNAL( triggered(bool)), m_ViewerCore, SLOT( setShowCrosshair(bool)));
 
 	//toolbar stuff
 	m_Toolbar->setOrientation( Qt::Horizontal );
@@ -257,7 +259,7 @@ void MainWindow::reloadPluginsToGUI()
 
 void MainWindow::loadSettings()
 {
-	m_ViewerCore->getSettings()->beginGroup( "MainWindow" );
+	m_ViewerCore->getSettings()->beginGroup( "UserProfile" );
 	resize( m_ViewerCore->getSettings()->value( "size", QSize( 900, 900 ) ).toSize() );
 	move( m_ViewerCore->getSettings()->value( "pos", QPoint( 0, 0 ) ).toPoint() );
 
@@ -265,21 +267,20 @@ void MainWindow::loadSettings()
 		showMaximized();
 	}
 
-	m_ViewerCore->getSettings()->endGroup();
-
-	m_ViewerCore->getSettings()->beginGroup( "UserProfile" );
-
 	m_ViewerCore->getOptionMap()->setPropertyAs<bool>( "propagateZooming", m_ViewerCore->getSettings()->value( "propagateZooming", false ).toBool() );
 	m_ViewerCore->getOptionMap()->setPropertyAs<bool>( "showLabels", m_ViewerCore->getSettings()->value( "showLabels", false ).toBool() );
+	m_ViewerCore->getOptionMap()->setPropertyAs<bool>( "showCrosshair", m_ViewerCore->getSettings()->value( "showCrosshair", true ).toBool() );
 	m_ViewerCore->getOptionMap()->setPropertyAs<uint16_t>( "minMaxSearchRadius",
 			m_ViewerCore->getSettings()->value( "minMaxSearchRadius", m_ViewerCore->getOptionMap()->getPropertyAs<uint16_t>( "minMaxSearchRadius" ) ).toInt() );
 	m_ViewerCore->getOptionMap()->setPropertyAs<bool>( "showAdvancedFileDialogOptions", m_ViewerCore->getSettings()->value( "showAdvancedFileDialogOptions", false ).toBool() );
+	m_ViewerCore->getOptionMap()->setPropertyAs<bool>( "showFavoriteFileList", m_ViewerCore->getSettings()->value( "showFavoriteFileList", false).toBool() );
 	m_ViewerCore->getSettings()->endGroup();
 }
 
 void MainWindow::refreshUI()
 {
 	m_UI.actionShow_Labels->setChecked( m_ViewerCore->getOptionMap()->getPropertyAs<bool>( "showLabels" ) );
+	m_UI.actionShow_Crosshair->setChecked( m_ViewerCore->getOptionMap()->getPropertyAs<bool>( "showCrosshair" ) );
 	m_ViewerCore->setShowLabels( m_UI.actionShow_Labels->isChecked() );
 	m_UI.actionPropagate_Zooming->setChecked( m_ViewerCore->getOptionMap()->getPropertyAs<bool>( "propagateZooming" ) );
 	m_RadiusSpin->setValue( m_ViewerCore->getOptionMap()->getPropertyAs<uint16_t>( "minMaxSearchRadius" ) );
@@ -294,16 +295,16 @@ void MainWindow::closeEvent( QCloseEvent * )
 void MainWindow::saveSettings()
 {
 	//saving the preferences to the profile file
-	m_ViewerCore->getSettings()->beginGroup( "MainWindow" );
+	m_ViewerCore->getSettings()->beginGroup( "UserProfile" );
 	m_ViewerCore->getSettings()->setValue( "size", size() );
 	m_ViewerCore->getSettings()->setValue( "maximized", isMaximized() );
 	m_ViewerCore->getSettings()->setValue( "pos", pos() );
-	m_ViewerCore->getSettings()->endGroup();
-	m_ViewerCore->getSettings()->beginGroup( "UserProfile" );
 	m_ViewerCore->getSettings()->setValue( "propagateZooming", m_UI.actionPropagate_Zooming->isChecked() );
 	m_ViewerCore->getSettings()->setValue( "minMaxSearchRadius", m_RadiusSpin->value() );
 	m_ViewerCore->getSettings()->setValue( "showLabels", m_UI.actionShow_Labels->isChecked() );
+	m_ViewerCore->getSettings()->setValue( "showCrosshair", m_UI.actionShow_Crosshair->isChecked() );
 	m_ViewerCore->getSettings()->setValue( "showAdvancedFileDialogOptions", m_ViewerCore->getOptionMap()->getPropertyAs<bool>( "showAdvancedFileDialogOptions" ) );
+	m_ViewerCore->getSettings()->setValue( "showFavoriteFileList", m_ViewerCore->getOptionMap()->getPropertyAs<bool>( "showFavoriteFileList" ) );
 	m_ViewerCore->getSettings()->endGroup();
 	m_ViewerCore->getSettings()->sync();
 }

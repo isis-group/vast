@@ -33,26 +33,31 @@ OrientatioCorrectionDialog::OrientatioCorrectionDialog( QWidget *parent, QViewer
 
 void OrientatioCorrectionDialog::flipPressed()
 {
-	boost::numeric::ublas::matrix<float> transform = boost::numeric::ublas::identity_matrix<float>( 3, 3 );
+	if( m_Core->hasImage() ) {
+		boost::numeric::ublas::matrix<float> transform = boost::numeric::ublas::identity_matrix<float>( 3, 3 );
 
-	std::string desc;
-	
-	if( ui.checkFlipZ->isChecked() ) {
-		transform( 2, 2 ) = -1;
-		desc = "Flip Z";
+		std::string desc;
+		uint8_t dim = 0;
+		if( ui.checkFlipZ->isChecked() ) {
+			dim = m_Core->getCurrentImage()->getISISImage()->mapScannerAxesToImageDimension(isis::data::z);
+			transform( dim, dim ) = -1;
+			desc = "Flip Z";
+		}
+
+		if( ui.checkFlipY->isChecked() ) {
+			dim = m_Core->getCurrentImage()->getISISImage()->mapScannerAxesToImageDimension(isis::data::y);
+			transform( dim, dim ) = -1;
+			desc = "Flip Y";
+		}
+
+		if( ui.checkFlipX->isChecked() ) {
+			dim = m_Core->getCurrentImage()->getISISImage()->mapScannerAxesToImageDimension(isis::data::x);
+			transform( dim, dim ) = -1;
+			desc = "Flip X";
+		}
+		
+		applyTransform( transform, ui.checkISO->isChecked(), desc );
 	}
-
-	if( ui.checkFlipY->isChecked() ) {
-		transform( 1, 1 ) = -1;
-		desc = "Flip Y";
-	}
-
-	if( ui.checkFlipX->isChecked() ) {
-		transform( 0, 0 ) = -1;
-		desc = "Flip X";
-	}
-
-	applyTransform( transform, ui.checkISO->isChecked(), desc );
 }
 void OrientatioCorrectionDialog::applyPressed()
 {

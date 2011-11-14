@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>554</width>
-    <height>241</height>
+    <height>501</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -364,6 +364,66 @@
           <widget class="QRadioButton" name="insertInWidgetCheck">
            <property name="text">
             <string>Insert in existing widget</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QCheckBox" name="favoritesCheck">
+     <property name="text">
+      <string>Show favorites</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QFrame" name="favoritesFrame">
+     <property name="frameShape">
+      <enum>QFrame::StyledPanel</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Raised</enum>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_3">
+      <property name="spacing">
+       <number>2</number>
+      </property>
+      <property name="margin">
+       <number>2</number>
+      </property>
+      <item>
+       <widget class="QListWidget" name="favoriteList"/>
+      </item>
+      <item>
+       <widget class="QFrame" name="frame_5">
+        <property name="frameShape">
+         <enum>QFrame::StyledPanel</enum>
+        </property>
+        <property name="frameShadow">
+         <enum>QFrame::Raised</enum>
+        </property>
+        <layout class="QHBoxLayout" name="horizontalLayout_9">
+         <property name="spacing">
+          <number>2</number>
+         </property>
+         <property name="margin">
+          <number>2</number>
+         </property>
+         <item>
+          <widget class="QPushButton" name="addToListButton">
+           <property name="text">
+            <string>Add as favorite</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="removeFromListButton">
+           <property name="text">
+            <string>Remove</string>
            </property>
           </widget>
          </item>

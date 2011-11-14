@@ -57,6 +57,7 @@ public Q_SLOTS:
 	virtual void physicalCoordsChanged( util::fvector4 );
 	virtual void timestepChanged( int );
 	virtual void setShowLabels( bool );
+	virtual void setShowCrosshair( bool );
 	virtual void updateScene( );
 	virtual bool callPlugin( QString name );
 	virtual void receiveMessage( qt4::QMessage message );
@@ -71,6 +72,7 @@ Q_SIGNALS:
 	void emitImagesChanged( DataContainer );
 	void emitShowLabels( bool );
 	void emitUpdateScene( );
+	void emitSetEnableCrosshair( bool enable );
 
 private:
 

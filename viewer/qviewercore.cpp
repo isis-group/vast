@@ -86,6 +86,14 @@ void QViewerCore::setShowLabels( bool l )
 	updateScene();
 }
 
+void QViewerCore::setShowCrosshair(bool c )
+{
+	getOptionMap()->setPropertyAs<bool>( "showCrosshair", c );
+	emitSetEnableCrosshair( c );
+	updateScene();
+}
+
+
 void QViewerCore::settingsChanged()
 {
 	getSettings()->beginGroup( "UserProfile" );

@@ -41,6 +41,7 @@ void QImageWidgetImplementation::commonInit()
 	connect( m_ViewerCore, SIGNAL( emitPhysicalCoordsChanged( util::fvector4 ) ), this, SLOT( lookAtPhysicalCoords( util::fvector4 ) ) );
 	connect( m_ViewerCore, SIGNAL( emitZoomChanged( float ) ), this, SLOT( setZoom( float ) ) );
 	connect( m_ViewerCore, SIGNAL( emitShowLabels( bool ) ), this, SLOT( setShowLabels( bool ) ) );
+	connect( m_ViewerCore, SIGNAL( emitSetEnableCrosshair(bool)), this, SLOT( setEnableCrosshair(bool)));
 	setAutoFillBackground( true );
 	setPalette( QPalette( Qt::black ) );
 	m_LeftMouseButtonPressed = false;
@@ -55,6 +56,7 @@ void QImageWidgetImplementation::commonInit()
 	currentZoom = 1.0;
 	translationX = 0.0;
 	translationY = 0.0;
+	m_ShowCrosshair = true;
 
 }
 
@@ -143,8 +145,9 @@ void QImageWidgetImplementation::paintEvent( QPaintEvent *event )
 			&& cImage->isVisible ) {
 			paintImage( cImage );
 		}
-
-		paintCrosshair();
+		if( m_ShowCrosshair ) {
+			paintCrosshair();
+		}
 
 		if( m_ShowScalingOffset ) {
 			m_Painter->resetMatrix();

@@ -25,8 +25,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>773</width>
-         <height>485</height>
+         <width>771</width>
+         <height>481</height>
         </rect>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout">
@@ -88,7 +88,7 @@
      <x>0</x>
      <y>0</y>
      <width>809</width>
-     <height>25</height>
+     <height>27</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
@@ -106,9 +106,16 @@
     <property name="title">
      <string>&amp;Options</string>
     </property>
+    <widget class="QMenu" name="menuShow">
+     <property name="title">
+      <string>Show...</string>
+     </property>
+     <addaction name="actionShow_Labels"/>
+     <addaction name="actionShow_Crosshair"/>
+    </widget>
     <addaction name="action_Preferences"/>
     <addaction name="separator"/>
-    <addaction name="actionShow_Labels"/>
+    <addaction name="menuShow"/>
     <addaction name="actionIgnore_Orientation"/>
     <addaction name="actionPropagate_Zooming"/>
    </widget>
@@ -219,7 +226,7 @@
      <normaloff>:/common/orient.gif</normaloff>:/common/orient.gif</iconset>
    </property>
    <property name="text">
-    <string>Show Labels</string>
+    <string>Labels</string>
    </property>
    <property name="shortcut">
     <string>S, L</string>
@@ -254,6 +261,17 @@
    </property>
    <property name="text">
     <string>Propagate Zooming</string>
+   </property>
+  </action>
+  <action name="actionShow_Crosshair">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Crosshair</string>
+   </property>
+   <property name="shortcut">
+    <string>S, C</string>
    </property>
   </action>
  </widget>
