@@ -35,22 +35,24 @@ void OrientatioCorrectionDialog::flipPressed()
 {
 	boost::numeric::ublas::matrix<float> transform = boost::numeric::ublas::identity_matrix<float>( 3, 3 );
 
+	std::string desc;
+	
 	if( ui.checkFlipZ->isChecked() ) {
 		transform( 2, 2 ) = -1;
-		m_Core->getCurrentImage()->addChangedAttribute( "Flip Z" );
+		desc = "Flip Z";
 	}
 
 	if( ui.checkFlipY->isChecked() ) {
 		transform( 1, 1 ) = -1;
-		m_Core->getCurrentImage()->addChangedAttribute( "Flip Y" );
+		desc = "Flip Y";
 	}
 
 	if( ui.checkFlipX->isChecked() ) {
 		transform( 0, 0 ) = -1;
-		m_Core->getCurrentImage()->addChangedAttribute( "Flip X" );
+		desc = "Flip X";
 	}
 
-	applyTransform( transform, ui.checkISO->isChecked() );
+	applyTransform( transform, ui.checkISO->isChecked(), desc );
 }
 void OrientatioCorrectionDialog::applyPressed()
 {
@@ -66,8 +68,7 @@ void OrientatioCorrectionDialog::applyPressed()
 	desc << "Transformation matrix: " << std::endl << transform( 0, 0 ) << " " << transform( 1, 0 ) << " " << transform( 2, 0 ) << std::endl <<
 		 transform( 0, 1 ) << " " << transform( 1, 1 ) << " " << transform( 2, 1 ) << std::endl <<
 		 transform( 0, 2 ) << " " << transform( 1, 2 ) << " " << transform( 2, 2 ) << std::endl;
-	m_Core->getCurrentImage()->addChangedAttribute( desc.str() );
-	applyTransform( transform, ui.checkISO->isChecked() );
+	applyTransform( transform, ui.checkISO->isChecked(), desc.str() );
 }
 
 void OrientatioCorrectionDialog::rotatePressed()
@@ -100,23 +101,25 @@ void OrientatioCorrectionDialog::rotatePressed()
 	if( ui.rotateZ->text().toDouble() != 0 ) {
 		desc << "Z Rotation: " << ui.rotateZ->text().toDouble() << std::endl;
 	}
-
-	m_Core->getCurrentImage()->addChangedAttribute( desc.str() );
-	applyTransform( transform, ui.checkISO->isChecked() );
+	applyTransform( transform, ui.checkISO->isChecked(), desc.str() );
 
 }
-bool OrientatioCorrectionDialog::applyTransform( const boost::numeric::ublas::matrix< float >& trans, bool center ) const
+bool OrientatioCorrectionDialog::applyTransform( const boost::numeric::ublas::matrix< float >& trans, bool center, const std::string &desc ) const
 {
-	bool ret = m_Core->getCurrentImage()->getISISImage()->transformCoords( trans, center );
-
-	if( ret ) {
-		m_Core->getCurrentImage()->getPropMap().setPropertyAs<util::fvector4>( "originalRowVec", m_Core->getCurrentImage()->getISISImage()->getPropertyAs<util::fvector4>( "rowVec" ) );
-		m_Core->getCurrentImage()->getPropMap().setPropertyAs<util::fvector4>( "originalColumnVec", m_Core->getCurrentImage()->getISISImage()->getPropertyAs<util::fvector4>( "columnVec" ) );
-		m_Core->getCurrentImage()->getPropMap().setPropertyAs<util::fvector4>( "originalSliceVec", m_Core->getCurrentImage()->getISISImage()->getPropertyAs<util::fvector4>( "sliceVec" ) );
+	if( m_Core->hasImage() ) {
+		bool ret = m_Core->getCurrentImage()->getISISImage()->transformCoords( trans, center );
+		if( ret ) {
+			m_Core->getCurrentImage()->getPropMap().setPropertyAs<util::fvector4>( "originalRowVec", m_Core->getCurrentImage()->getISISImage()->getPropertyAs<util::fvector4>( "rowVec" ) );
+			m_Core->getCurrentImage()->getPropMap().setPropertyAs<util::fvector4>( "originalColumnVec", m_Core->getCurrentImage()->getISISImage()->getPropertyAs<util::fvector4>( "columnVec" ) );
+			m_Core->getCurrentImage()->getPropMap().setPropertyAs<util::fvector4>( "originalSliceVec", m_Core->getCurrentImage()->getISISImage()->getPropertyAs<util::fvector4>( "sliceVec" ) );
+			m_Core->getCurrentImage()->addChangedAttribute( desc );
+		} else {
+			LOG( Runtime, error ) << "Could not apply transform " << trans << " to the image " << m_Core->getCurrentImage()->getFileNames().front() << " !";
+		}
+		m_Core->updateScene();
+		return ret;
 	}
-
-	m_Core->updateScene();
-	return ret;
+	return false;
 
 }
 

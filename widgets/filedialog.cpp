@@ -19,7 +19,6 @@ isis::viewer::widget::FileDialog::FileDialog( QWidget *parent, QViewerCore *core
 	std::stringstream fileFormats;
 	fileFormats << "Image files (" << getFileFormatsAsString( isis::image_io::FileFormat::read_only, std::string( "*." ) ) << ")";
 	m_FileDialog.setNameFilter( fileFormats.str().c_str() );
-	m_Interface.distributeCheck->setEnabled( false );
 	m_Interface.typeComboBox->addItem( "structural image" );
 	m_Interface.typeComboBox->addItem( "zmap" );
 	connect( m_Interface.browseButton, SIGNAL( clicked() ), this, SLOT( browse() ) );
@@ -132,12 +131,13 @@ void isis::viewer::widget::FileDialog::parsePath()
 	ss << "Open " << validFiles << " file(s)";
 	m_Interface.openSaveButton->setText( ss.str().c_str() );
 	m_Interface.fileDirEdit->setPalette( pal );
-
-	if( validFiles > 1 ) {
-		m_Interface.distributeCheck->setEnabled( true );
+	if( !m_ViewerCore->hasImage() ) {
+		m_Interface.widgetInsertFrame->setVisible( false );
+		m_Interface.newWidgetCheck->setChecked( true );
 	} else {
-		m_Interface.distributeCheck->setEnabled( false );
+		m_Interface.widgetInsertFrame->setVisible( true );
 	}
+
 }
 
 bool isis::viewer::widget::FileDialog::checkIfPathIsValid( QString path, unsigned short &validFiles, bool acceptNoSuffix )
@@ -208,7 +208,7 @@ void isis::viewer::widget::FileDialog::openPath()
 {
 	//TODO check if valid
 	close();
-	m_ViewerCore->openPath( m_PathList, m_ImageType, m_Dialect, m_Suffix, m_Interface.distributeCheck->isChecked() );
+	m_ViewerCore->openPath( m_PathList, m_ImageType, m_Dialect, m_Suffix, m_Interface.newWidgetCheck->isChecked() );
 }
 
 void isis::viewer::widget::FileDialog::advancedChecked( bool advanced )

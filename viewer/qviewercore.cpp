@@ -162,12 +162,11 @@ bool QViewerCore::attachImageToWidget( boost::shared_ptr<ImageHolder> image, QWi
 							  << image->getFileNames().front() << ", so will not add it to widget " << widget << ".";
 		return false;
 	}
-
 	widget->addImage( image );
 	return true;
 }
 
-void QViewerCore::openPath( QStringList fileList, ImageHolder::ImageType imageType, const std::string &rdialect, const std::string &rf, bool distribute )
+void QViewerCore::openPath( QStringList fileList, ImageHolder::ImageType imageType, const std::string &rdialect, const std::string &rf, bool newWidget )
 {
 	if( !fileList.empty() ) {
 		QDir dir;
@@ -181,11 +180,7 @@ void QViewerCore::openPath( QStringList fileList, ImageHolder::ImageType imageTy
 			getUI()->setViewWidgetArrangement( isis::viewer::UICore::Default );
 		}
 
-		UICore::ViewWidgetEnsembleType ensemble;
-
-		if( !distribute ) {
-			ensemble = getUI()->createViewWidgetEnsemble( "" );
-		}
+		UICore::ViewWidgetEnsembleType ensemble = getUI()->getEnsembleList().front();
 
 		BOOST_FOREACH( QStringList::const_reference filename, fileList ) {
 			std::stringstream msg;
@@ -211,7 +206,7 @@ void QViewerCore::openPath( QStringList fileList, ImageHolder::ImageType imageTy
 				imgList.push_back( image );
 				boost::shared_ptr<ImageHolder> imageHolder = addImage( image, imageType );
 
-				if( distribute ) {
+				if( newWidget ) {
 					ensemble = getUI()->createViewWidgetEnsemble( "" );
 				}
 
@@ -223,7 +218,8 @@ void QViewerCore::openPath( QStringList fileList, ImageHolder::ImageType imageTy
 		getUI()->setShowWorkingLabel( "", false );
 		getUI()->rearrangeViewWidgets();
 		getUI()->refreshUI();
-		updateScene( );
+		centerImages();
+		
 	}
 }
 

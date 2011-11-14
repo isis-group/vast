@@ -25,8 +25,20 @@ MainWindow::MainWindow( QViewerCore *core ) :
 	setWindowIcon( QIcon( ":/common/vast.jpg" ) );
 	loadSettings();
 	m_ActionReset_Scaling = new QAction( this );
-	m_ActionReset_Scaling->setShortcut( QKeySequence( tr( "Ctrl+R, Ctrl+S" ) ) );
+	m_ActionReset_Scaling->setShortcut( QKeySequence( tr( "R, S" ) ) );
 	addAction( m_ActionReset_Scaling );
+	
+	m_UI.action_Save_Image->setShortcut( QKeySequence::Save );
+	m_UI.actionSave_Image->setShortcut( QKeySequence::SaveAs );
+	m_UI.actionOpen_image->setShortcut( QKeySequence::Open );
+	m_UI.action_Exit->setShortcut( QKeySequence::Quit );
+	m_UI.actionIgnore_Orientation->setShortcut( QKeySequence( tr( "I, O" ) ) );
+	m_UI.action_Preferences->setShortcut( QKeySequence( tr( "S, P" ) ) );
+	m_UI.actionFind_Global_Max->setShortcut( QKeySequence( tr( "F, M, A" ) ) );
+	m_UI.actionFind_Global_Min->setShortcut( QKeySequence( tr( "F, M, I" ) ) );
+	m_UI.actionShow_scaling_option->setShortcut( QKeySequence( tr("S, S" ) ) );
+	m_UI.actionPropagate_Zooming->setShortcut( QKeySequence( tr("P, Z" ) ) );
+	m_UI.actionShow_Labels->setShortcut( QKeySequence( tr("S, L" ) ) );
 
 	connect( m_UI.action_Save_Image, SIGNAL( triggered() ), this, SLOT( saveImage() ) );
 	connect( m_UI.actionSave_Image, SIGNAL( triggered() ), this, SLOT( saveImageAs() ) );
@@ -147,59 +159,60 @@ void MainWindow::spinRadiusChanged( int radius )
 
 void MainWindow::openImage()
 {
-
 	m_FileDialog->setMode( isis::viewer::widget::FileDialog::OPEN_FILE );
 	m_FileDialog->show();
-
-
 }
 
 void MainWindow::saveImage()
 {
-	if( !m_ViewerCore->getCurrentImage()->getPropMap().getPropertyAs<util::slist>( "changedAttributes" ).size() ) {
-		QMessageBox msgBox;
-		msgBox.setText( "The image that is currently selected has no changes! Won´t save anything." );
-		msgBox.exec();
-	} else {
-		QMessageBox msgBox;
-		msgBox.setIcon( QMessageBox::Information );
-		std::stringstream text;
-		text << "This will overwrite" << m_ViewerCore->getCurrentImage()->getFileNames().front() << " !";
-		msgBox.setText( text.str().c_str() );
-		msgBox.setInformativeText( "Do you want to proceed?" );
-		std::stringstream detailedText;
-		detailedText << "Changed attributes: " << std::endl;
-		BOOST_FOREACH( util::slist::const_reference attrChanged, m_ViewerCore->getCurrentImage()->getPropMap().getPropertyAs<util::slist>( "changedAttributes" ) ) {
-			detailedText << " >> " << attrChanged << std::endl;
-		}
-		msgBox.setDetailedText( detailedText.str().c_str() );
-		msgBox.setStandardButtons( QMessageBox::Yes | QMessageBox::No );
-		msgBox.setDefaultButton( QMessageBox::No );
+	if( m_ViewerCore->hasImage() ) {
+		if( !m_ViewerCore->getCurrentImage()->getPropMap().getPropertyAs<util::slist>( "changedAttributes" ).size() ) {
+			QMessageBox msgBox;
+			msgBox.setText( "The image that is currently selected has no changes! Won´t save anything." );
+			msgBox.exec();
+		} else {
+			QMessageBox msgBox;
+			msgBox.setIcon( QMessageBox::Information );
+			std::stringstream text;
+			text << "This will overwrite" << m_ViewerCore->getCurrentImage()->getFileNames().front() << " !";
+			msgBox.setText( text.str().c_str() );
+			msgBox.setInformativeText( "Do you want to proceed?" );
+			std::stringstream detailedText;
+			detailedText << "Changed attributes: " << std::endl;
+			BOOST_FOREACH( util::slist::const_reference attrChanged, m_ViewerCore->getCurrentImage()->getPropMap().getPropertyAs<util::slist>( "changedAttributes" ) ) {
+				detailedText << " >> " << attrChanged << std::endl;
+			}
+			msgBox.setDetailedText( detailedText.str().c_str() );
+			msgBox.setStandardButtons( QMessageBox::Yes | QMessageBox::No );
+			msgBox.setDefaultButton( QMessageBox::No );
 
-		switch ( msgBox.exec() ) {
-		case QMessageBox::No:
-			return;
-			break;
-		case QMessageBox::Yes:
-			isis::data::IOFactory::write( *m_ViewerCore->getCurrentImage()->getISISImage(), m_ViewerCore->getCurrentImage()->getFileNames().front(), "", "" );
-			break;
+			switch ( msgBox.exec() ) {
+			case QMessageBox::No:
+				return;
+				break;
+			case QMessageBox::Yes:
+				isis::data::IOFactory::write( *m_ViewerCore->getCurrentImage()->getISISImage(), m_ViewerCore->getCurrentImage()->getFileNames().front(), "", "" );
+				break;
+			}
 		}
 	}
 }
 
 void MainWindow::saveImageAs()
 {
-	std::stringstream fileFormats;
-	fileFormats << "Image files (" << getFileFormatsAsString( isis::image_io::FileFormat::write_only, std::string( "*." ) ) << ")";
-	QString filename = QFileDialog::getSaveFileName( this,
-					   tr( "Save Image As..." ),
-					   m_ViewerCore->getCurrentPath().c_str(),
-					   tr( fileFormats.str().c_str() ) );
+	if( m_ViewerCore->hasImage() ) {
+		std::stringstream fileFormats;
+		fileFormats << "Image files (" << getFileFormatsAsString( isis::image_io::FileFormat::write_only, std::string( "*." ) ) << ")";
+		QString filename = QFileDialog::getSaveFileName( this,
+						tr( "Save Image As..." ),
+						m_ViewerCore->getCurrentPath().c_str(),
+						tr( fileFormats.str().c_str() ) );
 
-	if( filename.size() ) {
-		std::stringstream ss;
-		ss << "Saving image to " << filename.toStdString() << "...";
-		isis::data::IOFactory::write( *m_ViewerCore->getCurrentImage()->getISISImage(), filename.toStdString(), "", "" );
+		if( filename.size() ) {
+			std::stringstream ss;
+			ss << "Saving image to " << filename.toStdString() << "...";
+			isis::data::IOFactory::write( *m_ViewerCore->getCurrentImage()->getISISImage(), filename.toStdString(), "", "" );
+		}
 	}
 
 }
@@ -231,7 +244,7 @@ void MainWindow::reloadPluginsToGUI()
 				processAction->setIcon( *plugin->getToolbarIcon() );
 				m_Toolbar->addAction( processAction );
 			}
-
+			processAction->setShortcut( plugin->getShortcut() );
 			processAction->setStatusTip( QString( plugin->getTooltip().c_str() ) );
 			signalMapper->setMapping( processAction, QString( plugin->getName().c_str() ) );
 			tmpMenu->addAction( processAction );
@@ -302,19 +315,22 @@ void MainWindow::showPreferences()
 
 void MainWindow::findGlobalMin()
 {
-	const util::ivector4 minVoxel = operation::NativeImageOps::getGlobalMin( m_ViewerCore->getCurrentImage(),
-									m_ViewerCore->getCurrentImage()->voxelCoords,
-									m_RadiusSpin->value() );
-	m_ViewerCore->physicalCoordsChanged( m_ViewerCore->getCurrentImage()->getISISImage()->getPhysicalCoordsFromIndex( minVoxel ) );
-
+	if( m_ViewerCore->hasImage() ) {
+		const util::ivector4 minVoxel = operation::NativeImageOps::getGlobalMin( m_ViewerCore->getCurrentImage(),
+										m_ViewerCore->getCurrentImage()->voxelCoords,
+										m_RadiusSpin->value() );
+		m_ViewerCore->physicalCoordsChanged( m_ViewerCore->getCurrentImage()->getISISImage()->getPhysicalCoordsFromIndex( minVoxel ) );
+	}
 }
 
 void MainWindow::findGlobalMax()
 {
-	const util::ivector4 maxVoxel = operation::NativeImageOps::getGlobalMax( m_ViewerCore->getCurrentImage(),
-									m_ViewerCore->getCurrentImage()->voxelCoords,
-									m_RadiusSpin->value() );
-	m_ViewerCore->physicalCoordsChanged( m_ViewerCore->getCurrentImage()->getISISImage()->getPhysicalCoordsFromIndex( maxVoxel ) );
+	if( m_ViewerCore->hasImage() ) {
+		const util::ivector4 maxVoxel = operation::NativeImageOps::getGlobalMax( m_ViewerCore->getCurrentImage(),
+										m_ViewerCore->getCurrentImage()->voxelCoords,
+										m_RadiusSpin->value() );
+		m_ViewerCore->physicalCoordsChanged( m_ViewerCore->getCurrentImage()->getISISImage()->getPhysicalCoordsFromIndex( maxVoxel ) );
+	}
 }
 
 

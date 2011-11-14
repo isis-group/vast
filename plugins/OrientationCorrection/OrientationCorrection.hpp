@@ -25,7 +25,7 @@ private:
 	QViewerCore *m_Core;
 	Ui::OrientationCorrection ui;
 	boost::numeric::ublas::matrix<QTableWidgetItem *> m_MatrixItems;
-	bool applyTransform ( const boost::numeric::ublas::matrix<float> &trans, bool center ) const ;
+	bool applyTransform ( const boost::numeric::ublas::matrix<float> &trans, bool center, const std::string &desc ) const ;
 
 };
 

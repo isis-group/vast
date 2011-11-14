@@ -47,6 +47,16 @@ boost::shared_ptr<ImageHolder> ViewerCoreBase::addImage( const isis::data::Image
 	return retImage;
 }
 
+boost::shared_ptr< ImageHolder > ViewerCoreBase::getCurrentImage()
+{
+	if( m_CurrentImage.get() ) {
+		return m_CurrentImage; 
+	} else {
+		LOG( Runtime, error ) << "Trying to fetch the current image. But there is no current image at all. Should be checked before.";
+		return boost::shared_ptr< ImageHolder >();
+	}
+	
+}
 
 
 void ViewerCoreBase::setImageList( std::list< data::Image > imgList, const ImageHolder::ImageType &imageType )

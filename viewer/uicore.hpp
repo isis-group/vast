@@ -4,6 +4,7 @@
 #include <list>
 #include <widgetImplementationBase.hpp>
 #include "mainwindow.hpp"
+#include <map>
 
 namespace isis
 {
@@ -102,6 +103,7 @@ private:
 	unsigned short m_RowCount;
 
 	WidgetMap m_WidgetMap;
+	
 
 };
 

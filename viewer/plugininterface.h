@@ -5,6 +5,7 @@
 #include <iostream>
 #include <QObject>
 #include <QIcon>
+#include <QKeySequence>
 #include <boost/uuid/uuid.hpp>
 #include <boost/uuid/uuid_generators.hpp>
 
@@ -41,6 +42,9 @@ public:
 	
 	///returns the tooltip of the plugin
 	virtual std::string getTooltip() = 0;
+	
+	///returns the shortcut that can be used to call the plugin
+	virtual QKeySequence getShortcut() { return QKeySequence(); }
 	
 	///returns if the plugin uses a gui
 	virtual bool isGUI() = 0;
