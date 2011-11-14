@@ -179,8 +179,10 @@ void QViewerCore::openPath( QStringList fileList, ImageHolder::ImageType imageTy
 		} else {
 			getUI()->setViewWidgetArrangement( isis::viewer::UICore::Default );
 		}
-
-		UICore::ViewWidgetEnsembleType ensemble = getUI()->getEnsembleList().front();
+		UICore::ViewWidgetEnsembleType ensemble;
+		if( getUI()->getEnsembleList().size() ) {
+			ensemble = getUI()->getEnsembleList().front();
+		}
 
 		BOOST_FOREACH( QStringList::const_reference filename, fileList ) {
 			std::stringstream msg;
