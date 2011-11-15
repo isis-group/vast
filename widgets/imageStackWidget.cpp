@@ -8,7 +8,17 @@ namespace viewer
 namespace widget
 {
 
-ImageStack::ImageStack(QWidget* parent, ImageStackWidget *widget ): QListWidget(parent), m_Widget(widget) {}
+ImageStack::ImageStack(QWidget* parent, ImageStackWidget *widget )
+	: QListWidget(parent), 
+	m_Widget(widget) 
+{
+	setMinimumWidth(700);
+	setMaximumWidth(0);
+	setSizePolicy( QSizePolicy( QSizePolicy::Ignored, QSizePolicy::Minimum) );
+	setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+	setVerticalScrollMode(ScrollPerItem);
+	setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+}
 
 void ImageStack::contextMenuEvent(QContextMenuEvent* event )
 {
@@ -89,7 +99,6 @@ void ImageStackWidget::closeAllImages()
 	{
 		m_ViewerCore->closeImage( m_ViewerCore->getDataContainer().at( item->text().toStdString() ) );
 	}
-
 }
 
 
