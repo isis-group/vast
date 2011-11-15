@@ -39,7 +39,6 @@ int main( int argc, char *argv[] )
 	}
 
 	qt4::IOQtApplication app( appName.c_str(), false, false );
-
 	app.parameters["in"] = util::slist();
 	app.parameters["in"].needed() = false;
 	app.parameters["in"].setDescription( "The input image file list." );

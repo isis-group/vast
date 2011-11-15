@@ -42,11 +42,13 @@ public Q_SLOTS:
 	void itemSelected( QListWidgetItem * );
 	void closeImage();
 	void distributeImages();
+	void closeAllImages();
 
 private:
 	QViewerCore *m_ViewerCore;
 	Ui::imageStackWidget m_Interface;
 	ImageStack *m_ImageStack;
+	void _closeImage( QString );
 
 };
 
