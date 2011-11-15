@@ -1,3 +1,9 @@
+vast (0.1.4gec4b5d5-0) stable; urgency=low
+
+  * a lot of fixes
+
+ -- ISIS Group (The friendly isis team) <gr_isis@cbs.mpg.de>  Tue, 15 Nov 2011 18:25:35 +0200
+
 vast (0.1.3gitce7b97c-0) stable; urgency=low
 
   * alpha version of vast meant to be installed on pandamonium for testing
