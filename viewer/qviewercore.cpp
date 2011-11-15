@@ -219,6 +219,12 @@ void QViewerCore::openPath( QStringList fileList, ImageHolder::ImageType imageTy
 
 				if( newWidget ) {
 					ensemble = getUI()->createViewWidgetEnsemble( "" );
+					//if we load a zmap we additionally add an anatomical image to the widget to make things easier for the user....
+					if( imageType == ImageHolder::z_map && m_CurrentAnatomicalReference.get() ) {
+						attachImageToWidget( m_CurrentAnatomicalReference, ensemble[0].widgetImplementation);
+						attachImageToWidget( m_CurrentAnatomicalReference, ensemble[1].widgetImplementation);
+						attachImageToWidget( m_CurrentAnatomicalReference, ensemble[2].widgetImplementation);
+					}
 				}
 
 				attachImageToWidget( imageHolder, ensemble[0].widgetImplementation );
@@ -235,6 +241,28 @@ void QViewerCore::openPath( QStringList fileList, ImageHolder::ImageType imageTy
 	}
 }
 
+void QViewerCore::closeImage( boost::shared_ptr<ImageHolder> image )
+{
+		BOOST_FOREACH( std::list< QWidgetImplementationBase *>::const_reference widget, image->getWidgetList() ) {
+			widget->removeImage( image );
+		}
+		if( getCurrentImage().get() == image.get() ) {
+			std::list<boost::shared_ptr< ImageHolder > > tmpList;
+			BOOST_FOREACH( DataContainer::const_reference image, getDataContainer() ) {
+				tmpList.push_back( image.second );
+			}
+			tmpList.erase( std::find( tmpList.begin(), tmpList.end(), image ) );
+
+			if( tmpList.size() ) {
+				setCurrentImage( tmpList.front() );
+			} else {
+				setCurrentImage( boost::shared_ptr<ImageHolder>() );
+			}
+		}
+		getDataContainer().erase(  image->getFileNames().front() );
+		getUI()->refreshUI();
+		updateScene();
+}
 
 
 

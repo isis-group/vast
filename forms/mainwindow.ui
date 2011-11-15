@@ -168,6 +168,10 @@
    </property>
   </action>
   <action name="action_Exit">
+   <property name="icon">
+    <iconset resource="../resources/viewer.qrc">
+     <normaloff>:/common/exit.png</normaloff>:/common/exit.png</iconset>
+   </property>
    <property name="text">
     <string>&amp;Exit</string>
    </property>
@@ -272,6 +276,14 @@
    </property>
    <property name="shortcut">
     <string>S, C</string>
+   </property>
+  </action>
+  <action name="actionCenter_to_ca">
+   <property name="text">
+    <string>Center to ca</string>
+   </property>
+   <property name="shortcut">
+    <string>Space, Space</string>
    </property>
   </action>
  </widget>

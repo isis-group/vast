@@ -63,7 +63,6 @@ protected:
 
 Q_SIGNALS:
 	void redraw();
-	void voxelCoordsChanged( util::ivector4 );
 	void physicalCoordsChanged( util::fvector4 );
 	void zoomChanged( float zoomFactor );
 
@@ -95,7 +94,7 @@ private:
 	float translationX;
 	float translationY;
 	float currentZoom;
-
+	
 	std::pair<int, int> m_StartCoordsPair;
 
 };

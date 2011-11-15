@@ -63,6 +63,7 @@ public Q_SLOTS:
 	virtual void receiveMessage( qt4::QMessage message );
 	virtual void openPath( QStringList fileList, ImageHolder::ImageType imageType, const std::string &rdialect = "", const std::string &rf = "", bool newWidget = false );
 	virtual void centerImages();
+	virtual void closeImage( boost::shared_ptr<ImageHolder> image );
 
 Q_SIGNALS:
 	void emitZoomChanged( float zoom );

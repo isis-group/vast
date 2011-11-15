@@ -131,7 +131,7 @@ QDockWidget *UICore::createDockingEnsemble( QWidget *widget )
 	dockWidget->setFeatures( QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable );
 	dockWidget->setSizePolicy( QSizePolicy( QSizePolicy::Maximum, QSizePolicy::Maximum ) );
 	dockWidget->setWidget( widget );
-	dockWidget->setContentsMargins( 0, 0, 0, 0 );
+	dockWidget->setContentsMargins( 5, 5, 5, 5 );
 	return dockWidget;
 
 }
@@ -279,13 +279,26 @@ void UICore::refreshUI()
 	m_ImageStackWidget->synchronize();
 	m_VoxelInformationWidget->synchronize();
 	BOOST_FOREACH( WidgetMap::reference widget, getWidgets() ) {
-		if( !widget.second.widgetImplementation->getImageVector().size() ) {
+		QWidgetImplementationBase::ImageVectorType iVector = widget.second.widgetImplementation->getImageVector();
+		if( !iVector.size() ) {
 			widget.second.dockWidget->setVisible( false );
 		} else {
 			widget.second.dockWidget->setVisible( true );
 		}
+		if( std::find( iVector.begin(), iVector.end(), m_ViewerCore->getCurrentImage() ) != iVector.end() ) {
+			QPalette pal;
+			pal.setColor( QPalette::Background, QColor( 119, 136, 153) );
+			widget.second.frame->setFrameStyle( QFrame::WinPanel | QFrame::Raised );
+			widget.second.frame->setLineWidth(3);
+			widget.second.frame->setPalette(pal);
+			widget.second.frame->setAutoFillBackground(true);
+		} else {
+			widget.second.frame->setFrameStyle(0);
+			widget.second.frame->setAutoFillBackground( false );
+		}
 	}
 	m_MainWindow->refreshUI();
+	
 }
 
 

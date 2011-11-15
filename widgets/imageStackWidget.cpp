@@ -8,22 +8,48 @@ namespace viewer
 namespace widget
 {
 
+ImageStack::ImageStack(QWidget* parent, ImageStackWidget *widget )
+	: QListWidget(parent), 
+	m_Widget(widget) 
+{
+	setMinimumWidth(700);
+	setMaximumWidth(0);
+	setSizePolicy( QSizePolicy( QSizePolicy::Ignored, QSizePolicy::Minimum) );
+	setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+	setVerticalScrollMode(ScrollPerItem);
+	setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+}
+
+void ImageStack::contextMenuEvent(QContextMenuEvent* event )
+{
+	QMenu menu(this);
+	menu.addAction( m_Widget->m_Interface.actionClose_image );
+	menu.addAction( m_Widget->m_Interface.actionDistribute_images);
+	menu.addSeparator();
+	menu.addAction( m_Widget->m_Interface.actionClose_all_images);
+	menu.exec( event->globalPos() );
+}
+	
 ImageStackWidget::ImageStackWidget( QWidget *parent, QViewerCore *core )
 	: QWidget( parent ), m_ViewerCore( core )
 {
 	m_Interface.setupUi( this );
-
-	m_Interface.imageStack->setEditTriggers( QAbstractItemView::NoEditTriggers );
-	connect( m_Interface.imageStack, SIGNAL( itemActivated( QListWidgetItem * ) ), this, SLOT( itemSelected( QListWidgetItem * ) ) );
-	connect( m_Interface.imageStack, SIGNAL( itemChanged( QListWidgetItem * ) ), this, SLOT( itemClicked( QListWidgetItem * ) ) );
-	connect( m_Interface.buttonCloseImage, SIGNAL( clicked() ), this, SLOT( closeButtonClicked() ) );
-	connect( m_Interface.buttonDistributeImages, SIGNAL( clicked() ), this, SLOT( distributeImages() ) );
+	m_Interface.actionClose_image->setIconVisibleInMenu(true);
+	m_Interface.actionDistribute_images->setIconVisibleInMenu(true);
+	m_Interface.actionClose_all_images->setIconVisibleInMenu(true);
+	m_ImageStack = new ImageStack(m_Interface.imageStackPlaceHolder, this);
+	m_ImageStack->setEditTriggers( QAbstractItemView::NoEditTriggers );
+	connect( m_ImageStack, SIGNAL( itemActivated( QListWidgetItem * ) ), this, SLOT( itemSelected( QListWidgetItem * ) ) );
+	connect( m_ImageStack, SIGNAL( itemChanged( QListWidgetItem * ) ), this, SLOT( itemClicked( QListWidgetItem * ) ) );
+	connect( m_Interface.actionClose_image, SIGNAL( triggered()), this, SLOT( closeImage()));
+	connect( m_Interface.actionDistribute_images, SIGNAL( triggered()), this, SLOT( distributeImages()) );
+	connect( m_Interface.actionClose_all_images, SIGNAL( triggered()), this, SLOT( closeAllImages()));
 
 }
 
 void ImageStackWidget::synchronize()
 {
-	m_Interface.imageStack->clear();
+	m_ImageStack->clear();
 	BOOST_FOREACH( DataContainer::const_reference imageRef, m_ViewerCore->getDataContainer() ) {
 		QListWidgetItem *item = new QListWidgetItem;
 		QString sD = imageRef.second->getPropMap().getPropertyAs<std::string>( "sequenceDescription" ).c_str();
@@ -40,7 +66,7 @@ void ImageStackWidget::synchronize()
 			item->setIcon( QIcon( ":/common/currentImage.gif" ) );
 		}
 
-		m_Interface.imageStack->addItem( item );
+		m_ImageStack->addItem( item );
 	}
 }
 
@@ -66,31 +92,20 @@ void ImageStackWidget::itemSelected( QListWidgetItem *item )
 	m_ViewerCore->updateScene();
 }
 
-void ImageStackWidget::closeButtonClicked()
+void ImageStackWidget::closeAllImages()
 {
-	if(  m_Interface.imageStack->currentItem() ) {
-		boost::shared_ptr<ImageHolder> image = m_ViewerCore->getDataContainer().at( m_Interface.imageStack->currentItem()->text().toStdString() );
-		BOOST_FOREACH( std::list< QWidgetImplementationBase *>::const_reference widget, image->getWidgetList() ) {
-			widget->removeImage( image );
-		}
+	QList<QListWidgetItem *> items = m_ImageStack->findItems(QString("*"), Qt::MatchWrap | Qt::MatchWildcard);
+	BOOST_FOREACH( QList<QListWidgetItem *>::const_reference item, items ) 
+	{
+		m_ViewerCore->closeImage( m_ViewerCore->getDataContainer().at( item->text().toStdString() ) );
+	}
+}
 
-		if( m_ViewerCore->getCurrentImage().get() == m_ViewerCore->getDataContainer().at( m_Interface.imageStack->currentItem()->text().toStdString() ).get() ) {
-			std::list<std::string> tmpList;
-			BOOST_FOREACH( DataContainer::const_reference image, m_ViewerCore->getDataContainer() ) {
-				tmpList.push_back( image.first );
-			}
-			tmpList.erase( std::find( tmpList.begin(), tmpList.end(), m_Interface.imageStack->currentItem()->text().toStdString() ) );
 
-			if( tmpList.size() ) {
-				m_ViewerCore->setCurrentImage( m_ViewerCore->getDataContainer().at( tmpList.front() ) );
-			} else {
-				m_ViewerCore->setCurrentImage( boost::shared_ptr<ImageHolder>() );
-			}
-		}
-
-		m_ViewerCore->getDataContainer().erase( m_Interface.imageStack->currentItem()->text().toStdString() );
-		m_ViewerCore->getUI()->refreshUI();
-		m_ViewerCore->updateScene();
+void ImageStackWidget::closeImage()
+{
+	if(  m_ImageStack->currentItem() ) {
+		m_ViewerCore->closeImage( m_ViewerCore->getDataContainer().at( m_ImageStack->currentItem()->text().toStdString() ) );
 	}
 }
 
