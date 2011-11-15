@@ -33,6 +33,7 @@ isis::viewer::widget::FileDialog::FileDialog( QWidget *parent, QViewerCore *core
 	connect( m_Interface.addToListButton, SIGNAL( clicked()), this, SLOT( addToFavList()));
 	connect( m_Interface.favoriteList, SIGNAL( itemSelectionChanged()), this, SLOT( onFavListClicked()));
 	connect( m_Interface.removeFromListButton, SIGNAL( clicked()), this, SLOT( removeFromFavList()));
+	connect( m_Interface.favoriteList, SIGNAL( doubleClicked(QModelIndex)), this, SLOT( openPath()) );
 }
 
 void isis::viewer::widget::FileDialog::showEvent( QShowEvent * )
@@ -212,9 +213,9 @@ void isis::viewer::widget::FileDialog::browse()
 	parsePath();
 }
 
+
 void isis::viewer::widget::FileDialog::openPath()
 {
-	//TODO check if valid
 	close();
 	m_ViewerCore->openPath( m_PathList, m_ImageType, m_Dialect, m_Suffix == "auto" ? "" : m_Suffix, m_Interface.newWidgetCheck->isChecked() );
 }
