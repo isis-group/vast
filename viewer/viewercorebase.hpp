@@ -62,6 +62,8 @@ protected:
 	boost::shared_ptr<util::PropertyMap> m_OptionsMap;
 	//additional imagelist for finding purpose
 	ImageHolder::ImageListType m_ImageList;
+	
+	boost::shared_ptr<ImageHolder> m_CurrentAnatomicalReference;
 
 
 
