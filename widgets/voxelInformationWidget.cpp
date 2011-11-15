@@ -143,7 +143,7 @@ void VoxelInformationWidget::synchronize()
 		m_Interface.yBox->setMaximum( physicalBegin[1] > physicalEnd[1] ? physicalBegin[1] : physicalEnd[1] );
 		m_Interface.zBox->setMinimum( physicalBegin[2] < physicalEnd[2] ? physicalBegin[2] : physicalEnd[2] );
 		m_Interface.zBox->setMaximum( physicalBegin[2] > physicalEnd[2] ? physicalBegin[2] : physicalEnd[2] );
-		synchronizePos( image->physicalCoords );
+		synchronizePos( image->voxelCoords );
 		util::fvector4 voxelSpacing;
 		if( image->getISISImage()->hasProperty("voxelGap" ) ){
 			voxelSpacing = image->getISISImage()->getPropertyAs<util::fvector4>( "voxelSize" ) + image->getISISImage()->getPropertyAs<util::fvector4>( "voxelGap" );

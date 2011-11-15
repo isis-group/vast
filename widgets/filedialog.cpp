@@ -103,8 +103,16 @@ void isis::viewer::widget::FileDialog::setup()
 	QList<QVariant> favFiles = m_ViewerCore->getSettings()->value( "favoriteFiles" ).toList();
 	m_ViewerCore->getSettings()->endGroup();
 	m_Interface.favoriteList->clear();
+	
 	BOOST_FOREACH( QList<QVariant>::const_reference path, favFiles ) {
-		m_Interface.favoriteList->addItem( path.toString() );
+		unsigned short validFiles;
+		QListWidgetItem *item = new QListWidgetItem( path.toString() );
+		if( checkIfPathIsValid( path.toString(), validFiles ) ) {
+			item->setTextColor(QColor( 34, 139, 34 ));
+		} else {
+			item->setTextColor( Qt::red );
+		}
+		m_Interface.favoriteList->addItem( item );
 	}
 	adjustSize();
 }

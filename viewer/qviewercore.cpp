@@ -74,6 +74,7 @@ void QViewerCore::centerImages()
 		const util::ivector4 center( size[0] / 2, size[1] / 2, size[2] / 2,
 										 getCurrentImage()->voxelCoords[3] );
 		getCurrentImage()->voxelCoords = center;
+		m_UI->refreshUI();
 		updateScene();
 	}
 }
