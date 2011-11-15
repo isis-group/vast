@@ -16,6 +16,8 @@ VoxelInformationWidget::VoxelInformationWidget( QWidget *parent, QViewerCore *co
 	  isConnected( false )
 {
 	m_Interface.setupUi( this );
+	m_Interface.frame_4->setMaximumHeight(m_ViewerCore->getOptionMap()->getPropertyAs<uint16_t>("maxOptionWidgetHeight"));
+	m_Interface.frame_4->setMinimumHeight(m_ViewerCore->getOptionMap()->getPropertyAs<uint16_t>("minOptionWidgetHeight"));
 	m_Interface.rowBox->setMinimum( 0 );
 	m_Interface.columnBox->setMinimum( 0 );
 	m_Interface.sliceBox->setMinimum( 0 );

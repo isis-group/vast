@@ -89,8 +89,12 @@ void ViewerCoreBase::setCommonViewerOptions()
 	m_OptionsMap->setPropertyAs<uint16_t>( "minMaxSearchRadius", 20 );
 	m_OptionsMap->setPropertyAs<bool>( "showAdvancedFileDialogOptions", false );
 	m_OptionsMap->setPropertyAs<bool>( "showFavoriteFileList", false );
+	m_OptionsMap->setPropertyAs<uint16_t>( "maxWidgetHeight", 200 );
+	m_OptionsMap->setPropertyAs<uint16_t>( "maxWidgetWidth", 200 );
+	m_OptionsMap->setPropertyAs<uint16_t>( "maxOptionWidgetHeight", 150);
+	m_OptionsMap->setPropertyAs<uint16_t>( "minOptionWidgetHeight", 100);	
 	//logging
-	m_OptionsMap->setPropertyAs<uint16_t>( "logDelayTime", 5000 );
+	m_OptionsMap->setPropertyAs<uint16_t>( "logDelayTime", 6000 );
 	m_OptionsMap->setPropertyAs<bool>( "showErrorMessages", true );
 	m_OptionsMap->setPropertyAs<bool>( "showNoticeMessages", true );
 	m_OptionsMap->setPropertyAs<bool>( "showWarningMessages", false );
