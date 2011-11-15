@@ -84,32 +84,13 @@
           <number>2</number>
          </property>
          <item row="0" column="0">
-          <widget class="QListWidget" name="imageStack"/>
-         </item>
-         <item row="0" column="1">
-          <widget class="QFrame" name="frame_4">
-           <property name="frameShape">
-            <enum>QFrame::NoFrame</enum>
+          <widget class="QWidget" name="imageStackPlaceHolder" native="true">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
            </property>
-           <property name="frameShadow">
-            <enum>QFrame::Raised</enum>
-           </property>
-           <layout class="QVBoxLayout" name="verticalLayout_2">
-            <item>
-             <widget class="QPushButton" name="buttonCloseImage">
-              <property name="text">
-               <string>Close image</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QPushButton" name="buttonDistributeImages">
-              <property name="text">
-               <string>Distribute</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
           </widget>
          </item>
         </layout>
@@ -143,7 +124,27 @@
     </widget>
    </item>
   </layout>
+  <action name="actionClose_image">
+   <property name="icon">
+    <iconset resource="../resources/viewer.qrc">
+     <normaloff>:/common/close.gif</normaloff>:/common/close.gif</iconset>
+   </property>
+   <property name="text">
+    <string>Close image</string>
+   </property>
+  </action>
+  <action name="actionDistribute_images">
+   <property name="icon">
+    <iconset resource="../resources/viewer.qrc">
+     <normaloff>:/common/distribute.png</normaloff>:/common/distribute.png</iconset>
+   </property>
+   <property name="text">
+    <string>Distribute images</string>
+   </property>
+  </action>
  </widget>
- <resources/>
+ <resources>
+  <include location="../resources/viewer.qrc"/>
+ </resources>
  <connections/>
 </ui>

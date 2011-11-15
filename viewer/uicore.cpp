@@ -285,7 +285,6 @@ void UICore::refreshUI()
 		} else {
 			widget.second.dockWidget->setVisible( true );
 		}
-
 		if( std::find( iVector.begin(), iVector.end(), m_ViewerCore->getCurrentImage() ) != iVector.end() ) {
 			QPalette pal;
 			pal.setColor( QPalette::Background, QColor( 119, 136, 153) );
@@ -297,8 +296,6 @@ void UICore::refreshUI()
 			widget.second.frame->setFrameStyle(0);
 			widget.second.frame->setAutoFillBackground( false );
 		}
-		
-		
 	}
 	m_MainWindow->refreshUI();
 	

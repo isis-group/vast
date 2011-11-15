@@ -1,5 +1,8 @@
 <RCC>
   <qresource prefix="common">
+    <file>close.gif</file>
+    <file>distribute.png</file>
+    <file>exit.png</file>
     <file>vast.jpg</file>
     <file>saveimage.gif</file>
     <file>max.gif</file>
