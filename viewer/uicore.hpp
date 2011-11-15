@@ -90,7 +90,6 @@ private:
 	QViewerCore *m_ViewerCore;
 	MainWindow *m_MainWindow;
 	ViewWidgetEnsembleListType m_EnsembleList;
-	util::PropertyMap m_UICoreProperties;
 
 	widget::VoxelInformationWidget *m_VoxelInformationWidget;
 	QDockWidget *m_VoxelInformationDockWidget;

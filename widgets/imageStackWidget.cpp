@@ -1,5 +1,6 @@
 #include "imageStackWidget.hpp"
 #include <viewercorebase.hpp>
+#include <qviewercore.hpp>
 
 namespace isis
 {
@@ -12,12 +13,11 @@ ImageStack::ImageStack(QWidget* parent, ImageStackWidget *widget )
 	: QListWidget(parent), 
 	m_Widget(widget) 
 {
-	setMinimumWidth(700);
-	setMaximumWidth(0);
-	setSizePolicy( QSizePolicy( QSizePolicy::Ignored, QSizePolicy::Minimum) );
 	setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
 	setVerticalScrollMode(ScrollPerItem);
 	setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+	setMaximumHeight(m_Widget->m_ViewerCore->getOptionMap()->getPropertyAs<uint16_t>("maxOptionWidgetHeight") - 4);
+	setMinimumHeight(m_Widget->m_ViewerCore->getOptionMap()->getPropertyAs<uint16_t>("minOptionWidgetHeight") - 4);	
 }
 
 void ImageStack::contextMenuEvent(QContextMenuEvent* event )
@@ -37,7 +37,9 @@ ImageStackWidget::ImageStackWidget( QWidget *parent, QViewerCore *core )
 	m_Interface.actionClose_image->setIconVisibleInMenu(true);
 	m_Interface.actionDistribute_images->setIconVisibleInMenu(true);
 	m_Interface.actionClose_all_images->setIconVisibleInMenu(true);
-	m_ImageStack = new ImageStack(m_Interface.imageStackPlaceHolder, this);
+	m_ImageStack = new ImageStack(this, this);
+	m_Interface.layout->addWidget( m_ImageStack );
+
 	m_ImageStack->setEditTriggers( QAbstractItemView::NoEditTriggers );
 	connect( m_ImageStack, SIGNAL( itemActivated( QListWidgetItem * ) ), this, SLOT( itemSelected( QListWidgetItem * ) ) );
 	connect( m_ImageStack, SIGNAL( itemChanged( QListWidgetItem * ) ), this, SLOT( itemClicked( QListWidgetItem * ) ) );
@@ -49,6 +51,8 @@ ImageStackWidget::ImageStackWidget( QWidget *parent, QViewerCore *core )
 
 void ImageStackWidget::synchronize()
 {
+	m_Interface.frame->setMaximumHeight(m_ViewerCore->getOptionMap()->getPropertyAs<uint16_t>("maxOptionWidgetHeight"));
+	m_Interface.frame->setMinimumHeight(m_ViewerCore->getOptionMap()->getPropertyAs<uint16_t>("minOptionWidgetHeight"));
 	m_ImageStack->clear();
 	BOOST_FOREACH( DataContainer::const_reference imageRef, m_ViewerCore->getDataContainer() ) {
 		QListWidgetItem *item = new QListWidgetItem;

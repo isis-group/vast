@@ -13,9 +13,6 @@ UICore::UICore( QViewerCore *core )
 	: m_MainWindow( new MainWindow( core ) ),
 	  m_ViewerCore( core )
 {
-	m_UICoreProperties.setPropertyAs<uint16_t>( "maxWidgetHeight", 200 );
-	m_UICoreProperties.setPropertyAs<uint16_t>( "maxWidgetWidth", 200 );
-
 	m_VoxelInformationWidget = new widget::VoxelInformationWidget( m_MainWindow, core );
 	m_SliderWidget = new widget::SliderWidget( m_MainWindow, core );
 	m_ImageStackWidget = new widget::ImageStackWidget( m_MainWindow, core );
@@ -249,8 +246,8 @@ UICore::ViewWidget UICore::createViewWidget( const std::string &widgetType, Plan
 	QFrame *frameWidget = new QFrame();
 
 	QDockWidget *dockWidget = createDockingEnsemble( frameWidget );
-	dockWidget->setMinimumHeight( m_UICoreProperties.getPropertyAs<uint16_t>( "maxWidgetHeight" ) );
-	dockWidget->setMinimumWidth( m_UICoreProperties.getPropertyAs<uint16_t>( "maxWidgetWidth" ) );
+	dockWidget->setMinimumHeight( m_ViewerCore->getOptionMap()->getPropertyAs<uint16_t>( "maxWidgetHeight" ) );
+	dockWidget->setMinimumWidth( m_ViewerCore->getOptionMap()->getPropertyAs<uint16_t>( "maxWidgetWidth" ) );
 	dockWidget->setWidget( frameWidget );
 	frameWidget->setParent( dockWidget );
 
