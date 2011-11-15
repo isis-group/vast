@@ -67,6 +67,7 @@ QWidgetImplementationBase *QImageWidgetImplementation::createSharedWidget( QWidg
 }
 
 
+
 void QImageWidgetImplementation::addImage( const boost::shared_ptr< ImageHolder > image )
 {
 	ImageProperties imgProperties;
@@ -258,6 +259,7 @@ void QImageWidgetImplementation::mousePressEvent( QMouseEvent *e )
 
 void QImageWidgetImplementation::mouseMoveEvent( QMouseEvent *e )
 {
+	
 	if( m_RightMouseButtonPressed && m_LeftMouseButtonPressed ) {
 		boost::shared_ptr<ImageHolder> image = getWidgetSpecCurrentImage();
 		const double offset =  ( m_StartCoordsPair.second - e->y() ) / ( float )height() * image->extent;
@@ -331,7 +333,6 @@ void QImageWidgetImplementation::paintCrosshair() const
 	const boost::shared_ptr< ImageHolder > image = getWidgetSpecCurrentImage();
 	const ImageProperties &imgProps = m_ImageProperties.at( image );
 	std::pair<int, int> coords = QOrienationHandler::convertVoxel2WindowCoords( imgProps.viewPort, image, m_PlaneOrientation );
-#warning adopt border
 	short border = -5000; 
 	
 	const QLine xline1( coords.first, border, coords.first, coords.second - 15 );

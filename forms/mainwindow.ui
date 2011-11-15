@@ -274,6 +274,14 @@
     <string>S, C</string>
    </property>
   </action>
+  <action name="actionCenter_to_ca">
+   <property name="text">
+    <string>Center to ca</string>
+   </property>
+   <property name="shortcut">
+    <string>Space, Space</string>
+   </property>
+  </action>
  </widget>
  <resources>
   <include location="../resources/viewer.qrc"/>
