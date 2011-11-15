@@ -223,6 +223,7 @@ void QViewerCore::openPath( QStringList fileList, ImageHolder::ImageType imageTy
 				attachImageToWidget( imageHolder, ensemble[0].widgetImplementation );
 				attachImageToWidget( imageHolder, ensemble[1].widgetImplementation );
 				attachImageToWidget( imageHolder, ensemble[2].widgetImplementation );
+				setCurrentImage( imageHolder );
 			}
 		}
 		getUI()->setShowWorkingLabel( "", false );

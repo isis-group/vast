@@ -168,12 +168,12 @@ color::Color::ColormapType color::Color::adaptColorMapToImage( color::Color::Col
 		scaledVal = i * scaling + offset * norm > 255 ? 255 : i * scaling + offset * norm;
 		retMap[i] = colorMap[scaledVal];
 	}
-
+	color::Color::ColormapType negVec( mid );
+	color::Color::ColormapType posVec( 256 - mid );
 	//only stuff necessary for colormaps
 	if( image->imageType == ImageHolder::z_map ) {
+		
 		if( split ) {
-			color::Color::ColormapType negVec( mid );
-			color::Color::ColormapType posVec( 256 - mid );
 			assert( negVec.size() + posVec.size() == 256 );
 
 			//fill negVec
@@ -192,14 +192,12 @@ color::Color::ColormapType color::Color::adaptColorMapToImage( color::Color::Col
 				const double offset = ( 256 - mid ) * scaleMax;
 
 				for( unsigned short i = 0; i < 256 - mid; i++ ) {
-					posVec[i * ( 1 - scaleMax ) + offset] = retMap[128 + i * normMax];
+					posVec[(i * ( 1 - scaleMax ) + offset)] = retMap[128 + i * normMax];
 				}
 			}
-
 			retMap = negVec << posVec;
 		}
 	}
-
 	//kill the zero value
 	retMap[mid] = QColor( 0, 0, 0, 0 ).rgba();
 	return retMap;

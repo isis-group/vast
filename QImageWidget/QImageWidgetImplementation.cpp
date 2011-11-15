@@ -148,6 +148,9 @@ void QImageWidgetImplementation::paintEvent( QPaintEvent *event )
 		if( m_ShowCrosshair ) {
 			paintCrosshair();
 		}
+		if( m_ShowLabels ) {
+			showLabels();
+		}
 
 		if( m_ShowScalingOffset ) {
 			m_Painter->resetMatrix();
@@ -351,9 +354,7 @@ void QImageWidgetImplementation::paintCrosshair() const
 	pen.setWidth( 2 );
 	m_Painter->drawPoint( coords.first, coords.second );
 
-	if( m_ShowLabels ) {
-		showLabels();
-	}
+
 }
 
 bool QImageWidgetImplementation::lookAtPhysicalCoords( const isis::util::fvector4 &physicalCoords )

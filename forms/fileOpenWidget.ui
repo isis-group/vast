@@ -396,7 +396,11 @@
        <number>2</number>
       </property>
       <item>
-       <widget class="QListWidget" name="favoriteList"/>
+       <widget class="QListWidget" name="favoriteList">
+        <property name="selectionMode">
+         <enum>QAbstractItemView::MultiSelection</enum>
+        </property>
+       </widget>
       </item>
       <item>
        <widget class="QFrame" name="frame_5">
