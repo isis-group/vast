@@ -1,5 +1,6 @@
 #include "preferenceDialog.hpp"
 #include "color.hpp"
+#include <qviewercore.hpp>
 
 namespace isis
 {
@@ -51,7 +52,9 @@ void PreferencesDialog::loadSettings()
 	preferencesUi.comboScaling->setCurrentIndex( m_ViewerCore->getSettings()->value( "scaling", 0 ).toUInt() );
 	preferencesUi.checkShowLabels->setChecked( m_ViewerCore->getSettings()->value( "showLabels", false ).toBool() );
 	preferencesUi.checkPropagateZooming->setChecked( m_ViewerCore->getSettings()->value( "propagateZooming", false ).toBool() );
-	preferencesUi.comboBox->setCurrentIndex( preferencesUi.comboBox->findText( m_ViewerCore->getCurrentImage()->lut.c_str() ) );
+	if( m_ViewerCore->hasImage() ) {
+		preferencesUi.comboBox->setCurrentIndex( preferencesUi.comboBox->findText( m_ViewerCore->getCurrentImage()->lut.c_str() ) );
+	}
 	m_ViewerCore->getSettings()->endGroup();
 }
 
@@ -66,7 +69,9 @@ void PreferencesDialog::saveSettings()
 	m_ViewerCore->getSettings()->setValue( "propagateZooming", preferencesUi.checkPropagateZooming->isChecked() );
 	m_ViewerCore->getSettings()->endGroup();
 	m_ViewerCore->getSettings()->sync();
-	m_ViewerCore->getCurrentImage()->lut = preferencesUi.comboBox->currentText().toStdString() ;
+	if( m_ViewerCore->hasImage() ) {
+		m_ViewerCore->getCurrentImage()->lut = preferencesUi.comboBox->currentText().toStdString() ;
+	}
 }
 
 
