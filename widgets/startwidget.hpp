@@ -22,6 +22,7 @@ public Q_SLOTS:
 	void statusChanged( QString );
 	void showMeChecked( bool );
 	virtual void showEvent( QShowEvent *) ;
+	void openPath();
 
 private:
 	Ui::startDialog m_Interface;

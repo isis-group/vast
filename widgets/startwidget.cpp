@@ -15,6 +15,7 @@ StartWidget::StartWidget(QWidget* parent, QViewerCore* core)
 	connect( m_Interface.openImageButton, SIGNAL( clicked()), this, SLOT( openImageButtonClicked()));
 	connect( m_ViewerCore, SIGNAL( emitStatus(QString)), this, SLOT( statusChanged(QString)));
 	connect( m_Interface.showMeCheck, SIGNAL( clicked(bool)), this, SLOT( showMeChecked(bool)));
+	connect( m_Interface.favList, SIGNAL( doubleClicked(QModelIndex)), this, SLOT( openPath()));
 
 }
 
@@ -23,6 +24,14 @@ void StartWidget::showMeChecked(bool checked )
 	m_ViewerCore->getOptionMap()->setPropertyAs<bool>("showStartWidget", checked );
 }
 
+
+void StartWidget::openPath()
+{
+	close();
+	QStringList fileList;
+	fileList.push_back( m_Interface.favList->currentItem()->text() );
+	m_ViewerCore->openPath( fileList, ImageHolder::anatomical_image, "", "", true );
+}
 
 void StartWidget::showEvent(QShowEvent* )
 {
