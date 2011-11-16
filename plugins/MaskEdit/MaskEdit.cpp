@@ -88,6 +88,13 @@ void MaskEditDialog::createEmptyMask()
 void MaskEditDialog::closeEvent(QCloseEvent* )
 {
 	disconnect( m_ViewerCore, SIGNAL ( emitPhysicalCoordsChanged(util::fvector4)), this, SLOT( physicalCoordChanged(util::fvector4)));
+	BOOST_FOREACH( UICore::ViewWidgetEnsembleListType::const_reference ensemble, m_ViewerCore->getUI()->getEnsembleList() ) {
+		for ( unsigned short i = 0; i < 3; i++ ) {
+			ensemble[i].widgetImplementation->setMouseCursorIcon( QIcon() );
+			ensemble[i].widgetImplementation->setEnableCrosshair(true);
+		}
+	}
+	
 }
 
 	

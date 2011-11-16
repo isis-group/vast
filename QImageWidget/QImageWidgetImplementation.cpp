@@ -60,7 +60,11 @@ void QImageWidgetImplementation::commonInit()
 
 void QImageWidgetImplementation::setMouseCursorIcon(QIcon icon)
 {
-	setCursor( QCursor( icon.pixmap(45,45) ) );
+	if( !icon.isNull() )  {
+		setCursor( QCursor( icon.pixmap(45,45) ) );
+	} else {
+		setCursor( Qt::ArrowCursor );
+	}
 }
 
 WidgetInterface *QImageWidgetImplementation::createSharedWidget( QWidget *parent, PlaneOrientation orientation )
@@ -158,7 +162,7 @@ void QImageWidgetImplementation::paintEvent( QPaintEvent *event )
 		if( m_ShowScalingOffset ) {
 			m_Painter->resetMatrix();
 			m_Painter->setFont( QFont( "Chicago", 10 ) );
-			m_Painter->setPen( Qt::white );
+			m_Painter->setPen( Qt::red );
 			std::stringstream scalingOffset;
 			boost::shared_ptr<ImageHolder> image = getWidgetSpecCurrentImage();
 			scalingOffset << "Scaling: " << image->scaling
