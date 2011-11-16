@@ -1,0 +1,5 @@
+<RCC>
+  <qresource prefix="common">
+    <file>maskEdit.png</file>
+  </qresource>
+</RCC>
