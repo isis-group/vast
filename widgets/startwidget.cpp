@@ -77,17 +77,21 @@ void StartWidget::showMe(bool asStartDialog)
 		QList<QVariant> favFiles = m_ViewerCore->getSettings()->value( "favoriteFiles" ).toList();
 		m_ViewerCore->getSettings()->endGroup();
 		m_Interface.favList->clear();
-		
-		BOOST_FOREACH( QList<QVariant>::const_reference path, favFiles ) {
-			unsigned short validFiles;
-			QListWidgetItem *item = new QListWidgetItem( path.toString() );
-			if( FileDialog::checkIfPathIsValid( path.toString(), validFiles, "" ) ) {
-				item->setTextColor(QColor( 34, 139, 34 ));
-			} else {
-				item->setTextColor( Qt::red );
+		if( favFiles.size() ) {
+			BOOST_FOREACH( QList<QVariant>::const_reference path, favFiles ) {
+				unsigned short validFiles;
+				QListWidgetItem *item = new QListWidgetItem( path.toString() );
+				if( FileDialog::checkIfPathIsValid( path.toString(), validFiles, "" ) ) {
+					item->setTextColor(QColor( 34, 139, 34 ));
+				} else {
+					item->setTextColor( Qt::red );
+				}
+				m_Interface.favList->addItem( item );
 			}
-			m_Interface.favList->addItem( item );
+		} else {
+			m_Interface.favList->setVisible(false);
 		}
+		
 		adjustSize();
 		show();
 	} else {
