@@ -24,6 +24,11 @@ void StartWidget::showMeChecked(bool checked )
 	m_ViewerCore->getOptionMap()->setPropertyAs<bool>("showStartWidget", checked );
 }
 
+void StartWidget::closeEvent(QCloseEvent* )
+{
+	m_ViewerCore->getUI()->getMainWindow()->setEnabled(true);
+}
+
 
 void StartWidget::openPath()
 {
@@ -48,11 +53,14 @@ void StartWidget::showEvent(QShowEvent* )
 	m_Interface.imageLabel->setPixmap( pixMap.scaled(width, width * ratio) );
 	m_Interface.buttonFrame->setMaximumHeight( height - width * ratio );
 	move( screen.center() - rect().center() );
+	m_ViewerCore->getUI()->getMainWindow()->setEnabled(false);
+	setEnabled( true );
 }
 
 
 void StartWidget::showMe(bool asStartDialog)
 {
+
 	if( asStartDialog ) {
 		m_Interface.buttonFrame->setVisible(true);
 		m_Interface.statusLabel->setText( m_ViewerCore->getVersion().c_str() );

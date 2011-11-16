@@ -22,6 +22,7 @@ public Q_SLOTS:
 	void statusChanged( QString );
 	void showMeChecked( bool );
 	virtual void showEvent( QShowEvent *) ;
+	virtual void closeEvent( QCloseEvent *);
 	void openPath();
 
 private:
