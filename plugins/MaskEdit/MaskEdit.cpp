@@ -2,6 +2,7 @@
 #include "MaskEdit.hpp"
 #include <DataStorage/image.hpp>
 #include "uicore.hpp"
+#include "common.hpp"
 
 
 namespace isis {
@@ -22,6 +23,11 @@ MaskEditDialog::MaskEditDialog(QWidget* parent, QViewerCore* core)
 void MaskEditDialog::showEvent(QShowEvent* )
 {
 	connect( m_ViewerCore, SIGNAL ( emitPhysicalCoordsChanged(util::fvector4)), this, SLOT( physicalCoordChanged(util::fvector4)));	
+	m_Interface.maskType->clear();
+	BOOST_FOREACH( std::list<std::string>::const_reference type, isis::viewer::getSupportedTypeList())
+	{
+		m_Interface.maskType->addItem( type.c_str() );
+	}
 }
 
 
