@@ -154,8 +154,8 @@ color::Color::ColormapType color::Color::adaptColorMapToImage( color::Color::Col
 	LOG_IF( colorMap.size() != 256, Runtime, error ) << "The colormap is of size " << colorMap.size() << " but has to be of size 256!";
 	color::Color::ColormapType retMap = colorMap;
 	const double extent = image->extent;
-	const double min = image->getMinMax().first->as<double>();
-	const double max = image->getMinMax().second->as<double>();
+	const double min = image->minMax.first->as<double>();
+	const double max = image->minMax.second->as<double>();
 	const double lowerThreshold = image->lowerThreshold;
 	const double upperThreshold = image->upperThreshold;
 	const double offset = image->offset;

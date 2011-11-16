@@ -48,6 +48,7 @@ public Q_SLOTS:
 	virtual void updateScene();
 	virtual void setInterpolationType( InterpolationType interType ) { m_InterpolationType = interType; }
 	virtual void setShowLabels( bool show ) { m_ShowLabels = show; m_Border = show ? 18 : 0; }
+	virtual void setMouseCursorIcon( QIcon icon );
 
 	virtual std::string getWidgetName() const;
 	virtual void setWidgetName( const std::string &wName );

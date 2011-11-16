@@ -64,13 +64,13 @@ void SliderWidget::opacityChanged( int sliderPos )
 
 void SliderWidget::lowerThresholdChanged( int sliderPos )
 {
-	m_ViewerCore->getCurrentImage()->lowerThreshold = norm( m_ViewerCore->getCurrentImage()->getMinMax().first->as<double>() , 0.0, 1000 - sliderPos ) * -1 ;
+	m_ViewerCore->getCurrentImage()->lowerThreshold = norm( m_ViewerCore->getCurrentImage()->minMax.first->as<double>() , 0.0, 1000 - sliderPos ) * -1 ;
 	m_ViewerCore->updateScene();
 }
 
 void SliderWidget::upperThresholdChanged( int sliderPos )
 {
-	m_ViewerCore->getCurrentImage()->upperThreshold = norm( 0.0, m_ViewerCore->getCurrentImage()->getMinMax().second->as<double>(), 1000 - sliderPos ) ;
+	m_ViewerCore->getCurrentImage()->upperThreshold = norm( 0.0, m_ViewerCore->getCurrentImage()->minMax.second->as<double>(), 1000 - sliderPos ) ;
 	m_ViewerCore->updateScene();
 }
 
@@ -87,10 +87,10 @@ void SliderWidget::synchronize()
 			setVisible( Opacity, true );
 		}
 
-		const unsigned short lowerThreshold = 1000 - abs( ( 1000 / m_ViewerCore->getCurrentImage()->getMinMax().first->as<double>() )
+		const unsigned short lowerThreshold = 1000 - abs( ( 1000 / m_ViewerCore->getCurrentImage()->minMax.first->as<double>() )
 											  * m_ViewerCore->getCurrentImage()->lowerThreshold );
 
-		const unsigned short upperThreshold = 1000 - abs( ( 1000 / m_ViewerCore->getCurrentImage()->getMinMax().second->as<double>() )
+		const unsigned short upperThreshold = 1000 - abs( ( 1000 / m_ViewerCore->getCurrentImage()->minMax.second->as<double>() )
 											  * m_ViewerCore->getCurrentImage()->upperThreshold );
 
 		m_Interface.opacitySlider->setSliderPosition( m_ViewerCore->getCurrentImage()->opacity * 1000 );

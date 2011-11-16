@@ -24,6 +24,14 @@ void StartWidget::showMeChecked(bool checked )
 	m_ViewerCore->getOptionMap()->setPropertyAs<bool>("showStartWidget", checked );
 }
 
+void StartWidget::keyPressEvent(QKeyEvent *e )
+{
+	if( e->key() == Qt::Key_Escape ) {
+		close();
+	}
+}
+
+
 void StartWidget::closeEvent(QCloseEvent* )
 {
 	m_ViewerCore->getUI()->getMainWindow()->setEnabled(true);

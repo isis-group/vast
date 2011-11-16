@@ -58,6 +58,10 @@ void QImageWidgetImplementation::commonInit()
 
 }
 
+void QImageWidgetImplementation::setMouseCursorIcon(QIcon icon)
+{
+	setCursor( QCursor( icon.pixmap(45,45) ) );
+}
 
 WidgetInterface *QImageWidgetImplementation::createSharedWidget( QWidget *parent, PlaneOrientation orientation )
 {

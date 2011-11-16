@@ -46,8 +46,6 @@ public:
 	boost::shared_ptr< data::Image >getISISImage() const { return m_Image; }
 	boost::numeric::ublas::matrix<float> getNormalizedImageOrientation( bool transposed = false ) const;
 	boost::numeric::ublas::matrix<float> getImageOrientation( bool transposed = false ) const;
-	std::pair<util::ValueReference, util::ValueReference> getMinMax() const { return m_MinMax; }
-	std::pair<util::ValueReference, util::ValueReference> getInternMinMax() const { return m_InternMinMax; }
 	void addChangedAttribute( const std::string &attribute );
 
 	/**offset, scaling**/
@@ -75,8 +73,8 @@ public:
 		const size_t volume = getImageSize()[0] * getImageSize()[1] * getImageSize()[2];
 		const TYPE maxTypeValue = std::numeric_limits<TYPE>::max();
 		const TYPE minTypeValue = std::numeric_limits<TYPE>::min();
-		const TYPE minImage = getInternMinMax().first->as<TYPE>();
-		const TYPE maxImage = getInternMinMax().second->as<TYPE>();
+		const TYPE minImage = internMinMax.first->as<TYPE>();
+		const TYPE maxImage = internMinMax.second->as<TYPE>();
 		const TYPE extent = maxImage - minImage;
 		double *histogram = ( double * ) calloc( extent + 1, sizeof( double ) );
 		size_t stepSize = 2;
@@ -128,6 +126,8 @@ public:
 	std::string lut;
 	ImageType imageType;
 	InterpolationType interpolationType;
+	std::pair<util::ValueReference, util::ValueReference> minMax;
+	std::pair<util::ValueReference, util::ValueReference> internMinMax;
 
 private:
 
@@ -135,8 +135,8 @@ private:
 	size_t m_NumberOfTimeSteps;
 	util::FixedVector<size_t, 4> m_ImageSize;
 	util::PropertyMap m_PropMap;
-	std::pair<util::ValueReference, util::ValueReference> m_MinMax;
-	std::pair<util::ValueReference, util::ValueReference> m_InternMinMax;
+
+
 	boost::shared_ptr<data::Image> m_Image;
 	util::slist m_Filenames;
 	size_t m_ID;

@@ -119,8 +119,8 @@ void ScalingWidget::reset()
 	boost::shared_ptr<ImageHolder> image = m_ViewerCore->getCurrentImage();
 	image->offset = 0.0;
 	image->scaling = 1.0;
-	image->getPropMap().setPropertyAs<double>( "scalingMinValue", image->getMinMax().first->as<double>() );
-	image->getPropMap().setPropertyAs<double>( "scalingMaxValue", image->getMinMax().second->as<double>() );
+	image->getPropMap().setPropertyAs<double>( "scalingMinValue", image->minMax.first->as<double>() );
+	image->getPropMap().setPropertyAs<double>( "scalingMaxValue", image->minMax.second->as<double>() );
 	synchronize();
 	m_ViewerCore->updateScene();
 }
@@ -128,7 +128,7 @@ void ScalingWidget::reset()
 std::pair< double, double > ScalingWidget::getMinMaxFromScalingOffset( const std::pair< double, double >& scalingOffset, boost::shared_ptr<ImageHolder> image )
 {
 	std::pair<double, double> retMinMax;
-	retMinMax.first = image->getMinMax().first->as<double>() + scalingOffset.second;
+	retMinMax.first = image->minMax.first->as<double>() + scalingOffset.second;
 	retMinMax.second = image->extent / scalingOffset.first + retMinMax.first;
 	return retMinMax;
 }
@@ -136,7 +136,7 @@ std::pair< double, double > ScalingWidget::getMinMaxFromScalingOffset( const std
 std::pair< double, double > ScalingWidget::getScalingOffsetFromMinMax( const std::pair< double, double >& minMax, boost::shared_ptr<ImageHolder> image )
 {
 	std::pair<double, double> retScalingOffset;
-	retScalingOffset.second = minMax.first - image->getMinMax().first->as<double>();
+	retScalingOffset.second = minMax.first - image->minMax.first->as<double>();
 	retScalingOffset.first =  image->extent / ( minMax.second - minMax.first );
 	return retScalingOffset;
 

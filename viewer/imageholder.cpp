@@ -126,7 +126,7 @@ bool ImageHolder::setImage( const data::Image &image, const ImageType &_imageTyp
 	}
 
 	// get some image information
-	m_MinMax = image.getMinMax();
+	minMax = image.getMinMax();
 	m_ImageSize = image.getSizeAsVector();
 	m_NumberOfTimeSteps = m_ImageSize[3];
 	LOG( Debug, verbose_info )  << "Fetched image of size " << m_ImageSize << " and type "
@@ -136,7 +136,7 @@ bool ImageHolder::setImage( const data::Image &image, const ImageType &_imageTyp
 	LOG( Debug, verbose_info ) << "Needed memory: " << image.getVolume() * sizeof( InternalImageType ) / ( 1024.0 * 1024.0 ) << " mb.";
 	image.copyToMem<InternalImageType>( &imagePtr[0], image.getVolume() );
 	LOG( Debug, verbose_info ) << "Copied image to continuous memory space.";
-	m_InternMinMax = imagePtr.getMinMax();
+	internMinMax = imagePtr.getMinMax();
 
 	//splice the image in its volumes -> we get a vector of t volumes
 	if( m_NumberOfTimeSteps > 1 ) { //splicing is only necessary if we got more than 1 timestep
@@ -173,12 +173,12 @@ bool ImageHolder::setImage( const data::Image &image, const ImageType &_imageTyp
 		upperThreshold = 0;
 		lut = std::string( "standard_zmap" );
 	} else if( imageType == anatomical_image ) {
-		lowerThreshold = getMinMax().first->as<double>() ;
-		lowerThreshold = getMinMax().second->as<double>();
+		lowerThreshold = minMax.first->as<double>() ;
+		lowerThreshold = minMax.second->as<double>();
 		lut = std::string( "standard_grey_values" );
 	}
 
-	extent = fabs( getMinMax().second->as<double>() - getMinMax().first->as<double>() );
+	extent = fabs( minMax.second->as<double>() - minMax.first->as<double>() );
 	voxelCoords = util::ivector4( m_ImageSize[0] / 2, m_ImageSize[1] / 2, m_ImageSize[2] / 2, 0 );
 	physicalCoords = m_Image->getPhysicalCoordsFromIndex( voxelCoords );
 	isVisible = true;
@@ -188,8 +188,8 @@ bool ImageHolder::setImage( const data::Image &image, const ImageType &_imageTyp
 	alignedSize32 = get32BitAlignedSize( m_ImageSize );
 	m_PropMap.setPropertyAs<bool>( "init", true );
 	m_PropMap.setPropertyAs<util::slist>( "changedAttributes", util::slist() );
-	m_PropMap.setPropertyAs<double>( "scalingMinValue", m_MinMax.first->as<double>() );
-	m_PropMap.setPropertyAs<double>( "scalingMaxValue", m_MinMax.second->as<double>() );
+	m_PropMap.setPropertyAs<double>( "scalingMinValue", minMax.first->as<double>() );
+	m_PropMap.setPropertyAs<double>( "scalingMaxValue", minMax.second->as<double>() );
 	m_PropMap.setPropertyAs<util::fvector4>( "originalColumnVec", image.getPropertyAs<util::fvector4>( "columnVec" ) );
 	m_PropMap.setPropertyAs<util::fvector4>( "originalRowVec", image.getPropertyAs<util::fvector4>( "rowVec" ) );
 	m_PropMap.setPropertyAs<util::fvector4>( "originalSliceVec", image.getPropertyAs<util::fvector4>( "sliceVec" ) );

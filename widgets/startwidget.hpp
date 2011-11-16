@@ -23,6 +23,7 @@ public Q_SLOTS:
 	void showMeChecked( bool );
 	virtual void showEvent( QShowEvent *) ;
 	virtual void closeEvent( QCloseEvent *);
+	virtual void keyPressEvent( QKeyEvent *);
 	void openPath();
 
 private:

@@ -211,8 +211,6 @@ void MainWindow::saveImageAs()
 						tr( fileFormats.str().c_str() ) );
 
 		if( filename.size() ) {
-			std::stringstream ss;
-			ss << "Saving image to " << filename.toStdString() << "...";
 			isis::data::IOFactory::write( *m_ViewerCore->getCurrentImage()->getISISImage(), filename.toStdString(), "", "" );
 		}
 	}
