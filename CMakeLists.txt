@@ -17,6 +17,9 @@ file (GLOB QWIDGET_FILES_CPP QImageWidget/*.cpp )
 file (GLOB UI_FILES forms/*.ui)
 file (GLOB RESOURCE_FILES resources/*.qrc)
 
+file (GLOB VIEWER_DEV_FILES viewer/*.hpp )
+file (GLOB WIDGET_DEV_FILES widgets/*.hpp )
+
 set(VIEWER_FILES_HPP
 	viewer/qviewercore.hpp
 	widgets/mainwindow.hpp
@@ -150,3 +153,7 @@ add_subdirectory(plugins)
 target_link_libraries(vast ${NEEDED_LIBS})
 
 install(TARGETS vast RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin )
+
+# install header files
+install(FILES ${VIEWER_DEV_FILES} DESTINATION include/vast COMPONENT Development)
+install(FILES ${WIDGET_DEV_FILES} DESTINATION include/vast COMPONENT Development)
