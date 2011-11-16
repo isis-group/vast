@@ -18,6 +18,7 @@ public Q_SLOTS:
 	void physicalCoordChanged( util::fvector4 physCoord );
 	void createEmptyMask();
 	virtual void closeEvent( QCloseEvent * );
+	virtual void showEvent( QShowEvent *);
 	
 private:
 	Ui::maskEditDialog m_Interface;

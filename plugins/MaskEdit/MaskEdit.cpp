@@ -14,10 +14,16 @@ MaskEditDialog::MaskEditDialog(QWidget* parent, QViewerCore* core)
 	m_Radius(5)
 {
 	m_Interface.setupUi( this );
-	connect( m_ViewerCore, SIGNAL ( emitPhysicalCoordsChanged(util::fvector4)), this, SLOT( physicalCoordChanged(util::fvector4)));
+
 	connect( m_Interface.createMask, SIGNAL( clicked()), this, SLOT( createEmptyMask())) ;
 
 }
+
+void MaskEditDialog::showEvent(QShowEvent* )
+{
+	connect( m_ViewerCore, SIGNAL ( emitPhysicalCoordsChanged(util::fvector4)), this, SLOT( physicalCoordChanged(util::fvector4)));	
+}
+
 
 void MaskEditDialog::physicalCoordChanged(util::fvector4 physCoord)
 {
@@ -54,6 +60,7 @@ void MaskEditDialog::createEmptyMask()
 		m_CurrentMask = m_ViewerCore->addImage( mask, ImageHolder::anatomical_image );
 		m_CurrentMask->minMax.second = isis::util::Value<uint8_t>( std::numeric_limits<uint8_t>::max() );
 		m_CurrentMask->internMinMax.second = isis::util::Value<uint8_t>( std::numeric_limits<uint8_t>::max() );
+		m_CurrentMask->extent = m_CurrentMask->minMax.second->as<double>() -  m_CurrentMask->minMax.first->as<double>();
 		BOOST_FOREACH( UICore::ViewWidgetEnsembleListType::const_reference ensemble, m_ViewerCore->getUI()->getEnsembleList() ) {
 			WidgetInterface::ImageVectorType iVector;
 			for( unsigned short i = 0; i < 3; i++ ) {
