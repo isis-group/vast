@@ -3,7 +3,7 @@
 
 
 #include "viewercorebase.hpp"
-#include "widgetImplementationBase.hpp"
+#include "widgetinterface.hpp"
 #include <QtGui>
 #include "color.hpp"
 #include "qprogressfeedback.hpp"
@@ -35,7 +35,7 @@ public:
 	void addPlugins( plugin::PluginLoader::PluginListType plugins );
 	PluginListType getPlugins() const { return m_PluginList; }
 
-	virtual bool attachImageToWidget( boost::shared_ptr<ImageHolder> image, QWidgetImplementationBase *widget );
+	virtual bool attachImageToWidget( boost::shared_ptr<ImageHolder> image, WidgetInterface *widget );
 
 	void setParentWidget( QWidget *parent ) { m_Parent = parent; }
 

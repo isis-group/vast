@@ -158,7 +158,7 @@ bool QViewerCore::callPlugin( QString name )
 	return false;
 }
 
-bool QViewerCore::attachImageToWidget( boost::shared_ptr<ImageHolder> image, QWidgetImplementationBase *widget )
+bool QViewerCore::attachImageToWidget( boost::shared_ptr<ImageHolder> image, WidgetInterface *widget )
 {
 	if ( getUI()->getWidgets().find( widget ) == getUI()->getWidgets().end() ) {
 		LOG( Runtime, error ) << "There is no such widget "
@@ -243,7 +243,7 @@ void QViewerCore::openPath( QStringList fileList, ImageHolder::ImageType imageTy
 
 void QViewerCore::closeImage( boost::shared_ptr<ImageHolder> image )
 {
-		BOOST_FOREACH( std::list< QWidgetImplementationBase *>::const_reference widget, image->getWidgetList() ) {
+		BOOST_FOREACH( std::list< WidgetInterface *>::const_reference widget, image->getWidgetList() ) {
 			widget->removeImage( image );
 		}
 		if( getCurrentImage().get() == image.get() ) {

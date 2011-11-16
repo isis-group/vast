@@ -5,8 +5,6 @@ namespace isis
 
 namespace viewer
 {
-namespace qt
-{
 
 
 util::fvector4 QOrienationHandler::mapCoordsToOrientation( const util::fvector4 &coords, const boost::shared_ptr< ImageHolder > image, PlaneOrientation orientation, bool back, bool absolute )
@@ -95,7 +93,7 @@ util::ivector4 QOrienationHandler::getMappedCoords( const boost::shared_ptr< Ima
 
 
 
-ViewPortType QOrienationHandler::getViewPort(  const float &zoom, const boost::shared_ptr< ImageHolder > image, const size_t &w, const size_t &h, PlaneOrientation orientation, unsigned short border )
+QOrienationHandler::ViewPortType QOrienationHandler::getViewPort(  const float &zoom, const boost::shared_ptr< ImageHolder > image, const size_t &w, const size_t &h, PlaneOrientation orientation, unsigned short border )
 {
 	ViewPortType viewPort;
 	util::ivector4 mappedSize = QOrienationHandler::mapCoordsToOrientation( image->getImageSize(), image, orientation );
@@ -166,6 +164,6 @@ std::pair< int, int > QOrienationHandler::convertVoxel2WindowCoords( const ViewP
 	return std::make_pair<int, int>( round( x ), round( y ) );
 }
 
-}
+
 }
 } // end namespace

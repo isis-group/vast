@@ -7,8 +7,7 @@ namespace isis
 {
 namespace viewer
 {
-namespace qt
-{
+
 class QMemoryHandler
 {
 public:
@@ -21,7 +20,7 @@ private:
 };
 
 
-}
+
 }
 } // end namespace
 

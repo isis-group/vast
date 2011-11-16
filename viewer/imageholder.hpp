@@ -8,13 +8,13 @@
 #include <DataStorage/image.hpp>
 #include "common.hpp"
 #include "color.hpp"
-#include "widgetImplementationBase.hpp"
+#include "widgetinterface.hpp"
 
 namespace isis
 {
 namespace viewer
 {
-class QWidgetImplementationBase;
+class WidgetInterface;
 /**
  * Class that holds one image in a vector of data::ValuePtr's
  * It ensures the data is hold in continuous memory and only consists of one type.
@@ -62,9 +62,9 @@ public:
 	bool operator<( const ImageHolder &ref ) const { return m_ID < ref.getID(); }
 
 
-	void addWidget( QWidgetImplementationBase *widget ) { m_WidgetList.push_back( widget ); }
-	void removeWidget( QWidgetImplementationBase *widget ) { m_WidgetList.erase( std::find( m_WidgetList.begin(), m_WidgetList.end(), widget ) ) ; }
-	std::list< QWidgetImplementationBase * > getWidgetList() { return m_WidgetList; }
+	void addWidget( WidgetInterface *widget ) { m_WidgetList.push_back( widget ); }
+	void removeWidget( WidgetInterface *widget ) { m_WidgetList.erase( std::find( m_WidgetList.begin(), m_WidgetList.end(), widget ) ) ; }
+	std::list< WidgetInterface * > getWidgetList() { return m_WidgetList; }
 
 	bool isInsideImage( const util::ivector4 &voxelCoords ) const;
 	bool isInsideImage( const util::fvector4 &physicalCoords ) const;
@@ -148,7 +148,7 @@ private:
 
 	bool filterRelevantMetaInformation();
 
-	std::list<QWidgetImplementationBase *> m_WidgetList;
+	std::list<WidgetInterface *> m_WidgetList;
 	
 
 };

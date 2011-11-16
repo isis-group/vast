@@ -5,11 +5,11 @@
 #include <QWidget>
 #include <QPainter>
 #include <QtGui>
-#include "widgetImplementationBase.hpp"
+#include "widgetinterface.hpp"
 #include "qviewercore.hpp"
 #include "QMemoryHandler.hpp"
+#include "QOrientationHandler.hpp"
 #include "color.hpp"
-#include "QtWidgetCommon.hpp"
 
 namespace isis
 {
@@ -17,23 +17,22 @@ namespace isis
 namespace viewer
 {
 
-namespace qt
-{
 
-class QImageWidgetImplementation : public QWidget, public QWidgetImplementationBase
+class QImageWidgetImplementation : public QWidget, public WidgetInterface
 {
 	Q_OBJECT
 	struct ImageProperties {
 		/**scaling, offset, size**/
-		ViewPortType viewPort;
+		isis::viewer::QOrienationHandler::ViewPortType viewPort;
 	};
 	typedef std::map<boost::shared_ptr<ImageHolder>, ImageProperties> ImagePropertiesMapType;
 
 public:
+	
 	QImageWidgetImplementation( QViewerCore *core, QWidget *parent = 0, QWidget *share = 0, PlaneOrientation orienation = axial );
 	QImageWidgetImplementation( QViewerCore *core, QWidget *parent = 0, PlaneOrientation orientation = axial );
 
-	virtual QWidgetImplementationBase *createSharedWidget( QWidget *parent, PlaneOrientation orienation = axial );
+	virtual WidgetInterface *createSharedWidget( QWidget *parent, PlaneOrientation orienation = axial );
 
 public Q_SLOTS:
 
@@ -71,7 +70,7 @@ private:
 	ImagePropertiesMapType m_ImageProperties;
 
 	void emitMousePressEvent( QMouseEvent *e );
-	bool isInViewPort( const ViewPortType &viewPort, QMouseEvent *e ) const;
+	bool isInViewPort( const QOrienationHandler::ViewPortType &viewPort, QMouseEvent *e ) const;
 	void recalculateTranslation();
 	void showLabels() const ;
 
@@ -100,7 +99,6 @@ private:
 };
 
 
-}
 }
 } // end namespace
 #endif

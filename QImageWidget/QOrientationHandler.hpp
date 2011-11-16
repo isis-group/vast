@@ -4,7 +4,6 @@
 #include <QTransform>
 #include "imageholder.hpp"
 #include "common.hpp"
-#include "QtWidgetCommon.hpp"
 
 #include <boost/numeric/ublas/matrix.hpp>
 #include <boost/numeric/ublas/io.hpp>
@@ -16,13 +15,13 @@ namespace isis
 {
 namespace viewer
 {
-namespace qt
-{
+
 
 class QOrienationHandler
 {
 
 public:
+	typedef  util::FixedVector<float, 6 > ViewPortType;
 	static util::fvector4 mapCoordsToOrientation( const util::fvector4 &coords, const boost::shared_ptr<ImageHolder> image, PlaneOrientation orientation, bool back = false, bool absolute = true );
 	static util::ivector4 getMappedCoords( const boost::shared_ptr<ImageHolder> image, const util::ivector4 &coords );
 
@@ -34,7 +33,7 @@ public:
 };
 
 
-}
+
 }
 }// end namespace
 

@@ -6,13 +6,11 @@ namespace isis
 {
 namespace viewer
 {
-namespace qt
-{
 
 
 QImageWidgetImplementation::QImageWidgetImplementation( QViewerCore *core, QWidget *parent, PlaneOrientation orientation )
 	: QWidget( parent ),
-	  QWidgetImplementationBase( core, parent, orientation ),
+	  WidgetInterface( core, parent, orientation ),
 	  m_MemoryHandler( core ),
 	  m_Painter( new QPainter() ),
 	  m_ShowLabels( false ),
@@ -25,7 +23,7 @@ QImageWidgetImplementation::QImageWidgetImplementation( QViewerCore *core, QWidg
 
 QImageWidgetImplementation::QImageWidgetImplementation( QViewerCore *core, QWidget *parent, QWidget *share, PlaneOrientation orienation )
 	: QWidget( parent ),
-	  QWidgetImplementationBase( core, parent, orienation ),
+	  WidgetInterface( core, parent, orienation ),
 	  m_MemoryHandler( core ),
 	  m_Painter( new QPainter() )
 {
@@ -61,7 +59,7 @@ void QImageWidgetImplementation::commonInit()
 }
 
 
-QWidgetImplementationBase *QImageWidgetImplementation::createSharedWidget( QWidget *parent, PlaneOrientation orientation )
+WidgetInterface *QImageWidgetImplementation::createSharedWidget( QWidget *parent, PlaneOrientation orientation )
 {
 	return new QImageWidgetImplementation( m_ViewerCore, parent, this, orientation );
 }
@@ -71,7 +69,7 @@ QWidgetImplementationBase *QImageWidgetImplementation::createSharedWidget( QWidg
 void QImageWidgetImplementation::addImage( const boost::shared_ptr< ImageHolder > image )
 {
 	ImageProperties imgProperties;
-	imgProperties.viewPort = ViewPortType();
+	imgProperties.viewPort = QOrienationHandler::ViewPortType();
 	m_ImageProperties.insert( std::make_pair<boost::shared_ptr<ImageHolder> , ImageProperties >( image, imgProperties ) );
 	m_ImageVector.push_back( image );
 	image->addWidget( this );
@@ -182,7 +180,7 @@ void QImageWidgetImplementation::recalculateTranslation()
 	const float transYConst = ( ( center[1] + 2 ) - mappedSize[1] / ( 2 * currentZoom ) );
 	const float transX = transXConst * ( ( float )diff[0] / ( float )center[0] ) * signVec[0];
 	const float transY = transYConst * ( ( float )diff[1] / ( float )center[1] ) * signVec[1];
-	const ViewPortType viewPort = m_ImageProperties.at( image ).viewPort;
+	const QOrienationHandler::ViewPortType viewPort = m_ImageProperties.at( image ).viewPort;
 	translationX = transX * viewPort[0] ;
 	translationY = transY * viewPort[1] ;
 }
@@ -273,7 +271,7 @@ void QImageWidgetImplementation::mouseMoveEvent( QMouseEvent *e )
 	}
 }
 
-bool QImageWidgetImplementation::isInViewPort( const ViewPortType &viewPort, QMouseEvent *e ) const
+bool QImageWidgetImplementation::isInViewPort( const QOrienationHandler::ViewPortType &viewPort, QMouseEvent *e ) const
 {
 	return ( e->x() > viewPort[2] && e->x() < ( viewPort[2] + viewPort[4] )
 			 && e->y() > viewPort[3] && e->y() < ( viewPort[3] + viewPort[5] )
@@ -412,6 +410,5 @@ void QImageWidgetImplementation::setWidgetName( const std::string &wName )
 	m_WidgetProperties.setPropertyAs<std::string>( "widgetName", wName );
 }
 
-}
 }
 } //end namespace
