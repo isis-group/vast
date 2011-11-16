@@ -109,6 +109,7 @@ void UICore::showMessage( const qt4::QMessage &message  )
 		break;
 
 	}
+	QCoreApplication::processEvents();
 }
 
 void UICore::showMainWindow()
@@ -309,15 +310,6 @@ bool UICore::registerWidget( ViewWidget widget )
 	m_WidgetMap[widget.widgetImplementation] = widget;
 	return true;
 
-}
-
-void UICore::setShowWorkingLabel( const std::string &message, bool show )
-{
-	m_MainWindow->getWorkignInformationLabel()->setText( message.c_str() );
-	m_MainWindow->getWorkignInformationLabel()->setFixedWidth( message.length() * 10 );
-	m_MainWindow->getWorkignInformationLabel()->move( m_MainWindow->x() + m_MainWindow->width() / 2 - m_MainWindow->getWorkignInformationLabel()->width() / 2, m_MainWindow->y() + m_MainWindow->height() / 2 - 50 );
-
-	m_MainWindow->getWorkignInformationLabel()->setVisible( show );
 }
 
 

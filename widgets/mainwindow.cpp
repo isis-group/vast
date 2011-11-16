@@ -14,12 +14,13 @@ namespace viewer
 MainWindow::MainWindow( QViewerCore *core ) :
 	m_ViewerCore( core ),
 	m_Toolbar( new QToolBar( this ) ),
-	m_PreferencesDialog( new widget::PreferencesDialog( this, core ) ),
-	m_ScalingWidget( new widget::ScalingWidget( this, core ) ),
+	preferencesDialog( new widget::PreferencesDialog( this, core ) ),
+	scalingWidget( new widget::ScalingWidget( this, core ) ),
 	m_RadiusSpin( new QSpinBox( this ) ),
 	m_LogButton( new QPushButton( this ) ),
-	m_LoggingDialog( new widget::LoggingDialog( this, core ) ),
-	m_FileDialog( new widget::FileDialog( this, core ) )
+	loggingDialog( new widget::LoggingDialog( this, core ) ),
+	fileDialog( new widget::FileDialog( this, core ) ),
+	startWidget( new widget::StartWidget( this, core ) )
 {
 	m_UI.setupUi( this );
 	setWindowIcon( QIcon( ":/common/vast.jpg" ) );
@@ -48,7 +49,7 @@ MainWindow::MainWindow( QViewerCore *core ) :
 	connect( m_UI.action_Save_Image, SIGNAL( triggered() ), this, SLOT( saveImage() ) );
 	connect( m_UI.actionSave_Image, SIGNAL( triggered() ), this, SLOT( saveImageAs() ) );
 	connect( m_UI.actionOpen_image, SIGNAL( triggered() ), this, SLOT( openImage() ) );
-	connect( m_UI.action_Preferences, SIGNAL( triggered() ), this, SLOT( showPreferences() ) );
+	connect( m_UI.action_Preferences, SIGNAL( triggered() ), preferencesDialog, SLOT( show() ) );
 	connect( m_UI.actionFind_Global_Min, SIGNAL( triggered() ), this, SLOT( findGlobalMin() ) );
 	connect( m_UI.actionFind_Global_Max, SIGNAL( triggered() ), this, SLOT( findGlobalMax() ) );
 	connect( m_UI.actionShow_Labels, SIGNAL( triggered( bool ) ), m_ViewerCore, SLOT( setShowLabels( bool ) ) );
@@ -86,14 +87,9 @@ MainWindow::MainWindow( QViewerCore *core ) :
 	m_LogButton->setText( "Show log" );
 	m_UI.statusbar->addPermanentWidget( m_LogButton );
 
-	m_ScalingWidget->setVisible( false );
-	m_WorkingInformationLabel = new QLabel( this );
-	m_WorkingInformationLabel->setFrameShape( QFrame::Box );
-	m_WorkingInformationLabel->setAlignment( Qt::AlignCenter );
-	m_WorkingInformationLabel->setFont( QFont( "Times", 15 ) );
-	m_WorkingInformationLabel->setVisible( false );
-
+	scalingWidget->setVisible( false );
 }
+
 
 void MainWindow::keyPressEvent( QKeyEvent *e )
 {
@@ -110,7 +106,7 @@ void MainWindow::resetScaling()
 		image.second->offset = 0.0;
 	}
 	m_ViewerCore->updateScene();
-	m_ScalingWidget->synchronize();
+	scalingWidget->synchronize();
 }
 
 
@@ -123,8 +119,8 @@ void MainWindow::propagateZooming( bool propagate )
 
 void MainWindow::showLoggingDialog()
 {
-	m_LoggingDialog->synchronize();
-	m_LoggingDialog->setVisible( true );
+	loggingDialog->synchronize();
+	loggingDialog->setVisible( true );
 }
 
 
@@ -153,8 +149,8 @@ void MainWindow::ignoreOrientation( bool ignore )
 
 void MainWindow::showScalingOption()
 {
-	m_ScalingWidget->move( QCursor::pos().x() + m_Toolbar->height() / 2, QCursor::pos().y() + m_Toolbar->height() / 2 );
-	m_ScalingWidget->showMe( m_UI.actionShow_scaling_option->isChecked() );
+	scalingWidget->move( QCursor::pos().x() + m_Toolbar->height() / 2, QCursor::pos().y() + m_Toolbar->height() / 2 );
+	scalingWidget->showMe( m_UI.actionShow_scaling_option->isChecked() );
 }
 
 
@@ -165,8 +161,8 @@ void MainWindow::spinRadiusChanged( int radius )
 
 void MainWindow::openImage()
 {
-	m_FileDialog->setMode( isis::viewer::widget::FileDialog::OPEN_FILE );
-	m_FileDialog->show();
+	fileDialog->setMode( isis::viewer::widget::FileDialog::OPEN_FILE );
+	fileDialog->show();
 }
 
 void MainWindow::saveImage()
@@ -278,6 +274,7 @@ void MainWindow::loadSettings()
 			m_ViewerCore->getSettings()->value( "minMaxSearchRadius", m_ViewerCore->getOptionMap()->getPropertyAs<uint16_t>( "minMaxSearchRadius" ) ).toInt() );
 	m_ViewerCore->getOptionMap()->setPropertyAs<bool>( "showAdvancedFileDialogOptions", m_ViewerCore->getSettings()->value( "showAdvancedFileDialogOptions", false ).toBool() );
 	m_ViewerCore->getOptionMap()->setPropertyAs<bool>( "showFavoriteFileList", m_ViewerCore->getSettings()->value( "showFavoriteFileList", false).toBool() );
+	m_ViewerCore->getOptionMap()->setPropertyAs<bool>( "showStartWidget", m_ViewerCore->getSettings()->value("showStartWidget", true).toBool() );
 	m_ViewerCore->getSettings()->endGroup();
 }
 
@@ -309,13 +306,9 @@ void MainWindow::saveSettings()
 	m_ViewerCore->getSettings()->setValue( "showCrosshair", m_UI.actionShow_Crosshair->isChecked() );
 	m_ViewerCore->getSettings()->setValue( "showAdvancedFileDialogOptions", m_ViewerCore->getOptionMap()->getPropertyAs<bool>( "showAdvancedFileDialogOptions" ) );
 	m_ViewerCore->getSettings()->setValue( "showFavoriteFileList", m_ViewerCore->getOptionMap()->getPropertyAs<bool>( "showFavoriteFileList" ) );
+	m_ViewerCore->getSettings()->setValue( "showStartWidget", m_ViewerCore->getOptionMap()->getPropertyAs<bool>("showStartWidget") );
 	m_ViewerCore->getSettings()->endGroup();
 	m_ViewerCore->getSettings()->sync();
-}
-
-void MainWindow::showPreferences()
-{
-	m_PreferencesDialog->show();
 }
 
 void MainWindow::findGlobalMin()

@@ -27,22 +27,12 @@ public:
 	void setCurrentImage( const boost::shared_ptr<ImageHolder> image ) { m_CurrentImage = image; }
 
 	boost::shared_ptr<ImageHolder> getCurrentImage();
-	size_t getCurrentTimestep() const { return m_CurrentTimestep; }
-	bool setCurrentTimestep( size_t timestep ) {
-		if(  m_CurrentImage->getImageSize()[3] > timestep ) {
-			m_CurrentTimestep = timestep;
-			return true;
-		} else { return false; }
-	}
 
 	const DataContainer &getDataContainer() const { return m_DataContainer; }
 	DataContainer &getDataContainer() { return m_DataContainer; }
 	ImageHolder::ImageListType getImageList() const { return m_ImageList; }
 
 	boost::shared_ptr<util::PropertyMap>  getOptionMap() { return m_OptionsMap; }
-
-	void setCoordsTransformation( const util::fvector4 &transformation ) { m_VoxelTransformation = transformation; }
-	util::fvector4 getTransformedCoords( const util::fvector4 &coords ) const;
 
 	color::Color *getColorHandler() const { return m_ColorHandler; }
 
@@ -52,8 +42,6 @@ private:
 	//this is the container which actually holds all the images
 	DataContainer m_DataContainer;
 	boost::shared_ptr<ImageHolder>  m_CurrentImage;
-	size_t m_CurrentTimestep;
-	util::fvector4 m_VoxelTransformation;
 	color::Color *m_ColorHandler;
 	void setCommonViewerOptions();
 

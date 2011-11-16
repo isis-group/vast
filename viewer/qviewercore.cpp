@@ -38,6 +38,15 @@ void QViewerCore::receiveMessage( qt4::QMessage message )
 	getUI()->showMessage( message );
 }
 
+void QViewerCore::receiveMessage(std::string message)
+{
+	qt4::QMessage qmessage;
+	qmessage.message = message;
+	emitStatus( QString( message.c_str() ) );
+	receiveMessage( qmessage );
+}
+
+
 void QViewerCore::physicalCoordsChanged( util::fvector4 physicalCoords )
 {
 	emitPhysicalCoordsChanged( physicalCoords );
@@ -203,14 +212,12 @@ void QViewerCore::openPath( QStringList fileList, ImageHolder::ImageType imageTy
 				msg << "Loading image \"" << p.filename() << "\"...";
 			}
 
-			getUI()->setShowWorkingLabel( msg.str() );
 			std::list<data::Image> tempImgList = isis::data::IOFactory::load( filename.toStdString() , rf, rdialect );
 			pathList.push_back( filename.toStdString() );
 
 			if( tempImgList.size() > 1 ) {
 				msg.clear();
 				msg << "Found " << tempImgList.size() << " images. Loading...";
-				getUI()->setShowWorkingLabel( msg.str() );
 			}
 
 			BOOST_FOREACH( std::list<data::Image>::const_reference image, tempImgList ) {
@@ -233,7 +240,6 @@ void QViewerCore::openPath( QStringList fileList, ImageHolder::ImageType imageTy
 				setCurrentImage( imageHolder );
 			}
 		}
-		getUI()->setShowWorkingLabel( "", false );
 		getUI()->rearrangeViewWidgets();
 		getUI()->refreshUI();
 		centerImages();
@@ -263,7 +269,6 @@ void QViewerCore::closeImage( boost::shared_ptr<ImageHolder> image )
 		getUI()->refreshUI();
 		updateScene();
 }
-
 
 
 }

@@ -65,6 +65,7 @@ int main( int argc, char *argv[] )
 	app.init( argc, argv, true );
 
 	QViewerCore *core = new QViewerCore( appName, orgName );
+	
 	core->addMessageHandler( viewer_handler );
 	core->addMessageHandler( isis_handler );
 	core->addMessageHandler( imageio_handler );
@@ -72,41 +73,49 @@ int main( int argc, char *argv[] )
 	//scan for plugins and hand them to the core
 	core->addPlugins( plugin::PluginLoader::get().getPlugins() );
 	core->getUI()->reloadPluginsToGUI();
-
+	
 	app.setLog<ViewerLog>( static_cast<LogLevel>( static_cast <unsigned short>( app.parameters["dViewer"]->as<util::Selection>() ) ) );
 	app.setLog<ViewerDebug>( static_cast<LogLevel>( static_cast <unsigned short>( app.parameters["dViewer"]->as<util::Selection>() ) ) );
 	util::slist fileList = app.parameters["in"];
 	util::slist zmapFileList = app.parameters["zmap"];
 	std::list< data::Image > imgList;
 	std::list< data::Image > zImgList;
-	core->getUI()->setShowWorkingLabel( "Loading images..." );
-
-	//load the anatomical images
-	BOOST_FOREACH ( util::slist::const_reference fileName, fileList ) {
-		std::list< data::Image > tmpList = data::IOFactory::load( fileName, app.parameters["rf"].toString(), app.parameters["rdialect"].toString() );
-		BOOST_FOREACH( std::list< data::Image >::reference imageRef, tmpList ) {
-			imgList.push_back( imageRef );
-			
-		}
-	}
-	//load the zmap images
-	BOOST_FOREACH ( util::slist::const_reference fileName, zmapFileList ) {
-		std::string dialect = app.parameters["rdialect"].toString();
-
-		//what a nasty hack :-( but necessary, since only vista understands the onlyfirst dialect
-		if( boost::filesystem::extension( boost::filesystem::path(fileName) ) == std::string(".v") ) {
-			if( !dialect.size() ) {
-				dialect = std::string( "onlyfirst" );
+	if( fileList.size() || zmapFileList.size() ) {
+		core->getUI()->getMainWindow()->startWidget->showMe( false );
+			//load the anatomical images
+		BOOST_FOREACH ( util::slist::const_reference fileName, fileList ) {
+			std::stringstream fileLoad;
+			fileLoad << "Loading " << fileName << " ...";
+			core->receiveMessage( fileLoad.str() );
+			std::list< data::Image > tmpList = data::IOFactory::load( fileName, app.parameters["rf"].toString(), app.parameters["rdialect"].toString() );
+			BOOST_FOREACH( std::list< data::Image >::reference imageRef, tmpList ) {
+				imgList.push_back( imageRef );
+				
 			}
 		}
+		//load the zmap images
+		BOOST_FOREACH ( util::slist::const_reference fileName, zmapFileList ) {
+			std::string dialect = app.parameters["rdialect"].toString();
+			std::stringstream fileLoad;
+			fileLoad << "Loading " << fileName << " ...";
+			core->receiveMessage( fileLoad.str() );
+			//what a nasty hack :-( but necessary, since only vista understands the onlyfirst dialect
+			if( boost::filesystem::extension( boost::filesystem::path(fileName) ) == std::string(".v") ) {
+				if( !dialect.size() ) {
+					dialect = std::string( "onlyfirst" );
+				}
+			}
 
-		std::list< data::Image > tmpList = data::IOFactory::load( fileName, app.parameters["rf"].toString(), dialect );
-		BOOST_FOREACH( std::list< data::Image >::reference imageRef, tmpList ) {
-			zImgList.push_back( imageRef );
-			
+			std::list< data::Image > tmpList = data::IOFactory::load( fileName, app.parameters["rf"].toString(), dialect );
+			BOOST_FOREACH( std::list< data::Image >::reference imageRef, tmpList ) {
+				zImgList.push_back( imageRef );
+				
+			}
 		}
+	} else if( core->getOptionMap()->getPropertyAs<bool>("showStartWidget") ) {
+		core->getUI()->getMainWindow()->startWidget->showMe( true );
 	}
-	core->getUI()->setShowWorkingLabel( "", false );
+
 	//*****************************************************************************************
 	//distribution of images
 	//*****************************************************************************************
@@ -127,6 +136,7 @@ int main( int argc, char *argv[] )
 			}
 		}
 		core->getUI()->setOptionPosition( isis::viewer::UICore::bottom );
+		core->getUI()->getMainWindow()->startWidget->close();
 		//only anatomical images with split option was specified
 	} else if ( app.parameters["in"].isSet() && app.parameters["split"].isSet() ) {
 		core->getUI()->setViewWidgetArrangement( UICore::InRow );
@@ -134,6 +144,7 @@ int main( int argc, char *argv[] )
 			core->getUI()->createViewWidgetEnsemble( "", image );
 		}
 		core->getUI()->setOptionPosition( isis::viewer::UICore::bottom );
+		core->getUI()->getMainWindow()->startWidget->close();
 	} else if ( app.parameters["in"].isSet() || app.parameters["zmap"].isSet() ) {
 		core->getUI()->setViewWidgetArrangement( UICore::InRow );
 		UICore::ViewWidgetEnsembleType ensemble = core->getUI()->createViewWidgetEnsemble( "" );
@@ -148,12 +159,15 @@ int main( int argc, char *argv[] )
 			core->attachImageToWidget( image, ensemble[2]. widgetImplementation );
 		}
 		core->getUI()->setOptionPosition( isis::viewer::UICore::bottom );
+		core->getUI()->getMainWindow()->startWidget->close();
 
 	}
 
 	LOG( isis::viewer::Runtime, info ) << "Welcome to vast ;-)";
 	core->getUI()->showMainWindow();
+
 	core->settingsChanged();
+	
 
 
 	return app.getQApplication().exec();

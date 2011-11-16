@@ -27,6 +27,7 @@ set(VIEWER_FILES_HPP
 	widgets/scalingWidget.hpp
 	widgets/loggingDialog.hpp
 	widgets/filedialog.hpp
+	widgets/startwidget.hpp
 )
 
 set(GLWIDGET_FILES_HPP

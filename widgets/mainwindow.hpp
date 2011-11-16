@@ -10,6 +10,7 @@
 #include "scalingWidget.hpp"
 #include "loggingDialog.hpp"
 #include "filedialog.hpp"
+#include "startwidget.hpp"
 
 namespace isis
 {
@@ -21,6 +22,7 @@ class PreferencesDialog;
 class ScalingWidget;
 class LoggingDialog;
 class FileDialog;
+class StartWidget;
 }
 
 class MainWindow : public QMainWindow
@@ -35,11 +37,15 @@ public:
 	Ui::vastMainWindow &getUI() { return m_UI; }
 
 	void reloadPluginsToGUI( );
-	QLabel *getWorkignInformationLabel() { return m_WorkingInformationLabel; }
+	
+	widget::PreferencesDialog *preferencesDialog;
+	widget::LoggingDialog *loggingDialog;
+	widget::FileDialog *fileDialog;
+	widget::StartWidget *startWidget;
+	widget::ScalingWidget *scalingWidget;
 
 
 public Q_SLOTS:
-	void showPreferences();
 	void openImage();
 	void saveImage();
 	void saveImageAs();
@@ -62,13 +68,8 @@ private:
 	QViewerCore *m_ViewerCore;
 
 	QToolBar *m_Toolbar;
-	isis::viewer::widget::PreferencesDialog *m_PreferencesDialog;
-	isis::viewer::widget::LoggingDialog *m_LoggingDialog;
-	isis::viewer::widget::FileDialog *m_FileDialog;
-
-	widget::ScalingWidget *m_ScalingWidget;
+	
 	QSpinBox *m_RadiusSpin;
-	QLabel *m_WorkingInformationLabel;
 	QPushButton *m_LogButton;
 
 	QAction *m_ActionReset_Scaling;
