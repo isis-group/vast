@@ -1,3 +1,10 @@
+vast (0.1.5alpha-0) stable; urgency=low
+
+  * startscreen
+  * a lot of fixes
+
+ -- ISIS Group (The friendly isis team) <gr_isis@cbs.mpg.de>  Thu, 17 Nov 2011 12:25:35 +0200
+
 vast (0.1.4gec4b5d5-0) stable; urgency=low
 
   * a lot of fixes
