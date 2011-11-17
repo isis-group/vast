@@ -31,6 +31,7 @@ public:
 	virtual std::string getWidgetName() const = 0;
 	virtual void setInterpolationType( InterpolationType interpolation ) = 0;
 	virtual void setMouseCursorIcon( QIcon ) = 0;
+	virtual void setCrossHairColor( QColor color ) {}
 
 	virtual QWidget *getParent( ) const { return m_Parent; }
 	virtual PlaneOrientation getPlaneOrientation() { return m_PlaneOrientation; }

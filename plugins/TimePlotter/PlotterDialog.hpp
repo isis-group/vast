@@ -40,7 +40,7 @@ public Q_SLOTS:
 	virtual void refresh( util::fvector4 physicalCoords ) {
 		if( !ui.checkLock->isChecked() ) {
 			boost::shared_ptr<ImageHolder> image = m_ViewerCore->getCurrentImage();
-			if( !image->getImageSize()[3] > 1 ) {
+			if( !(image->getImageSize()[3] > 1) ) {
 				BOOST_FOREACH( DataContainer::const_reference iRef, m_ViewerCore->getDataContainer() )
 				{
 					if ( iRef.second->getImageSize()[3] > 1 ) {
@@ -74,35 +74,38 @@ public Q_SLOTS:
 					timeSteps.push_back( t * repTime );
 
 					switch( image->getISISImage()->getChunk( voxCoords[0], voxCoords[1], voxCoords[2], t ).getTypeID() ) {
+					case ValuePtr<bool>::staticID:
+						fillVector<bool>( intensityValues, t, voxCoords, image );
+						break;
 					case ValuePtr<int8_t>::staticID:
-						fillVector<int8_t>( intensityValues, t, voxCoords );
+						fillVector<int8_t>( intensityValues, t, voxCoords, image );
 						break;
 					case ValuePtr<uint8_t>::staticID:
-						fillVector<uint8_t>( intensityValues, t, voxCoords );
+						fillVector<uint8_t>( intensityValues, t, voxCoords, image );
 						break;
 					case ValuePtr<int16_t>::staticID:
-						fillVector<int16_t>( intensityValues, t, voxCoords );
+						fillVector<int16_t>( intensityValues, t, voxCoords, image  );
 						break;
 					case ValuePtr<uint16_t>::staticID:
-						fillVector<uint16_t>( intensityValues, t, voxCoords );
+						fillVector<uint16_t>( intensityValues, t, voxCoords, image );
 						break;
 					case ValuePtr<int32_t>::staticID:
-						fillVector<int32_t>( intensityValues, t, voxCoords );
+						fillVector<int32_t>( intensityValues, t, voxCoords, image );
 						break;
 					case ValuePtr<uint32_t>::staticID:
-						fillVector<uint32_t>( intensityValues, t, voxCoords );
+						fillVector<uint32_t>( intensityValues, t, voxCoords, image );
 						break;
 					case ValuePtr<int64_t>::staticID:
-						fillVector<int64_t>( intensityValues, t, voxCoords );
+						fillVector<int64_t>( intensityValues, t, voxCoords, image );
 						break;
 					case ValuePtr<uint64_t>::staticID:
-						fillVector<uint64_t>( intensityValues, t, voxCoords );
+						fillVector<uint64_t>( intensityValues, t, voxCoords, image );
 						break;
 					case ValuePtr<float>::staticID:
-						fillVector<float>( intensityValues, t, voxCoords );
+						fillVector<float>( intensityValues, t, voxCoords, image );
 						break;
 					case ValuePtr<double>::staticID:
-						fillVector<double>( intensityValues, t, voxCoords );
+						fillVector<double>( intensityValues, t, voxCoords, image );
 						break;
 					}
 				}
@@ -124,8 +127,8 @@ private:
 	QwtPlotCurve *curve;
 	QViewerCore *m_ViewerCore;
 	template<typename TYPE>
-	void fillVector( QVector<double> &iv, const size_t &t, const util::ivector4 &vox ) {
-		iv.push_back( m_ViewerCore->getCurrentImage()->getISISImage()->voxel<TYPE>( vox[0], vox[1], vox[2], t ) );
+	void fillVector( QVector<double> &iv, const size_t &t, const util::ivector4 &vox, boost::shared_ptr<ImageHolder> image ) {
+		iv.push_back( image->getISISImage()->voxel<TYPE>( vox[0], vox[1], vox[2], t ) );
 	}
 
 };

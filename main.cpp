@@ -122,6 +122,10 @@ int main( int argc, char *argv[] )
 
 	typedef std::list< boost::shared_ptr<ImageHolder > >::const_reference ImageListRef;
 
+	if( app.parameters["zmap"].isSet() ) {
+		core->setMode( ViewerCoreBase::zmap );
+		core->getUI()->getMainWindow()->setWindowTitle( "vast (zmap mode)" );
+	}	
 	//particular distribution of images in widgets
 	if( app.parameters["zmap"].isSet() && zImgList.size() > 1 ) {
 		core->getUI()->setViewWidgetArrangement( UICore::InRow );
@@ -129,10 +133,15 @@ int main( int argc, char *argv[] )
 			UICore::ViewWidgetEnsembleType ensemble = core->getUI()->createViewWidgetEnsemble( "", image );
 
 			if( app.parameters["in"].isSet() ) {
-				boost::shared_ptr<ImageHolder> anatomicalImage = core->addImage( imgList.front(), ImageHolder::anatomical_image );
-				ensemble[0].widgetImplementation->addImage( anatomicalImage );
-				ensemble[1].widgetImplementation->addImage( anatomicalImage );
-				ensemble[2].widgetImplementation->addImage( anatomicalImage );
+				BOOST_FOREACH( std::list<data::Image>::const_reference image, imgList)
+				{
+					boost::shared_ptr<ImageHolder> anatomicalImage = core->addImage( image, ImageHolder::anatomical_image );
+					if( anatomicalImage->getImageSize()[3] == 1 ) {
+						ensemble[0].widgetImplementation->addImage( anatomicalImage );
+						ensemble[1].widgetImplementation->addImage( anatomicalImage );
+						ensemble[2].widgetImplementation->addImage( anatomicalImage );
+					}
+				}
 			}
 		}
 		core->getUI()->setOptionPosition( isis::viewer::UICore::bottom );

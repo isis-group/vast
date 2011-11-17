@@ -211,7 +211,8 @@ void QViewerCore::openPath( QStringList fileList, ImageHolder::ImageType imageTy
 			} else {
 				msg << "Loading image \"" << p.filename() << "\"...";
 			}
-
+			getUI()->getMainWindow()->startWidget->showMe( false );
+			receiveMessage( msg.str() );
 			std::list<data::Image> tempImgList = isis::data::IOFactory::load( filename.toStdString() , rf, rdialect );
 			pathList.push_back( filename.toStdString() );
 
@@ -223,27 +224,27 @@ void QViewerCore::openPath( QStringList fileList, ImageHolder::ImageType imageTy
 			BOOST_FOREACH( std::list<data::Image>::const_reference image, tempImgList ) {
 				imgList.push_back( image );
 				boost::shared_ptr<ImageHolder> imageHolder = addImage( image, imageType );
-
-				if( newWidget ) {
-					ensemble = getUI()->createViewWidgetEnsemble( "" );
-					//if we load a zmap we additionally add an anatomical image to the widget to make things easier for the user....
-					if( imageType == ImageHolder::z_map && m_CurrentAnatomicalReference.get() ) {
-						attachImageToWidget( m_CurrentAnatomicalReference, ensemble[0].widgetImplementation);
-						attachImageToWidget( m_CurrentAnatomicalReference, ensemble[1].widgetImplementation);
-						attachImageToWidget( m_CurrentAnatomicalReference, ensemble[2].widgetImplementation);
+				if( !( getMode() == ViewerCoreBase::zmap && imageHolder->imageType == ImageHolder::anatomical_image ) ) {	
+					if( newWidget ) {
+						ensemble = getUI()->createViewWidgetEnsemble( "" );
+						//if we load a zmap we additionally add an anatomical image to the widget to make things easier for the user....
+						if( imageType == ImageHolder::z_map && m_CurrentAnatomicalReference.get() ) {
+							attachImageToWidget( m_CurrentAnatomicalReference, ensemble[0].widgetImplementation);
+							attachImageToWidget( m_CurrentAnatomicalReference, ensemble[1].widgetImplementation);
+							attachImageToWidget( m_CurrentAnatomicalReference, ensemble[2].widgetImplementation);
+						}
 					}
+					attachImageToWidget( imageHolder, ensemble[0].widgetImplementation );
+					attachImageToWidget( imageHolder, ensemble[1].widgetImplementation );
+					attachImageToWidget( imageHolder, ensemble[2].widgetImplementation );
+					setCurrentImage( imageHolder );
 				}
-
-				attachImageToWidget( imageHolder, ensemble[0].widgetImplementation );
-				attachImageToWidget( imageHolder, ensemble[1].widgetImplementation );
-				attachImageToWidget( imageHolder, ensemble[2].widgetImplementation );
-				setCurrentImage( imageHolder );
 			}
 		}
 		getUI()->rearrangeViewWidgets();
 		getUI()->refreshUI();
 		centerImages();
-		
+		getUI()->getMainWindow()->startWidget->close();
 	}
 }
 

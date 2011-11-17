@@ -49,6 +49,7 @@ public Q_SLOTS:
 	virtual void setInterpolationType( InterpolationType interType ) { m_InterpolationType = interType; }
 	virtual void setShowLabels( bool show ) { m_ShowLabels = show; m_Border = show ? 18 : 0; }
 	virtual void setMouseCursorIcon( QIcon icon );
+	virtual void setCrossHairColor( QColor color) { m_CrosshairColor = color; }
 
 	virtual std::string getWidgetName() const;
 	virtual void setWidgetName( const std::string &wName );
@@ -83,6 +84,7 @@ private:
 	void commonInit();
 	util::PropertyMap m_WidgetProperties;
 	QPainter *m_Painter;
+	QColor m_CrosshairColor;
 	InternalImageType m_InterpolationType;
 	ScalingType m_ScalingType;
 	bool m_ShowLabels;

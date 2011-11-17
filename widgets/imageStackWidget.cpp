@@ -55,22 +55,25 @@ void ImageStackWidget::synchronize()
 	m_Interface.frame->setMinimumHeight(m_ViewerCore->getOptionMap()->getPropertyAs<uint16_t>("minOptionWidgetHeight"));
 	m_ImageStack->clear();
 	BOOST_FOREACH( DataContainer::const_reference imageRef, m_ViewerCore->getDataContainer() ) {
-		QListWidgetItem *item = new QListWidgetItem;
-		QString sD = imageRef.second->getPropMap().getPropertyAs<std::string>( "sequenceDescription" ).c_str();
-		item->setText( QString( imageRef.second->getFileNames().front().c_str() ) );
-		item->setFlags( Qt::ItemIsEnabled | Qt::ItemIsUserCheckable | Qt::ItemIsSelectable );
+		if( !( m_ViewerCore->getMode() == ViewerCoreBase::zmap && imageRef.second->imageType == ImageHolder::anatomical_image ) ) 
+		{
+			QListWidgetItem *item = new QListWidgetItem;
+			QString sD = imageRef.second->getPropMap().getPropertyAs<std::string>( "sequenceDescription" ).c_str();
+			item->setText( QString( imageRef.second->getFileNames().front().c_str() ) );
+			item->setFlags( Qt::ItemIsEnabled | Qt::ItemIsUserCheckable | Qt::ItemIsSelectable );
 
-		if( imageRef.second->isVisible ) {
-			item->setCheckState( Qt::Checked );
-		} else {
-			item->setCheckState( Qt::Unchecked );
+			if( imageRef.second->isVisible ) {
+				item->setCheckState( Qt::Checked );
+			} else {
+				item->setCheckState( Qt::Unchecked );
+			}
+
+			if( m_ViewerCore->getCurrentImage().get() == imageRef.second.get() ) {
+				item->setIcon( QIcon( ":/common/currentImage.gif" ) );
+			}
+
+			m_ImageStack->addItem( item );
 		}
-
-		if( m_ViewerCore->getCurrentImage().get() == imageRef.second.get() ) {
-			item->setIcon( QIcon( ":/common/currentImage.gif" ) );
-		}
-
-		m_ImageStack->addItem( item );
 	}
 }
 

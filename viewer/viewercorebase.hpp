@@ -15,6 +15,8 @@ class ViewerCoreBase
 
 public:
 
+	enum Mode { standard, zmap };
+	
 	typedef std::list<boost::shared_ptr< plugin::PluginInterface > > PluginListType;
 	ViewerCoreBase( );
 
@@ -37,6 +39,9 @@ public:
 	color::Color *getColorHandler() const { return m_ColorHandler; }
 
 	bool hasImage() const { return getDataContainer().size(); }
+	
+	void setMode( Mode mode ) { m_Mode = mode; }
+	Mode getMode() const { return m_Mode; }
 
 private:
 	//this is the container which actually holds all the images
@@ -52,6 +57,7 @@ protected:
 	ImageHolder::ImageListType m_ImageList;
 	
 	boost::shared_ptr<ImageHolder> m_CurrentAnatomicalReference;
+	Mode m_Mode;
 
 
 
