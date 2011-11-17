@@ -25,8 +25,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>773</width>
-         <height>485</height>
+         <width>771</width>
+         <height>481</height>
         </rect>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout">
@@ -88,7 +88,7 @@
      <x>0</x>
      <y>0</y>
      <width>809</width>
-     <height>25</height>
+     <height>27</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
@@ -99,6 +99,7 @@
     <addaction name="separator"/>
     <addaction name="action_Save_Image"/>
     <addaction name="actionSave_Image"/>
+    <addaction name="actionSave_all_Images"/>
     <addaction name="separator"/>
     <addaction name="action_Exit"/>
    </widget>
@@ -284,6 +285,18 @@
    </property>
    <property name="shortcut">
     <string>Space, Space</string>
+   </property>
+  </action>
+  <action name="actionSave_all_Images">
+   <property name="icon">
+    <iconset resource="../resources/viewer.qrc">
+     <normaloff>:/common/saveAll.gif</normaloff>:/common/saveAll.gif</iconset>
+   </property>
+   <property name="text">
+    <string>Save all Images</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Alt+Shift+S</string>
    </property>
   </action>
  </widget>

@@ -37,6 +37,7 @@ MainWindow::MainWindow( QViewerCore *core ) :
 	m_UI.actionOpen_image->setIconVisibleInMenu( true );
 	m_UI.action_Exit->setShortcut( QKeySequence::Quit );
 	m_UI.action_Exit->setIconVisibleInMenu( true );
+	m_UI.actionSave_all_Images->setIconVisibleInMenu( true );
 	m_UI.actionIgnore_Orientation->setShortcut( QKeySequence( tr( "I, O" ) ) );
 	m_UI.action_Preferences->setShortcut( QKeySequence( tr( "S, P" ) ) );
 	m_UI.actionFind_Global_Max->setShortcut( QKeySequence( tr( "F, M, A" ) ) );
@@ -70,6 +71,7 @@ MainWindow::MainWindow( QViewerCore *core ) :
 	m_Toolbar->addAction( m_UI.actionOpen_image );
 	m_Toolbar->addAction( m_UI.action_Save_Image );
 	m_Toolbar->addAction( m_UI.actionSave_Image );
+	m_Toolbar->addAction( m_UI.actionSave_all_Images );
 	m_Toolbar->addSeparator();
 	m_Toolbar->addAction( m_UI.actionShow_Labels );
 	m_Toolbar->addAction( m_UI.action_Preferences );

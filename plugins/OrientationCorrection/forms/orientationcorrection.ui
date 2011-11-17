@@ -7,11 +7,11 @@
     <x>0</x>
     <y>0</y>
     <width>527</width>
-    <height>443</height>
+    <height>507</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>Orientation Correction</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
@@ -168,6 +168,22 @@
               <widget class="QPushButton" name="rotateButton">
                <property name="text">
                 <string>Rotate</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item>
+           <widget class="QGroupBox" name="groupBox_3">
+            <property name="title">
+             <string>Align</string>
+            </property>
+            <layout class="QVBoxLayout" name="verticalLayout_5">
+             <item>
+              <widget class="QCheckBox" name="alignCheck">
+               <property name="text">
+                <string>Align all images to center</string>
                </property>
               </widget>
              </item>

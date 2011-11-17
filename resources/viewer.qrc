@@ -2,6 +2,7 @@
   <qresource prefix="common">
     <file>vast_big.jpg</file>
     <file>close.gif</file>
+    <file>saveAll.gif</file>
     <file>distribute.png</file>
     <file>exit.png</file>
     <file>vast.jpg</file>

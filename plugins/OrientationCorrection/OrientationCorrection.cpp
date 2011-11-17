@@ -29,7 +29,45 @@ OrientatioCorrectionDialog::OrientatioCorrectionDialog( QWidget *parent, QViewer
 	connect( ui.pushButton, SIGNAL( pressed() ), this, SLOT( applyPressed() ) );
 	connect( ui.flipButton, SIGNAL( pressed() ), this, SLOT( flipPressed() ) );
 	connect( ui.rotateButton, SIGNAL( pressed() ), this, SLOT( rotatePressed() ) );
+	connect( ui.alignCheck, SIGNAL( clicked(bool)), this, SLOT( alignOnCenter(bool)));
 }
+
+void OrientatioCorrectionDialog::alignOnCenter(bool align)
+{
+	if ( m_ViewerCore->hasImage() ) {
+		if( align ) {
+			const util::fvector4 indexOrigin = m_ViewerCore->getCurrentImage()->getISISImage()->getPropertyAs<util::fvector4>("indexOrigin");
+			const util::fvector4 rowVec = m_ViewerCore->getCurrentImage()->getISISImage()->getPropertyAs<util::fvector4>("rowVec");
+			const util::fvector4 columnVec = m_ViewerCore->getCurrentImage()->getISISImage()->getPropertyAs<util::fvector4>("columnVec");
+			const util::fvector4 sliceVec = m_ViewerCore->getCurrentImage()->getISISImage()->getPropertyAs<util::fvector4>("sliceVec");
+			BOOST_FOREACH( DataContainer::reference image, m_ViewerCore->getDataContainer() ) {
+				const util::ivector4 size = image.second->getImageSize();
+
+				const util::fvector4 voxelSize = image.second->getISISImage()->getPropertyAs<util::fvector4>("voxelSize" );
+				const util::fvector4 center = util::fvector4( (-size[0] * voxelSize[0]) / 2.0, 
+															  (-size[1] * voxelSize[1]) / 2.0, 
+															  (-size[2] * voxelSize[2]) / 2.0 );
+				image.second->getISISImage()->setPropertyAs<util::fvector4>("rowVec", rowVec );
+				image.second->getISISImage()->setPropertyAs<util::fvector4>("columnVec", columnVec );
+				image.second->getISISImage()->setPropertyAs<util::fvector4>("sliceVec", sliceVec );
+				image.second->getISISImage()->setPropertyAs<util::fvector4>("indexOrigin", center );
+				image.second->getISISImage()->updateOrientationMatrices();				
+			}
+		} else {
+			BOOST_FOREACH( DataContainer::reference image, m_ViewerCore->getDataContainer() ) {
+				image.second->getISISImage()->setPropertyAs<util::fvector4>("indexOrigin", image.second->getPropMap().getPropertyAs<util::fvector4>("originalIndexOrigin") );
+				image.second->getISISImage()->setPropertyAs<util::fvector4>("rowVec", image.second->getPropMap().getPropertyAs<util::fvector4>("originalRowVec") );
+				image.second->getISISImage()->setPropertyAs<util::fvector4>("columnVec", image.second->getPropMap().getPropertyAs<util::fvector4>("originalColumnVec") );
+				image.second->getISISImage()->setPropertyAs<util::fvector4>("sliceVec", image.second->getPropMap().getPropertyAs<util::fvector4>("originalSliceVec") );
+				image.second->getISISImage()->updateOrientationMatrices();
+			}
+		}
+		m_ViewerCore->centerImages();
+		m_ViewerCore->updateScene();
+	}
+
+}
+
 
 void OrientatioCorrectionDialog::flipPressed()
 {
