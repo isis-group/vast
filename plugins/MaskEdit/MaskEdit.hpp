@@ -17,6 +17,9 @@ public:
 public Q_SLOTS:
 	void physicalCoordChanged( util::fvector4 physCoord );
 	void createEmptyMask();
+	void radiusChange(int);
+	void paintClicked();
+	void cutClicked();
 	virtual void closeEvent( QCloseEvent * );
 	virtual void showEvent( QShowEvent *);
 	

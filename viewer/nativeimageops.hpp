@@ -50,9 +50,9 @@ private:
 		data::TypedImage<TYPE> typedImage = *image->getISISImage();
 		TYPE currentMin = std::numeric_limits<TYPE>::max();
 
-		for( unsigned short z = start[2]; z < end[2]; z++ ) {
-			for( unsigned short y = start[1]; y < end[1]; y++ ) {
-				for( unsigned short x = start[0]; x < end[0]; x++ ) {
+		for( unsigned short z = start[2] + 1; z < end[2]; z++ ) {
+			for( unsigned short y = start[1] + 1; y < end[1]; y++ ) {
+				for( unsigned short x = start[0] + 1; x < end[0]; x++ ) {
 					currentValue = static_cast<data::Image &>( typedImage ).voxel<TYPE>( x, y, z ); //TODO wtf??
 
 					if( currentValue < currentMin ) {
@@ -87,9 +87,9 @@ private:
 		data::TypedImage<TYPE> typedImage = *image->getISISImage();
 		TYPE currentMax = std::numeric_limits<TYPE>::min();
 
-		for( unsigned short z = start[2]; z < end[2]; z++ ) {
-			for( unsigned short y = start[1]; y < end[1]; y++ ) {
-				for( unsigned short x = start[0]; x < end[0]; x++ ) {
+		for( unsigned short z = start[2] + 1; z < end[2]; z++ ) {
+			for( unsigned short y = start[1] + 1; y < end[1]; y++ ) {
+				for( unsigned short x = start[0] + 1; x < end[0]; x++ ) {
 					currentValue = static_cast<data::Image &>( typedImage ).voxel<TYPE>( x, y, z ); //TODO wtf??
 
 					if( currentValue > currentMax ) {

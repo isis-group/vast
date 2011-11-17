@@ -1,5 +1,6 @@
 <RCC>
   <qresource prefix="common">
+    <file>scissor.gif</file>
     <file>newMask.png</file>
     <file>maskeditLUT</file>
     <file>brush.png</file>

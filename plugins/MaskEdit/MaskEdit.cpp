@@ -3,6 +3,7 @@
 #include <DataStorage/image.hpp>
 #include "uicore.hpp"
 #include "common.hpp"
+#include <CoreUtils/vector.hpp>
 
 
 namespace isis {
@@ -12,13 +13,40 @@ namespace plugin {
 MaskEditDialog::MaskEditDialog(QWidget* parent, QViewerCore* core)
 	: QDialog(parent),
 	m_ViewerCore(core),
-	m_Radius(4)
+	m_Radius(2)
 {
 	m_Interface.setupUi( this );
+	m_Interface.cut->setEnabled(false);
+	m_Interface.paint->setEnabled(false);
+	m_Interface.radius->setEnabled(false);
+	m_Interface.radius->setMaximum(500);
+	m_Interface.radius->setValue(m_Radius);
+	m_Interface.maskName->setText("mask1");
 	m_ViewerCore->getColorHandler()->addColormap( ":/common/maskeditLUT" );
 	connect( m_Interface.newMask, SIGNAL( clicked()), this, SLOT( createEmptyMask())) ;
+	connect( m_Interface.radius, SIGNAL( valueChanged(int)), SLOT( radiusChange(int)));
+	connect( m_Interface.cut, SIGNAL( clicked(bool)), this , SLOT( cutClicked()));
+	connect( m_Interface.paint, SIGNAL( clicked(bool)), this , SLOT( paintClicked()));
 
 }
+
+void MaskEditDialog::cutClicked()
+{
+	m_Interface.paint->setChecked( !m_Interface.cut->isChecked() );
+}
+
+void MaskEditDialog::paintClicked()
+{
+	m_Interface.cut->setChecked( !m_Interface.paint->isChecked() );
+}
+
+
+
+void MaskEditDialog::radiusChange(int r)
+{
+	m_Radius = r;
+}
+
 
 void MaskEditDialog::showEvent(QShowEvent* )
 {
@@ -50,8 +78,14 @@ void MaskEditDialog::physicalCoordChanged(util::fvector4 physCoord)
 				int y = voxel[1] - j;
 				int z = voxel[2] - k;
 				if( x * x + y * y + z * z <= radSquare ) {
-					m_CurrentMask->getISISImage()->voxel<uint8_t>( i, j, k ) = std::numeric_limits<uint8_t>::max();
-					m_CurrentMask->getChunkVector()[0].voxel<uint8_t>( i, j, k ) = std::numeric_limits<uint8_t>::max();	
+					if( m_Interface.paint->isChecked() ) {
+						m_CurrentMask->getISISImage()->voxel<uint8_t>( i, j, k ) = std::numeric_limits<uint8_t>::max();
+						m_CurrentMask->getChunkVector()[0].voxel<uint8_t>( i, j, k ) = std::numeric_limits<uint8_t>::max();	
+					} else {
+						m_CurrentMask->getISISImage()->voxel<uint8_t>( i, j, k ) = std::numeric_limits<uint8_t>::min();
+						m_CurrentMask->getChunkVector()[0].voxel<uint8_t>( i, j, k ) = std::numeric_limits<uint8_t>::min();	
+
+					}
 				}
 			}
 		}
@@ -90,6 +124,10 @@ void MaskEditDialog::createEmptyMask()
 		m_ViewerCore->setShowCrosshair(false);
 		m_ViewerCore->updateScene();
 		m_ViewerCore->getUI()->refreshUI();
+		m_Interface.cut->setEnabled(true);
+		m_Interface.paint->setEnabled(true);
+		m_Interface.radius->setEnabled(true);
+		m_Interface.paint->setChecked(true);
 	}
 }
 
