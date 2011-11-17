@@ -21,11 +21,13 @@ public Q_SLOTS:
 	virtual void applyPressed();
 	virtual void flipPressed();
 	virtual void rotatePressed();
+	virtual void alignOnCenter(bool);
 private:
 	QViewerCore *m_ViewerCore;
 	Ui::OrientationCorrection ui;
 	boost::numeric::ublas::matrix<QTableWidgetItem *> m_MatrixItems;
 	bool applyTransform ( const boost::numeric::ublas::matrix<float> &trans, bool center, const std::string &desc ) const ;
+	std::string m_ImageNameAlignedTo;
 
 };
 

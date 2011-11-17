@@ -47,9 +47,8 @@ public:
 	boost::numeric::ublas::matrix<float> getNormalizedImageOrientation( bool transposed = false ) const;
 	boost::numeric::ublas::matrix<float> getImageOrientation( bool transposed = false ) const;
 	void addChangedAttribute( const std::string &attribute );
+	bool removeChangedAttribute( const std::string &attribute );
 
-	/**offset, scaling**/
-	std::pair<double, double> getOptimalScalingPair() const { return m_OptimalScalingPair;  }
 	boost::weak_ptr<void>
 	getImageWeakPointer( size_t timestep = 0 ) const {
 		return getImageVector()[timestep]->getRawAddress();
@@ -63,9 +62,6 @@ public:
 	void addWidget( WidgetInterface *widget ) { m_WidgetList.push_back( widget ); }
 	void removeWidget( WidgetInterface *widget ) { m_WidgetList.erase( std::find( m_WidgetList.begin(), m_WidgetList.end(), widget ) ) ; }
 	std::list< WidgetInterface * > getWidgetList() { return m_WidgetList; }
-
-	bool isInsideImage( const util::ivector4 &voxelCoords ) const;
-	bool isInsideImage( const util::fvector4 &physicalCoords ) const;
 
 	/**offset, scaling**/
 	template<typename TYPE>
@@ -131,8 +127,6 @@ public:
 
 private:
 
-
-	size_t m_NumberOfTimeSteps;
 	util::FixedVector<size_t, 4> m_ImageSize;
 	util::PropertyMap m_PropMap;
 
@@ -141,12 +135,9 @@ private:
 	util::slist m_Filenames;
 	size_t m_ID;
 	std::pair<double, double> m_OptimalScalingPair;
-	std::pair<double, double> m_CutAwayPair;
 
 	std::vector< ImagePointerType > m_ImageVector;
 	std::vector< data::Chunk > m_ChunkVector;
-
-	bool filterRelevantMetaInformation();
 
 	std::list<WidgetInterface *> m_WidgetList;
 	

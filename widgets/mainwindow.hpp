@@ -49,6 +49,7 @@ public Q_SLOTS:
 	void openImage();
 	void saveImage();
 	void saveImageAs();
+	void saveAllImages();
 	void loadSettings();
 	void saveSettings();
 	void closeEvent( QCloseEvent * );

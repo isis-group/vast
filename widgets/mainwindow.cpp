@@ -37,6 +37,7 @@ MainWindow::MainWindow( QViewerCore *core ) :
 	m_UI.actionOpen_image->setIconVisibleInMenu( true );
 	m_UI.action_Exit->setShortcut( QKeySequence::Quit );
 	m_UI.action_Exit->setIconVisibleInMenu( true );
+	m_UI.actionSave_all_Images->setIconVisibleInMenu( true );
 	m_UI.actionIgnore_Orientation->setShortcut( QKeySequence( tr( "I, O" ) ) );
 	m_UI.action_Preferences->setShortcut( QKeySequence( tr( "S, P" ) ) );
 	m_UI.actionFind_Global_Max->setShortcut( QKeySequence( tr( "F, M, A" ) ) );
@@ -61,6 +62,7 @@ MainWindow::MainWindow( QViewerCore *core ) :
 	connect( m_UI.actionPropagate_Zooming, SIGNAL( triggered( bool ) ), this, SLOT( propagateZooming( bool ) ) );
 	connect( m_ActionReset_Scaling, SIGNAL( triggered() ), this, SLOT( resetScaling() ) );
 	connect( m_UI.actionShow_Crosshair, SIGNAL( triggered(bool)), m_ViewerCore, SLOT( setShowCrosshair(bool)));
+	connect( m_UI.actionSave_all_Images, SIGNAL( triggered()), this, SLOT( saveAllImages()));
 
 	//toolbar stuff
 	m_Toolbar->setOrientation( Qt::Horizontal );
@@ -70,6 +72,7 @@ MainWindow::MainWindow( QViewerCore *core ) :
 	m_Toolbar->addAction( m_UI.actionOpen_image );
 	m_Toolbar->addAction( m_UI.action_Save_Image );
 	m_Toolbar->addAction( m_UI.actionSave_Image );
+	m_Toolbar->addAction( m_UI.actionSave_all_Images );
 	m_Toolbar->addSeparator();
 	m_Toolbar->addAction( m_UI.actionShow_Labels );
 	m_Toolbar->addAction( m_UI.action_Preferences );
@@ -199,6 +202,68 @@ void MainWindow::saveImage()
 		}
 	}
 }
+
+void MainWindow::saveAllImages()
+{
+	if( m_ViewerCore->hasImage() ) {
+		std::list<util::slist> changedAttributesList;
+		util::slist fileNames;
+		BOOST_FOREACH( DataContainer::const_reference image, m_ViewerCore->getDataContainer() ) 
+		{
+			fileNames.push_back( image.second->getFileNames().front() );
+			if( image.second->getPropMap().getPropertyAs<util::slist>( "changedAttributes" ).size() ) {
+				changedAttributesList.push_back( image.second->getPropMap().getPropertyAs<util::slist>( "changedAttributes" ) );
+			}
+		}
+		if( changedAttributesList.size() ) {
+			QMessageBox msgBox;
+			msgBox.setIcon( QMessageBox::Information );
+			std::stringstream text;
+			text << "This will overwrite:" << std::endl;;
+			BOOST_FOREACH( util::slist::const_reference fileName, fileNames ) 
+			{
+				text << fileName << std::endl;
+			}
+			msgBox.setText( text.str().c_str() );
+			msgBox.setInformativeText( "Do you want to proceed?" );
+			std::stringstream detailedText;
+			detailedText << "Changed attributes: " << std::endl;
+			BOOST_FOREACH( DataContainer::const_reference image, m_ViewerCore->getDataContainer() ) 
+			{
+				if( image.second->getPropMap().getPropertyAs<util::slist>( "changedAttributes" ).size() ) {
+					detailedText << image.second->getFileNames().front() << " : " << std::endl;
+					BOOST_FOREACH( util::slist::const_reference changedAttribute, image.second->getPropMap().getPropertyAs<util::slist>( "changedAttributes" ) ) 
+					{
+						detailedText << changedAttribute << std::endl;
+					}
+				}
+			}
+			msgBox.setDetailedText( detailedText.str().c_str() );
+			msgBox.setStandardButtons( QMessageBox::Yes | QMessageBox::No );
+			msgBox.setDefaultButton( QMessageBox::No );
+
+			switch ( msgBox.exec() ) {
+			case QMessageBox::No:
+				return;
+				break;
+			case QMessageBox::Yes:
+				BOOST_FOREACH( DataContainer::const_reference image, m_ViewerCore->getDataContainer() ) 
+				{
+					isis::data::IOFactory::write( *image.second->getISISImage(), image.second->getFileNames().front(), "", "" );
+				}
+				
+				break;
+			}
+			
+		} else {
+			QMessageBox msgBox;
+			msgBox.setText( "No image has changed attributes! Won´t save anything." );
+			msgBox.exec();
+		}
+		
+	}
+}
+
 
 void MainWindow::saveImageAs()
 {

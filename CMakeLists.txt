@@ -51,11 +51,11 @@ add_definitions(-D_ISIS_VIEWER_VERSION_PATCH=${ISIS_VIEWER_VERSION_PATCH})
 # isis stuff
 ###########################################################
 SET(ISIS_DIR /usr/share/isis/cmake CACHE PATH 
-    "The directory where the isis cmake configuration skript script is located.")
+    "The directory where the isis cmake configuration script is located.")
 find_package(ISIS REQUIRED)
 
 option(ISIS_RUNTIME_LOG "Toggles the isis runtime logging" ON)
-option(ISIS_DEBUG_LOG "Toggles the isis debug logging" ON) 
+option(ISIS_DEBUG_LOG "Toggles the isis debug logging" OFF) 
 
 # we use the log definitions of the core
 IF(ISIS_RUNTIME_LOG)

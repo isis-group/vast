@@ -68,10 +68,11 @@ Q_SIGNALS:
 
 
 private:
+	QVBoxLayout *m_Layout;
+	
 	ImagePropertiesMapType m_ImageProperties;
 
 	void emitMousePressEvent( QMouseEvent *e );
-	bool isInViewPort( const QOrienationHandler::ViewPortType &viewPort, QMouseEvent *e ) const;
 	void recalculateTranslation();
 	void showLabels() const ;
 

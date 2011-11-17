@@ -1,5 +1,7 @@
 <RCC>
   <qresource prefix="common">
+    <file>newMask.png</file>
+    <file>maskeditLUT</file>
     <file>brush.png</file>
     <file>maskEdit.png</file>
   </qresource>

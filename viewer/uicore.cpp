@@ -17,26 +17,26 @@ UICore::UICore( QViewerCore *core )
 	m_SliderWidget = new widget::SliderWidget( m_MainWindow, core );
 	m_ImageStackWidget = new widget::ImageStackWidget( m_MainWindow, core );
 	m_ViewWidgetArrangement = InRow;
-	m_VoxelInformationDockWidget = createDockingEnsemble( m_VoxelInformationWidget );
-	m_ImageStackDockWidget = createDockingEnsemble( m_ImageStackWidget );
 	m_RowCount = m_MainWindow->getUI().centralGridLayout->rowCount();
-	m_ImageStackDockWidget->setVisible( false );
-	m_VoxelInformationDockWidget->setVisible( false );
+	m_VoxelInformationWidget->setMaximumWidth( getMainWindow()->width() / 3 );
+	m_VoxelInformationWidget->setMinimumWidth( getMainWindow()->width() / 3 );
+	m_VoxelInformationWidget->setVisible( false );
+	m_ImageStackWidget->setVisible( false );
 
 }
 
 void UICore::setOptionPosition( UICore::OptionPosition pos )
 {
-	m_ImageStackDockWidget->setVisible( true );
-	m_VoxelInformationDockWidget->setVisible( true );
+	m_VoxelInformationWidget->setVisible( true );
+	m_ImageStackWidget->setVisible( true );
 	switch ( pos ) {
 	case bottom:
-		m_MainWindow->getUI().bottomGridLayout->addWidget( m_VoxelInformationDockWidget, 0, 1 );
-		m_MainWindow->getUI().bottomGridLayout->addWidget( m_ImageStackDockWidget, 0, 0 );
+		m_MainWindow->getUI().bottomGridLayout->addWidget( m_VoxelInformationWidget, 0, 1 );
+		m_MainWindow->getUI().bottomGridLayout->addWidget( m_ImageStackWidget, 0, 0 );
 		break;
 	case top:
-		m_MainWindow->getUI().topGridLayout->addWidget( m_ImageStackDockWidget, 0, 1 );
-		m_MainWindow->getUI().topGridLayout->addWidget( m_VoxelInformationDockWidget, 0, 0 );
+		m_MainWindow->getUI().topGridLayout->addWidget( m_ImageStackWidget, 0, 1 );
+		m_MainWindow->getUI().topGridLayout->addWidget( m_VoxelInformationWidget, 0, 0 );
 		break;
 	case central11:
 		QGridLayout *layout = new QGridLayout(  );
@@ -47,8 +47,8 @@ void UICore::setOptionPosition( UICore::OptionPosition pos )
 		QFrame *frame = new QFrame( m_MainWindow );
 		frame->setLayout( layout );
 		m_MainWindow->getUI().centralGridLayout->addWidget( frame, 1, 1 );
-		layout->addWidget( m_VoxelInformationDockWidget, 0, 0 );
-		layout->addWidget( m_ImageStackDockWidget, 1, 0 );
+		layout->addWidget( m_VoxelInformationWidget, 0, 0 );
+		layout->addWidget( m_ImageStackWidget, 1, 0 );
 		break;
 	}
 }
@@ -129,7 +129,7 @@ QDockWidget *UICore::createDockingEnsemble( QWidget *widget )
 	dockWidget->setFeatures( QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable );
 	dockWidget->setSizePolicy( QSizePolicy( QSizePolicy::Maximum, QSizePolicy::Maximum ) );
 	dockWidget->setWidget( widget );
-	dockWidget->setContentsMargins( 5, 5, 5, 5 );
+	dockWidget->setContentsMargins( 2, 0, 2, 0 );
 	return dockWidget;
 
 }
@@ -245,7 +245,6 @@ UICore::ViewWidget UICore::createViewWidget( const std::string &widgetType, Plan
 {
 
 	QFrame *frameWidget = new QFrame();
-
 	QDockWidget *dockWidget = createDockingEnsemble( frameWidget );
 	dockWidget->setMinimumHeight( m_ViewerCore->getOptionMap()->getPropertyAs<uint16_t>( "maxWidgetHeight" ) );
 	dockWidget->setMinimumWidth( m_ViewerCore->getOptionMap()->getPropertyAs<uint16_t>( "maxWidgetWidth" ) );
@@ -287,7 +286,7 @@ void UICore::refreshUI()
 			QPalette pal;
 			pal.setColor( QPalette::Background, QColor( 119, 136, 153) );
 			widget.second.frame->setFrameStyle( QFrame::WinPanel | QFrame::Raised );
-			widget.second.frame->setLineWidth(3);
+			widget.second.frame->setLineWidth(1);
 			widget.second.frame->setPalette(pal);
 			widget.second.frame->setAutoFillBackground(true);
 		} else {

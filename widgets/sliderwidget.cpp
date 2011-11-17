@@ -1,5 +1,7 @@
 #include "sliderwidget.hpp"
 #include <boost/concept_check.hpp>
+#include "imageholder.hpp"
+#include "qviewercore.hpp"
 
 
 namespace isis
@@ -70,7 +72,8 @@ void SliderWidget::lowerThresholdChanged( int sliderPos )
 
 void SliderWidget::upperThresholdChanged( int sliderPos )
 {
-	m_ViewerCore->getCurrentImage()->upperThreshold = norm( 0.0, m_ViewerCore->getCurrentImage()->minMax.second->as<double>(), 1000 - sliderPos ) ;
+	//TODO should be 1000 instead of 999. This is just workaround for a problem in viewer/color.cpp:adaptColorMapToImage
+	m_ViewerCore->getCurrentImage()->upperThreshold = norm( 0.0, m_ViewerCore->getCurrentImage()->minMax.second->as<double>(), 999 - sliderPos ) ;
 	m_ViewerCore->updateScene();
 }
 
