@@ -27,6 +27,7 @@ private:
 	Ui::OrientationCorrection ui;
 	boost::numeric::ublas::matrix<QTableWidgetItem *> m_MatrixItems;
 	bool applyTransform ( const boost::numeric::ublas::matrix<float> &trans, bool center, const std::string &desc ) const ;
+	std::string m_ImageNameAlignedTo;
 
 };
 

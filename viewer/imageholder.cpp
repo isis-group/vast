@@ -205,6 +205,18 @@ void ImageHolder::addChangedAttribute( const std::string &attribute )
 	m_PropMap.setPropertyAs<util::slist>( "changedAttributes", attributes );
 }
 
+bool ImageHolder::removeChangedAttribute(const std::string& attribute)
+{
+	util::slist attributes = m_PropMap.getPropertyAs<util::slist>( "changedAttributes" );
+	util::slist::iterator iter = std::find( attributes.begin(), attributes.end(), attribute );
+	if( iter == attributes.end() ) {
+		return false;
+	} else {
+		attributes.erase(iter);
+		m_PropMap.setPropertyAs<util::slist>( "changedAttributes", attributes );
+		return true;
+	}
+}
 
 
 }

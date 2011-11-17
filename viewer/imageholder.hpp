@@ -47,6 +47,7 @@ public:
 	boost::numeric::ublas::matrix<float> getNormalizedImageOrientation( bool transposed = false ) const;
 	boost::numeric::ublas::matrix<float> getImageOrientation( bool transposed = false ) const;
 	void addChangedAttribute( const std::string &attribute );
+	bool removeChangedAttribute( const std::string &attribute );
 
 	/**offset, scaling**/
 	std::pair<double, double> getOptimalScalingPair() const { return m_OptimalScalingPair;  }
@@ -142,8 +143,6 @@ private:
 
 	std::vector< ImagePointerType > m_ImageVector;
 	std::vector< data::Chunk > m_ChunkVector;
-
-	bool filterRelevantMetaInformation();
 
 	std::list<WidgetInterface *> m_WidgetList;
 	

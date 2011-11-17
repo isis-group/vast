@@ -36,6 +36,7 @@ void OrientatioCorrectionDialog::alignOnCenter(bool align)
 {
 	if ( m_ViewerCore->hasImage() ) {
 		if( align ) {
+			m_ImageNameAlignedTo = m_ViewerCore->getCurrentImage()->getFileNames().front();
 			const util::fvector4 indexOrigin = m_ViewerCore->getCurrentImage()->getISISImage()->getPropertyAs<util::fvector4>("indexOrigin");
 			const util::fvector4 rowVec = m_ViewerCore->getCurrentImage()->getISISImage()->getPropertyAs<util::fvector4>("rowVec");
 			const util::fvector4 columnVec = m_ViewerCore->getCurrentImage()->getISISImage()->getPropertyAs<util::fvector4>("columnVec");
@@ -52,7 +53,8 @@ void OrientatioCorrectionDialog::alignOnCenter(bool align)
 				image.second->getISISImage()->setPropertyAs<util::fvector4>("sliceVec", sliceVec );
 				image.second->getISISImage()->setPropertyAs<util::fvector4>("indexOrigin", center );
 				image.second->getISISImage()->updateOrientationMatrices();				
-				image.second->addChangedAttribute( "Centered and aligned to " + m_ViewerCore->getCurrentImage()->getFileNames().front() );
+
+				image.second->addChangedAttribute( "Centered and aligned to " + m_ImageNameAlignedTo );
 			}
 		} else {
 			BOOST_FOREACH( DataContainer::reference image, m_ViewerCore->getDataContainer() ) {
@@ -61,6 +63,7 @@ void OrientatioCorrectionDialog::alignOnCenter(bool align)
 				image.second->getISISImage()->setPropertyAs<util::fvector4>("columnVec", image.second->getPropMap().getPropertyAs<util::fvector4>("originalColumnVec") );
 				image.second->getISISImage()->setPropertyAs<util::fvector4>("sliceVec", image.second->getPropMap().getPropertyAs<util::fvector4>("originalSliceVec") );
 				image.second->getISISImage()->updateOrientationMatrices();
+				image.second->removeChangedAttribute( "Centered and aligned to " + m_ImageNameAlignedTo );
 			}
 		}
 		m_ViewerCore->centerImages();
