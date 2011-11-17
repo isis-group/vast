@@ -52,6 +52,7 @@ void OrientatioCorrectionDialog::alignOnCenter(bool align)
 				image.second->getISISImage()->setPropertyAs<util::fvector4>("sliceVec", sliceVec );
 				image.second->getISISImage()->setPropertyAs<util::fvector4>("indexOrigin", center );
 				image.second->getISISImage()->updateOrientationMatrices();				
+				image.second->addChangedAttribute( "Centered and aligned to " + m_ViewerCore->getCurrentImage()->getFileNames().front() );
 			}
 		} else {
 			BOOST_FOREACH( DataContainer::reference image, m_ViewerCore->getDataContainer() ) {

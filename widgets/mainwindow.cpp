@@ -62,6 +62,7 @@ MainWindow::MainWindow( QViewerCore *core ) :
 	connect( m_UI.actionPropagate_Zooming, SIGNAL( triggered( bool ) ), this, SLOT( propagateZooming( bool ) ) );
 	connect( m_ActionReset_Scaling, SIGNAL( triggered() ), this, SLOT( resetScaling() ) );
 	connect( m_UI.actionShow_Crosshair, SIGNAL( triggered(bool)), m_ViewerCore, SLOT( setShowCrosshair(bool)));
+	connect( m_UI.actionSave_all_Images, SIGNAL( triggered()), this, SLOT( saveAllImages()));
 
 	//toolbar stuff
 	m_Toolbar->setOrientation( Qt::Horizontal );
@@ -201,6 +202,68 @@ void MainWindow::saveImage()
 		}
 	}
 }
+
+void MainWindow::saveAllImages()
+{
+	if( m_ViewerCore->hasImage() ) {
+		std::list<util::slist> changedAttributesList;
+		util::slist fileNames;
+		BOOST_FOREACH( DataContainer::const_reference image, m_ViewerCore->getDataContainer() ) 
+		{
+			fileNames.push_back( image.second->getFileNames().front() );
+			if( image.second->getPropMap().getPropertyAs<util::slist>( "changedAttributes" ).size() ) {
+				changedAttributesList.push_back( image.second->getPropMap().getPropertyAs<util::slist>( "changedAttributes" ) );
+			}
+		}
+		if( changedAttributesList.size() ) {
+			QMessageBox msgBox;
+			msgBox.setIcon( QMessageBox::Information );
+			std::stringstream text;
+			text << "This will overwrite:" << std::endl;;
+			BOOST_FOREACH( util::slist::const_reference fileName, fileNames ) 
+			{
+				text << fileName << std::endl;
+			}
+			msgBox.setText( text.str().c_str() );
+			msgBox.setInformativeText( "Do you want to proceed?" );
+			std::stringstream detailedText;
+			detailedText << "Changed attributes: " << std::endl;
+			BOOST_FOREACH( DataContainer::const_reference image, m_ViewerCore->getDataContainer() ) 
+			{
+				if( image.second->getPropMap().getPropertyAs<util::slist>( "changedAttributes" ).size() ) {
+					detailedText << image.second->getFileNames().front() << " : " << std::endl;
+					BOOST_FOREACH( util::slist::const_reference changedAttribute, image.second->getPropMap().getPropertyAs<util::slist>( "changedAttributes" ) ) 
+					{
+						detailedText << changedAttribute << std::endl;
+					}
+				}
+			}
+			msgBox.setDetailedText( detailedText.str().c_str() );
+			msgBox.setStandardButtons( QMessageBox::Yes | QMessageBox::No );
+			msgBox.setDefaultButton( QMessageBox::No );
+
+			switch ( msgBox.exec() ) {
+			case QMessageBox::No:
+				return;
+				break;
+			case QMessageBox::Yes:
+				BOOST_FOREACH( DataContainer::const_reference image, m_ViewerCore->getDataContainer() ) 
+				{
+					isis::data::IOFactory::write( *image.second->getISISImage(), image.second->getFileNames().front(), "", "" );
+				}
+				
+				break;
+			}
+			
+		} else {
+			QMessageBox msgBox;
+			msgBox.setText( "No image has changed attributes! Won´t save anything." );
+			msgBox.exec();
+		}
+		
+	}
+}
+
 
 void MainWindow::saveImageAs()
 {
