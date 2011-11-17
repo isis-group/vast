@@ -120,7 +120,7 @@ void ImageStackWidget::distributeImages()
 
 		tmpContainer.insert( image );
 		m_ViewerCore->getDataContainer().erase( image.first );
-		BOOST_FOREACH( std::list< QWidgetImplementationBase *>::const_reference widget, image.second->getWidgetList() ) {
+		BOOST_FOREACH( std::list< WidgetInterface *>::const_reference widget, image.second->getWidgetList() ) {
 			widget->removeImage( image.second );
 		}
 	}

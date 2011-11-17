@@ -38,6 +38,15 @@ void QViewerCore::receiveMessage( qt4::QMessage message )
 	getUI()->showMessage( message );
 }
 
+void QViewerCore::receiveMessage(std::string message)
+{
+	qt4::QMessage qmessage;
+	qmessage.message = message;
+	emitStatus( QString( message.c_str() ) );
+	receiveMessage( qmessage );
+}
+
+
 void QViewerCore::physicalCoordsChanged( util::fvector4 physicalCoords )
 {
 	emitPhysicalCoordsChanged( physicalCoords );
@@ -158,7 +167,7 @@ bool QViewerCore::callPlugin( QString name )
 	return false;
 }
 
-bool QViewerCore::attachImageToWidget( boost::shared_ptr<ImageHolder> image, QWidgetImplementationBase *widget )
+bool QViewerCore::attachImageToWidget( boost::shared_ptr<ImageHolder> image, WidgetInterface *widget )
 {
 	if ( getUI()->getWidgets().find( widget ) == getUI()->getWidgets().end() ) {
 		LOG( Runtime, error ) << "There is no such widget "
@@ -203,14 +212,12 @@ void QViewerCore::openPath( QStringList fileList, ImageHolder::ImageType imageTy
 				msg << "Loading image \"" << p.filename() << "\"...";
 			}
 
-			getUI()->setShowWorkingLabel( msg.str() );
 			std::list<data::Image> tempImgList = isis::data::IOFactory::load( filename.toStdString() , rf, rdialect );
 			pathList.push_back( filename.toStdString() );
 
 			if( tempImgList.size() > 1 ) {
 				msg.clear();
 				msg << "Found " << tempImgList.size() << " images. Loading...";
-				getUI()->setShowWorkingLabel( msg.str() );
 			}
 
 			BOOST_FOREACH( std::list<data::Image>::const_reference image, tempImgList ) {
@@ -233,7 +240,6 @@ void QViewerCore::openPath( QStringList fileList, ImageHolder::ImageType imageTy
 				setCurrentImage( imageHolder );
 			}
 		}
-		getUI()->setShowWorkingLabel( "", false );
 		getUI()->rearrangeViewWidgets();
 		getUI()->refreshUI();
 		centerImages();
@@ -243,7 +249,7 @@ void QViewerCore::openPath( QStringList fileList, ImageHolder::ImageType imageTy
 
 void QViewerCore::closeImage( boost::shared_ptr<ImageHolder> image )
 {
-		BOOST_FOREACH( std::list< QWidgetImplementationBase *>::const_reference widget, image->getWidgetList() ) {
+		BOOST_FOREACH( std::list< WidgetInterface *>::const_reference widget, image->getWidgetList() ) {
 			widget->removeImage( image );
 		}
 		if( getCurrentImage().get() == image.get() ) {
@@ -263,7 +269,6 @@ void QViewerCore::closeImage( boost::shared_ptr<ImageHolder> image )
 		getUI()->refreshUI();
 		updateScene();
 }
-
 
 
 }

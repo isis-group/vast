@@ -1,0 +1,6 @@
+<RCC>
+  <qresource prefix="common">
+    <file>brush.png</file>
+    <file>maskEdit.png</file>
+  </qresource>
+</RCC>

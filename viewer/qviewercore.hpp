@@ -3,7 +3,7 @@
 
 
 #include "viewercorebase.hpp"
-#include "widgetImplementationBase.hpp"
+#include "widgetinterface.hpp"
 #include <QtGui>
 #include "color.hpp"
 #include "qprogressfeedback.hpp"
@@ -35,7 +35,7 @@ public:
 	void addPlugins( plugin::PluginLoader::PluginListType plugins );
 	PluginListType getPlugins() const { return m_PluginList; }
 
-	virtual bool attachImageToWidget( boost::shared_ptr<ImageHolder> image, QWidgetImplementationBase *widget );
+	virtual bool attachImageToWidget( boost::shared_ptr<ImageHolder> image, WidgetInterface *widget );
 
 	void setParentWidget( QWidget *parent ) { m_Parent = parent; }
 
@@ -61,6 +61,7 @@ public Q_SLOTS:
 	virtual void updateScene( );
 	virtual bool callPlugin( QString name );
 	virtual void receiveMessage( qt4::QMessage message );
+	virtual void receiveMessage( std::string message );
 	virtual void openPath( QStringList fileList, ImageHolder::ImageType imageType, const std::string &rdialect = "", const std::string &rf = "", bool newWidget = false );
 	virtual void centerImages();
 	virtual void closeImage( boost::shared_ptr<ImageHolder> image );
@@ -74,6 +75,7 @@ Q_SIGNALS:
 	void emitShowLabels( bool );
 	void emitUpdateScene( );
 	void emitSetEnableCrosshair( bool enable );
+	void emitStatus( QString );
 
 private:
 

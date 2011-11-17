@@ -1,13 +1,11 @@
 #include "QMemoryHandler.hpp"
-#include "QtWidgetCommon.hpp"
 #include "QOrientationHandler.hpp"
 
 namespace isis
 {
 namespace viewer
 {
-namespace qt
-{
+
 
 
 QMemoryHandler::QMemoryHandler( QViewerCore *core )
@@ -31,9 +29,6 @@ bool QMemoryHandler::fillSliceChunk( data::MemChunk< InternalImageType > &sliceC
 				chunk.voxel<InternalImageType>( coords[mapping[0]], coords[mapping[1]], coords[mapping[2]] );
 		}
 	}
-}
-
-
 }
 
 

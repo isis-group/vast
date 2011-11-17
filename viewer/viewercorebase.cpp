@@ -10,12 +10,10 @@ namespace viewer
 {
 
 ViewerCoreBase::ViewerCoreBase( )
-	: m_CurrentTimestep( 0 ),
-	  m_ColorHandler( new color::Color() ),
+	: m_ColorHandler( new color::Color() ),
 	  m_OptionsMap( boost::shared_ptr< util::PropertyMap >( new util::PropertyMap ) )
 {
 	m_ColorHandler->initStandardColormaps();
-	m_VoxelTransformation.fill( 1.0 );
 	setCommonViewerOptions();
 }
 
@@ -72,13 +70,7 @@ std::string ViewerCoreBase::getVersion() const
 	return STR( _ISIS_VIEWER_VERSION_MAJOR ) + "." + STR( _ISIS_VIEWER_VERSION_MINOR ) + "." + STR( _ISIS_VIEWER_VERSION_PATCH );
 }
 
-util::fvector4 ViewerCoreBase::getTransformedCoords( const isis::util::fvector4 &coords ) const
-{
-	return util::fvector4( coords[0] * m_VoxelTransformation[0],
-						   coords[1] * m_VoxelTransformation[1],
-						   coords[2] * m_VoxelTransformation[2],
-						   coords[3] * m_VoxelTransformation[3] );
-}
+
 
 void ViewerCoreBase::setCommonViewerOptions()
 {
@@ -91,8 +83,11 @@ void ViewerCoreBase::setCommonViewerOptions()
 	m_OptionsMap->setPropertyAs<bool>( "showFavoriteFileList", false );
 	m_OptionsMap->setPropertyAs<uint16_t>( "maxWidgetHeight", 200 );
 	m_OptionsMap->setPropertyAs<uint16_t>( "maxWidgetWidth", 200 );
-	m_OptionsMap->setPropertyAs<uint16_t>( "maxOptionWidgetHeight", 150);
-	m_OptionsMap->setPropertyAs<uint16_t>( "minOptionWidgetHeight", 100);	
+	m_OptionsMap->setPropertyAs<uint16_t>( "maxOptionWidgetHeight", 130);
+	m_OptionsMap->setPropertyAs<uint16_t>( "minOptionWidgetHeight", 80);
+	m_OptionsMap->setPropertyAs<bool>("showStartWidget", true );
+	m_OptionsMap->setPropertyAs<uint16_t>("startWidgetHeight", 450);
+	m_OptionsMap->setPropertyAs<uint16_t>("startWidgetWidth", 400);
 	//logging
 	m_OptionsMap->setPropertyAs<uint16_t>( "logDelayTime", 6000 );
 	m_OptionsMap->setPropertyAs<bool>( "showErrorMessages", true );

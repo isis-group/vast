@@ -21,7 +21,7 @@ class PlotterDialog : public QDialog
 {
 	Q_OBJECT
 public:
-	PlotterDialog( QWidget *parent, QViewerCore *core ) : QDialog( parent ), m_Core( core ) {
+	PlotterDialog( QWidget *parent, QViewerCore *core ) : QDialog( parent ), m_ViewerCore( core ) {
 		ui.setupUi( this );
 		plot = new QwtPlot( tr( "Timecourse" ), ui.widget );
 		curve = new QwtPlotCurve();
@@ -29,17 +29,17 @@ public:
 		plot->setAxisTitle( 2, tr( "Timestep" ) );
 		plot->setAxisTitle( 0, tr( "Intensity" ) );
 		plot->setBackgroundRole( QPalette::Light );
-		connect( m_Core, SIGNAL( emitPhysicalCoordsChanged( util::fvector4 ) ), this, ( SLOT( refresh( util::fvector4 ) ) ) );
+		connect( m_ViewerCore, SIGNAL( emitPhysicalCoordsChanged( util::fvector4 ) ), this, ( SLOT( refresh( util::fvector4 ) ) ) );
 
-		if( m_Core->hasImage() ) {
-			refresh( m_Core->getCurrentImage()->physicalCoords );
+		if( m_ViewerCore->hasImage() ) {
+			refresh( m_ViewerCore->getCurrentImage()->physicalCoords );
 		}
 
 	};
 public Q_SLOTS:
 	virtual void refresh( util::fvector4 physicalCoords ) {
 		if( !ui.checkLock->isChecked() ) {
-			boost::shared_ptr<ImageHolder> image = m_Core->getCurrentImage();
+			boost::shared_ptr<ImageHolder> image = m_ViewerCore->getCurrentImage();
 
 			if( image->getImageSize()[3] > 1 && image->isVisible ) {
 				std::stringstream title;
@@ -48,7 +48,7 @@ public Q_SLOTS:
 
 				if ( !image->isInsideImage( voxCoords ) ) return;
 
-				title << "Timecourse for " << m_Core->getCurrentImage()->getFileNames().front();
+				title << "Timecourse for " << m_ViewerCore->getCurrentImage()->getFileNames().front();
 				coordsAsString << voxCoords[0] << " : " << voxCoords[1] << " : " << voxCoords[2];
 				plot->setTitle( coordsAsString.str().c_str() );
 				setWindowTitle( title.str().c_str() );
@@ -117,10 +117,10 @@ private:
 	Ui::plottingDialog ui;
 	QwtPlot *plot;
 	QwtPlotCurve *curve;
-	QViewerCore *m_Core;
+	QViewerCore *m_ViewerCore;
 	template<typename TYPE>
 	void fillVector( QVector<double> &iv, const size_t &t, const util::ivector4 &vox ) {
-		iv.push_back( m_Core->getCurrentImage()->getISISImage()->voxel<TYPE>( vox[0], vox[1], vox[2], t ) );
+		iv.push_back( m_ViewerCore->getCurrentImage()->getISISImage()->voxel<TYPE>( vox[0], vox[1], vox[2], t ) );
 	}
 
 };

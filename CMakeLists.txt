@@ -17,6 +17,9 @@ file (GLOB QWIDGET_FILES_CPP QImageWidget/*.cpp )
 file (GLOB UI_FILES forms/*.ui)
 file (GLOB RESOURCE_FILES resources/*.qrc)
 
+file (GLOB VIEWER_DEV_FILES viewer/*.hpp )
+file (GLOB WIDGET_DEV_FILES widgets/*.hpp )
+
 set(VIEWER_FILES_HPP
 	viewer/qviewercore.hpp
 	widgets/mainwindow.hpp
@@ -27,6 +30,7 @@ set(VIEWER_FILES_HPP
 	widgets/scalingWidget.hpp
 	widgets/loggingDialog.hpp
 	widgets/filedialog.hpp
+	widgets/startwidget.hpp
 )
 
 set(GLWIDGET_FILES_HPP
@@ -37,7 +41,7 @@ set(GLWIDGET_FILES_HPP
 ##########################################################
 set(ISIS_VIEWER_VERSION_MAJOR "0")
 set(ISIS_VIEWER_VERSION_MINOR "1")
-set(ISIS_VIEWER_VERSION_PATCH "4")
+set(ISIS_VIEWER_VERSION_PATCH "5")
 
 add_definitions(-D_ISIS_VIEWER_VERSION_MAJOR=${ISIS_VIEWER_VERSION_MAJOR})
 add_definitions(-D_ISIS_VIEWER_VERSION_MINOR=${ISIS_VIEWER_VERSION_MINOR})
@@ -149,3 +153,7 @@ add_subdirectory(plugins)
 target_link_libraries(vast ${NEEDED_LIBS})
 
 install(TARGETS vast RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin )
+
+# install header files
+install(FILES ${VIEWER_DEV_FILES} DESTINATION include/vast COMPONENT Development)
+install(FILES ${WIDGET_DEV_FILES} DESTINATION include/vast COMPONENT Development)

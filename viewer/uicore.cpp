@@ -109,6 +109,7 @@ void UICore::showMessage( const qt4::QMessage &message  )
 		break;
 
 	}
+	QCoreApplication::processEvents();
 }
 
 void UICore::showMainWindow()
@@ -158,7 +159,7 @@ UICore::ViewWidgetEnsembleType UICore::createViewWidgetEnsemble( const std::stri
 	return ensemble;
 }
 
-void UICore::removeViewWidgetEnsemble( isis::viewer::QWidgetImplementationBase *widgetImplementation )
+void UICore::removeViewWidgetEnsemble( WidgetInterface *widgetImplementation )
 {
 	BOOST_FOREACH( ViewWidgetEnsembleListType::reference ref, m_EnsembleList ) {
 		if( ref[0].widgetImplementation == widgetImplementation
@@ -178,7 +179,7 @@ void UICore::removeViewWidgetEnsemble( UICore::ViewWidgetEnsembleType ensemble )
 	m_EnsembleList.erase( std::find( m_EnsembleList.begin(), m_EnsembleList.end(), ensemble ) );
 }
 
-UICore::ViewWidgetEnsembleType UICore::detachViewWidgetEnsemble( QWidgetImplementationBase *widgetImplementation )
+UICore::ViewWidgetEnsembleType UICore::detachViewWidgetEnsemble( WidgetInterface *widgetImplementation )
 {
 	BOOST_FOREACH( ViewWidgetEnsembleListType::reference ref, m_EnsembleList ) {
 		if( ref[0].widgetImplementation == widgetImplementation
@@ -252,7 +253,7 @@ UICore::ViewWidget UICore::createViewWidget( const std::string &widgetType, Plan
 	frameWidget->setParent( dockWidget );
 
 #warning this has to be done with the help of a widget factory. nasty this way
-	QWidgetImplementationBase *widgetImpl = new qt::QImageWidgetImplementation( m_ViewerCore, frameWidget, planeOrientation );
+	WidgetInterface *widgetImpl = new QImageWidgetImplementation( m_ViewerCore, frameWidget, planeOrientation );
 
 	ViewWidget viewWidget;
 	viewWidget.dockWidget = dockWidget;
@@ -276,7 +277,7 @@ void UICore::refreshUI()
 	m_ImageStackWidget->synchronize();
 	m_VoxelInformationWidget->synchronize();
 	BOOST_FOREACH( WidgetMap::reference widget, getWidgets() ) {
-		QWidgetImplementationBase::ImageVectorType iVector = widget.second.widgetImplementation->getImageVector();
+		WidgetInterface::ImageVectorType iVector = widget.second.widgetImplementation->getImageVector();
 		if( !iVector.size() ) {
 			widget.second.dockWidget->setVisible( false );
 		} else {
@@ -309,15 +310,6 @@ bool UICore::registerWidget( ViewWidget widget )
 	m_WidgetMap[widget.widgetImplementation] = widget;
 	return true;
 
-}
-
-void UICore::setShowWorkingLabel( const std::string &message, bool show )
-{
-	m_MainWindow->getWorkignInformationLabel()->setText( message.c_str() );
-	m_MainWindow->getWorkignInformationLabel()->setFixedWidth( message.length() * 10 );
-	m_MainWindow->getWorkignInformationLabel()->move( m_MainWindow->x() + m_MainWindow->width() / 2 - m_MainWindow->getWorkignInformationLabel()->width() / 2, m_MainWindow->y() + m_MainWindow->height() / 2 - 50 );
-
-	m_MainWindow->getWorkignInformationLabel()->setVisible( show );
 }
 
 

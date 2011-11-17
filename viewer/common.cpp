@@ -1,6 +1,7 @@
 #include "common.hpp"
 #include <DataStorage/io_factory.hpp>
 #include "imageholder.hpp"
+#include <boost/assign.hpp>
 
 namespace isis
 {
@@ -76,6 +77,12 @@ util::ivector4 get32BitAlignedSize( const util::ivector4 &origSize )
 
 	return retSize;
 }
+
+std::list< std::string > getSupportedTypeList() 
+{
+	return boost::assign::list_of<std::string>("boolean")("s8bit")("u8bit")("s16bit")("u16bit")("s32bit")("u32bit")("s64bit")("u64bit")("float")("double");
+}
+
 
 }
 }

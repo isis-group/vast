@@ -2,7 +2,7 @@
 #define UICORE_HPP
 
 #include <list>
-#include <widgetImplementationBase.hpp>
+#include "widgetinterface.hpp"
 #include "mainwindow.hpp"
 #include <map>
 
@@ -32,12 +32,12 @@ public:
 	struct ViewWidget {
 		QDockWidget *dockWidget;
 		QFrame *frame;
-		QWidgetImplementationBase *widgetImplementation;
+		WidgetInterface *widgetImplementation;
 		PlaneOrientation planeOrientation;
 		std::string widgetType;
 		bool operator==( const ViewWidget &other ) const { return widgetImplementation == other.widgetImplementation; }
 	};
-	typedef std::map<QWidgetImplementationBase *, ViewWidget > WidgetMap;
+	typedef std::map<WidgetInterface *, ViewWidget > WidgetMap;
 	typedef util::FixedVector<ViewWidget, 3> ViewWidgetEnsembleType;
 	typedef std::list< ViewWidgetEnsembleType > ViewWidgetEnsembleListType;
 
@@ -52,10 +52,10 @@ public:
 	virtual ViewWidgetEnsembleType createViewWidgetEnsemble( const std::string &widgetType, bool show = true  );
 	virtual ViewWidgetEnsembleType createViewWidgetEnsemble( const std::string &widgetType, boost::shared_ptr< ImageHolder > image, bool show = true );
 
-	virtual void removeViewWidgetEnsemble( QWidgetImplementationBase *widgetImplementation );
+	virtual void removeViewWidgetEnsemble( WidgetInterface *widgetImplementation );
 	virtual void removeViewWidgetEnsemble( ViewWidgetEnsembleType ensemble );
 
-	virtual ViewWidgetEnsembleType detachViewWidgetEnsemble( QWidgetImplementationBase *widgetImplementation );
+	virtual ViewWidgetEnsembleType detachViewWidgetEnsemble( WidgetInterface *widgetImplementation );
 	virtual ViewWidgetEnsembleType detachViewWidgetEnsemble( ViewWidgetEnsembleType ensemble );
 
 	virtual void attachViewWidgetEnsemble( ViewWidgetEnsembleType ensemble );
@@ -75,7 +75,6 @@ public Q_SLOTS:
 	virtual void reloadPluginsToGUI();
 	virtual void refreshUI();
 	void showMessage( const qt4::QMessage &message );
-	void setShowWorkingLabel( const std::string &message, bool show = true );
 
 	friend class QViewerCore;
 protected:

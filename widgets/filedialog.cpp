@@ -50,6 +50,7 @@ void isis::viewer::widget::FileDialog::imageTypeChanged( int imageType )
 void isis::viewer::widget::FileDialog::rfChanged( int rfIndex )
 {
 	m_Suffix = m_Interface.rfComboBox->itemText( rfIndex ).toStdString();
+	m_Suffix = m_Suffix == std::string("auto") ? std::string("") : m_Suffix;
 	parsePath();
 }
 
@@ -67,7 +68,6 @@ void isis::viewer::widget::FileDialog::setup()
 		m_FileDialog.setOption( QFileDialog::ShowDirsOnly, true );
 		m_Interface.fileDirLabel->setText( "Directory: " );
 		m_Interface.openSaveButton->setText( "Open Directory" );
-		m_FileFormatList = getFileFormatsAsList( isis::image_io::FileFormat::read_only );
 		m_Interface.dirRadio->setChecked( true );
 		break;
 	case OPEN_FILE:
@@ -75,7 +75,6 @@ void isis::viewer::widget::FileDialog::setup()
 		m_FileDialog.setFileMode( QFileDialog::ExistingFiles );
 		m_Interface.fileDirLabel->setText( "File(s): " );
 		m_Interface.openSaveButton->setText( "Open File(s)" );
-		m_FileFormatList = getFileFormatsAsList( isis::image_io::FileFormat::read_only );
 		m_Interface.imageRadio->setChecked( true );
 		break;
 	}
@@ -85,7 +84,7 @@ void isis::viewer::widget::FileDialog::setup()
 	m_Interface.fileDirEdit->clear();
 	m_Interface.rfComboBox->clear();
 	m_Interface.rfComboBox->addItem( "auto" );
-	BOOST_FOREACH( std::list<std::string>::const_reference suffix, m_FileFormatList ) {
+	BOOST_FOREACH( std::list<std::string>::const_reference suffix, getFileFormatsAsList(isis::image_io::FileFormat::read_only) ) {
 		m_Interface.rfComboBox->addItem( suffix.c_str() );
 	}
 	m_Interface.rfComboBox->setCurrentIndex( 0 );
@@ -107,7 +106,7 @@ void isis::viewer::widget::FileDialog::setup()
 	BOOST_FOREACH( QList<QVariant>::const_reference path, favFiles ) {
 		unsigned short validFiles;
 		QListWidgetItem *item = new QListWidgetItem( path.toString() );
-		if( checkIfPathIsValid( path.toString(), validFiles ) ) {
+		if( checkIfPathIsValid( path.toString(), validFiles, "" ) ) {
 			item->setTextColor(QColor( 34, 139, 34 ));
 		} else {
 			item->setTextColor( Qt::red );
@@ -128,12 +127,12 @@ void isis::viewer::widget::FileDialog::parsePath()
 		m_PathList.clear();
 
 		for( unsigned short i = 0; i < m_Interface.fileDirEdit->count(); i++ ) {
-			if( checkIfPathIsValid( m_Interface.fileDirEdit->itemText( i ), validFiles ) ) {
+			if( checkIfPathIsValid( m_Interface.fileDirEdit->itemText( i ), validFiles, m_Suffix ) ) {
 				m_PathList.push_back( m_Interface.fileDirEdit->itemText( i ) );
 			}
 		}
 	} else {
-		if( checkIfPathIsValid( m_Interface.fileDirEdit->currentText(), validFiles ) ) {
+		if( checkIfPathIsValid( m_Interface.fileDirEdit->currentText(), validFiles, m_Suffix ) ) {
 			m_PathList.clear();
 			m_PathList.push_back( m_Interface.fileDirEdit->currentText() );
 		}
@@ -157,18 +156,18 @@ void isis::viewer::widget::FileDialog::parsePath()
 
 }
 
-bool isis::viewer::widget::FileDialog::checkIfPathIsValid( QString path, unsigned short &validFiles, bool acceptNoSuffix )
+bool isis::viewer::widget::FileDialog::checkIfPathIsValid( QString path, unsigned short &validFiles, const std::string &suffix, FileMode mode, bool acceptNoSuffix )
 {
 	boost::filesystem::path p( path.toStdString() );
-
+	util::slist fileFormatList = getFileFormatsAsList( isis::image_io::FileFormat::read_only );
 	//ok, path exists
 	if( boost::filesystem::exists( p ) ) {
 		//is dir?
-		if( boost::filesystem::is_directory( p ) && m_Mode == OPEN_DIR ) {
+		if( boost::filesystem::is_directory( p ) && mode == OPEN_DIR ) {
 			for ( boost::filesystem::directory_iterator itr( p ); itr != boost::filesystem::directory_iterator(); ++itr ) {
 				if ( boost::filesystem::is_directory( *itr ) )continue;
 
-				checkIfPathIsValid( itr->path().file_string().c_str(), validFiles );
+				checkIfPathIsValid( itr->path().file_string().c_str(), validFiles, suffix );
 			}
 
 			if( validFiles ) {
@@ -181,8 +180,8 @@ bool isis::viewer::widget::FileDialog::checkIfPathIsValid( QString path, unsigne
 			//lstrip "."
 			extension.erase( 0, 1 );
 
-			if( !m_Suffix.size() ) {
-				if( std::find( m_FileFormatList.begin(), m_FileFormatList.end(), extension ) != m_FileFormatList.end() ) {
+			if( !suffix.size() ) {
+				if( std::find( fileFormatList.begin(), fileFormatList.end(), extension ) != fileFormatList.end() ) {
 					validFiles++;
 					return true;
 				}

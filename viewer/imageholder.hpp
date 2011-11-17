@@ -8,13 +8,13 @@
 #include <DataStorage/image.hpp>
 #include "common.hpp"
 #include "color.hpp"
-#include "widgetImplementationBase.hpp"
+#include "widgetinterface.hpp"
 
 namespace isis
 {
 namespace viewer
 {
-class QWidgetImplementationBase;
+class WidgetInterface;
 /**
  * Class that holds one image in a vector of data::ValuePtr's
  * It ensures the data is hold in continuous memory and only consists of one type.
@@ -46,8 +46,6 @@ public:
 	boost::shared_ptr< data::Image >getISISImage() const { return m_Image; }
 	boost::numeric::ublas::matrix<float> getNormalizedImageOrientation( bool transposed = false ) const;
 	boost::numeric::ublas::matrix<float> getImageOrientation( bool transposed = false ) const;
-	std::pair<util::ValueReference, util::ValueReference> getMinMax() const { return m_MinMax; }
-	std::pair<util::ValueReference, util::ValueReference> getInternMinMax() const { return m_InternMinMax; }
 	void addChangedAttribute( const std::string &attribute );
 
 	/**offset, scaling**/
@@ -62,9 +60,9 @@ public:
 	bool operator<( const ImageHolder &ref ) const { return m_ID < ref.getID(); }
 
 
-	void addWidget( QWidgetImplementationBase *widget ) { m_WidgetList.push_back( widget ); }
-	void removeWidget( QWidgetImplementationBase *widget ) { m_WidgetList.erase( std::find( m_WidgetList.begin(), m_WidgetList.end(), widget ) ) ; }
-	std::list< QWidgetImplementationBase * > getWidgetList() { return m_WidgetList; }
+	void addWidget( WidgetInterface *widget ) { m_WidgetList.push_back( widget ); }
+	void removeWidget( WidgetInterface *widget ) { m_WidgetList.erase( std::find( m_WidgetList.begin(), m_WidgetList.end(), widget ) ) ; }
+	std::list< WidgetInterface * > getWidgetList() { return m_WidgetList; }
 
 	bool isInsideImage( const util::ivector4 &voxelCoords ) const;
 	bool isInsideImage( const util::fvector4 &physicalCoords ) const;
@@ -75,8 +73,8 @@ public:
 		const size_t volume = getImageSize()[0] * getImageSize()[1] * getImageSize()[2];
 		const TYPE maxTypeValue = std::numeric_limits<TYPE>::max();
 		const TYPE minTypeValue = std::numeric_limits<TYPE>::min();
-		const TYPE minImage = getInternMinMax().first->as<TYPE>();
-		const TYPE maxImage = getInternMinMax().second->as<TYPE>();
+		const TYPE minImage = internMinMax.first->as<TYPE>();
+		const TYPE maxImage = internMinMax.second->as<TYPE>();
 		const TYPE extent = maxImage - minImage;
 		double *histogram = ( double * ) calloc( extent + 1, sizeof( double ) );
 		size_t stepSize = 2;
@@ -128,6 +126,8 @@ public:
 	std::string lut;
 	ImageType imageType;
 	InterpolationType interpolationType;
+	std::pair<util::ValueReference, util::ValueReference> minMax;
+	std::pair<util::ValueReference, util::ValueReference> internMinMax;
 
 private:
 
@@ -135,8 +135,8 @@ private:
 	size_t m_NumberOfTimeSteps;
 	util::FixedVector<size_t, 4> m_ImageSize;
 	util::PropertyMap m_PropMap;
-	std::pair<util::ValueReference, util::ValueReference> m_MinMax;
-	std::pair<util::ValueReference, util::ValueReference> m_InternMinMax;
+
+
 	boost::shared_ptr<data::Image> m_Image;
 	util::slist m_Filenames;
 	size_t m_ID;
@@ -148,7 +148,7 @@ private:
 
 	bool filterRelevantMetaInformation();
 
-	std::list<QWidgetImplementationBase *> m_WidgetList;
+	std::list<WidgetInterface *> m_WidgetList;
 	
 
 };

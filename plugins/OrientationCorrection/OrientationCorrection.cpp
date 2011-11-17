@@ -13,7 +13,7 @@ namespace plugin
 
 OrientatioCorrectionDialog::OrientatioCorrectionDialog( QWidget *parent, QViewerCore *core )
 	: QDialog( parent ),
-	  m_Core( core ),
+	  m_ViewerCore( core ),
 	  m_MatrixItems( 3, 3 )
 {
 	ui.setupUi( this );
@@ -33,25 +33,25 @@ OrientatioCorrectionDialog::OrientatioCorrectionDialog( QWidget *parent, QViewer
 
 void OrientatioCorrectionDialog::flipPressed()
 {
-	if( m_Core->hasImage() ) {
+	if( m_ViewerCore->hasImage() ) {
 		boost::numeric::ublas::matrix<float> transform = boost::numeric::ublas::identity_matrix<float>( 3, 3 );
 
 		std::string desc;
 		uint8_t dim = 0;
 		if( ui.checkFlipZ->isChecked() ) {
-			dim = m_Core->getCurrentImage()->getISISImage()->mapScannerAxesToImageDimension(isis::data::z);
+			dim = m_ViewerCore->getCurrentImage()->getISISImage()->mapScannerAxesToImageDimension(isis::data::z);
 			transform( dim, dim ) = -1;
 			desc = "Flip Z";
 		}
 
 		if( ui.checkFlipY->isChecked() ) {
-			dim = m_Core->getCurrentImage()->getISISImage()->mapScannerAxesToImageDimension(isis::data::y);
+			dim = m_ViewerCore->getCurrentImage()->getISISImage()->mapScannerAxesToImageDimension(isis::data::y);
 			transform( dim, dim ) = -1;
 			desc = "Flip Y";
 		}
 
 		if( ui.checkFlipX->isChecked() ) {
-			dim = m_Core->getCurrentImage()->getISISImage()->mapScannerAxesToImageDimension(isis::data::x);
+			dim = m_ViewerCore->getCurrentImage()->getISISImage()->mapScannerAxesToImageDimension(isis::data::x);
 			transform( dim, dim ) = -1;
 			desc = "Flip X";
 		}
@@ -111,17 +111,17 @@ void OrientatioCorrectionDialog::rotatePressed()
 }
 bool OrientatioCorrectionDialog::applyTransform( const boost::numeric::ublas::matrix< float >& trans, bool center, const std::string &desc ) const
 {
-	if( m_Core->hasImage() ) {
-		bool ret = m_Core->getCurrentImage()->getISISImage()->transformCoords( trans, center );
+	if( m_ViewerCore->hasImage() ) {
+		bool ret = m_ViewerCore->getCurrentImage()->getISISImage()->transformCoords( trans, center );
 		if( ret ) {
-			m_Core->getCurrentImage()->getPropMap().setPropertyAs<util::fvector4>( "originalRowVec", m_Core->getCurrentImage()->getISISImage()->getPropertyAs<util::fvector4>( "rowVec" ) );
-			m_Core->getCurrentImage()->getPropMap().setPropertyAs<util::fvector4>( "originalColumnVec", m_Core->getCurrentImage()->getISISImage()->getPropertyAs<util::fvector4>( "columnVec" ) );
-			m_Core->getCurrentImage()->getPropMap().setPropertyAs<util::fvector4>( "originalSliceVec", m_Core->getCurrentImage()->getISISImage()->getPropertyAs<util::fvector4>( "sliceVec" ) );
-			m_Core->getCurrentImage()->addChangedAttribute( desc );
+			m_ViewerCore->getCurrentImage()->getPropMap().setPropertyAs<util::fvector4>( "originalRowVec", m_ViewerCore->getCurrentImage()->getISISImage()->getPropertyAs<util::fvector4>( "rowVec" ) );
+			m_ViewerCore->getCurrentImage()->getPropMap().setPropertyAs<util::fvector4>( "originalColumnVec", m_ViewerCore->getCurrentImage()->getISISImage()->getPropertyAs<util::fvector4>( "columnVec" ) );
+			m_ViewerCore->getCurrentImage()->getPropMap().setPropertyAs<util::fvector4>( "originalSliceVec", m_ViewerCore->getCurrentImage()->getISISImage()->getPropertyAs<util::fvector4>( "sliceVec" ) );
+			m_ViewerCore->getCurrentImage()->addChangedAttribute( desc );
 		} else {
-			LOG( Runtime, error ) << "Could not apply transform " << trans << " to the image " << m_Core->getCurrentImage()->getFileNames().front() << " !";
+			LOG( Runtime, error ) << "Could not apply transform " << trans << " to the image " << m_ViewerCore->getCurrentImage()->getFileNames().front() << " !";
 		}
-		m_Core->updateScene();
+		m_ViewerCore->updateScene();
 		return ret;
 	}
 	return false;

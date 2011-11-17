@@ -131,8 +131,8 @@ void VoxelInformationWidget::synchronize()
 				m_ViewerCore->getColorHandler()->getIcon( image->lut, size.width(), size.height() - 10, color::Color::lower_half, true ).pixmap( size.width(), size.height() - 10 ) );
 		}
 
-		m_Interface.labelMin->setText( QString::number( image->getMinMax().first->as<double>(), 'g', 4 ) );
-		m_Interface.labelMax->setText( QString::number( image->getMinMax().second->as<double>(), 'g', 4 ) );
+		m_Interface.labelMin->setText( QString::number( image->minMax.first->as<double>(), 'g', 4 ) );
+		m_Interface.labelMax->setText( QString::number( image->minMax.second->as<double>(), 'g', 4 ) );
 		const util::ivector4 outerCorner = util::ivector4( image->getImageSize()[0] - 1, image->getImageSize()[1] - 1, image->getImageSize()[2] - 1 );
 		m_Interface.rowBox->setMaximum( outerCorner[0] );
 		m_Interface.columnBox->setMaximum( outerCorner[1] );
@@ -201,6 +201,9 @@ void VoxelInformationWidget::synchronizePos( util::ivector4 voxelCoords )
 	m_Interface.intensityValue->setToolTip( typeName.substr( 0, typeName.length() - 1 ).c_str() );
 
 	switch( image->getISISImage()->getChunk( voxelCoords[0], voxelCoords[1], voxelCoords[2], voxelCoords[3], false ).getTypeID() ) {
+	case isis::data::ValuePtr<bool>::staticID:
+		displayIntensity<bool>( voxelCoords );
+		break;
 	case isis::data::ValuePtr<int8_t>::staticID:
 		displayIntensity<int8_t>( voxelCoords );
 		break;

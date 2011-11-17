@@ -15,12 +15,12 @@ namespace viewer
 
 class QViewerCore;
 
-class QWidgetImplementationBase
+class WidgetInterface
 {
 
 public:
 	typedef std::vector<boost::shared_ptr<ImageHolder> > ImageVectorType;
-	virtual QWidgetImplementationBase *createSharedWidget( QWidget *parent, PlaneOrientation orienation ) = 0;
+	virtual WidgetInterface *createSharedWidget( QWidget *parent, PlaneOrientation orienation ) = 0;
 
 	virtual void setEnableCrosshair( bool enable ) = 0;
 	virtual void updateScene() = 0;
@@ -30,6 +30,7 @@ public:
 	virtual void setWidgetName( const std::string &name ) = 0;
 	virtual std::string getWidgetName() const = 0;
 	virtual void setInterpolationType( InterpolationType interpolation ) = 0;
+	virtual void setMouseCursorIcon( QIcon ) = 0;
 
 	virtual QWidget *getParent( ) const { return m_Parent; }
 	virtual PlaneOrientation getPlaneOrientation() { return m_PlaneOrientation; }
@@ -41,7 +42,11 @@ public:
 	ImageVectorType getImageVector() const { return m_ImageVector; }
 
 protected:
-	QWidgetImplementationBase( QViewerCore *core, QWidget *parent, PlaneOrientation orientation );
+	WidgetInterface( QViewerCore *core, QWidget *parent, PlaneOrientation orientation )
+		: m_ViewerCore( core ),
+		m_PlaneOrientation( orientation ),
+		m_Parent( parent ),
+		m_ID( boost::uuids::random_generator()() ) {}
 
 	QViewerCore *m_ViewerCore;
 	PlaneOrientation m_PlaneOrientation;
