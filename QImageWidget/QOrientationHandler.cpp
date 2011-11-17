@@ -14,7 +14,7 @@ util::fvector4 QOrienationHandler::mapCoordsToOrientation( const util::fvector4 
 	matrix<float> finMatrix = identity_matrix<float>( 4, 4 );
 	vector<float> vec = vector<float>( 4 );
 	vector<float> finVec = vector<float>( 4 );
-
+	
 	for( size_t i = 0; i < 4 ; i++ ) {
 		vec( i ) = coords[i];
 	}
@@ -64,7 +64,7 @@ util::fvector4 QOrienationHandler::mapCoordsToOrientation( const util::fvector4 
 	}
 
 	if( absolute ) {
-		return util::fvector4( fabs( finVec( 0 ) ), fabs( finVec( 1 ) ), fabs( finVec( 2 ) ), fabs( finVec( 3 ) ) );
+		return util::fvector4( fabs( finVec( 0 ) ), fabs( finVec( 1 ) ), fabs( finVec( 2 ) ) ,fabs( finVec( 3 ) ) );
 	} else {
 		return util::fvector4( finVec( 0 ), finVec( 1 ), finVec( 2 ), finVec( 3 ) );
 	}

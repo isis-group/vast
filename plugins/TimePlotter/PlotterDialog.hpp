@@ -44,9 +44,7 @@ public Q_SLOTS:
 			if( image->getImageSize()[3] > 1 && image->isVisible ) {
 				std::stringstream title;
 				std::stringstream coordsAsString;
-				util::ivector4 voxCoords = image->getISISImage()->getIndexFromPhysicalCoords( physicalCoords );
-
-				if ( !image->isInsideImage( voxCoords ) ) return;
+				util::ivector4 voxCoords = image->getISISImage()->getIndexFromPhysicalCoords( physicalCoords, true );
 
 				title << "Timecourse for " << m_ViewerCore->getCurrentImage()->getFileNames().front();
 				coordsAsString << voxCoords[0] << " : " << voxCoords[1] << " : " << voxCoords[2];

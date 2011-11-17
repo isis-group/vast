@@ -279,14 +279,6 @@ void QImageWidgetImplementation::mouseMoveEvent( QMouseEvent *e )
 	}
 }
 
-bool QImageWidgetImplementation::isInViewPort( const QOrienationHandler::ViewPortType &viewPort, QMouseEvent *e ) const
-{
-	return ( e->x() > viewPort[2] && e->x() < ( viewPort[2] + viewPort[4] )
-			 && e->y() > viewPort[3] && e->y() < ( viewPort[3] + viewPort[5] )
-		   );
-}
-
-
 void QImageWidgetImplementation::emitMousePressEvent( QMouseEvent *e )
 {
 	boost::shared_ptr<ImageHolder> image = getWidgetSpecCurrentImage();
@@ -340,7 +332,6 @@ void QImageWidgetImplementation::paintCrosshair() const
 	const ImageProperties &imgProps = m_ImageProperties.at( image );
 	std::pair<int, int> coords = QOrienationHandler::convertVoxel2WindowCoords( imgProps.viewPort, image, m_PlaneOrientation );
 	short border = -5000; 
-	
 	const QLine xline1( coords.first, border, coords.first, coords.second - 15 );
 	const QLine xline2( coords.first, coords.second + 15, coords.first, height() - border  );
 
@@ -368,7 +359,7 @@ bool QImageWidgetImplementation::lookAtPhysicalCoords( const isis::util::fvector
 {
 	BOOST_FOREACH( DataContainer::reference image, m_ViewerCore->getDataContainer() ) {
 		image.second->physicalCoords = physicalCoords;
-		image.second->voxelCoords = image.second->getISISImage()->getIndexFromPhysicalCoords( physicalCoords );
+		image.second->voxelCoords = image.second->getISISImage()->getIndexFromPhysicalCoords( physicalCoords, true );
 	}
 	update();
 }

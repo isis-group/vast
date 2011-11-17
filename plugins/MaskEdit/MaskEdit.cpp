@@ -33,7 +33,7 @@ void MaskEditDialog::showEvent(QShowEvent* )
 
 void MaskEditDialog::physicalCoordChanged(util::fvector4 physCoord)
 {
-	util::ivector4 voxel = m_CurrentMask->getISISImage()->getIndexFromPhysicalCoords( physCoord );
+	util::ivector4 voxel = m_CurrentMask->getISISImage()->getIndexFromPhysicalCoords( physCoord, true );
 	util::ivector4 imageSize = m_CurrentMask->getImageSize();
 	util::ivector4 start;
 	util::ivector4 end;

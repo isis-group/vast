@@ -64,9 +64,6 @@ public:
 	void removeWidget( WidgetInterface *widget ) { m_WidgetList.erase( std::find( m_WidgetList.begin(), m_WidgetList.end(), widget ) ) ; }
 	std::list< WidgetInterface * > getWidgetList() { return m_WidgetList; }
 
-	bool isInsideImage( const util::ivector4 &voxelCoords ) const;
-	bool isInsideImage( const util::fvector4 &physicalCoords ) const;
-
 	/**offset, scaling**/
 	template<typename TYPE>
 	std::pair<double, double> getOptimalScalingToForType( const std::pair<double, double> &cutAway ) const {
