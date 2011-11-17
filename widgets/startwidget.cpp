@@ -104,6 +104,10 @@ void StartWidget::showMe(bool asStartDialog)
 
 void StartWidget::statusChanged(QString status)
 {
+	QFont font;
+	font.setPointSize( width() / status.length()  );
+	font.setBold(true);
+	m_Interface.statusLabel->setFont( font );
 	m_Interface.statusLabel->setText( status );
 	QCoreApplication::processEvents();
 }
