@@ -1,4 +1,6 @@
 #include "scalingWidget.hpp"
+#include "common.hpp"
+#include "qviewercore.hpp"
 
 namespace isis
 {
@@ -107,7 +109,7 @@ void ScalingWidget::setScalingOffset( std::pair< double, double > scalingOffset,
 void ScalingWidget::autoScale()
 {
 	boost::shared_ptr<ImageHolder> image = m_ViewerCore->getCurrentImage();
-	std::pair<double, double> scalingOffset = image->getOptimalScalingPair();
+	std::pair<double, double> scalingOffset = image->getOptimalScalingToForType<isis::viewer::InternalImageType>( std::make_pair<double,double>(0.03,0.03) ) ;
 	setScalingOffset( scalingOffset, image );
 	setMinMax( getMinMaxFromScalingOffset( scalingOffset, image ), image );
 	m_ViewerCore->updateScene();

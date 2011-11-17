@@ -12,11 +12,11 @@ namespace plugin {
 MaskEditDialog::MaskEditDialog(QWidget* parent, QViewerCore* core)
 	: QDialog(parent),
 	m_ViewerCore(core),
-	m_Radius(5)
+	m_Radius(4)
 {
 	m_Interface.setupUi( this );
-
-	connect( m_Interface.createMask, SIGNAL( clicked()), this, SLOT( createEmptyMask())) ;
+	m_ViewerCore->getColorHandler()->addColormap( ":/common/maskeditLUT" );
+	connect( m_Interface.newMask, SIGNAL( clicked()), this, SLOT( createEmptyMask())) ;
 
 }
 
@@ -42,11 +42,17 @@ void MaskEditDialog::physicalCoordChanged(util::fvector4 physCoord)
 		start[i] = ( voxel[i] - m_Radius ) < 0 ? 0 : voxel[i] - m_Radius;
 		end[i] = ( voxel[i] + m_Radius ) > imageSize[i] ? imageSize[i] : voxel[i] + m_Radius;
 	}
-	for( unsigned short z = start[2]; z < end[2]; z++ ) {
-		for( unsigned short y = start[1]; y < end[1]; y++ ) {
-			for( unsigned short x = start[0]; x < end[0]; x++ ) {
-				m_CurrentMask->getISISImage()->voxel<uint8_t>( x, y, z ) = std::numeric_limits<uint8_t>::max();
-				m_CurrentMask->getChunkVector()[0].voxel<uint8_t>( x, y, z ) = std::numeric_limits<uint8_t>::max();	
+	unsigned short radSquare = m_Radius * m_Radius;
+	for( unsigned short k = start[2] + 1; k < end[2]; k++ ) {
+		for( unsigned short j = start[1] + 1; j < end[1]; j++ ) {
+			for( unsigned short i = start[0] + 1; i < end[0]; i++ ) {
+				int x = voxel[0] - i;
+				int y = voxel[1] - j;
+				int z = voxel[2] - k;
+				if( x * x + y * y + z * z <= radSquare ) {
+					m_CurrentMask->getISISImage()->voxel<uint8_t>( i, j, k ) = std::numeric_limits<uint8_t>::max();
+					m_CurrentMask->getChunkVector()[0].voxel<uint8_t>( i, j, k ) = std::numeric_limits<uint8_t>::max();	
+				}
 			}
 		}
 	}
@@ -67,6 +73,8 @@ void MaskEditDialog::createEmptyMask()
 		m_CurrentMask->minMax.second = isis::util::Value<uint8_t>( std::numeric_limits<uint8_t>::max() );
 		m_CurrentMask->internMinMax.second = isis::util::Value<uint8_t>( std::numeric_limits<uint8_t>::max() );
 		m_CurrentMask->extent = m_CurrentMask->minMax.second->as<double>() -  m_CurrentMask->minMax.first->as<double>();
+		m_CurrentMask->opacity = 0.5;
+		m_CurrentMask->lut = "maskeditLUT";
 		BOOST_FOREACH( UICore::ViewWidgetEnsembleListType::const_reference ensemble, m_ViewerCore->getUI()->getEnsembleList() ) {
 			WidgetInterface::ImageVectorType iVector;
 			for( unsigned short i = 0; i < 3; i++ ) {

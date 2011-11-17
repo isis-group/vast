@@ -91,9 +91,7 @@ private:
 	ViewWidgetEnsembleListType m_EnsembleList;
 
 	widget::VoxelInformationWidget *m_VoxelInformationWidget;
-	QDockWidget *m_VoxelInformationDockWidget;
 	widget::ImageStackWidget *m_ImageStackWidget;
-	QDockWidget *m_ImageStackDockWidget;
 	widget::SliderWidget *m_SliderWidget;
 
 	ViewWidgetArragment m_ViewWidgetArrangement;

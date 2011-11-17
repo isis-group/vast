@@ -7,8 +7,6 @@ namespace viewer
 {
 
 ImageHolder::ImageHolder( )
-	: m_NumberOfTimeSteps( 0 ),
-	  m_CutAwayPair( std::make_pair<double, double>( 0.03, 0.03 ) )
 {
 }
 boost::numeric::ublas::matrix< float > ImageHolder::getNormalizedImageOrientation( bool transposed ) const
@@ -128,7 +126,6 @@ bool ImageHolder::setImage( const data::Image &image, const ImageType &_imageTyp
 	// get some image information
 	minMax = image.getMinMax();
 	m_ImageSize = image.getSizeAsVector();
-	m_NumberOfTimeSteps = m_ImageSize[3];
 	LOG( Debug, verbose_info )  << "Fetched image of size " << m_ImageSize << " and type "
 								<< image.getMajorTypeName() << ".";
 	//copy the image into continuous memory space and assure consistent data type
@@ -139,7 +136,7 @@ bool ImageHolder::setImage( const data::Image &image, const ImageType &_imageTyp
 	internMinMax = imagePtr.getMinMax();
 
 	//splice the image in its volumes -> we get a vector of t volumes
-	if( m_NumberOfTimeSteps > 1 ) { //splicing is only necessary if we got more than 1 timestep
+	if( m_ImageSize[3] > 1 ) { //splicing is only necessary if we got more than 1 timestep
 		m_ImageVector = imagePtr.splice( m_ImageSize[0] * m_ImageSize[1] * m_ImageSize[2] );
 	} else {
 		m_ImageVector.push_back( imagePtr );
@@ -147,8 +144,8 @@ bool ImageHolder::setImage( const data::Image &image, const ImageType &_imageTyp
 
 	LOG_IF( m_ImageVector.empty(), Runtime, error ) << "Size of image vector is 0!";
 
-	if( m_ImageVector.size() != m_NumberOfTimeSteps ) {
-		LOG( Runtime, error ) << "The number of timesteps (" << m_NumberOfTimeSteps
+	if( m_ImageVector.size() != m_ImageSize[3] ) {
+		LOG( Runtime, error ) << "The number of timesteps (" << m_ImageSize[3]
 							  << ") does not coincide with the number of volumes ("  << m_ImageVector.size() << ").";
 		return false;
 	}
@@ -161,7 +158,6 @@ bool ImageHolder::setImage( const data::Image &image, const ImageType &_imageTyp
 
 	LOG( Debug, verbose_info ) << "Spliced image to " << m_ImageVector.size() << " volumes.";
 
-	m_OptimalScalingPair = getOptimalScalingToForType<InternalImageType>( m_CutAwayPair );
 	//image seems to be ok...i guess
 
 	//add some more properties

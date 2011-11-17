@@ -49,8 +49,6 @@ public:
 	void addChangedAttribute( const std::string &attribute );
 	bool removeChangedAttribute( const std::string &attribute );
 
-	/**offset, scaling**/
-	std::pair<double, double> getOptimalScalingPair() const { return m_OptimalScalingPair;  }
 	boost::weak_ptr<void>
 	getImageWeakPointer( size_t timestep = 0 ) const {
 		return getImageVector()[timestep]->getRawAddress();
@@ -129,8 +127,6 @@ public:
 
 private:
 
-
-	size_t m_NumberOfTimeSteps;
 	util::FixedVector<size_t, 4> m_ImageSize;
 	util::PropertyMap m_PropMap;
 
@@ -139,7 +135,6 @@ private:
 	util::slist m_Filenames;
 	size_t m_ID;
 	std::pair<double, double> m_OptimalScalingPair;
-	std::pair<double, double> m_CutAwayPair;
 
 	std::vector< ImagePointerType > m_ImageVector;
 	std::vector< data::Chunk > m_ChunkVector;

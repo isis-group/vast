@@ -40,8 +40,15 @@ public Q_SLOTS:
 	virtual void refresh( util::fvector4 physicalCoords ) {
 		if( !ui.checkLock->isChecked() ) {
 			boost::shared_ptr<ImageHolder> image = m_ViewerCore->getCurrentImage();
-
-			if( image->getImageSize()[3] > 1 && image->isVisible ) {
+			if( !image->getImageSize()[3] > 1 ) {
+				BOOST_FOREACH( DataContainer::const_reference iRef, m_ViewerCore->getDataContainer() )
+				{
+					if ( iRef.second->getImageSize()[3] > 1 ) {
+						image = iRef.second;
+					}
+				}
+			}
+			if( image->getImageSize()[3] > 1 ) {
 				std::stringstream title;
 				std::stringstream coordsAsString;
 				util::ivector4 voxCoords = image->getISISImage()->getIndexFromPhysicalCoords( physicalCoords, true );

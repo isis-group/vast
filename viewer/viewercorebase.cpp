@@ -87,6 +87,7 @@ void ViewerCoreBase::setCommonViewerOptions()
 	m_OptionsMap->setPropertyAs<bool>("showStartWidget", true );
 	m_OptionsMap->setPropertyAs<uint16_t>("startWidgetHeight", 500);
 	m_OptionsMap->setPropertyAs<uint16_t>("startWidgetWidth", 400);
+	m_OptionsMap->setPropertyAs<uint16_t>("viewerWidgetMargin", 5);
 	//logging
 	m_OptionsMap->setPropertyAs<uint16_t>( "logDelayTime", 6000 );
 	m_OptionsMap->setPropertyAs<bool>( "showErrorMessages", true );

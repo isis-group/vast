@@ -14,9 +14,10 @@ QImageWidgetImplementation::QImageWidgetImplementation( QViewerCore *core, QWidg
 	  m_MemoryHandler( core ),
 	  m_Painter( new QPainter() ),
 	  m_ShowLabels( false ),
-	  m_Border( 0 )
+  	  m_Layout( new QVBoxLayout(parent ) )
 {
-	( new QVBoxLayout( parent ) )->addWidget( this );
+	m_Layout->addWidget( this );
+	m_Layout->setMargin(m_ViewerCore->getOptionMap()->getPropertyAs<uint16_t>("viewerWidgetMargin"));
 	commonInit();
 }
 
@@ -25,9 +26,11 @@ QImageWidgetImplementation::QImageWidgetImplementation( QViewerCore *core, QWidg
 	: QWidget( parent ),
 	  WidgetInterface( core, parent, orienation ),
 	  m_MemoryHandler( core ),
-	  m_Painter( new QPainter() )
+	  m_Painter( new QPainter() ),
+	  m_Layout( new QVBoxLayout(parent ) )
 {
-	( new QVBoxLayout( parent ) )->addWidget( this );
+	m_Layout->addWidget( this );
+	m_Layout->setMargin(m_ViewerCore->getOptionMap()->getPropertyAs<uint16_t>("viewerWidgetMargin"));
 	commonInit();
 }
 
@@ -55,6 +58,7 @@ void QImageWidgetImplementation::commonInit()
 	translationX = 0.0;
 	translationY = 0.0;
 	m_ShowCrosshair = true;
+
 
 }
 
