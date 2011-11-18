@@ -31,6 +31,8 @@ private:
 	double norm( const double &min, const double &max, const int &pos );
 	Ui::sliderwidget m_Interface;
 	QViewerCore *m_ViewerCore;
+	double m_maxMax;
+	double m_maxMin;
 
 };
 
