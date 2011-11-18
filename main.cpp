@@ -122,17 +122,28 @@ int main( int argc, char *argv[] )
 
 	typedef std::list< boost::shared_ptr<ImageHolder > >::const_reference ImageListRef;
 
+	if( app.parameters["zmap"].isSet() ) {
+		core->setMode( ViewerCoreBase::zmap );
+		core->getUI()->getMainWindow()->setWindowTitle( "vast (zmap mode)" );
+	}	
 	//particular distribution of images in widgets
 	if( app.parameters["zmap"].isSet() && zImgList.size() > 1 ) {
 		core->getUI()->setViewWidgetArrangement( UICore::InRow );
 		BOOST_FOREACH( ImageListRef image, core->addImageList( zImgList, ImageHolder::z_map ) ) {
+			checkForCaCp(image);
 			UICore::ViewWidgetEnsembleType ensemble = core->getUI()->createViewWidgetEnsemble( "", image );
 
 			if( app.parameters["in"].isSet() ) {
-				boost::shared_ptr<ImageHolder> anatomicalImage = core->addImage( imgList.front(), ImageHolder::anatomical_image );
-				ensemble[0].widgetImplementation->addImage( anatomicalImage );
-				ensemble[1].widgetImplementation->addImage( anatomicalImage );
-				ensemble[2].widgetImplementation->addImage( anatomicalImage );
+				BOOST_FOREACH( std::list<data::Image>::const_reference image, imgList)
+				{
+					boost::shared_ptr<ImageHolder> anatomicalImage = core->addImage( image, ImageHolder::anatomical_image );
+					checkForCaCp(anatomicalImage);
+					if( anatomicalImage->getImageSize()[3] == 1 ) {
+						ensemble[0].widgetImplementation->addImage( anatomicalImage );
+						ensemble[1].widgetImplementation->addImage( anatomicalImage );
+						ensemble[2].widgetImplementation->addImage( anatomicalImage );
+					}
+				}
 			}
 		}
 		core->getUI()->setOptionPosition( isis::viewer::UICore::bottom );
@@ -141,6 +152,7 @@ int main( int argc, char *argv[] )
 	} else if ( app.parameters["in"].isSet() && app.parameters["split"].isSet() ) {
 		core->getUI()->setViewWidgetArrangement( UICore::InRow );
 		BOOST_FOREACH( ImageListRef image, core->addImageList( imgList, ImageHolder::anatomical_image ) ) {
+			checkForCaCp(image);
 			core->getUI()->createViewWidgetEnsemble( "", image );
 		}
 		core->getUI()->setOptionPosition( isis::viewer::UICore::bottom );
@@ -149,11 +161,13 @@ int main( int argc, char *argv[] )
 		core->getUI()->setViewWidgetArrangement( UICore::InRow );
 		UICore::ViewWidgetEnsembleType ensemble = core->getUI()->createViewWidgetEnsemble( "" );
 		BOOST_FOREACH( ImageListRef image, core->addImageList( imgList, ImageHolder::anatomical_image ) ) {
+			checkForCaCp(image);
 			core->attachImageToWidget( image, ensemble[0]. widgetImplementation );
 			core->attachImageToWidget( image, ensemble[1]. widgetImplementation );
 			core->attachImageToWidget( image, ensemble[2]. widgetImplementation );
 		}
 		BOOST_FOREACH( ImageListRef image, core->addImageList( zImgList, ImageHolder::z_map ) ) {
+			checkForCaCp(image);
 			core->attachImageToWidget( image, ensemble[0]. widgetImplementation );
 			core->attachImageToWidget( image, ensemble[1]. widgetImplementation );
 			core->attachImageToWidget( image, ensemble[2]. widgetImplementation );

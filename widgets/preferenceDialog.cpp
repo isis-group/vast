@@ -47,11 +47,7 @@ void PreferencesDialog::loadSettings()
 		}
 	}
 	m_ViewerCore->getSettings()->beginGroup( "UserProfile" );
-	preferencesUi.checkShowDesc->setChecked( m_ViewerCore->getSettings()->value( "showDesc", false ).toBool() );
 	preferencesUi.comboInterpolation->setCurrentIndex( m_ViewerCore->getSettings()->value( "interpolationType", 0 ).toUInt() );
-	preferencesUi.comboScaling->setCurrentIndex( m_ViewerCore->getSettings()->value( "scaling", 0 ).toUInt() );
-	preferencesUi.checkShowLabels->setChecked( m_ViewerCore->getSettings()->value( "showLabels", false ).toBool() );
-	preferencesUi.checkPropagateZooming->setChecked( m_ViewerCore->getSettings()->value( "propagateZooming", false ).toBool() );
 	if( m_ViewerCore->hasImage() ) {
 		preferencesUi.comboBox->setCurrentIndex( preferencesUi.comboBox->findText( m_ViewerCore->getCurrentImage()->lut.c_str() ) );
 	}
@@ -61,12 +57,8 @@ void PreferencesDialog::loadSettings()
 void PreferencesDialog::saveSettings()
 {
 	m_ViewerCore->getSettings()->beginGroup( "UserProfile" );
-	m_ViewerCore->getSettings()->setValue( "showDesc", preferencesUi.checkShowDesc->isChecked() );
 	m_ViewerCore->getSettings()->setValue( "interpolationType", preferencesUi.comboInterpolation->currentIndex() );
 	m_ViewerCore->getSettings()->setValue( "lut", preferencesUi.comboBox->currentText() );
-	m_ViewerCore->getSettings()->setValue( "scaling", preferencesUi.comboScaling->currentIndex() );
-	m_ViewerCore->getSettings()->setValue( "showLabels", preferencesUi.checkShowLabels->isChecked() );
-	m_ViewerCore->getSettings()->setValue( "propagateZooming", preferencesUi.checkPropagateZooming->isChecked() );
 	m_ViewerCore->getSettings()->endGroup();
 	m_ViewerCore->getSettings()->sync();
 	if( m_ViewerCore->hasImage() ) {

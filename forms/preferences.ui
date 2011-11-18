@@ -7,8 +7,14 @@
     <x>0</x>
     <y>0</y>
     <width>502</width>
-    <height>446</height>
+    <height>172</height>
    </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
   </property>
   <property name="windowTitle">
    <string>Preferences</string>
@@ -71,20 +77,13 @@
          </attribute>
          <layout class="QGridLayout" name="gridLayout_2">
           <item row="0" column="0">
-           <widget class="QCheckBox" name="checkShowDesc">
-            <property name="text">
-             <string>Show image description</string>
-            </property>
-           </widget>
-          </item>
-          <item row="3" column="0">
            <widget class="QLabel" name="label_2">
             <property name="text">
              <string>Interpolation:</string>
             </property>
            </widget>
           </item>
-          <item row="3" column="1">
+          <item row="0" column="1">
            <widget class="QComboBox" name="comboInterpolation">
             <item>
              <property name="text">
@@ -98,53 +97,13 @@
             </item>
            </widget>
           </item>
-          <item row="4" column="0">
-           <widget class="QLabel" name="label_3">
-            <property name="text">
-             <string>Standard Scaling:</string>
-            </property>
-           </widget>
-          </item>
-          <item row="4" column="1">
-           <widget class="QComboBox" name="comboScaling">
-            <item>
-             <property name="text">
-              <string>No Scaling</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>Automatic Scaling</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>Manual Scaling</string>
-             </property>
-            </item>
-           </widget>
-          </item>
-          <item row="1" column="0">
-           <widget class="QCheckBox" name="checkShowLabels">
-            <property name="text">
-             <string>Show labels</string>
-            </property>
-           </widget>
-          </item>
-          <item row="5" column="1">
+          <item row="1" column="1">
            <widget class="QComboBox" name="comboBox"/>
           </item>
-          <item row="5" column="0">
+          <item row="1" column="0">
            <widget class="QLabel" name="label_4">
             <property name="text">
              <string>Standard Colortable:</string>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="0">
-           <widget class="QCheckBox" name="checkPropagateZooming">
-            <property name="text">
-             <string>Propagate zooming</string>
             </property>
            </widget>
           </item>

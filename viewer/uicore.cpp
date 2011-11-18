@@ -289,9 +289,17 @@ void UICore::refreshUI()
 			widget.second.frame->setLineWidth(1);
 			widget.second.frame->setPalette(pal);
 			widget.second.frame->setAutoFillBackground(true);
+			if( m_ViewerCore->getMode() == ViewerCoreBase::zmap ) {
+				widget.second.widgetImplementation->setCrossHairColor( Qt::white );
+				widget.second.widgetImplementation->updateScene();
+			}
 		} else {
 			widget.second.frame->setFrameStyle(0);
 			widget.second.frame->setAutoFillBackground( false );
+			if ( m_ViewerCore->getMode() == ViewerCoreBase::zmap ) {
+				widget.second.widgetImplementation->setCrossHairColor( QColor( 255, 102, 0 ) );
+				widget.second.widgetImplementation->updateScene();
+			}
 		}
 	}
 	m_MainWindow->refreshUI();

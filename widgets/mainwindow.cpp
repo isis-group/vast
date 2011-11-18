@@ -86,7 +86,7 @@ MainWindow::MainWindow( QViewerCore *core ) :
 	m_RadiusSpin->setMaximum( 500 );
 	m_RadiusSpin->setToolTip( "Search radius for finding local minimum/maximum. If radius is 0 it will search the entire image." );
 	m_UI.statusbar->addPermanentWidget( m_ViewerCore->getProgressFeedback()->getProgressBar() );
-
+	
 	m_LogButton->setText( "Show log" );
 	m_UI.statusbar->addPermanentWidget( m_LogButton );
 

@@ -58,6 +58,7 @@ void QImageWidgetImplementation::commonInit()
 	translationX = 0.0;
 	translationY = 0.0;
 	m_ShowCrosshair = true;
+	m_CrosshairColor = QColor( 255, 102, 0 );
 
 
 }
@@ -263,7 +264,16 @@ void QImageWidgetImplementation::mousePressEvent( QMouseEvent *e )
 		m_StartCoordsPair.first = e->x();
 		m_StartCoordsPair.second = e->y();
 	}
-
+	if( m_ViewerCore->getMode() == ViewerCoreBase::zmap ) {
+		BOOST_FOREACH( ImageVectorType::const_reference image, m_ImageVector )
+		{
+			if( image->imageType == ImageHolder::z_map) {
+				m_ViewerCore->setCurrentImage( image );
+				m_ViewerCore->getUI()->refreshUI();
+			}
+		}
+	}
+	
 	emitMousePressEvent( e );
 }
 
@@ -343,7 +353,7 @@ void QImageWidgetImplementation::paintCrosshair() const
 	const QLine yline2( coords.first + 15, coords.second,  width() - border, coords.second  );
 
 	QPen pen;
-	pen.setColor( QColor( 255, 102, 0 ) );
+	pen.setColor( m_CrosshairColor );
 	m_Painter->setOpacity( 1.0 );
 	m_Painter->setTransform( QOrienationHandler::getTransform( imgProps.viewPort, image, width(), height(), m_PlaneOrientation ) );
 	m_Painter->scale( 1.0 / imgProps.viewPort[0], 1.0 / imgProps.viewPort[1] );

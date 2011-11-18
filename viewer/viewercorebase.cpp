@@ -11,7 +11,8 @@ namespace viewer
 
 ViewerCoreBase::ViewerCoreBase( )
 	: m_ColorHandler( new color::Color() ),
-	  m_OptionsMap( boost::shared_ptr< util::PropertyMap >( new util::PropertyMap ) )
+	  m_OptionsMap( boost::shared_ptr< util::PropertyMap >( new util::PropertyMap ) ),
+	  m_Mode( standard )
 {
 	m_ColorHandler->initStandardColormaps();
 	setCommonViewerOptions();
@@ -37,9 +38,11 @@ boost::shared_ptr<ImageHolder> ViewerCoreBase::addImage( const isis::data::Image
 	if( imageType == ImageHolder::anatomical_image ) {
 		m_CurrentAnatomicalReference = retImage;
 	}
-	checkForCaCp(retImage);
+
 	m_ImageList.push_back( retImage );
-	setCurrentImage( m_DataContainer.begin()->second );
+	if(!( getMode() == ViewerCoreBase::zmap && retImage->imageType == ImageHolder::anatomical_image )) {
+		setCurrentImage( retImage );
+	}
 	return retImage;
 }
 
@@ -82,8 +85,8 @@ void ViewerCoreBase::setCommonViewerOptions()
 	m_OptionsMap->setPropertyAs<bool>( "showFavoriteFileList", false );
 	m_OptionsMap->setPropertyAs<uint16_t>( "maxWidgetHeight", 200 );
 	m_OptionsMap->setPropertyAs<uint16_t>( "maxWidgetWidth", 200 );
-	m_OptionsMap->setPropertyAs<uint16_t>( "maxOptionWidgetHeight", 130);
-	m_OptionsMap->setPropertyAs<uint16_t>( "minOptionWidgetHeight", 80);
+	m_OptionsMap->setPropertyAs<uint16_t>( "maxOptionWidgetHeight", 90);
+	m_OptionsMap->setPropertyAs<uint16_t>( "minOptionWidgetHeight", 90);
 	m_OptionsMap->setPropertyAs<bool>("showStartWidget", true );
 	m_OptionsMap->setPropertyAs<uint16_t>("startWidgetHeight", 500);
 	m_OptionsMap->setPropertyAs<uint16_t>("startWidgetWidth", 400);
