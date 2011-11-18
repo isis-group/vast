@@ -10,7 +10,7 @@ DEB_CMAKE_EXTRA_FLAGS = \
 	-DQT_QMAKE_EXECUTABLE=/usr/bin/qmake-qt4 \
 	-Dvast_PLUGIN_TIMEPLOTTER:BOOL=ON \
 	-Dvast_PLUGIN_ORIENTATIONCORRECTION:BOOL=ON \
-	-Dvast_OLUGIN_MASKEDIT:BOOL=ON
+	-Dvast_PLUGIN_MASKEDIT:BOOL=ON
 
 # get number of parallel builds from the default environment
 # variable DEB_BUILD_OPTIONS. The expected value is 'parrallel=#'.
