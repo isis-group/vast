@@ -4,6 +4,7 @@
 #include "ui_maskEdit.h"
 #include "qviewercore.hpp"
 #include <DataStorage/chunk.hpp>
+#include <boost/assign/list_of.hpp>
 
 namespace isis {
 namespace viewer {
@@ -79,8 +80,20 @@ private:
 		isis::data::Image mask ( ch);
 		const util::fvector4 voxelSize = util::fvector4( m_Interface.xRes->value(), m_Interface.yRes->value(), m_Interface.zRes->value() );
 		mask.setPropertyAs<util::fvector4>("voxelSize", voxelSize );
-		
 		mask.updateOrientationMatrices();
+		if( mask.hasProperty("Vista/ca") ) {
+			std::list<double> ca = util::stringToList<double>(mask.getPropertyAs<std::string>("Vista/ca"));
+			std::list<double>::const_iterator iter = ca.end();
+			std::list<double> newCa = boost::assign::list_of<double>( *--iter / voxelSize[0])( *--iter / voxelSize[1])( *--iter / voxelSize[2] );
+			mask.setPropertyAs<std::string>("Vista/ca", util::listToString<std::list<double>::iterator>(newCa.begin(), newCa.end(), " ", "", "") );
+		}
+		if( mask.hasProperty("Vista/cp") ) {
+			std::list<double> cp = util::stringToList<double>(mask.getPropertyAs<std::string>("Vista/cp"));
+			std::list<double>::const_iterator iter = cp.end();
+			std::list<double> newCp = boost::assign::list_of<double>( *--iter / voxelSize[0])( *--iter / voxelSize[1])( *--iter / voxelSize[2] );
+			mask.setPropertyAs<std::string>("Vista/cp", util::listToString<std::list<double>::iterator>(newCp.begin(), newCp.end(), " ", "", "") );
+		}
+		
 		if( m_Interface.maskName->text().size() ) {
 			mask.setPropertyAs<std::string>("source", m_Interface.maskName->text().toStdString() );
 		} else {
