@@ -173,6 +173,10 @@ bool ImageHolder::setImage( const data::Image &image, const ImageType &_imageTyp
 		lowerThreshold = minMax.second->as<double>();
 		lut = std::string( "standard_grey_values" );
 	}
+	voxelSize = image.getPropertyAs<util::fvector4>("voxelSize");
+	if( image.hasProperty("voxelGap") ) {
+		voxelSize += image.getPropertyAs<util::fvector4>("voxelGap");
+	}
 
 	extent = fabs( minMax.second->as<double>() - minMax.first->as<double>() );
 	voxelCoords = util::ivector4( m_ImageSize[0] / 2, m_ImageSize[1] / 2, m_ImageSize[2] / 2, 0 );
@@ -181,6 +185,8 @@ bool ImageHolder::setImage( const data::Image &image, const ImageType &_imageTyp
 	opacity = 1.0;
 	scaling = 1.0;
 	offset = 0.0;
+	orientation = getImageOrientation();
+	latchedOrientation = getNormalizedImageOrientation();
 	alignedSize32 = get32BitAlignedSize( m_ImageSize );
 	m_PropMap.setPropertyAs<bool>( "init", true );
 	m_PropMap.setPropertyAs<util::slist>( "changedAttributes", util::slist() );
@@ -190,6 +196,7 @@ bool ImageHolder::setImage( const data::Image &image, const ImageType &_imageTyp
 	m_PropMap.setPropertyAs<util::fvector4>( "originalRowVec", image.getPropertyAs<util::fvector4>( "rowVec" ) );
 	m_PropMap.setPropertyAs<util::fvector4>( "originalSliceVec", image.getPropertyAs<util::fvector4>( "sliceVec" ) );
 	m_PropMap.setPropertyAs<util::fvector4>( "originalIndexOrigin", image.getPropertyAs<util::fvector4>( "indexOrigin" ) );
+
 	m_Image->updateOrientationMatrices();
 	return true;
 }

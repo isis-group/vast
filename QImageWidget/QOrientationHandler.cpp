@@ -58,9 +58,9 @@ util::fvector4 QOrienationHandler::mapCoordsToOrientation( const util::fvector4 
 	}
 
 	if( back ) {
-		finVec = prod( trans( prod(  transformMatrix, image->getNormalizedImageOrientation() ) ), vec );
+		finVec = prod( trans( prod(  transformMatrix, image->latchedOrientation ) ), vec );
 	} else {
-		finVec = prod( prod( transformMatrix, image->getNormalizedImageOrientation() ) , vec );
+		finVec = prod( prod( transformMatrix, image->latchedOrientation ) , vec );
 	}
 
 	if( absolute ) {
@@ -82,7 +82,7 @@ util::ivector4 QOrienationHandler::getMappedCoords( const boost::shared_ptr< Ima
 		vec( i ) = coords[i];
 	}
 
-	vec1 = prod( image->getNormalizedImageOrientation(), vec );
+	vec1 = prod( image->latchedOrientation, vec );
 
 	for ( size_t i = 0; i < 4; i++ ) {
 		retVec[i] = abs( vec1( i ) );
@@ -97,8 +97,7 @@ QOrienationHandler::ViewPortType QOrienationHandler::getViewPort(  const float &
 {
 	ViewPortType viewPort;
 	util::ivector4 mappedSize = QOrienationHandler::mapCoordsToOrientation( image->getImageSize(), image, orientation );
-	util::fvector4 mappedScaling = QOrienationHandler::mapCoordsToOrientation( image->getISISImage()->getPropertyAs<util::fvector4>( "voxelSize" ), image, orientation );
-	mappedScaling += QOrienationHandler::mapCoordsToOrientation( image->getISISImage()->getPropertyAs<util::fvector4>( "voxelGap" ), image, orientation );
+	util::fvector4 mappedScaling = QOrienationHandler::mapCoordsToOrientation( image->voxelSize, image, orientation );
 	util::fvector4 physSize = mappedScaling * mappedSize;
 	float scalew = ( w - border * 2 ) / float( physSize[0] );
 	float scaleh = ( h - border * 2 ) / float( physSize[1] );

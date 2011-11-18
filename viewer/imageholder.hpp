@@ -111,6 +111,7 @@ public:
 
 	util::ivector4 voxelCoords;
 	util::fvector4 physicalCoords;
+	util::fvector4 voxelSize;
 	bool isVisible;
 	float opacity;
 	util::ivector4 alignedSize32;
@@ -124,7 +125,9 @@ public:
 	InterpolationType interpolationType;
 	std::pair<util::ValueReference, util::ValueReference> minMax;
 	std::pair<util::ValueReference, util::ValueReference> internMinMax;
-
+	boost::numeric::ublas::matrix<float> orientation;
+	boost::numeric::ublas::matrix<float> latchedOrientation;
+	
 private:
 
 	util::FixedVector<size_t, 4> m_ImageSize;
