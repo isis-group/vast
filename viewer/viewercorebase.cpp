@@ -38,7 +38,7 @@ boost::shared_ptr<ImageHolder> ViewerCoreBase::addImage( const isis::data::Image
 	if( imageType == ImageHolder::anatomical_image ) {
 		m_CurrentAnatomicalReference = retImage;
 	}
-	checkForCaCp(retImage);
+
 	m_ImageList.push_back( retImage );
 	if(!( getMode() == ViewerCoreBase::zmap && retImage->imageType == ImageHolder::anatomical_image )) {
 		setCurrentImage( retImage );

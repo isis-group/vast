@@ -1,9 +1,10 @@
 <RCC>
   <qresource prefix="common">
-    <file>scissor.gif</file>
     <file>newMask.png</file>
+    <file>cut.png</file>
     <file>maskeditLUT</file>
-    <file>brush.png</file>
     <file>maskEdit.png</file>
+    <file>cutCrosshair.png</file>
+    <file>paintCrosshair.png</file>
   </qresource>
 </RCC>

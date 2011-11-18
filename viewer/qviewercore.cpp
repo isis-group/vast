@@ -76,13 +76,17 @@ void QViewerCore::setImageList( const std::list< data::Image > imageList, const 
 
 
 }
-void QViewerCore::centerImages()
+void QViewerCore::centerImages(bool ca)
 {
 	if( hasImage() ) {
-		const util::ivector4 size = getCurrentImage()->getImageSize();
-		const util::ivector4 center( size[0] / 2, size[1] / 2, size[2] / 2,
-										 getCurrentImage()->voxelCoords[3] );
-		getCurrentImage()->voxelCoords = center;
+		if(!ca) {
+			const util::ivector4 size = getCurrentImage()->getImageSize();
+			const util::ivector4 center( size[0] / 2, size[1] / 2, size[2] / 2,
+											getCurrentImage()->voxelCoords[3] );
+			getCurrentImage()->voxelCoords = center;
+		} else {
+			getCurrentImage()->physicalCoords = util::fvector4();
+		}
 		m_UI->refreshUI();
 		updateScene();
 	}
@@ -189,7 +193,6 @@ void QViewerCore::openPath( QStringList fileList, ImageHolder::ImageType imageTy
 	if( !fileList.empty() ) {
 		QDir dir;
 		setCurrentPath( dir.absoluteFilePath( fileList.front() ).toStdString() );
-		std::list<data::Image> imgList;
 		util::slist pathList;
 
 		if( ( getDataContainer().size() + fileList.size() ) > 1 ) {
@@ -222,8 +225,8 @@ void QViewerCore::openPath( QStringList fileList, ImageHolder::ImageType imageTy
 			}
 
 			BOOST_FOREACH( std::list<data::Image>::const_reference image, tempImgList ) {
-				imgList.push_back( image );
 				boost::shared_ptr<ImageHolder> imageHolder = addImage( image, imageType );
+				checkForCaCp(imageHolder);
 				if( !( getMode() == ViewerCoreBase::zmap && imageHolder->imageType == ImageHolder::anatomical_image ) ) {	
 					if( newWidget ) {
 						ensemble = getUI()->createViewWidgetEnsemble( "" );

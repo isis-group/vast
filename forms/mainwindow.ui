@@ -162,7 +162,10 @@
      <normaloff>:/common/saveimageas.gif</normaloff>:/common/saveimageas.gif</iconset>
    </property>
    <property name="text">
-    <string>Save Image...</string>
+    <string>Save Image As...</string>
+   </property>
+   <property name="toolTip">
+    <string>Save Image As...</string>
    </property>
    <property name="shortcut">
     <string>S, I, A</string>
@@ -198,10 +201,10 @@
      <normaloff>:/common/min.gif</normaloff>:/common/min.gif</iconset>
    </property>
    <property name="text">
-    <string>Find local min</string>
+    <string>Find Local Min</string>
    </property>
    <property name="toolTip">
-    <string>Find local min</string>
+    <string>Find Local Min</string>
    </property>
    <property name="shortcut">
     <string>F, M, I</string>
@@ -213,10 +216,10 @@
      <normaloff>:/common/max.gif</normaloff>:/common/max.gif</iconset>
    </property>
    <property name="text">
-    <string>Find local max</string>
+    <string>Find Local Max</string>
    </property>
    <property name="toolTip">
-    <string>Find local max</string>
+    <string>Find Local Max</string>
    </property>
    <property name="shortcut">
     <string>F, M, A</string>
@@ -246,7 +249,10 @@
      <normaloff>:/common/autoscale.gif</normaloff>:/common/autoscale.gif</iconset>
    </property>
    <property name="text">
-    <string>Show scaling option</string>
+    <string>Show Scaling Options</string>
+   </property>
+   <property name="toolTip">
+    <string>Show Scaling Options</string>
    </property>
    <property name="shortcut">
     <string>S, S, O</string>
@@ -281,7 +287,10 @@
   </action>
   <action name="actionCenter_to_ca">
    <property name="text">
-    <string>Center to ca</string>
+    <string>Center To Ca</string>
+   </property>
+   <property name="toolTip">
+    <string>Center To Ca</string>
    </property>
    <property name="shortcut">
     <string>Space, Space</string>

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>724</width>
-    <height>88</height>
+    <width>868</width>
+    <height>87</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -46,8 +46,11 @@
         <layout class="QHBoxLayout" name="horizontalLayout_3">
          <item>
           <widget class="QPushButton" name="newMask">
+           <property name="toolTip">
+            <string>Create new mask</string>
+           </property>
            <property name="text">
-            <string>New mask</string>
+            <string/>
            </property>
            <property name="icon">
             <iconset resource="../resources/maskedit.qrc">
@@ -75,6 +78,36 @@
          <item>
           <widget class="QComboBox" name="maskType"/>
          </item>
+         <item>
+          <widget class="QLabel" name="label_4">
+           <property name="text">
+            <string>Resolution:</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QDoubleSpinBox" name="xRes"/>
+         </item>
+         <item>
+          <widget class="QLabel" name="label_5">
+           <property name="text">
+            <string>x</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QDoubleSpinBox" name="yRes"/>
+         </item>
+         <item>
+          <widget class="QLabel" name="label_6">
+           <property name="text">
+            <string>x</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QDoubleSpinBox" name="zRes"/>
+         </item>
         </layout>
        </widget>
       </item>
@@ -99,6 +132,9 @@
            <property name="checkable">
             <bool>true</bool>
            </property>
+           <property name="autoExclusive">
+            <bool>true</bool>
+           </property>
           </widget>
          </item>
          <item>
@@ -108,9 +144,12 @@
            </property>
            <property name="icon">
             <iconset resource="../resources/maskedit.qrc">
-             <normaloff>:/common/scissor.gif</normaloff>:/common/scissor.gif</iconset>
+             <normaloff>:/common/cut.png</normaloff>:/common/cut.png</iconset>
            </property>
            <property name="checkable">
+            <bool>true</bool>
+           </property>
+           <property name="autoExclusive">
             <bool>true</bool>
            </property>
           </widget>
