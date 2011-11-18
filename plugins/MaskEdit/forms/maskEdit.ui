@@ -56,6 +56,9 @@
             <iconset resource="../resources/maskedit.qrc">
              <normaloff>:/common/newMask.png</normaloff>:/common/newMask.png</iconset>
            </property>
+           <property name="shortcut">
+            <string>Ctrl+M, Ctrl+N</string>
+           </property>
           </widget>
          </item>
          <item>
@@ -129,6 +132,9 @@
             <iconset resource="../resources/maskedit.qrc">
              <normaloff>:/common/maskEdit.png</normaloff>:/common/maskEdit.png</iconset>
            </property>
+           <property name="shortcut">
+            <string>Ctrl+M, Ctrl+P</string>
+           </property>
            <property name="checkable">
             <bool>true</bool>
            </property>
@@ -145,6 +151,9 @@
            <property name="icon">
             <iconset resource="../resources/maskedit.qrc">
              <normaloff>:/common/cut.png</normaloff>:/common/cut.png</iconset>
+           </property>
+           <property name="shortcut">
+            <string>Ctrl+M, Ctrl+C</string>
            </property>
            <property name="checkable">
             <bool>true</bool>
