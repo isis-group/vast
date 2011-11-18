@@ -58,7 +58,7 @@ private:
 							image->getChunkVector()[0].voxel<InternalImageType>(i,j,k) = value;
 						} else {
 							image->getISISImage()->voxel<TYPE>(i,j,k) = std::numeric_limits<TYPE>::min();
-							image->getChunkVector()[0].voxel<TYPE>(i,j,k) = std::numeric_limits<InternalImageType>::min();
+							image->getChunkVector()[0].voxel<InternalImageType>(i,j,k) = std::numeric_limits<InternalImageType>::min();
 						}
 					}
 				}
@@ -87,8 +87,11 @@ private:
 			mask.setPropertyAs<std::string>("source", "mask" );
 		}
 		retImage = m_ViewerCore->addImage( mask, ImageHolder::anatomical_image );
+		retImage->minMax.first = isis::util::Value<TYPE>( std::numeric_limits<TYPE>::min() );
 		retImage->minMax.second = isis::util::Value<TYPE>( std::numeric_limits<TYPE>::max() );
+		retImage->internMinMax.first = isis::util::Value<TYPE>( std::numeric_limits<TYPE>::min() );		
 		retImage->internMinMax.second = isis::util::Value<TYPE>( std::numeric_limits<TYPE>::max() );
+
 		return retImage;
 	}
 };

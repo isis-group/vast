@@ -80,50 +80,61 @@ void MaskEditDialog::showEvent(QShowEvent* )
 		m_Interface.yRes->setValue(3);
 		m_Interface.zRes->setValue(3);
 	}
+	if( !m_ViewerCore->hasImage() ) {
+		m_Interface.cut->setEnabled(false);
+		m_Interface.paint->setEnabled(false);
+		m_Interface.radius->setEnabled(false);
+	} else {
+		m_Interface.cut->setEnabled(true);
+		m_Interface.paint->setEnabled(true);
+		m_Interface.radius->setEnabled(true);
+		m_Interface.paint->setChecked(true);
+	}
 
 }
 
 
 void MaskEditDialog::physicalCoordChanged(util::fvector4 physCoord)
 {
-	if( m_CurrentMask ) {
-
-		switch( m_CurrentMajorTypeID ) {
-			case isis::data::ValuePtr<bool>::staticID:
-				manipulateVoxel<bool>(physCoord, std::numeric_limits<bool>::max(), m_CurrentMask );
-				break;
-			case isis::data::ValuePtr<int8_t>::staticID:
-				manipulateVoxel<int8_t>(physCoord,std::numeric_limits<int8_t>::max(), m_CurrentMask );
-				break;
-			case isis::data::ValuePtr<uint8_t>::staticID:
-				manipulateVoxel<uint8_t>(physCoord,std::numeric_limits<uint8_t>::max(), m_CurrentMask );
-				break;
-			case isis::data::ValuePtr<int16_t>::staticID:
-				manipulateVoxel<int16_t>(physCoord, std::numeric_limits<int16_t>::max(), m_CurrentMask );
-				break;
-			case isis::data::ValuePtr<uint16_t>::staticID:
-				manipulateVoxel<uint16_t>(physCoord, std::numeric_limits<uint16_t>::max(), m_CurrentMask );
-				break;
-			case isis::data::ValuePtr<int32_t>::staticID:
-				manipulateVoxel<int32_t>(physCoord, std::numeric_limits<int32_t>::max(), m_CurrentMask );
-				break;
-			case isis::data::ValuePtr<uint32_t>::staticID:
-				manipulateVoxel<uint32_t>(physCoord, std::numeric_limits<uint32_t>::max(), m_CurrentMask );
-				break;
-			case isis::data::ValuePtr<int64_t>::staticID:
-				manipulateVoxel<int64_t>(physCoord, std::numeric_limits<int64_t>::max(), m_CurrentMask );
-				break;
-			case isis::data::ValuePtr<uint64_t>::staticID:
-				manipulateVoxel<uint64_t>(physCoord, std::numeric_limits<uint64_t>::max(), m_CurrentMask );
-				break;
-			case isis::data::ValuePtr<double>::staticID:
-				manipulateVoxel<double>(physCoord, std::numeric_limits<double>::max(), m_CurrentMask );
-				break;
-			case isis::data::ValuePtr<float>::staticID:
-				manipulateVoxel<float>(physCoord, std::numeric_limits<float>::max(), m_CurrentMask );
-				break;
+	if( m_ViewerCore->hasImage() ) {
+		if( m_CurrentMask ) {
+			switch( m_CurrentMajorTypeID ) {
+				case isis::data::ValuePtr<bool>::staticID:
+					manipulateVoxel<bool>(physCoord, std::numeric_limits<bool>::max(), m_CurrentMask );
+					break;
+				case isis::data::ValuePtr<int8_t>::staticID:
+					manipulateVoxel<int8_t>(physCoord,std::numeric_limits<int8_t>::max(), m_CurrentMask );
+					break;
+				case isis::data::ValuePtr<uint8_t>::staticID:
+					manipulateVoxel<uint8_t>(physCoord,std::numeric_limits<uint8_t>::max(), m_CurrentMask );
+					break;
+				case isis::data::ValuePtr<int16_t>::staticID:
+					manipulateVoxel<int16_t>(physCoord, std::numeric_limits<int16_t>::max(), m_CurrentMask );
+					break;
+				case isis::data::ValuePtr<uint16_t>::staticID:
+					manipulateVoxel<uint16_t>(physCoord, std::numeric_limits<uint16_t>::max(), m_CurrentMask );
+					break;
+				case isis::data::ValuePtr<int32_t>::staticID:
+					manipulateVoxel<int32_t>(physCoord, std::numeric_limits<int32_t>::max(), m_CurrentMask );
+					break;
+				case isis::data::ValuePtr<uint32_t>::staticID:
+					manipulateVoxel<uint32_t>(physCoord, std::numeric_limits<uint32_t>::max(), m_CurrentMask );
+					break;
+				case isis::data::ValuePtr<int64_t>::staticID:
+					manipulateVoxel<int64_t>(physCoord, std::numeric_limits<int64_t>::max(), m_CurrentMask );
+					break;
+				case isis::data::ValuePtr<uint64_t>::staticID:
+					manipulateVoxel<uint64_t>(physCoord, std::numeric_limits<uint64_t>::max(), m_CurrentMask );
+					break;
+				case isis::data::ValuePtr<double>::staticID:
+					manipulateVoxel<double>(physCoord, std::numeric_limits<double>::max(), m_CurrentMask );
+					break;
+				case isis::data::ValuePtr<float>::staticID:
+					manipulateVoxel<float>(physCoord, std::numeric_limits<float>::max(), m_CurrentMask );
+					break;
+			}
+			m_ViewerCore->updateScene();
 		}
-		m_ViewerCore->updateScene();
 	}
 
 }
