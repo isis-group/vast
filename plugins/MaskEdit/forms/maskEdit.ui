@@ -50,7 +50,7 @@
             <string>Create new mask</string>
            </property>
            <property name="text">
-            <string/>
+            <string>Create empty mask</string>
            </property>
            <property name="icon">
             <iconset resource="../resources/maskedit.qrc">
@@ -62,54 +62,15 @@
           </widget>
          </item>
          <item>
-          <widget class="QLabel" name="label">
+          <widget class="QPushButton" name="editCurrentImage">
            <property name="text">
-            <string>Name:</string>
+            <string>Edit current image</string>
+           </property>
+           <property name="icon">
+            <iconset resource="../resources/maskedit.qrc">
+             <normaloff>:/common/brain.jpg</normaloff>:/common/brain.jpg</iconset>
            </property>
           </widget>
-         </item>
-         <item>
-          <widget class="QLineEdit" name="maskName"/>
-         </item>
-         <item>
-          <widget class="QLabel" name="label_2">
-           <property name="text">
-            <string>Type:</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QComboBox" name="maskType"/>
-         </item>
-         <item>
-          <widget class="QLabel" name="label_4">
-           <property name="text">
-            <string>Resolution:</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QDoubleSpinBox" name="xRes"/>
-         </item>
-         <item>
-          <widget class="QLabel" name="label_5">
-           <property name="text">
-            <string>x</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QDoubleSpinBox" name="yRes"/>
-         </item>
-         <item>
-          <widget class="QLabel" name="label_6">
-           <property name="text">
-            <string>x</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QDoubleSpinBox" name="zRes"/>
          </item>
         </layout>
        </widget>

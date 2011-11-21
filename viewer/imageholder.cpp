@@ -9,11 +9,11 @@ namespace viewer
 ImageHolder::ImageHolder( )
 {
 }
-boost::numeric::ublas::matrix< float > ImageHolder::getNormalizedImageOrientation( bool transposed ) const
+boost::numeric::ublas::matrix< double > ImageHolder::getNormalizedImageOrientation( bool transposed ) const
 {
-	boost::numeric::ublas::matrix<float> retMatrix = boost::numeric::ublas::zero_matrix<float>( 4, 4 );
+	boost::numeric::ublas::matrix<double> retMatrix = boost::numeric::ublas::zero_matrix<double>( 4, 4 );
 	retMatrix( 3, 3 ) = 1;
-	float deg45 = sin( ( 45.0 / 180 ) * M_PI );
+	double deg45 = sin( ( 45.0 / 180 ) * M_PI );
 	util::fvector4 rowVec = m_Image->getPropertyAs<util::fvector4>( "rowVec" );
 	util::fvector4 columnVec = m_Image->getPropertyAs<util::fvector4>( "columnVec" );
 	util::fvector4 sliceVec = m_Image->getPropertyAs<util::fvector4>( "sliceVec" );
@@ -74,9 +74,9 @@ boost::numeric::ublas::matrix< float > ImageHolder::getNormalizedImageOrientatio
 	return retMatrix;
 }
 
-boost::numeric::ublas::matrix< float > ImageHolder::getImageOrientation( bool transposed ) const
+boost::numeric::ublas::matrix< double > ImageHolder::getImageOrientation( bool transposed ) const
 {
-	boost::numeric::ublas::matrix<float> retMatrix = boost::numeric::ublas::zero_matrix<float>( 4, 4 );
+	boost::numeric::ublas::matrix<double> retMatrix = boost::numeric::ublas::zero_matrix<double>( 4, 4 );
 	retMatrix( 3, 3 ) = 1;
 	util::fvector4 rowVec = m_Image->getPropertyAs<util::fvector4>( "rowVec" );
 	util::fvector4 columnVec = m_Image->getPropertyAs<util::fvector4>( "columnVec" );
@@ -185,6 +185,7 @@ bool ImageHolder::setImage( const data::Image &image, const ImageType &_imageTyp
 	opacity = 1.0;
 	scaling = 1.0;
 	offset = 0.0;
+	majorTypeID = image.getMajorTypeID();
 	orientation = getImageOrientation();
 	latchedOrientation = getNormalizedImageOrientation();
 	alignedSize32 = get32BitAlignedSize( m_ImageSize );

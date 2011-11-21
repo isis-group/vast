@@ -44,8 +44,8 @@ public:
 	const util::PropertyMap &getPropMap() const { return m_PropMap; }
 	const util::FixedVector<size_t, 4> &getImageSize() const { return m_ImageSize; }
 	boost::shared_ptr< data::Image >getISISImage() const { return m_Image; }
-	boost::numeric::ublas::matrix<float> getNormalizedImageOrientation( bool transposed = false ) const;
-	boost::numeric::ublas::matrix<float> getImageOrientation( bool transposed = false ) const;
+	boost::numeric::ublas::matrix<double> getNormalizedImageOrientation( bool transposed = false ) const;
+	boost::numeric::ublas::matrix<double> getImageOrientation( bool transposed = false ) const;
 	void addChangedAttribute( const std::string &attribute );
 	bool removeChangedAttribute( const std::string &attribute );
 
@@ -125,8 +125,9 @@ public:
 	InterpolationType interpolationType;
 	std::pair<util::ValueReference, util::ValueReference> minMax;
 	std::pair<util::ValueReference, util::ValueReference> internMinMax;
-	boost::numeric::ublas::matrix<float> orientation;
-	boost::numeric::ublas::matrix<float> latchedOrientation;
+	boost::numeric::ublas::matrix<double> orientation;
+	boost::numeric::ublas::matrix<double> latchedOrientation;
+	unsigned short majorTypeID;
 	
 private:
 

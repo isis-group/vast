@@ -71,27 +71,6 @@ util::fvector4 QOrienationHandler::mapCoordsToOrientation( const util::fvector4 
 
 }
 
-util::ivector4 QOrienationHandler::getMappedCoords( const boost::shared_ptr< ImageHolder > image, const util::ivector4 &coords )
-{
-	using namespace boost::numeric::ublas;
-	vector<int16_t> vec = vector<int16_t>( 4 );
-	vector<int16_t> vec1 = vector<int16_t>( 4 );
-	util::ivector4 retVec;
-
-	for( size_t i = 0; i < 4; i++ ) {
-		vec( i ) = coords[i];
-	}
-
-	vec1 = prod( image->latchedOrientation, vec );
-
-	for ( size_t i = 0; i < 4; i++ ) {
-		retVec[i] = abs( vec1( i ) );
-	}
-
-	return retVec;
-}
-
-
 
 QOrienationHandler::ViewPortType QOrienationHandler::getViewPort(  const float &zoom, const boost::shared_ptr< ImageHolder > image, const size_t &w, const size_t &h, PlaneOrientation orientation, unsigned short border )
 {
@@ -131,7 +110,6 @@ QTransform QOrienationHandler::getTransform( const ViewPortType &viewPort, const
 	retTransform.translate( flipVec[0] * viewPort[2], flipVec[1] * viewPort[3] );
 	retTransform.scale( viewPort[0], viewPort[1] );
 	retTransform.translate(  flipVec[0] < 0 ? -mappedSize[0] : 0, flipVec[1] < 0 ? -mappedSize[1] : 0 );
-
 
 	return retTransform;
 
