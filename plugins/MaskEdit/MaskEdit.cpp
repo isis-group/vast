@@ -62,7 +62,7 @@ void MaskEditDialog::showEvent(QShowEvent* )
 {
 	connect( m_ViewerCore, SIGNAL ( emitPhysicalCoordsChanged(util::fvector4)), this, SLOT( physicalCoordChanged(util::fvector4)));	
 
-	if( !m_ViewerCore->hasImage() ) {
+	if( !m_CurrentMask ) {
 		m_Interface.cut->setEnabled(false);
 		m_Interface.paint->setEnabled(false);
 		m_Interface.radius->setEnabled(false);
@@ -131,7 +131,21 @@ void MaskEditDialog::editCurrentImage()
 		m_Interface.cut->setEnabled(true);
 		m_Interface.paint->setEnabled(true);
 		m_Interface.radius->setEnabled(true);
-		m_Interface.paint->setChecked(true);		
+		m_Interface.paint->setChecked(true);	
+		BOOST_FOREACH( UICore::ViewWidgetEnsembleListType::const_reference ensemble, m_ViewerCore->getUI()->getEnsembleList() ) {
+			WidgetInterface::ImageVectorType iVector;
+			for( unsigned short i = 0; i < 3; i++ ) {
+				iVector = ensemble[i].widgetImplementation->getImageVector();
+				if( std::find( iVector.begin(), iVector.end(), m_CurrentMask ) != iVector.end() ) {
+					m_CurrentWidgetEnsemble = ensemble;
+					m_ViewerCore->attachImageToWidget( m_CurrentMask, ensemble[i].widgetImplementation ) ;
+					ensemble[i].widgetImplementation->setMouseCursorIcon( QIcon( ":/common/paintCrosshair.png" ) );
+					ensemble[i].widgetImplementation->setEnableCrosshair( false );
+			
+				}			
+			}
+		}	
+		m_ViewerCore->updateScene();
 	}
 }
 
