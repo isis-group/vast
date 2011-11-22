@@ -72,7 +72,11 @@
      </layout>
     </item>
     <item row="0" column="1">
-     <layout class="QGridLayout" name="topGridLayout"/>
+     <layout class="QGridLayout" name="topGridLayout" rowstretch="0">
+      <property name="spacing">
+       <number>2</number>
+      </property>
+     </layout>
     </item>
     <item row="1" column="0">
      <layout class="QGridLayout" name="leftGridLayout"/>

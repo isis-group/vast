@@ -44,8 +44,8 @@ public:
 	const util::PropertyMap &getPropMap() const { return m_PropMap; }
 	const util::FixedVector<size_t, 4> &getImageSize() const { return m_ImageSize; }
 	boost::shared_ptr< data::Image >getISISImage() const { return m_Image; }
-	boost::numeric::ublas::matrix<float> getNormalizedImageOrientation( bool transposed = false ) const;
-	boost::numeric::ublas::matrix<float> getImageOrientation( bool transposed = false ) const;
+	boost::numeric::ublas::matrix<double> getNormalizedImageOrientation( bool transposed = false ) const;
+	boost::numeric::ublas::matrix<double> getImageOrientation( bool transposed = false ) const;
 	void addChangedAttribute( const std::string &attribute );
 	bool removeChangedAttribute( const std::string &attribute );
 
@@ -111,6 +111,7 @@ public:
 
 	util::ivector4 voxelCoords;
 	util::fvector4 physicalCoords;
+	util::fvector4 voxelSize;
 	bool isVisible;
 	float opacity;
 	util::ivector4 alignedSize32;
@@ -124,7 +125,10 @@ public:
 	InterpolationType interpolationType;
 	std::pair<util::ValueReference, util::ValueReference> minMax;
 	std::pair<util::ValueReference, util::ValueReference> internMinMax;
-
+	boost::numeric::ublas::matrix<double> orientation;
+	boost::numeric::ublas::matrix<double> latchedOrientation;
+	unsigned short majorTypeID;
+	
 private:
 
 	util::FixedVector<size_t, 4> m_ImageSize;

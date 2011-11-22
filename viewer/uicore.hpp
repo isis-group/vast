@@ -23,7 +23,7 @@ class UICore
 {
 
 public:
-
+	friend class QViewerCore;
 
 	enum OptionPosition { bottom, top, left, right, central11 };
 	enum ViewWidgetArragment { Default, InRow, InColumn };
@@ -76,7 +76,7 @@ public Q_SLOTS:
 	virtual void refreshUI();
 	void showMessage( const qt4::QMessage &message );
 
-	friend class QViewerCore;
+
 protected:
 	UICore( QViewerCore *core );
 

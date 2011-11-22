@@ -9,11 +9,11 @@ namespace viewer
 ImageHolder::ImageHolder( )
 {
 }
-boost::numeric::ublas::matrix< float > ImageHolder::getNormalizedImageOrientation( bool transposed ) const
+boost::numeric::ublas::matrix< double > ImageHolder::getNormalizedImageOrientation( bool transposed ) const
 {
-	boost::numeric::ublas::matrix<float> retMatrix = boost::numeric::ublas::zero_matrix<float>( 4, 4 );
+	boost::numeric::ublas::matrix<double> retMatrix = boost::numeric::ublas::zero_matrix<double>( 4, 4 );
 	retMatrix( 3, 3 ) = 1;
-	float deg45 = sin( ( 45.0 / 180 ) * M_PI );
+	double deg45 = sin( ( 45.0 / 180 ) * M_PI );
 	util::fvector4 rowVec = m_Image->getPropertyAs<util::fvector4>( "rowVec" );
 	util::fvector4 columnVec = m_Image->getPropertyAs<util::fvector4>( "columnVec" );
 	util::fvector4 sliceVec = m_Image->getPropertyAs<util::fvector4>( "sliceVec" );
@@ -74,9 +74,9 @@ boost::numeric::ublas::matrix< float > ImageHolder::getNormalizedImageOrientatio
 	return retMatrix;
 }
 
-boost::numeric::ublas::matrix< float > ImageHolder::getImageOrientation( bool transposed ) const
+boost::numeric::ublas::matrix< double > ImageHolder::getImageOrientation( bool transposed ) const
 {
-	boost::numeric::ublas::matrix<float> retMatrix = boost::numeric::ublas::zero_matrix<float>( 4, 4 );
+	boost::numeric::ublas::matrix<double> retMatrix = boost::numeric::ublas::zero_matrix<double>( 4, 4 );
 	retMatrix( 3, 3 ) = 1;
 	util::fvector4 rowVec = m_Image->getPropertyAs<util::fvector4>( "rowVec" );
 	util::fvector4 columnVec = m_Image->getPropertyAs<util::fvector4>( "columnVec" );
@@ -173,6 +173,10 @@ bool ImageHolder::setImage( const data::Image &image, const ImageType &_imageTyp
 		lowerThreshold = minMax.second->as<double>();
 		lut = std::string( "standard_grey_values" );
 	}
+	voxelSize = image.getPropertyAs<util::fvector4>("voxelSize");
+	if( image.hasProperty("voxelGap") ) {
+		voxelSize += image.getPropertyAs<util::fvector4>("voxelGap");
+	}
 
 	extent = fabs( minMax.second->as<double>() - minMax.first->as<double>() );
 	voxelCoords = util::ivector4( m_ImageSize[0] / 2, m_ImageSize[1] / 2, m_ImageSize[2] / 2, 0 );
@@ -181,6 +185,9 @@ bool ImageHolder::setImage( const data::Image &image, const ImageType &_imageTyp
 	opacity = 1.0;
 	scaling = 1.0;
 	offset = 0.0;
+	majorTypeID = image.getMajorTypeID();
+	orientation = getImageOrientation();
+	latchedOrientation = getNormalizedImageOrientation();
 	alignedSize32 = get32BitAlignedSize( m_ImageSize );
 	m_PropMap.setPropertyAs<bool>( "init", true );
 	m_PropMap.setPropertyAs<util::slist>( "changedAttributes", util::slist() );
@@ -190,6 +197,7 @@ bool ImageHolder::setImage( const data::Image &image, const ImageType &_imageTyp
 	m_PropMap.setPropertyAs<util::fvector4>( "originalRowVec", image.getPropertyAs<util::fvector4>( "rowVec" ) );
 	m_PropMap.setPropertyAs<util::fvector4>( "originalSliceVec", image.getPropertyAs<util::fvector4>( "sliceVec" ) );
 	m_PropMap.setPropertyAs<util::fvector4>( "originalIndexOrigin", image.getPropertyAs<util::fvector4>( "indexOrigin" ) );
+
 	m_Image->updateOrientationMatrices();
 	return true;
 }

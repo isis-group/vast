@@ -41,7 +41,7 @@ set(GLWIDGET_FILES_HPP
 ##########################################################
 set(ISIS_VIEWER_VERSION_MAJOR "0")
 set(ISIS_VIEWER_VERSION_MINOR "1")
-set(ISIS_VIEWER_VERSION_PATCH "6")
+set(ISIS_VIEWER_VERSION_PATCH "7")
 
 add_definitions(-D_ISIS_VIEWER_VERSION_MAJOR=${ISIS_VIEWER_VERSION_MAJOR})
 add_definitions(-D_ISIS_VIEWER_VERSION_MINOR=${ISIS_VIEWER_VERSION_MINOR})
@@ -55,7 +55,7 @@ SET(ISIS_DIR /usr/share/isis/cmake CACHE PATH
 find_package(ISIS REQUIRED)
 
 option(ISIS_RUNTIME_LOG "Toggles the isis runtime logging" ON)
-option(ISIS_DEBUG_LOG "Toggles the isis debug logging" OFF) 
+option(ISIS_DEBUG_LOG "Toggles the isis debug logging" OFF)
 
 # we use the log definitions of the core
 IF(ISIS_RUNTIME_LOG)
@@ -132,6 +132,15 @@ SET(CPACK_PACKAGE_FILE_NAME ${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION_MAJOR}
 #SET(CPACK_PACKAGE_INSTALL_DIRECTORY "CMake ${${CMAKE_PROJECT_NAME}_VERSION_MAJOR}.${${CMAKE_PROJECT_NAME}_VERSION_MINOR}")
 INCLUDE(CPack)
 
+###########################################################
+# OPenMP config
+###########################################################
+option(VAST_OPENMP "Toggles the omp" OFF)
+
+IF(VAST_OPENMP)
+	SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fopenmp ")
+	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fopenmp ")
+ENDIF(VAST_OPENMP)
 
 
 

@@ -1,5 +1,6 @@
 <RCC>
   <qresource prefix="common">
+    <file>brain.jpg</file>
     <file>newMask.png</file>
     <file>cut.png</file>
     <file>maskeditLUT</file>

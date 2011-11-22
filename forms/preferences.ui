@@ -38,40 +38,9 @@
       <item row="0" column="0">
        <widget class="QTabWidget" name="tabWidget">
         <property name="currentIndex">
-         <number>1</number>
+         <number>0</number>
         </property>
-        <widget class="QWidget" name="tab">
-         <attribute name="title">
-          <string>Common</string>
-         </attribute>
-         <widget class="QGroupBox" name="groupBox">
-          <property name="geometry">
-           <rect>
-            <x>10</x>
-            <y>10</y>
-            <width>431</width>
-            <height>91</height>
-           </rect>
-          </property>
-          <property name="title">
-           <string>Size</string>
-          </property>
-          <widget class="QLabel" name="label">
-           <property name="geometry">
-            <rect>
-             <x>10</x>
-             <y>30</y>
-             <width>81</width>
-             <height>17</height>
-            </rect>
-           </property>
-           <property name="text">
-            <string>Minimum </string>
-           </property>
-          </widget>
-         </widget>
-        </widget>
-        <widget class="QWidget" name="Profile">
+        <widget class="QWidget" name="Common">
          <attribute name="title">
           <string>Profile</string>
          </attribute>
