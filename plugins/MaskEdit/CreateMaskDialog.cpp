@@ -107,7 +107,10 @@ void CreateMaskDialog::createMask()
 		m_MaskEditDialog->m_ViewerCore->setShowCrosshair(false);
 		m_MaskEditDialog->m_ViewerCore->updateScene();
 		m_MaskEditDialog->m_ViewerCore->getUI()->refreshUI();
-
+		m_MaskEditDialog->m_Interface.cut->setEnabled(true);
+		m_MaskEditDialog->m_Interface.paint->setEnabled(true);
+		m_MaskEditDialog->m_Interface.radius->setEnabled(true);
+		m_MaskEditDialog->m_Interface.paint->setChecked(true);
 	}
 	close();
 }

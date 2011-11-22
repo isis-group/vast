@@ -301,6 +301,9 @@ void UICore::refreshUI()
 				widget.second.widgetImplementation->updateScene();
 			}
 		}
+		if( m_ViewerCore->getMode() != ViewerCoreBase::zmap ) {	
+			widget.second.widgetImplementation->setCrossHairColor( QColor( 255, 102, 0 ) );
+		}
 	}
 	m_MainWindow->refreshUI();
 	

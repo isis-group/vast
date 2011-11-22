@@ -153,12 +153,7 @@ void MaskEditDialog::editCurrentImage()
 void MaskEditDialog::createEmptyMask()
 {
 	m_CreateMaskDialog->show();
-	if( m_CurrentMask ) {
-		m_Interface.cut->setEnabled(true);
-		m_Interface.paint->setEnabled(true);
-		m_Interface.radius->setEnabled(true);
-		m_Interface.paint->setChecked(true);
-	}
+
 }
 
 void MaskEditDialog::closeEvent(QCloseEvent* )

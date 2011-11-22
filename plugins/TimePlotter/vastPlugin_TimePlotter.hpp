@@ -17,7 +17,7 @@ namespace plugin
 class TimePlotter : public PluginInterface
 {
 public:
-
+	virtual QKeySequence getShortcut() { return QKeySequence( "T, P" ) ;}
 	virtual std::string getName() { return std::string( "TimePlotter" ) ; }
 	virtual std::string getDescription() { return std::string( "Plots a timeseries" ); }
 	virtual std::string getTooltip() { return std::string( "" ); }

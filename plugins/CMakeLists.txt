@@ -11,6 +11,7 @@ include_directories(${CMAKE_SOURCE_DIR}/viewer)
 option(${CMAKE_PROJECT_NAME}_PLUGIN_TIMEPLOTTER "Enable TimePlotter plugin" OFF)
 option(${CMAKE_PROJECT_NAME}_PLUGIN_ORIENTATIONCORRECTION "Enable OrientationCorrection plugin" OFF)
 option(${CMAKE_PROJECT_NAME}_PLUGIN_MASKEDIT "Enable MaskEdit plugin" OFF)
+option(${CMAKE_PROJECT_NAME}_PLUGIN_CORRELATIONPLOTTER "Enable CorrelationPlotter plugin" OFF)
 
 ############################################################
 # TimePlotter plugin
@@ -32,3 +33,10 @@ endif(${CMAKE_PROJECT_NAME}_PLUGIN_ORIENTATIONCORRECTION)
 if(${CMAKE_PROJECT_NAME}_PLUGIN_MASKEDIT)
 	add_subdirectory(MaskEdit)
 endif(${CMAKE_PROJECT_NAME}_PLUGIN_MASKEDIT)
+
+############################################################
+# CorrelationPlotter plugin
+############################################################
+if(${CMAKE_PROJECT_NAME}_PLUGIN_CORRELATIONPLOTTER)
+	add_subdirectory(CorrelationPlotter)
+endif(${CMAKE_PROJECT_NAME}_PLUGIN_CORRELATIONPLOTTER)
