@@ -16,6 +16,7 @@ public:
 	virtual std::string getDescription() { return std::string( "" ); }
 	virtual std::string getTooltip() { return std::string( "" ); }
 	virtual QKeySequence getShortcut() { return QKeySequence( "C, P" ) ;}
+	virtual QIcon *getToolbarIcon() { return new QIcon( ":/common/Correlation.png" ); }
 	virtual bool isGUI() { return true; }
 	virtual bool call() {
 		if( !m_CorrelationPlotterSet ) {	

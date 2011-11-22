@@ -310,7 +310,7 @@ void MainWindow::reloadPluginsToGUI()
 				m_Toolbar->addAction( processAction );
 			}
 			processAction->setShortcut( plugin->getShortcut() );
-			processAction->setStatusTip( QString( plugin->getTooltip().c_str() ) );
+			processAction->setToolTip(QString( plugin->getTooltip().c_str() )  );
 			signalMapper->setMapping( processAction, QString( plugin->getName().c_str() ) );
 			tmpMenu->addAction( processAction );
 			connect( processAction, SIGNAL( triggered() ), signalMapper, SLOT( map() ) );
