@@ -1,3 +1,10 @@
+vast (0.1.7alpha-0) stable; urgency=low
+
+  * add correlation plotting plugin
+  * some fixes
+
+ -- ISIS Group (The friendly isis team) <gr_isis@cbs.mpg.de>  Thu, 22 Nov 2011 17:45:35 +0200
+
 vast (0.1.6alpha-0) stable; urgency=low
 
   * add zmap mode
