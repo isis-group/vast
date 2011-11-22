@@ -10,13 +10,26 @@ isis::viewer::plugin::CorrelationPlotterDialog::CorrelationPlotterDialog(QWidget
 	m_Interface.correlationType->addItem( "linear" );
 	m_Interface.correlationType->setCurrentIndex(0);
 	m_Interface.lock->setChecked( false );
+	connect( m_Interface.lock, SIGNAL( clicked(bool)), this, SLOT( lockClicked()));
+	
+#ifdef _OPENMP
+	omp_set_num_threads( omp_get_num_procs() );
+#endif
+	
 }
+
+void isis::viewer::plugin::CorrelationPlotterDialog::lockClicked()
+{
+	if( m_Interface.lock->isChecked() )  {
+		calculateCorrelation(true);
+	}
+}
+
 
 void isis::viewer::plugin::CorrelationPlotterDialog::physicalCoordsChanged(isis::util::fvector4 physicalCoords)
 {
 	if( !m_Interface.lock->isChecked() ) {
 		m_CurrentVoxelPos = m_CurrentFunctionalImage->voxelCoords;
-		
 		calculateCorrelation();
 		m_ViewerCore->updateScene();
 	}	
@@ -27,6 +40,7 @@ void isis::viewer::plugin::CorrelationPlotterDialog::physicalCoordsChanged(isis:
 void isis::viewer::plugin::CorrelationPlotterDialog::closeEvent(QCloseEvent* )
 {
 	disconnect( m_ViewerCore, SIGNAL( emitPhysicalCoordsChanged(util::fvector4)), this, SLOT( physicalCoordsChanged(util::fvector4)));
+	calculateCorrelation(true);
 	m_ViewerCore->setMode( m_OrigMode );
 	m_ViewerCore->getUI()->refreshUI();;
 	
@@ -117,7 +131,7 @@ bool isis::viewer::plugin::CorrelationPlotterDialog::createCorrelationMap()
 }
 
 
-void isis::viewer::plugin::CorrelationPlotterDialog::calculateCorrelation()
+void isis::viewer::plugin::CorrelationPlotterDialog::calculateCorrelation(bool all)
 {	
 	const size_t vol = m_CurrentFunctionalImage->getImageSize()[0] * m_CurrentFunctionalImage->getImageSize()[1] * m_CurrentFunctionalImage->getImageSize()[2];
 	const size_t n = m_CurrentFunctionalImage->getImageSize()[3];
@@ -130,21 +144,36 @@ void isis::viewer::plugin::CorrelationPlotterDialog::calculateCorrelation()
 	}
 	const double _x = sum_x / n;	
 	const double s_x = std::sqrt((1/float(n-1))*(sum_quad_x - n * _x * _x ));
-	for( unsigned int z = 0; z < m_CurrentFunctionalImage->getImageSize()[2]; z++ ) {
+	
+	if( !all ) {
+#pragma omp parallel for
+		for( unsigned int z = 0; z < m_CurrentFunctionalImage->getImageSize()[2]; z++ ) {
+			for( unsigned int y = 0; y < m_CurrentFunctionalImage->getImageSize()[1]; y++ ) {
+				_internCalculateCorrelation( util::ivector4( m_CurrentVoxelPos[0], y,z ), s_x, _x, vx, n, vol );
+			}
+		}
+#pragma omp parallel for
 		for( unsigned int y = 0; y < m_CurrentFunctionalImage->getImageSize()[1]; y++ ) {
-			_internCalculateCorrelation( util::ivector4( m_CurrentVoxelPos[0], y,z ), s_x, _x, vx, n, vol );
+			for( unsigned int x = 0; x < m_CurrentFunctionalImage->getImageSize()[0]; x++ ) {
+				_internCalculateCorrelation( util::ivector4( x,y,m_CurrentVoxelPos[2] ), s_x, _x, vx, n, vol );
+			}
+		}
+#pragma omp parallel for
+		for( unsigned int z = 0; z < m_CurrentFunctionalImage->getImageSize()[2]; z++ ) {
+			for( unsigned int x = 0; x < m_CurrentFunctionalImage->getImageSize()[0]; x++ ) {
+				_internCalculateCorrelation( util::ivector4( x, m_CurrentVoxelPos[1], z ), s_x, _x, vx, n, vol );
+			}
+		}	
+	} else {
+#pragma omp parallel for
+		for( unsigned int z = 0; z < m_CurrentFunctionalImage->getImageSize()[2]; z++ ) {
+			for( unsigned int y = 0; y < m_CurrentFunctionalImage->getImageSize()[1]; y++ ) {
+				for( unsigned int x = 0; x < m_CurrentFunctionalImage->getImageSize()[0]; x++ ) {
+					_internCalculateCorrelation( util::ivector4( x, y, z ), s_x, _x, vx, n, vol );
+				}
+			}
 		}
 	}
-	for( unsigned int y = 0; y < m_CurrentFunctionalImage->getImageSize()[1]; y++ ) {
-		for( unsigned int x = 0; x < m_CurrentFunctionalImage->getImageSize()[0]; x++ ) {
-			_internCalculateCorrelation( util::ivector4( x,y,m_CurrentVoxelPos[2] ), s_x, _x, vx, n, vol );
-		}
-	}
-	for( unsigned int z = 0; z < m_CurrentFunctionalImage->getImageSize()[2]; z++ ) {
-		for( unsigned int x = 0; x < m_CurrentFunctionalImage->getImageSize()[0]; x++ ) {
-			_internCalculateCorrelation( util::ivector4( x, m_CurrentVoxelPos[1], z ), s_x, _x, vx, n, vol );
-		}
-	}	
 
 	
 

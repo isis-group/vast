@@ -6,6 +6,10 @@
 #include "qviewercore.hpp"
 #include <cmath>
 
+#ifdef _OPENMP
+#include <omp.h>
+#endif /*_OPENMP*/
+
 namespace isis {
 namespace viewer {
 namespace plugin {
@@ -23,6 +27,8 @@ public Q_SLOTS:
 	virtual void closeEvent( QCloseEvent* );
 	void physicalCoordsChanged( util::fvector4 );
 	bool createCorrelationMap();
+	void calculateCorrelation(bool all = false);
+	void lockClicked();
 	
 private:
 	ViewerCoreBase::Mode m_OrigMode;
@@ -33,7 +39,7 @@ private:
 	boost::scoped_ptr< isis::data::Chunk > m_InternalChunk;
 	util::ivector4 m_CurrentVoxelPos;
 	
-	void calculateCorrelation();
+	
 	void _internCalculateCorrelation( const util::ivector4 &vec, const double &s_x, const double &_x, const InternalFunctionalImageType *vx, const size_t &n, const size_t &vol  );	
 
 };
