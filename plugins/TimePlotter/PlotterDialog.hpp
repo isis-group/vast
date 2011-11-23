@@ -69,7 +69,6 @@ public Q_SLOTS:
 				QVector<double> timeSteps;
 				QVector<double> intensityValues;
 				using namespace isis::data;
-
 				for ( size_t t = 0; t < image->getImageSize()[3]; t++ ) {
 					timeSteps.push_back( t * repTime );
 
