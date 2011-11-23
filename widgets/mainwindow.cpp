@@ -63,6 +63,7 @@ MainWindow::MainWindow( QViewerCore *core ) :
 	connect( m_ActionReset_Scaling, SIGNAL( triggered() ), this, SLOT( resetScaling() ) );
 	connect( m_UI.actionShow_Crosshair, SIGNAL( triggered(bool)), m_ViewerCore, SLOT( setShowCrosshair(bool)));
 	connect( m_UI.actionSave_all_Images, SIGNAL( triggered()), this, SLOT( saveAllImages()));
+	connect( m_UI.actionToggle_Zmap_Mode, SIGNAL( triggered(bool)), this, SLOT( toggleZMapMode(bool)));
 
 	//toolbar stuff
 	m_Toolbar->setOrientation( Qt::Horizontal );
@@ -92,6 +93,18 @@ MainWindow::MainWindow( QViewerCore *core ) :
 
 	scalingWidget->setVisible( false );
 }
+
+void MainWindow::toggleZMapMode(bool zmap)
+{
+	if( zmap ) {
+		m_ViewerCore->setMode( ViewerCoreBase::zmap );
+	} else {
+		m_ViewerCore->setMode( ViewerCoreBase::standard );
+	}
+	m_ViewerCore->getUI()->refreshUI();
+	m_ViewerCore->updateScene();
+}
+
 
 
 void MainWindow::keyPressEvent( QKeyEvent *e )
@@ -133,12 +146,13 @@ void MainWindow::ignoreOrientation( bool ignore )
 		if( ignore ) {
 			setOrientationToIdentity( *image.second->getISISImage() );
 			checkForCaCp( image.second );
+			image.second->updateOrientation();
 		} else {
 			image.second->getISISImage()->setPropertyAs<util::fvector4>( "rowVec", image.second->getPropMap().getPropertyAs<util::fvector4>( "originalRowVec" ) );
 			image.second->getISISImage()->setPropertyAs<util::fvector4>( "columnVec", image.second->getPropMap().getPropertyAs<util::fvector4>( "originalColumnVec" ) );
 			image.second->getISISImage()->setPropertyAs<util::fvector4>( "sliceVec", image.second->getPropMap().getPropertyAs<util::fvector4>( "originalSliceVec" ) );
 			image.second->getISISImage()->setPropertyAs<util::fvector4>( "indexOrigin", image.second->getPropMap().getPropertyAs<util::fvector4>( "originalIndexOrigin" ) );
-			image.second->getISISImage()->updateOrientationMatrices();
+			image.second->updateOrientation();
 			checkForCaCp( image.second );
 		}
 		image.second->physicalCoords = image.second->getISISImage()->getPhysicalCoordsFromIndex( image.second->voxelCoords );
@@ -348,6 +362,11 @@ void MainWindow::refreshUI()
 	m_ViewerCore->setShowLabels( m_UI.actionShow_Labels->isChecked() );
 	m_UI.actionPropagate_Zooming->setChecked( m_ViewerCore->getOptionMap()->getPropertyAs<bool>( "propagateZooming" ) );
 	m_RadiusSpin->setValue( m_ViewerCore->getOptionMap()->getPropertyAs<uint16_t>( "minMaxSearchRadius" ) );
+	if( m_ViewerCore->getMode() == ViewerCoreBase::zmap ) {
+		m_UI.actionToggle_Zmap_Mode->setChecked( true );
+	} else {
+		m_UI.actionToggle_Zmap_Mode->setChecked( false );
+	}
 }
 
 

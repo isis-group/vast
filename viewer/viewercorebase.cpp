@@ -12,7 +12,8 @@ namespace viewer
 ViewerCoreBase::ViewerCoreBase( )
 	: m_ColorHandler( new color::Color() ),
 	  m_OptionsMap( boost::shared_ptr< util::PropertyMap >( new util::PropertyMap ) ),
-	  m_Mode( standard )
+	  m_Mode( standard ),
+	  m_CurrentAnatomicalReference( boost::shared_ptr<ImageHolder>() )
 {
 	m_ColorHandler->initStandardColormaps();
 	setCommonViewerOptions();
@@ -35,7 +36,7 @@ ImageHolder::ImageListType ViewerCoreBase::addImageList( const std::list< data::
 boost::shared_ptr<ImageHolder> ViewerCoreBase::addImage( const isis::data::Image &image, const isis::viewer::ImageHolder::ImageType &imageType )
 {
 	boost::shared_ptr<ImageHolder> retImage = m_DataContainer.addImage( image, imageType );
-	if( imageType == ImageHolder::anatomical_image ) {
+	if( imageType == ImageHolder::anatomical_image && image.getSizeAsVector()[3] == 1 ) {
 		m_CurrentAnatomicalReference = retImage;
 	}
 
@@ -43,6 +44,10 @@ boost::shared_ptr<ImageHolder> ViewerCoreBase::addImage( const isis::data::Image
 	if(!( getMode() == ViewerCoreBase::zmap && retImage->imageType == ImageHolder::anatomical_image )) {
 		setCurrentImage( retImage );
 	}
+	if( getMode() == ViewerCoreBase::zmap && retImage->getImageSize()[3] > 1 ) {
+		retImage->isVisible = false;
+	}
+	
 	return retImage;
 }
 

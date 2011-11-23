@@ -30,6 +30,8 @@ public:
 
 	boost::shared_ptr<ImageHolder> getCurrentImage();
 
+	boost::shared_ptr<ImageHolder> getCurrentAnatomicalRefernce() const { return m_CurrentAnatomicalReference; }
+	
 	const DataContainer &getDataContainer() const { return m_DataContainer; }
 	DataContainer &getDataContainer() { return m_DataContainer; }
 	ImageHolder::ImageListType getImageList() const { return m_ImageList; }
@@ -42,6 +44,7 @@ public:
 	
 	void setMode( Mode mode ) { m_Mode = mode; }
 	Mode getMode() const { return m_Mode; }
+	
 
 private:
 	//this is the container which actually holds all the images

@@ -73,6 +73,8 @@ void ImageStackWidget::synchronize()
 			}
 
 			m_ImageStack->addItem( item );
+		} else if ( imageRef.second.get() != m_ViewerCore->getCurrentAnatomicalRefernce().get() ) {
+			imageRef.second->isVisible = false;
 		}
 	}
 }

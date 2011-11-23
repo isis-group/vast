@@ -152,9 +152,8 @@ bool ImageHolder::setImage( const data::Image &image, const ImageType &_imageTyp
 
 	//create the chunk vector
 	BOOST_FOREACH( std::vector< ImagePointerType >::const_reference pointerRef, m_ImageVector ) {
-		m_ChunkVector.push_back( data::Chunk( pointerRef, m_ImageSize[0], m_ImageSize[1], m_ImageSize[2] ) );
+		m_ChunkVector.push_back( data::Chunk(  pointerRef, m_ImageSize[0], m_ImageSize[1], m_ImageSize[2] ) );
 	}
-
 
 	LOG( Debug, verbose_info ) << "Spliced image to " << m_ImageVector.size() << " volumes.";
 
@@ -186,19 +185,16 @@ bool ImageHolder::setImage( const data::Image &image, const ImageType &_imageTyp
 	scaling = 1.0;
 	offset = 0.0;
 	majorTypeID = image.getMajorTypeID();
-	orientation = getImageOrientation();
-	latchedOrientation = getNormalizedImageOrientation();
 	alignedSize32 = get32BitAlignedSize( m_ImageSize );
 	m_PropMap.setPropertyAs<bool>( "init", true );
 	m_PropMap.setPropertyAs<util::slist>( "changedAttributes", util::slist() );
 	m_PropMap.setPropertyAs<double>( "scalingMinValue", minMax.first->as<double>() );
 	m_PropMap.setPropertyAs<double>( "scalingMaxValue", minMax.second->as<double>() );
+	updateOrientation();
 	m_PropMap.setPropertyAs<util::fvector4>( "originalColumnVec", image.getPropertyAs<util::fvector4>( "columnVec" ) );
 	m_PropMap.setPropertyAs<util::fvector4>( "originalRowVec", image.getPropertyAs<util::fvector4>( "rowVec" ) );
 	m_PropMap.setPropertyAs<util::fvector4>( "originalSliceVec", image.getPropertyAs<util::fvector4>( "sliceVec" ) );
-	m_PropMap.setPropertyAs<util::fvector4>( "originalIndexOrigin", image.getPropertyAs<util::fvector4>( "indexOrigin" ) );
-
-	m_Image->updateOrientationMatrices();
+	m_PropMap.setPropertyAs<util::fvector4>( "originalIndexOrigin", image.getPropertyAs<util::fvector4>( "indexOrigin" ) );	
 	return true;
 }
 
@@ -220,6 +216,13 @@ bool ImageHolder::removeChangedAttribute(const std::string& attribute)
 		m_PropMap.setPropertyAs<util::slist>( "changedAttributes", attributes );
 		return true;
 	}
+}
+
+void ImageHolder::updateOrientation()
+{
+	m_Image->updateOrientationMatrices();
+	latchedOrientation = getNormalizedImageOrientation();
+	orientation = getImageOrientation();
 }
 
 

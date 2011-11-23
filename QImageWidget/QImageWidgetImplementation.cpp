@@ -130,33 +130,48 @@ void QImageWidgetImplementation::paintEvent( QPaintEvent *event )
 										 );
 
 		boost::shared_ptr<ImageHolder> cImage =  getWidgetSpecCurrentImage();
-		//painting all anatomical images
-		BOOST_FOREACH( ImageVectorType::const_reference image, m_ImageVector ) {
-			if( image.get() != cImage.get()
-				&& image->isVisible
-				&& image->imageType == ImageHolder::anatomical_image ) {
-				paintImage( image );
+
+		if( m_ViewerCore->getMode() == ViewerCoreBase::zmap ) {
+			//painting all anatomical images
+			BOOST_FOREACH( ImageVectorType::const_reference image, m_ImageVector ) {
+				if( image.get() != cImage.get()
+					&& image->isVisible
+					&& image->imageType == ImageHolder::anatomical_image ) {
+					paintImage( image );
+				}
 			}
-		}
 
-		if( cImage->imageType == ImageHolder::anatomical_image
-			&& cImage->isVisible ) {
-			paintImage( cImage );
-		}
-
-		//painting the zmaps
-		BOOST_FOREACH( ImageVectorType::const_reference image, m_ImageVector ) {
-			if( image.get() != cImage.get()
-				&& image->isVisible
-				&& image->imageType == ImageHolder::z_map ) {
-				paintImage( image );
+			if( cImage->imageType == ImageHolder::anatomical_image
+				&& cImage->isVisible ) {
+				paintImage( cImage );
 			}
-		}
 
-		if( cImage->imageType == ImageHolder::z_map
-			&& cImage->isVisible ) {
-			paintImage( cImage );
+			//painting the zmaps
+			BOOST_FOREACH( ImageVectorType::const_reference image, m_ImageVector ) {
+				if( image.get() != cImage.get()
+					&& image->isVisible
+					&& image->imageType == ImageHolder::z_map ) {
+					paintImage( image );
+				}
+			}
+
+			if( cImage->imageType == ImageHolder::z_map
+				&& cImage->isVisible ) {
+				paintImage( cImage );
+			}
+		} else {
+			BOOST_FOREACH( ImageVectorType::const_reference image, m_ImageVector ) {
+				if( image.get() != cImage.get()
+					&& image->isVisible ) {
+					paintImage( image );
+				}
+			}
+			if( cImage->isVisible ) {
+				paintImage( cImage );
+			}			
 		}
+		
+		
 		if( m_ShowCrosshair ) {
 			paintCrosshair();
 		}

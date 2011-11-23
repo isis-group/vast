@@ -163,6 +163,7 @@ bool OrientatioCorrectionDialog::applyTransform( const boost::numeric::ublas::ma
 		} else {
 			LOG( Runtime, error ) << "Could not apply transform " << trans << " to the image " << m_ViewerCore->getCurrentImage()->getFileNames().front() << " !";
 		}
+		m_ViewerCore->getCurrentImage()->updateOrientation();
 		m_ViewerCore->updateScene();
 		return ret;
 	}
