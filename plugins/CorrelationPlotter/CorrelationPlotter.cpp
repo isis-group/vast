@@ -12,10 +12,7 @@ isis::viewer::plugin::CorrelationPlotterDialog::CorrelationPlotterDialog(QWidget
 	m_Interface.lock->setChecked( false );
 	connect( m_Interface.lock, SIGNAL( clicked(bool)), this, SLOT( lockClicked()));
 	
-#ifdef _OPENMP
-	omp_set_num_threads( omp_get_num_procs() );
-#endif
-	
+
 }
 
 void isis::viewer::plugin::CorrelationPlotterDialog::lockClicked()

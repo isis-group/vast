@@ -5,6 +5,11 @@
 #include <map>
 #include "pluginloader.hpp"
 
+
+#ifdef _OPENMP
+#include <omp.h>
+#endif /*_OPENMP*/
+
 namespace isis
 {
 namespace viewer

@@ -17,6 +17,10 @@ ViewerCoreBase::ViewerCoreBase( )
 {
 	m_ColorHandler->initStandardColormaps();
 	setCommonViewerOptions();
+	
+#ifdef _OPENMP
+	omp_set_num_threads( omp_get_num_procs() );
+#endif
 }
 
 ImageHolder::ImageListType ViewerCoreBase::addImageList( const std::list< data::Image > imageList, const ImageHolder::ImageType &imageType )

@@ -54,10 +54,10 @@ void ImageStackWidget::synchronize()
 	m_Interface.frame->setMaximumHeight(m_ViewerCore->getOptionMap()->getPropertyAs<uint16_t>("maxOptionWidgetHeight"));
 	m_Interface.frame->setMinimumHeight(m_ViewerCore->getOptionMap()->getPropertyAs<uint16_t>("minOptionWidgetHeight"));
 	m_ImageStack->clear();
-	BOOST_FOREACH( DataContainer::const_reference imageRef, m_ViewerCore->getDataContainer() ) {
+	BOOST_FOREACH( DataContainer::const_reference imageRef, m_ViewerCore->getDataContainer() ) 
+	{
 		if( !( m_ViewerCore->getMode() == ViewerCoreBase::zmap && imageRef.second->imageType == ImageHolder::anatomical_image ) ) 
 		{
-			m_ViewerCore->setCurrentImage( imageRef.second );
 			QListWidgetItem *item = new QListWidgetItem;
 			QString sD = imageRef.second->getPropMap().getPropertyAs<std::string>( "sequenceDescription" ).c_str();
 			item->setText( QString( imageRef.second->getFileNames().front().c_str() ) );
