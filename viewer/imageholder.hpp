@@ -62,6 +62,8 @@ public:
 	void addWidget( WidgetInterface *widget ) { m_WidgetList.push_back( widget ); }
 	void removeWidget( WidgetInterface *widget ) { m_WidgetList.erase( std::find( m_WidgetList.begin(), m_WidgetList.end(), widget ) ) ; }
 	std::list< WidgetInterface * > getWidgetList() { return m_WidgetList; }
+	
+	void updateOrientation();
 
 	/**offset, scaling**/
 	template<typename TYPE>

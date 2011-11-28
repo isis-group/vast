@@ -110,7 +110,7 @@ QTransform QOrienationHandler::getTransform( const ViewPortType &viewPort, const
 	retTransform.translate( flipVec[0] * viewPort[2], flipVec[1] * viewPort[3] );
 	retTransform.scale( viewPort[0], viewPort[1] );
 	retTransform.translate(  flipVec[0] < 0 ? -mappedSize[0] : 0, flipVec[1] < 0 ? -mappedSize[1] : 0 );
-
+	
 	return retTransform;
 
 }

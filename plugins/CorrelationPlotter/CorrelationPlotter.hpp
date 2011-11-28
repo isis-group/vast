@@ -6,10 +6,6 @@
 #include "qviewercore.hpp"
 #include <cmath>
 
-#ifdef _OPENMP
-#include <omp.h>
-#endif /*_OPENMP*/
-
 namespace isis {
 namespace viewer {
 namespace plugin {

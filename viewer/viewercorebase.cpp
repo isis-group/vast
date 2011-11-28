@@ -12,10 +12,15 @@ namespace viewer
 ViewerCoreBase::ViewerCoreBase( )
 	: m_ColorHandler( new color::Color() ),
 	  m_OptionsMap( boost::shared_ptr< util::PropertyMap >( new util::PropertyMap ) ),
-	  m_Mode( standard )
+	  m_Mode( standard ),
+	  m_CurrentAnatomicalReference( boost::shared_ptr<ImageHolder>() )
 {
 	m_ColorHandler->initStandardColormaps();
 	setCommonViewerOptions();
+	
+#ifdef _OPENMP
+	omp_set_num_threads( omp_get_num_procs() );
+#endif
 }
 
 ImageHolder::ImageListType ViewerCoreBase::addImageList( const std::list< data::Image > imageList, const ImageHolder::ImageType &imageType )
@@ -35,14 +40,16 @@ ImageHolder::ImageListType ViewerCoreBase::addImageList( const std::list< data::
 boost::shared_ptr<ImageHolder> ViewerCoreBase::addImage( const isis::data::Image &image, const isis::viewer::ImageHolder::ImageType &imageType )
 {
 	boost::shared_ptr<ImageHolder> retImage = m_DataContainer.addImage( image, imageType );
-	if( imageType == ImageHolder::anatomical_image ) {
+	if( imageType == ImageHolder::anatomical_image && image.getSizeAsVector()[3] == 1 ) {
 		m_CurrentAnatomicalReference = retImage;
 	}
-
+	setCurrentImage( retImage );
 	m_ImageList.push_back( retImage );
-	if(!( getMode() == ViewerCoreBase::zmap && retImage->imageType == ImageHolder::anatomical_image )) {
-		setCurrentImage( retImage );
+
+	if( getMode() == ViewerCoreBase::zmap && retImage->getImageSize()[3] > 1 ) {
+		retImage->isVisible = false;
 	}
+
 	return retImage;
 }
 

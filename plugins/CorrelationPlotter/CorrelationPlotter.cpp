@@ -12,10 +12,7 @@ isis::viewer::plugin::CorrelationPlotterDialog::CorrelationPlotterDialog(QWidget
 	m_Interface.lock->setChecked( false );
 	connect( m_Interface.lock, SIGNAL( clicked(bool)), this, SLOT( lockClicked()));
 	
-#ifdef _OPENMP
-	omp_set_num_threads( omp_get_num_procs() );
-#endif
-	
+
 }
 
 void isis::viewer::plugin::CorrelationPlotterDialog::lockClicked()
@@ -72,6 +69,7 @@ void isis::viewer::plugin::CorrelationPlotterDialog::showEvent(QShowEvent* )
 			QMessageBox msgBox;
 			msgBox.setText( "Can not find any functional dataset. Won´t calculate correlation map!" );
 			msgBox.exec();
+			return;
 		} else {
 			if ( !m_CurrentCorrelationMap ) {
 				createCorrelationMap() ;
@@ -91,8 +89,9 @@ void isis::viewer::plugin::CorrelationPlotterDialog::showEvent(QShowEvent* )
 				m_ViewerCore->setMode( ViewerCoreBase::zmap );	
 			}
 			m_ViewerCore->getUI()->refreshUI();
-			physicalCoordsChanged( m_CurrentFunctionalImage->physicalCoords );
+			
 		}
+		physicalCoordsChanged( m_CurrentFunctionalImage->physicalCoords );
 	}
 
 }

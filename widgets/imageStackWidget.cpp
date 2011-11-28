@@ -54,7 +54,8 @@ void ImageStackWidget::synchronize()
 	m_Interface.frame->setMaximumHeight(m_ViewerCore->getOptionMap()->getPropertyAs<uint16_t>("maxOptionWidgetHeight"));
 	m_Interface.frame->setMinimumHeight(m_ViewerCore->getOptionMap()->getPropertyAs<uint16_t>("minOptionWidgetHeight"));
 	m_ImageStack->clear();
-	BOOST_FOREACH( DataContainer::const_reference imageRef, m_ViewerCore->getDataContainer() ) {
+	BOOST_FOREACH( DataContainer::const_reference imageRef, m_ViewerCore->getDataContainer() ) 
+	{
 		if( !( m_ViewerCore->getMode() == ViewerCoreBase::zmap && imageRef.second->imageType == ImageHolder::anatomical_image ) ) 
 		{
 			QListWidgetItem *item = new QListWidgetItem;
@@ -73,6 +74,8 @@ void ImageStackWidget::synchronize()
 			}
 
 			m_ImageStack->addItem( item );
+		} else if ( imageRef.second.get() != m_ViewerCore->getCurrentAnatomicalRefernce().get() ) {
+			imageRef.second->isVisible = false;
 		}
 	}
 }

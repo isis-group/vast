@@ -62,6 +62,7 @@ public Q_SLOTS:
 	void showLoggingDialog();
 	void refreshUI();
 	void resetScaling();
+	void toggleZMapMode(bool);
 	virtual void keyPressEvent( QKeyEvent * );
 
 private:
