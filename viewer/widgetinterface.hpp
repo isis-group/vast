@@ -4,8 +4,6 @@
 #include "common.hpp"
 #include "imageholder.hpp"
 #include <QtGui>
-#include <boost/uuid/uuid.hpp>
-#include <boost/uuid/uuid_generators.hpp>
 
 namespace isis
 {
@@ -38,21 +36,17 @@ public:
 
 	virtual bool lookAtPhysicalCoords( const util::fvector4 &physicalCoords ) = 0;
 
-	boost::uuids::uuid getID() const { return m_ID; }
-
 	ImageVectorType getImageVector() const { return m_ImageVector; }
 
 protected:
 	WidgetInterface( QViewerCore *core, QWidget *parent, PlaneOrientation orientation )
 		: m_ViewerCore( core ),
 		m_PlaneOrientation( orientation ),
-		m_Parent( parent ),
-		m_ID( boost::uuids::random_generator()() ) {}
+		m_Parent( parent ) {}
 
 	QViewerCore *m_ViewerCore;
 	PlaneOrientation m_PlaneOrientation;
 	QWidget *m_Parent;
-	boost::uuids::uuid m_ID;
 	ImageVectorType m_ImageVector;
 };
 
