@@ -1,3 +1,9 @@
+vast (0.1.7alpha-1) stable; urgency=low
+
+  * new isis version 0.4.1
+
+ -- ISIS Group (The friendly isis team) <gr_isis@cbs.mpg.de>  Thu, 22 Nov 2011 17:45:35 +0200
+
 vast (0.1.7alpha-0) stable; urgency=low
 
   * add correlation plotting plugin
