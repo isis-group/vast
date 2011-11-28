@@ -70,7 +70,6 @@ public:
 	std::pair<double, double> getOptimalScalingToForType( const std::pair<double, double> &cutAway ) const {
 		const size_t volume = getImageSize()[0] * getImageSize()[1] * getImageSize()[2];
 		const TYPE maxTypeValue = std::numeric_limits<TYPE>::max();
-		const TYPE minTypeValue = std::numeric_limits<TYPE>::min();
 		const TYPE minImage = internMinMax.first->as<TYPE>();
 		const TYPE maxImage = internMinMax.second->as<TYPE>();
 		const TYPE extent = maxImage - minImage;
