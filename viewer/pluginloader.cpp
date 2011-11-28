@@ -1,5 +1,5 @@
-#include "pluginloader.hpp"
 #include <CoreUtils/message.hpp>
+#include "pluginloader.hpp"
 #include "common.hpp"
 #ifdef WIN32
 #include <windows.h>

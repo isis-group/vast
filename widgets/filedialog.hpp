@@ -3,10 +3,10 @@
 
 
 #include "ui_fileOpenWidget.h"
-#include <QFileDialog>
-#include <boost/filesystem.hpp>
 #include "qviewercore.hpp"
+#include <QFileDialog>
 #include <QCompleter>
+#include <boost/filesystem.hpp>
 
 namespace isis
 {
