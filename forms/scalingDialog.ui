@@ -27,9 +27,6 @@
   <property name="accessibleDescription">
    <string notr="true"/>
   </property>
-  <property name="inputMethodHints">
-   <set>Qt::ImhNone</set>
-  </property>
   <property name="sizeGripEnabled">
    <bool>false</bool>
   </property>

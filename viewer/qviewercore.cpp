@@ -210,9 +210,9 @@ void QViewerCore::openPath( QStringList fileList, ImageHolder::ImageType imageTy
 			boost::filesystem::path p( filename.toStdString() );
 
 			if( boost::filesystem::is_directory( p ) ) {
-				msg << "Loading images from directory \"" << p.filename() << "\"...";
+				msg << "Loading images from directory \"" << p.leaf() << "\"...";
 			} else {
-				msg << "Loading image \"" << p.filename() << "\"...";
+				msg << "Loading image \"" << p.leaf() << "\"...";
 			}
 			getUI()->getMainWindow()->startWidget->showMe( false );
 			receiveMessage( msg.str() );

@@ -29,7 +29,7 @@ int main( int argc, char *argv[] )
 
 	util::Selection dbg_levels( "error,warning,info,verbose_info" );
 	dbg_levels.set( "warning" );
-
+#if QT_VERSION >= 0x040500 
 	const char *graphics_system = getenv( "VAST_GRAPHICS_SYSTEM" );
 
 	if( graphics_system && ( !strcmp( graphics_system, "raster" ) || !strcmp( graphics_system, "opengl" ) || !strcmp( graphics_system, "native" ) ) ) {
@@ -37,7 +37,7 @@ int main( int argc, char *argv[] )
 	} else {
 		QApplication::setGraphicsSystem( "raster" );
 	}
-
+#endif
 	qt4::IOQtApplication app( appName.c_str(), false, false );
 	app.parameters["in"] = util::slist();
 	app.parameters["in"].needed() = false;

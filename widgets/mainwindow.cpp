@@ -31,11 +31,9 @@ MainWindow::MainWindow( QViewerCore *core ) :
 	
 	m_UI.action_Save_Image->setShortcut( QKeySequence::Save );
 	m_UI.action_Save_Image->setIconVisibleInMenu(true);
-	m_UI.actionSave_Image->setShortcut( QKeySequence::SaveAs );
 	m_UI.actionSave_Image->setIconVisibleInMenu(true);
 	m_UI.actionOpen_image->setShortcut( QKeySequence::Open );
 	m_UI.actionOpen_image->setIconVisibleInMenu( true );
-	m_UI.action_Exit->setShortcut( QKeySequence::Quit );
 	m_UI.action_Exit->setIconVisibleInMenu( true );
 	m_UI.actionSave_all_Images->setIconVisibleInMenu( true );
 	m_UI.actionIgnore_Orientation->setShortcut( QKeySequence( tr( "I, O" ) ) );

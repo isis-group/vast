@@ -174,7 +174,7 @@
     <string>Save Image As...</string>
    </property>
    <property name="shortcut">
-    <string>S, I, A</string>
+    <string>Ctrl+Alt+Shift+S</string>
    </property>
   </action>
   <action name="action_Exit">
@@ -186,7 +186,7 @@
     <string>&amp;Exit</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+C</string>
+    <string>Ctrl+Q</string>
    </property>
   </action>
   <action name="action_Preferences">
