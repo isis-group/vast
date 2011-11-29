@@ -49,7 +49,7 @@ private:
 		util::ivector4 start;
 		util::ivector4 end;
 		const bool cut = m_Interface.cut->isChecked();
-		for( size_t i = 0; i < 3; i++ ) {
+		for( unsigned short i = 0; i < 3; i++ ) {
 			start[i] = ( voxel[i] - m_Radius ) < 0 ? 0 : voxel[i] - m_Radius;
 			end[i] = ( voxel[i] + m_Radius ) > imageSize[i] ? imageSize[i] : voxel[i] + m_Radius;
 		}

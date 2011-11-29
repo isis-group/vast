@@ -65,7 +65,9 @@ void isis::viewer::widget::FileDialog::setup()
 	case OPEN_DIR:
 		m_FileDialog.setWindowTitle( "Open Directory" );
 		m_FileDialog.setFileMode( QFileDialog::Directory );
+#if QT_VERSION >= 0x040500 
 		m_FileDialog.setOption( QFileDialog::ShowDirsOnly, true );
+#endif
 		m_Interface.fileDirLabel->setText( "Directory: " );
 		m_Interface.openSaveButton->setText( "Open Directory" );
 		m_Interface.dirRadio->setChecked( true );
