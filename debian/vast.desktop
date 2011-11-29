@@ -1,0 +1,12 @@
+[Desktop Entry]
+Encoding=UTF-8
+GernericName=MRI/fMRI Image Viewer
+GernericName[de]=Betrachter fuer MRT-Daten
+Name=vast
+Exec=vast %F
+TryExec=vast
+Type=Application
+Terminal=false
+Comment=This program is part of lipsia/isis
+Categories=Education;Graphics;Science;DataVisualization;MedicalSoftware;Qt;Viewer;
+Icon=vast.xpm
