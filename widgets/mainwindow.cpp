@@ -35,6 +35,12 @@ MainWindow::MainWindow( QViewerCore *core ) :
 	m_UI.actionOpen_image->setShortcut( QKeySequence::Open );
 	m_UI.actionOpen_image->setIconVisibleInMenu( true );
 	m_UI.action_Exit->setIconVisibleInMenu( true );
+
+#if QT_VERSION >= 0x040500 
+	m_UI.actionSave_Image->setShortcut( QKeySequence::SaveAs );
+	m_UI.action_Exit->setShortcut( QKeySequence::Quit );	
+#endif
+
 	m_UI.actionSave_all_Images->setIconVisibleInMenu( true );
 	m_UI.actionIgnore_Orientation->setShortcut( QKeySequence( tr( "I, O" ) ) );
 	m_UI.action_Preferences->setShortcut( QKeySequence( tr( "S, P" ) ) );
