@@ -1,0 +1,8 @@
+?package(vast): \
+	needs="X11" \
+	section="Applications/Science" \
+	title="vast" \
+	longtitle="vast Image Viewer" \
+	icon="vast.xpm" \
+	command="/usr/bin/vast" \
+	hints="MRI,fMRI,ISIS,LIPSIA"
