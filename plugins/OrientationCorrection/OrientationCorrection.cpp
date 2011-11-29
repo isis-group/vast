@@ -17,7 +17,9 @@ OrientatioCorrectionDialog::OrientatioCorrectionDialog( QWidget *parent, QViewer
 	  m_MatrixItems( 3, 3 )
 {
 	ui.setupUi( this );
+#if QT_VERSION >= 0x040500 
 	ui.tableWidget->setInputMethodHints( Qt::ImhFormattedNumbersOnly );
+#endif
 
 	for( unsigned short i = 0; i < 3; i++ ) {
 		for( unsigned short j = 0; j < 3; j++ ) {
