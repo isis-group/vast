@@ -166,3 +166,6 @@ install(TARGETS vast RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin )
 # install header files
 install(FILES ${VIEWER_DEV_FILES} DESTINATION include/vast COMPONENT Development)
 install(FILES ${WIDGET_DEV_FILES} DESTINATION include/vast COMPONENT Development)
+
+#install pixmap
+install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/resources/vast.xpm DESTINATION ${CMAKE_INSTALL_PREFIX}/share/pixmaps)
