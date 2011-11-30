@@ -37,9 +37,11 @@ void isis::viewer::plugin::CorrelationPlotterDialog::physicalCoordsChanged(isis:
 void isis::viewer::plugin::CorrelationPlotterDialog::closeEvent(QCloseEvent* )
 {
 	disconnect( m_ViewerCore, SIGNAL( emitPhysicalCoordsChanged(util::fvector4)), this, SLOT( physicalCoordsChanged(util::fvector4)));
-	calculateCorrelation(true);
+	if( m_CurrentFunctionalImage ) {
+		calculateCorrelation(true);
+	}
 	m_ViewerCore->setMode( m_OrigMode );
-	m_ViewerCore->getUI()->refreshUI();;
+	m_ViewerCore->getUI()->refreshUI();
 	
 }
 

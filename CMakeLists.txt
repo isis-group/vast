@@ -31,9 +31,10 @@ set(VIEWER_FILES_HPP
 	widgets/loggingDialog.hpp
 	widgets/filedialog.hpp
 	widgets/startwidget.hpp
+	widgets/keycommandsdialog.hpp
 )
 
-set(GLWIDGET_FILES_HPP
+set(WIDGET_FILES_HPP
 	QImageWidget/QImageWidgetImplementation.hpp)
 
 ##########################################################
@@ -88,7 +89,7 @@ INCLUDE(${QT_USE_FILE})
 
 QT4_ADD_RESOURCES(vast_rcc_files ${RESOURCE_FILES})
 
-qt4_wrap_cpp(vast_moc_files ${VIEWER_FILES_HPP} ${GLWIDGET_FILES_HPP})
+qt4_wrap_cpp(vast_moc_files ${VIEWER_FILES_HPP} ${WIDGET_FILES_HPP})
 QT4_WRAP_UI(vast_UIS_H ${UI_FILES})
 
 
@@ -144,7 +145,7 @@ ENDIF(VAST_OPENMP)
 
 
 
-add_executable(vast main.cpp ${QWIDGET_FILES_CPP} ${GLWIDGET_FILES_CPP} ${VIEWER_FILES_CPP} ${WIDGET_FILES_CPP} ${vast_UIS_H} ${vast_moc_files} ${vast_rcc_files})
+add_executable(vast main.cpp ${QWIDGET_FILES_CPP} ${WIDGET_FILES_CPP} ${VIEWER_FILES_CPP} ${WIDGET_FILES_CPP} ${vast_UIS_H} ${vast_moc_files} ${vast_rcc_files})
 find_library(isisqt4_LIBRARY "isisAdapter_qt4")
 
 set(NEEDED_LIBS

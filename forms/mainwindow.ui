@@ -133,9 +133,18 @@
     <addaction name="actionFind_Global_Min"/>
     <addaction name="actionFind_Global_Max"/>
    </widget>
+   <widget class="QMenu" name="menu_Help">
+    <property name="title">
+     <string>&amp;Help</string>
+    </property>
+    <addaction name="actionKey_Commands"/>
+    <addaction name="separator"/>
+    <addaction name="actionAbout"/>
+   </widget>
    <addaction name="menu_File"/>
    <addaction name="menu_Preferences"/>
    <addaction name="menu_Tools"/>
+   <addaction name="menu_Help"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="actionOpen_image">
@@ -329,6 +338,16 @@
    </property>
    <property name="shortcut">
     <string>T, Z, M</string>
+   </property>
+  </action>
+  <action name="actionKey_Commands">
+   <property name="text">
+    <string>Key Commands</string>
+   </property>
+  </action>
+  <action name="actionAbout">
+   <property name="text">
+    <string>About</string>
    </property>
   </action>
  </widget>
