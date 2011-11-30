@@ -344,6 +344,9 @@
    <property name="text">
     <string>Key Commands</string>
    </property>
+   <property name="shortcut">
+    <string>S, K, C</string>
+   </property>
   </action>
   <action name="actionAbout">
    <property name="text">

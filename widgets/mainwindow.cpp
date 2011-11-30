@@ -20,14 +20,18 @@ MainWindow::MainWindow( QViewerCore *core ) :
 	m_LogButton( new QPushButton( this ) ),
 	loggingDialog( new widget::LoggingDialog( this, core ) ),
 	fileDialog( new widget::FileDialog( this, core ) ),
-	startWidget( new widget::StartWidget( this, core ) )
+	startWidget( new widget::StartWidget( this, core ) ),
+	keyCommandsdialog( new widget::KeyCommandsDialog(this) ) 
 {
 	m_UI.setupUi( this );
 	setWindowIcon( QIcon( ":/common/vast.jpg" ) );
 	loadSettings();
 	m_ActionReset_Scaling = new QAction( this );
+	m_ActionAuto_Scaling = new QAction( this );
 	m_ActionReset_Scaling->setShortcut( QKeySequence( tr( "R, S" ) ) );
+	m_ActionAuto_Scaling->setShortcut( QKeySequence( tr( "A, S" ) ) );
 	addAction( m_ActionReset_Scaling );
+	addAction( m_ActionAuto_Scaling);
 	
 	m_UI.action_Save_Image->setShortcut( QKeySequence::Save );
 	m_UI.action_Save_Image->setIconVisibleInMenu(true);
@@ -65,9 +69,11 @@ MainWindow::MainWindow( QViewerCore *core ) :
 	connect( m_LogButton, SIGNAL( clicked() ), this, SLOT( showLoggingDialog() ) );
 	connect( m_UI.actionPropagate_Zooming, SIGNAL( triggered( bool ) ), this, SLOT( propagateZooming( bool ) ) );
 	connect( m_ActionReset_Scaling, SIGNAL( triggered() ), this, SLOT( resetScaling() ) );
+	connect( m_ActionAuto_Scaling, SIGNAL( triggered() ), this, SLOT( autoScaling()) );
 	connect( m_UI.actionShow_Crosshair, SIGNAL( triggered(bool)), m_ViewerCore, SLOT( setShowCrosshair(bool)));
 	connect( m_UI.actionSave_all_Images, SIGNAL( triggered()), this, SLOT( saveAllImages()));
 	connect( m_UI.actionToggle_Zmap_Mode, SIGNAL( triggered(bool)), this, SLOT( toggleZMapMode(bool)));
+	connect( m_UI.actionKey_Commands, SIGNAL( triggered()), this, SLOT( showKeyCommandDialog()));
 
 	//toolbar stuff
 	m_Toolbar->setOrientation( Qt::Horizontal );
@@ -96,6 +102,17 @@ MainWindow::MainWindow( QViewerCore *core ) :
 	m_UI.statusbar->addPermanentWidget( m_LogButton );
 
 	scalingWidget->setVisible( false );
+}
+
+void MainWindow::autoScaling()
+{
+	scalingWidget->autoScale();
+}
+
+
+void MainWindow::showKeyCommandDialog()
+{
+	keyCommandsdialog->show();
 }
 
 void MainWindow::toggleZMapMode(bool zmap)
