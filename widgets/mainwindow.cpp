@@ -110,15 +110,6 @@ void MainWindow::toggleZMapMode(bool zmap)
 }
 
 
-
-void MainWindow::keyPressEvent( QKeyEvent *e )
-{
-	if( e->key() == Qt::Key_Space ) {
-		m_ViewerCore->centerImages();
-	}
-}
-
-
 void MainWindow::resetScaling()
 {
 	BOOST_FOREACH( DataContainer::reference image, m_ViewerCore->getDataContainer() ) {

@@ -63,7 +63,6 @@ public Q_SLOTS:
 	void refreshUI();
 	void resetScaling();
 	void toggleZMapMode(bool);
-	virtual void keyPressEvent( QKeyEvent * );
 
 private:
 	Ui::vastMainWindow m_UI;
