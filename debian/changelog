@@ -1,3 +1,9 @@
+vast (0.1.8alpha-0) stable; urgency=low
+
+  * some new features
+
+ -- ISIS Group (The friendly isis team) <gr_isis@cbs.mpg.de>  Wed, 30 Nov 2011 14:38:35 +0200
+
 vast (0.1.7alpha-2) stable; urgency=low
 
   * add debian menu entry for vast
