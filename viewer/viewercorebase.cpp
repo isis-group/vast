@@ -99,6 +99,8 @@ void ViewerCoreBase::setCommonViewerOptions()
 	m_OptionsMap->setPropertyAs<uint16_t>("startWidgetHeight", 500);
 	m_OptionsMap->setPropertyAs<uint16_t>("startWidgetWidth", 400);
 	m_OptionsMap->setPropertyAs<uint16_t>("viewerWidgetMargin", 5);
+	m_OptionsMap->setPropertyAs<double>("upperCutOff", 0.13 );
+	m_OptionsMap->setPropertyAs<double>("lowerCutOff", 0.05 );
 	//logging
 	m_OptionsMap->setPropertyAs<uint16_t>( "logDelayTime", 6000 );
 	m_OptionsMap->setPropertyAs<bool>( "showErrorMessages", true );

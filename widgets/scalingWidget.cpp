@@ -109,7 +109,8 @@ void ScalingWidget::setScalingOffset( std::pair< double, double > scalingOffset,
 void ScalingWidget::autoScale()
 {
 	boost::shared_ptr<ImageHolder> image = m_ViewerCore->getCurrentImage();
-	std::pair<double, double> scalingOffset = image->getOptimalScalingToForType<isis::viewer::InternalImageType>( std::make_pair<double,double>(0.03,0.03) ) ;
+	std::pair<double, double> cutOff = std::make_pair<double, double>(m_ViewerCore->getOptionMap()->getPropertyAs<double>("lowerCutOff"), m_ViewerCore->getOptionMap()->getPropertyAs<double>("upperCutOff") );
+	std::pair<double, double> scalingOffset = image->getOptimalScalingToForType<isis::viewer::InternalImageType>( cutOff ) ;
 	setScalingOffset( scalingOffset, image );
 	setMinMax( getMinMaxFromScalingOffset( scalingOffset, image ), image );
 	m_ViewerCore->updateScene();
