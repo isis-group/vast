@@ -10,3 +10,4 @@ Terminal=false
 Comment=This program is part of lipsia/isis
 Categories=Education;Graphics;Science;DataVisualization;MedicalSoftware;Qt;Viewer;
 Icon=vast.xpm
+MimeType=image/nifti;image/vista;image/dcm;image/ima;image/nifti-gz;image/ima-gz;
