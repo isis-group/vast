@@ -37,6 +37,8 @@ int main( int argc, char *argv[] )
 	} else {
 		QApplication::setGraphicsSystem( "raster" );
 	}
+#else
+	std::cout << "Warning! Your Qt version is below Qt4.5. Not able to use accelerated graphics mode" << std::endl;
 #endif
 	qt4::IOQtApplication app( appName.c_str(), false, false );
 	app.parameters["in"] = util::slist();
@@ -81,7 +83,9 @@ int main( int argc, char *argv[] )
 	std::list< data::Image > imgList;
 	std::list< data::Image > zImgList;
 	if( fileList.size() || zmapFileList.size() ) {
-		core->getUI()->getMainWindow()->startWidget->showMe( false );
+		if( core->getOptionMap()->getPropertyAs<bool>("showLoadingWidget") ) {
+			core->getUI()->getMainWindow()->startWidget->showMe( false );
+		}
 			//load the anatomical images
 		BOOST_FOREACH ( util::slist::const_reference fileName, fileList ) {
 			std::stringstream fileLoad;

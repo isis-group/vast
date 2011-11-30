@@ -52,6 +52,9 @@ void PreferencesDialog::loadSettings()
 		preferencesUi.comboBox->setCurrentIndex( preferencesUi.comboBox->findText( m_ViewerCore->getCurrentImage()->lut.c_str() ) );
 	}
 	m_ViewerCore->getSettings()->endGroup();
+	preferencesUi.checkLoadingScreen->setChecked( m_ViewerCore->getOptionMap()->getPropertyAs<bool>("showLoadingWidget") );
+	preferencesUi.checkStartUpScreen->setChecked( m_ViewerCore->getOptionMap()->getPropertyAs<bool>("showStartWidget") );
+	
 }
 
 void PreferencesDialog::saveSettings()
@@ -59,6 +62,8 @@ void PreferencesDialog::saveSettings()
 	m_ViewerCore->getSettings()->beginGroup( "UserProfile" );
 	m_ViewerCore->getSettings()->setValue( "interpolationType", preferencesUi.comboInterpolation->currentIndex() );
 	m_ViewerCore->getSettings()->setValue( "lut", preferencesUi.comboBox->currentText() );
+	m_ViewerCore->getOptionMap()->setPropertyAs<bool>("showStartWidget", preferencesUi.checkStartUpScreen->isChecked() );
+	m_ViewerCore->getOptionMap()->setPropertyAs<bool>("showLoadingWidget", preferencesUi.checkLoadingScreen->isChecked() );
 	m_ViewerCore->getSettings()->endGroup();
 	m_ViewerCore->getSettings()->sync();
 	if( m_ViewerCore->hasImage() ) {

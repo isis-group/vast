@@ -356,6 +356,7 @@ void MainWindow::loadSettings()
 	m_ViewerCore->getOptionMap()->setPropertyAs<bool>( "showAdvancedFileDialogOptions", m_ViewerCore->getSettings()->value( "showAdvancedFileDialogOptions", false ).toBool() );
 	m_ViewerCore->getOptionMap()->setPropertyAs<bool>( "showFavoriteFileList", m_ViewerCore->getSettings()->value( "showFavoriteFileList", false).toBool() );
 	m_ViewerCore->getOptionMap()->setPropertyAs<bool>( "showStartWidget", m_ViewerCore->getSettings()->value("showStartWidget", true).toBool() );
+	m_ViewerCore->getOptionMap()->setPropertyAs<bool>( "showLoadingWidget", m_ViewerCore->getSettings()->value("showLoadingWidget", true).toBool() );
 	m_ViewerCore->getSettings()->endGroup();
 }
 
@@ -393,6 +394,7 @@ void MainWindow::saveSettings()
 	m_ViewerCore->getSettings()->setValue( "showAdvancedFileDialogOptions", m_ViewerCore->getOptionMap()->getPropertyAs<bool>( "showAdvancedFileDialogOptions" ) );
 	m_ViewerCore->getSettings()->setValue( "showFavoriteFileList", m_ViewerCore->getOptionMap()->getPropertyAs<bool>( "showFavoriteFileList" ) );
 	m_ViewerCore->getSettings()->setValue( "showStartWidget", m_ViewerCore->getOptionMap()->getPropertyAs<bool>("showStartWidget") );
+	m_ViewerCore->getSettings()->setValue( "showLoadingWidget", m_ViewerCore->getOptionMap()->getPropertyAs<bool>("showLoadingWidget") );
 	m_ViewerCore->getSettings()->endGroup();
 	m_ViewerCore->getSettings()->sync();
 }
