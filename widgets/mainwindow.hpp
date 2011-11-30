@@ -11,6 +11,7 @@
 #include "loggingDialog.hpp"
 #include "filedialog.hpp"
 #include "startwidget.hpp"
+#include "keycommandsdialog.hpp"
 
 namespace isis
 {
@@ -23,6 +24,7 @@ class ScalingWidget;
 class LoggingDialog;
 class FileDialog;
 class StartWidget;
+class KeyCommandsDialog;
 }
 
 class MainWindow : public QMainWindow
@@ -43,6 +45,7 @@ public:
 	widget::FileDialog *fileDialog;
 	widget::StartWidget *startWidget;
 	widget::ScalingWidget *scalingWidget;
+	widget::KeyCommandsDialog *keyCommandsdialog;
 
 
 public Q_SLOTS:
@@ -62,8 +65,9 @@ public Q_SLOTS:
 	void showLoggingDialog();
 	void refreshUI();
 	void resetScaling();
+	void autoScaling();
 	void toggleZMapMode(bool);
-	virtual void keyPressEvent( QKeyEvent * );
+	void showKeyCommandDialog();
 
 private:
 	Ui::vastMainWindow m_UI;
@@ -75,6 +79,7 @@ private:
 	QPushButton *m_LogButton;
 
 	QAction *m_ActionReset_Scaling;
+	QAction *m_ActionAuto_Scaling;
 
 
 

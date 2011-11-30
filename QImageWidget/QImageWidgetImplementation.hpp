@@ -53,6 +53,7 @@ public Q_SLOTS:
 
 	virtual std::string getWidgetName() const;
 	virtual void setWidgetName( const std::string &wName );
+	virtual void keyPressEvent( QKeyEvent *e);
 
 protected:
 	void paintEvent( QPaintEvent *event );
@@ -61,6 +62,7 @@ protected:
 	virtual void mousePressEvent( QMouseEvent *e );
 	virtual void mouseReleaseEvent( QMouseEvent *e );
 	virtual void mouseMoveEvent( QMouseEvent *e );
+
 
 Q_SIGNALS:
 	void redraw();

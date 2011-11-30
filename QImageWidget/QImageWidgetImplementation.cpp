@@ -59,8 +59,6 @@ void QImageWidgetImplementation::commonInit()
 	translationY = 0.0;
 	m_ShowCrosshair = true;
 	m_CrosshairColor = QColor( 255, 102, 0 );
-
-
 }
 
 void QImageWidgetImplementation::setMouseCursorIcon(QIcon icon)
@@ -86,6 +84,7 @@ void QImageWidgetImplementation::addImage( const boost::shared_ptr< ImageHolder 
 	m_ImageProperties.insert( std::make_pair<boost::shared_ptr<ImageHolder> , ImageProperties >( image, imgProperties ) );
 	m_ImageVector.push_back( image );
 	image->addWidget( this );
+	setFocus();
 }
 
 bool QImageWidgetImplementation::removeImage( const boost::shared_ptr< ImageHolder > image )
@@ -288,7 +287,7 @@ void QImageWidgetImplementation::mousePressEvent( QMouseEvent *e )
 			}
 		}
 	}
-	
+	setFocus();
 	emitMousePressEvent( e );
 }
 
@@ -437,6 +436,25 @@ void QImageWidgetImplementation::setWidgetName( const std::string &wName )
 	setWindowTitle( QString( wName.c_str() ) );
 	m_WidgetProperties.setPropertyAs<std::string>( "widgetName", wName );
 }
+
+void QImageWidgetImplementation::keyPressEvent(QKeyEvent* e)
+{
+	float oldZoom = currentZoom;
+	if( e->key() == Qt::Key_Minus ) {
+		oldZoom /= m_WidgetProperties.getPropertyAs<float>( "zoomFactorOut" );
+	} else if ( e->key() == Qt::Key_Plus ) {
+		oldZoom *= m_WidgetProperties.getPropertyAs<float>( "zoomFactorIn" );
+	} else if( e->key() == Qt::Key_Space ) {
+		m_ViewerCore->centerImages();
+	}
+	
+	if( m_ViewerCore->getOptionMap()->getPropertyAs<bool>( "propagateZooming" ) ) {
+		zoomChanged( oldZoom );
+	} else {
+		setZoom( oldZoom );
+	}	
+}
+
 
 }
 } //end namespace
