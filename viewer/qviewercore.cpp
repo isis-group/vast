@@ -214,7 +214,9 @@ void QViewerCore::openPath( QStringList fileList, ImageHolder::ImageType imageTy
 			} else {
 				msg << "Loading image \"" << p.leaf() << "\"...";
 			}
-			getUI()->getMainWindow()->startWidget->showMe( false );
+			if( getOptionMap()->getPropertyAs<bool>("showLoadingWidget") ) {
+				getUI()->getMainWindow()->startWidget->showMe( false );
+			}
 			receiveMessage( msg.str() );
 			std::list<data::Image> tempImgList = isis::data::IOFactory::load( filename.toStdString() , rf, rdialect );
 			pathList.push_back( filename.toStdString() );
