@@ -114,6 +114,7 @@ public:
 	util::fvector4 physicalCoords;
 	util::fvector4 voxelSize;
 	bool isVisible;
+	bool isRGB;
 	float opacity;
 	util::ivector4 alignedSize32;
 	double offset;

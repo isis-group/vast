@@ -34,6 +34,7 @@ public:
 	void setCurrentImage( const boost::shared_ptr<ImageHolder> image ) { m_CurrentImage = image; }
 
 	boost::shared_ptr<ImageHolder> getCurrentImage();
+	data::Image getCurrentImageAsISIS();
 
 	boost::shared_ptr<ImageHolder> getCurrentAnatomicalRefernce() const { return m_CurrentAnatomicalReference; }
 	

@@ -59,6 +59,12 @@ boost::shared_ptr< ImageHolder > ViewerCoreBase::getCurrentImage()
 	}
 	
 }
+data::Image ViewerCoreBase::getCurrentImageAsISIS()
+{
+	if( hasImage() ) {
+		return *(m_CurrentImage->getISISImage().get());
+	}
+}
 
 
 void ViewerCoreBase::setImageList( std::list< data::Image > imgList, const ImageHolder::ImageType &imageType )
