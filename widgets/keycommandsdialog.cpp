@@ -16,7 +16,8 @@ isis::viewer::widget::KeyCommandsDialog::KeyCommandsDialog(QWidget* parent)
 	m_KeyCommands.push_back(std::make_pair<std::string, std::string>("Show crosshair", "S, C"));
 	m_KeyCommands.push_back(std::make_pair<std::string, std::string>("Find local minimum", "F, M, I"));
 	m_KeyCommands.push_back(std::make_pair<std::string, std::string>("Find local maximum", "F, M, A"));
-	m_KeyCommands.push_back(std::make_pair<std::string, std::string>("Show scaling dialog", "S, S"));	
+	m_KeyCommands.push_back(std::make_pair<std::string, std::string>("Show scaling dialog", "S, S"));
+// 	m_KeyCommands.push_back(std::make_pair<std::string, std::string>("Show image properties", "S, I, P"));
 	m_KeyCommands.push_back(std::make_pair<std::string, std::string>("Reset Scaling", "R, S"));	
 	m_KeyCommands.push_back(std::make_pair<std::string, std::string>("Auto Scaling", "A, S"));	
 	m_KeyCommands.push_back(std::make_pair<std::string, std::string>("Open image", "Ctrl+O"));

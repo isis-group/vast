@@ -135,7 +135,6 @@ private:
 	util::FixedVector<size_t, 4> m_ImageSize;
 	util::PropertyMap m_PropMap;
 
-
 	boost::shared_ptr<data::Image> m_Image;
 	util::slist m_Filenames;
 	size_t m_ID;
