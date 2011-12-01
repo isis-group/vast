@@ -23,7 +23,14 @@ QViewerCore::QViewerCore( const std::string &appName, const std::string &orgName
 	setParentWidget( m_UI->getMainWindow() );
 	data::IOFactory::setProgressFeedback( m_ProgressFeedback );
 	operation::NativeImageOps::setProgressFeedBack( m_ProgressFeedback );
-
+	loadSettings();
+#ifdef _OPENMP
+	omp_set_num_threads( getOptionMap()->getPropertyAs<uint8_t>("numberOfThreads") );
+	getOptionMap()->setPropertyAs<bool>("ompAvailable", true );
+	getOptionMap()->setPropertyAs<uint8_t>( "maxNumberOfThreads", omp_get_num_procs() );
+#else
+	getOptionMap()->setPropertyAs<bool>("ompAvailable", false );
+#endif	
 }
 
 
@@ -275,6 +282,48 @@ void QViewerCore::closeImage( boost::shared_ptr<ImageHolder> image )
 		getUI()->refreshUI();
 		updateScene();
 }
+
+void QViewerCore::loadSettings()
+{
+	getSettings()->beginGroup( "UserProfile" );
+	getOptionMap()->setPropertyAs<bool>( "propagateZooming", getSettings()->value( "propagateZooming", false ).toBool() );
+	getOptionMap()->setPropertyAs<bool>( "showLabels", getSettings()->value( "showLabels", false ).toBool() );
+	getOptionMap()->setPropertyAs<bool>( "showCrosshair", getSettings()->value( "showCrosshair", true ).toBool() );
+	getOptionMap()->setPropertyAs<uint16_t>( "minMaxSearchRadius",
+			getSettings()->value( "minMaxSearchRadius", getOptionMap()->getPropertyAs<uint16_t>( "minMaxSearchRadius" ) ).toUInt() );
+	getOptionMap()->setPropertyAs<bool>( "showAdvancedFileDialogOptions", getSettings()->value( "showAdvancedFileDialogOptions", false ).toBool() );
+	getOptionMap()->setPropertyAs<bool>( "showFavoriteFileList", getSettings()->value( "showFavoriteFileList", false).toBool() );
+	getOptionMap()->setPropertyAs<bool>( "showStartWidget", getSettings()->value("showStartWidget", true).toBool() );
+	getOptionMap()->setPropertyAs<bool>( "showLoadingWidget", getSettings()->value("showLoadingWidget", true).toBool() );
+	getOptionMap()->setPropertyAs<uint8_t>( "numberOfThreads", getSettings()->value( "numberOfThreads" ).toUInt() );
+	getOptionMap()->setPropertyAs<bool>( "enableMultithreading", getSettings()->value( "enableMultithreading" ).toBool() );
+	getOptionMap()->setPropertyAs<bool>( "useAllAvailablethreads", getSettings()->value( "useAllAvailableThreads" ).toBool() );
+	getSettings()->endGroup();
+}
+
+
+void QViewerCore::saveSettings()
+{
+	//saving the preferences to the profile file
+	getSettings()->beginGroup( "UserProfile" );
+	getSettings()->setValue( "size", getUI()->getMainWindow()->size() );
+	getSettings()->setValue( "maximized", getUI()->getMainWindow()->isMaximized() );
+	getSettings()->setValue( "pos", getUI()->getMainWindow()->pos() );
+	getSettings()->setValue( "propagateZooming", getOptionMap()->getPropertyAs<bool>("propagateZooming") );
+	getSettings()->setValue( "minMaxSearchRadius", getOptionMap()->getPropertyAs<uint16_t>("minMaxSearchRadius") );
+	getSettings()->setValue( "showLabels", getOptionMap()->getPropertyAs<bool>("showLabels") );
+	getSettings()->setValue( "showCrosshair", getOptionMap()->getPropertyAs<bool>("showCrosshair") );
+	getSettings()->setValue( "showAdvancedFileDialogOptions", getOptionMap()->getPropertyAs<bool>( "showAdvancedFileDialogOptions" ) );
+	getSettings()->setValue( "showFavoriteFileList", getOptionMap()->getPropertyAs<bool>( "showFavoriteFileList" ) );
+	getSettings()->setValue( "showStartWidget", getOptionMap()->getPropertyAs<bool>("showStartWidget") );
+	getSettings()->setValue( "showLoadingWidget", getOptionMap()->getPropertyAs<bool>("showLoadingWidget") );
+	getSettings()->setValue( "numberOfThreads", getOptionMap()->getPropertyAs<uint8_t>("numberOfThreads"));
+	getSettings()->setValue( "enableMultithreading", getOptionMap()->getPropertyAs<bool>("enableMultithreading"));
+	getSettings()->setValue( "useAllAvailablethreads", getOptionMap()->getPropertyAs<bool>("useAllAvailableThreads"));
+	getSettings()->endGroup();
+	getSettings()->sync();
+}
+
 
 
 }

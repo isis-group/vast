@@ -53,8 +53,6 @@ public Q_SLOTS:
 	void saveImage();
 	void saveImageAs();
 	void saveAllImages();
-	void loadSettings();
-	void saveSettings();
 	void closeEvent( QCloseEvent * );
 	void findGlobalMin();
 	void findGlobalMax();
@@ -68,6 +66,7 @@ public Q_SLOTS:
 	void autoScaling();
 	void toggleZMapMode(bool);
 	void showKeyCommandDialog();
+	void loadSettings();
 
 private:
 	Ui::vastMainWindow m_UI;

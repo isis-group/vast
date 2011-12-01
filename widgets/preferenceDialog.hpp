@@ -26,6 +26,9 @@ public Q_SLOTS:
 	void loadSettings();
 	void saveSettings();
 	void apply( int dummy = 0 );
+	void toggleMultithreading( bool );
+	void toggleUseAllThreads( bool );
+	void numberOfThreadsChanged( int );
 	virtual void showEvent( QShowEvent * ) { loadSettings(); }
 
 private:

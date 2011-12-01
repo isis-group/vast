@@ -17,10 +17,6 @@ ViewerCoreBase::ViewerCoreBase( )
 {
 	m_ColorHandler->initStandardColormaps();
 	setCommonViewerOptions();
-	
-#ifdef _OPENMP
-	omp_set_num_threads( omp_get_num_procs() );
-#endif
 }
 
 ImageHolder::ImageListType ViewerCoreBase::addImageList( const std::list< data::Image > imageList, const ImageHolder::ImageType &imageType )
@@ -101,6 +97,11 @@ void ViewerCoreBase::setCommonViewerOptions()
 	m_OptionsMap->setPropertyAs<uint16_t>("viewerWidgetMargin", 5);
 	m_OptionsMap->setPropertyAs<double>("upperCutOff", 0.13 );
 	m_OptionsMap->setPropertyAs<double>("lowerCutOff", 0.05 );
+	m_OptionsMap->setPropertyAs<uint8_t>("numberOfThreads", 1);
+	m_OptionsMap->setPropertyAs<bool>("ompAvailable", false );
+	m_OptionsMap->setPropertyAs<uint8_t>("maxNumberOfThreads", 1 );
+	m_OptionsMap->setPropertyAs<bool>("enableMultithreading", false );
+	m_OptionsMap->setPropertyAs<bool>("useAllAvailableThreads", false);
 	//logging
 	m_OptionsMap->setPropertyAs<uint16_t>( "logDelayTime", 6000 );
 	m_OptionsMap->setPropertyAs<bool>( "showErrorMessages", true );
