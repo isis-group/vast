@@ -11,7 +11,7 @@ namespace widget
 
 ImageStack::ImageStack(QWidget* parent, ImageStackWidget *widget )
 	: QListWidget(parent), 
-	m_Widget(widget) 
+	m_Widget(widget)
 {
 	setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
 	setVerticalScrollMode(ScrollPerItem);
@@ -19,6 +19,7 @@ ImageStack::ImageStack(QWidget* parent, ImageStackWidget *widget )
 	setMaximumHeight(m_Widget->m_ViewerCore->getOptionMap()->getPropertyAs<uint16_t>("maxOptionWidgetHeight") - 4);
 	setMinimumHeight(m_Widget->m_ViewerCore->getOptionMap()->getPropertyAs<uint16_t>("minOptionWidgetHeight") - 4);
 	setMinimumWidth( 300 );
+	
 }
 
 void ImageStack::contextMenuEvent(QContextMenuEvent* event )
@@ -30,6 +31,12 @@ void ImageStack::contextMenuEvent(QContextMenuEvent* event )
 	menu.addAction( m_Widget->m_Interface.actionClose_all_images);
 	menu.exec( event->globalPos() );
 }
+
+
+	
+
+//ImageStackWidget
+	
 	
 ImageStackWidget::ImageStackWidget( QWidget *parent, QViewerCore *core )
 	: QWidget( parent ), m_ViewerCore( core )
@@ -79,6 +86,7 @@ void ImageStackWidget::synchronize()
 			imageRef.second->isVisible = false;
 		}
 	}
+
 }
 
 
