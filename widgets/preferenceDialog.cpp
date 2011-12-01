@@ -45,7 +45,6 @@ void PreferencesDialog::toggleMultithreading(bool toggle )
 			preferencesUi.numberOfThreads->setValue( m_ViewerCore->getOptionMap()->getPropertyAs<uint8_t>("numberOfThreads") );
 		}
 	}
-	adjustSize();
 }
 
 void PreferencesDialog::toggleUseAllThreads(bool toggle )
