@@ -218,6 +218,8 @@ bool ImageHolder::removeChangedAttribute(const std::string& attribute)
 	}
 }
 
+
+///calls isis::data::Image::updateOrientationMatrices() and sets latchedOrientation and orientation of the isis::viewer::ImageHolder
 void ImageHolder::updateOrientation()
 {
 	m_Image->updateOrientationMatrices();

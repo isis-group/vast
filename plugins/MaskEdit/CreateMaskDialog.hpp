@@ -32,11 +32,13 @@ private:
 	
 	template<typename TYPE>
 	boost::shared_ptr<ImageHolder> _createEmptyMask( boost::shared_ptr<ImageHolder> refImage ){
+		const util::fvector4 refVoxelSize = refImage->getISISImage()->getPropertyAs<util::fvector4>("voxelSize") + 
+				( refImage->getISISImage()->hasProperty("voxelGap") ? refImage->getISISImage()->getPropertyAs<util::fvector4>("voxelGap") : util::fvector4() );
 		boost::shared_ptr< ImageHolder > retImage;
 		util::ivector4 size = refImage->getImageSize();
-		size[0] /= m_Interface.xRes->value();
-		size[1] /= m_Interface.yRes->value();
-		size[2] /= m_Interface.zRes->value();				
+		size[0] /= ( m_Interface.xRes->value() / refVoxelSize[0] );
+		size[1] /= ( m_Interface.yRes->value() / refVoxelSize[1] );
+		size[2] /= ( m_Interface.zRes->value() / refVoxelSize[2] );				
 		isis::data::MemChunk<TYPE> ch( size[0], size[1], size[2] );
 		ch.join( static_cast<isis::util::PropertyMap&>( *refImage->getISISImage() ) );		
 		isis::data::Image mask ( ch);
@@ -55,12 +57,12 @@ private:
 			std::list<double> newCp = boost::assign::list_of<double>( *--iter / voxelSize[0])( *--iter / voxelSize[1])( *--iter / voxelSize[2] );
 			mask.setPropertyAs<std::string>("Vista/cp", util::listToString<std::list<double>::iterator>(newCp.begin(), newCp.end(), " ", "", "") );
 		}
-		
+		mask.setPropertyAs<util::fvector4>("indexOrigin", refImage->getISISImage()->getPropertyAs<util::fvector4>("indexOrigin") );
 		if( m_Interface.maskName->text().size() ) {
 			mask.setPropertyAs<std::string>("source", m_Interface.maskName->text().toStdString() );
 		} else {
 			mask.setPropertyAs<std::string>("source", "mask" );
-		}
+		}		
 		retImage = m_MaskEditDialog->m_ViewerCore->addImage( mask, ImageHolder::anatomical_image );
 		retImage->minMax.first = isis::util::Value<TYPE>( std::numeric_limits<TYPE>::min() );
 		retImage->minMax.second = isis::util::Value<TYPE>( std::numeric_limits<TYPE>::max() );
