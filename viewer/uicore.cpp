@@ -22,6 +22,7 @@ UICore::UICore( QViewerCore *core )
 	m_VoxelInformationWidget->setMinimumWidth( getMainWindow()->width() / 3 );
 	m_VoxelInformationWidget->setVisible( false );
 	m_ImageStackWidget->setVisible( false );
+	getMainWindow()->adjustSize();
 
 }
 
