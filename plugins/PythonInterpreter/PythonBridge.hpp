@@ -22,6 +22,10 @@ private:
 	void initializePython();
 	isis::viewer::QViewerCore *m_ViewerCore;
 	
+	void exposeEnums();
+	void exposeViewerCore();
+	void exposeImageHolder();
+	
 	PythonStdIoRedirect python_stdio_redirector;	
 	
 };

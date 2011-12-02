@@ -86,7 +86,7 @@ void isis::viewer::widget::FileDialog::setup()
 	m_Interface.fileDirEdit->clear();
 	m_Interface.rfComboBox->clear();
 	m_Interface.rfComboBox->addItem( "auto" );
-	BOOST_FOREACH( std::list<std::string>::const_reference suffix, getFileFormatsAsList(isis::image_io::FileFormat::read_only) ) {
+	BOOST_FOREACH( std::list<util::istring>::const_reference suffix, getFileFormatsAsList(isis::image_io::FileFormat::read_only) ) {
 		m_Interface.rfComboBox->addItem( suffix.c_str() );
 	}
 	m_Interface.rfComboBox->setCurrentIndex( 0 );
@@ -108,7 +108,7 @@ void isis::viewer::widget::FileDialog::setup()
 	BOOST_FOREACH( QList<QVariant>::const_reference path, favFiles ) {
 		unsigned short validFiles;
 		QListWidgetItem *item = new QListWidgetItem( path.toString() );
-		if( checkIfPathIsValid( path.toString(), validFiles, "" ) ) {
+		if( checkIfPathIsValid( path.toString(), validFiles, "", m_Mode ) ) {
 			item->setTextColor(QColor( 34, 139, 34 ));
 		} else {
 			item->setTextColor( Qt::red );
@@ -129,12 +129,12 @@ void isis::viewer::widget::FileDialog::parsePath()
 		m_PathList.clear();
 
 		for( unsigned short i = 0; i < m_Interface.fileDirEdit->count(); i++ ) {
-			if( checkIfPathIsValid( m_Interface.fileDirEdit->itemText( i ), validFiles, m_Suffix ) ) {
+			if( checkIfPathIsValid( m_Interface.fileDirEdit->itemText( i ), validFiles, m_Suffix, m_Mode ) ) {
 				m_PathList.push_back( m_Interface.fileDirEdit->itemText( i ) );
 			}
 		}
 	} else {
-		if( checkIfPathIsValid( m_Interface.fileDirEdit->currentText(), validFiles, m_Suffix ) ) {
+		if( checkIfPathIsValid( m_Interface.fileDirEdit->currentText(), validFiles, m_Suffix, m_Mode ) ) {
 			m_PathList.clear();
 			m_PathList.push_back( m_Interface.fileDirEdit->currentText() );
 		}
@@ -161,15 +161,14 @@ void isis::viewer::widget::FileDialog::parsePath()
 bool isis::viewer::widget::FileDialog::checkIfPathIsValid( QString path, unsigned short &validFiles, const std::string &suffix, FileMode mode, bool acceptNoSuffix )
 {
 	boost::filesystem::path p( path.toStdString() );
-	util::slist fileFormatList = getFileFormatsAsList( isis::image_io::FileFormat::read_only );
+	std::list<util::istring> fileFormatList = getFileFormatsAsList( isis::image_io::FileFormat::read_only );
 	//ok, path exists
 	if( boost::filesystem::exists( p ) ) {
 		//is dir?
 		if( boost::filesystem::is_directory( p ) && mode == OPEN_DIR ) {
 			for ( boost::filesystem::directory_iterator itr( p ); itr != boost::filesystem::directory_iterator(); ++itr ) {
 				if ( boost::filesystem::is_directory( *itr ) )continue;
-
-				checkIfPathIsValid( itr->path().file_string().c_str(), validFiles, suffix );
+				checkIfPathIsValid( itr->path().file_string().c_str(), validFiles, suffix, OPEN_FILE );
 			}
 
 			if( validFiles ) {
@@ -178,7 +177,7 @@ bool isis::viewer::widget::FileDialog::checkIfPathIsValid( QString path, unsigne
 
 			//
 		} else if ( !boost::filesystem::is_directory(p) ) {
-			std::string extension = boost::filesystem::extension( p );
+			util::istring extension = boost::filesystem::extension( p ).c_str();
 			//lstrip "."
 			extension.erase( 0, 1 );
 

@@ -88,7 +88,6 @@ private:
 	QPainter *m_Painter;
 	QColor m_CrosshairColor;
 	InternalImageType m_InterpolationType;
-	ScalingType m_ScalingType;
 	bool m_ShowLabels;
 	unsigned short m_Border;
 	bool m_LeftMouseButtonPressed;
