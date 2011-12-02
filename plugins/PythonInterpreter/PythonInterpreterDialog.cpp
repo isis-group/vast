@@ -13,5 +13,6 @@ isis::viewer::plugin::PyhtonInterpreterDialog::PyhtonInterpreterDialog(QWidget* 
 
 void isis::viewer::plugin::PyhtonInterpreterDialog::run()
 {
-	m_Bridge->run( m_Interface.pythonInput->toPlainText().toStdString() );
+	std::string output = m_Bridge->run( m_Interface.pythonInput->toPlainText().toStdString() );
+	m_Interface.output->addItem(output.c_str());
 }
