@@ -37,12 +37,21 @@ private:
 	void reconnectSignals();
 
 	template<typename TYPE>
-	void displayIntensity( util::ivector4 coords ) {
-		util::Value<TYPE> vIntensity ( m_ViewerCore->getCurrentImage()->getISISImage()->voxel<TYPE>( coords[0], coords[1], coords[2], coords[3] ) );
-		double intensity = roundNumber<double>( vIntensity, 4 );
+	void displayIntensity( const util::ivector4 &coords ) const {
+		const util::Value<TYPE> vIntensity ( m_ViewerCore->getCurrentImage()->getISISImage()->voxel<TYPE>( coords[0], coords[1], coords[2], coords[3] ) );
+		const double intensity = roundNumber<double>( vIntensity, 4 );
 		m_Interface.intensityValue->setText( QString::number( intensity ) );
-		m_ViewerCore->getCurrentImage()->getPropMap().setPropertyAs<double>( "currentIntensity", intensity );
 	}
+	
+	template<typename TYPE>
+	void displayIntensityColor( const util::ivector4 &coords) const
+	{
+		util::checkType<TYPE>();
+		const util::Value<TYPE> vIntensity ( m_ViewerCore->getCurrentImage()->getISISImage()->voxel<TYPE>( coords[0], coords[1], coords[2], coords[3] ) );
+		const std::string intensityStr = static_cast<const util::_internal::ValueBase&>( vIntensity ).as<std::string>();
+		m_Interface.intensityValue->setText( intensityStr.c_str() );
+	}
+	
 };
 
 }

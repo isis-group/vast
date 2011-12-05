@@ -105,6 +105,24 @@ private:
 
 	std::list<WidgetInterface *> m_WidgetList;
 	
+	template<typename TYPE>
+	void copyImageToVector( const data::Image &image ) {
+		data::ValuePtr<TYPE> imagePtr( ( TYPE * ) calloc( image.getVolume(), sizeof( TYPE ) ), image.getVolume() );
+		LOG( Debug, verbose_info ) << "Needed memory: " << image.getVolume() * sizeof( TYPE ) / ( 1024.0 * 1024.0 ) << " mb.";
+		data::TypedImage<TYPE> typedefImage ( image );
+		static_cast<data::Image&>( typedefImage).copyToMem<TYPE>( &imagePtr[0], image.getVolume() );
+		LOG( Debug, verbose_info ) << "Copied image to continuous memory space.";
+		internMinMax = imagePtr.getMinMax();
+		//splice the image in its volumes -> we get a vector of t volumes
+		if( m_ImageSize[3] > 1 ) { //splicing is only necessary if we got more than 1 timestep
+			m_ImageVector = imagePtr.splice( m_ImageSize[0] * m_ImageSize[1] * m_ImageSize[2] );
+		} else {
+			m_ImageVector.push_back( imagePtr );
+		}
+
+	
+	}
+	
 
 };
 

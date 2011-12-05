@@ -39,14 +39,14 @@ void OrientatioCorrectionDialog::alignOnCenter(bool align)
 	if ( m_ViewerCore->hasImage() ) {
 		if( align ) {
 			m_ImageNameAlignedTo = m_ViewerCore->getCurrentImage()->getFileNames().front();
-			const util::fvector4 indexOrigin = m_ViewerCore->getCurrentImage()->getISISImage()->getPropertyAs<util::fvector4>("indexOrigin");
-			const util::fvector4 rowVec = m_ViewerCore->getCurrentImage()->getISISImage()->getPropertyAs<util::fvector4>("rowVec");
-			const util::fvector4 columnVec = m_ViewerCore->getCurrentImage()->getISISImage()->getPropertyAs<util::fvector4>("columnVec");
-			const util::fvector4 sliceVec = m_ViewerCore->getCurrentImage()->getISISImage()->getPropertyAs<util::fvector4>("sliceVec");
+			const util::fvector4 &indexOrigin = m_ViewerCore->getCurrentImage()->getISISImage()->getPropertyAs<util::fvector4>("indexOrigin");
+			const util::fvector4 &rowVec = m_ViewerCore->getCurrentImage()->getISISImage()->getPropertyAs<util::fvector4>("rowVec");
+			const util::fvector4 &columnVec = m_ViewerCore->getCurrentImage()->getISISImage()->getPropertyAs<util::fvector4>("columnVec");
+			const util::fvector4 &sliceVec = m_ViewerCore->getCurrentImage()->getISISImage()->getPropertyAs<util::fvector4>("sliceVec");
 			BOOST_FOREACH( DataContainer::reference image, m_ViewerCore->getDataContainer() ) {
 				const util::ivector4 size = image.second->getImageSize();
 
-				const util::fvector4 voxelSize = image.second->getISISImage()->getPropertyAs<util::fvector4>("voxelSize" );
+				const util::fvector4 &voxelSize = image.second->getISISImage()->getPropertyAs<util::fvector4>("voxelSize" );
 				const util::fvector4 center = util::fvector4( (-size[0] * voxelSize[0]) / 2.0, 
 															  (-size[1] * voxelSize[1]) / 2.0, 
 															  (-size[2] * voxelSize[2]) / 2.0 );

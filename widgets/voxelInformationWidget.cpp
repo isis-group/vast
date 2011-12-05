@@ -99,6 +99,7 @@ void VoxelInformationWidget::synchronize()
 	if( m_ViewerCore->hasImage() ) {
 		const boost::shared_ptr<ImageHolder> image = m_ViewerCore->getCurrentImage();
 		disconnectSignals();
+		m_Interface.colormapFrame->setVisible(!image->isRGB);
 		if( image->imageType == ImageHolder::anatomical_image ) {
 			m_Interface.colormapGrid->addWidget( m_Interface.labelMin, 0, 0 );
 			m_Interface.colormapGrid->addWidget( m_Interface.upperHalfColormapLabel, 0, 1 );
@@ -129,9 +130,10 @@ void VoxelInformationWidget::synchronize()
 			m_Interface.lowerHalfColormapLabel->setPixmap(
 				m_ViewerCore->getColorHandler()->getIcon( image->lut, size.width(), size.height() - 10, color::Color::lower_half, true ).pixmap( size.width(), size.height() - 10 ) );
 		}
-
-		m_Interface.labelMin->setText( QString::number( image->minMax.first->as<double>(), 'g', 4 ) );
-		m_Interface.labelMax->setText( QString::number( image->minMax.second->as<double>(), 'g', 4 ) );
+		if( !image->isRGB ) {
+			m_Interface.labelMin->setText( QString::number( image->minMax.first->as<double>(), 'g', 4 ) );
+			m_Interface.labelMax->setText( QString::number( image->minMax.second->as<double>(), 'g', 4 ) );
+		}
 		const util::ivector4 outerCorner = util::ivector4( image->getImageSize()[0] - 1, image->getImageSize()[1] - 1, image->getImageSize()[2] - 1 );
 		m_Interface.rowBox->setMaximum( outerCorner[0] );
 		m_Interface.columnBox->setMaximum( outerCorner[1] );
@@ -229,6 +231,12 @@ void VoxelInformationWidget::synchronizePos( util::ivector4 voxelCoords )
 	case isis::data::ValuePtr<double>::staticID:
 		displayIntensity<double>( voxelCoords );
 		break;
+	case isis::data::ValuePtr<util::color24>::staticID:
+		displayIntensityColor<util::color24>( voxelCoords );
+		break;
+	case isis::data::ValuePtr<util::color48>::staticID:
+		displayIntensityColor<util::color48> ( voxelCoords );
+		break;
 	}
 	disconnectSignals();
 	m_Interface.rowBox->setValue( voxelCoords[0] );
@@ -241,6 +249,8 @@ void VoxelInformationWidget::synchronizePos( util::ivector4 voxelCoords )
 	reconnectSignals();
 
 }
+
+
 
 }
 }

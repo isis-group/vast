@@ -125,7 +125,8 @@ void SliderWidget::synchronize()
 		m_Interface.zmapModeFrame->setVisible( false );
 		m_Interface.checkGlobal->setChecked(false);
 	}	
-	if( m_ViewerCore->hasImage() ) {
+	if( m_ViewerCore->hasImage() && !m_ViewerCore->getCurrentImage()->isRGB) {
+		QWidget::setVisible(true);
 		if( m_ViewerCore->getCurrentImage()->imageType == ImageHolder::z_map ) {
 			setVisible( LowerThreshold, true );
 			setVisible( UpperThreshold, true );
@@ -147,7 +148,10 @@ void SliderWidget::synchronize()
 		m_Interface.minSlider->setSliderPosition( lowerThreshold );
 
 		m_Interface.maxSlider->setSliderPosition( upperThreshold );
+	} else {
+		QWidget::setVisible(false);
 	}
+	
 }
 
 

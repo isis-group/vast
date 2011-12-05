@@ -14,6 +14,7 @@
 #include <boost/shared_ptr.hpp>
 #include <DataStorage/common.hpp>
 #include <CoreUtils/common.hpp>
+#include <CoreUtils/types.hpp>
 #include <DataStorage/io_interface.h>
 
 
@@ -27,6 +28,7 @@ namespace viewer
 {
 class ImageHolder;
 typedef uint8_t InternalImageType;
+typedef isis::util::color24 InternalImageColorType;
 
 enum PlaneOrientation { axial, sagittal, coronal };
 enum WidgetType { type_gl, type_qt };

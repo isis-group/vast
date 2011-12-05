@@ -23,7 +23,7 @@ int main( int argc, char *argv[] )
 	util::_internal::Log<viewer::Runtime>::setHandler( boost::shared_ptr<qt4::QDefaultMessagePrint>( viewer_handler ) );
 	util::_internal::Log<data::Runtime>::setHandler( boost::shared_ptr<qt4::QDefaultMessagePrint>( isis_handler ) );
 	util::_internal::Log<image_io::Runtime>::setHandler( boost::shared_ptr<qt4::QDefaultMessagePrint>( imageio_handler ) );
-
+	
 	std::string appName = "vast";
 	std::string orgName = "cbs.mpg.de";
 
@@ -38,7 +38,7 @@ int main( int argc, char *argv[] )
 		QApplication::setGraphicsSystem( "raster" );
 	}
 #else
-	std::cout << "Warning! Your Qt version is below Qt4.5. Not able to use accelerated graphics mode" << std::endl;
+	std::cout << "Warning! Your Qt version is below Qt4.5. Not able to set graghics system." << std::endl;
 #endif
 	qt4::IOQtApplication app( appName.c_str(), false, false );
 	app.parameters["in"] = util::slist();

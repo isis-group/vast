@@ -128,7 +128,7 @@ util::ivector4 QOrienationHandler::convertWindow2VoxelCoords( const ViewPortType
 		coords[i] = coords[i] < 0 ? 0 : coords[i];
 		coords[i] = coords[i] >= abs( mappedSize[i] ) ? abs( mappedSize[i] ) - 1 : coords[i];
 	}
-
+	coords[3] = image->voxelCoords[3];
 	return QOrienationHandler::mapCoordsToOrientation( coords, image, orientation, true );
 }
 
