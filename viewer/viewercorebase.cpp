@@ -39,13 +39,15 @@ boost::shared_ptr<ImageHolder> ViewerCoreBase::addImage( const isis::data::Image
 	if( imageType == ImageHolder::anatomical_image && image.getSizeAsVector()[3] == 1 ) {
 		m_CurrentAnatomicalReference = retImage;
 	}
-	if( getMode() == ViewerCoreBase::zmap && retImage->imageType == ImageHolder::z_map ) {
-		setCurrentImage( retImage );
-	}
+	
 	m_ImageList.push_back( retImage );
 
 	if( getMode() == ViewerCoreBase::zmap && retImage->getImageSize()[3] > 1 ) {
 		retImage->isVisible = false;
+	} else if ( getMode() == ViewerCoreBase::zmap && retImage->imageType == ImageHolder::z_map ) {
+		setCurrentImage(retImage);
+	} else {
+		setCurrentImage( retImage );
 	}
 	return retImage;
 }
