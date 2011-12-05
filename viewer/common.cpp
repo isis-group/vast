@@ -19,10 +19,10 @@ void setOrientationToIdentity( data::Image &image )
 void checkForCaCp( boost::shared_ptr<ImageHolder> image)
 {
 	if( image->getISISImage()->hasProperty("Vista/ca" ) ) {
-		const util::fvector4 rowVec = image->getISISImage()->getPropertyAs<util::fvector4>("rowVec");
-		const util::fvector4 columnVec = image->getISISImage()->getPropertyAs<util::fvector4>("columnVec");
-		const util::fvector4 sliceVec = image->getISISImage()->getPropertyAs<util::fvector4>("sliceVec");
-		const util::fvector4 voxelSize = image->getISISImage()->getPropertyAs<util::fvector4>("voxelSize");
+		const util::fvector4 &rowVec = image->getISISImage()->getPropertyAs<util::fvector4>("rowVec");
+		const util::fvector4 &columnVec = image->getISISImage()->getPropertyAs<util::fvector4>("columnVec");
+		const util::fvector4 &sliceVec = image->getISISImage()->getPropertyAs<util::fvector4>("sliceVec");
+		const util::fvector4 &voxelSize = image->getISISImage()->getPropertyAs<util::fvector4>("voxelSize");
 		std::list<float> ca = util::stringToList<float>(image->getISISImage()->getPropertyAs<std::string>("Vista/ca" ) );
 		std::list<float>::const_iterator iter = ca.end();
 		const util::fvector4 newIndexOrigin( -*--iter, -*--iter, -*--iter );
@@ -50,9 +50,9 @@ std::string getFileFormatsAsString( image_io::FileFormat::io_modes mode, const s
 
 }
 
-std::list<std::string> getFileFormatsAsList( image_io::FileFormat::io_modes mode )
+std::list<util::istring> getFileFormatsAsList( image_io::FileFormat::io_modes mode )
 {
-	std::list<std::string> retList;
+	std::list<util::istring> retList;
 	BOOST_FOREACH( isis::data::IOFactory::FileFormatList::const_reference formatList, isis::data::IOFactory::getFormats() ) {
 		BOOST_FOREACH( std::list<util::istring>::const_reference format, formatList->getSuffixes( mode ) ) {
 			retList.push_back( format.c_str() );

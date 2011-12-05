@@ -80,10 +80,7 @@ void ImageStackWidget::synchronize()
 			if( m_ViewerCore->getCurrentImage().get() == imageRef.second.get() ) {
 				item->setIcon( QIcon( ":/common/currentImage.gif" ) );
 			}
-
 			m_ImageStack->addItem( item );
-		} else if ( imageRef.second.get() != m_ViewerCore->getCurrentAnatomicalRefernce().get() ) {
-			imageRef.second->isVisible = false;
 		}
 	}
 

@@ -64,56 +64,15 @@ public:
 	std::list< WidgetInterface * > getWidgetList() { return m_WidgetList; }
 	
 	void updateOrientation();
-
+	
 	/**offset, scaling**/
-	template<typename TYPE>
-	std::pair<double, double> getOptimalScalingToForType( const std::pair<double, double> &cutAway ) const {
-		const size_t volume = getImageSize()[0] * getImageSize()[1] * getImageSize()[2];
-		const TYPE maxTypeValue = std::numeric_limits<TYPE>::max();
-		const TYPE minImage = internMinMax.first->as<TYPE>();
-		const TYPE maxImage = internMinMax.second->as<TYPE>();
-		const TYPE extent = maxImage - minImage;
-		double *histogram = ( double * ) calloc( extent + 1, sizeof( double ) );
-		size_t stepSize = 2;
-		size_t numberOfVoxels = volume / stepSize;
-		TYPE *dataPtr = static_cast<TYPE *>( getImageVector().front()->getRawAddress().get() );
-
-		//create the histogram
-		for( size_t i = 0; i < volume; i += stepSize ) {
-			histogram[dataPtr[i]]++;
-		}
-
-		//normalize histogram
-		for( TYPE i = 0; i < extent; i++ ) {
-			histogram[i] /= numberOfVoxels;
-		}
-
-		TYPE upperBorder = extent - 1;
-		TYPE lowerBorder = 0;
-		double sum = 0;
-
-		while( sum < cutAway.second ) {
-			sum += histogram[upperBorder--];
-
-		}
-
-		sum = 0;
-
-		while ( sum < cutAway.first ) {
-			sum += histogram[lowerBorder++];
-		}
-
-		std::pair<double, double> retPair;
-		retPair.first = lowerBorder;
-		retPair.second = ( float )maxTypeValue / float( upperBorder - lowerBorder );
-		delete[] histogram;
-		return retPair;
-	}
-
+	std::pair<double, double> getOptimalScaling() const;
+	
 	util::ivector4 voxelCoords;
 	util::fvector4 physicalCoords;
 	util::fvector4 voxelSize;
 	bool isVisible;
+	bool isRGB;
 	float opacity;
 	util::ivector4 alignedSize32;
 	double offset;
@@ -126,6 +85,7 @@ public:
 	InterpolationType interpolationType;
 	std::pair<util::ValueReference, util::ValueReference> minMax;
 	std::pair<util::ValueReference, util::ValueReference> internMinMax;
+	std::pair<double, double> optimalScalingOffset;
 	boost::numeric::ublas::matrix<double> orientation;
 	boost::numeric::ublas::matrix<double> latchedOrientation;
 	unsigned short majorTypeID;
@@ -144,6 +104,24 @@ private:
 	std::vector< data::Chunk > m_ChunkVector;
 
 	std::list<WidgetInterface *> m_WidgetList;
+	
+	template<typename TYPE>
+	void copyImageToVector( const data::Image &image ) {
+		data::ValuePtr<TYPE> imagePtr( ( TYPE * ) calloc( image.getVolume(), sizeof( TYPE ) ), image.getVolume() );
+		LOG( Debug, verbose_info ) << "Needed memory: " << image.getVolume() * sizeof( TYPE ) / ( 1024.0 * 1024.0 ) << " mb.";
+		data::TypedImage<TYPE> typedefImage ( image );
+		static_cast<data::Image&>( typedefImage).copyToMem<TYPE>( &imagePtr[0], image.getVolume() );
+		LOG( Debug, verbose_info ) << "Copied image to continuous memory space.";
+		internMinMax = imagePtr.getMinMax();
+		//splice the image in its volumes -> we get a vector of t volumes
+		if( m_ImageSize[3] > 1 ) { //splicing is only necessary if we got more than 1 timestep
+			m_ImageVector = imagePtr.splice( m_ImageSize[0] * m_ImageSize[1] * m_ImageSize[2] );
+		} else {
+			m_ImageVector.push_back( imagePtr );
+		}
+
+	
+	}
 	
 
 };

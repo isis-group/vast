@@ -32,7 +32,7 @@ private:
 	
 	template<typename TYPE>
 	boost::shared_ptr<ImageHolder> _createEmptyMask( boost::shared_ptr<ImageHolder> refImage ){
-		const util::fvector4 refVoxelSize = refImage->getISISImage()->getPropertyAs<util::fvector4>("voxelSize") + 
+		const util::fvector4 &refVoxelSize = refImage->getISISImage()->getPropertyAs<util::fvector4>("voxelSize") + 
 				( refImage->getISISImage()->hasProperty("voxelGap") ? refImage->getISISImage()->getPropertyAs<util::fvector4>("voxelGap") : util::fvector4() );
 		boost::shared_ptr< ImageHolder > retImage;
 		util::ivector4 size = refImage->getImageSize();

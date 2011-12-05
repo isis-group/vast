@@ -39,13 +39,16 @@ boost::shared_ptr<ImageHolder> ViewerCoreBase::addImage( const isis::data::Image
 	if( imageType == ImageHolder::anatomical_image && image.getSizeAsVector()[3] == 1 ) {
 		m_CurrentAnatomicalReference = retImage;
 	}
-	setCurrentImage( retImage );
+	
 	m_ImageList.push_back( retImage );
 
 	if( getMode() == ViewerCoreBase::zmap && retImage->getImageSize()[3] > 1 ) {
 		retImage->isVisible = false;
+	} else if ( getMode() == ViewerCoreBase::zmap && retImage->imageType == ImageHolder::z_map ) {
+		setCurrentImage(retImage);
+	} else {
+		setCurrentImage( retImage );
 	}
-
 	return retImage;
 }
 
@@ -59,7 +62,6 @@ boost::shared_ptr< ImageHolder > ViewerCoreBase::getCurrentImage()
 	}
 	
 }
-
 
 void ViewerCoreBase::setImageList( std::list< data::Image > imgList, const ImageHolder::ImageType &imageType )
 {
@@ -95,8 +97,6 @@ void ViewerCoreBase::setCommonViewerOptions()
 	m_OptionsMap->setPropertyAs<uint16_t>("startWidgetHeight", 500);
 	m_OptionsMap->setPropertyAs<uint16_t>("startWidgetWidth", 400);
 	m_OptionsMap->setPropertyAs<uint16_t>("viewerWidgetMargin", 5);
-	m_OptionsMap->setPropertyAs<double>("upperCutOff", 0.13 );
-	m_OptionsMap->setPropertyAs<double>("lowerCutOff", 0.05 );
 	m_OptionsMap->setPropertyAs<uint8_t>("numberOfThreads", 1);
 	m_OptionsMap->setPropertyAs<bool>("ompAvailable", false );
 	m_OptionsMap->setPropertyAs<uint8_t>("maxNumberOfThreads", 1 );

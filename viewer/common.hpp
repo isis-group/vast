@@ -14,6 +14,7 @@
 #include <boost/shared_ptr.hpp>
 #include <DataStorage/common.hpp>
 #include <CoreUtils/common.hpp>
+#include <CoreUtils/types.hpp>
 #include <DataStorage/io_interface.h>
 
 
@@ -27,12 +28,11 @@ namespace viewer
 {
 class ImageHolder;
 typedef uint8_t InternalImageType;
+typedef isis::util::color24 InternalImageColorType;
 
-// just some helper typedefs which we will need regularly
 enum PlaneOrientation { axial, sagittal, coronal };
 enum WidgetType { type_gl, type_qt };
 enum InterpolationType { nn = 0, lin };
-enum ScalingType { no_scaling, automatic_scaling, manual_scaling };
 
 template<typename TYPE>
 TYPE roundNumber( TYPE number, unsigned  short placesOfDec )
@@ -43,7 +43,7 @@ TYPE roundNumber( TYPE number, unsigned  short placesOfDec )
 void setOrientationToIdentity( data::Image &image );
 void checkForCaCp( boost::shared_ptr<ImageHolder> image );
 std::string getFileFormatsAsString( image_io::FileFormat::io_modes mode, const std::string preSeparator, const std::string postSeparator = std::string( " " ) );
-std::list<std::string> getFileFormatsAsList( image_io::FileFormat::io_modes mode );
+std::list<util::istring> getFileFormatsAsList( image_io::FileFormat::io_modes mode );
 std::list<std::string> getSupportedTypeList() ;
 
 util::ivector4 get32BitAlignedSize( const util::ivector4 &origSize );

@@ -52,7 +52,7 @@ void QImageWidgetImplementation::commonInit()
 	m_WidgetProperties.setPropertyAs<bool>( "zoomEvent", false );
 	m_WidgetProperties.setPropertyAs<float>( "zoomFactorIn", 1.5 );
 	m_WidgetProperties.setPropertyAs<float>( "zoomFactorOut", 1.5 );
-	m_WidgetProperties.setPropertyAs<float>( "maxZoom", 20 );
+	m_WidgetProperties.setPropertyAs<float>( "maxZoom", 30 );
 	m_WidgetProperties.setPropertyAs<float>( "minZoom", 1.0 );
 	currentZoom = 1.0;
 	translationX = 0.0;
@@ -228,14 +228,6 @@ void QImageWidgetImplementation::paintImage( boost::shared_ptr< ImageHolder > im
 
 	const util::ivector4 mappedSizeAligned = QOrienationHandler::mapCoordsToOrientation( image->alignedSize32, image, m_PlaneOrientation );
 
-	isis::data::MemChunk<InternalImageType> sliceChunk( mappedSizeAligned[0], mappedSizeAligned[1] );
-
-	m_MemoryHandler.fillSliceChunk( sliceChunk, image, m_PlaneOrientation, image->voxelCoords[3] );
-
-	QImage qImage( ( InternalImageType * ) sliceChunk.asValuePtr<InternalImageType>().getRawAddress().get(),
-				   mappedSizeAligned[0], mappedSizeAligned[1], QImage::Format_Indexed8 );
-
-
 	m_Painter->resetMatrix();
 
 	if( image.get() != getWidgetSpecCurrentImage().get() ) {
@@ -251,13 +243,24 @@ void QImageWidgetImplementation::paintImage( boost::shared_ptr< ImageHolder > im
 	imgProps.viewPort[3] += translationY;
 
 	m_Painter->setTransform( QOrienationHandler::getTransform( imgProps.viewPort, image, width(), height(), m_PlaneOrientation ) );
-
+	
 	m_Painter->setOpacity( image->opacity );
-
-	qImage.setColorTable( color::Color::adaptColorMapToImage(
+	if ( !image->isRGB ) {
+		isis::data::MemChunk<InternalImageType> sliceChunk( mappedSizeAligned[0], mappedSizeAligned[1] );
+		m_MemoryHandler.fillSliceChunk<InternalImageType>( sliceChunk, image, m_PlaneOrientation, image->voxelCoords[3] );
+		QImage qImage( ( InternalImageType * ) sliceChunk.asValuePtr<InternalImageType>().getRawAddress().get(),
+				   mappedSizeAligned[0], mappedSizeAligned[1], QImage::Format_Indexed8 );
+		qImage.setColorTable( color::Color::adaptColorMapToImage(
 							  m_ViewerCore->getColorHandler()->getColormapMap().at( image->lut ), image ) );
-
-	m_Painter->drawImage( 0, 0, qImage );
+		m_Painter->drawImage( 0, 0, qImage );
+	} else {
+		isis::data::MemChunk<InternalImageColorType> sliceChunk( mappedSizeAligned[0], mappedSizeAligned[1] );
+		m_MemoryHandler.fillSliceChunk<InternalImageColorType>( sliceChunk, image, m_PlaneOrientation, image->voxelCoords[3] );
+		QImage qImage( ( InternalImageType * ) sliceChunk.asValuePtr<InternalImageColorType>().getRawAddress().get(),
+				   mappedSizeAligned[0], mappedSizeAligned[1], QImage::Format_RGB888 );
+		m_Painter->drawImage( 0, 0, qImage );
+		
+	}
 
 	m_Painter->resetMatrix();
 	m_Painter->fillRect( imgProps.viewPort[4] + imgProps.viewPort[2], -1, width(), height(), Qt::black );
@@ -309,11 +312,10 @@ void QImageWidgetImplementation::mouseMoveEvent( QMouseEvent *e )
 
 void QImageWidgetImplementation::emitMousePressEvent( QMouseEvent *e )
 {
-	boost::shared_ptr<ImageHolder> image = getWidgetSpecCurrentImage();
-	ImageProperties &imgProps = m_ImageProperties.at( image );
-
-	uint16_t slice = QOrienationHandler::mapCoordsToOrientation( image->voxelCoords, image, m_PlaneOrientation )[2];
-	util::ivector4 coords = QOrienationHandler::convertWindow2VoxelCoords( imgProps.viewPort, m_WidgetProperties, image, e->x(), e->y(), slice, m_PlaneOrientation );
+	const boost::shared_ptr<ImageHolder> image = getWidgetSpecCurrentImage();
+	const ImageProperties &imgProps = m_ImageProperties.at( image );
+	const uint16_t slice = QOrienationHandler::mapCoordsToOrientation( image->voxelCoords, image, m_PlaneOrientation )[2];
+	const util::ivector4 &coords = QOrienationHandler::convertWindow2VoxelCoords( imgProps.viewPort, m_WidgetProperties, image, e->x(), e->y(), slice, m_PlaneOrientation );
 	physicalCoordsChanged( image->getISISImage()->getPhysicalCoordsFromIndex( coords ) );
 }
 
