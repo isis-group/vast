@@ -136,7 +136,6 @@ int main( int argc, char *argv[] )
 		BOOST_FOREACH( ImageListRef image, core->addImageList( zImgList, ImageHolder::z_map ) ) {
 			checkForCaCp(image);
 			UICore::ViewWidgetEnsembleType ensemble = core->getUI()->createViewWidgetEnsemble( "", image );
-
 			if( app.parameters["in"].isSet() ) {
 				BOOST_FOREACH( std::list<data::Image>::const_reference image, imgList)
 				{

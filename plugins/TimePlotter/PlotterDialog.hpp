@@ -29,11 +29,14 @@ public:
 		plot->setAxisTitle( 2, tr( "Timestep" ) );
 		plot->setAxisTitle( 0, tr( "Intensity" ) );
 		plot->setBackgroundRole( QPalette::Light );
+		plot->setFont(QFont("",2 ) );
 		connect( m_ViewerCore, SIGNAL( emitPhysicalCoordsChanged( util::fvector4 ) ), this, ( SLOT( refresh( util::fvector4 ) ) ) );
 
 		if( m_ViewerCore->hasImage() ) {
 			refresh( m_ViewerCore->getCurrentImage()->physicalCoords );
 		}
+		setMinimumHeight(200);
+		setMaximumHeight(500);
 
 	};
 public Q_SLOTS:
@@ -69,7 +72,6 @@ public Q_SLOTS:
 				QVector<double> timeSteps;
 				QVector<double> intensityValues;
 				using namespace isis::data;
-#pragma omp parallel for
 				for ( size_t t = 0; t < image->getImageSize()[3]; t++ ) {
 					timeSteps.push_back( t * repTime );
 
