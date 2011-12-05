@@ -64,54 +64,10 @@ public:
 	std::list< WidgetInterface * > getWidgetList() { return m_WidgetList; }
 	
 	void updateOrientation();
-
+	
 	/**offset, scaling**/
-	template<typename TYPE>
-	std::pair<double, double> getOptimalScalingToForType( const std::pair<double, double> &cutAway ) const {
-		const size_t volume = getImageSize()[0] * getImageSize()[1] * getImageSize()[2];
-		const TYPE maxTypeValue = std::numeric_limits<TYPE>::max();
-		const TYPE minImage = internMinMax.first->as<TYPE>();
-		const TYPE maxImage = internMinMax.second->as<TYPE>();
-		const TYPE extent = maxImage - minImage;
-		double *histogram = ( double * ) calloc( extent + 1, sizeof( double ) );
-		size_t stepSize = 2;
-		size_t numberOfVoxels = volume / stepSize;
-		TYPE *dataPtr = static_cast<TYPE *>( getImageVector().front()->getRawAddress().get() );
-
-		//create the histogram
-#pragma omp parallel for
-		for( size_t i = 0; i < volume; i += stepSize ) {
-			histogram[dataPtr[i]]++;
-		}
-
-		//normalize histogram
-#pragma omp parallel for		
-		for( TYPE i = 0; i < extent; i++ ) {
-			histogram[i] /= numberOfVoxels;
-		}
-
-		TYPE upperBorder = extent - 1;
-		TYPE lowerBorder = 0;
-		double sum = 0;
-
-		while( sum < cutAway.second ) {
-			sum += histogram[upperBorder--];
-
-		}
-
-		sum = 0;
-
-		while ( sum < cutAway.first ) {
-			sum += histogram[lowerBorder++];
-		}
-
-		std::pair<double, double> retPair;
-		retPair.first = lowerBorder;
-		retPair.second = ( float )maxTypeValue / float( upperBorder - lowerBorder );
-		delete[] histogram;
-		return retPair;
-	}
-
+	std::pair<double, double> getOptimalScaling() const;
+	
 	util::ivector4 voxelCoords;
 	util::fvector4 physicalCoords;
 	util::fvector4 voxelSize;
@@ -129,6 +85,7 @@ public:
 	InterpolationType interpolationType;
 	std::pair<util::ValueReference, util::ValueReference> minMax;
 	std::pair<util::ValueReference, util::ValueReference> internMinMax;
+	std::pair<double, double> optimalScalingOffset;
 	boost::numeric::ublas::matrix<double> orientation;
 	boost::numeric::ublas::matrix<double> latchedOrientation;
 	unsigned short majorTypeID;

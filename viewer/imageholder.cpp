@@ -184,6 +184,7 @@ bool ImageHolder::setImage( const data::Image &image, const ImageType &_imageTyp
 	opacity = 1.0;
 	scaling = 1.0;
 	offset = 0.0;
+	optimalScalingOffset = getOptimalScaling();
 	majorTypeID = image.getMajorTypeID();
 	alignedSize32 = get32BitAlignedSize( m_ImageSize );
 	m_PropMap.setPropertyAs<bool>( "init", true );
@@ -217,6 +218,52 @@ bool ImageHolder::removeChangedAttribute(const std::string& attribute)
 		return true;
 	}
 }
+
+std::pair< double, double > ImageHolder::getOptimalScaling() const
+{
+	const float lowerCutOff = 0.05;
+	const float upperCutOff = 0.05;
+	const size_t volume = getImageSize()[0] * getImageSize()[1] * getImageSize()[2];
+	const InternalImageType minImage = internMinMax.first->as<InternalImageType>();
+	const InternalImageType maxImage = internMinMax.second->as<InternalImageType>();
+	const InternalImageType extent = maxImage - minImage;
+	double *histogram = ( double * ) calloc( extent + 1, sizeof( double ) );
+	InternalImageType *dataPtr = static_cast<InternalImageType *>( getImageVector().front()->getRawAddress().get() );
+
+	//create the histogram
+#pragma omp parallel for
+	for( size_t i = 0; i < volume; i++ ) {
+		histogram[dataPtr[i]]++;
+	}
+
+	//normalize histogram
+#pragma omp parallel for		
+	for( InternalImageType i = 0; i < extent; i++ ) {
+		histogram[i] /= volume;
+	}
+
+	InternalImageType upperBorder = extent - 1;
+	InternalImageType lowerBorder = 0;
+	double sum = 0;
+
+	while( sum < upperCutOff ) {
+		sum += histogram[upperBorder--];
+
+	}
+
+	sum = 0;
+
+	while ( sum < lowerCutOff ) {
+		sum += histogram[lowerBorder++];
+	}
+
+	std::pair<double, double> retPair;
+	retPair.first = lowerBorder;
+	retPair.second = ( float )std::numeric_limits<InternalImageType>::max() / float( upperBorder - lowerBorder );
+	delete[] histogram;
+	return retPair;	
+}
+
 
 
 ///calls isis::data::Image::updateOrientationMatrices() and sets latchedOrientation and orientation of the isis::viewer::ImageHolder

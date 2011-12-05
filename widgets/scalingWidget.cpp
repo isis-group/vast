@@ -25,16 +25,17 @@ ScalingWidget::ScalingWidget( QWidget *parent, isis::viewer::QViewerCore *core )
 
 void ScalingWidget::synchronize()
 {
+	m_Interface.offset->setMaximum( std::numeric_limits<double>::max() );
+	m_Interface.offset->setMinimum( std::numeric_limits<double>::min() );
+	m_Interface.scaling->setMinimum( 0.0 );
+	m_Interface.scaling->setMaximum( 100 );
+	m_Interface.min->setMinimum( -std::numeric_limits<double>::max() );
+	m_Interface.min->setMaximum( std::numeric_limits<double>::max() );
+	m_Interface.max->setMinimum( -std::numeric_limits<double>::max() );
+	m_Interface.max->setMaximum( std::numeric_limits<double>::max() );
 	if( m_ViewerCore->getCurrentImage().get() ) {
 		boost::shared_ptr<ImageHolder> image = m_ViewerCore->getCurrentImage();
-		m_Interface.offset->setMaximum( std::numeric_limits<double>::max() );
-		m_Interface.offset->setMinimum( std::numeric_limits<double>::min() );
-		m_Interface.scaling->setMinimum( 0.0 );
-		m_Interface.scaling->setMaximum( 100 );
-		m_Interface.min->setMinimum( std::numeric_limits<double>::min() );
-		m_Interface.min->setMaximum( std::numeric_limits<double>::max() );
-		m_Interface.max->setMinimum( std::numeric_limits<double>::min() );
-		m_Interface.max->setMaximum( std::numeric_limits<double>::max() );
+
 
 		m_Interface.offset->setValue( image->offset );
 		m_Interface.scaling->setValue( image->scaling );
@@ -65,7 +66,7 @@ void ScalingWidget::minChanged( double min )
 void ScalingWidget::offsetChanged( double offset )
 {
 	boost::shared_ptr<ImageHolder> image = m_ViewerCore->getCurrentImage();
-	image->getPropMap().setPropertyAs<double>( "offset", offset );
+	image->offset = offset;
 	setMinMax( getMinMaxFromScalingOffset( std::make_pair<double, double>( image->scaling, offset ), image ), image );
 }
 
@@ -109,8 +110,7 @@ void ScalingWidget::setScalingOffset( std::pair< double, double > scalingOffset,
 void ScalingWidget::autoScale()
 {
 	boost::shared_ptr<ImageHolder> image = m_ViewerCore->getCurrentImage();
-	std::pair<double, double> cutOff = std::make_pair<double, double>(m_ViewerCore->getOptionMap()->getPropertyAs<double>("lowerCutOff"), m_ViewerCore->getOptionMap()->getPropertyAs<double>("upperCutOff") );
-	std::pair<double, double> scalingOffset = image->getOptimalScalingToForType<isis::viewer::InternalImageType>( cutOff ) ;
+	std::pair<double, double> scalingOffset = image->optimalScalingOffset;
 	setScalingOffset( scalingOffset, image );
 	setMinMax( getMinMaxFromScalingOffset( scalingOffset, image ), image );
 	m_ViewerCore->updateScene();
