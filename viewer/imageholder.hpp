@@ -79,11 +79,13 @@ public:
 		TYPE *dataPtr = static_cast<TYPE *>( getImageVector().front()->getRawAddress().get() );
 
 		//create the histogram
+#pragma omp parallel for
 		for( size_t i = 0; i < volume; i += stepSize ) {
 			histogram[dataPtr[i]]++;
 		}
 
 		//normalize histogram
+#pragma omp parallel for		
 		for( TYPE i = 0; i < extent; i++ ) {
 			histogram[i] /= numberOfVoxels;
 		}

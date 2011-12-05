@@ -262,25 +262,25 @@ void QViewerCore::openPath( QStringList fileList, ImageHolder::ImageType imageTy
 
 void QViewerCore::closeImage( boost::shared_ptr<ImageHolder> image )
 {
-		BOOST_FOREACH( std::list< WidgetInterface *>::const_reference widget, image->getWidgetList() ) {
-			widget->removeImage( image );
+	BOOST_FOREACH( std::list< WidgetInterface *>::const_reference widget, image->getWidgetList() ) {
+		widget->removeImage( image );
+	}
+	if( getCurrentImage().get() == image.get() ) {
+		std::list<boost::shared_ptr< ImageHolder > > tmpList;
+		BOOST_FOREACH( DataContainer::const_reference image, getDataContainer() ) {
+			tmpList.push_back( image.second );
 		}
-		if( getCurrentImage().get() == image.get() ) {
-			std::list<boost::shared_ptr< ImageHolder > > tmpList;
-			BOOST_FOREACH( DataContainer::const_reference image, getDataContainer() ) {
-				tmpList.push_back( image.second );
-			}
-			tmpList.erase( std::find( tmpList.begin(), tmpList.end(), image ) );
+		tmpList.erase( std::find( tmpList.begin(), tmpList.end(), image ) );
 
-			if( tmpList.size() ) {
-				setCurrentImage( tmpList.front() );
-			} else {
-				setCurrentImage( boost::shared_ptr<ImageHolder>() );
-			}
+		if( tmpList.size() ) {
+			setCurrentImage( tmpList.front() );
+		} else {
+			setCurrentImage( boost::shared_ptr<ImageHolder>() );
 		}
-		getDataContainer().erase(  image->getFileNames().front() );
-		getUI()->refreshUI();
-		updateScene();
+	}
+	getDataContainer().erase(  image->getFileNames().front() );
+	getUI()->refreshUI();
+	updateScene();
 }
 
 void QViewerCore::loadSettings()

@@ -191,9 +191,7 @@ void VoxelInformationWidget::synchronizePos( util::fvector4 physicalCoords )
 
 void VoxelInformationWidget::synchronizePos( util::ivector4 voxelCoords )
 {
-
 	boost::shared_ptr<ImageHolder> image = m_ViewerCore->getCurrentImage();
-
 	const std::string typeName = image->getISISImage()->getChunk( voxelCoords[0], voxelCoords[1], voxelCoords[2], voxelCoords[3], false ).getTypeName();
 	m_Interface.intensityValue->setToolTip( typeName.substr( 0, typeName.length() - 1 ).c_str() );
 

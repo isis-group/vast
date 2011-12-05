@@ -140,7 +140,6 @@ bool Color::hasColormap( const std::string &name ) const
 color::Color::ColormapType Color::getFallbackColormap() const
 {
 	ColormapType retColormap;
-
 	for ( unsigned short i = 0; i < 256; i++ ) {
 		retColormap.push_back( QColor( i, i, i, 255 ).rgba() );
 	}
@@ -163,7 +162,6 @@ color::Color::ColormapType color::Color::adaptColorMapToImage( color::Color::Col
 	const double norm = 256.0 / extent;
 	const unsigned short mid = norm * fabs( min );
 	unsigned short scaledVal;
-
 	for ( unsigned short i = 0; i < 256; i++ ) {
 		scaledVal = i * scaling + offset * norm > 255 ? 255 : i * scaling + offset * norm;
 		retMap[i] = colorMap[scaledVal];
@@ -180,7 +178,6 @@ color::Color::ColormapType color::Color::adaptColorMapToImage( color::Color::Col
 			if( min < 0 ) {
 				const double scaleMin = 1 - fabs( lowerThreshold / min );
 				const double normMin = 128.0 / mid;
-
 				for ( unsigned short i = 0; i < mid; i++ ) {
 					negVec[i * scaleMin] = retMap[i * normMin];
 				}
@@ -190,7 +187,6 @@ color::Color::ColormapType color::Color::adaptColorMapToImage( color::Color::Col
 				const double normMax = 128.0 / ( 256 - mid );
 				const double scaleMax = fabs( upperThreshold / max );
 				const double offset = ( 256 - mid ) * scaleMax;
-
 				for( unsigned short i = 0; i < 256 - mid; i++ ) {
 					posVec[(i * ( 1 - scaleMax ) + offset)] = retMap[128 + i * normMax];
 				}
