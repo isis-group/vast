@@ -124,9 +124,7 @@ QIcon Color::getIcon( const std::string &colormapName, size_t w, size_t h, icon_
 			lutImage[index++] = QColor( lut[i] ).blue();
 		}
 	}
-
-	QImage image( static_cast<uint8_t *>( lutImage.getRawAddress().get() ), ( end - start ), 1, QImage::Format_RGB888 );
-	QPixmap pixmap( QPixmap::fromImage( image ) );
+	QPixmap pixmap( QPixmap::fromImage( QImage ( static_cast<uint8_t *>( lutImage.getRawAddress().get() ), ( end - start ), 1, QImage::Format_RGB888 ).copy() ) );
 	return QIcon( pixmap.scaled( w, h ) );
 }
 
