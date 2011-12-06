@@ -67,7 +67,7 @@
     <item row="2" column="1">
      <layout class="QGridLayout" name="bottomGridLayout">
       <property name="sizeConstraint">
-       <enum>QLayout::SetMinimumSize</enum>
+       <enum>QLayout::SetMaximumSize</enum>
       </property>
       <property name="spacing">
        <number>0</number>

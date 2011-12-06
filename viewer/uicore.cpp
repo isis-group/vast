@@ -18,8 +18,6 @@ UICore::UICore( QViewerCore *core )
 	m_ImageStackWidget = new widget::ImageStackWidget( m_MainWindow, core );
 	m_ViewWidgetArrangement = InRow;
 	m_RowCount = m_MainWindow->getUI().centralGridLayout->rowCount();
-	m_VoxelInformationWidget->setMaximumWidth( getMainWindow()->width() / 3 );
-	m_VoxelInformationWidget->setMinimumWidth( getMainWindow()->width() / 3 );
 	m_VoxelInformationWidget->setVisible( false );
 	m_ImageStackWidget->setVisible( false );
 	getMainWindow()->adjustSize();
