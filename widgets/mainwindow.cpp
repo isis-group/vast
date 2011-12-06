@@ -104,7 +104,6 @@ MainWindow::MainWindow( QViewerCore *core ) :
 	loadSettings();
 }
 
-
 void MainWindow::loadSettings()
 {
 	m_ViewerCore->getSettings()->beginGroup( "UserProfile" );

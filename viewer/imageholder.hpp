@@ -58,6 +58,7 @@ public:
 
 	bool operator<( const ImageHolder &ref ) const { return m_ID < ref.getID(); }
 
+	void checkVoxelCoords();
 
 	void addWidget( WidgetInterface *widget ) { m_WidgetList.push_back( widget ); }
 	void removeWidget( WidgetInterface *widget ) { m_WidgetList.erase( std::find( m_WidgetList.begin(), m_WidgetList.end(), widget ) ) ; }

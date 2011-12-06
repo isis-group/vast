@@ -192,6 +192,7 @@ void QImageWidgetImplementation::paintEvent( QPaintEvent *event )
 		m_ShowScalingOffset = false;
 		m_Painter->end();
 	}
+	setFocus();
 
 }
 
@@ -454,6 +455,45 @@ void QImageWidgetImplementation::keyPressEvent(QKeyEvent* e)
 		zoomChanged( oldZoom );
 	} else {
 		setZoom( oldZoom );
+	}	
+	
+	if( m_ViewerCore->hasImage() ) {
+		if( e->key() == Qt::Key_Up ) {
+			m_ViewerCore->getCurrentImage()->voxelCoords[1]++;
+			m_ViewerCore->getCurrentImage()->checkVoxelCoords();
+			m_ViewerCore->updateScene();
+			m_ViewerCore->getUI()->refreshUI();
+		}
+		if( e->key() == Qt::Key_Down ) {
+			m_ViewerCore->getCurrentImage()->voxelCoords[1]--;
+			m_ViewerCore->getCurrentImage()->checkVoxelCoords();
+			m_ViewerCore->updateScene();
+			m_ViewerCore->getUI()->refreshUI();			
+		}
+		if( e->key() == Qt::Key_Left ) {
+			m_ViewerCore->getCurrentImage()->voxelCoords[0]--;
+			m_ViewerCore->getCurrentImage()->checkVoxelCoords();			
+			m_ViewerCore->updateScene();
+			m_ViewerCore->getUI()->refreshUI();
+		}
+		if( e->key() == Qt::Key_Right ) {
+			m_ViewerCore->getCurrentImage()->voxelCoords[0]++;
+			m_ViewerCore->getCurrentImage()->checkVoxelCoords();			
+			m_ViewerCore->updateScene();
+			m_ViewerCore->getUI()->refreshUI();
+		}
+		if( e->key() == Qt::Key_PageUp ) {
+			m_ViewerCore->getCurrentImage()->voxelCoords[2]++;
+			m_ViewerCore->getCurrentImage()->checkVoxelCoords();			
+			m_ViewerCore->updateScene();
+			m_ViewerCore->getUI()->refreshUI();
+		}
+		if( e->key() == Qt::Key_PageDown ) {
+			m_ViewerCore->getCurrentImage()->voxelCoords[2]--;
+			m_ViewerCore->getCurrentImage()->checkVoxelCoords();
+			m_ViewerCore->updateScene();
+			m_ViewerCore->getUI()->refreshUI();
+		}
 	}	
 }
 

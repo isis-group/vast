@@ -32,8 +32,8 @@ void UICore::setOptionPosition( UICore::OptionPosition pos )
 	m_ImageStackWidget->setVisible( true );
 	switch ( pos ) {
 	case bottom:
-		m_MainWindow->getUI().bottomGridLayout->addWidget( m_VoxelInformationWidget, 0, 1 );
-		m_MainWindow->getUI().bottomGridLayout->addWidget( m_ImageStackWidget, 0, 0 );
+		m_MainWindow->getUI().bottomGridLayout->addWidget( m_VoxelInformationWidget, 0, 0 );
+		m_MainWindow->getUI().bottomGridLayout->addWidget( m_ImageStackWidget, 0, 1 );
 		break;
 	case top:
 		m_MainWindow->getUI().topGridLayout->addWidget( m_ImageStackWidget, 0, 1 );
