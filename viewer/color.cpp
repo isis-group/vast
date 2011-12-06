@@ -108,14 +108,20 @@ QIcon Color::getIcon( const std::string &colormapName, size_t w, size_t h, icon_
 		break;
 	}
 	QImage tmpImage( end-start, 1,QImage::Format_RGB888 ); 
+	uint8_t *line = tmpImage.scanLine(0);	
 
+	unsigned short index = 0;
 	if( !flipped ) {
-		for ( unsigned short i = start,index=0; i < end; i++,index++ ) {
-			tmpImage.setPixel(index, 0, lut[i] );
+		for ( unsigned short i = start; i < end; i++ ) {
+			line[index++] = qRed(lut[i]);
+			line[index++] = qGreen(lut[i]);
+			line[index++] = qBlue(lut[i]);
 		}
 	} else {
-		for ( short i = end,index=0; i > start - 1; i--,index++ ) {
-			tmpImage.setPixel(index, 0, lut[i] );
+		for ( short i = end; i > start - 1; i-- ) {
+			line[index++] = qRed(lut[i]);
+			line[index++] = qGreen(lut[i]);
+			line[index++] = qBlue(lut[i]);
 		}
 	}
 	QPixmap pixmap( QPixmap::fromImage( tmpImage ) );
