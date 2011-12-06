@@ -21,7 +21,7 @@ isis::viewer::widget::FileDialog::FileDialog( QWidget *parent, QViewerCore *core
 	m_Interface.typeComboBox->addItem( "structural image" );
 	m_Interface.typeComboBox->addItem( "zmap" );
 	connect( m_Interface.browseButton, SIGNAL( clicked() ), this, SLOT( browse() ) );
-	connect( m_Interface.fileDirEdit, SIGNAL( textChanged( QString ) ), this, SLOT( parsePath() ) );
+	connect( m_Interface.fileDirEdit, SIGNAL( editTextChanged(QString) ), this, SLOT( parsePath() ) );
 	connect( m_Interface.advancedOptionsCheck, SIGNAL( clicked( bool ) ), this, SLOT( advancedChecked( bool ) ) );
 	connect( m_Interface.openSaveButton, SIGNAL( clicked() ), this, SLOT( openPath() ) );
 	connect( m_Interface.cancelButton, SIGNAL( clicked() ), this, SLOT( close() ) );
