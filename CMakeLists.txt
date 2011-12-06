@@ -154,7 +154,6 @@ set(NEEDED_LIBS
 	${ISIS_LIB}
 	${ISIS_LIB_DEPENDS}
 	${isisqt4_LIBRARY}
-	${QWT5_library} 
 	)
 
 #add the plugin directory

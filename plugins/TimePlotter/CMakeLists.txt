@@ -13,6 +13,13 @@ include_directories(${QWT5_include})
 ###########################################################
 # qt4 stuff
 ###########################################################
+FIND_PACKAGE(Qt4 COMPONENTS QtCore QtGui REQUIRED)
+
+set(QT_USE_QTUITOOLS TRUE)
+set(QT_USE_QTOPENGL TRUE)
+set(QT_USE_OPENGL TRUE )
+
+INCLUDE(${QT_USE_FILE})
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 QT4_ADD_RESOURCES(timeplotter_rcc_files resources/timeplotter.qrc)
@@ -20,6 +27,6 @@ qt4_wrap_cpp(plugin_moc_files PlotterDialog.hpp)
 QT4_WRAP_UI(timeplotter_ui_h ${FILES_UI})
 
 add_library(vastPlugin_TimePlotter SHARED vastPlugin_TimePlotter.cpp ${timeplotter_ui_h} ${plugin_moc_files} ${timeplotter_rcc_files})
-target_link_libraries(vastPlugin_TimePlotter isis_core  ${ISIS_LIB_DEPENDS} ${QWT5_library} )
+target_link_libraries(vastPlugin_TimePlotter isis_core  ${ISIS_LIB_DEPENDS} ${QWT5_library} ${QT_LIBRARIES})
 
 install(TARGETS vastPlugin_TimePlotter DESTINATION ${VAST_PLUGIN_INFIX} COMPONENT "vast plugins" )
