@@ -90,7 +90,6 @@ QIcon Color::getIcon( const std::string &colormapName, size_t w, size_t h, icon_
 {
 	const ColormapType lut = getColormapMap().at(colormapName);
 
-	unsigned short index = 0;
 	unsigned short start = 0;
 	unsigned short end = 0;
 
@@ -108,28 +107,17 @@ QIcon Color::getIcon( const std::string &colormapName, size_t w, size_t h, icon_
 		end = 256;
 		break;
 	}
+	QImage tmpImage( end-start, 1,QImage::Format_RGB888 ); 
 
-	data::ValuePtr<util::color24> lutImage( ( end - start ) );
-	
 	if( !flipped ) {
-		for ( unsigned short i = start; i < end; i++ ) {
-			lutImage[index].r = QColor( lut[i] ).red();
-			lutImage[index].g = QColor( lut[i] ).green();
-			lutImage[index].b = QColor( lut[i] ).blue();
-			index++;
+		for ( unsigned short i = start,index=0; i < end; i++,index++ ) {
+			tmpImage.setPixel(index, 0, lut[i] );
 		}
 	} else {
-		for ( short i = end; i > start - 1; i-- ) {
-			lutImage[index].r = QColor( lut[i] ).red();
-			lutImage[index].g = QColor( lut[i] ).green();
-			lutImage[index].b = QColor( lut[i] ).blue();
-			index++;
+		for ( short i = end,index=0; i > start - 1; i--,index++ ) {
+			tmpImage.setPixel(index, 0, lut[i] );
 		}
 	}
-
-	QImage tmpImage( end-start, 1,QImage::Format_RGB888 ); 
-	lutImage.copyToMem<util::color24>( reinterpret_cast<util::color24*>( tmpImage.bits() ), end-start );
-// 	QImage image( static_cast<uint8_t *>( lutImage.getRawAddress().get() ), ( end - start ), 1, QImage::Format_RGB888 );
 	QPixmap pixmap( QPixmap::fromImage( tmpImage ) );
 	return QIcon( pixmap.scaled( w, h ) );
 }
