@@ -274,6 +274,14 @@ void ImageHolder::updateOrientation()
 	orientation = getImageOrientation();
 }
 
+void ImageHolder::checkVoxelCoords()
+{
+	for( unsigned short i = 0; i<4;i++) {
+		voxelCoords[i] = voxelCoords[i] < 0 ? 0 : voxelCoords[i];		
+		voxelCoords[i] = voxelCoords[i] >= getImageSize()[i] ? getImageSize()[i] - 1 : voxelCoords[i];
+		
+	}
+}
 
 }
 } //end namespace

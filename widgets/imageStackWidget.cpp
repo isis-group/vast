@@ -17,9 +17,7 @@ ImageStack::ImageStack(QWidget* parent, ImageStackWidget *widget )
 	setVerticalScrollMode(ScrollPerItem);
 	setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
 	setMaximumHeight(m_Widget->m_ViewerCore->getOptionMap()->getPropertyAs<uint16_t>("maxOptionWidgetHeight") - 4);
-	setMinimumHeight(m_Widget->m_ViewerCore->getOptionMap()->getPropertyAs<uint16_t>("minOptionWidgetHeight") - 4);
-	setMinimumWidth( 300 );
-	
+	setMinimumHeight(m_Widget->m_ViewerCore->getOptionMap()->getPropertyAs<uint16_t>("minOptionWidgetHeight") - 4);	
 }
 
 void ImageStack::contextMenuEvent(QContextMenuEvent* event )

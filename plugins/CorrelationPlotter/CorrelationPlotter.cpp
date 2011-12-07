@@ -195,7 +195,7 @@ void isis::viewer::plugin::CorrelationPlotterDialog::_internCalculateCorrelation
 	const double s_xy = (1 / float( n - 1 ) ) * ( sum_xy - n * _x * _y );
 	const double s_y = std::sqrt((1/ float(n-1)) * (sum_quad_y - n * _y * _y ) );
 	double r_xy = s_xy / ( s_x * s_y );
-	if( !isnan( r_xy ) ) {
+	if( !std::isnan( r_xy ) ) {
 		r_xy += 1;
 		r_xy *= 128;
 		m_CurrentCorrelationMap->getChunkVector()[0].voxel<InternalImageType>( vec[0], vec[1], vec[2] ) = r_xy;
