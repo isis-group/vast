@@ -1,3 +1,10 @@
+vast (0.2.1alpha-0) stable; urgency=low
+
+  * fixed some bugs
+  * changed and fixed design 
+
+ -- ISIS Group (The friendly isis team) <gr_isis@cbs.mpg.de>  Wed, 7 Nov 2011 10:40:35 +0200
+
 vast (0.1.9alpha-0) stable; urgency=low
 
   * add multithreading support 
