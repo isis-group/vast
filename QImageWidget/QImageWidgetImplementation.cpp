@@ -287,9 +287,9 @@ void QImageWidgetImplementation::mousePressEvent( QMouseEvent *e )
 		{
 			if( image->imageType == ImageHolder::z_map) {
 				m_ViewerCore->setCurrentImage( image );
-				m_ViewerCore->getUI()->refreshUI();
 			}
 		}
+		m_ViewerCore->getUI()->refreshUI();
 	}
 	setFocus();
 	emitMousePressEvent( e );
@@ -462,37 +462,31 @@ void QImageWidgetImplementation::keyPressEvent(QKeyEvent* e)
 			m_ViewerCore->getCurrentImage()->voxelCoords[1]++;			
 			m_ViewerCore->getCurrentImage()->checkVoxelCoords();			
 			m_ViewerCore->physicalCoordsChanged( m_ViewerCore->getCurrentImage()->getISISImage()->getPhysicalCoordsFromIndex( m_ViewerCore->getCurrentImage()->voxelCoords ) );
-			m_ViewerCore->getUI()->refreshUI();
 		}
 		if( e->key() == Qt::Key_Down ) {
 			m_ViewerCore->getCurrentImage()->voxelCoords[1]--;
 			m_ViewerCore->getCurrentImage()->checkVoxelCoords();
 			m_ViewerCore->physicalCoordsChanged( m_ViewerCore->getCurrentImage()->getISISImage()->getPhysicalCoordsFromIndex( m_ViewerCore->getCurrentImage()->voxelCoords ) );
-			m_ViewerCore->getUI()->refreshUI();	
 		}
 		if( e->key() == Qt::Key_Left ) {
 			m_ViewerCore->getCurrentImage()->voxelCoords[0]--;
 			m_ViewerCore->getCurrentImage()->checkVoxelCoords();			
 			m_ViewerCore->physicalCoordsChanged( m_ViewerCore->getCurrentImage()->getISISImage()->getPhysicalCoordsFromIndex( m_ViewerCore->getCurrentImage()->voxelCoords ) );
-			m_ViewerCore->getUI()->refreshUI();
 		}
 		if( e->key() == Qt::Key_Right ) {
 			m_ViewerCore->getCurrentImage()->voxelCoords[0]++;
 			m_ViewerCore->getCurrentImage()->checkVoxelCoords();			
 			m_ViewerCore->physicalCoordsChanged( m_ViewerCore->getCurrentImage()->getISISImage()->getPhysicalCoordsFromIndex( m_ViewerCore->getCurrentImage()->voxelCoords ) );
-			m_ViewerCore->getUI()->refreshUI();
 		}
 		if( e->key() == Qt::Key_PageUp ) {
 			m_ViewerCore->getCurrentImage()->voxelCoords[2]++;
 			m_ViewerCore->getCurrentImage()->checkVoxelCoords();			
 			m_ViewerCore->physicalCoordsChanged( m_ViewerCore->getCurrentImage()->getISISImage()->getPhysicalCoordsFromIndex( m_ViewerCore->getCurrentImage()->voxelCoords ) );
-			m_ViewerCore->getUI()->refreshUI();
 		}
 		if( e->key() == Qt::Key_PageDown ) {
 			m_ViewerCore->getCurrentImage()->voxelCoords[2]--;
 			m_ViewerCore->getCurrentImage()->checkVoxelCoords();
 			m_ViewerCore->physicalCoordsChanged( m_ViewerCore->getCurrentImage()->getISISImage()->getPhysicalCoordsFromIndex( m_ViewerCore->getCurrentImage()->voxelCoords ) );
-			m_ViewerCore->getUI()->refreshUI();
 		}
 	}	
 }

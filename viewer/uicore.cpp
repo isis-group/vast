@@ -269,7 +269,7 @@ void UICore::reloadPluginsToGUI()
 	m_MainWindow->reloadPluginsToGUI();
 }
 
-void UICore::refreshUI()
+void UICore::refreshUI( )
 {
 	m_SliderWidget->synchronize();
 	m_ImageStackWidget->synchronize();
