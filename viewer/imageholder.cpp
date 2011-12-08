@@ -6,9 +6,8 @@ namespace isis
 namespace viewer
 {
 
-ImageHolder::ImageHolder( )
-{
-}
+ImageHolder::ImageHolder(){}
+	
 boost::numeric::ublas::matrix< double > ImageHolder::getNormalizedImageOrientation( bool transposed ) const
 {
 	boost::numeric::ublas::matrix<double> retMatrix = boost::numeric::ublas::zero_matrix<double>( 4, 4 );
@@ -182,6 +181,7 @@ bool ImageHolder::setImage( const data::Image &image, const ImageType &_imageTyp
 	opacity = 1.0;
 	scaling = 1.0;
 	offset = 0.0;
+	colorMap = util::Singletons::get<color::Color, 10>().getColormapMap().at(lut);
 	if( !isRGB ) {
 		extent = fabs( minMax.second->as<double>() - minMax.first->as<double>() );		
 		optimalScalingOffset = getOptimalScaling();

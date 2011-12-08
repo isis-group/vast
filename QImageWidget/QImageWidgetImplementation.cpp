@@ -251,8 +251,7 @@ void QImageWidgetImplementation::paintImage( boost::shared_ptr< ImageHolder > im
 		m_MemoryHandler.fillSliceChunk<InternalImageType>( sliceChunk, image, m_PlaneOrientation, image->voxelCoords[3] );
 		QImage qImage( ( InternalImageType * ) sliceChunk.asValuePtr<InternalImageType>().getRawAddress().get(),
 				   mappedSizeAligned[0], mappedSizeAligned[1], QImage::Format_Indexed8 );
-		qImage.setColorTable( color::Color::adaptColorMapToImage(
-							  m_ViewerCore->getColorHandler()->getColormapMap().at( image->lut ), image ) );
+		qImage.setColorTable( image->colorMap );
 		m_Painter->drawImage( 0, 0, qImage );
 	} else {
 		isis::data::MemChunk<InternalImageColorType> sliceChunk( mappedSizeAligned[0], mappedSizeAligned[1] );

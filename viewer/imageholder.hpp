@@ -14,6 +14,10 @@ namespace isis
 {
 namespace viewer
 {
+	
+namespace color {
+class Color;
+}
 class WidgetInterface;
 /**
  * Class that holds one image in a vector of data::ValuePtr's
@@ -31,7 +35,7 @@ public:
 
 	enum ImageType { anatomical_image, z_map };
 
-	ImageHolder( );
+	ImageHolder();
 
 	bool setImage( const data::Image &image, const ImageType &imageType, const std::string &filename = "" );
 
@@ -81,6 +85,7 @@ public:
 	double extent;
 	double lowerThreshold;
 	double upperThreshold;
+	QVector<QRgb> colorMap;
 	std::string lut;
 	ImageType imageType;
 	InterpolationType interpolationType;
@@ -105,6 +110,8 @@ private:
 	std::vector< data::Chunk > m_ChunkVector;
 
 	std::list<WidgetInterface *> m_WidgetList;
+	
+	boost::shared_ptr<color::Color> m_ColorHandler;
 	
 	template<typename TYPE>
 	void copyImageToVector( const data::Image &image ) {

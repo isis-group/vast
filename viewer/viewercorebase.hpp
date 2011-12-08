@@ -43,8 +43,6 @@ public:
 
 	boost::shared_ptr<util::PropertyMap>  getOptionMap() { return m_OptionsMap; }
 
-	color::Color *getColorHandler() const { return m_ColorHandler; }
-
 	bool hasImage() const { return getDataContainer().size(); }
 	
 	void setMode( Mode mode ) { m_Mode = mode; }
@@ -55,7 +53,6 @@ private:
 	//this is the container which actually holds all the images
 	DataContainer m_DataContainer;
 	boost::shared_ptr<ImageHolder>  m_CurrentImage;
-	color::Color *m_ColorHandler;
 	void setCommonViewerOptions();
 
 

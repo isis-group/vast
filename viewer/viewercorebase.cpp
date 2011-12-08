@@ -10,12 +10,11 @@ namespace viewer
 {
 
 ViewerCoreBase::ViewerCoreBase( )
-	: m_ColorHandler( new color::Color() ),
-	  m_OptionsMap( boost::shared_ptr< util::PropertyMap >( new util::PropertyMap ) ),
+	: m_OptionsMap( boost::shared_ptr< util::PropertyMap >( new util::PropertyMap ) ),
 	  m_Mode( standard ),
 	  m_CurrentAnatomicalReference( boost::shared_ptr<ImageHolder>() )
 {
-	m_ColorHandler->initStandardColormaps();
+	util::Singletons::get<color::Color,10>().initStandardColormaps();
 	setCommonViewerOptions();
 }
 

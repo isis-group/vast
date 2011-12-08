@@ -1,5 +1,4 @@
 #include "voxelInformationWidget.hpp"
-#include <color.hpp>
 #include <imageholder.hpp>
 #include <qviewercore.hpp>
 
@@ -109,8 +108,8 @@ void VoxelInformationWidget::synchronize()
 			m_Interface.upperThresholdLabel->setVisible( false );
 			m_Interface.upperHalfColormapLabel->adjustSize();
 			QSize size = m_Interface.upperHalfColormapLabel->size();
-			m_Interface.upperHalfColormapLabel->setPixmap(
-				m_ViewerCore->getColorHandler()->getIcon( image->lut, size.width(), size.height() - 10 ).pixmap( size.width(), size.height() - 10 ) );
+			m_Interface.upperHalfColormapLabel->setPixmap( 
+				util::Singletons::get<color::Color,10>().getIcon( image->lut, size.width(), size.height() - 10 ).pixmap( size.width(), size.height() - 10 ) );
 		} else if ( image->imageType == ImageHolder::z_map ) {
 			m_Interface.colormapGrid->addWidget( m_Interface.upperThresholdLabel, 0, 0 );
 			m_Interface.colormapGrid->addWidget( m_Interface.upperHalfColormapLabel, 0, 1 );
@@ -126,9 +125,9 @@ void VoxelInformationWidget::synchronize()
 			m_Interface.upperHalfColormapLabel->adjustSize();
 			QSize size = m_Interface.upperHalfColormapLabel->size();
 			m_Interface.upperHalfColormapLabel->setPixmap(
-				m_ViewerCore->getColorHandler()->getIcon( image->lut, size.width(), size.height() - 10, color::Color::upper_half ).pixmap( size.width(), size.height() - 10 ) );
+				util::Singletons::get<color::Color,10>().getIcon( image->lut, size.width(), size.height() - 10, color::Color::upper_half ).pixmap( size.width(), size.height() - 10 ) );
 			m_Interface.lowerHalfColormapLabel->setPixmap(
-				m_ViewerCore->getColorHandler()->getIcon( image->lut, size.width(), size.height() - 10, color::Color::lower_half, true ).pixmap( size.width(), size.height() - 10 ) );
+				util::Singletons::get<color::Color,10>().getIcon( image->lut, size.width(), size.height() - 10, color::Color::lower_half, true ).pixmap( size.width(), size.height() - 10 ) );
 		}
 		if( !image->isRGB ) {
 			m_Interface.labelMin->setText( QString::number( image->minMax.first->as<double>(), 'g', 4 ) );
