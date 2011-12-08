@@ -1,5 +1,4 @@
 #include "preferenceDialog.hpp"
-#include "color.hpp"
 #include <qviewercore.hpp>
 
 namespace isis
@@ -81,9 +80,10 @@ void PreferencesDialog::loadSettings()
 	preferencesUi.comboBox->clear();
 	QSize size = preferencesUi.comboBox->iconSize();
 	unsigned short index = 0;
-	BOOST_FOREACH( color::Color::ColormapMapType::const_reference lut, m_ViewerCore->getColorHandler()->getColormapMap() ) {
+	color::Color::ColormapMapType colorMap = util::Singletons::get<color::Color,10>().getColormapMap();
+	BOOST_FOREACH( color::Color::ColormapMapType::const_reference lut, colorMap ) {
 		if( lut.first != std::string( "fallback" ) ) {
-			preferencesUi.comboBox->insertItem( index++, m_ViewerCore->getColorHandler()->getIcon( lut.first, size.width() , size.height() ), QString( lut.first.c_str() ) ) ;
+			preferencesUi.comboBox->insertItem( index++, util::Singletons::get<color::Color,10>().getIcon( lut.first, size.width() , size.height() ), QString( lut.first.c_str() ) ) ;
 		}
 	}
 	m_ViewerCore->getSettings()->beginGroup( "UserProfile" );

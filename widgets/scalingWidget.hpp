@@ -29,6 +29,7 @@ public Q_SLOTS:
 	void reset();
 	void autoScale();
 	void showMe( bool visible );
+	void applyScalingOffset( const double &scaling, const double &offset, bool global );
 
 
 private:

@@ -23,7 +23,7 @@ MaskEditDialog::MaskEditDialog(QWidget* parent, QViewerCore* core)
 	m_Interface.radius->setMaximum(500);
 	m_Interface.radius->setValue(m_Radius);
 
-	m_ViewerCore->getColorHandler()->addColormap( ":/common/maskeditLUT" );
+	util::Singletons::get<color::Color, 10>().addColormap(":/common/maskeditLUT" );
 	connect( m_Interface.newMask, SIGNAL( clicked()), this, SLOT( createEmptyMask())) ;
 	connect( m_Interface.radius, SIGNAL( valueChanged(int)), SLOT( radiusChange(int)));
 	connect( m_Interface.cut, SIGNAL( clicked(bool)), this , SLOT( cutClicked()));

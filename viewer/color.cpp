@@ -146,10 +146,12 @@ color::Color::ColormapType Color::getFallbackColormap() const
 }
 
 
-color::Color::ColormapType color::Color::adaptColorMapToImage( color::Color::ColormapType colorMap, const boost::shared_ptr< ImageHolder > image, bool split )
+void color::Color::adaptColorMapToImage( ImageHolder* image, bool split )
 {
-	LOG_IF( colorMap.size() != 256, Runtime, error ) << "The colormap is of size " << colorMap.size() << " but has to be of size 256!";
-	color::Color::ColormapType retMap = colorMap;
+	LOG_IF( image->colorMap.size() != 256, Runtime, error ) << "The colormap is of size " << image->colorMap.size() << " but has to be of size 256!";
+	color::Color::ColormapType retMap ;
+	retMap.resize(256);
+	color::Color::ColormapType tmpMap = util::Singletons::get<color::Color,10>().getColormapMap().at( image->lut );
 	const double extent = image->extent;
 	const double min = image->minMax.first->as<double>();
 	const double max = image->minMax.second->as<double>();
@@ -162,7 +164,7 @@ color::Color::ColormapType color::Color::adaptColorMapToImage( color::Color::Col
 	unsigned short scaledVal;
 	for ( unsigned short i = 0; i < 256; i++ ) {
 		scaledVal = i * scaling + offset * norm > 255 ? 255 : i * scaling + offset * norm;
-		retMap[i] = colorMap[scaledVal];
+		retMap[i] = tmpMap[scaledVal];
 	}
 	color::Color::ColormapType negVec( mid );
 	color::Color::ColormapType posVec( 256 - mid );
@@ -194,7 +196,7 @@ color::Color::ColormapType color::Color::adaptColorMapToImage( color::Color::Col
 	}
 	//kill the zero value
 	retMap[mid] = QColor( 0, 0, 0, 0 ).rgba();
-	return retMap;
+	image->colorMap = retMap;
 }
 
 

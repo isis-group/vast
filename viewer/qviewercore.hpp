@@ -5,7 +5,6 @@
 #include "viewercorebase.hpp"
 #include "widgetinterface.hpp"
 #include <QtGui>
-#include "color.hpp"
 #include "qprogressfeedback.hpp"
 #include <Adapter/qtapplication.hpp>
 

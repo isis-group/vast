@@ -94,7 +94,6 @@ void QViewerCore::centerImages(bool ca)
 		} else {
 			getCurrentImage()->physicalCoords = util::fvector4();
 		}
-		m_UI->refreshUI();
 		updateScene();
 	}
 }

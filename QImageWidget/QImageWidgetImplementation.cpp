@@ -59,6 +59,7 @@ void QImageWidgetImplementation::commonInit()
 	translationY = 0.0;
 	m_ShowCrosshair = true;
 	m_CrosshairColor = QColor( 255, 102, 0 );
+	setFocus();
 }
 
 void QImageWidgetImplementation::setMouseCursorIcon(QIcon icon)
@@ -192,7 +193,6 @@ void QImageWidgetImplementation::paintEvent( QPaintEvent *event )
 		m_ShowScalingOffset = false;
 		m_Painter->end();
 	}
-	setFocus();
 
 }
 
@@ -251,8 +251,7 @@ void QImageWidgetImplementation::paintImage( boost::shared_ptr< ImageHolder > im
 		m_MemoryHandler.fillSliceChunk<InternalImageType>( sliceChunk, image, m_PlaneOrientation, image->voxelCoords[3] );
 		QImage qImage( ( InternalImageType * ) sliceChunk.asValuePtr<InternalImageType>().getRawAddress().get(),
 				   mappedSizeAligned[0], mappedSizeAligned[1], QImage::Format_Indexed8 );
-		qImage.setColorTable( color::Color::adaptColorMapToImage(
-							  m_ViewerCore->getColorHandler()->getColormapMap().at( image->lut ), image ) );
+		qImage.setColorTable( image->colorMap );
 		m_Painter->drawImage( 0, 0, qImage );
 	} else {
 		isis::data::MemChunk<InternalImageColorType> sliceChunk( mappedSizeAligned[0], mappedSizeAligned[1] );
@@ -287,9 +286,9 @@ void QImageWidgetImplementation::mousePressEvent( QMouseEvent *e )
 		{
 			if( image->imageType == ImageHolder::z_map) {
 				m_ViewerCore->setCurrentImage( image );
-				m_ViewerCore->getUI()->refreshUI();
 			}
 		}
+		m_ViewerCore->getUI()->refreshUI();
 	}
 	setFocus();
 	emitMousePressEvent( e );
@@ -299,11 +298,23 @@ void QImageWidgetImplementation::mouseMoveEvent( QMouseEvent *e )
 {
 	
 	if( m_RightMouseButtonPressed && m_LeftMouseButtonPressed ) {
-		boost::shared_ptr<ImageHolder> image = getWidgetSpecCurrentImage();
-		const double offset =  ( m_StartCoordsPair.second - e->y() ) / ( float )height() * image->extent;
-		const double scaling = 1.0 - ( m_StartCoordsPair.first - e->x() ) / ( float )width() * 5;
-		image->offset = offset < 0 ? 0 : offset;
-		image->scaling = scaling < 0.0 ? 0.0 : scaling;
+		if( QApplication::keyboardModifiers() == Qt::ControlModifier ) {
+			BOOST_FOREACH( DataContainer::reference image, m_ViewerCore->getDataContainer() ) 
+			{
+				const double offset =  ( m_StartCoordsPair.second - e->y() ) / ( float )height() * image.second->extent;
+				const double scaling = 1.0 - ( m_StartCoordsPair.first - e->x() ) / ( float )width() * 5;
+				image.second->offset = offset < 0 ? 0 : offset;
+				image.second->scaling = scaling < 0.0 ? 0.0 : scaling;
+				image.second->updateColorMap();
+			}
+		} else {
+			boost::shared_ptr<ImageHolder> image = getWidgetSpecCurrentImage();
+			const double offset =  ( m_StartCoordsPair.second - e->y() ) / ( float )height() * image->extent;
+			const double scaling = 1.0 - ( m_StartCoordsPair.first - e->x() ) / ( float )width() * 5;
+			image->offset = offset < 0 ? 0 : offset;
+			image->scaling = scaling < 0.0 ? 0.0 : scaling;
+			image->updateColorMap();
+		}
 		m_ShowScalingOffset = true;
 		m_ViewerCore->updateScene();
 	} else if( m_RightMouseButtonPressed || m_LeftMouseButtonPressed ) {
@@ -462,37 +473,31 @@ void QImageWidgetImplementation::keyPressEvent(QKeyEvent* e)
 			m_ViewerCore->getCurrentImage()->voxelCoords[1]++;			
 			m_ViewerCore->getCurrentImage()->checkVoxelCoords();			
 			m_ViewerCore->physicalCoordsChanged( m_ViewerCore->getCurrentImage()->getISISImage()->getPhysicalCoordsFromIndex( m_ViewerCore->getCurrentImage()->voxelCoords ) );
-			m_ViewerCore->getUI()->refreshUI();
 		}
 		if( e->key() == Qt::Key_Down ) {
 			m_ViewerCore->getCurrentImage()->voxelCoords[1]--;
 			m_ViewerCore->getCurrentImage()->checkVoxelCoords();
 			m_ViewerCore->physicalCoordsChanged( m_ViewerCore->getCurrentImage()->getISISImage()->getPhysicalCoordsFromIndex( m_ViewerCore->getCurrentImage()->voxelCoords ) );
-			m_ViewerCore->getUI()->refreshUI();	
 		}
 		if( e->key() == Qt::Key_Left ) {
 			m_ViewerCore->getCurrentImage()->voxelCoords[0]--;
 			m_ViewerCore->getCurrentImage()->checkVoxelCoords();			
 			m_ViewerCore->physicalCoordsChanged( m_ViewerCore->getCurrentImage()->getISISImage()->getPhysicalCoordsFromIndex( m_ViewerCore->getCurrentImage()->voxelCoords ) );
-			m_ViewerCore->getUI()->refreshUI();
 		}
 		if( e->key() == Qt::Key_Right ) {
 			m_ViewerCore->getCurrentImage()->voxelCoords[0]++;
 			m_ViewerCore->getCurrentImage()->checkVoxelCoords();			
 			m_ViewerCore->physicalCoordsChanged( m_ViewerCore->getCurrentImage()->getISISImage()->getPhysicalCoordsFromIndex( m_ViewerCore->getCurrentImage()->voxelCoords ) );
-			m_ViewerCore->getUI()->refreshUI();
 		}
 		if( e->key() == Qt::Key_PageUp ) {
 			m_ViewerCore->getCurrentImage()->voxelCoords[2]++;
 			m_ViewerCore->getCurrentImage()->checkVoxelCoords();			
 			m_ViewerCore->physicalCoordsChanged( m_ViewerCore->getCurrentImage()->getISISImage()->getPhysicalCoordsFromIndex( m_ViewerCore->getCurrentImage()->voxelCoords ) );
-			m_ViewerCore->getUI()->refreshUI();
 		}
 		if( e->key() == Qt::Key_PageDown ) {
 			m_ViewerCore->getCurrentImage()->voxelCoords[2]--;
 			m_ViewerCore->getCurrentImage()->checkVoxelCoords();
 			m_ViewerCore->physicalCoordsChanged( m_ViewerCore->getCurrentImage()->getISISImage()->getPhysicalCoordsFromIndex( m_ViewerCore->getCurrentImage()->voxelCoords ) );
-			m_ViewerCore->getUI()->refreshUI();
 		}
 	}	
 }
