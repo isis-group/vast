@@ -59,6 +59,7 @@ void QImageWidgetImplementation::commonInit()
 	translationY = 0.0;
 	m_ShowCrosshair = true;
 	m_CrosshairColor = QColor( 255, 102, 0 );
+	setFocus();
 }
 
 void QImageWidgetImplementation::setMouseCursorIcon(QIcon icon)
@@ -192,7 +193,6 @@ void QImageWidgetImplementation::paintEvent( QPaintEvent *event )
 		m_ShowScalingOffset = false;
 		m_Painter->end();
 	}
-	setFocus();
 
 }
 
