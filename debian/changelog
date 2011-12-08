@@ -1,3 +1,9 @@
+vast (0.2.2alpha-0) stable; urgency=low
+
+  * fixed some bugs 
+
+ -- ISIS Group (The friendly isis team) <gr_isis@cbs.mpg.de>  Wed, 8 Nov 2011 13:16:35 +0200
+
 vast (0.2.1alpha-0) stable; urgency=low
 
   * fixed some bugs
