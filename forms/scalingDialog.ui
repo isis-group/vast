@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>114</height>
+    <width>411</width>
+    <height>129</height>
    </rect>
   </property>
   <property name="font">
@@ -143,6 +143,13 @@
            </property>
            <property name="text">
             <string>Reset</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="checkGlobal">
+           <property name="text">
+            <string>Global</string>
            </property>
           </widget>
          </item>

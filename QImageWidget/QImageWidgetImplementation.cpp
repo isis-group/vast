@@ -298,11 +298,23 @@ void QImageWidgetImplementation::mouseMoveEvent( QMouseEvent *e )
 {
 	
 	if( m_RightMouseButtonPressed && m_LeftMouseButtonPressed ) {
-		boost::shared_ptr<ImageHolder> image = getWidgetSpecCurrentImage();
-		const double offset =  ( m_StartCoordsPair.second - e->y() ) / ( float )height() * image->extent;
-		const double scaling = 1.0 - ( m_StartCoordsPair.first - e->x() ) / ( float )width() * 5;
-		image->offset = offset < 0 ? 0 : offset;
-		image->scaling = scaling < 0.0 ? 0.0 : scaling;
+		if( QApplication::keyboardModifiers() == Qt::ControlModifier ) {
+			BOOST_FOREACH( DataContainer::reference image, m_ViewerCore->getDataContainer() ) 
+			{
+				const double offset =  ( m_StartCoordsPair.second - e->y() ) / ( float )height() * image.second->extent;
+				const double scaling = 1.0 - ( m_StartCoordsPair.first - e->x() ) / ( float )width() * 5;
+				image.second->offset = offset < 0 ? 0 : offset;
+				image.second->scaling = scaling < 0.0 ? 0.0 : scaling;
+				image.second->updateColorMap();
+			}
+		} else {
+			boost::shared_ptr<ImageHolder> image = getWidgetSpecCurrentImage();
+			const double offset =  ( m_StartCoordsPair.second - e->y() ) / ( float )height() * image->extent;
+			const double scaling = 1.0 - ( m_StartCoordsPair.first - e->x() ) / ( float )width() * 5;
+			image->offset = offset < 0 ? 0 : offset;
+			image->scaling = scaling < 0.0 ? 0.0 : scaling;
+			image->updateColorMap();
+		}
 		m_ShowScalingOffset = true;
 		m_ViewerCore->updateScene();
 	} else if( m_RightMouseButtonPressed || m_LeftMouseButtonPressed ) {

@@ -117,7 +117,6 @@ void VoxelInformationWidget::synchronize()
 			m_Interface.colormapGrid->addWidget( m_Interface.lowerThresholdLabel, 1, 0 );
 			m_Interface.colormapGrid->addWidget( m_Interface.lowerHalfColormapLabel, 1, 1 );
 			m_Interface.colormapGrid->addWidget( m_Interface.labelMin, 1, 2 );
-			m_Interface.lowerHalfColormapLabel->setVisible( true );
 			m_Interface.lowerThresholdLabel->setVisible( true );
 			m_Interface.upperThresholdLabel->setVisible( true );
 			m_Interface.lowerThresholdLabel->setText( QString::number( image->lowerThreshold, 'g', 4 ) );
@@ -128,6 +127,25 @@ void VoxelInformationWidget::synchronize()
 				util::Singletons::get<color::Color,10>().getIcon( image->lut, size.width(), size.height() - 10, color::Color::upper_half ).pixmap( size.width(), size.height() - 10 ) );
 			m_Interface.lowerHalfColormapLabel->setPixmap(
 				util::Singletons::get<color::Color,10>().getIcon( image->lut, size.width(), size.height() - 10, color::Color::lower_half, true ).pixmap( size.width(), size.height() - 10 ) );
+			if( image->minMax.first->as<double>() >= 0 ) {
+				m_Interface.lowerHalfColormapLabel->setVisible( false );
+				m_Interface.lowerThresholdLabel->setVisible( false );
+				m_Interface.labelMin->setVisible( false );
+			} else {
+				m_Interface.lowerHalfColormapLabel->setVisible( true );
+				m_Interface.lowerThresholdLabel->setVisible( true );
+				m_Interface.labelMin->setVisible( true );
+			}
+			if( image->minMax.second->as<double>() <= 0 ) {
+				m_Interface.upperHalfColormapLabel->setVisible( false );
+				m_Interface.upperThresholdLabel->setVisible( false );
+				m_Interface.labelMax->setVisible( false );
+			} else {
+				m_Interface.upperHalfColormapLabel->setVisible( true );
+				m_Interface.upperThresholdLabel->setVisible( true );
+				m_Interface.labelMax->setVisible( true );
+
+			}
 		}
 		if( !image->isRGB ) {
 			m_Interface.labelMin->setText( QString::number( image->minMax.first->as<double>(), 'g', 4 ) );

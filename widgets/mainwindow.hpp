@@ -81,7 +81,6 @@ private:
 	QAction *m_ActionAuto_Scaling;
 
 
-
 };
 
 

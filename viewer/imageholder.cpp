@@ -181,7 +181,7 @@ bool ImageHolder::setImage( const data::Image &image, const ImageType &_imageTyp
 	opacity = 1.0;
 	scaling = 1.0;
 	offset = 0.0;
-	colorMap = util::Singletons::get<color::Color, 10>().getColormapMap().at(lut);
+	colorMap = util::Singletons::get<color::Color, 10>().getColormapMap().at(lut);	
 	if( !isRGB ) {
 		extent = fabs( minMax.second->as<double>() - minMax.first->as<double>() );		
 		optimalScalingOffset = getOptimalScaling();
@@ -195,7 +195,8 @@ bool ImageHolder::setImage( const data::Image &image, const ImageType &_imageTyp
 	m_PropMap.setPropertyAs<util::fvector4>( "originalColumnVec", image.getPropertyAs<util::fvector4>( "columnVec" ) );
 	m_PropMap.setPropertyAs<util::fvector4>( "originalRowVec", image.getPropertyAs<util::fvector4>( "rowVec" ) );
 	m_PropMap.setPropertyAs<util::fvector4>( "originalSliceVec", image.getPropertyAs<util::fvector4>( "sliceVec" ) );
-	m_PropMap.setPropertyAs<util::fvector4>( "originalIndexOrigin", image.getPropertyAs<util::fvector4>( "indexOrigin" ) );	
+	m_PropMap.setPropertyAs<util::fvector4>( "originalIndexOrigin", image.getPropertyAs<util::fvector4>( "indexOrigin" ) );
+	updateColorMap();
 	return true;
 }
 
@@ -282,6 +283,12 @@ void ImageHolder::checkVoxelCoords()
 		
 	}
 }
+
+void ImageHolder::updateColorMap()
+{
+	util::Singletons::get<color::Color,10>().adaptColorMapToImage( this );
+}
+
 
 }
 } //end namespace

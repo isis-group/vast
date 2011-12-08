@@ -66,14 +66,14 @@ void ScalingWidget::minChanged( double min )
 void ScalingWidget::offsetChanged( double offset )
 {
 	boost::shared_ptr<ImageHolder> image = m_ViewerCore->getCurrentImage();
-	image->offset = offset;
+	applyScalingOffset( offset, image->scaling, m_Interface.checkGlobal->isChecked() );
 	setMinMax( getMinMaxFromScalingOffset( std::make_pair<double, double>( image->scaling, offset ), image ), image );
 }
 
 void ScalingWidget::scalingChanged( double scaling )
 {
 	boost::shared_ptr<ImageHolder> image = m_ViewerCore->getCurrentImage();
-	image->scaling = scaling ;
+	applyScalingOffset( scaling, image->offset , m_Interface.checkGlobal->isChecked() );
 	setMinMax( getMinMaxFromScalingOffset( std::make_pair<double, double>( scaling, image->offset ), image ), image );
 
 }
@@ -99,11 +99,8 @@ void ScalingWidget::setScalingOffset( std::pair< double, double > scalingOffset,
 	m_Interface.offset->setValue( scalingOffset.second );
 	connect( m_Interface.scaling, SIGNAL( valueChanged( double ) ), this, SLOT( scalingChanged( double ) ) );
 	connect( m_Interface.offset, SIGNAL( valueChanged( double ) ), this, SLOT( offsetChanged( double ) ) );
-	image->scaling = scalingOffset.first;
-	image->offset = scalingOffset.second;
+	applyScalingOffset( scalingOffset.first, scalingOffset.second, m_Interface.checkGlobal->isChecked() );
 	synchronize();
-	m_ViewerCore->updateScene();
-
 }
 
 
@@ -113,19 +110,13 @@ void ScalingWidget::autoScale()
 	std::pair<double, double> scalingOffset = image->optimalScalingOffset;
 	setScalingOffset( scalingOffset, image );
 	setMinMax( getMinMaxFromScalingOffset( scalingOffset, image ), image );
-	m_ViewerCore->updateScene();
-
 }
 
 void ScalingWidget::reset()
 {
 	boost::shared_ptr<ImageHolder> image = m_ViewerCore->getCurrentImage();
-	image->offset = 0.0;
-	image->scaling = 1.0;
-	image->getPropMap().setPropertyAs<double>( "scalingMinValue", image->minMax.first->as<double>() );
-	image->getPropMap().setPropertyAs<double>( "scalingMaxValue", image->minMax.second->as<double>() );
+	applyScalingOffset( 1.0, 0.0, m_Interface.checkGlobal->isChecked() );
 	synchronize();
-	m_ViewerCore->updateScene();
 }
 
 std::pair< double, double > ScalingWidget::getMinMaxFromScalingOffset( const std::pair< double, double >& scalingOffset, boost::shared_ptr<ImageHolder> image )
@@ -163,6 +154,25 @@ void ScalingWidget::showMe( bool visible )
 }
 
 
+void ScalingWidget::applyScalingOffset(const double& scaling, const double& offset, bool global)
+{
+	if( global ) {
+		BOOST_FOREACH( DataContainer::reference image, m_ViewerCore->getDataContainer() ) 
+		{
+			image.second->scaling = scaling;
+			image.second->offset = offset;
+			image.second->updateColorMap();
+		}
+		m_ViewerCore->updateScene();
+	} else {
+		if( m_ViewerCore->hasImage() ) {
+			m_ViewerCore->getCurrentImage()->scaling = scaling;
+			m_ViewerCore->getCurrentImage()->offset = offset;
+			m_ViewerCore->getCurrentImage()->updateColorMap();
+			m_ViewerCore->updateScene();
+		}
+	}
+}
 
 
 }

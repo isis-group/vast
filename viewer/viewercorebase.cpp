@@ -110,7 +110,5 @@ void ViewerCoreBase::setCommonViewerOptions()
 	m_OptionsMap->setPropertyAs<bool>( "showVerboseInfoMessages", false );
 }
 
-
-
 }
 } // end namespace

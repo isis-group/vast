@@ -78,12 +78,14 @@ void SliderWidget::lowerThresholdChanged( int sliderPos )
 {
 	if ( !m_Interface.checkGlobal->isChecked() ) {
 		m_ViewerCore->getCurrentImage()->lowerThreshold = norm( m_ViewerCore->getCurrentImage()->minMax.first->as<double>() , 0.0, 1000 - sliderPos ) * -1 ;
+		m_ViewerCore->getCurrentImage()->updateColorMap();
 	} else {
 		BOOST_FOREACH( DataContainer::reference image, m_ViewerCore->getDataContainer() ) 
 		{
 			if( image.second->imageType == ImageHolder::z_map ) {
 				const double lT = norm( m_maxMin, 0.0, 1000 - sliderPos ) * -1;
 				image.second->lowerThreshold = lT > image.second->minMax.first->as<double>() ? lT : image.second->minMax.first->as<double>();
+				image.second->updateColorMap();
 			}
 		}		
 	}
@@ -94,12 +96,14 @@ void SliderWidget::upperThresholdChanged( int sliderPos )
 {
 	if( !m_Interface.checkGlobal->isChecked() ) {
 		m_ViewerCore->getCurrentImage()->upperThreshold = norm( 0.0, m_ViewerCore->getCurrentImage()->minMax.second->as<double>(), 1000 - sliderPos ) ;
+		m_ViewerCore->getCurrentImage()->updateColorMap();
 	} else {
 		BOOST_FOREACH( DataContainer::reference image, m_ViewerCore->getDataContainer() ) 
 		{
 			if( image.second->imageType == ImageHolder::z_map ) {
 				const double uT = norm( 0.0, m_maxMax, 1000 - sliderPos );
 				image.second->upperThreshold = uT < image.second->minMax.second->as<double>() ? uT : image.second->minMax.second->as<double>() - std::numeric_limits<double>::round_error();
+				image.second->updateColorMap();
 			}
 		}
 	}
@@ -128,8 +132,8 @@ void SliderWidget::synchronize()
 	if( m_ViewerCore->hasImage() && !m_ViewerCore->getCurrentImage()->isRGB) {
 		QWidget::setVisible(true);
 		if( m_ViewerCore->getCurrentImage()->imageType == ImageHolder::z_map ) {
-			setVisible( LowerThreshold, true );
-			setVisible( UpperThreshold, true );
+			setVisible( LowerThreshold, m_ViewerCore->getCurrentImage()->minMax.first->as<double>() < 0 );
+			setVisible( UpperThreshold, m_ViewerCore->getCurrentImage()->minMax.second->as<double>() > 0 );
 			setVisible( Opacity, true );
 		} else if ( m_ViewerCore->getCurrentImage()->imageType == ImageHolder::anatomical_image ) {
 			setVisible( LowerThreshold, false );
