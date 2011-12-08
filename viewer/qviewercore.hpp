@@ -49,6 +49,7 @@ public:
 	void addMessageHandler( qt4::QDefaultMessagePrint * );
 
 	std::list< qt4::QMessage> getMessageLog() const { return m_MessageLog; }
+	
 
 public Q_SLOTS:
 	virtual void settingsChanged();

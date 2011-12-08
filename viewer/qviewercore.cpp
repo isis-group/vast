@@ -284,7 +284,7 @@ void QViewerCore::closeImage( boost::shared_ptr<ImageHolder> image )
 
 void QViewerCore::loadSettings()
 {
-	getSettings()->beginGroup( "UserProfile" );
+	getSettings()->beginGroup( "ViewerCore" );
 	getOptionMap()->setPropertyAs<bool>( "propagateZooming", getSettings()->value( "propagateZooming", false ).toBool() );
 	getOptionMap()->setPropertyAs<bool>( "showLabels", getSettings()->value( "showLabels", false ).toBool() );
 	getOptionMap()->setPropertyAs<bool>( "showCrosshair", getSettings()->value( "showCrosshair", true ).toBool() );
@@ -304,10 +304,7 @@ void QViewerCore::loadSettings()
 void QViewerCore::saveSettings()
 {
 	//saving the preferences to the profile file
-	getSettings()->beginGroup( "UserProfile" );
-	getSettings()->setValue( "size", getUI()->getMainWindow()->size() );
-	getSettings()->setValue( "maximized", getUI()->getMainWindow()->isMaximized() );
-	getSettings()->setValue( "pos", getUI()->getMainWindow()->pos() );
+	getSettings()->beginGroup( "ViewerCore" );
 	getSettings()->setValue( "propagateZooming", getOptionMap()->getPropertyAs<bool>("propagateZooming") );
 	getSettings()->setValue( "minMaxSearchRadius", getOptionMap()->getPropertyAs<uint16_t>("minMaxSearchRadius") );
 	getSettings()->setValue( "showLabels", getOptionMap()->getPropertyAs<bool>("showLabels") );

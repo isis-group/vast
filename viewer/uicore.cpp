@@ -20,8 +20,6 @@ UICore::UICore( QViewerCore *core )
 	m_RowCount = m_MainWindow->getUI().centralGridLayout->rowCount();
 	m_VoxelInformationWidget->setVisible( false );
 	m_ImageStackWidget->setVisible( false );
-	getMainWindow()->adjustSize();
-
 }
 
 void UICore::setOptionPosition( UICore::OptionPosition pos )

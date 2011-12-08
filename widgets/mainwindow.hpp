@@ -67,6 +67,7 @@ public Q_SLOTS:
 	void toggleZMapMode(bool);
 	void showKeyCommandDialog();
 	void loadSettings();
+	void saveSettings();
 
 private:
 	Ui::vastMainWindow m_UI;

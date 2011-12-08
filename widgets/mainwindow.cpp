@@ -106,14 +106,23 @@ MainWindow::MainWindow( QViewerCore *core ) :
 
 void MainWindow::loadSettings()
 {
-	m_ViewerCore->getSettings()->beginGroup( "UserProfile" );
-	resize( m_ViewerCore->getSettings()->value( "size", QSize( 900, 900 ) ).toSize() );
+	m_ViewerCore->getSettings()->beginGroup( "MainWindow" );
 	move( m_ViewerCore->getSettings()->value( "pos", QPoint( 0, 0 ) ).toPoint() );
-
 	if( m_ViewerCore->getSettings()->value( "maximized", false ).toBool() ) {
 		showMaximized();
 	}
+	resize( m_ViewerCore->getSettings()->value( "size", QSize( 900, 900 ) ).toSize() );
 	m_ViewerCore->getSettings()->endGroup();
+}
+
+void MainWindow::saveSettings()
+{
+	m_ViewerCore->getSettings()->beginGroup( "MainWindow" );
+	m_ViewerCore->getSettings()->setValue( "size", size() );
+	m_ViewerCore->getSettings()->setValue( "maximized", isMaximized() );
+	m_ViewerCore->getSettings()->setValue( "pos", pos() );
+	m_ViewerCore->getSettings()->endGroup();
+	m_ViewerCore->getSettings()->sync();	
 }
 
 
@@ -376,6 +385,7 @@ void MainWindow::refreshUI()
 
 void MainWindow::closeEvent( QCloseEvent * )
 {
+	saveSettings();
 	m_ViewerCore->saveSettings();
 }
 
