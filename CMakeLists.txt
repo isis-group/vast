@@ -22,6 +22,7 @@ file (GLOB WIDGET_DEV_FILES widgets/*.hpp )
 
 set(VIEWER_FILES_HPP
 	viewer/qviewercore.hpp
+	viewer/uicore.hpp
 	widgets/mainwindow.hpp
 	widgets/preferenceDialog.hpp
 	widgets/voxelInformationWidget.hpp

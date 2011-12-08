@@ -20,6 +20,7 @@ UICore::UICore( QViewerCore *core )
 	m_RowCount = m_MainWindow->getUI().centralGridLayout->rowCount();
 	m_VoxelInformationWidget->setVisible( false );
 	m_ImageStackWidget->setVisible( false );
+	connect( m_MainWindow->getUI().actionInformation_Areas, SIGNAL( triggered(bool)), SLOT(showInformationAreas(bool)));
 }
 
 void UICore::setOptionPosition( UICore::OptionPosition pos )
@@ -317,6 +318,13 @@ bool UICore::registerWidget( ViewWidget widget )
 	m_WidgetMap[widget.widgetImplementation] = widget;
 	return true;
 
+}
+
+void UICore::showInformationAreas(bool show )
+{
+	m_VoxelInformationWidget->setVisible( show );
+	m_ImageStackWidget->setVisible( show );
+	m_SliderWidget->setVisible( show );
 }
 
 

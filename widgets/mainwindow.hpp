@@ -68,6 +68,7 @@ public Q_SLOTS:
 	void showKeyCommandDialog();
 	void loadSettings();
 	void saveSettings();
+	
 
 private:
 	Ui::vastMainWindow m_UI;

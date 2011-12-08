@@ -37,7 +37,7 @@ SliderWidget::SliderWidget( QWidget *parent, isis::viewer::QViewerCore *core )
 }
 
 
-void SliderWidget::setVisible( SliderWidget::SliderType slider , bool visible )
+void SliderWidget::setSliderVisible( SliderWidget::SliderType slider , bool visible )
 {
 	switch( slider ) {
 	case Opacity:
@@ -132,13 +132,13 @@ void SliderWidget::synchronize()
 	if( m_ViewerCore->hasImage() && !m_ViewerCore->getCurrentImage()->isRGB) {
 		QWidget::setVisible(true);
 		if( m_ViewerCore->getCurrentImage()->imageType == ImageHolder::z_map ) {
-			setVisible( LowerThreshold, m_ViewerCore->getCurrentImage()->minMax.first->as<double>() < 0 );
-			setVisible( UpperThreshold, m_ViewerCore->getCurrentImage()->minMax.second->as<double>() > 0 );
-			setVisible( Opacity, true );
+			setSliderVisible( LowerThreshold, m_ViewerCore->getCurrentImage()->minMax.first->as<double>() < 0 );
+			setSliderVisible( UpperThreshold, m_ViewerCore->getCurrentImage()->minMax.second->as<double>() > 0 );
+			setSliderVisible( Opacity, true );
 		} else if ( m_ViewerCore->getCurrentImage()->imageType == ImageHolder::anatomical_image ) {
-			setVisible( LowerThreshold, false );
-			setVisible( UpperThreshold, false );
-			setVisible( Opacity, true );
+			setSliderVisible( LowerThreshold, false );
+			setSliderVisible( UpperThreshold, false );
+			setSliderVisible( Opacity, true );
 		}
 
 		const unsigned short lowerThreshold = 1000 - abs( ( 1000 / m_ViewerCore->getCurrentImage()->minMax.first->as<double>() )

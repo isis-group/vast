@@ -19,8 +19,9 @@ class SliderWidget;
 }
 class MainWindow;
 
-class UICore
+class UICore : public QObject
 {
+	Q_OBJECT
 
 public:
 	friend class QViewerCore;
@@ -75,6 +76,7 @@ public Q_SLOTS:
 	virtual void reloadPluginsToGUI();
 	virtual void refreshUI();
 	void showMessage( const qt4::QMessage &message );
+	void showInformationAreas( bool );
 
 
 protected:

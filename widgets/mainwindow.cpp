@@ -32,6 +32,8 @@ MainWindow::MainWindow( QViewerCore *core ) :
 	addAction( m_ActionReset_Scaling );
 	addAction( m_ActionAuto_Scaling);
 	
+	m_UI.actionInformation_Areas->setChecked( true );
+	
 	m_UI.action_Save_Image->setShortcut( QKeySequence::Save );
 	m_UI.action_Save_Image->setIconVisibleInMenu(true);
 	m_UI.actionSave_Image->setIconVisibleInMenu(true);

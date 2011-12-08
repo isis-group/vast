@@ -19,7 +19,7 @@ public:
 	enum SliderType { Opacity, UpperThreshold, LowerThreshold };
 	SliderWidget( QWidget *parent, QViewerCore *core );
 
-	void setVisible( SliderType, bool );
+	void setSliderVisible( SliderType, bool );
 
 public Q_SLOTS:
 	void opacityChanged( int );

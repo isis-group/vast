@@ -126,6 +126,7 @@
      </property>
      <addaction name="actionShow_Labels"/>
      <addaction name="actionShow_Crosshair"/>
+     <addaction name="actionInformation_Areas"/>
     </widget>
     <addaction name="action_Preferences"/>
     <addaction name="separator"/>
@@ -360,6 +361,17 @@
   <action name="actionAbout">
    <property name="text">
     <string>About</string>
+   </property>
+  </action>
+  <action name="actionInformation_Areas">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Information Areas</string>
+   </property>
+   <property name="shortcut">
+    <string>S, I, A</string>
    </property>
   </action>
  </widget>
