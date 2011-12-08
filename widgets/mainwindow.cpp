@@ -23,7 +23,7 @@ MainWindow::MainWindow( QViewerCore *core ) :
 	startWidget( new widget::StartWidget( this, core ) ),
 	keyCommandsdialog( new widget::KeyCommandsDialog(this) ) 
 {
-	m_UI.setupUi( this );
+	m_Interface.setupUi( this );
 	setWindowIcon( QIcon( ":/common/vast.jpg" ) );
 	m_ActionReset_Scaling = new QAction( this );
 	m_ActionAuto_Scaling = new QAction( this );
@@ -32,75 +32,75 @@ MainWindow::MainWindow( QViewerCore *core ) :
 	addAction( m_ActionReset_Scaling );
 	addAction( m_ActionAuto_Scaling);
 	
-	m_UI.actionInformation_Areas->setChecked( true );
+	m_Interface.actionInformation_Areas->setChecked( true );
 	
-	m_UI.action_Save_Image->setShortcut( QKeySequence::Save );
-	m_UI.action_Save_Image->setIconVisibleInMenu(true);
-	m_UI.actionSave_Image->setIconVisibleInMenu(true);
-	m_UI.actionOpen_image->setShortcut( QKeySequence::Open );
-	m_UI.actionOpen_image->setIconVisibleInMenu( true );
-	m_UI.action_Exit->setIconVisibleInMenu( true );
+	m_Interface.action_Save_Image->setShortcut( QKeySequence::Save );
+	m_Interface.action_Save_Image->setIconVisibleInMenu(true);
+	m_Interface.actionSave_Image->setIconVisibleInMenu(true);
+	m_Interface.actionOpen_image->setShortcut( QKeySequence::Open );
+	m_Interface.actionOpen_image->setIconVisibleInMenu( true );
+	m_Interface.action_Exit->setIconVisibleInMenu( true );
 
 #if QT_VERSION >= 0x040500 
-	m_UI.actionSave_Image->setShortcut( QKeySequence::SaveAs );
-	m_UI.action_Exit->setShortcut( QKeySequence::Quit );	
+	m_Interface.actionSave_Image->setShortcut( QKeySequence::SaveAs );
+	m_Interface.action_Exit->setShortcut( QKeySequence::Quit );	
 #endif
 
-	m_UI.actionSave_all_Images->setIconVisibleInMenu( true );
-	m_UI.actionIgnore_Orientation->setShortcut( QKeySequence( tr( "I, O" ) ) );
-	m_UI.action_Preferences->setShortcut( QKeySequence( tr( "S, P" ) ) );
-	m_UI.actionFind_Global_Max->setShortcut( QKeySequence( tr( "F, M, A" ) ) );
-	m_UI.actionFind_Global_Min->setShortcut( QKeySequence( tr( "F, M, I" ) ) );
-	m_UI.actionShow_scaling_option->setShortcut( QKeySequence( tr("S, S" ) ) );
-	m_UI.actionPropagate_Zooming->setShortcut( QKeySequence( tr("P, Z" ) ) );
-	m_UI.actionShow_Labels->setShortcut( QKeySequence( tr("S, L" ) ) );
-	m_UI.actionShow_Crosshair->setShortcut( QKeySequence( tr("S, C" ) ) );
+	m_Interface.actionSave_all_Images->setIconVisibleInMenu( true );
+	m_Interface.actionIgnore_Orientation->setShortcut( QKeySequence( tr( "I, O" ) ) );
+	m_Interface.action_Preferences->setShortcut( QKeySequence( tr( "S, P" ) ) );
+	m_Interface.actionFind_Global_Max->setShortcut( QKeySequence( tr( "F, M, A" ) ) );
+	m_Interface.actionFind_Global_Min->setShortcut( QKeySequence( tr( "F, M, I" ) ) );
+	m_Interface.actionShow_scaling_option->setShortcut( QKeySequence( tr("S, S" ) ) );
+	m_Interface.actionPropagate_Zooming->setShortcut( QKeySequence( tr("P, Z" ) ) );
+	m_Interface.actionShow_Labels->setShortcut( QKeySequence( tr("S, L" ) ) );
+	m_Interface.actionShow_Crosshair->setShortcut( QKeySequence( tr("S, C" ) ) );
 
-	connect( m_UI.action_Save_Image, SIGNAL( triggered() ), this, SLOT( saveImage() ) );
-	connect( m_UI.actionSave_Image, SIGNAL( triggered() ), this, SLOT( saveImageAs() ) );
-	connect( m_UI.actionOpen_image, SIGNAL( triggered() ), this, SLOT( openImage() ) );
-	connect( m_UI.action_Preferences, SIGNAL( triggered() ), preferencesDialog, SLOT( show() ) );
-	connect( m_UI.actionFind_Global_Min, SIGNAL( triggered() ), this, SLOT( findGlobalMin() ) );
-	connect( m_UI.actionFind_Global_Max, SIGNAL( triggered() ), this, SLOT( findGlobalMax() ) );
-	connect( m_UI.actionShow_Labels, SIGNAL( triggered( bool ) ), m_ViewerCore, SLOT( setShowLabels( bool ) ) );
+	connect( m_Interface.action_Save_Image, SIGNAL( triggered() ), this, SLOT( saveImage() ) );
+	connect( m_Interface.actionSave_Image, SIGNAL( triggered() ), this, SLOT( saveImageAs() ) );
+	connect( m_Interface.actionOpen_image, SIGNAL( triggered() ), this, SLOT( openImage() ) );
+	connect( m_Interface.action_Preferences, SIGNAL( triggered() ), preferencesDialog, SLOT( show() ) );
+	connect( m_Interface.actionFind_Global_Min, SIGNAL( triggered() ), this, SLOT( findGlobalMin() ) );
+	connect( m_Interface.actionFind_Global_Max, SIGNAL( triggered() ), this, SLOT( findGlobalMax() ) );
+	connect( m_Interface.actionShow_Labels, SIGNAL( triggered( bool ) ), m_ViewerCore, SLOT( setShowLabels( bool ) ) );
 	connect( m_RadiusSpin, SIGNAL( valueChanged( int ) ), this, SLOT( spinRadiusChanged( int ) ) );
-	connect( m_UI.actionShow_scaling_option, SIGNAL( triggered() ), this, SLOT( showScalingOption() ) );
-	connect( m_UI.actionIgnore_Orientation, SIGNAL( triggered( bool ) ), this, SLOT( ignoreOrientation( bool ) ) );
-	connect( m_UI.action_Exit, SIGNAL( triggered() ), this, SLOT( close() ) );
+	connect( m_Interface.actionShow_scaling_option, SIGNAL( triggered() ), this, SLOT( showScalingOption() ) );
+	connect( m_Interface.actionIgnore_Orientation, SIGNAL( triggered( bool ) ), this, SLOT( ignoreOrientation( bool ) ) );
+	connect( m_Interface.action_Exit, SIGNAL( triggered() ), this, SLOT( close() ) );
 	connect( m_LogButton, SIGNAL( clicked() ), this, SLOT( showLoggingDialog() ) );
-	connect( m_UI.actionPropagate_Zooming, SIGNAL( triggered( bool ) ), this, SLOT( propagateZooming( bool ) ) );
+	connect( m_Interface.actionPropagate_Zooming, SIGNAL( triggered( bool ) ), this, SLOT( propagateZooming( bool ) ) );
 	connect( m_ActionReset_Scaling, SIGNAL( triggered() ), this, SLOT( resetScaling() ) );
 	connect( m_ActionAuto_Scaling, SIGNAL( triggered() ), this, SLOT( autoScaling()) );
-	connect( m_UI.actionShow_Crosshair, SIGNAL( triggered(bool)), m_ViewerCore, SLOT( setShowCrosshair(bool)));
-	connect( m_UI.actionSave_all_Images, SIGNAL( triggered()), this, SLOT( saveAllImages()));
-	connect( m_UI.actionToggle_Zmap_Mode, SIGNAL( triggered(bool)), this, SLOT( toggleZMapMode(bool)));
-	connect( m_UI.actionKey_Commands, SIGNAL( triggered()), this, SLOT( showKeyCommandDialog()));
+	connect( m_Interface.actionShow_Crosshair, SIGNAL( triggered(bool)), m_ViewerCore, SLOT( setShowCrosshair(bool)));
+	connect( m_Interface.actionSave_all_Images, SIGNAL( triggered()), this, SLOT( saveAllImages()));
+	connect( m_Interface.actionToggle_Zmap_Mode, SIGNAL( triggered(bool)), this, SLOT( toggleZMapMode(bool)));
+	connect( m_Interface.actionKey_Commands, SIGNAL( triggered()), this, SLOT( showKeyCommandDialog()));
 
 	//toolbar stuff
 	m_Toolbar->setOrientation( Qt::Horizontal );
 	m_Toolbar->setMinimumHeight( 20 );
 	m_Toolbar->setMaximumHeight( 30 );
 	addToolBar( Qt::TopToolBarArea, m_Toolbar );
-	m_Toolbar->addAction( m_UI.actionOpen_image );
-	m_Toolbar->addAction( m_UI.action_Save_Image );
-	m_Toolbar->addAction( m_UI.actionSave_Image );
-	m_Toolbar->addAction( m_UI.actionSave_all_Images );
+	m_Toolbar->addAction( m_Interface.actionOpen_image );
+	m_Toolbar->addAction( m_Interface.action_Save_Image );
+	m_Toolbar->addAction( m_Interface.actionSave_Image );
+	m_Toolbar->addAction( m_Interface.actionSave_all_Images );
 	m_Toolbar->addSeparator();
-	m_Toolbar->addAction( m_UI.actionShow_Labels );
-	m_Toolbar->addAction( m_UI.action_Preferences );
-	m_Toolbar->addAction( m_UI.actionShow_scaling_option );
+	m_Toolbar->addAction( m_Interface.actionShow_Labels );
+	m_Toolbar->addAction( m_Interface.action_Preferences );
+	m_Toolbar->addAction( m_Interface.actionShow_scaling_option );
 	m_Toolbar->addSeparator();
-	m_Toolbar->addAction( m_UI.actionFind_Global_Min );
-	m_Toolbar->addAction( m_UI.actionFind_Global_Max );
+	m_Toolbar->addAction( m_Interface.actionFind_Global_Min );
+	m_Toolbar->addAction( m_Interface.actionFind_Global_Max );
 	m_Toolbar->addWidget( m_RadiusSpin );
 	m_Toolbar->addSeparator();
 	m_RadiusSpin->setMinimum( 0 );
 	m_RadiusSpin->setMaximum( 500 );
 	m_RadiusSpin->setToolTip( "Search radius for finding local minimum/maximum. If radius is 0 it will search the entire image." );
-	m_UI.statusbar->addPermanentWidget( m_ViewerCore->getProgressFeedback()->getProgressBar() );
+	m_Interface.statusbar->addPermanentWidget( m_ViewerCore->getProgressFeedback()->getProgressBar() );
 	
 	m_LogButton->setText( "Show log" );
-	m_UI.statusbar->addPermanentWidget( m_LogButton );
+	m_Interface.statusbar->addPermanentWidget( m_LogButton );
 
 	scalingWidget->setVisible( false );
 	loadSettings();
@@ -146,7 +146,7 @@ void MainWindow::toggleZMapMode(bool zmap)
 	} else {
 		m_ViewerCore->setMode( ViewerCoreBase::standard );
 	}
-	m_ViewerCore->getUI()->refreshUI();
+	m_ViewerCore->getUICore()->refreshUI();
 	m_ViewerCore->updateScene();
 }
 
@@ -194,7 +194,7 @@ void MainWindow::ignoreOrientation( bool ignore )
 		image.second->physicalCoords = image.second->getISISImage()->getPhysicalCoordsFromIndex( image.second->voxelCoords );
 	}
 	
-	m_ViewerCore->getUI()->refreshUI();
+	m_ViewerCore->getUICore()->refreshUI();
 	m_ViewerCore->centerImages();
 	
 }
@@ -203,7 +203,7 @@ void MainWindow::ignoreOrientation( bool ignore )
 void MainWindow::showScalingOption()
 {
 	scalingWidget->move( QCursor::pos().x() + m_Toolbar->height() / 2, QCursor::pos().y() + m_Toolbar->height() / 2 );
-	scalingWidget->showMe( m_UI.actionShow_scaling_option->isChecked() );
+	scalingWidget->showMe( m_Interface.actionShow_scaling_option->isChecked() );
 }
 
 
@@ -339,8 +339,8 @@ void MainWindow::reloadPluginsToGUI()
 	QMenu *processMenu = new QMenu( QString( "Plugins" ) );
 
 	if( m_ViewerCore->getPlugins().size() ) {
-		getUI().menu_Tools->addSeparator();
-		getUI().menu_Tools->addMenu( processMenu );
+		getInterface().menu_Tools->addSeparator();
+		getInterface().menu_Tools->addMenu( processMenu );
 
 		QSignalMapper *signalMapper = new QSignalMapper( this );
 		BOOST_FOREACH( ViewerCoreBase::PluginListType::const_reference plugin, m_ViewerCore->getPlugins() ) {
@@ -372,15 +372,15 @@ void MainWindow::reloadPluginsToGUI()
 
 void MainWindow::refreshUI()
 {
-	m_UI.actionShow_Labels->setChecked( m_ViewerCore->getOptionMap()->getPropertyAs<bool>( "showLabels" ) );
-	m_UI.actionShow_Crosshair->setChecked( m_ViewerCore->getOptionMap()->getPropertyAs<bool>( "showCrosshair" ) );
-	m_ViewerCore->setShowLabels( m_UI.actionShow_Labels->isChecked() );
-	m_UI.actionPropagate_Zooming->setChecked( m_ViewerCore->getOptionMap()->getPropertyAs<bool>( "propagateZooming" ) );
+	m_Interface.actionShow_Labels->setChecked( m_ViewerCore->getOptionMap()->getPropertyAs<bool>( "showLabels" ) );
+	m_Interface.actionShow_Crosshair->setChecked( m_ViewerCore->getOptionMap()->getPropertyAs<bool>( "showCrosshair" ) );
+	m_ViewerCore->setShowLabels( m_Interface.actionShow_Labels->isChecked() );
+	m_Interface.actionPropagate_Zooming->setChecked( m_ViewerCore->getOptionMap()->getPropertyAs<bool>( "propagateZooming" ) );
 	m_RadiusSpin->setValue( m_ViewerCore->getOptionMap()->getPropertyAs<uint16_t>( "minMaxSearchRadius" ) );
 	if( m_ViewerCore->getMode() == ViewerCoreBase::zmap ) {
-		m_UI.actionToggle_Zmap_Mode->setChecked( true );
+		m_Interface.actionToggle_Zmap_Mode->setChecked( true );
 	} else {
-		m_UI.actionToggle_Zmap_Mode->setChecked( false );
+		m_Interface.actionToggle_Zmap_Mode->setChecked( false );
 	}
 }
 

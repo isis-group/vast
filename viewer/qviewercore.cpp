@@ -42,7 +42,7 @@ void QViewerCore::addMessageHandler( qt4::QDefaultMessagePrint *handler )
 void QViewerCore::receiveMessage( qt4::QMessage message )
 {
 	m_MessageLog.push_back( message );
-	getUI()->showMessage( message );
+	getUICore()->showMessage( message );
 }
 
 void QViewerCore::receiveMessage(std::string message)
@@ -124,11 +124,11 @@ void QViewerCore::settingsChanged()
 		}
 	}
 
-	BOOST_FOREACH( UICore::WidgetMap::const_reference widget, getUI()->getWidgets() ) {
+	BOOST_FOREACH( UICore::WidgetMap::const_reference widget, getUICore()->getWidgets() ) {
 		widget.first->setInterpolationType( static_cast<InterpolationType>( getSettings()->value( "interpolationType", 0 ).toUInt() ) );
 	}
 	emitShowLabels( getOptionMap()->getPropertyAs<bool>( "showLabels" ) );
-	m_UI->getMainWindow()->getUI().actionPropagate_Zooming->setChecked( getOptionMap()->getPropertyAs<bool>( "propagateZooming" ) );
+	m_UI->getMainWindow()->getInterface().actionPropagate_Zooming->setChecked( getOptionMap()->getPropertyAs<bool>( "propagateZooming" ) );
 	getSettings()->endGroup();
 	m_UI->refreshUI();
 }
@@ -179,7 +179,7 @@ bool QViewerCore::callPlugin( QString name )
 
 bool QViewerCore::attachImageToWidget( boost::shared_ptr<ImageHolder> image, WidgetInterface *widget )
 {
-	if ( getUI()->getWidgets().find( widget ) == getUI()->getWidgets().end() ) {
+	if ( getUICore()->getWidgets().find( widget ) == getUICore()->getWidgets().end() ) {
 		LOG( Runtime, error ) << "There is no such widget "
 							  << widget << ", so will not add image " << image->getFileNames().front() << " to it.";
 		return false;
@@ -202,13 +202,13 @@ void QViewerCore::openPath( QStringList fileList, ImageHolder::ImageType imageTy
 		util::slist pathList;
 
 		if( ( getDataContainer().size() + fileList.size() ) > 1 ) {
-			getUI()->setViewWidgetArrangement( isis::viewer::UICore::InRow );
+			getUICore()->setViewWidgetArrangement( isis::viewer::UICore::InRow );
 		} else {
-			getUI()->setViewWidgetArrangement( isis::viewer::UICore::Default );
+			getUICore()->setViewWidgetArrangement( isis::viewer::UICore::Default );
 		}
 		UICore::ViewWidgetEnsembleType ensemble;
-		if( getUI()->getEnsembleList().size() ) {
-			ensemble = getUI()->getEnsembleList().front();
+		if( getUICore()->getEnsembleList().size() ) {
+			ensemble = getUICore()->getEnsembleList().front();
 		}
 
 		BOOST_FOREACH( QStringList::const_reference filename, fileList ) {
@@ -221,7 +221,7 @@ void QViewerCore::openPath( QStringList fileList, ImageHolder::ImageType imageTy
 				msg << "Loading image \"" << p.leaf() << "\"...";
 			}
 			if( getOptionMap()->getPropertyAs<bool>("showLoadingWidget") ) {
-				getUI()->getMainWindow()->startWidget->showMe( false );
+				getUICore()->getMainWindow()->startWidget->showMe( false );
 			}
 			receiveMessage( msg.str() );
 			std::list<data::Image> tempImgList = isis::data::IOFactory::load( filename.toStdString() , rf, rdialect );
@@ -237,7 +237,7 @@ void QViewerCore::openPath( QStringList fileList, ImageHolder::ImageType imageTy
 				checkForCaCp(imageHolder);
 				if( !( getMode() == ViewerCoreBase::zmap && imageHolder->imageType == ImageHolder::anatomical_image ) ) {	
 					if( newWidget ) {
-						ensemble = getUI()->createViewWidgetEnsemble( "" );
+						ensemble = getUICore()->createViewWidgetEnsemble( "" );
 						//if we load a zmap we additionally add an anatomical image to the widget to make things easier for the user....
 						if( imageType == ImageHolder::z_map && m_CurrentAnatomicalReference.get() ) {
 							attachImageToWidget( m_CurrentAnatomicalReference, ensemble[0].widgetImplementation);
@@ -252,10 +252,10 @@ void QViewerCore::openPath( QStringList fileList, ImageHolder::ImageType imageTy
 				}
 			}
 		}
-		getUI()->rearrangeViewWidgets();
-		getUI()->refreshUI();
+		getUICore()->rearrangeViewWidgets();
+		getUICore()->refreshUI();
 		centerImages();
-		getUI()->getMainWindow()->startWidget->close();
+		getUICore()->getMainWindow()->startWidget->close();
 	}
 }
 
@@ -278,7 +278,7 @@ void QViewerCore::closeImage( boost::shared_ptr<ImageHolder> image )
 		}
 	}
 	getDataContainer().erase(  image->getFileNames().front() );
-	getUI()->refreshUI();
+	getUICore()->refreshUI();
 	updateScene();
 }
 

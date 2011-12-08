@@ -93,7 +93,7 @@ void ImageStackWidget::itemClicked( QListWidgetItem *item )
 		m_ViewerCore->getDataContainer().at( item->text().toStdString() )->isVisible = false ;
 	}
 
-	m_ViewerCore->getUI()->refreshUI();
+	m_ViewerCore->getUICore()->refreshUI();
 	m_ViewerCore->updateScene();
 
 }
@@ -102,7 +102,7 @@ void ImageStackWidget::itemSelected( QListWidgetItem *item )
 {
 	m_ViewerCore->setCurrentImage( m_ViewerCore->getDataContainer().at( item->text().toStdString() ) );
 	synchronize();
-	m_ViewerCore->getUI()->refreshUI();
+	m_ViewerCore->getUICore()->refreshUI();
 	m_ViewerCore->updateScene();
 }
 
@@ -134,12 +134,12 @@ void ImageStackWidget::distributeImages()
 			widget->removeImage( image.second );
 		}
 	}
-	m_ViewerCore->getUI()->refreshUI();
+	m_ViewerCore->getUICore()->refreshUI();
 	BOOST_FOREACH( DataContainer::const_reference image, tmpContainer ) {
 		m_ViewerCore->getDataContainer().insert( image );
-		m_ViewerCore->getUI()->createViewWidgetEnsemble( "", image.second );
+		m_ViewerCore->getUICore()->createViewWidgetEnsemble( "", image.second );
 	}
-	m_ViewerCore->getUI()->refreshUI();
+	m_ViewerCore->getUICore()->refreshUI();
 	m_ViewerCore->settingsChanged();
 	m_ViewerCore->updateScene();
 }

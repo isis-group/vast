@@ -35,8 +35,8 @@ public:
 
 	virtual ~MainWindow() {};
 
-	const Ui::vastMainWindow &getUI() const { return m_UI; }
-	Ui::vastMainWindow &getUI() { return m_UI; }
+	const Ui::vastMainWindow &getInterface() const { return m_Interface; }
+	Ui::vastMainWindow &getInterface() { return m_Interface; }
 
 	void reloadPluginsToGUI( );
 	
@@ -71,7 +71,7 @@ public Q_SLOTS:
 	
 
 private:
-	Ui::vastMainWindow m_UI;
+	Ui::vastMainWindow m_Interface;
 	QViewerCore *m_ViewerCore;
 
 	QToolBar *m_Toolbar;

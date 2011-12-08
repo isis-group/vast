@@ -41,8 +41,8 @@ public:
 	const std::string &getCurrentPath() const  { return m_CurrentPath; }
 	void setCurrentPath( const std::string &path ) { m_CurrentPath = path; }
 
-	const UICore *getUI() const { return m_UI; }
-	UICore *getUI() { return m_UI; }
+	const UICore *getUICore() const { return m_UI; }
+	UICore *getUICore() { return m_UI; }
 
 	const boost::shared_ptr< QProgressFeedback > getProgressFeedback() const { return m_ProgressFeedback; }
 

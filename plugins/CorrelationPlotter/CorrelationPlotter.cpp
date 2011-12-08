@@ -41,7 +41,7 @@ void isis::viewer::plugin::CorrelationPlotterDialog::closeEvent(QCloseEvent* )
 		calculateCorrelation(true);
 	}
 	m_ViewerCore->setMode( m_OrigMode );
-	m_ViewerCore->getUI()->refreshUI();
+	m_ViewerCore->getUICore()->refreshUI();
 	
 }
 
@@ -75,7 +75,7 @@ void isis::viewer::plugin::CorrelationPlotterDialog::showEvent(QShowEvent* )
 		} else {
 			if ( !m_CurrentCorrelationMap ) {
 				createCorrelationMap() ;
-				BOOST_FOREACH( UICore::ViewWidgetEnsembleListType::const_reference ensemble, m_ViewerCore->getUI()->getEnsembleList() ) {
+				BOOST_FOREACH( UICore::ViewWidgetEnsembleListType::const_reference ensemble, m_ViewerCore->getUICore()->getEnsembleList() ) {
 					WidgetInterface::ImageVectorType iVector;
 					for( unsigned short i = 0; i < 3; i++ ) {
 						iVector = ensemble[i].widgetImplementation->getImageVector();
@@ -90,7 +90,7 @@ void isis::viewer::plugin::CorrelationPlotterDialog::showEvent(QShowEvent* )
 			if( m_ViewerCore->getMode() != ViewerCoreBase::zmap ) {
 				m_ViewerCore->setMode( ViewerCoreBase::zmap );	
 			}
-			m_ViewerCore->getUI()->refreshUI();
+			m_ViewerCore->getUICore()->refreshUI();
 			
 		}
 		physicalCoordsChanged( m_CurrentFunctionalImage->physicalCoords );

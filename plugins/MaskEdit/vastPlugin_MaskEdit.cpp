@@ -20,7 +20,7 @@ public:
 	virtual bool call() {
 		if( !m_MaskEditSet ) {	
 			m_MaskEdit = new MaskEditDialog( parentWidget, viewerCore ) ;
-			viewerCore->getUI()->getMainWindow()->getUI().topGridLayout->addWidget( m_MaskEdit );
+			viewerCore->getUICore()->getMainWindow()->getInterface().topGridLayout->addWidget( m_MaskEdit );
 			m_MaskEditSet = true;
 		}
 		if( m_Visible ) {

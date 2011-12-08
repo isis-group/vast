@@ -93,7 +93,7 @@ void CreateMaskDialog::createMask()
 		m_MaskEditDialog->m_CurrentMask->opacity = 0.5;
 		m_MaskEditDialog->m_CurrentMask->lut = "maskeditLUT";
 		m_MaskEditDialog->m_CurrentMask->updateOrientation();
-		BOOST_FOREACH( UICore::ViewWidgetEnsembleListType::const_reference ensemble, m_MaskEditDialog->m_ViewerCore->getUI()->getEnsembleList() ) {
+		BOOST_FOREACH( UICore::ViewWidgetEnsembleListType::const_reference ensemble, m_MaskEditDialog->m_ViewerCore->getUICore()->getEnsembleList() ) {
 			WidgetInterface::ImageVectorType iVector;
 			for( unsigned short i = 0; i < 3; i++ ) {
 				iVector = ensemble[i].widgetImplementation->getImageVector();
@@ -108,7 +108,7 @@ void CreateMaskDialog::createMask()
 		m_MaskEditDialog->m_ViewerCore->setCurrentImage( m_MaskEditDialog->m_CurrentMask );
 		m_MaskEditDialog->m_ViewerCore->setShowCrosshair(false);
 		m_MaskEditDialog->m_ViewerCore->updateScene();
-		m_MaskEditDialog->m_ViewerCore->getUI()->refreshUI();
+		m_MaskEditDialog->m_ViewerCore->getUICore()->refreshUI();
 		m_MaskEditDialog->m_Interface.cut->setEnabled(true);
 		m_MaskEditDialog->m_Interface.paint->setEnabled(true);
 		m_MaskEditDialog->m_Interface.radius->setEnabled(true);

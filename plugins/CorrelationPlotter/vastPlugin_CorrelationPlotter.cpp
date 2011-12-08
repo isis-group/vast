@@ -21,7 +21,7 @@ public:
 	virtual bool call() {
 		if( !m_CorrelationPlotterSet ) {	
 			m_CorrelationPlotter = new CorrelationPlotterDialog( parentWidget, viewerCore ) ;
-			viewerCore->getUI()->getMainWindow()->getUI().topGridLayout->addWidget( m_CorrelationPlotter );
+			viewerCore->getUICore()->getMainWindow()->getInterface().topGridLayout->addWidget( m_CorrelationPlotter );
 			m_CorrelationPlotterSet = true;
 		}
 		if( m_Visible ) {

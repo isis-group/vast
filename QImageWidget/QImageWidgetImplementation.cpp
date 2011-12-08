@@ -288,7 +288,7 @@ void QImageWidgetImplementation::mousePressEvent( QMouseEvent *e )
 				m_ViewerCore->setCurrentImage( image );
 			}
 		}
-		m_ViewerCore->getUI()->refreshUI();
+		m_ViewerCore->getUICore()->refreshUI();
 	}
 	setFocus();
 	emitMousePressEvent( e );

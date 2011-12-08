@@ -34,7 +34,7 @@ void StartWidget::keyPressEvent(QKeyEvent *e )
 
 void StartWidget::closeEvent(QCloseEvent* )
 {
-	m_ViewerCore->getUI()->getMainWindow()->setEnabled(true);
+	m_ViewerCore->getUICore()->getMainWindow()->setEnabled(true);
 }
 
 
@@ -60,10 +60,10 @@ void StartWidget::showEvent(QShowEvent* )
 	float ratio = pixMap.height() / (float)pixMap.width();
 	m_Interface.imageLabel->setPixmap( pixMap.scaled(width, width * ratio) );
 	m_Interface.buttonFrame->setMaximumHeight( height - width * ratio );
-	move( m_ViewerCore->getUI()->getMainWindow()->rect().center().x() - this->width() / 2,  m_ViewerCore->getUI()->getMainWindow()->rect().center().y() - this->height() / 2 );
+	move( m_ViewerCore->getUICore()->getMainWindow()->rect().center().x() - this->width() / 2,  m_ViewerCore->getUICore()->getMainWindow()->rect().center().y() - this->height() / 2 );
 	
 	
-	m_ViewerCore->getUI()->getMainWindow()->setEnabled(false);
+	m_ViewerCore->getUICore()->getMainWindow()->setEnabled(false);
 	setEnabled( true );
 }
 
@@ -113,7 +113,7 @@ void StartWidget::statusChanged(QString status)
 void StartWidget::openImageButtonClicked()
 {
 	close();
-	m_ViewerCore->getUI()->getMainWindow()->openImage();
+	m_ViewerCore->getUICore()->getMainWindow()->openImage();
 }
 
 

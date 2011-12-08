@@ -74,7 +74,7 @@ int main( int argc, char *argv[] )
 	std::cout << "v" << core->getVersion() << " ( isis core: " << app.getCoreVersion() << " )" << std::endl;
 	//scan for plugins and hand them to the core
 	core->addPlugins( plugin::PluginLoader::get().getPlugins() );
-	core->getUI()->reloadPluginsToGUI();
+	core->getUICore()->reloadPluginsToGUI();
 	
 	app.setLog<ViewerLog>( static_cast<LogLevel>( static_cast <unsigned short>( app.parameters["dViewer"]->as<util::Selection>() ) ) );
 	app.setLog<ViewerDebug>( static_cast<LogLevel>( static_cast <unsigned short>( app.parameters["dViewer"]->as<util::Selection>() ) ) );
@@ -84,7 +84,7 @@ int main( int argc, char *argv[] )
 	std::list< data::Image > zImgList;
 	if( fileList.size() || zmapFileList.size() ) {
 		if( core->getOptionMap()->getPropertyAs<bool>("showLoadingWidget") ) {
-			core->getUI()->getMainWindow()->startWidget->showMe( false );
+			core->getUICore()->getMainWindow()->startWidget->showMe( false );
 		}
 			//load the anatomical images
 		BOOST_FOREACH ( util::slist::const_reference fileName, fileList ) {
@@ -117,7 +117,7 @@ int main( int argc, char *argv[] )
 			}
 		}
 	} else if( core->getOptionMap()->getPropertyAs<bool>("showStartWidget") ) {
-		core->getUI()->getMainWindow()->startWidget->showMe( true );
+		core->getUICore()->getMainWindow()->startWidget->showMe( true );
 	}
 
 	//*****************************************************************************************
@@ -128,14 +128,14 @@ int main( int argc, char *argv[] )
 
 	if( app.parameters["zmap"].isSet() ) {
 		core->setMode( ViewerCoreBase::zmap );
-		core->getUI()->getMainWindow()->setWindowTitle( "vast (zmap mode)" );
+		core->getUICore()->getMainWindow()->setWindowTitle( "vast (zmap mode)" );
 	}	
 	//particular distribution of images in widgets
 	if( app.parameters["zmap"].isSet() && zImgList.size() > 1 ) {
-		core->getUI()->setViewWidgetArrangement( UICore::InRow );
+		core->getUICore()->setViewWidgetArrangement( UICore::InRow );
 		BOOST_FOREACH( ImageListRef image, core->addImageList( zImgList, ImageHolder::z_map ) ) {
 			checkForCaCp(image);
-			UICore::ViewWidgetEnsembleType ensemble = core->getUI()->createViewWidgetEnsemble( "", image );
+			UICore::ViewWidgetEnsembleType ensemble = core->getUICore()->createViewWidgetEnsemble( "", image );
 			if( app.parameters["in"].isSet() ) {
 				BOOST_FOREACH( std::list<data::Image>::const_reference image, imgList)
 				{
@@ -149,20 +149,20 @@ int main( int argc, char *argv[] )
 				}
 			}
 		}
-		core->getUI()->setOptionPosition( isis::viewer::UICore::bottom );
-		core->getUI()->getMainWindow()->startWidget->close();
+		core->getUICore()->setOptionPosition( isis::viewer::UICore::bottom );
+		core->getUICore()->getMainWindow()->startWidget->close();
 		//only anatomical images with split option was specified
 	} else if ( app.parameters["in"].isSet() && app.parameters["split"].isSet() ) {
-		core->getUI()->setViewWidgetArrangement( UICore::InRow );
+		core->getUICore()->setViewWidgetArrangement( UICore::InRow );
 		BOOST_FOREACH( ImageListRef image, core->addImageList( imgList, ImageHolder::anatomical_image ) ) {
 			checkForCaCp(image);
-			core->getUI()->createViewWidgetEnsemble( "", image );
+			core->getUICore()->createViewWidgetEnsemble( "", image );
 		}
-		core->getUI()->setOptionPosition( isis::viewer::UICore::bottom );
-		core->getUI()->getMainWindow()->startWidget->close();
+		core->getUICore()->setOptionPosition( isis::viewer::UICore::bottom );
+		core->getUICore()->getMainWindow()->startWidget->close();
 	} else if ( app.parameters["in"].isSet() || app.parameters["zmap"].isSet() ) {
-		core->getUI()->setViewWidgetArrangement( UICore::InRow );
-		UICore::ViewWidgetEnsembleType ensemble = core->getUI()->createViewWidgetEnsemble( "" );
+		core->getUICore()->setViewWidgetArrangement( UICore::InRow );
+		UICore::ViewWidgetEnsembleType ensemble = core->getUICore()->createViewWidgetEnsemble( "" );
 		BOOST_FOREACH( ImageListRef image, core->addImageList( imgList, ImageHolder::anatomical_image ) ) {
 			checkForCaCp(image);
 			core->attachImageToWidget( image, ensemble[0]. widgetImplementation );
@@ -175,13 +175,13 @@ int main( int argc, char *argv[] )
 			core->attachImageToWidget( image, ensemble[1]. widgetImplementation );
 			core->attachImageToWidget( image, ensemble[2]. widgetImplementation );
 		}
-		core->getUI()->setOptionPosition( isis::viewer::UICore::bottom );
-		core->getUI()->getMainWindow()->startWidget->close();
+		core->getUICore()->setOptionPosition( isis::viewer::UICore::bottom );
+		core->getUICore()->getMainWindow()->startWidget->close();
 
 	}
 
 	LOG( isis::viewer::Runtime, info ) << "Welcome to vast ;-)";
-	core->getUI()->showMainWindow();
+	core->getUICore()->showMainWindow();
 
 	core->settingsChanged();
 	

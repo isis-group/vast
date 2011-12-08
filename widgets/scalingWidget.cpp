@@ -146,7 +146,7 @@ void ScalingWidget::showMe( bool visible )
 {
 	setVisible( visible );
 	move( QCursor::pos().x(), QCursor::pos().y() );
-	m_ViewerCore->getUI()->getMainWindow()->getUI().actionShow_scaling_option->setChecked( visible );
+	m_ViewerCore->getUICore()->getMainWindow()->getInterface().actionShow_scaling_option->setChecked( visible );
 
 	if( visible ) {
 		synchronize();

@@ -17,10 +17,10 @@ UICore::UICore( QViewerCore *core )
 	m_SliderWidget = new widget::SliderWidget( m_MainWindow, core );
 	m_ImageStackWidget = new widget::ImageStackWidget( m_MainWindow, core );
 	m_ViewWidgetArrangement = InRow;
-	m_RowCount = m_MainWindow->getUI().centralGridLayout->rowCount();
+	m_RowCount = m_MainWindow->getInterface().centralGridLayout->rowCount();
 	m_VoxelInformationWidget->setVisible( false );
 	m_ImageStackWidget->setVisible( false );
-	connect( m_MainWindow->getUI().actionInformation_Areas, SIGNAL( triggered(bool)), SLOT(showInformationAreas(bool)));
+	connect( m_MainWindow->getInterface().actionInformation_Areas, SIGNAL( triggered(bool)), SLOT(showInformationAreas(bool)));
 }
 
 void UICore::setOptionPosition( UICore::OptionPosition pos )
@@ -29,12 +29,12 @@ void UICore::setOptionPosition( UICore::OptionPosition pos )
 	m_ImageStackWidget->setVisible( true );
 	switch ( pos ) {
 	case bottom:
-		m_MainWindow->getUI().bottomGridLayout->addWidget( m_VoxelInformationWidget, 0, 0 );
-		m_MainWindow->getUI().bottomGridLayout->addWidget( m_ImageStackWidget, 0, 1 );
+		m_MainWindow->getInterface().bottomGridLayout->addWidget( m_VoxelInformationWidget, 0, 0 );
+		m_MainWindow->getInterface().bottomGridLayout->addWidget( m_ImageStackWidget, 0, 1 );
 		break;
 	case top:
-		m_MainWindow->getUI().topGridLayout->addWidget( m_ImageStackWidget, 0, 1 );
-		m_MainWindow->getUI().topGridLayout->addWidget( m_VoxelInformationWidget, 0, 0 );
+		m_MainWindow->getInterface().topGridLayout->addWidget( m_ImageStackWidget, 0, 1 );
+		m_MainWindow->getInterface().topGridLayout->addWidget( m_VoxelInformationWidget, 0, 0 );
 		break;
 	case central11:
 		QGridLayout *layout = new QGridLayout(  );
@@ -44,7 +44,7 @@ void UICore::setOptionPosition( UICore::OptionPosition pos )
 		layout->setContentsMargins( 0, 0, 0, 0 );
 		QFrame *frame = new QFrame( m_MainWindow );
 		frame->setLayout( layout );
-		m_MainWindow->getUI().centralGridLayout->addWidget( frame, 1, 1 );
+		m_MainWindow->getInterface().centralGridLayout->addWidget( frame, 1, 1 );
 		layout->addWidget( m_VoxelInformationWidget, 0, 0 );
 		layout->addWidget( m_ImageStackWidget, 1, 0 );
 		break;
@@ -56,7 +56,7 @@ void UICore::showMessage( const qt4::QMessage &message  )
 	QPalette pal;
 	std::stringstream logStream;
 	logStream << message.m_module << "(" << message.time_str << ") -> " << message.message ;
-	m_MainWindow->getUI().statusbar->setFont( QFont( "", 12 ) );
+	m_MainWindow->getInterface().statusbar->setFont( QFont( "", 12 ) );
 	const uint16_t logTime = m_ViewerCore->getOptionMap()->getPropertyAs<uint16_t>( "logDelayTime" );
 
 	switch( message.m_level ) {
@@ -64,8 +64,8 @@ void UICore::showMessage( const qt4::QMessage &message  )
 
 		if( m_ViewerCore->getOptionMap()->getPropertyAs<bool>( "showVerboseInfoMessages" ) ) {
 			pal.setColor( QPalette::Foreground, Qt::black );
-			m_MainWindow->getUI().statusbar->setPalette( pal );
-			m_MainWindow->getUI().statusbar->showMessage( logStream.str().c_str(), logTime );
+			m_MainWindow->getInterface().statusbar->setPalette( pal );
+			m_MainWindow->getInterface().statusbar->showMessage( logStream.str().c_str(), logTime );
 		}
 
 		break;
@@ -73,8 +73,8 @@ void UICore::showMessage( const qt4::QMessage &message  )
 
 		if( m_ViewerCore->getOptionMap()->getPropertyAs<bool>( "showInfoMessages" ) ) {
 			pal.setColor( QPalette::Foreground, Qt::black );
-			m_MainWindow->getUI().statusbar->setPalette( pal );
-			m_MainWindow->getUI().statusbar->showMessage( logStream.str().c_str(), logTime );
+			m_MainWindow->getInterface().statusbar->setPalette( pal );
+			m_MainWindow->getInterface().statusbar->showMessage( logStream.str().c_str(), logTime );
 		}
 
 		break;
@@ -82,8 +82,8 @@ void UICore::showMessage( const qt4::QMessage &message  )
 
 		if( m_ViewerCore->getOptionMap()->getPropertyAs<bool>( "showWarningMessages" ) ) {
 			pal.setColor( QPalette::Foreground, QColor( 184, 134, 11 )  );
-			m_MainWindow->getUI().statusbar->setPalette( pal );
-			m_MainWindow->getUI().statusbar->showMessage( logStream.str().c_str(), logTime );
+			m_MainWindow->getInterface().statusbar->setPalette( pal );
+			m_MainWindow->getInterface().statusbar->showMessage( logStream.str().c_str(), logTime );
 		}
 
 		break;
@@ -91,8 +91,8 @@ void UICore::showMessage( const qt4::QMessage &message  )
 
 		if( m_ViewerCore->getOptionMap()->getPropertyAs<bool>( "showErrorMessages" ) ) {
 			pal.setColor( QPalette::Foreground, Qt::red  );
-			m_MainWindow->getUI().statusbar->setPalette( pal );
-			m_MainWindow->getUI().statusbar->showMessage( logStream.str().c_str(), logTime );
+			m_MainWindow->getInterface().statusbar->setPalette( pal );
+			m_MainWindow->getInterface().statusbar->showMessage( logStream.str().c_str(), logTime );
 		}
 
 		break;
@@ -100,8 +100,8 @@ void UICore::showMessage( const qt4::QMessage &message  )
 
 		if( m_ViewerCore->getOptionMap()->getPropertyAs<bool>( "showNoticeMessages" ) ) {
 			pal.setColor( QPalette::Foreground, Qt::green  );
-			m_MainWindow->getUI().statusbar->setPalette( pal );
-			m_MainWindow->getUI().statusbar->showMessage( logStream.str().c_str(), logTime );
+			m_MainWindow->getInterface().statusbar->setPalette( pal );
+			m_MainWindow->getInterface().statusbar->showMessage( logStream.str().c_str(), logTime );
 		}
 
 		break;
@@ -112,7 +112,7 @@ void UICore::showMessage( const qt4::QMessage &message  )
 
 void UICore::showMainWindow()
 {
-	m_MainWindow->getUI().rightGridLayout->addWidget( m_SliderWidget );
+	m_MainWindow->getInterface().rightGridLayout->addWidget( m_SliderWidget );
 	m_MainWindow->show();
 
 }
@@ -171,7 +171,7 @@ void UICore::removeViewWidgetEnsemble( WidgetInterface *widgetImplementation )
 void UICore::removeViewWidgetEnsemble( UICore::ViewWidgetEnsembleType ensemble )
 {
 	for( unsigned short i = 0; i < 3; i++ ) {
-		m_MainWindow->getUI().centralGridLayout->removeWidget( ensemble[i].dockWidget );
+		m_MainWindow->getInterface().centralGridLayout->removeWidget( ensemble[i].dockWidget );
 	}
 
 	m_EnsembleList.erase( std::find( m_EnsembleList.begin(), m_EnsembleList.end(), ensemble ) );
@@ -191,7 +191,7 @@ UICore::ViewWidgetEnsembleType UICore::detachViewWidgetEnsemble( WidgetInterface
 UICore::ViewWidgetEnsembleType  UICore::detachViewWidgetEnsemble( UICore::ViewWidgetEnsembleType ensemble )
 {
 	for( unsigned short i = 0; i < 3; i++ ) {
-		m_MainWindow->getUI().centralGridLayout->removeWidget( ensemble[i].dockWidget );
+		m_MainWindow->getInterface().centralGridLayout->removeWidget( ensemble[i].dockWidget );
 	}
 
 	return ensemble;
@@ -202,28 +202,28 @@ void UICore::attachViewWidgetEnsemble( UICore::ViewWidgetEnsembleType ensemble )
 	switch ( m_ViewWidgetArrangement ) {
 	case Default: {
 		if( m_EnsembleList.size() > 0 ) {
-			m_MainWindow->getUI().centralGridLayout->addWidget( ensemble[0].dockWidget, m_RowCount, 0 );
-			m_MainWindow->getUI().centralGridLayout->addWidget( ensemble[1].dockWidget, m_RowCount, 1 );
-			m_MainWindow->getUI().centralGridLayout->addWidget( ensemble[2].dockWidget, m_RowCount, 2 );
+			m_MainWindow->getInterface().centralGridLayout->addWidget( ensemble[0].dockWidget, m_RowCount, 0 );
+			m_MainWindow->getInterface().centralGridLayout->addWidget( ensemble[1].dockWidget, m_RowCount, 1 );
+			m_MainWindow->getInterface().centralGridLayout->addWidget( ensemble[2].dockWidget, m_RowCount, 2 );
 		} else {
-			m_MainWindow->getUI().centralGridLayout->addWidget( ensemble[0].dockWidget, 0, 0 );
-			m_MainWindow->getUI().centralGridLayout->addWidget( ensemble[1].dockWidget, 0, 1 );
-			m_MainWindow->getUI().centralGridLayout->addWidget( ensemble[2].dockWidget, 1, 0 );
+			m_MainWindow->getInterface().centralGridLayout->addWidget( ensemble[0].dockWidget, 0, 0 );
+			m_MainWindow->getInterface().centralGridLayout->addWidget( ensemble[1].dockWidget, 0, 1 );
+			m_MainWindow->getInterface().centralGridLayout->addWidget( ensemble[2].dockWidget, 1, 0 );
 		}
 
 		break;
 	}
 	case InRow: {
-		m_MainWindow->getUI().centralGridLayout->addWidget( ensemble[0].dockWidget, m_RowCount, 0 );
-		m_MainWindow->getUI().centralGridLayout->addWidget( ensemble[1].dockWidget, m_RowCount, 1 );
-		m_MainWindow->getUI().centralGridLayout->addWidget( ensemble[2].dockWidget, m_RowCount, 2 );
+		m_MainWindow->getInterface().centralGridLayout->addWidget( ensemble[0].dockWidget, m_RowCount, 0 );
+		m_MainWindow->getInterface().centralGridLayout->addWidget( ensemble[1].dockWidget, m_RowCount, 1 );
+		m_MainWindow->getInterface().centralGridLayout->addWidget( ensemble[2].dockWidget, m_RowCount, 2 );
 		break;
 	}
 	case InColumn: {
-		int currentColumn = m_MainWindow->getUI().centralGridLayout->columnCount() ;
-		m_MainWindow->getUI().centralGridLayout->addWidget( ensemble[0].dockWidget, 0, currentColumn );
-		m_MainWindow->getUI().centralGridLayout->addWidget( ensemble[1].dockWidget, 1, currentColumn );
-		m_MainWindow->getUI().centralGridLayout->addWidget( ensemble[2].dockWidget, 2, currentColumn );
+		int currentColumn = m_MainWindow->getInterface().centralGridLayout->columnCount() ;
+		m_MainWindow->getInterface().centralGridLayout->addWidget( ensemble[0].dockWidget, 0, currentColumn );
+		m_MainWindow->getInterface().centralGridLayout->addWidget( ensemble[1].dockWidget, 1, currentColumn );
+		m_MainWindow->getInterface().centralGridLayout->addWidget( ensemble[2].dockWidget, 2, currentColumn );
 	}
 	}
 

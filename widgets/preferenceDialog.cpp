@@ -61,7 +61,7 @@ void PreferencesDialog::toggleUseAllThreads(bool toggle )
 void PreferencesDialog::apply( int /*dummy*/ )
 {
 	saveSettings();
-	m_ViewerCore->getUI()->refreshUI();
+	m_ViewerCore->getUICore()->refreshUI();
 	m_ViewerCore->settingsChanged();
 	m_ViewerCore->updateScene();
 #ifdef _OPENMP
