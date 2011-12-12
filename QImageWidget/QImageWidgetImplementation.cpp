@@ -76,7 +76,9 @@ bool QImageWidgetImplementation::removeImage( const boost::shared_ptr< ImageHold
 	image->removeWidget( this );
 	m_ImageProperties.erase( image );
 	ImageVectorType::iterator iter = std::find( m_ImageVector.begin(), m_ImageVector.end(), image );
-	m_ImageVector.erase( iter );
+	if( iter != m_ImageVector.end() ) {
+		m_ImageVector.erase( iter );
+	}
 	return iter != m_ImageVector.end();
 }
 
@@ -526,6 +528,7 @@ void QImageWidgetImplementation::dropEvent(QDropEvent *e )
 				myEnsemble = ensemble;
 			} else if( myEnsemble != ensemble ) {
 				ensemble[i].widgetImplementation->removeImage( image );
+				image->removeWidget( ensemble[i].widgetImplementation );
 			}
 		}
 	}
