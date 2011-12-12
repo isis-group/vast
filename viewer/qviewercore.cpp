@@ -18,7 +18,7 @@ QViewerCore::QViewerCore( const std::string &appName, const std::string &orgName
 {
 	QCoreApplication::setApplicationName( QString( appName.c_str() ) );
 	QCoreApplication::setOrganizationName( QString( orgName.c_str() ) );
-
+	QApplication::setStartDragTime(1000);
 
 	setParentWidget( m_UI->getMainWindow() );
 	data::IOFactory::setProgressFeedback( m_ProgressFeedback );

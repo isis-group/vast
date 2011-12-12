@@ -30,6 +30,18 @@ void ImageStack::contextMenuEvent(QContextMenuEvent* event )
 	menu.exec( event->globalPos() );
 }
 
+void ImageStack::mousePressEvent(QMouseEvent *e )
+{
+	if( e->button() == Qt::LeftButton && geometry().contains( e->pos() ) && QApplication::keyboardModifiers() == Qt::ControlModifier) {
+		QDrag *drag = new QDrag(this);
+		QMimeData *mimeData = new QMimeData;
+		mimeData->setText( itemAt(e->pos())->text() );
+		drag->setMimeData( mimeData );
+		drag->setPixmap( QIcon( ":/common/vast.jpg" ).pixmap(15) );
+		drag->exec();
+	}
+	QListWidget::mousePressEvent(e);
+}
 
 	
 

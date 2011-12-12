@@ -62,7 +62,7 @@ public:
 
 	bool operator<( const ImageHolder &ref ) const { return m_ID < ref.getID(); }
 
-	void checkVoxelCoords();
+	void checkVoxelCoords( util::ivector4 &voxelCoords );
 	
 	void updateColorMap();
 

@@ -184,8 +184,6 @@ int main( int argc, char *argv[] )
 	core->getUICore()->showMainWindow();
 
 	core->settingsChanged();
-	
-
 
 	return app.getQApplication().exec();
 }

@@ -68,7 +68,8 @@ public:
 	void setViewWidgetArrangement( ViewWidgetArragment arrangement ) { m_ViewWidgetArrangement = arrangement; }
 	ViewWidgetArragment getViewWidgetArrangement() const { return m_ViewWidgetArrangement; }
 
-	ViewWidgetEnsembleListType getEnsembleList() const { return m_EnsembleList; }
+	const ViewWidgetEnsembleListType getEnsembleList() const { return m_EnsembleList; }
+	ViewWidgetEnsembleListType getEnsembleList() { return m_EnsembleList; }
 
 	void rearrangeViewWidgets();
 

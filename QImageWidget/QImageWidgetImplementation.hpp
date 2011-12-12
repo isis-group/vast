@@ -51,6 +51,9 @@ public Q_SLOTS:
 	virtual std::string getWidgetName() const;
 	virtual void setWidgetName( const std::string &wName );
 	virtual void keyPressEvent( QKeyEvent *e);
+	
+	virtual void dragEnterEvent( QDragEnterEvent * );
+	virtual void dropEvent( QDropEvent * );
 
 protected:
 	void paintEvent( QPaintEvent *event );

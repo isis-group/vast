@@ -19,6 +19,7 @@ public:
 	ImageStack( QWidget *parent, ImageStackWidget *widget );
 public Q_SLOTS:
 	void contextMenuEvent( QContextMenuEvent *);
+	void mousePressEvent( QMouseEvent * );
 private:
 	ImageStackWidget *m_Widget;
 	

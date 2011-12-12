@@ -274,11 +274,11 @@ void ImageHolder::updateOrientation()
 	orientation = getImageOrientation();
 }
 
-void ImageHolder::checkVoxelCoords()
+void ImageHolder::checkVoxelCoords( util::ivector4 &vc )
 {
 	for( unsigned short i = 0; i<4;i++) {
-		voxelCoords[i] = voxelCoords[i] < 0 ? 0 : voxelCoords[i];		
-		voxelCoords[i] = voxelCoords[i] >= static_cast<int>(getImageSize()[i]) ? static_cast<int>(getImageSize()[i]) - 1 : voxelCoords[i]; //cast to avoid warning
+		vc[i] = vc[i] < 0 ? 0 : vc[i];		
+		vc[i] = vc[i] >= static_cast<int>(getImageSize()[i]) ? static_cast<int>(getImageSize()[i]) - 1 : vc[i]; //cast to avoid warning
 		
 	}
 }

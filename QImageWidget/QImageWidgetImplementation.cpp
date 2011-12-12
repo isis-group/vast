@@ -1,6 +1,7 @@
 #include "QImageWidgetImplementation.hpp"
 
 #include "QOrientationHandler.hpp"
+#include "uicore.hpp"
 
 namespace isis
 {
@@ -47,6 +48,7 @@ void QImageWidgetImplementation::commonInit()
 	translationY = 0.0;
 	m_ShowCrosshair = true;
 	m_CrosshairColor = QColor( 255, 102, 0 );
+	setAcceptDrops(true);
 	setFocus();
 }
 
@@ -454,35 +456,72 @@ void QImageWidgetImplementation::keyPressEvent(QKeyEvent* e)
 	if( m_ViewerCore->hasImage() ) {
 		if( e->key() == Qt::Key_Up ) {
 			m_ViewerCore->getCurrentImage()->voxelCoords[1]++;			
-			m_ViewerCore->getCurrentImage()->checkVoxelCoords();			
+			m_ViewerCore->getCurrentImage()->checkVoxelCoords(m_ViewerCore->getCurrentImage()->voxelCoords);			
 			m_ViewerCore->physicalCoordsChanged( m_ViewerCore->getCurrentImage()->getISISImage()->getPhysicalCoordsFromIndex( m_ViewerCore->getCurrentImage()->voxelCoords ) );
 		}
 		if( e->key() == Qt::Key_Down ) {
 			m_ViewerCore->getCurrentImage()->voxelCoords[1]--;
-			m_ViewerCore->getCurrentImage()->checkVoxelCoords();
+			m_ViewerCore->getCurrentImage()->checkVoxelCoords(m_ViewerCore->getCurrentImage()->voxelCoords);
 			m_ViewerCore->physicalCoordsChanged( m_ViewerCore->getCurrentImage()->getISISImage()->getPhysicalCoordsFromIndex( m_ViewerCore->getCurrentImage()->voxelCoords ) );
 		}
 		if( e->key() == Qt::Key_Left ) {
 			m_ViewerCore->getCurrentImage()->voxelCoords[0]--;
-			m_ViewerCore->getCurrentImage()->checkVoxelCoords();			
+			m_ViewerCore->getCurrentImage()->checkVoxelCoords(m_ViewerCore->getCurrentImage()->voxelCoords);			
 			m_ViewerCore->physicalCoordsChanged( m_ViewerCore->getCurrentImage()->getISISImage()->getPhysicalCoordsFromIndex( m_ViewerCore->getCurrentImage()->voxelCoords ) );
 		}
 		if( e->key() == Qt::Key_Right ) {
 			m_ViewerCore->getCurrentImage()->voxelCoords[0]++;
-			m_ViewerCore->getCurrentImage()->checkVoxelCoords();			
+			m_ViewerCore->getCurrentImage()->checkVoxelCoords(m_ViewerCore->getCurrentImage()->voxelCoords);			
 			m_ViewerCore->physicalCoordsChanged( m_ViewerCore->getCurrentImage()->getISISImage()->getPhysicalCoordsFromIndex( m_ViewerCore->getCurrentImage()->voxelCoords ) );
 		}
 		if( e->key() == Qt::Key_PageUp ) {
 			m_ViewerCore->getCurrentImage()->voxelCoords[2]++;
-			m_ViewerCore->getCurrentImage()->checkVoxelCoords();			
+			m_ViewerCore->getCurrentImage()->checkVoxelCoords(m_ViewerCore->getCurrentImage()->voxelCoords);			
 			m_ViewerCore->physicalCoordsChanged( m_ViewerCore->getCurrentImage()->getISISImage()->getPhysicalCoordsFromIndex( m_ViewerCore->getCurrentImage()->voxelCoords ) );
 		}
 		if( e->key() == Qt::Key_PageDown ) {
 			m_ViewerCore->getCurrentImage()->voxelCoords[2]--;
-			m_ViewerCore->getCurrentImage()->checkVoxelCoords();
+			m_ViewerCore->getCurrentImage()->checkVoxelCoords(m_ViewerCore->getCurrentImage()->voxelCoords);
 			m_ViewerCore->physicalCoordsChanged( m_ViewerCore->getCurrentImage()->getISISImage()->getPhysicalCoordsFromIndex( m_ViewerCore->getCurrentImage()->voxelCoords ) );
 		}
 	}	
+}
+
+
+void QImageWidgetImplementation::dragEnterEvent(QDragEnterEvent *e )
+{
+	if( e->mimeData()->hasFormat("text/plain")) {
+		bool hasImage = false;
+		BOOST_FOREACH( ImageVectorType::const_reference image, m_ImageVector ) {
+			if( image->getFileNames().front() == e->mimeData()->text().toStdString() ) {
+				hasImage = true;
+			}
+		}	
+		if( !hasImage ) {
+			e->acceptProposedAction();
+		}
+	}
+}
+
+
+void QImageWidgetImplementation::dropEvent(QDropEvent *e )
+{
+	const boost::shared_ptr<ImageHolder> image = m_ViewerCore->getDataContainer().at( e->mimeData()->text().toStdString() );
+	UICore::ViewWidgetEnsembleType myEnsemble = UICore::ViewWidgetEnsembleType();
+	BOOST_FOREACH( UICore::ViewWidgetEnsembleListType::const_reference ensemble, m_ViewerCore->getUICore()->getEnsembleList() ) 
+	{
+		for( unsigned short i = 0; i < 3; i++ ) {
+			if( ensemble[i].widgetImplementation == this ) {
+				myEnsemble = ensemble;
+			}
+		}
+	}
+	for( unsigned short i = 0; i < 3; i++ ) {
+		myEnsemble[i].widgetImplementation->addImage(image);
+	}
+	m_ViewerCore->setCurrentImage( image );
+	m_ViewerCore->updateScene();
+	m_ViewerCore->getUICore()->refreshUI();
 }
 
 
