@@ -288,6 +288,14 @@ void ImageHolder::updateColorMap()
 	util::Singletons::get<color::Color,10>().adaptColorMapToImage( this );
 }
 
+void ImageHolder::removeWidget(WidgetInterface* widget)
+{
+	std::list<WidgetInterface*>::iterator iter = std::find( m_WidgetList.begin(), m_WidgetList.end(), widget );
+	if( iter != m_WidgetList.end() ) {
+		m_WidgetList.erase(iter);
+	}
+}
+
 
 }
 } //end namespace

@@ -413,5 +413,6 @@ void MainWindow::findGlobalMax()
 }
 
 
+
 }
 }

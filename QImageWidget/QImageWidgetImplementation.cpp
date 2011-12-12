@@ -113,7 +113,6 @@ void QImageWidgetImplementation::paintEvent( QPaintEvent */*event*/ )
 										   m_PlaneOrientation,
 										   m_Border
 										 );
-
 		boost::shared_ptr<ImageHolder> cImage =  getWidgetSpecCurrentImage();
 
 		if( m_ViewerCore->getMode() == ViewerCoreBase::zmap ) {
@@ -255,7 +254,17 @@ void QImageWidgetImplementation::paintImage( boost::shared_ptr< ImageHolder > im
 
 
 void QImageWidgetImplementation::mousePressEvent( QMouseEvent *e )
-{
+{	
+	if( e->button() == Qt::LeftButton && geometry().contains( e->pos() ) && QApplication::keyboardModifiers() == Qt::ControlModifier) {
+		QDrag *drag = new QDrag(this);
+		QMimeData *mimeData = new QMimeData;
+		mimeData->setText( getWidgetSpecCurrentImage()->getFileNames().front().c_str() );
+		drag->setMimeData( mimeData );
+		drag->setPixmap( QIcon( ":/common/vast.jpg" ).pixmap(15) );
+		drag->exec();
+		return;
+	}
+	
 	if( e->button() == Qt::RightButton ) {
 		m_RightMouseButtonPressed = true;
 	} else if ( e->button() == Qt::LeftButton ) {
@@ -305,6 +314,7 @@ void QImageWidgetImplementation::mouseMoveEvent( QMouseEvent *e )
 	} else if( m_RightMouseButtonPressed || m_LeftMouseButtonPressed ) {
 		emitMousePressEvent( e );
 	}
+	QWidget::mouseMoveEvent(e);
 }
 
 void QImageWidgetImplementation::emitMousePressEvent( QMouseEvent *e )
@@ -400,6 +410,7 @@ void QImageWidgetImplementation::mouseReleaseEvent( QMouseEvent *e )
 	if ( e->button() == Qt::LeftButton ) {
 		m_LeftMouseButtonPressed = false;
 	}
+	QWidget::mouseReleaseEvent(e);
 }
 
 void QImageWidgetImplementation::wheelEvent( QWheelEvent *e )
@@ -513,6 +524,8 @@ void QImageWidgetImplementation::dropEvent(QDropEvent *e )
 		for( unsigned short i = 0; i < 3; i++ ) {
 			if( ensemble[i].widgetImplementation == this ) {
 				myEnsemble = ensemble;
+			} else if( myEnsemble != ensemble ) {
+				ensemble[i].widgetImplementation->removeImage( image );
 			}
 		}
 	}
