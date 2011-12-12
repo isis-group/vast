@@ -19,6 +19,7 @@ public:
 	virtual bool call() {
 		m_OrienatationCorrectionDialog = new OrientatioCorrectionDialog( parentWidget, viewerCore );
 		m_OrienatationCorrectionDialog->show();
+		return true;
 	};
 
 	virtual ~OrientationCorrection() {};

@@ -5,6 +5,9 @@ boost::shared_ptr< isis::viewer::QProgressFeedback > isis::viewer::operation::Na
 isis::util::ivector4 isis::viewer::operation::NativeImageOps::getGlobalMin( const boost::shared_ptr< isis::viewer::ImageHolder > image, const util::ivector4 &startPos, const unsigned short &radius )
 {
 	switch ( image->getISISImage()->getMajorTypeID() ) {
+	case data::ValuePtr<bool>::staticID:
+		return internGetMax<bool>( image, startPos, radius );
+		break;		
 	case data::ValuePtr<int8_t>::staticID:
 		return internGetMin<int8_t>( image, startPos, radius );
 		break;
@@ -35,12 +38,19 @@ isis::util::ivector4 isis::viewer::operation::NativeImageOps::getGlobalMin( cons
 	case data::ValuePtr<double>::staticID:
 		return internGetMin<double>( image, startPos, radius );
 		break;
+	default:
+		LOG( Runtime, error ) << "Search of min/max is not suported for " << image->getISISImage()->getMajorTypeID() << " !";
+		return isis::util::ivector4();
+		break;
 	}
 }
 
 isis::util::ivector4 isis::viewer::operation::NativeImageOps::getGlobalMax( const boost::shared_ptr< isis::viewer::ImageHolder > image, const util::ivector4 &startPos, const unsigned short &radius )
 {
 	switch ( image->getISISImage()->getMajorTypeID() ) {
+	case data::ValuePtr<bool>::staticID:
+		return internGetMax<bool>( image, startPos, radius );
+		break;		
 	case data::ValuePtr<int8_t>::staticID:
 		return internGetMax<int8_t>( image, startPos, radius );
 		break;
@@ -70,6 +80,10 @@ isis::util::ivector4 isis::viewer::operation::NativeImageOps::getGlobalMax( cons
 		break;
 	case data::ValuePtr<double>::staticID:
 		return internGetMax<double>( image, startPos, radius );
+		break;
+	default:
+		LOG( Runtime, error ) << "Search of min/max is not suported for " << image->getISISImage()->getMajorTypeID() << " !";
+		return isis::util::ivector4();
 		break;
 	}
 }

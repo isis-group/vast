@@ -43,6 +43,7 @@ boost::shared_ptr< ImageHolder > DataContainer::getImageByID( short unsigned int
 		}
 	}
 	LOG( Runtime, warning ) << "There is no image with id " << id << " !";
+	return boost::shared_ptr<ImageHolder>();
 }
 
 

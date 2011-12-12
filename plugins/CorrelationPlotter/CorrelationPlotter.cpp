@@ -3,8 +3,9 @@
 
 isis::viewer::plugin::CorrelationPlotterDialog::CorrelationPlotterDialog(QWidget* parent, isis::viewer::QViewerCore* core)
 	: QDialog(parent),
-	m_ViewerCore( core ),
-	m_OrigMode( core->getMode() )
+	m_OrigMode( core->getMode() ),	
+	m_ViewerCore( core )
+	
 {
 	m_Interface.setupUi( this );
 	m_Interface.correlationType->addItem( "linear" );
@@ -23,7 +24,7 @@ void isis::viewer::plugin::CorrelationPlotterDialog::lockClicked()
 }
 
 
-void isis::viewer::plugin::CorrelationPlotterDialog::physicalCoordsChanged(isis::util::fvector4 physicalCoords)
+void isis::viewer::plugin::CorrelationPlotterDialog::physicalCoordsChanged(isis::util::fvector4 /*physicalCoords*/)
 {
 	if( !m_Interface.lock->isChecked() ) {
 		m_CurrentVoxelPos = m_CurrentFunctionalImage->voxelCoords;

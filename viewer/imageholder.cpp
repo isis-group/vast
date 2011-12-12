@@ -12,7 +12,6 @@ boost::numeric::ublas::matrix< double > ImageHolder::getNormalizedImageOrientati
 {
 	boost::numeric::ublas::matrix<double> retMatrix = boost::numeric::ublas::zero_matrix<double>( 4, 4 );
 	retMatrix( 3, 3 ) = 1;
-	double deg45 = sin( ( 45.0 / 180 ) * M_PI );
 	const util::fvector4 &rowVec = m_Image->propertyValue( "rowVec" )->castTo<util::fvector4>();
 	const util::fvector4 &columnVec = m_Image->propertyValue( "columnVec" )->castTo<util::fvector4>();
 	const util::fvector4 &sliceVec = m_Image->propertyValue( "sliceVec" )->castTo<util::fvector4>();
@@ -28,7 +27,7 @@ boost::numeric::ublas::matrix< double > ImageHolder::getNormalizedImageOrientati
 		} else if ( sB == 1 ) {
 			rB = 0;
 			cB = 2;
-		} else if ( sB = 2 ) {
+		} else if ( sB == 2 ) {
 			rB = 0;
 			rB = 1;
 		}
@@ -41,7 +40,7 @@ boost::numeric::ublas::matrix< double > ImageHolder::getNormalizedImageOrientati
 		} else if ( cB == 1 ) {
 			rB = 0;
 			sB = 2;
-		} else if ( cB = 2 ) {
+		} else if ( cB == 2 ) {
 			rB = 0;
 			sB = 1;
 		}
@@ -54,7 +53,7 @@ boost::numeric::ublas::matrix< double > ImageHolder::getNormalizedImageOrientati
 		} else if ( rB == 1 ) {
 			cB = 0;
 			sB = 2;
-		} else if ( rB = 2 ) {
+		} else if ( rB == 2 ) {
 			cB = 0;
 			sB = 1;
 		}
@@ -279,7 +278,7 @@ void ImageHolder::checkVoxelCoords()
 {
 	for( unsigned short i = 0; i<4;i++) {
 		voxelCoords[i] = voxelCoords[i] < 0 ? 0 : voxelCoords[i];		
-		voxelCoords[i] = voxelCoords[i] >= getImageSize()[i] ? getImageSize()[i] - 1 : voxelCoords[i];
+		voxelCoords[i] = voxelCoords[i] >= static_cast<int>(getImageSize()[i]) ? static_cast<int>(getImageSize()[i]) - 1 : voxelCoords[i]; //cast to avoid warning
 		
 	}
 }

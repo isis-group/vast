@@ -10,8 +10,8 @@ namespace viewer
 
 
 UICore::UICore( QViewerCore *core )
-	: m_MainWindow( new MainWindow( core ) ),
-	  m_ViewerCore( core )
+	: m_ViewerCore( core ),
+	m_MainWindow( new MainWindow( core ) )
 {
 	m_VoxelInformationWidget = new widget::VoxelInformationWidget( m_MainWindow, core );
 	m_SliderWidget = new widget::SliderWidget( m_MainWindow, core );
@@ -37,6 +37,7 @@ void UICore::setOptionPosition( UICore::OptionPosition pos )
 		m_MainWindow->getInterface().topGridLayout->addWidget( m_VoxelInformationWidget, 0, 0 );
 		break;
 	case central11:
+	{
 		QGridLayout *layout = new QGridLayout(  );
 		layout->setVerticalSpacing( 0 );
 		layout->setHorizontalSpacing( 0 );
@@ -47,6 +48,11 @@ void UICore::setOptionPosition( UICore::OptionPosition pos )
 		m_MainWindow->getInterface().centralGridLayout->addWidget( frame, 1, 1 );
 		layout->addWidget( m_VoxelInformationWidget, 0, 0 );
 		layout->addWidget( m_ImageStackWidget, 1, 0 );
+		break;
+	}
+	case left:
+		break;
+	case right:
 		break;
 	}
 }
@@ -186,6 +192,7 @@ UICore::ViewWidgetEnsembleType UICore::detachViewWidgetEnsemble( WidgetInterface
 			return detachViewWidgetEnsemble( ref );
 		}
 	}
+	return ViewWidgetEnsembleType();
 }
 
 UICore::ViewWidgetEnsembleType  UICore::detachViewWidgetEnsemble( UICore::ViewWidgetEnsembleType ensemble )
@@ -249,7 +256,6 @@ UICore::ViewWidget UICore::createViewWidget( const std::string &widgetType, Plan
 	dockWidget->setWidget( frameWidget );
 	frameWidget->setParent( dockWidget );
 
-#warning this has to be done with the help of a widget factory. nasty this way
 	WidgetInterface *widgetImpl = new QImageWidgetImplementation( m_ViewerCore, frameWidget, planeOrientation );
 
 	ViewWidget viewWidget;

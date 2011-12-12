@@ -16,7 +16,7 @@ public:
 	QMemoryHandler( QViewerCore *core );
 
 	template< typename TYPE>
-	bool fillSliceChunk( data::MemChunk<TYPE> &sliceChunk, const boost::shared_ptr< ImageHolder > image, const PlaneOrientation &orientation, const size_t &timestep = 0 ) const {
+	void fillSliceChunk( data::MemChunk<TYPE> &sliceChunk, const boost::shared_ptr< ImageHolder > image, const PlaneOrientation &orientation, const size_t &timestep = 0 ) const {
 		const util::ivector4 mappedSize = QOrienationHandler::mapCoordsToOrientation( image->getImageSize(), image, orientation );
 		const util::ivector4 mappedCoords = QOrienationHandler::mapCoordsToOrientation( image->voxelCoords, image, orientation );
 		const util::ivector4 mapping = QOrienationHandler::mapCoordsToOrientation( util::ivector4( 0, 1, 2, 3 ), image, orientation, true );

@@ -29,10 +29,7 @@ class QImageWidgetImplementation : public QWidget, public WidgetInterface
 
 public:
 	
-	QImageWidgetImplementation( QViewerCore *core, QWidget *parent = 0, QWidget *share = 0, PlaneOrientation orienation = axial );
 	QImageWidgetImplementation( QViewerCore *core, QWidget *parent = 0, PlaneOrientation orientation = axial );
-
-	virtual WidgetInterface *createSharedWidget( QWidget *parent, PlaneOrientation orienation = axial );
 
 public Q_SLOTS:
 
@@ -44,7 +41,7 @@ public Q_SLOTS:
 	virtual void paintImage( boost::shared_ptr< ImageHolder > image );
 	virtual void paintCrosshair() const;
 
-	virtual bool lookAtPhysicalCoords( const util::fvector4 &physicalCoords );
+	virtual void lookAtPhysicalCoords( const util::fvector4 &physicalCoords );
 	virtual void updateScene();
 	virtual void setInterpolationType( InterpolationType interType ) { m_InterpolationType = interType; }
 	virtual void setShowLabels( bool show ) { m_ShowLabels = show; m_Border = show ? 18 : 0; }

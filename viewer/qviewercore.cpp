@@ -10,8 +10,8 @@ namespace viewer
 
 QViewerCore::QViewerCore( const std::string &appName, const std::string &orgName, QWidget *parent )
 	: ViewerCoreBase( ),
-	  m_Parent( parent ),
 	  m_Settings( new QSettings( appName.c_str(), orgName.c_str() ) ),
+	  m_Parent( parent ),
 	  m_CurrentPath( QDir::currentPath().toStdString() ),
 	  m_ProgressFeedback( boost::shared_ptr<QProgressFeedback>( new QProgressFeedback() ) ),
 	  m_UI( new isis::viewer::UICore( this ) )

@@ -29,7 +29,9 @@ public:
 		} else {
 			m_CorrelationPlotter->show();
 		}
-		m_Visible = !m_Visible;};
+		m_Visible = !m_Visible;
+		return true;
+	};
 	CorrelationPlotter() : m_Visible(false), m_CorrelationPlotterSet(false) {}
 
 	virtual ~CorrelationPlotter() {};

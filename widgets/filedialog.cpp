@@ -3,10 +3,10 @@
 
 isis::viewer::widget::FileDialog::FileDialog( QWidget *parent, QViewerCore *core )
 	: QDialog ( parent ),
+	  m_Mode( OPEN_FILE ),
 	  m_ViewerCore( core ),
 	  m_ImageType( ImageHolder::anatomical_image ),
-	  m_Completer( new QCompleter( this ) ),
-	  m_Mode( OPEN_FILE )
+	  m_Completer( new QCompleter( this ) )
 {
 
 	m_Interface.setupUi( this );
@@ -158,7 +158,7 @@ void isis::viewer::widget::FileDialog::parsePath()
 
 }
 
-bool isis::viewer::widget::FileDialog::checkIfPathIsValid( QString path, unsigned short &validFiles, const std::string &suffix, FileMode mode, bool acceptNoSuffix )
+bool isis::viewer::widget::FileDialog::checkIfPathIsValid( QString path, unsigned short &validFiles, const std::string &suffix, FileMode mode, bool /*acceptNoSuffix*/ )
 {
 	boost::filesystem::path p( path.toStdString() );
 	std::list<util::istring> fileFormatList = getFileFormatsAsList( isis::image_io::FileFormat::read_only );

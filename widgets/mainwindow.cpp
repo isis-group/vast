@@ -12,16 +12,16 @@ namespace viewer
 {
 
 MainWindow::MainWindow( QViewerCore *core ) :
-	m_ViewerCore( core ),
-	m_Toolbar( new QToolBar( this ) ),
 	preferencesDialog( new widget::PreferencesDialog( this, core ) ),
-	scalingWidget( new widget::ScalingWidget( this, core ) ),
-	m_RadiusSpin( new QSpinBox( this ) ),
-	m_LogButton( new QPushButton( this ) ),
 	loggingDialog( new widget::LoggingDialog( this, core ) ),
 	fileDialog( new widget::FileDialog( this, core ) ),
 	startWidget( new widget::StartWidget( this, core ) ),
-	keyCommandsdialog( new widget::KeyCommandsDialog(this) ) 
+	scalingWidget( new widget::ScalingWidget( this, core ) ),
+	keyCommandsdialog( new widget::KeyCommandsDialog(this) ),
+	m_ViewerCore( core ),
+	m_Toolbar( new QToolBar( this ) ),	
+	m_RadiusSpin( new QSpinBox( this ) ),
+	m_LogButton( new QPushButton( this ) )
 {
 	m_Interface.setupUi( this );
 	setWindowIcon( QIcon( ":/common/vast.jpg" ) );

@@ -52,7 +52,7 @@ void ScalingWidget::maxChanged( double max )
 {
 	boost::shared_ptr<ImageHolder> image = m_ViewerCore->getCurrentImage();
 	image->getPropMap().setPropertyAs<double>( "scalingMaxValue", max );
-	setScalingOffset( getScalingOffsetFromMinMax( std::make_pair<double, double>( image->getPropMap().getPropertyAs<double>( "scalingMinValue" ), max ), image ), image );
+	setScalingOffset( getScalingOffsetFromMinMax( std::make_pair<double, double>( image->getPropMap().getPropertyAs<double>( "scalingMinValue" ), max ), image ) );
 }
 
 
@@ -60,7 +60,7 @@ void ScalingWidget::minChanged( double min )
 {
 	boost::shared_ptr<ImageHolder> image = m_ViewerCore->getCurrentImage();
 	image->getPropMap().setPropertyAs<double>( "scalingMinValue", min );
-	setScalingOffset( getScalingOffsetFromMinMax( std::make_pair<double, double>( min, image->getPropMap().getPropertyAs<double>( "scalingMaxValue" ) ), image ), image );
+	setScalingOffset( getScalingOffsetFromMinMax( std::make_pair<double, double>( min, image->getPropMap().getPropertyAs<double>( "scalingMaxValue" ) ), image ) );
 }
 
 void ScalingWidget::offsetChanged( double offset )
@@ -91,7 +91,7 @@ void ScalingWidget::setMinMax( std::pair< double, double > minMax, boost::shared
 	m_ViewerCore->updateScene();
 }
 
-void ScalingWidget::setScalingOffset( std::pair< double, double > scalingOffset, boost::shared_ptr< ImageHolder > image )
+void ScalingWidget::setScalingOffset( std::pair< double, double > scalingOffset )
 {
 	disconnect( m_Interface.scaling, SIGNAL( valueChanged( double ) ), this, SLOT( scalingChanged( double ) ) );
 	disconnect( m_Interface.offset, SIGNAL( valueChanged( double ) ), this, SLOT( offsetChanged( double ) ) );
@@ -108,7 +108,7 @@ void ScalingWidget::autoScale()
 {
 	boost::shared_ptr<ImageHolder> image = m_ViewerCore->getCurrentImage();
 	std::pair<double, double> scalingOffset = image->optimalScalingOffset;
-	setScalingOffset( scalingOffset, image );
+	setScalingOffset( scalingOffset );
 	setMinMax( getMinMaxFromScalingOffset( scalingOffset, image ), image );
 }
 

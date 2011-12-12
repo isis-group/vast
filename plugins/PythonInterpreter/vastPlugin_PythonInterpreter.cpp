@@ -21,6 +21,7 @@ public:
 			isInitialized = true;
 		}
 		m_Dialog->show();
+		return true;
 	}
 
 private:

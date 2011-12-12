@@ -29,6 +29,7 @@ public:
 			m_MaskEdit->show();
 		}
 		m_Visible = !m_Visible;
+		return true;
 	};
 	
 	virtual ~MaskEdit() {};

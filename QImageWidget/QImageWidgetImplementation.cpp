@@ -11,28 +11,16 @@ namespace viewer
 QImageWidgetImplementation::QImageWidgetImplementation( QViewerCore *core, QWidget *parent, PlaneOrientation orientation )
 	: QWidget( parent ),
 	  WidgetInterface( core, parent, orientation ),
-	  m_MemoryHandler( core ),
-	  m_Painter( new QPainter() ),
-	  m_ShowLabels( false ),
-  	  m_Layout( new QVBoxLayout(parent ) )
+	  m_Layout( new QVBoxLayout(parent ) ),	  
+	  m_MemoryHandler( core ), 	  
+	  m_Painter( new QPainter() ),	  
+	  m_ShowLabels( false )
 {
 	m_Layout->addWidget( this );
 	m_Layout->setMargin(m_ViewerCore->getOptionMap()->getPropertyAs<uint16_t>("viewerWidgetMargin"));
 	commonInit();
 }
 
-
-QImageWidgetImplementation::QImageWidgetImplementation( QViewerCore *core, QWidget *parent, QWidget *share, PlaneOrientation orienation )
-	: QWidget( parent ),
-	  WidgetInterface( core, parent, orienation ),
-	  m_MemoryHandler( core ),
-	  m_Painter( new QPainter() ),
-	  m_Layout( new QVBoxLayout(parent ) )
-{
-	m_Layout->addWidget( this );
-	m_Layout->setMargin(m_ViewerCore->getOptionMap()->getPropertyAs<uint16_t>("viewerWidgetMargin"));
-	commonInit();
-}
 
 void QImageWidgetImplementation::commonInit()
 {
@@ -71,13 +59,6 @@ void QImageWidgetImplementation::setMouseCursorIcon(QIcon icon)
 	}
 }
 
-WidgetInterface *QImageWidgetImplementation::createSharedWidget( QWidget *parent, PlaneOrientation orientation )
-{
-	return new QImageWidgetImplementation( m_ViewerCore, parent, this, orientation );
-}
-
-
-
 void QImageWidgetImplementation::addImage( const boost::shared_ptr< ImageHolder > image )
 {
 	ImageProperties imgProperties;
@@ -92,7 +73,9 @@ bool QImageWidgetImplementation::removeImage( const boost::shared_ptr< ImageHold
 {
 	image->removeWidget( this );
 	m_ImageProperties.erase( image );
-	m_ImageVector.erase( std::find( m_ImageVector.begin(), m_ImageVector.end(), image ) );
+	ImageVectorType::iterator iter = std::find( m_ImageVector.begin(), m_ImageVector.end(), image );
+	m_ImageVector.erase( iter );
+	return iter != m_ImageVector.end();
 }
 
 boost::shared_ptr< ImageHolder > QImageWidgetImplementation::getWidgetSpecCurrentImage() const
@@ -116,7 +99,7 @@ void QImageWidgetImplementation::setZoom( float zoom )
 
 }
 
-void QImageWidgetImplementation::paintEvent( QPaintEvent *event )
+void QImageWidgetImplementation::paintEvent( QPaintEvent */*event*/ )
 {
 	if( m_ImageVector.size() ) {
 		m_Painter->begin( this );
@@ -243,7 +226,7 @@ void QImageWidgetImplementation::paintImage( boost::shared_ptr< ImageHolder > im
 	imgProps.viewPort[2] += translationX;
 	imgProps.viewPort[3] += translationY;
 
-	m_Painter->setTransform( QOrienationHandler::getTransform( imgProps.viewPort, image, width(), height(), m_PlaneOrientation ) );
+	m_Painter->setTransform( QOrienationHandler::getTransform( imgProps.viewPort, image, m_PlaneOrientation ) );
 	
 	m_Painter->setOpacity( image->opacity );
 	if ( !image->isRGB ) {
@@ -327,7 +310,7 @@ void QImageWidgetImplementation::emitMousePressEvent( QMouseEvent *e )
 	const boost::shared_ptr<ImageHolder> image = getWidgetSpecCurrentImage();
 	const ImageProperties &imgProps = m_ImageProperties.at( image );
 	const uint16_t slice = QOrienationHandler::mapCoordsToOrientation( image->voxelCoords, image, m_PlaneOrientation )[2];
-	const util::ivector4 &coords = QOrienationHandler::convertWindow2VoxelCoords( imgProps.viewPort, m_WidgetProperties, image, e->x(), e->y(), slice, m_PlaneOrientation );
+	const util::ivector4 &coords = QOrienationHandler::convertWindow2VoxelCoords( imgProps.viewPort, image, e->x(), e->y(), slice, m_PlaneOrientation );
 	physicalCoordsChanged( image->getISISImage()->getPhysicalCoordsFromIndex( coords ) );
 }
 
@@ -383,7 +366,7 @@ void QImageWidgetImplementation::paintCrosshair() const
 	QPen pen;
 	pen.setColor( m_CrosshairColor );
 	m_Painter->setOpacity( 1.0 );
-	m_Painter->setTransform( QOrienationHandler::getTransform( imgProps.viewPort, image, width(), height(), m_PlaneOrientation ) );
+	m_Painter->setTransform( QOrienationHandler::getTransform( imgProps.viewPort, image, m_PlaneOrientation ) );
 	m_Painter->scale( 1.0 / imgProps.viewPort[0], 1.0 / imgProps.viewPort[1] );
 	m_Painter->translate( -imgProps.viewPort[2], -imgProps.viewPort[3] );
 	m_Painter->setPen( pen );
@@ -397,7 +380,7 @@ void QImageWidgetImplementation::paintCrosshair() const
 
 }
 
-bool QImageWidgetImplementation::lookAtPhysicalCoords( const isis::util::fvector4 &physicalCoords )
+void QImageWidgetImplementation::lookAtPhysicalCoords( const isis::util::fvector4 &physicalCoords )
 {
 	BOOST_FOREACH( DataContainer::reference image, m_ViewerCore->getDataContainer() ) {
 		image.second->physicalCoords = physicalCoords;
