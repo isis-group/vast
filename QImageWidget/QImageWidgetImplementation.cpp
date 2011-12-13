@@ -18,7 +18,7 @@ QImageWidgetImplementation::QImageWidgetImplementation( QViewerCore *core, QWidg
 	  m_ShowLabels( false )
 {
 	m_Layout->addWidget( this );
-	m_Layout->setMargin(m_ViewerCore->getOptionMap()->getPropertyAs<uint16_t>("viewerWidgetMargin"));
+	m_Layout->setMargin(0);
 	commonInit();
 }
 

@@ -5,6 +5,9 @@
 #include <QWidget>
 #include <qwt_plot.h>
 #include <qwt_plot_curve.h>
+#include <qwt_plot_grid.h>
+#include <qwt_plot_marker.h>
+#include <qwt_symbol.h>
 #include "ui_plotting.h"
 #include <iostream>
 #include "qviewercore.hpp"
@@ -24,6 +27,10 @@ public:
 	PlotterDialog( QWidget *parent, QViewerCore *core ) : QDialog( parent ), m_ViewerCore( core ) {
 		ui.setupUi( this );
 		plot = new QwtPlot( tr( "Timecourse" ), ui.widget );
+		grid = new QwtPlotGrid();
+		plotMarker = new QwtPlotMarker();
+		plotMarker->setSymbol( QwtSymbol(QwtSymbol::Cross, QBrush(), QPen(), QSize(10,10)));
+		plotMarker->attach(plot);
 		ui.verticalLayout->addWidget( plot );
 		plot->setAxisTitle( 2, tr( "Timestep" ) );
 		plot->setAxisTitle( 0, tr( "Intensity" ) );
@@ -57,7 +64,6 @@ public Q_SLOTS:
 					title << "Timecourse for " << m_ViewerCore->getCurrentImage()->getFileNames().front();
 					coordsAsString << voxCoords[0] << " : " << voxCoords[1] << " : " << voxCoords[2];
 					plot->setTitle( coordsAsString.str().c_str() );
-					plot->setFont(QFont("", 5) );
 					setWindowTitle( title.str().c_str() );
 					uint16_t repTime = 1;
 
@@ -113,7 +119,7 @@ public Q_SLOTS:
 
 					curve->setData( timeSteps, intensityValues );
 					
-					if( image.second.get() == m_ViewerCore->getCurrentImage().get() ) {
+					if( image.second.get() == m_ViewerCore->getCurrentImage().get() || m_ViewerCore->getMode() == ViewerCoreBase::zmap ) {
 						curve->attach( plot );
 						curve->setPen( QPen( Qt::red ) );
 					} else {
@@ -121,13 +127,12 @@ public Q_SLOTS:
 							curve->attach( plot );
 						}
 						QPen pen;
-						pen.setBrush(QBrush( Qt::gray, Qt::Dense4Pattern ) );
+						pen.setBrush(QBrush( Qt::gray, Qt::Dense1Pattern ) );
 						curve->setPen( pen );
 					}
 					
 
 				} else {
-// 					curve->detach();
 					plot->setTitle( QString( "Image has only one timestep!" ) );
 				}
 			}
@@ -137,7 +142,8 @@ public Q_SLOTS:
 private:
 	Ui::plottingDialog ui;
 	QwtPlot *plot;
-// 	QwtPlotCurve *curve;
+	QwtPlotGrid *grid;
+	QwtPlotMarker *plotMarker;
 	QViewerCore *m_ViewerCore;
 	util::fvector4 m_CurrentPhysicalCoords;
 	template<typename TYPE>

@@ -248,17 +248,22 @@ void UICore::rearrangeViewWidgets()
 
 UICore::ViewWidget UICore::createViewWidget( const std::string &widgetType, PlaneOrientation planeOrientation )
 {
-
 	QFrame *frameWidget = new QFrame();
+	QWidget *placeHolder = new QWidget( frameWidget );
 	QDockWidget *dockWidget = createDockingEnsemble( frameWidget );
 	dockWidget->setMinimumHeight( m_ViewerCore->getOptionMap()->getPropertyAs<uint16_t>( "maxWidgetHeight" ) );
 	dockWidget->setMinimumWidth( m_ViewerCore->getOptionMap()->getPropertyAs<uint16_t>( "maxWidgetWidth" ) );
 	dockWidget->setWidget( frameWidget );
 	frameWidget->setParent( dockWidget );
+	frameWidget->setLayout( new QGridLayout() );
+	frameWidget->layout()->addWidget( placeHolder );
+	frameWidget->layout()->setMargin(m_ViewerCore->getOptionMap()->getPropertyAs<uint16_t>("viewerWidgetMargin") );
+	
 
-	WidgetInterface *widgetImpl = new QImageWidgetImplementation( m_ViewerCore, frameWidget, planeOrientation );
+	WidgetInterface *widgetImpl = new QImageWidgetImplementation( m_ViewerCore, placeHolder, planeOrientation );
 
 	ViewWidget viewWidget;
+	viewWidget.placeHolder = placeHolder;
 	viewWidget.dockWidget = dockWidget;
 	viewWidget.frame = frameWidget;
 	viewWidget.widgetImplementation = widgetImpl;

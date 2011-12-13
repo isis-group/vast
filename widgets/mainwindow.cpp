@@ -75,6 +75,7 @@ MainWindow::MainWindow( QViewerCore *core ) :
 	connect( m_Interface.actionSave_all_Images, SIGNAL( triggered()), this, SLOT( saveAllImages()));
 	connect( m_Interface.actionToggle_Zmap_Mode, SIGNAL( triggered(bool)), this, SLOT( toggleZMapMode(bool)));
 	connect( m_Interface.actionKey_Commands, SIGNAL( triggered()), this, SLOT( showKeyCommandDialog()));
+	connect( m_Interface.actionCreate_Screenshot, SIGNAL( triggered()), this, SLOT( createScreenshot()));
 
 	//toolbar stuff
 	m_Toolbar->setOrientation( Qt::Horizontal );
@@ -105,6 +106,26 @@ MainWindow::MainWindow( QViewerCore *core ) :
 	scalingWidget->setVisible( false );
 	loadSettings();
 }
+
+
+void MainWindow::createScreenshot()
+{
+	UICore::ViewWidgetEnsembleListType ensembleList = m_ViewerCore->getUICore()->getEnsembleList();
+	QPixmap screenshot( 3 * 500, 800 ) ;
+	QPainter painter( &screenshot );
+	unsigned short eIndex = 0;
+	BOOST_FOREACH( UICore::ViewWidgetEnsembleListType::reference ensemble, ensembleList )
+	{
+		for ( unsigned short i = 0; i < 3; i++ ) {
+			QWidget *placeHolder = ensemble[i].placeHolder;
+			painter.drawPixmap( i * placeHolder->width(), eIndex * placeHolder->height(), QPixmap::grabWidget( placeHolder ) );
+		}
+		
+	}
+	painter.end();
+	screenshot.save("/tmp/test.png");
+}
+
 
 void MainWindow::loadSettings()
 {

@@ -33,6 +33,7 @@ public:
 	struct ViewWidget {
 		QDockWidget *dockWidget;
 		QFrame *frame;
+		QWidget *placeHolder;
 		WidgetInterface *widgetImplementation;
 		PlaneOrientation planeOrientation;
 		std::string widgetType;

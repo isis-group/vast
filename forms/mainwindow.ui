@@ -114,6 +114,8 @@
     <addaction name="actionSave_Image"/>
     <addaction name="actionSave_all_Images"/>
     <addaction name="separator"/>
+    <addaction name="actionCreate_Screenshot"/>
+    <addaction name="separator"/>
     <addaction name="action_Exit"/>
    </widget>
    <widget class="QMenu" name="menu_Preferences">
@@ -372,6 +374,11 @@
    </property>
    <property name="shortcut">
     <string>S, I, A</string>
+   </property>
+  </action>
+  <action name="actionCreate_Screenshot">
+   <property name="text">
+    <string>Create Screenshot</string>
    </property>
   </action>
  </widget>
