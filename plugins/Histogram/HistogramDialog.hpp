@@ -9,10 +9,13 @@
 #include "qwt_plot_zoomer.h"
 #include "qwt_plot_picker.h"
 
-namespace isis {
-namespace viewer {
-namespace plugin {
-	
+namespace isis
+{
+namespace viewer
+{
+namespace plugin
+{
+
 
 class HistogramDialog : public QDialog
 {
@@ -29,13 +32,15 @@ private:
 	QwtPlot *m_Plotter;
 	QwtPlotGrid *m_Grid;
 	QwtPlotZoomer *m_Zoomer;
-	
-	
-	
+
+
+
 };
-	
-	
-}}}
+
+
+}
+}
+}
 
 
 

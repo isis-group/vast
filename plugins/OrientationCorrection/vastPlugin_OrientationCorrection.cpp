@@ -11,17 +11,18 @@ namespace plugin
 class OrientationCorrection : public PluginInterface
 {
 public:
-	OrientationCorrection() : isInitialized(false) {}
+	OrientationCorrection() : isInitialized( false ) {}
 	virtual std::string getName() { return std::string( "OrienationCorrection" ) ; }
 	virtual std::string getDescription() { return std::string( "" ); }
 	virtual std::string getTooltip() { return std::string( "" ); }
 	virtual QKeySequence getShortcut() { return QKeySequence( "O, C" ) ;}
 	virtual bool isGUI() { return true; }
 	virtual bool call() {
-		if(!isInitialized ) {
+		if( !isInitialized ) {
 			m_OrienatationCorrectionDialog = new OrientatioCorrectionDialog( parentWidget, viewerCore );
 			isInitialized = true;
-		} 
+		}
+
 		m_OrienatationCorrectionDialog->show();
 		return true;
 	};

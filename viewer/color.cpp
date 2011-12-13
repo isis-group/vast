@@ -88,7 +88,7 @@ bool Color::addColormap( const std::string &path, const boost::regex &separator 
 
 QIcon Color::getIcon( const std::string &colormapName, size_t w, size_t h, icon_type type, bool flipped ) const
 {
-	const ColormapType lut = getColormapMap().at(colormapName);
+	const ColormapType lut = getColormapMap().at( colormapName );
 
 	unsigned short start = 0;
 	unsigned short end = 0;
@@ -107,23 +107,26 @@ QIcon Color::getIcon( const std::string &colormapName, size_t w, size_t h, icon_
 		end = 256;
 		break;
 	}
-	QImage tmpImage( end-start, 1,QImage::Format_RGB888 ); 
-	uint8_t *line = tmpImage.scanLine(0);	
+
+	QImage tmpImage( end - start, 1, QImage::Format_RGB888 );
+	uint8_t *line = tmpImage.scanLine( 0 );
 
 	unsigned short index = 0;
+
 	if( !flipped ) {
 		for ( unsigned short i = start; i < end; i++ ) {
-			line[index++] = qRed(lut[i]);
-			line[index++] = qGreen(lut[i]);
-			line[index++] = qBlue(lut[i]);
+			line[index++] = qRed( lut[i] );
+			line[index++] = qGreen( lut[i] );
+			line[index++] = qBlue( lut[i] );
 		}
 	} else {
 		for ( short i = end; i > start - 1; i-- ) {
-			line[index++] = qRed(lut[i]);
-			line[index++] = qGreen(lut[i]);
-			line[index++] = qBlue(lut[i]);
+			line[index++] = qRed( lut[i] );
+			line[index++] = qGreen( lut[i] );
+			line[index++] = qBlue( lut[i] );
 		}
 	}
+
 	QPixmap pixmap( QPixmap::fromImage( tmpImage ) );
 	return QIcon( pixmap.scaled( w, h ) );
 }
@@ -138,6 +141,7 @@ bool Color::hasColormap( const std::string &name ) const
 color::Color::ColormapType Color::getFallbackColormap() const
 {
 	ColormapType retColormap;
+
 	for ( unsigned short i = 0; i < 256; i++ ) {
 		retColormap.push_back( QColor( i, i, i, 255 ).rgba() );
 	}
@@ -146,12 +150,12 @@ color::Color::ColormapType Color::getFallbackColormap() const
 }
 
 
-void color::Color::adaptColorMapToImage( ImageHolder* image, bool split )
+void color::Color::adaptColorMapToImage( ImageHolder *image, bool split )
 {
 	LOG_IF( image->colorMap.size() != 256, Runtime, error ) << "The colormap is of size " << image->colorMap.size() << " but has to be of size 256!";
 	color::Color::ColormapType retMap ;
-	retMap.resize(256);
-	color::Color::ColormapType tmpMap = util::Singletons::get<color::Color,10>().getColormapMap().at( image->lut );
+	retMap.resize( 256 );
+	color::Color::ColormapType tmpMap = util::Singletons::get<color::Color, 10>().getColormapMap().at( image->lut );
 	const double extent = image->extent;
 	const double min = image->minMax.first->as<double>();
 	const double max = image->minMax.second->as<double>();
@@ -162,15 +166,18 @@ void color::Color::adaptColorMapToImage( ImageHolder* image, bool split )
 	const double norm = 256.0 / extent;
 	const unsigned short mid = norm * fabs( min );
 	unsigned short scaledVal;
+
 	for ( unsigned short i = 0; i < 256; i++ ) {
 		scaledVal = i * scaling + offset * norm > 255 ? 255 : i * scaling + offset * norm;
 		retMap[i] = tmpMap[scaledVal];
 	}
+
 	color::Color::ColormapType negVec( mid );
 	color::Color::ColormapType posVec( 256 - mid );
+
 	//only stuff necessary for colormaps
 	if( image->imageType == ImageHolder::z_map ) {
-		
+
 		if( split ) {
 			assert( negVec.size() + posVec.size() == 256 );
 
@@ -178,6 +185,7 @@ void color::Color::adaptColorMapToImage( ImageHolder* image, bool split )
 			if( min < 0 ) {
 				const double scaleMin = 1 - fabs( lowerThreshold / min );
 				const double normMin = 128.0 / mid;
+
 				for ( unsigned short i = 0; i < mid; i++ ) {
 					negVec[i * scaleMin] = retMap[i * normMin];
 				}
@@ -187,13 +195,16 @@ void color::Color::adaptColorMapToImage( ImageHolder* image, bool split )
 				const double normMax = 128.0 / ( 256 - mid );
 				const double scaleMax = fabs( upperThreshold / max );
 				const double offset = ( 256 - mid ) * scaleMax;
+
 				for( unsigned short i = 0; i < 256 - mid; i++ ) {
-					posVec[(i * ( 1 - scaleMax ) + offset)] = retMap[128 + i * normMax];
+					posVec[( i * ( 1 - scaleMax ) + offset )] = retMap[128 + i * normMax];
 				}
 			}
+
 			retMap = negVec << posVec;
 		}
 	}
+
 	//kill the zero value
 	retMap[mid] = QColor( 0, 0, 0, 0 ).rgba();
 	image->colorMap = retMap;

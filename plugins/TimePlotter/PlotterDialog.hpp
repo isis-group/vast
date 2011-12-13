@@ -29,29 +29,31 @@ public:
 		plot = new QwtPlot( tr( "Timecourse" ), ui.widget );
 		grid = new QwtPlotGrid();
 		plotMarker = new QwtPlotMarker();
-		plotMarker->setSymbol( QwtSymbol(QwtSymbol::Cross, QBrush(), QPen(), QSize(10,10)));
-		plotMarker->attach(plot);
+		plotMarker->setSymbol( QwtSymbol( QwtSymbol::Cross, QBrush(), QPen(), QSize( 10, 10 ) ) );
+		plotMarker->attach( plot );
 		ui.verticalLayout->addWidget( plot );
 		plot->setAxisTitle( 2, tr( "Timestep" ) );
 		plot->setAxisTitle( 0, tr( "Intensity" ) );
 		plot->setBackgroundRole( QPalette::Light );
-		plot->setFont(QFont("",2 ) );
+		plot->setFont( QFont( "", 2 ) );
 		connect( m_ViewerCore, SIGNAL( emitPhysicalCoordsChanged( util::fvector4 ) ), this, ( SLOT( refresh( util::fvector4 ) ) ) );
 		connect( m_ViewerCore, SIGNAL( emitUpdateScene() ), this, SLOT( updateScene() ) );
 
 		if( m_ViewerCore->hasImage() ) {
 			refresh( m_ViewerCore->getCurrentImage()->physicalCoords );
 		}
-		setMinimumHeight(200);
-		setMaximumHeight(500);
+
+		setMinimumHeight( 200 );
+		setMaximumHeight( 500 );
 
 	};
 public Q_SLOTS:
 	void updateScene() { refresh ( m_CurrentPhysicalCoords ); }
-	
+
 	virtual void refresh( util::fvector4 physicalCoords ) {
 		m_CurrentPhysicalCoords = physicalCoords;
 		plot->clear();
+
 		if( !ui.checkLock->isChecked() ) {
 			BOOST_FOREACH( DataContainer::const_reference image, m_ViewerCore->getDataContainer() ) {
 				if( image.second->getImageSize()[3] > 1 ) {
@@ -77,6 +79,7 @@ public Q_SLOTS:
 					QVector<double> timeSteps;
 					QVector<double> intensityValues;
 					using namespace isis::data;
+
 					for ( size_t t = 0; t < image.second->getImageSize()[3]; t++ ) {
 						timeSteps.push_back( t * repTime );
 
@@ -118,7 +121,7 @@ public Q_SLOTS:
 					}
 
 					curve->setData( timeSteps, intensityValues );
-					
+
 					if( image.second.get() == m_ViewerCore->getCurrentImage().get() || m_ViewerCore->getMode() == ViewerCoreBase::zmap ) {
 						curve->attach( plot );
 						curve->setPen( QPen( Qt::red ) );
@@ -126,11 +129,12 @@ public Q_SLOTS:
 						if( image.second->isVisible ) {
 							curve->attach( plot );
 						}
+
 						QPen pen;
-						pen.setBrush(QBrush( Qt::gray, Qt::Dense1Pattern ) );
+						pen.setBrush( QBrush( Qt::gray, Qt::Dense1Pattern ) );
 						curve->setPen( pen );
 					}
-					
+
 
 				} else {
 					plot->setTitle( QString( "Image has only one timestep!" ) );

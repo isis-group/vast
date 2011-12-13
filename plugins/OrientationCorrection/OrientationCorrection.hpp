@@ -21,7 +21,7 @@ public Q_SLOTS:
 	virtual void applyPressed();
 	virtual void flipPressed();
 	virtual void rotatePressed();
-	virtual void alignOnCenter(bool);
+	virtual void alignOnCenter( bool );
 private:
 	QViewerCore *m_ViewerCore;
 	Ui::OrientationCorrection ui;

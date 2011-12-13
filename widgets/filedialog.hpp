@@ -40,7 +40,7 @@ public Q_SLOTS:
 	void removeFromFavList();
 	void onFavListClicked();
 
-	static bool checkIfPathIsValid( QString path, unsigned short &validFiles,const std::string &suffix, FileMode mode = OPEN_FILE, bool acceptNoSuffix = false );
+	static bool checkIfPathIsValid( QString path, unsigned short &validFiles, const std::string &suffix, FileMode mode = OPEN_FILE, bool acceptNoSuffix = false );
 
 private:
 	FileMode m_Mode;

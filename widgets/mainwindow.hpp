@@ -39,7 +39,7 @@ public:
 	Ui::vastMainWindow &getInterface() { return m_Interface; }
 
 	void reloadPluginsToGUI( );
-	
+
 	widget::PreferencesDialog *preferencesDialog;
 	widget::LoggingDialog *loggingDialog;
 	widget::FileDialog *fileDialog;
@@ -64,19 +64,19 @@ public Q_SLOTS:
 	void refreshUI();
 	void resetScaling();
 	void autoScaling();
-	void toggleZMapMode(bool);
+	void toggleZMapMode( bool );
 	void showKeyCommandDialog();
 	void loadSettings();
 	void saveSettings();
 	void createScreenshot();
-	
+
 
 private:
 	Ui::vastMainWindow m_Interface;
 	QViewerCore *m_ViewerCore;
 
 	QToolBar *m_Toolbar;
-	
+
 	QSpinBox *m_RadiusSpin;
 	QPushButton *m_LogButton;
 

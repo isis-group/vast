@@ -41,8 +41,8 @@ public:
 protected:
 	WidgetInterface( QViewerCore *core, QWidget *parent, PlaneOrientation orientation )
 		: m_ViewerCore( core ),
-		m_PlaneOrientation( orientation ),
-		m_Parent( parent ) {}
+		  m_PlaneOrientation( orientation ),
+		  m_Parent( parent ) {}
 
 	QViewerCore *m_ViewerCore;
 	PlaneOrientation m_PlaneOrientation;

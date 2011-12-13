@@ -73,7 +73,7 @@ public:
 	ViewWidgetEnsembleListType &getEnsembleList() { return m_EnsembleList; }
 
 	void rearrangeViewWidgets();
-	
+
 	QPixmap getScreenshot();
 
 public Q_SLOTS:
@@ -105,7 +105,7 @@ private:
 	unsigned short m_RowCount;
 
 	WidgetMap m_WidgetMap;
-	
+
 
 };
 

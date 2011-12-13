@@ -7,7 +7,7 @@ isis::util::ivector4 isis::viewer::operation::NativeImageOps::getGlobalMin( cons
 	switch ( image->getISISImage()->getMajorTypeID() ) {
 	case data::ValuePtr<bool>::staticID:
 		return internGetMax<bool>( image, startPos, radius );
-		break;		
+		break;
 	case data::ValuePtr<int8_t>::staticID:
 		return internGetMin<int8_t>( image, startPos, radius );
 		break;
@@ -50,7 +50,7 @@ isis::util::ivector4 isis::viewer::operation::NativeImageOps::getGlobalMax( cons
 	switch ( image->getISISImage()->getMajorTypeID() ) {
 	case data::ValuePtr<bool>::staticID:
 		return internGetMax<bool>( image, startPos, radius );
-		break;		
+		break;
 	case data::ValuePtr<int8_t>::staticID:
 		return internGetMax<int8_t>( image, startPos, radius );
 		break;

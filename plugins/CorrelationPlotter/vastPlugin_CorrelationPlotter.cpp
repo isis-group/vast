@@ -8,7 +8,7 @@ namespace viewer
 {
 namespace plugin
 {
-	
+
 class CorrelationPlotter : public PluginInterface
 {
 public:
@@ -19,34 +19,38 @@ public:
 	virtual QIcon *getToolbarIcon() { return new QIcon( ":/common/Correlation.png" ); }
 	virtual bool isGUI() { return true; }
 	virtual bool call() {
-		if( !m_CorrelationPlotterSet ) {	
+		if( !m_CorrelationPlotterSet ) {
 			m_CorrelationPlotter = new CorrelationPlotterDialog( parentWidget, viewerCore ) ;
 			viewerCore->getUICore()->getMainWindow()->getInterface().topGridLayout->addWidget( m_CorrelationPlotter );
 			m_CorrelationPlotterSet = true;
 		}
+
 		if( m_Visible ) {
 			m_CorrelationPlotter->close();
 		} else {
 			m_CorrelationPlotter->show();
 		}
+
 		m_Visible = !m_Visible;
 		return true;
 	};
-	CorrelationPlotter() : m_Visible(false), m_CorrelationPlotterSet(false) {}
+	CorrelationPlotter() : m_Visible( false ), m_CorrelationPlotterSet( false ) {}
 
 	virtual ~CorrelationPlotter() {};
 private:
 	bool m_Visible;
 	bool m_CorrelationPlotterSet;
 	CorrelationPlotterDialog *m_CorrelationPlotter;
-	
-	
+
+
 };
-	
-	
-	
-	
-}}}
+
+
+
+
+}
+}
+}
 
 
 isis::viewer::plugin::PluginInterface *loadPlugin()

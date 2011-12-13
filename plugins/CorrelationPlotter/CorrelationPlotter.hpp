@@ -6,9 +6,12 @@
 #include "qviewercore.hpp"
 #include <cmath>
 
-namespace isis {
-namespace viewer {
-namespace plugin {
+namespace isis
+{
+namespace viewer
+{
+namespace plugin
+{
 
 class CorrelationPlotterDialog : public QDialog
 {
@@ -17,15 +20,15 @@ class CorrelationPlotterDialog : public QDialog
 	typedef uint16_t InternalFunctionalImageType;
 public:
 	CorrelationPlotterDialog( QWidget *parent, QViewerCore *core );
-	
+
 public Q_SLOTS:
-	virtual void showEvent( QShowEvent* );
-	virtual void closeEvent( QCloseEvent* );
+	virtual void showEvent( QShowEvent * );
+	virtual void closeEvent( QCloseEvent * );
 	void physicalCoordsChanged( util::fvector4 );
 	bool createCorrelationMap();
-	void calculateCorrelation(bool all = false);
+	void calculateCorrelation( bool all = false );
 	void lockClicked();
-	
+
 private:
 	ViewerCoreBase::Mode m_OrigMode;
 	Ui::correlationPlotterDialog m_Interface;
@@ -34,13 +37,15 @@ private:
 	boost::shared_ptr<ImageHolder> m_CurrentFunctionalImage;
 	boost::scoped_ptr< isis::data::Chunk > m_InternalChunk;
 	util::ivector4 m_CurrentVoxelPos;
-	
-	
-	void _internCalculateCorrelation( const util::ivector4 &vec, const double &s_x, const double &_x, const InternalFunctionalImageType *vx, const size_t &n, const size_t &vol  );	
+
+
+	void _internCalculateCorrelation( const util::ivector4 &vec, const double &s_x, const double &_x, const InternalFunctionalImageType *vx, const size_t &n, const size_t &vol  );
 
 };
-	
 
-}}}
+
+}
+}
+}
 
 #endif

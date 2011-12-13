@@ -37,7 +37,7 @@ public:
 	bool hasColormap( const std::string &name ) const;
 	ColormapType getFallbackColormap() const;
 
-	void adaptColorMapToImage( ImageHolder* image, bool split = true );
+	void adaptColorMapToImage( ImageHolder *image, bool split = true );
 
 
 private:

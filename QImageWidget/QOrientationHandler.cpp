@@ -14,7 +14,7 @@ util::fvector4 QOrienationHandler::mapCoordsToOrientation( const util::fvector4 
 	matrix<float> finMatrix = identity_matrix<float>( 4, 4 );
 	vector<float> vec = vector<float>( 4 );
 	vector<float> finVec = vector<float>( 4 );
-	
+
 	for( size_t i = 0; i < 4 ; i++ ) {
 		vec( i ) = coords[i];
 	}
@@ -64,7 +64,7 @@ util::fvector4 QOrienationHandler::mapCoordsToOrientation( const util::fvector4 
 	}
 
 	if( absolute ) {
-		return util::fvector4( fabs( finVec( 0 ) ), fabs( finVec( 1 ) ), fabs( finVec( 2 ) ) ,fabs( finVec( 3 ) ) );
+		return util::fvector4( fabs( finVec( 0 ) ), fabs( finVec( 1 ) ), fabs( finVec( 2 ) ) , fabs( finVec( 3 ) ) );
 	} else {
 		return util::fvector4( finVec( 0 ), finVec( 1 ), finVec( 2 ), finVec( 3 ) );
 	}
@@ -110,7 +110,7 @@ QTransform QOrienationHandler::getTransform( const ViewPortType &viewPort, const
 	retTransform.translate( flipVec[0] * viewPort[2], flipVec[1] * viewPort[3] );
 	retTransform.scale( viewPort[0], viewPort[1] );
 	retTransform.translate(  flipVec[0] < 0 ? -mappedSize[0] : 0, flipVec[1] < 0 ? -mappedSize[1] : 0 );
-	
+
 	return retTransform;
 
 }
@@ -121,13 +121,15 @@ util::ivector4 QOrienationHandler::convertWindow2VoxelCoords( const ViewPortType
 	const size_t voxCoordX = ( x - viewPort[2] ) / viewPort[0];
 	const size_t voxCoordY = ( y - viewPort[3] ) / viewPort[1];
 	util::ivector4 coords =  util::ivector4( voxCoordX, voxCoordY, slice );
-	
-#pragma omp parallel for
+
+	#pragma omp parallel for
+
 	for ( size_t i = 0; i < 2; i++ ) {
 		coords[i] = mappedSize[i] < 0 ? abs( mappedSize[i] ) - coords[i] - 1 : coords[i];
 		coords[i] = coords[i] < 0 ? 0 : coords[i];
 		coords[i] = coords[i] >= abs( mappedSize[i] ) ? abs( mappedSize[i] ) - 1 : coords[i];
 	}
+
 	coords[3] = image->voxelCoords[3];
 	return QOrienationHandler::mapCoordsToOrientation( coords, image, orientation, true );
 }

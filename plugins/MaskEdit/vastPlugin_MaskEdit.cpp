@@ -1,11 +1,14 @@
 #include "plugininterface.h"
 #include "MaskEdit.hpp"
 
-namespace isis {
-namespace viewer {
-namespace plugin {
+namespace isis
+{
+namespace viewer
+{
+namespace plugin
+{
 
-	
+
 class MaskEdit : public PluginInterface
 {
 public:
@@ -15,33 +18,37 @@ public:
 	virtual QKeySequence getShortcut() { return QKeySequence( "M, E" ) ;}
 	virtual bool isGUI() { return true; }
 	virtual QIcon *getToolbarIcon() { return new QIcon( ":/common/maskEdit.png" ); }
-	MaskEdit() : m_Visible(false), m_MaskEditSet(false) {}
-	
+	MaskEdit() : m_Visible( false ), m_MaskEditSet( false ) {}
+
 	virtual bool call() {
-		if( !m_MaskEditSet ) {	
+		if( !m_MaskEditSet ) {
 			m_MaskEdit = new MaskEditDialog( parentWidget, viewerCore ) ;
 			viewerCore->getUICore()->getMainWindow()->getInterface().topGridLayout->addWidget( m_MaskEdit );
 			m_MaskEditSet = true;
 		}
+
 		if( m_Visible ) {
 			m_MaskEdit->close();
 		} else {
 			m_MaskEdit->show();
 		}
+
 		m_Visible = !m_Visible;
 		return true;
 	};
-	
+
 	virtual ~MaskEdit() {};
-private: 
+private:
 	MaskEditDialog *m_MaskEdit;
 	bool m_Visible;
 	bool m_MaskEditSet;
-	
+
 };
-	
-	
-}}}
+
+
+}
+}
+}
 
 
 isis::viewer::plugin::PluginInterface *loadPlugin()

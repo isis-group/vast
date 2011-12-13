@@ -14,7 +14,7 @@ ViewerCoreBase::ViewerCoreBase( )
 	  m_CurrentAnatomicalReference( boost::shared_ptr<ImageHolder>() ),
 	  m_Mode( standard )
 {
-	util::Singletons::get<color::Color,10>().initStandardColormaps();
+	util::Singletons::get<color::Color, 10>().initStandardColormaps();
 	setCommonViewerOptions();
 }
 
@@ -29,37 +29,40 @@ ImageHolder::ImageListType ViewerCoreBase::addImageList( const std::list< data::
 	} else {
 		LOG( Runtime, info ) << "The image list passed to the core is empty!";
 	}
+
 	return retList;
 }
 
 boost::shared_ptr<ImageHolder> ViewerCoreBase::addImage( const isis::data::Image &image, const isis::viewer::ImageHolder::ImageType &imageType )
 {
 	boost::shared_ptr<ImageHolder> retImage = m_DataContainer.addImage( image, imageType );
+
 	if( imageType == ImageHolder::anatomical_image && image.getSizeAsVector()[3] == 1 ) {
 		m_CurrentAnatomicalReference = retImage;
 	}
-	
+
 	m_ImageList.push_back( retImage );
 
 	if( getMode() == ViewerCoreBase::zmap && retImage->getImageSize()[3] > 1 ) {
 		retImage->isVisible = false;
 	} else if ( getMode() == ViewerCoreBase::zmap && retImage->imageType == ImageHolder::z_map ) {
-		setCurrentImage(retImage);
+		setCurrentImage( retImage );
 	} else if ( getMode() == ViewerCoreBase::standard ) {
 		setCurrentImage( retImage );
 	}
+
 	return retImage;
 }
 
 boost::shared_ptr< ImageHolder > ViewerCoreBase::getCurrentImage()
 {
 	if( m_CurrentImage.get() ) {
-		return m_CurrentImage; 
+		return m_CurrentImage;
 	} else {
 		LOG( Runtime, error ) << "Trying to fetch the current image. But there is no current image at all. Should be checked before.";
 		return boost::shared_ptr< ImageHolder >();
 	}
-	
+
 }
 
 void ViewerCoreBase::setImageList( std::list< data::Image > imgList, const ImageHolder::ImageType &imageType )
@@ -67,7 +70,7 @@ void ViewerCoreBase::setImageList( std::list< data::Image > imgList, const Image
 	if( !imgList.empty() ) {
 		m_DataContainer.clear();
 	}
-	
+
 	ViewerCoreBase::addImageList( imgList, imageType );
 }
 
@@ -89,19 +92,19 @@ void ViewerCoreBase::setCommonViewerOptions()
 	m_OptionsMap->setPropertyAs<bool>( "showFavoriteFileList", false );
 	m_OptionsMap->setPropertyAs<uint16_t>( "maxWidgetHeight", 200 );
 	m_OptionsMap->setPropertyAs<uint16_t>( "maxWidgetWidth", 200 );
-	m_OptionsMap->setPropertyAs<uint16_t>( "maxOptionWidgetHeight", 90);
-	m_OptionsMap->setPropertyAs<uint16_t>( "minOptionWidgetHeight", 90);
-	m_OptionsMap->setPropertyAs<bool>("showStartWidget", true );
-	m_OptionsMap->setPropertyAs<bool>("showLoadingWidget", true );
-	m_OptionsMap->setPropertyAs<uint16_t>("startWidgetHeight", 500);
-	m_OptionsMap->setPropertyAs<uint16_t>("startWidgetWidth", 400);
-	m_OptionsMap->setPropertyAs<uint16_t>("viewerWidgetMargin", 5);
-	m_OptionsMap->setPropertyAs<uint8_t>("numberOfThreads", 1);
-	m_OptionsMap->setPropertyAs<bool>("ompAvailable", false );
-	m_OptionsMap->setPropertyAs<uint8_t>("maxNumberOfThreads", 1 );
-	m_OptionsMap->setPropertyAs<bool>("enableMultithreading", false );
-	m_OptionsMap->setPropertyAs<bool>("useAllAvailableThreads", false);
-	m_OptionsMap->setPropertyAs<uint8_t>("screenshotQuality", 70);
+	m_OptionsMap->setPropertyAs<uint16_t>( "maxOptionWidgetHeight", 90 );
+	m_OptionsMap->setPropertyAs<uint16_t>( "minOptionWidgetHeight", 90 );
+	m_OptionsMap->setPropertyAs<bool>( "showStartWidget", true );
+	m_OptionsMap->setPropertyAs<bool>( "showLoadingWidget", true );
+	m_OptionsMap->setPropertyAs<uint16_t>( "startWidgetHeight", 500 );
+	m_OptionsMap->setPropertyAs<uint16_t>( "startWidgetWidth", 400 );
+	m_OptionsMap->setPropertyAs<uint16_t>( "viewerWidgetMargin", 5 );
+	m_OptionsMap->setPropertyAs<uint8_t>( "numberOfThreads", 1 );
+	m_OptionsMap->setPropertyAs<bool>( "ompAvailable", false );
+	m_OptionsMap->setPropertyAs<uint8_t>( "maxNumberOfThreads", 1 );
+	m_OptionsMap->setPropertyAs<bool>( "enableMultithreading", false );
+	m_OptionsMap->setPropertyAs<bool>( "useAllAvailableThreads", false );
+	m_OptionsMap->setPropertyAs<uint8_t>( "screenshotQuality", 70 );
 	//logging
 	m_OptionsMap->setPropertyAs<uint16_t>( "logDelayTime", 6000 );
 	m_OptionsMap->setPropertyAs<bool>( "showErrorMessages", true );

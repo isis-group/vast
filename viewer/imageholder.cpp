@@ -6,8 +6,8 @@ namespace isis
 namespace viewer
 {
 
-ImageHolder::ImageHolder(){}
-	
+ImageHolder::ImageHolder() {}
+
 boost::numeric::ublas::matrix< double > ImageHolder::getNormalizedImageOrientation( bool transposed ) const
 {
 	boost::numeric::ublas::matrix<double> retMatrix = boost::numeric::ublas::zero_matrix<double>( 4, 4 );
@@ -104,7 +104,7 @@ bool ImageHolder::setImage( const data::Image &image, const ImageType &_imageTyp
 		return false;
 	}
 
-	m_Image.reset( new data::Image( image ) );	
+	m_Image.reset( new data::Image( image ) );
 
 	//if no filename was specified we have to search for the filename by ourselfes
 	if( filename.empty() ) {
@@ -122,15 +122,15 @@ bool ImageHolder::setImage( const data::Image &image, const ImageType &_imageTyp
 	}
 
 	// get some image information
-	majorTypeID = image.getMajorTypeID();	
+	majorTypeID = image.getMajorTypeID();
 	minMax = image.getMinMax();
 	m_ImageSize = image.getSizeAsVector();
 	LOG( Debug, verbose_info )  << "Fetched image of size " << m_ImageSize << " and type "
 								<< image.getMajorTypeName() << ".";
 	//copy the image into continuous memory space and assure consistent data type
-	
+
 	if( data::ValuePtr<util::color24>::staticID != majorTypeID && data::ValuePtr<util::color48>::staticID != majorTypeID ) {
-		isRGB = false;	
+		isRGB = false;
 		copyImageToVector<InternalImageType>( image );
 	} else {
 		copyImageToVector<InternalImageColorType>( image );
@@ -141,9 +141,10 @@ bool ImageHolder::setImage( const data::Image &image, const ImageType &_imageTyp
 
 	if( m_ImageVector.size() != m_ImageSize[3] ) {
 		LOG( Runtime, error ) << "The number of timesteps (" << m_ImageSize[3]
-							<< ") does not coincide with the number of volumes ("  << m_ImageVector.size() << ").";
+							  << ") does not coincide with the number of volumes ("  << m_ImageVector.size() << ").";
 		return false;
 	}
+
 	//create the chunk vector
 	BOOST_FOREACH( std::vector< ImagePointerType >::const_reference pointerRef, m_ImageVector ) {
 		m_ChunkVector.push_back( data::Chunk(  pointerRef, m_ImageSize[0], m_ImageSize[1], m_ImageSize[2] ) );
@@ -166,27 +167,32 @@ bool ImageHolder::setImage( const data::Image &image, const ImageType &_imageTyp
 			lowerThreshold = minMax.first->as<double>() ;
 			lowerThreshold = minMax.second->as<double>();
 		}
+
 		lut = std::string( "standard_grey_values" );
 	}
-	voxelSize = image.getPropertyAs<util::fvector4>("voxelSize");
-	if( image.hasProperty("voxelGap") ) {
-		voxelSize += image.getPropertyAs<util::fvector4>("voxelGap");
+
+	voxelSize = image.getPropertyAs<util::fvector4>( "voxelSize" );
+
+	if( image.hasProperty( "voxelGap" ) ) {
+		voxelSize += image.getPropertyAs<util::fvector4>( "voxelGap" );
 	}
 
-	
+
 	voxelCoords = util::ivector4( m_ImageSize[0] / 2, m_ImageSize[1] / 2, m_ImageSize[2] / 2, 0 );
 	physicalCoords = m_Image->getPhysicalCoordsFromIndex( voxelCoords );
 	isVisible = true;
 	opacity = 1.0;
 	scaling = 1.0;
 	offset = 0.0;
-	colorMap = util::Singletons::get<color::Color, 10>().getColormapMap().at(lut);	
+	colorMap = util::Singletons::get<color::Color, 10>().getColormapMap().at( lut );
+
 	if( !isRGB ) {
-		extent = fabs( minMax.second->as<double>() - minMax.first->as<double>() );		
+		extent = fabs( minMax.second->as<double>() - minMax.first->as<double>() );
 		optimalScalingOffset = getOptimalScaling();
 		m_PropMap.setPropertyAs<double>( "scalingMinValue", minMax.first->as<double>() );
-		m_PropMap.setPropertyAs<double>( "scalingMaxValue", minMax.second->as<double>() );		
+		m_PropMap.setPropertyAs<double>( "scalingMaxValue", minMax.second->as<double>() );
 	}
+
 	alignedSize32 = get32BitAlignedSize( m_ImageSize );
 	m_PropMap.setPropertyAs<bool>( "init", true );
 	m_PropMap.setPropertyAs<util::slist>( "changedAttributes", util::slist() );
@@ -206,14 +212,15 @@ void ImageHolder::addChangedAttribute( const std::string &attribute )
 	m_PropMap.setPropertyAs<util::slist>( "changedAttributes", attributes );
 }
 
-bool ImageHolder::removeChangedAttribute(const std::string& attribute)
+bool ImageHolder::removeChangedAttribute( const std::string &attribute )
 {
 	util::slist attributes = m_PropMap.getPropertyAs<util::slist>( "changedAttributes" );
 	util::slist::iterator iter = std::find( attributes.begin(), attributes.end(), attribute );
+
 	if( iter == attributes.end() ) {
 		return false;
 	} else {
-		attributes.erase(iter);
+		attributes.erase( iter );
 		m_PropMap.setPropertyAs<util::slist>( "changedAttributes", attributes );
 		return true;
 	}
@@ -228,18 +235,22 @@ std::pair< double, double > ImageHolder::getOptimalScaling()
 	const InternalImageType maxImage = internMinMax.second->as<InternalImageType>();
 	const InternalImageType extent = maxImage - minImage;
 	double *nHistogram = ( double * ) calloc( extent + 1, sizeof( double ) );
-	histogramVector.resize( getImageSize()[3]);
+	histogramVector.resize( getImageSize()[3] );
+
 	for( unsigned short t = 0; t < getImageSize()[3]; t++ ) {
-		histogramVector[t] =( double * ) calloc( extent + 1, sizeof( double ) ) ;
+		histogramVector[t] = ( double * ) calloc( extent + 1, sizeof( double ) ) ;
 		InternalImageType *dataPtr = static_cast<InternalImageType *>( getImageVector()[t]->getRawAddress().get() );
 		//create the histogram
-#pragma omp parallel for
+		#pragma omp parallel for
+
 		for( size_t i = 0; i < volume; i++ ) {
 			histogramVector[t][dataPtr[i]]++;
-		}		
+		}
 	}
+
 	//normalize histogram
-#pragma omp parallel for		
+	#pragma omp parallel for
+
 	for( InternalImageType i = 0; i < extent; i++ ) {
 		nHistogram[i] = histogramVector.front()[i] / volume;
 	}
@@ -263,7 +274,7 @@ std::pair< double, double > ImageHolder::getOptimalScaling()
 	retPair.first = lowerBorder;
 	retPair.second = ( float )std::numeric_limits<InternalImageType>::max() / float( upperBorder - lowerBorder );
 	delete[] nHistogram;
-	return retPair;	
+	return retPair;
 }
 
 
@@ -278,23 +289,24 @@ void ImageHolder::updateOrientation()
 
 void ImageHolder::checkVoxelCoords( util::ivector4 &vc )
 {
-	for( unsigned short i = 0; i<4;i++) {
-		vc[i] = vc[i] < 0 ? 0 : vc[i];		
-		vc[i] = vc[i] >= static_cast<int>(getImageSize()[i]) ? static_cast<int>(getImageSize()[i]) - 1 : vc[i]; //cast to avoid warning
-		
+	for( unsigned short i = 0; i < 4; i++ ) {
+		vc[i] = vc[i] < 0 ? 0 : vc[i];
+		vc[i] = vc[i] >= static_cast<int>( getImageSize()[i] ) ? static_cast<int>( getImageSize()[i] ) - 1 : vc[i]; //cast to avoid warning
+
 	}
 }
 
 void ImageHolder::updateColorMap()
 {
-	util::Singletons::get<color::Color,10>().adaptColorMapToImage( this );
+	util::Singletons::get<color::Color, 10>().adaptColorMapToImage( this );
 }
 
-void ImageHolder::removeWidget(WidgetInterface* widget)
+void ImageHolder::removeWidget( WidgetInterface *widget )
 {
-	std::list<WidgetInterface*>::iterator iter = std::find( m_WidgetList.begin(), m_WidgetList.end(), widget );
+	std::list<WidgetInterface *>::iterator iter = std::find( m_WidgetList.begin(), m_WidgetList.end(), widget );
+
 	if( iter != m_WidgetList.end() ) {
-		m_WidgetList.erase(iter);
+		m_WidgetList.erase( iter );
 	}
 }
 

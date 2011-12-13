@@ -33,6 +33,7 @@ void ScalingWidget::synchronize()
 	m_Interface.min->setMaximum( std::numeric_limits<double>::max() );
 	m_Interface.max->setMinimum( -std::numeric_limits<double>::max() );
 	m_Interface.max->setMaximum( std::numeric_limits<double>::max() );
+
 	if( m_ViewerCore->getCurrentImage().get() ) {
 		boost::shared_ptr<ImageHolder> image = m_ViewerCore->getCurrentImage();
 
@@ -154,11 +155,10 @@ void ScalingWidget::showMe( bool visible )
 }
 
 
-void ScalingWidget::applyScalingOffset(const double& scaling, const double& offset, bool global)
+void ScalingWidget::applyScalingOffset( const double &scaling, const double &offset, bool global )
 {
 	if( global ) {
-		BOOST_FOREACH( DataContainer::reference image, m_ViewerCore->getDataContainer() ) 
-		{
+		BOOST_FOREACH( DataContainer::reference image, m_ViewerCore->getDataContainer() ) {
 			image.second->scaling = scaling;
 			image.second->offset = offset;
 			image.second->updateColorMap();

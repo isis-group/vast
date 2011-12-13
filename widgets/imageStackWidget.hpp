@@ -11,18 +11,18 @@ namespace viewer
 namespace widget
 {
 
-	
+
 class ImageStack : public QListWidget
 {
 	Q_OBJECT
 public:
 	ImageStack( QWidget *parent, ImageStackWidget *widget );
 public Q_SLOTS:
-	void contextMenuEvent( QContextMenuEvent *);
+	void contextMenuEvent( QContextMenuEvent * );
 	void mousePressEvent( QMouseEvent * );
 private:
 	ImageStackWidget *m_Widget;
-	
+
 };
 
 
@@ -35,7 +35,7 @@ public:
 	Ui::imageStackWidget &getInterface() { return m_Interface; }
 
 	void synchronize();
-	
+
 	friend class ImageStack;
 
 public Q_SLOTS:
