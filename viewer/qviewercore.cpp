@@ -121,6 +121,7 @@ void QViewerCore::settingsChanged()
 	if( hasImage() ) {
 		if( getCurrentImage()->imageType == ImageHolder::z_map ) {
 			getCurrentImage()->lut = getSettings()->value( "lut", "fallback" ).toString().toStdString();
+			getCurrentImage()->updateColorMap();
 		}
 	}
 
