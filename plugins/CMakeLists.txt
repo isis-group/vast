@@ -13,6 +13,7 @@ option(${CMAKE_PROJECT_NAME}_PLUGIN_ORIENTATIONCORRECTION "Enable OrientationCor
 option(${CMAKE_PROJECT_NAME}_PLUGIN_MASKEDIT "Enable MaskEdit plugin" OFF)
 option(${CMAKE_PROJECT_NAME}_PLUGIN_CORRELATIONPLOTTER "Enable CorrelationPlotter plugin" OFF)
 option(${CMAKE_PROJECT_NAME}_PLUGIN_PYTHONINTERPRETER "Enable PythonInterpreter plugin" OFF)
+option(${CMAKE_PROJECT_NAME}_PLUGIN_HISTOGRAM "Enable Histogram plugin" OFF)
 
 ############################################################
 # TimePlotter plugin
@@ -48,3 +49,10 @@ endif(${CMAKE_PROJECT_NAME}_PLUGIN_CORRELATIONPLOTTER)
 if(${CMAKE_PROJECT_NAME}_PLUGIN_PYTHONINTERPRETER)
 	add_subdirectory(PythonInterpreter)
 endif(${CMAKE_PROJECT_NAME}_PLUGIN_PYTHONINTERPRETER)
+
+############################################################
+# Histogram plugin
+############################################################
+if(${CMAKE_PROJECT_NAME}_PLUGIN_HISTOGRAM)
+	add_subdirectory(Histogram)
+endif(${CMAKE_PROJECT_NAME}_PLUGIN_HISTOGRAM)
