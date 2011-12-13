@@ -248,10 +248,11 @@ void QImageWidgetImplementation::paintImage( boost::shared_ptr< ImageHolder > im
 		m_Painter->drawImage( 0, 0, qImage );
 		
 	}
+	//workaround to elimninate white edges
 	m_Painter->resetMatrix();
-	m_Painter->fillRect( imgProps.viewPort[4] + imgProps.viewPort[2], 0, width(), height() , Qt::black );
-	m_Painter->fillRect( 0, imgProps.viewPort[5] + imgProps.viewPort[3], width(), height(), Qt::black );
-	m_Painter->fillRect( 0, 0, imgProps.viewPort[2], height(), Qt::black );
+	m_Painter->fillRect( imgProps.viewPort[4] + imgProps.viewPort[2] - (m_InterpolationType ? 2 : 0) , 0, width(), height(), Qt::black );
+	m_Painter->fillRect( 0, imgProps.viewPort[5] + imgProps.viewPort[3] - ( m_InterpolationType ? 2 : 0), width(), height(), Qt::black );
+	m_Painter->fillRect( 0, -1, imgProps.viewPort[2], height() + 1, Qt::black );
 }
 
 

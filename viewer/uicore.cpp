@@ -379,10 +379,13 @@ QPixmap UICore::getScreenshot()
 		font.setPointSize(15);
 		painter.setFont( font );
 		painter.setPen( QPen( Qt::white ) );
+		const int offset = -7;
 		if( m_ViewerCore->getCurrentImage()->minMax.first->as<double>() < 0 ) {
+			const double lT = roundNumber<double>( m_ViewerCore->getCurrentImage()->lowerThreshold, 4);
+			const double min = roundNumber<double>( m_ViewerCore->getCurrentImage()->minMax.first->as<double>(), 4);
 			painter.drawPixmap( 100, widgetHeight * eIndex +50, util::Singletons::get<color::Color, 10>().getIcon( m_ViewerCore->getCurrentImage()->lut, 150,15, color::Color::lower_half ).pixmap(150,15) );
-			painter.drawText(20, widgetHeight * eIndex + 65, QString::number( roundNumber<double>( m_ViewerCore->getCurrentImage()->lowerThreshold, 4)  ));
-			painter.drawText(280, widgetHeight * eIndex + 65, QString::number( roundNumber<double>( m_ViewerCore->getCurrentImage()->minMax.first->as<double>(), 4)  ));
+			painter.drawText(20 + (lT < 0 ? offset : 0), widgetHeight * eIndex + 65, QString::number( lT  ));
+			painter.drawText(280 + (min < 0 ? offset : 0), widgetHeight * eIndex + 65, QString::number( roundNumber<double>( m_ViewerCore->getCurrentImage()->minMax.first->as<double>(), 4)  ));
 		} 
 		if ( m_ViewerCore->getCurrentImage()->minMax.second->as<double>() > 0  ) {
 			painter.drawPixmap( 100, widgetHeight * eIndex +20, util::Singletons::get<color::Color, 10>().getIcon( m_ViewerCore->getCurrentImage()->lut, 150,15, color::Color::upper_half ).pixmap(150,15) );
