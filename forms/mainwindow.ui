@@ -378,7 +378,10 @@
   </action>
   <action name="actionCreate_Screenshot">
    <property name="text">
-    <string>Create Screenshot</string>
+    <string>Make Screenshot...</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+Print</string>
    </property>
   </action>
  </widget>

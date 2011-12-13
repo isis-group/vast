@@ -280,6 +280,7 @@ void QViewerCore::closeImage( boost::shared_ptr<ImageHolder> image )
 	getDataContainer().erase(  image->getFileNames().front() );
 	getUICore()->refreshUI();
 	updateScene();
+
 }
 
 void QViewerCore::loadSettings()

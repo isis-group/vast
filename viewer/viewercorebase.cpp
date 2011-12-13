@@ -101,6 +101,7 @@ void ViewerCoreBase::setCommonViewerOptions()
 	m_OptionsMap->setPropertyAs<uint8_t>("maxNumberOfThreads", 1 );
 	m_OptionsMap->setPropertyAs<bool>("enableMultithreading", false );
 	m_OptionsMap->setPropertyAs<bool>("useAllAvailableThreads", false);
+	m_OptionsMap->setPropertyAs<uint8_t>("screenshotQuality", 100);
 	//logging
 	m_OptionsMap->setPropertyAs<uint16_t>( "logDelayTime", 6000 );
 	m_OptionsMap->setPropertyAs<bool>( "showErrorMessages", true );

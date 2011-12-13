@@ -291,6 +291,7 @@ void UICore::refreshUI( )
 		} else {
 			widget.second.dockWidget->setVisible( true );
 		}
+		widget.second.widgetImplementation->setCrossHairWidth(1);
 		if( std::find( iVector.begin(), iVector.end(), m_ViewerCore->getCurrentImage() ) != iVector.end() ) {
 			QPalette pal;
 			pal.setColor( QPalette::Background, QColor( 119, 136, 153) );
@@ -315,6 +316,9 @@ void UICore::refreshUI( )
 		}
 	}
 	m_MainWindow->refreshUI();
+	m_VoxelInformationWidget->setVisible( m_ViewerCore->hasImage() );
+	m_ImageStackWidget->setVisible( m_ViewerCore->hasImage() );
+	m_SliderWidget->setVisible( m_ViewerCore->hasImage() );
 	
 }
 
@@ -336,6 +340,60 @@ void UICore::showInformationAreas(bool show )
 	m_VoxelInformationWidget->setVisible( show );
 	m_ImageStackWidget->setVisible( show );
 	m_SliderWidget->setVisible( show );
+}
+
+QPixmap UICore::getScreenshot()
+{
+	if( m_ViewerCore->hasImage() ) {
+		ViewWidgetEnsembleListType ensembleList = getEnsembleList();
+		const uint16_t bottomMargin = 100;
+		//preparation
+		BOOST_FOREACH( ViewWidgetEnsembleListType::reference ensemble, ensembleList )
+		{
+			for( unsigned short i = 0; i < 3; i++ ) {
+				ensemble[i].frame->setFrameStyle(0);
+				ensemble[i].frame->setAutoFillBackground( false );
+				ensemble[i].widgetImplementation->setCrossHairWidth(2);
+			}
+		}
+		const int widgetHeight = ensembleList.front()[0].placeHolder->height();
+		const int widgetWidth = ensembleList.front()[0].placeHolder->width();
+		QPixmap screenshot( 3 * widgetWidth, ensembleList.size() * widgetHeight + bottomMargin) ;
+		QPainter painter( &screenshot );
+		painter.fillRect( screenshot.rect(), Qt::black );
+		unsigned short eIndex = 0;
+		BOOST_FOREACH( ViewWidgetEnsembleListType::reference ensemble, ensembleList )
+		{
+			for ( unsigned short i = 0; i < 3; i++ ) {
+				QWidget *placeHolder = ensemble[i].placeHolder;
+				ensemble[i].widgetImplementation->setCrossHairColor( Qt::white );
+				ensemble[i].widgetImplementation->updateScene();			
+				painter.drawPixmap( i * placeHolder->width(), eIndex * placeHolder->height(), QPixmap::grabWidget( placeHolder ) );
+			}
+			eIndex++;
+			
+		}
+		//paint color table		
+		QFont font;
+		font.setBold(true);
+		font.setPointSize(15);
+		painter.setFont( font );
+		painter.setPen( QPen( Qt::white ) );
+		if( m_ViewerCore->getCurrentImage()->minMax.first->as<double>() < 0 ) {
+			painter.drawPixmap( 100, widgetHeight * eIndex +50, util::Singletons::get<color::Color, 10>().getIcon( m_ViewerCore->getCurrentImage()->lut, 150,15, color::Color::lower_half ).pixmap(150,15) );
+			painter.drawText(20, widgetHeight * eIndex + 65, QString::number( roundNumber<double>( m_ViewerCore->getCurrentImage()->lowerThreshold, 4)  ));
+			painter.drawText(280, widgetHeight * eIndex + 65, QString::number( roundNumber<double>( m_ViewerCore->getCurrentImage()->minMax.first->as<double>(), 4)  ));
+		} 
+		if ( m_ViewerCore->getCurrentImage()->minMax.second->as<double>() > 0  ) {
+			painter.drawPixmap( 100, widgetHeight * eIndex +20, util::Singletons::get<color::Color, 10>().getIcon( m_ViewerCore->getCurrentImage()->lut, 150,15, color::Color::upper_half ).pixmap(150,15) );
+			painter.drawText(20, widgetHeight * eIndex + 35, QString::number( roundNumber<double>( m_ViewerCore->getCurrentImage()->upperThreshold, 4)  ));
+			painter.drawText(280, widgetHeight * eIndex + 35, QString::number( roundNumber<double>( m_ViewerCore->getCurrentImage()->minMax.second->as<double>(), 4)  ));			
+		}
+		painter.end();
+		refreshUI();
+		return screenshot.copy(screenshot.rect());
+	}
+	return QPixmap();
 }
 
 

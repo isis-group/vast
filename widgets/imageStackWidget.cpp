@@ -1,6 +1,7 @@
 #include "imageStackWidget.hpp"
 #include <viewercorebase.hpp>
 #include <qviewercore.hpp>
+#include <uicore.hpp>
 
 namespace isis
 {
@@ -32,7 +33,7 @@ void ImageStack::contextMenuEvent(QContextMenuEvent* event )
 
 void ImageStack::mousePressEvent(QMouseEvent *e )
 {
-	if( e->button() == Qt::LeftButton && geometry().contains( e->pos() ) && QApplication::keyboardModifiers() == Qt::ControlModifier) {
+	if( e->button() == Qt::LeftButton && geometry().contains( e->pos() ) && QApplication::keyboardModifiers() == Qt::AltModifier) {
 		QDrag *drag = new QDrag(this);
 		QMimeData *mimeData = new QMimeData;
 		mimeData->setText( itemAt(e->pos())->text() );
@@ -146,6 +147,7 @@ void ImageStackWidget::distributeImages()
 			widget->removeImage( image.second );
 		}
 	}
+	m_ViewerCore->getUICore()->getEnsembleList().clear();
 	m_ViewerCore->getUICore()->refreshUI();
 	BOOST_FOREACH( DataContainer::const_reference image, tmpContainer ) {
 		m_ViewerCore->getDataContainer().insert( image );

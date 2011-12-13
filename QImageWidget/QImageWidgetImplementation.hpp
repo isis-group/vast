@@ -47,6 +47,7 @@ public Q_SLOTS:
 	virtual void setShowLabels( bool show ) { m_ShowLabels = show; m_Border = show ? 18 : 0; }
 	virtual void setMouseCursorIcon( QIcon icon );
 	virtual void setCrossHairColor( QColor color) { m_CrosshairColor = color; }
+	virtual void setCrossHairWidth( int width ) { m_CrosshairWidth = width; }
 
 	virtual std::string getWidgetName() const;
 	virtual void setWidgetName( const std::string &wName );
@@ -98,6 +99,7 @@ private:
 	float translationX;
 	float translationY;
 	float currentZoom;
+	int m_CrosshairWidth;
 	
 	std::pair<int, int> m_StartCoordsPair;
 

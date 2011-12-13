@@ -110,20 +110,16 @@ MainWindow::MainWindow( QViewerCore *core ) :
 
 void MainWindow::createScreenshot()
 {
-	UICore::ViewWidgetEnsembleListType ensembleList = m_ViewerCore->getUICore()->getEnsembleList();
-	QPixmap screenshot( 3 * 500, 800 ) ;
-	QPainter painter( &screenshot );
-	unsigned short eIndex = 0;
-	BOOST_FOREACH( UICore::ViewWidgetEnsembleListType::reference ensemble, ensembleList )
-	{
-		for ( unsigned short i = 0; i < 3; i++ ) {
-			QWidget *placeHolder = ensemble[i].placeHolder;
-			painter.drawPixmap( i * placeHolder->width(), eIndex * placeHolder->height(), QPixmap::grabWidget( placeHolder ) );
+	if( m_ViewerCore->hasImage() ) {
+		QString fileName = QFileDialog::getSaveFileName(this, tr("Save Screenshot"),
+					m_ViewerCore->getCurrentPath().c_str(),
+					tr("Images (*.png *.xpm *.jpg)"));
+		if( fileName.size() ) {
+			m_ViewerCore->getUICore()->getScreenshot().save(fileName, 0, m_ViewerCore->getOptionMap()->getPropertyAs<uint8_t>("screenshotQuality") );
 		}
-		
 	}
-	painter.end();
-	screenshot.save("/tmp/test.png");
+		
+
 }
 
 
@@ -403,6 +399,17 @@ void MainWindow::refreshUI()
 	} else {
 		m_Interface.actionToggle_Zmap_Mode->setChecked( false );
 	}
+	m_Interface.action_Save_Image->setEnabled( m_ViewerCore->hasImage() );
+	m_Interface.actionSave_all_Images->setEnabled( m_ViewerCore->hasImage() );
+	m_Interface.actionSave_Image->setEnabled( m_ViewerCore->hasImage() );
+	m_Interface.actionCreate_Screenshot->setEnabled( m_ViewerCore->hasImage() );
+	m_Interface.actionFind_Global_Max->setEnabled( m_ViewerCore->hasImage() );
+	m_Interface.actionFind_Global_Min->setEnabled( m_ViewerCore->hasImage() );
+	m_Interface.actionCenter_to_ca->setEnabled( m_ViewerCore->hasImage() );
+	m_Interface.actionToggle_Zmap_Mode->setEnabled( m_ViewerCore->hasImage() );
+	m_Interface.actionShow_Crosshair->setEnabled( m_ViewerCore->hasImage() );
+	m_Interface.actionShow_scaling_option->setEnabled( m_ViewerCore->hasImage() );
+	m_Interface.actionShow_Labels->setEnabled( m_ViewerCore->hasImage() );
 }
 
 

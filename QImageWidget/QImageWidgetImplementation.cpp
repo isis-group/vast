@@ -43,6 +43,7 @@ void QImageWidgetImplementation::commonInit()
 	m_WidgetProperties.setPropertyAs<float>( "zoomFactorOut", 1.5 );
 	m_WidgetProperties.setPropertyAs<float>( "maxZoom", 30 );
 	m_WidgetProperties.setPropertyAs<float>( "minZoom", 1.0 );
+	m_CrosshairWidth = 1;
 	currentZoom = 1.0;
 	translationX = 0.0;
 	translationY = 0.0;
@@ -247,17 +248,16 @@ void QImageWidgetImplementation::paintImage( boost::shared_ptr< ImageHolder > im
 		m_Painter->drawImage( 0, 0, qImage );
 		
 	}
-
 	m_Painter->resetMatrix();
-	m_Painter->fillRect( imgProps.viewPort[4] + imgProps.viewPort[2], -1, width(), height(), Qt::black );
-	m_Painter->fillRect( -1, imgProps.viewPort[5] + imgProps.viewPort[3], width(), height(), Qt::black );
-	m_Painter->fillRect( 0, -1, imgProps.viewPort[2], height(), Qt::black );
+	m_Painter->fillRect( imgProps.viewPort[4] + imgProps.viewPort[2], 0, width(), height() , Qt::black );
+	m_Painter->fillRect( 0, imgProps.viewPort[5] + imgProps.viewPort[3], width(), height(), Qt::black );
+	m_Painter->fillRect( 0, 0, imgProps.viewPort[2], height(), Qt::black );
 }
 
 
 void QImageWidgetImplementation::mousePressEvent( QMouseEvent *e )
 {	
-	if( e->button() == Qt::LeftButton && geometry().contains( e->pos() ) && QApplication::keyboardModifiers() == Qt::ControlModifier) {
+	if( e->button() == Qt::LeftButton && geometry().contains( e->pos() ) && QApplication::keyboardModifiers() == Qt::AltModifier) {
 		QDrag *drag = new QDrag(this);
 		QMimeData *mimeData = new QMimeData;
 		mimeData->setText( getWidgetSpecCurrentImage()->getFileNames().front().c_str() );
@@ -379,6 +379,7 @@ void QImageWidgetImplementation::paintCrosshair() const
 
 	QPen pen;
 	pen.setColor( m_CrosshairColor );
+	pen.setWidth( m_CrosshairWidth );
 	m_Painter->setOpacity( 1.0 );
 	m_Painter->setTransform( QOrienationHandler::getTransform( imgProps.viewPort, image, m_PlaneOrientation ) );
 	m_Painter->scale( 1.0 / imgProps.viewPort[0], 1.0 / imgProps.viewPort[1] );

@@ -29,6 +29,7 @@ public:
 	virtual void setInterpolationType( InterpolationType interpolation ) = 0;
 	virtual void setMouseCursorIcon( QIcon ) = 0;
 	virtual void setCrossHairColor( QColor ) {}
+	virtual void setCrossHairWidth( int ) {}
 
 	virtual QWidget *getParent( ) const { return m_Parent; }
 	virtual PlaneOrientation getPlaneOrientation() { return m_PlaneOrientation; }
