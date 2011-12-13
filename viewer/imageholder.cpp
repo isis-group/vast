@@ -219,7 +219,7 @@ bool ImageHolder::removeChangedAttribute(const std::string& attribute)
 	}
 }
 
-std::pair< double, double > ImageHolder::getOptimalScaling() const
+std::pair< double, double > ImageHolder::getOptimalScaling()
 {
 	const float lowerCutOff = 0.01;
 	const float upperCutOff = 0.01;
@@ -227,19 +227,21 @@ std::pair< double, double > ImageHolder::getOptimalScaling() const
 	const InternalImageType minImage = internMinMax.first->as<InternalImageType>();
 	const InternalImageType maxImage = internMinMax.second->as<InternalImageType>();
 	const InternalImageType extent = maxImage - minImage;
-	double *histogram = ( double * ) calloc( extent + 1, sizeof( double ) );
-	InternalImageType *dataPtr = static_cast<InternalImageType *>( getImageVector().front()->getRawAddress().get() );
-
-	//create the histogram
+	double *nHistogram = ( double * ) calloc( extent + 1, sizeof( double ) );
+	histogramVector.resize( getImageSize()[3]);
+	for( unsigned short t = 0; t < getImageSize()[3]; t++ ) {
+		histogramVector[t] =( double * ) calloc( extent + 1, sizeof( double ) ) ;
+		InternalImageType *dataPtr = static_cast<InternalImageType *>( getImageVector()[t]->getRawAddress().get() );
+		//create the histogram
 #pragma omp parallel for
-	for( size_t i = 0; i < volume; i++ ) {
-		histogram[dataPtr[i]]++;
+		for( size_t i = 0; i < volume; i++ ) {
+			histogramVector[t][dataPtr[i]]++;
+		}		
 	}
-
 	//normalize histogram
 #pragma omp parallel for		
 	for( InternalImageType i = 0; i < extent; i++ ) {
-		histogram[i] /= volume;
+		nHistogram[i] = histogramVector.front()[i] / volume;
 	}
 
 	InternalImageType upperBorder = extent - 1;
@@ -247,20 +249,20 @@ std::pair< double, double > ImageHolder::getOptimalScaling() const
 	double sum = 0;
 
 	while( sum < upperCutOff ) {
-		sum += histogram[upperBorder--];
+		sum += nHistogram[upperBorder--];
 
 	}
 
 	sum = 0;
 
 	while ( sum < lowerCutOff ) {
-		sum += histogram[lowerBorder++];
+		sum += nHistogram[lowerBorder++];
 	}
 
 	std::pair<double, double> retPair;
 	retPair.first = lowerBorder;
 	retPair.second = ( float )std::numeric_limits<InternalImageType>::max() / float( upperBorder - lowerBorder );
-	delete[] histogram;
+	delete[] nHistogram;
 	return retPair;	
 }
 

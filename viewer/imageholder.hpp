@@ -73,7 +73,7 @@ public:
 	void updateOrientation();
 	
 	/**offset, scaling**/
-	std::pair<double, double> getOptimalScaling() const;
+	std::pair<double, double> getOptimalScaling();
 	
 	util::ivector4 voxelCoords;
 	util::fvector4 physicalCoords;
@@ -97,6 +97,7 @@ public:
 	boost::numeric::ublas::matrix<double> orientation;
 	boost::numeric::ublas::matrix<double> latchedOrientation;
 	unsigned short majorTypeID;
+	std::vector< double *> histogramVector;
 	
 private:
 

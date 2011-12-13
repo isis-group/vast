@@ -258,7 +258,7 @@ void QImageWidgetImplementation::paintImage( boost::shared_ptr< ImageHolder > im
 
 void QImageWidgetImplementation::mousePressEvent( QMouseEvent *e )
 {	
-	if( e->button() == Qt::LeftButton && geometry().contains( e->pos() ) && QApplication::keyboardModifiers() == Qt::AltModifier) {
+	if( e->button() == Qt::LeftButton && geometry().contains( e->pos() ) && QApplication::keyboardModifiers() == Qt::ControlModifier) {
 		QDrag *drag = new QDrag(this);
 		QMimeData *mimeData = new QMimeData;
 		mimeData->setText( getWidgetSpecCurrentImage()->getFileNames().front().c_str() );
@@ -295,7 +295,7 @@ void QImageWidgetImplementation::mouseMoveEvent( QMouseEvent *e )
 {
 	
 	if( m_RightMouseButtonPressed && m_LeftMouseButtonPressed ) {
-		if( QApplication::keyboardModifiers() == Qt::ControlModifier ) {
+		if( QApplication::keyboardModifiers() == Qt::ShiftModifier ) {
 			BOOST_FOREACH( DataContainer::reference image, m_ViewerCore->getDataContainer() ) 
 			{
 				const double offset =  ( m_StartCoordsPair.second - e->y() ) / ( float )height() * image.second->extent;

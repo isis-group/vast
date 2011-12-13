@@ -33,7 +33,7 @@ void ImageStack::contextMenuEvent(QContextMenuEvent* event )
 
 void ImageStack::mousePressEvent(QMouseEvent *e )
 {
-	if( e->button() == Qt::LeftButton && geometry().contains( e->pos() ) && QApplication::keyboardModifiers() == Qt::AltModifier) {
+	if( e->button() == Qt::LeftButton && geometry().contains( e->pos() ) && QApplication::keyboardModifiers() == Qt::ControlModifier) {
 		QDrag *drag = new QDrag(this);
 		QMimeData *mimeData = new QMimeData;
 		mimeData->setText( itemAt(e->pos())->text() );
