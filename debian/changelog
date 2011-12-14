@@ -1,3 +1,11 @@
+vast (0.2.3alpha-0) stable; urgency=low
+
+  * fixed bugs
+  * add capability to save screenshots
+  * add histogram plugin
+
+ -- ISIS Group (The friendly isis team) <gr_isis@cbs.mpg.de>  Wed, 14 Dec 2011 13:24:35 +0200
+
 vast (0.2.2alpha-0) stable; urgency=low
 
   * fixed some bugs 
