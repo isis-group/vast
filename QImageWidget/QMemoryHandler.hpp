@@ -20,7 +20,7 @@ public:
 		const util::ivector4 mappedSize = QOrienationHandler::mapCoordsToOrientation( image->getImageSize(), image, orientation );
 		const util::ivector4 mappedCoords = QOrienationHandler::mapCoordsToOrientation( image->voxelCoords, image, orientation );
 		const util::ivector4 mapping = QOrienationHandler::mapCoordsToOrientation( util::ivector4( 0, 1, 2, 3 ), image, orientation, true );
-		data::Chunk chunk = image->getChunkVector()[timestep];
+		const data::Chunk chunk = image->getChunkVector()[timestep];
 		#pragma omp parallel for
 
 		for ( int32_t y = 0; y < mappedSize[1]; y++ ) {
