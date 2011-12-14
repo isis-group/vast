@@ -151,7 +151,6 @@
     </property>
     <addaction name="actionKey_Commands"/>
     <addaction name="separator"/>
-    <addaction name="actionAbout"/>
    </widget>
    <addaction name="menu_File"/>
    <addaction name="menu_Preferences"/>

@@ -49,6 +49,16 @@ add_definitions(-D_ISIS_VIEWER_VERSION_MAJOR=${ISIS_VIEWER_VERSION_MAJOR})
 add_definitions(-D_ISIS_VIEWER_VERSION_MINOR=${ISIS_VIEWER_VERSION_MINOR})
 add_definitions(-D_ISIS_VIEWER_VERSION_PATCH=${ISIS_VIEWER_VERSION_PATCH})
 
+
+###########################################################
+# documentation
+###########################################################
+option(ISIS_DOCUMENTATION "Build the documentation for vast" OFF)
+
+IF(ISIS_DOCUMENTATION)
+	add_subdirectory(documentation)
+ENDIF(ISIS_DOCUMENTATION)
+
 ###########################################################
 # isis stuff
 ###########################################################
