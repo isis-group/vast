@@ -100,7 +100,7 @@ std::string ViewerCoreBase::getVersion() const
 
 void ViewerCoreBase::setCommonViewerOptions()
 {
-	m_OptionsMap->setPropertyAs<bool>("zmapGlobal", true );
+	m_OptionsMap->setPropertyAs<bool>("zmapGlobal", false );
 	m_OptionsMap->setPropertyAs<bool>( "propagateZooming", false );
 	m_OptionsMap->setPropertyAs<bool>( "showLables", false );
 	m_OptionsMap->setPropertyAs<bool>( "showCrosshair", true );

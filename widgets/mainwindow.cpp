@@ -347,6 +347,7 @@ void MainWindow::saveImageAs()
 
 		if( filename.size() ) {
 			isis::data::IOFactory::write( *m_ViewerCore->getCurrentImage()->getISISImage(), filename.toStdString(), "", "" );
+			m_ViewerCore->setCurrentPath( filename.toStdString() );
 		}
 	}
 
