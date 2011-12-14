@@ -74,7 +74,7 @@ public:
 
 	void rearrangeViewWidgets();
 
-	QPixmap getScreenshot();
+	QImage getScreenshot();
 
 public Q_SLOTS:
 	virtual void reloadPluginsToGUI();

@@ -121,10 +121,8 @@ void QViewerCore::settingsChanged()
 	getSettings()->beginGroup( "UserProfile" );
 
 	if( hasImage() ) {
-		if( getCurrentImage()->imageType == ImageHolder::z_map ) {
-			getCurrentImage()->lut = getSettings()->value( "lut", "fallback" ).toString().toStdString();
-			getCurrentImage()->updateColorMap();
-		}
+		getCurrentImage()->lut = getSettings()->value( "lut", "fallback" ).toString().toStdString();
+		getCurrentImage()->updateColorMap();
 	}
 
 	BOOST_FOREACH( UICore::WidgetMap::const_reference widget, getUICore()->getWidgets() ) {
@@ -311,6 +309,13 @@ void QViewerCore::loadSettings()
 	getOptionMap()->setPropertyAs<uint8_t>( "numberOfThreads", getSettings()->value( "numberOfThreads" ).toUInt() );
 	getOptionMap()->setPropertyAs<bool>( "enableMultithreading", getSettings()->value( "enableMultithreading" ).toBool() );
 	getOptionMap()->setPropertyAs<bool>( "useAllAvailablethreads", getSettings()->value( "useAllAvailableThreads" ).toBool() );
+	//screenshot stuff
+	getOptionMap()->setPropertyAs<uint16_t>( "screenshotWidth", getSettings()->value( "screenshotWidth", getOptionMap()->getPropertyAs<uint16_t>("screenshotWidth") ).toUInt() );
+	getOptionMap()->setPropertyAs<uint16_t>( "screenshotHeight", getSettings()->value( "screenshotHeight", getOptionMap()->getPropertyAs<uint16_t>("screenshotHeight") ).toUInt() );
+	getOptionMap()->setPropertyAs<bool>( "screenshotKeepAspectRatio", getSettings()->value( "screenshotKeepAspectRatio", getOptionMap()->getPropertyAs<bool>("screenshotKeepAspectRatio") ).toBool() );
+	getOptionMap()->setPropertyAs<uint8_t>( "screenshotQuality", getSettings()->value( "screenshotQuality", getOptionMap()->getPropertyAs<uint8_t>("screenshotQuality") ).toUInt() );
+	getOptionMap()->setPropertyAs<uint16_t>( "screenshotDPIX", getSettings()->value( "screenshotDPIX", getOptionMap()->getPropertyAs<uint16_t>("screenshotDPIX") ).toUInt() );
+	getOptionMap()->setPropertyAs<uint16_t>( "screenshotDPIY", getSettings()->value( "screenshotDPIY", getOptionMap()->getPropertyAs<uint16_t>("screenshotDPIY") ).toUInt() );	
 	getSettings()->endGroup();
 }
 
@@ -330,6 +335,14 @@ void QViewerCore::saveSettings()
 	getSettings()->setValue( "numberOfThreads", getOptionMap()->getPropertyAs<uint8_t>( "numberOfThreads" ) );
 	getSettings()->setValue( "enableMultithreading", getOptionMap()->getPropertyAs<bool>( "enableMultithreading" ) );
 	getSettings()->setValue( "useAllAvailablethreads", getOptionMap()->getPropertyAs<bool>( "useAllAvailableThreads" ) );
+	//screenshot stuff
+	getSettings()->setValue( "screenshotWidth", getOptionMap()->getPropertyAs<uint16_t>("screenshotWidth") );
+	getSettings()->setValue( "screenshotHeight", getOptionMap()->getPropertyAs<uint16_t>("screenshotHeight") );
+	getSettings()->setValue( "screenshotKeepAspectRatio", getOptionMap()->getPropertyAs<bool>("screenshotKeepAspectRatio") );
+	getSettings()->setValue( "screenshotQuality", getOptionMap()->getPropertyAs<uint8_t>("screenshotQuality") );
+	getSettings()->setValue( "screenshotDPIX", getOptionMap()->getPropertyAs<uint16_t>("screenshotDPIX") );
+	getSettings()->setValue( "screenshotDPIY", getOptionMap()->getPropertyAs<uint16_t>("screenshotDPIY") );
+	
 	getSettings()->endGroup();
 	getSettings()->sync();
 }

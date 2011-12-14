@@ -400,8 +400,14 @@ void MainWindow::refreshUI()
 
 	if( m_ViewerCore->getMode() == ViewerCoreBase::zmap ) {
 		m_Interface.actionToggle_Zmap_Mode->setChecked( true );
+		m_Interface.actionFind_Global_Max->setVisible(true);
+		m_Interface.actionFind_Global_Min->setVisible(true);
+		m_RadiusSpin->setVisible(true);
 	} else {
 		m_Interface.actionToggle_Zmap_Mode->setChecked( false );
+		m_Interface.actionFind_Global_Max->setVisible(false);
+		m_Interface.actionFind_Global_Min->setVisible(false);
+		m_RadiusSpin->setVisible(false);
 	}
 
 	m_Interface.action_Save_Image->setEnabled( m_ViewerCore->hasImage() );

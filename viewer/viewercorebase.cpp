@@ -105,6 +105,11 @@ void ViewerCoreBase::setCommonViewerOptions()
 	m_OptionsMap->setPropertyAs<bool>( "enableMultithreading", false );
 	m_OptionsMap->setPropertyAs<bool>( "useAllAvailableThreads", false );
 	m_OptionsMap->setPropertyAs<uint8_t>( "screenshotQuality", 70 );
+	m_OptionsMap->setPropertyAs<uint16_t>("screenshotWidth", 700);
+	m_OptionsMap->setPropertyAs<uint16_t>("screenshotHeight", 700);
+	m_OptionsMap->setPropertyAs<uint16_t>("screenshotDPIX", 300);
+	m_OptionsMap->setPropertyAs<uint16_t>("screenshotDPIY", 300);	
+	m_OptionsMap->setPropertyAs<bool>("screenshotKeepAspectRatio", true);
 	//logging
 	m_OptionsMap->setPropertyAs<uint16_t>( "logDelayTime", 6000 );
 	m_OptionsMap->setPropertyAs<bool>( "showErrorMessages", true );
