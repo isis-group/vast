@@ -333,6 +333,7 @@ void QViewerCore::loadSettings()
 	getOptionMap()->setPropertyAs<uint8_t>( "screenshotQuality", getSettings()->value( "screenshotQuality", getOptionMap()->getPropertyAs<uint8_t>("screenshotQuality") ).toUInt() );
 	getOptionMap()->setPropertyAs<uint16_t>( "screenshotDPIX", getSettings()->value( "screenshotDPIX", getOptionMap()->getPropertyAs<uint16_t>("screenshotDPIX") ).toUInt() );
 	getOptionMap()->setPropertyAs<uint16_t>( "screenshotDPIY", getSettings()->value( "screenshotDPIY", getOptionMap()->getPropertyAs<uint16_t>("screenshotDPIY") ).toUInt() );
+	getOptionMap()->setPropertyAs<bool>( "screenshotManualScaling", getSettings()->value( "screenshotManualScaling", getOptionMap()->getPropertyAs<bool>("screenshotManualScaling") ).toBool() );	
 	getSettings()->endGroup();
 }
 
@@ -361,6 +362,7 @@ void QViewerCore::saveSettings()
 	getSettings()->setValue( "screenshotQuality", getOptionMap()->getPropertyAs<uint8_t>("screenshotQuality") );
 	getSettings()->setValue( "screenshotDPIX", getOptionMap()->getPropertyAs<uint16_t>("screenshotDPIX") );
 	getSettings()->setValue( "screenshotDPIY", getOptionMap()->getPropertyAs<uint16_t>("screenshotDPIY") );
+	getSettings()->setValue( "screenshotManualScaling", getOptionMap()->getPropertyAs<bool>("screenshotManualScaling") );
 	
 	getSettings()->endGroup();
 	getSettings()->sync();

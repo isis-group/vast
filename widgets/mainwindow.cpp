@@ -117,6 +117,7 @@ void MainWindow::createScreenshot()
 
 		if( fileName.size() ) {
 			m_ViewerCore->getUICore()->getScreenshot().save( fileName, 0, m_ViewerCore->getOptionMap()->getPropertyAs<uint8_t>( "screenshotQuality" ) );
+			m_ViewerCore->setCurrentPath( fileName.toStdString() );
 		}
 	}
 

@@ -133,8 +133,8 @@ void PreferencesDialog::loadSettings()
 	preferencesUi.sizeX->setValue( m_ViewerCore->getOptionMap()->getPropertyAs<uint16_t>("screenshotWidth" ) );
 	preferencesUi.sizeY->setValue( m_ViewerCore->getOptionMap()->getPropertyAs<uint16_t>("screenshotHeight" ) );
 	preferencesUi.keepRatio->setChecked( m_ViewerCore->getOptionMap()->getPropertyAs<bool>("screenshotKeepAspectRatio") );
-	
-	
+	preferencesUi.manualScaling->setChecked( m_ViewerCore->getOptionMap()->getPropertyAs<bool>("screenshotManualScaling") );
+	preferencesUi.scalingFrame->setVisible( m_ViewerCore->getOptionMap()->getPropertyAs<bool>("screenshotManualScaling") );
 
 	if( m_ViewerCore->getOptionMap()->getPropertyAs<bool>( "ompAvailable" ) ) {
 		preferencesUi.enableMultithreading->setChecked( m_ViewerCore->getOptionMap()->getPropertyAs<bool>( "enableMultithreading" ) );
@@ -164,6 +164,7 @@ void PreferencesDialog::saveSettings()
 	m_ViewerCore->getOptionMap()->setPropertyAs<uint16_t>("screenshotDPIY", preferencesUi.dpiY->value() );
 	m_ViewerCore->getOptionMap()->setPropertyAs<uint16_t>("screenshotWidth", preferencesUi.sizeX->value() );
 	m_ViewerCore->getOptionMap()->setPropertyAs<uint16_t>("screenshotHeight", preferencesUi.sizeY->value() );
+	m_ViewerCore->getOptionMap()->setPropertyAs<bool>("screenshotManualScaling", preferencesUi.manualScaling->isChecked() );
 
 	if( m_ViewerCore->hasImage() ) {
 		m_ViewerCore->getCurrentImage()->lut = preferencesUi.comboBox->currentText().toStdString() ;

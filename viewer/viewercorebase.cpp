@@ -117,6 +117,7 @@ void ViewerCoreBase::setCommonViewerOptions()
 	m_OptionsMap->setPropertyAs<uint16_t>("screenshotHeight", 700);
 	m_OptionsMap->setPropertyAs<uint16_t>("screenshotDPIX", 300);
 	m_OptionsMap->setPropertyAs<uint16_t>("screenshotDPIY", 300);	
+	m_OptionsMap->setPropertyAs<bool>("screenshotManualScaling", false );
 	m_OptionsMap->setPropertyAs<bool>("screenshotKeepAspectRatio", true);
 	m_OptionsMap->setPropertyAs<std::string>("lutAna", "standard_grey_values" );
 	m_OptionsMap->setPropertyAs<std::string>("lutZMap", "standard_zmap" );
