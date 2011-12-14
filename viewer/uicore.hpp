@@ -19,8 +19,9 @@ class SliderWidget;
 }
 class MainWindow;
 
-class UICore
+class UICore : public QObject
 {
+	Q_OBJECT
 
 public:
 	friend class QViewerCore;
@@ -32,6 +33,7 @@ public:
 	struct ViewWidget {
 		QDockWidget *dockWidget;
 		QFrame *frame;
+		QWidget *placeHolder;
 		WidgetInterface *widgetImplementation;
 		PlaneOrientation planeOrientation;
 		std::string widgetType;
@@ -67,14 +69,18 @@ public:
 	void setViewWidgetArrangement( ViewWidgetArragment arrangement ) { m_ViewWidgetArrangement = arrangement; }
 	ViewWidgetArragment getViewWidgetArrangement() const { return m_ViewWidgetArrangement; }
 
-	ViewWidgetEnsembleListType getEnsembleList() const { return m_EnsembleList; }
+	const ViewWidgetEnsembleListType &getEnsembleList() const { return m_EnsembleList; }
+	ViewWidgetEnsembleListType &getEnsembleList() { return m_EnsembleList; }
 
 	void rearrangeViewWidgets();
+
+	QImage getScreenshot();
 
 public Q_SLOTS:
 	virtual void reloadPluginsToGUI();
 	virtual void refreshUI();
 	void showMessage( const qt4::QMessage &message );
+	void showInformationAreas( bool );
 
 
 protected:
@@ -99,7 +105,7 @@ private:
 	unsigned short m_RowCount;
 
 	WidgetMap m_WidgetMap;
-	
+
 
 };
 

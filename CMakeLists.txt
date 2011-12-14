@@ -22,6 +22,7 @@ file (GLOB WIDGET_DEV_FILES widgets/*.hpp )
 
 set(VIEWER_FILES_HPP
 	viewer/qviewercore.hpp
+	viewer/uicore.hpp
 	widgets/mainwindow.hpp
 	widgets/preferenceDialog.hpp
 	widgets/voxelInformationWidget.hpp
@@ -42,7 +43,7 @@ set(WIDGET_FILES_HPP
 ##########################################################
 set(ISIS_VIEWER_VERSION_MAJOR "0")
 set(ISIS_VIEWER_VERSION_MINOR "2")
-set(ISIS_VIEWER_VERSION_PATCH "2")
+set(ISIS_VIEWER_VERSION_PATCH "3")
 
 add_definitions(-D_ISIS_VIEWER_VERSION_MAJOR=${ISIS_VIEWER_VERSION_MAJOR})
 add_definitions(-D_ISIS_VIEWER_VERSION_MINOR=${ISIS_VIEWER_VERSION_MINOR})
@@ -105,8 +106,8 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/viewer)
 
 #this flags has to be set due to use parallel with boos::signal
 
-SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ftemplate-depth-100 -Wextra -Wfatal-errors" )
-SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}  -Wextra -Wfatal-errors " )
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ftemplate-depth-100 -Wextra -Wall -Wfatal-errors" )
+SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}  -Wextra -Wall -Wfatal-errors " )
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ftemplate-depth-100")
 
 ############################################################

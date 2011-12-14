@@ -39,7 +39,7 @@ private:
 	std::pair<double, double> getScalingOffsetFromMinMax( const std::pair<double, double> &minMax, boost::shared_ptr<ImageHolder> image );
 	std::pair<double, double> getMinMaxFromScalingOffset( const std::pair<double, double> &scalingOffset,  boost::shared_ptr<ImageHolder> image );
 	void setMinMax( std::pair<double, double> minMax, boost::shared_ptr<ImageHolder> image ) ;
-	void setScalingOffset( std::pair<double, double> scalingOffset, boost::shared_ptr<ImageHolder> image ) ;
+	void setScalingOffset( std::pair<double, double> scalingOffset ) ;
 };
 
 }

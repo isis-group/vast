@@ -49,11 +49,12 @@ private:
 		TYPE currentValue;
 		data::TypedImage<TYPE> typedImage = *image->getISISImage();
 		TYPE currentMin = std::numeric_limits<TYPE>::max();
-#pragma omp parallel for
+		#pragma omp parallel for
+
 		for( unsigned short z = start[2] + 1; z < end[2]; z++ ) {
 			for( unsigned short y = start[1] + 1; y < end[1]; y++ ) {
 				for( unsigned short x = start[0] + 1; x < end[0]; x++ ) {
-					currentValue = static_cast<data::Image &>( typedImage ).voxel<TYPE>( x, y, z ); 
+					currentValue = static_cast<data::Image &>( typedImage ).voxel<TYPE>( x, y, z );
 
 					if( currentValue < currentMin ) {
 						currentPos = util::ivector4( x, y, z );
@@ -86,11 +87,12 @@ private:
 		TYPE currentValue;
 		data::TypedImage<TYPE> typedImage = *image->getISISImage();
 		TYPE currentMax = std::numeric_limits<TYPE>::min();
-#pragma omp parallel for
+		#pragma omp parallel for
+
 		for( unsigned short z = start[2] + 1; z < end[2]; z++ ) {
 			for( unsigned short y = start[1] + 1; y < end[1]; y++ ) {
 				for( unsigned short x = start[0] + 1; x < end[0]; x++ ) {
-					currentValue = static_cast<data::Image &>( typedImage ).voxel<TYPE>( x, y, z ); 
+					currentValue = static_cast<data::Image &>( typedImage ).voxel<TYPE>( x, y, z );
 
 					if( currentValue > currentMax ) {
 						currentPos = util::ivector4( x, y, z );

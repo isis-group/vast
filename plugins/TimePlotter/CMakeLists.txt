@@ -1,4 +1,3 @@
-
 set(FILES_UI forms/plotting.ui)
 
 message(STATUS "Adding TimePlotter plugin")
@@ -17,7 +16,6 @@ FIND_PACKAGE(Qt4 COMPONENTS QtCore QtGui REQUIRED)
 
 set(QT_USE_QTUITOOLS TRUE)
 set(QT_USE_QTOPENGL TRUE)
-set(QT_USE_OPENGL TRUE )
 
 INCLUDE(${QT_USE_FILE})
 include_directories(${CMAKE_CURRENT_BINARY_DIR})

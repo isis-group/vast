@@ -18,7 +18,6 @@ class WidgetInterface
 
 public:
 	typedef std::vector<boost::shared_ptr<ImageHolder> > ImageVectorType;
-	virtual WidgetInterface *createSharedWidget( QWidget *parent, PlaneOrientation orienation ) = 0;
 
 	virtual void setEnableCrosshair( bool enable ) = 0;
 	virtual void updateScene() = 0;
@@ -30,19 +29,20 @@ public:
 	virtual void setInterpolationType( InterpolationType interpolation ) = 0;
 	virtual void setMouseCursorIcon( QIcon ) = 0;
 	virtual void setCrossHairColor( QColor ) {}
+	virtual void setCrossHairWidth( int ) {}
 
 	virtual QWidget *getParent( ) const { return m_Parent; }
 	virtual PlaneOrientation getPlaneOrientation() { return m_PlaneOrientation; }
 
-	virtual bool lookAtPhysicalCoords( const util::fvector4 &physicalCoords ) = 0;
+	virtual void lookAtPhysicalCoords( const util::fvector4 &physicalCoords ) = 0;
 
 	ImageVectorType getImageVector() const { return m_ImageVector; }
 
 protected:
 	WidgetInterface( QViewerCore *core, QWidget *parent, PlaneOrientation orientation )
 		: m_ViewerCore( core ),
-		m_PlaneOrientation( orientation ),
-		m_Parent( parent ) {}
+		  m_PlaneOrientation( orientation ),
+		  m_Parent( parent ) {}
 
 	QViewerCore *m_ViewerCore;
 	PlaneOrientation m_PlaneOrientation;

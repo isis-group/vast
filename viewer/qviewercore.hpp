@@ -41,14 +41,15 @@ public:
 	const std::string &getCurrentPath() const  { return m_CurrentPath; }
 	void setCurrentPath( const std::string &path ) { m_CurrentPath = path; }
 
-	const UICore *getUI() const { return m_UI; }
-	UICore *getUI() { return m_UI; }
+	const UICore *getUICore() const { return m_UI; }
+	UICore *getUICore() { return m_UI; }
 
 	const boost::shared_ptr< QProgressFeedback > getProgressFeedback() const { return m_ProgressFeedback; }
 
 	void addMessageHandler( qt4::QDefaultMessagePrint * );
 
 	std::list< qt4::QMessage> getMessageLog() const { return m_MessageLog; }
+
 
 public Q_SLOTS:
 	virtual void settingsChanged();
@@ -62,7 +63,7 @@ public Q_SLOTS:
 	virtual void receiveMessage( qt4::QMessage message );
 	virtual void receiveMessage( std::string message );
 	virtual void openPath( QStringList fileList, ImageHolder::ImageType imageType, const std::string &rdialect = "", const std::string &rf = "", bool newWidget = false );
-	virtual void centerImages(bool ca = false);
+	virtual void centerImages( bool ca = false );
 	virtual void closeImage( boost::shared_ptr<ImageHolder> image );
 	virtual void saveSettings();
 	virtual void loadSettings();

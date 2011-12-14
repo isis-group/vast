@@ -5,14 +5,15 @@
 #include <iostream>
 #include <boost/circular_buffer.hpp>
 
-class PythonStdIoRedirect {
+class PythonStdIoRedirect
+{
 public:
-    typedef boost::circular_buffer<std::string> ContainerType;
-    void Write( std::string const& str );
-    static std::string GetOutput();
+	typedef boost::circular_buffer<std::string> ContainerType;
+	void Write( std::string const &str );
+	static std::string GetOutput();
 
 private:
-    static ContainerType m_outputs; // must be static, otherwise output is missing
+	static ContainerType m_outputs; // must be static, otherwise output is missing
 };
 
 

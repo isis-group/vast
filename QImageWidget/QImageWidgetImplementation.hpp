@@ -28,32 +28,33 @@ class QImageWidgetImplementation : public QWidget, public WidgetInterface
 	typedef std::map<boost::shared_ptr<ImageHolder>, ImageProperties> ImagePropertiesMapType;
 
 public:
-	
-	QImageWidgetImplementation( QViewerCore *core, QWidget *parent = 0, QWidget *share = 0, PlaneOrientation orienation = axial );
-	QImageWidgetImplementation( QViewerCore *core, QWidget *parent = 0, PlaneOrientation orientation = axial );
 
-	virtual WidgetInterface *createSharedWidget( QWidget *parent, PlaneOrientation orienation = axial );
+	QImageWidgetImplementation( QViewerCore *core, QWidget *parent = 0, PlaneOrientation orientation = axial );
 
 public Q_SLOTS:
 
 	virtual void setEnableCrosshair( bool enable ) { m_ShowCrosshair = enable; }
-	
+
 	virtual void setZoom( float zoom );
 	virtual void addImage( const boost::shared_ptr<ImageHolder> image );
 	virtual bool removeImage( const boost::shared_ptr<ImageHolder> image );
 	virtual void paintImage( boost::shared_ptr< ImageHolder > image );
 	virtual void paintCrosshair() const;
 
-	virtual bool lookAtPhysicalCoords( const util::fvector4 &physicalCoords );
+	virtual void lookAtPhysicalCoords( const util::fvector4 &physicalCoords );
 	virtual void updateScene();
 	virtual void setInterpolationType( InterpolationType interType ) { m_InterpolationType = interType; }
 	virtual void setShowLabels( bool show ) { m_ShowLabels = show; m_Border = show ? 18 : 0; }
 	virtual void setMouseCursorIcon( QIcon icon );
-	virtual void setCrossHairColor( QColor color) { m_CrosshairColor = color; }
+	virtual void setCrossHairColor( QColor color ) { m_CrosshairColor = color; }
+	virtual void setCrossHairWidth( int width ) { m_CrosshairWidth = width; }
 
 	virtual std::string getWidgetName() const;
 	virtual void setWidgetName( const std::string &wName );
-	virtual void keyPressEvent( QKeyEvent *e);
+	virtual void keyPressEvent( QKeyEvent *e );
+
+	virtual void dragEnterEvent( QDragEnterEvent * );
+	virtual void dropEvent( QDropEvent * );
 
 protected:
 	void paintEvent( QPaintEvent *event );
@@ -72,7 +73,7 @@ Q_SIGNALS:
 
 private:
 	QVBoxLayout *m_Layout;
-	
+
 	ImagePropertiesMapType m_ImageProperties;
 
 	void emitMousePressEvent( QMouseEvent *e );
@@ -94,11 +95,12 @@ private:
 	bool m_RightMouseButtonPressed;
 	bool m_ShowScalingOffset;
 	bool m_ShowCrosshair;
-	
+
 	float translationX;
 	float translationY;
 	float currentZoom;
-	
+	int m_CrosshairWidth;
+
 	std::pair<int, int> m_StartCoordsPair;
 
 };

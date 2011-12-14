@@ -35,11 +35,11 @@ public:
 
 	virtual ~MainWindow() {};
 
-	const Ui::vastMainWindow &getUI() const { return m_UI; }
-	Ui::vastMainWindow &getUI() { return m_UI; }
+	const Ui::vastMainWindow &getInterface() const { return m_Interface; }
+	Ui::vastMainWindow &getInterface() { return m_Interface; }
 
 	void reloadPluginsToGUI( );
-	
+
 	widget::PreferencesDialog *preferencesDialog;
 	widget::LoggingDialog *loggingDialog;
 	widget::FileDialog *fileDialog;
@@ -64,17 +64,21 @@ public Q_SLOTS:
 	void refreshUI();
 	void resetScaling();
 	void autoScaling();
-	void toggleZMapMode(bool);
+	void toggleZMapMode( bool );
 	void showKeyCommandDialog();
 	void loadSettings();
+	void saveSettings();
+	void createScreenshot();
+
 
 private:
-	Ui::vastMainWindow m_UI;
+	Ui::vastMainWindow m_Interface;
 	QViewerCore *m_ViewerCore;
 
 	QToolBar *m_Toolbar;
-	
+
 	QSpinBox *m_RadiusSpin;
+	QAction *m_RadiusSpinAction;
 	QPushButton *m_LogButton;
 
 	QAction *m_ActionReset_Scaling;

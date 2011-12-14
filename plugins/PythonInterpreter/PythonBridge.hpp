@@ -11,8 +11,8 @@ using namespace boost::python;
 class PythonBridge
 {
 public:
-	PythonBridge(isis::viewer::QViewerCore *core );
-	
+	PythonBridge( isis::viewer::QViewerCore *core );
+
 	virtual ~PythonBridge() { Py_Finalize(); }
 
 	boost::scoped_ptr< object > main_namespace;
@@ -21,13 +21,13 @@ public:
 private:
 	void initializePython();
 	isis::viewer::QViewerCore *m_ViewerCore;
-	
+
 	void exposeEnums();
 	void exposeViewerCore();
 	void exposeImageHolder();
-	
-	PythonStdIoRedirect python_stdio_redirector;	
-	
+
+	PythonStdIoRedirect python_stdio_redirector;
+
 };
 
 

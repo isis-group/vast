@@ -33,6 +33,7 @@ void ScalingWidget::synchronize()
 	m_Interface.min->setMaximum( std::numeric_limits<double>::max() );
 	m_Interface.max->setMinimum( -std::numeric_limits<double>::max() );
 	m_Interface.max->setMaximum( std::numeric_limits<double>::max() );
+
 	if( m_ViewerCore->getCurrentImage().get() ) {
 		boost::shared_ptr<ImageHolder> image = m_ViewerCore->getCurrentImage();
 
@@ -52,7 +53,7 @@ void ScalingWidget::maxChanged( double max )
 {
 	boost::shared_ptr<ImageHolder> image = m_ViewerCore->getCurrentImage();
 	image->getPropMap().setPropertyAs<double>( "scalingMaxValue", max );
-	setScalingOffset( getScalingOffsetFromMinMax( std::make_pair<double, double>( image->getPropMap().getPropertyAs<double>( "scalingMinValue" ), max ), image ), image );
+	setScalingOffset( getScalingOffsetFromMinMax( std::make_pair<double, double>( image->getPropMap().getPropertyAs<double>( "scalingMinValue" ), max ), image ) );
 }
 
 
@@ -60,7 +61,7 @@ void ScalingWidget::minChanged( double min )
 {
 	boost::shared_ptr<ImageHolder> image = m_ViewerCore->getCurrentImage();
 	image->getPropMap().setPropertyAs<double>( "scalingMinValue", min );
-	setScalingOffset( getScalingOffsetFromMinMax( std::make_pair<double, double>( min, image->getPropMap().getPropertyAs<double>( "scalingMaxValue" ) ), image ), image );
+	setScalingOffset( getScalingOffsetFromMinMax( std::make_pair<double, double>( min, image->getPropMap().getPropertyAs<double>( "scalingMaxValue" ) ), image ) );
 }
 
 void ScalingWidget::offsetChanged( double offset )
@@ -91,7 +92,7 @@ void ScalingWidget::setMinMax( std::pair< double, double > minMax, boost::shared
 	m_ViewerCore->updateScene();
 }
 
-void ScalingWidget::setScalingOffset( std::pair< double, double > scalingOffset, boost::shared_ptr< ImageHolder > image )
+void ScalingWidget::setScalingOffset( std::pair< double, double > scalingOffset )
 {
 	disconnect( m_Interface.scaling, SIGNAL( valueChanged( double ) ), this, SLOT( scalingChanged( double ) ) );
 	disconnect( m_Interface.offset, SIGNAL( valueChanged( double ) ), this, SLOT( offsetChanged( double ) ) );
@@ -108,7 +109,7 @@ void ScalingWidget::autoScale()
 {
 	boost::shared_ptr<ImageHolder> image = m_ViewerCore->getCurrentImage();
 	std::pair<double, double> scalingOffset = image->optimalScalingOffset;
-	setScalingOffset( scalingOffset, image );
+	setScalingOffset( scalingOffset );
 	setMinMax( getMinMaxFromScalingOffset( scalingOffset, image ), image );
 }
 
@@ -146,7 +147,7 @@ void ScalingWidget::showMe( bool visible )
 {
 	setVisible( visible );
 	move( QCursor::pos().x(), QCursor::pos().y() );
-	m_ViewerCore->getUI()->getMainWindow()->getUI().actionShow_scaling_option->setChecked( visible );
+	m_ViewerCore->getUICore()->getMainWindow()->getInterface().actionShow_scaling_option->setChecked( visible );
 
 	if( visible ) {
 		synchronize();
@@ -154,11 +155,10 @@ void ScalingWidget::showMe( bool visible )
 }
 
 
-void ScalingWidget::applyScalingOffset(const double& scaling, const double& offset, bool global)
+void ScalingWidget::applyScalingOffset( const double &scaling, const double &offset, bool global )
 {
 	if( global ) {
-		BOOST_FOREACH( DataContainer::reference image, m_ViewerCore->getDataContainer() ) 
-		{
+		BOOST_FOREACH( DataContainer::reference image, m_ViewerCore->getDataContainer() ) {
 			image.second->scaling = scaling;
 			image.second->offset = offset;
 			image.second->updateColorMap();
