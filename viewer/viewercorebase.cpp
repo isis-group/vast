@@ -40,8 +40,15 @@ boost::shared_ptr<ImageHolder> ViewerCoreBase::addImage( const isis::data::Image
 	//setting the lutAna
 	if( imageType == ImageHolder::anatomical_image ) {
 		retImage->lut = getOptionMap()->getPropertyAs<std::string>("lutAna");
+		if( !util::Singletons::get<color::Color, 10>().hasColormap( retImage->lut ) ) {	
+			retImage->lut = std::string( "standard_grey_values");
+		}
 	} else {
 		retImage->lut = getOptionMap()->getPropertyAs<std::string>("lutZMap" );
+		if( !util::Singletons::get<color::Color, 10>().hasColormap( retImage->lut ) ) {	
+			retImage->lut = std::string( "standard_zmap" );
+		}
+		
 	}
 	retImage->updateColorMap();
 	if( imageType == ImageHolder::anatomical_image && image.getSizeAsVector()[3] == 1 ) {
