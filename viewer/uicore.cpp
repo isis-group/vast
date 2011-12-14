@@ -404,7 +404,7 @@ QImage UICore::getScreenshot()
 		refreshUI();
 		QImage screenshotImage ( screenshot.scaled( m_ViewerCore->getOptionMap()->getPropertyAs<uint16_t>("screenshotWidth"),
 															m_ViewerCore->getOptionMap()->getPropertyAs<uint16_t>("screenshotHeight"), 
-															m_ViewerCore->getOptionMap()->getPropertyAs<bool>("screenshotKeepAspectRatio") ? Qt::KeepAspectRatio : Qt::IgnoreAspectRatio,
+															m_ViewerCore->getOptionMap()->getPropertyAs<bool>("screenshotKeepAspectRatio") ? Qt::KeepAspectRatioByExpanding : Qt::IgnoreAspectRatio,
 															Qt::SmoothTransformation  														
   														).toImage() );
 		const double dpiMeter = 39.3700787;

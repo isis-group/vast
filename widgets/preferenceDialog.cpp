@@ -18,11 +18,35 @@ PreferencesDialog::PreferencesDialog( QWidget *parent, QViewerCore *core ):
 	connect( preferencesUi.enableMultithreading, SIGNAL( clicked( bool ) ), this, SLOT( toggleMultithreading( bool ) ) );
 	connect( preferencesUi.useAllThreads, SIGNAL( clicked( bool ) ), this, SLOT( toggleUseAllThreads( bool ) ) );
 	connect( preferencesUi.numberOfThreads, SIGNAL( valueChanged( int ) ), this, SLOT( numberOfThreadsChanged( int ) ) );
-
+	connect( preferencesUi.sizeX, SIGNAL( valueChanged(int)), this, SLOT(screenshotXChanged(int)));
+	
 	QSize size( QSize( preferencesUi.comboBox->size().width() - 70, preferencesUi.comboBox->height() - 10 ) );
 	preferencesUi.comboBox->setIconSize( size );
 
 }
+
+void PreferencesDialog::screenshotXChanged(int val )
+{
+	if( preferencesUi.keepRatio->isChecked() ) {
+		if( m_ViewerCore->hasImage() ) {
+			UICore::ViewWidgetEnsembleListType ensembleList = m_ViewerCore->getUICore()->getEnsembleList();
+			//preparation
+			ensembleList.front()[0].frame->setFrameStyle( 0 );
+			ensembleList.front()[0].frame->setAutoFillBackground( false );
+			const int widgetHeight = ensembleList.size() *  ensembleList.front()[0].placeHolder->height() + ( m_ViewerCore->getMode() == ViewerCoreBase::zmap ? 100 : 0 ) ;
+			const int widgetWidth = 3 * ensembleList.front()[0].placeHolder->width();
+
+			const double ratio = (double)widgetHeight / widgetWidth;
+			preferencesUi.sizeY->setValue( val * ratio );
+			m_ViewerCore->getUICore()->refreshUI();
+		}
+		
+		
+		
+	}
+
+}
+
 
 void PreferencesDialog::numberOfThreadsChanged( int threads )
 {
@@ -121,7 +145,7 @@ void PreferencesDialog::loadSettings()
 		preferencesUi.numberOfThreads->setMinimum( 1 );
 		preferencesUi.numberOfThreads->setMaximum( m_ViewerCore->getOptionMap()->getPropertyAs<uint8_t>( "maxNumberOfThreads" ) );
 	}
-
+	screenshotXChanged( preferencesUi.sizeX->value() );
 }
 
 void PreferencesDialog::saveSettings()
