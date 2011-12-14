@@ -366,7 +366,6 @@ QPixmap UICore::getScreenshot()
 		const int widgetWidth = ensembleList.front()[0].placeHolder->width();
 		QPixmap screenshot( 3 * widgetWidth, ensembleList.size() * widgetHeight + bottomMargin ) ;
 		QPainter painter( &screenshot );
-		painter.fillRect( screenshot.rect(), Qt::black );
 		unsigned short eIndex = 0;
 		BOOST_FOREACH( ViewWidgetEnsembleListType::reference ensemble, ensembleList ) {
 			for ( unsigned short i = 0; i < 3; i++ ) {

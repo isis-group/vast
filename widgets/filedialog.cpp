@@ -220,11 +220,11 @@ void isis::viewer::widget::FileDialog::browse()
 
 	m_Interface.fileDirEdit->clear();
 	m_PathList.clear();
-	disconnect( m_Interface.fileDirEdit, SIGNAL( textChanged( QString ) ), this, SLOT( parsePath() ) );
+	disconnect( m_Interface.fileDirEdit, SIGNAL( editTextChanged( QString ) ), this, SLOT( parsePath() ) );
 	BOOST_FOREACH( QStringList::reference file, files ) {
 		m_Interface.fileDirEdit->addItem( file );
 	}
-	connect( m_Interface.fileDirEdit, SIGNAL( textChanged( QString ) ), this, SLOT( parsePath() ) );
+	connect( m_Interface.fileDirEdit, SIGNAL( editTextChanged( QString ) ), this, SLOT( parsePath() ) );
 	parsePath();
 }
 
