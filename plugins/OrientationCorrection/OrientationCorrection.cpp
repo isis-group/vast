@@ -94,7 +94,7 @@ void OrientatioCorrectionDialog::flipPressed()
 			transform( 0, 0 ) = -1;
 			desc = "Flip X";
 		}
-		applyTransform( transform, ui.checkISO->isChecked(), desc );
+		applyTransform( transform, false, desc );
 	}
 }
 void OrientatioCorrectionDialog::applyPressed()
@@ -111,7 +111,7 @@ void OrientatioCorrectionDialog::applyPressed()
 	desc << "Transformation matrix: " << std::endl << transform( 0, 0 ) << " " << transform( 1, 0 ) << " " << transform( 2, 0 ) << std::endl <<
 		 transform( 0, 1 ) << " " << transform( 1, 1 ) << " " << transform( 2, 1 ) << std::endl <<
 		 transform( 0, 2 ) << " " << transform( 1, 2 ) << " " << transform( 2, 2 ) << std::endl;
-	applyTransform( transform, ui.checkISO->isChecked(), desc.str() );
+	applyTransform( transform, false, desc.str() );
 }
 
 void OrientatioCorrectionDialog::rotatePressed()
@@ -145,7 +145,7 @@ void OrientatioCorrectionDialog::rotatePressed()
 		desc << "Z Rotation: " << ui.rotateZ->text().toDouble() << std::endl;
 	}
 
-	applyTransform( transform, ui.checkISO->isChecked(), desc.str() );
+	applyTransform( transform, false, desc.str() );
 
 }
 bool OrientatioCorrectionDialog::applyTransform( const boost::numeric::ublas::matrix< float >& trans, bool center, const std::string &desc ) const

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>527</width>
-    <height>507</height>
+    <height>447</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -180,6 +180,9 @@
              <string>Align</string>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_5">
+             <property name="margin">
+              <number>2</number>
+             </property>
              <item>
               <widget class="QCheckBox" name="alignCheck">
                <property name="text">
@@ -274,13 +277,6 @@
           </item>
          </layout>
         </widget>
-       </widget>
-      </item>
-      <item row="1" column="0">
-       <widget class="QCheckBox" name="checkISO">
-        <property name="text">
-         <string>Transform around iso-center</string>
-        </property>
        </widget>
       </item>
      </layout>
