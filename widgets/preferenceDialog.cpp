@@ -128,7 +128,9 @@ void PreferencesDialog::saveSettings()
 {
 	m_ViewerCore->getSettings()->beginGroup( "UserProfile" );
 	m_ViewerCore->getSettings()->setValue( "interpolationType", preferencesUi.comboInterpolation->currentIndex() );
-	m_ViewerCore->getSettings()->setValue( "lut", preferencesUi.comboBox->currentText() );
+	m_ViewerCore->getSettings()->endGroup();
+	m_ViewerCore->getSettings()->sync();
+	
 	m_ViewerCore->getOptionMap()->setPropertyAs<bool>( "showStartWidget", preferencesUi.checkStartUpScreen->isChecked() );
 	m_ViewerCore->getOptionMap()->setPropertyAs<bool>( "showLoadingWidget", preferencesUi.checkLoadingScreen->isChecked() );
 	//screenshot
@@ -138,13 +140,14 @@ void PreferencesDialog::saveSettings()
 	m_ViewerCore->getOptionMap()->setPropertyAs<uint16_t>("screenshotDPIY", preferencesUi.dpiY->value() );
 	m_ViewerCore->getOptionMap()->setPropertyAs<uint16_t>("screenshotWidth", preferencesUi.sizeX->value() );
 	m_ViewerCore->getOptionMap()->setPropertyAs<uint16_t>("screenshotHeight", preferencesUi.sizeY->value() );
-	
-	
-	m_ViewerCore->getSettings()->endGroup();
-	m_ViewerCore->getSettings()->sync();
 
 	if( m_ViewerCore->hasImage() ) {
 		m_ViewerCore->getCurrentImage()->lut = preferencesUi.comboBox->currentText().toStdString() ;
+		if( m_ViewerCore->getCurrentImage()->imageType == ImageHolder::z_map ) {
+			m_ViewerCore->getOptionMap()->setPropertyAs<std::string>("lutZMap", preferencesUi.comboBox->currentText().toStdString() );
+		} else {
+			m_ViewerCore->getOptionMap()->setPropertyAs<std::string>("lutAna", preferencesUi.comboBox->currentText().toStdString() );
+		}
 	}
 }
 

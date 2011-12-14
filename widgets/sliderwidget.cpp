@@ -32,10 +32,14 @@ SliderWidget::SliderWidget( QWidget *parent, isis::viewer::QViewerCore *core )
 	connect( m_Interface.opacitySlider, SIGNAL( sliderMoved( int ) ), this, SLOT( opacityChanged( int ) ) );
 	connect( m_Interface.maxSlider, SIGNAL( sliderMoved( int ) ), this, SLOT( upperThresholdChanged( int ) ) );
 	connect( m_Interface.minSlider, SIGNAL( sliderMoved( int ) ), this, SLOT( lowerThresholdChanged( int ) ) );
-	m_Interface.checkGlobal->setChecked( true );
+	connect( m_Interface.checkGlobal, SIGNAL( toggled(bool)), this, SLOT( toggleGlobal(bool)));
 
 }
 
+void SliderWidget::toggleGlobal(bool global)
+{
+	m_ViewerCore->getOptionMap()->setPropertyAs<bool>("zmapGlobal", global);
+}
 
 void SliderWidget::setSliderVisible( SliderWidget::SliderType slider , bool visible )
 {
@@ -127,7 +131,6 @@ void SliderWidget::synchronize()
 		}
 	} else {
 		m_Interface.zmapModeFrame->setVisible( false );
-		m_Interface.checkGlobal->setChecked( false );
 	}
 
 	if( m_ViewerCore->hasImage() && !m_ViewerCore->getCurrentImage()->isRGB ) {
@@ -157,6 +160,7 @@ void SliderWidget::synchronize()
 	} else {
 		QWidget::setVisible( false );
 	}
+	m_Interface.checkGlobal->setChecked( m_ViewerCore->getOptionMap()->getPropertyAs<bool>("zmapGlobal"));
 
 }
 

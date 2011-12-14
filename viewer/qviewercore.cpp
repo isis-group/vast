@@ -118,12 +118,7 @@ void QViewerCore::setShowCrosshair( bool c )
 
 void QViewerCore::settingsChanged()
 {
-	getSettings()->beginGroup( "UserProfile" );
-
-	if( hasImage() ) {
-		getCurrentImage()->lut = getSettings()->value( "lut", "fallback" ).toString().toStdString();
-		getCurrentImage()->updateColorMap();
-	}
+	getSettings()->beginGroup( "ViewerCore" );
 
 	BOOST_FOREACH( UICore::WidgetMap::const_reference widget, getUICore()->getWidgets() ) {
 		widget.first->setInterpolationType( static_cast<InterpolationType>( getSettings()->value( "interpolationType", 0 ).toUInt() ) );
@@ -131,6 +126,26 @@ void QViewerCore::settingsChanged()
 	emitShowLabels( getOptionMap()->getPropertyAs<bool>( "showLabels" ) );
 	m_UI->getMainWindow()->getInterface().actionPropagate_Zooming->setChecked( getOptionMap()->getPropertyAs<bool>( "propagateZooming" ) );
 	getSettings()->endGroup();
+	
+	if( hasImage() ) {
+		if( getCurrentImage()->imageType == ImageHolder::z_map ) {
+			getCurrentImage()->lut = getOptionMap()->getPropertyAs<std::string>("lutZMap");
+		}else {
+			getCurrentImage()->lut = getOptionMap()->getPropertyAs<std::string>("lutAna");
+		}
+		getCurrentImage()->updateColorMap();
+	}
+	if( getMode() == ViewerCoreBase::zmap && getOptionMap()->getPropertyAs<bool>("zmapGlobal")) {
+		BOOST_FOREACH( DataContainer::reference image, getDataContainer() )
+		{
+			if( image.second->imageType == ImageHolder::z_map ) {
+				image.second->lut = getOptionMap()->getPropertyAs<std::string>("lutZMap");
+				image.second->updateColorMap();
+			}
+		}
+		
+	}
+	updateScene();
 	m_UI->refreshUI();
 }
 
@@ -297,6 +312,8 @@ void QViewerCore::closeImage( boost::shared_ptr<ImageHolder> image )
 void QViewerCore::loadSettings()
 {
 	getSettings()->beginGroup( "ViewerCore" );
+	getOptionMap()->setPropertyAs<std::string>("lutZMap", getSettings()->value( "lutZMap", getOptionMap()->getPropertyAs<std::string>("lutZMap").c_str() ).toString().toStdString() );
+	getOptionMap()->setPropertyAs<std::string>("lutAna", getSettings()->value( "lutAna", getOptionMap()->getPropertyAs<std::string>("lutAna").c_str() ).toString().toStdString() );
 	getOptionMap()->setPropertyAs<bool>( "propagateZooming", getSettings()->value( "propagateZooming", false ).toBool() );
 	getOptionMap()->setPropertyAs<bool>( "showLabels", getSettings()->value( "showLabels", false ).toBool() );
 	getOptionMap()->setPropertyAs<bool>( "showCrosshair", getSettings()->value( "showCrosshair", true ).toBool() );
@@ -315,7 +332,7 @@ void QViewerCore::loadSettings()
 	getOptionMap()->setPropertyAs<bool>( "screenshotKeepAspectRatio", getSettings()->value( "screenshotKeepAspectRatio", getOptionMap()->getPropertyAs<bool>("screenshotKeepAspectRatio") ).toBool() );
 	getOptionMap()->setPropertyAs<uint8_t>( "screenshotQuality", getSettings()->value( "screenshotQuality", getOptionMap()->getPropertyAs<uint8_t>("screenshotQuality") ).toUInt() );
 	getOptionMap()->setPropertyAs<uint16_t>( "screenshotDPIX", getSettings()->value( "screenshotDPIX", getOptionMap()->getPropertyAs<uint16_t>("screenshotDPIX") ).toUInt() );
-	getOptionMap()->setPropertyAs<uint16_t>( "screenshotDPIY", getSettings()->value( "screenshotDPIY", getOptionMap()->getPropertyAs<uint16_t>("screenshotDPIY") ).toUInt() );	
+	getOptionMap()->setPropertyAs<uint16_t>( "screenshotDPIY", getSettings()->value( "screenshotDPIY", getOptionMap()->getPropertyAs<uint16_t>("screenshotDPIY") ).toUInt() );
 	getSettings()->endGroup();
 }
 
@@ -324,6 +341,8 @@ void QViewerCore::saveSettings()
 {
 	//saving the preferences to the profile file
 	getSettings()->beginGroup( "ViewerCore" );
+	getSettings()->setValue( "lutZMap", getOptionMap()->getPropertyAs<std::string>( "lutZMap" ).c_str() );
+	getSettings()->setValue( "lutAna", getOptionMap()->getPropertyAs<std::string>( "lutAna" ).c_str() );
 	getSettings()->setValue( "propagateZooming", getOptionMap()->getPropertyAs<bool>( "propagateZooming" ) );
 	getSettings()->setValue( "minMaxSearchRadius", getOptionMap()->getPropertyAs<uint16_t>( "minMaxSearchRadius" ) );
 	getSettings()->setValue( "showLabels", getOptionMap()->getPropertyAs<bool>( "showLabels" ) );

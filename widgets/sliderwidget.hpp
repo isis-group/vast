@@ -26,6 +26,7 @@ public Q_SLOTS:
 	void lowerThresholdChanged( int );
 	void upperThresholdChanged( int );
 	void synchronize();
+	void toggleGlobal( bool );
 
 private:
 	double norm( const double &min, const double &max, const int &pos );

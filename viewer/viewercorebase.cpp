@@ -36,7 +36,14 @@ ImageHolder::ImageListType ViewerCoreBase::addImageList( const std::list< data::
 boost::shared_ptr<ImageHolder> ViewerCoreBase::addImage( const isis::data::Image &image, const isis::viewer::ImageHolder::ImageType &imageType )
 {
 	boost::shared_ptr<ImageHolder> retImage = m_DataContainer.addImage( image, imageType );
-
+	
+	//setting the lutAna
+	if( imageType == ImageHolder::anatomical_image ) {
+		retImage->lut = getOptionMap()->getPropertyAs<std::string>("lutAna");
+	} else {
+		retImage->lut = getOptionMap()->getPropertyAs<std::string>("lutZMap" );
+	}
+	retImage->updateColorMap();
 	if( imageType == ImageHolder::anatomical_image && image.getSizeAsVector()[3] == 1 ) {
 		m_CurrentAnatomicalReference = retImage;
 	}
@@ -84,6 +91,7 @@ std::string ViewerCoreBase::getVersion() const
 
 void ViewerCoreBase::setCommonViewerOptions()
 {
+	m_OptionsMap->setPropertyAs<bool>("zmapGlobal", true );
 	m_OptionsMap->setPropertyAs<bool>( "propagateZooming", false );
 	m_OptionsMap->setPropertyAs<bool>( "showLables", false );
 	m_OptionsMap->setPropertyAs<bool>( "showCrosshair", true );
@@ -110,6 +118,8 @@ void ViewerCoreBase::setCommonViewerOptions()
 	m_OptionsMap->setPropertyAs<uint16_t>("screenshotDPIX", 300);
 	m_OptionsMap->setPropertyAs<uint16_t>("screenshotDPIY", 300);	
 	m_OptionsMap->setPropertyAs<bool>("screenshotKeepAspectRatio", true);
+	m_OptionsMap->setPropertyAs<std::string>("lutAna", "standard_grey_values" );
+	m_OptionsMap->setPropertyAs<std::string>("lutZMap", "standard_zmap" );
 	//logging
 	m_OptionsMap->setPropertyAs<uint16_t>( "logDelayTime", 6000 );
 	m_OptionsMap->setPropertyAs<bool>( "showErrorMessages", true );
