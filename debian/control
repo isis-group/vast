@@ -8,7 +8,7 @@ Standards-Version: 3.8.1
 Package: vast
 Section: science
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, libisiscore0 (>= 0.4.1), isis-qt4
+Depends: ${shlibs:Depends}, ${misc:Depends}, libisiscore0 (>= 0.4.2), isis-qt4
 Recommends: vast-correlationplotter, vast-timeplotter, vast-orientationcorrection, vast-maskedit, isisio0-vista, isisio0-nifti-sa, isisio0-dicom, isisio0-gz-proxy, isisio0-tar-proxy
 Description: vast is a viewer for medical image data. 
  It supports all image formats that are supportet by the isis package. With version 0.1.0 these are the following:
@@ -18,7 +18,7 @@ Description: vast is a viewer for medical image data.
 Package: vast-timeplotter
 Section: science
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, libqwt5-qt4, libisiscore0 (>= 0.4.1)
+Depends: ${shlibs:Depends}, ${misc:Depends}, libqwt5-qt4, libisiscore0 (>= 0.4.2)
 Description:  vast is a viewer for medical image data. 
  It supports all image formats that are supportet by the isis package. With version 0.1.0 these are the following:
  nifti, vista, dicom, tar.gz, raw, img, hdr.
@@ -29,7 +29,7 @@ Description:  vast is a viewer for medical image data.
 Package: vast-orientationcorrection
 Section: science
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, libisiscore0 (>= 0.4.1)
+Depends: ${shlibs:Depends}, ${misc:Depends}, libisiscore0 (>= 0.4.2)
 Description:  vast is a viewer for medical image data. 
  It supports all image formats that are supportet by the isis package. With version 0.1.0 these are the following:
  nifti, vista, dicom, tar.gz, raw, img, hdr.
@@ -40,7 +40,7 @@ Description:  vast is a viewer for medical image data.
 Package: vast-maskedit
 Section: science
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, libisiscore0 (>= 0.4.1)
+Depends: ${shlibs:Depends}, ${misc:Depends}, libisiscore0 (>= 0.4.2)
 Description:  vast is a viewer for medical image data. 
  It supports all image formats that are supportet by the isis package. With version 0.1.0 these are the following:
  nifti, vista, dicom, tar.gz, raw, img, hdr.
@@ -51,7 +51,7 @@ Description:  vast is a viewer for medical image data.
 Package: vast-correlationplotter
 Section: science
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, libisiscore0 (>= 0.4.1)
+Depends: ${shlibs:Depends}, ${misc:Depends}, libisiscore0 (>= 0.4.2)
 Description:  vast is a viewer for medical image data. 
  It supports all image formats that are supportet by the isis package. With version 0.1.0 these are the following:
  nifti, vista, dicom, tar.gz, raw, img, hdr.
@@ -59,3 +59,13 @@ Description:  vast is a viewer for medical image data.
  .
  This package provides a correlation-plotting-plugin for the vast viewer.
 
+Package: vast-histogram
+Section: science
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, libisiscore0 (>= 0.4.2)
+Description:  vast is a viewer for medical image data. 
+ It supports all image formats that are supportet by the isis package. With version 0.1.0 these are the following:
+ nifti, vista, dicom, tar.gz, raw, img, hdr.
+ The viewer is capable of visualizing anatomical images, statistical images and functional images.
+ .
+ This package provides a histogram-plugin for the vast viewer.
