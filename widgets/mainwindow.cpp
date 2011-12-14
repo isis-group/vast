@@ -93,7 +93,7 @@ MainWindow::MainWindow( QViewerCore *core ) :
 	m_Toolbar->addSeparator();
 	m_Toolbar->addAction( m_Interface.actionFind_Global_Min );
 	m_Toolbar->addAction( m_Interface.actionFind_Global_Max );
-	m_Toolbar->addWidget( m_RadiusSpin );
+	m_RadiusSpinAction = m_Toolbar->addWidget( m_RadiusSpin );
 	m_Toolbar->addSeparator();
 	m_RadiusSpin->setMinimum( 0 );
 	m_RadiusSpin->setMaximum( 500 );
@@ -402,12 +402,13 @@ void MainWindow::refreshUI()
 		m_Interface.actionToggle_Zmap_Mode->setChecked( true );
 		m_Interface.actionFind_Global_Max->setVisible(true);
 		m_Interface.actionFind_Global_Min->setVisible(true);
-		m_RadiusSpin->setVisible(true);
+		m_RadiusSpinAction->setVisible(true);
 	} else {
 		m_Interface.actionToggle_Zmap_Mode->setChecked( false );
 		m_Interface.actionFind_Global_Max->setVisible(false);
 		m_Interface.actionFind_Global_Min->setVisible(false);
-		m_RadiusSpin->setVisible(false);
+		m_RadiusSpinAction->setVisible(false);
+		
 	}
 
 	m_Interface.action_Save_Image->setEnabled( m_ViewerCore->hasImage() );

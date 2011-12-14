@@ -78,6 +78,7 @@ private:
 	QToolBar *m_Toolbar;
 
 	QSpinBox *m_RadiusSpin;
+	QAction *m_RadiusSpinAction;
 	QPushButton *m_LogButton;
 
 	QAction *m_ActionReset_Scaling;
