@@ -44,7 +44,8 @@ public:
 	void setID( size_t id ) { m_ID = id; }
 
 	std::vector< ImagePointerType > getImageVector() const { return m_ImageVector; }
-	std::vector< data::Chunk > getChunkVector() const { return m_ChunkVector; }
+	const std::vector< data::Chunk > &getChunkVector() const { return m_ChunkVector; }
+	std::vector< data::Chunk > &getChunkVector() { return m_ChunkVector; }
 	util::PropertyMap &getPropMap() { return m_PropMap; }
 	const util::PropertyMap &getPropMap() const { return m_PropMap; }
 	const util::FixedVector<size_t, 4> &getImageSize() const { return m_ImageSize; }

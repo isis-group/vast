@@ -42,11 +42,13 @@ boost::shared_ptr<ImageHolder> ViewerCoreBase::addImage( const isis::data::Image
 		retImage->lut = getOptionMap()->getPropertyAs<std::string>("lutAna");
 		if( !util::Singletons::get<color::Color, 10>().hasColormap( retImage->lut ) ) {	
 			retImage->lut = std::string( "standard_grey_values");
+			getOptionMap()->setPropertyAs<std::string>("lutAna", retImage->lut );
 		}
 	} else {
 		retImage->lut = getOptionMap()->getPropertyAs<std::string>("lutZMap" );
 		if( !util::Singletons::get<color::Color, 10>().hasColormap( retImage->lut ) ) {	
 			retImage->lut = std::string( "standard_zmap" );
+			getOptionMap()->setPropertyAs<std::string>("lutZMap", retImage->lut );
 		}
 		
 	}

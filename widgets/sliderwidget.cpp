@@ -69,7 +69,11 @@ void SliderWidget::opacityChanged( int sliderPos )
 		m_ViewerCore->getCurrentImage()->opacity = norm( 0.0, 1.0, sliderPos )  ;
 	} else {
 		BOOST_FOREACH( DataContainer::reference image, m_ViewerCore->getDataContainer() ) {
-			if( image.second->imageType == ImageHolder::z_map ) {
+			if( m_ViewerCore->getMode() == ViewerCoreBase::zmap ) {
+				if( image.second->imageType == ImageHolder::z_map ) {
+					image.second->opacity = norm( 0.0, 1.0, sliderPos )  ;
+				}
+			} else {
 				image.second->opacity = norm( 0.0, 1.0, sliderPos )  ;
 			}
 		}
