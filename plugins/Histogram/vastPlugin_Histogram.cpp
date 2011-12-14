@@ -22,7 +22,7 @@ public:
 	virtual std::string getName() { return std::string( "Histogram" ) ; }
 	virtual std::string getDescription() { return std::string( "Plots the image histogram" ); }
 	virtual std::string getTooltip() { return std::string( "" ); }
-	virtual QIcon *getToolbarIcon() { return new QIcon( ":/common/Histogram.png" ); }
+	virtual QIcon *getToolbarIcon() { return new QIcon( ":/common/histogram.gif" ); }
 	virtual bool isGUI() { return true; }
 	virtual bool call() {
 		if( !isInitialized ) {

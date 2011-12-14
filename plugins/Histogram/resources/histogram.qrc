@@ -1,5 +1,5 @@
 <RCC>
   <qresource prefix="common">
-    <file>Histogram.png</file>
+    <file>histogram.gif</file>
   </qresource>
 </RCC>
