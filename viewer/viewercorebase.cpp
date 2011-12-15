@@ -102,6 +102,7 @@ void ViewerCoreBase::setCommonViewerOptions()
 {
 	m_OptionsMap->setPropertyAs<bool>("zmapGlobal", false );
 	m_OptionsMap->setPropertyAs<bool>( "propagateZooming", false );
+	m_OptionsMap->setPropertyAs<uint8_t>( "interpolationType" , 0 );
 	m_OptionsMap->setPropertyAs<bool>( "showLables", false );
 	m_OptionsMap->setPropertyAs<bool>( "showCrosshair", true );
 	m_OptionsMap->setPropertyAs<uint16_t>( "minMaxSearchRadius", 20 );
