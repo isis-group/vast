@@ -20,6 +20,7 @@ void isis::viewer::plugin::CorrelationPlotterDialog::lockClicked()
 {
 	if( m_Interface.lock->isChecked() )  {
 		calculateCorrelation( true );
+		m_CurrentCorrelationMap->syncImage();
 	}
 }
 
@@ -140,7 +141,6 @@ bool isis::viewer::plugin::CorrelationPlotterDialog::createCorrelationMap()
 			return true;
 		}
 	}
-
 	return false;
 }
 

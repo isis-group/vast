@@ -73,6 +73,8 @@ public:
 	std::list< WidgetInterface * > getWidgetList() { return m_WidgetList; }
 
 	void updateOrientation();
+	
+	void syncImage();
 
 	/**offset, scaling**/
 	std::pair<double, double> getOptimalScaling();
@@ -133,10 +135,21 @@ private:
 		} else {
 			m_ImageVector.push_back( imagePtr );
 		}
-
-
 	}
-
+	
+	template<typename TYPE>
+	void _syncImage() {
+#pragma omp parallel for
+		for( size_t t = 0; t < getImageSize()[3]; t++ ) {
+			for( size_t z = 0; z < getImageSize()[2]; z++ ) {
+				for( size_t y = 0; y < getImageSize()[1]; y++ ) {
+					for( size_t x = 0; x < getImageSize()[0]; x++ ) {
+						getISISImage()->voxel<TYPE>(x,y,z,t) = util::Value<InternalImageType> ( getChunkVector()[t].voxel<InternalImageType>(x,y,z) ).as<TYPE>();
+					}
+				}
+			}
+		}
+	}
 
 };
 
