@@ -285,9 +285,9 @@ void UICore::refreshUI( )
 	m_SliderWidget->synchronize();
 	m_ImageStackWidget->synchronize();
 	m_VoxelInformationWidget->synchronize();
-	BOOST_FOREACH( WidgetMap::reference widget, getWidgets() ) {
+	BOOST_FOREACH( WidgetMap::reference widget, getWidgets() ) {		
 		WidgetInterface::ImageVectorType iVector = widget.second.widgetImplementation->getImageVector();
-
+		
 		if( !iVector.size() ) {
 			widget.second.dockWidget->setVisible( false );
 		} else {
@@ -414,6 +414,19 @@ QImage UICore::getScreenshot()
 	}
 	return QImage();
 }
+
+void UICore::setViewPlaneOrientation(PlaneOrientation orientation, bool visible)
+{
+	BOOST_FOREACH( ViewWidgetEnsembleListType::reference ensemble, getEnsembleList() )
+	{
+		for( unsigned short i = 0; i < 3; i++ ) {
+			if( ensemble[i].planeOrientation == orientation ) {
+				ensemble[i].dockWidget->setVisible( visible );
+			}
+		}
+	}	
+}
+
 
 
 }

@@ -528,10 +528,17 @@
             <item>
              <widget class="QSpinBox" name="timestepSpinBox">
               <property name="sizePolicy">
-               <sizepolicy hsizetype="Minimum" vsizetype="Maximum">
+               <sizepolicy hsizetype="Fixed" vsizetype="Maximum">
                 <horstretch>0</horstretch>
                 <verstretch>0</verstretch>
                </sizepolicy>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QToolButton" name="playButton">
+              <property name="text">
+               <string/>
               </property>
              </widget>
             </item>

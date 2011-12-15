@@ -129,6 +129,10 @@
      <addaction name="actionShow_Labels"/>
      <addaction name="actionShow_Crosshair"/>
      <addaction name="actionInformation_Areas"/>
+     <addaction name="separator"/>
+     <addaction name="actionAxial_View"/>
+     <addaction name="actionSagittal_View"/>
+     <addaction name="actionCoronal_View"/>
     </widget>
     <addaction name="action_Preferences"/>
     <addaction name="separator"/>
@@ -390,6 +394,39 @@
    </property>
    <property name="shortcut">
     <string>F1</string>
+   </property>
+  </action>
+  <action name="actionSagittal_View">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Sagittal View</string>
+   </property>
+   <property name="shortcut">
+    <string>S, V</string>
+   </property>
+  </action>
+  <action name="actionCoronal_View">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Coronal View</string>
+   </property>
+   <property name="shortcut">
+    <string>C, V</string>
+   </property>
+  </action>
+  <action name="actionAxial_View">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Axial View</string>
+   </property>
+   <property name="shortcut">
+    <string>A, V</string>
    </property>
   </action>
  </widget>

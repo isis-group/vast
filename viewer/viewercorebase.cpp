@@ -131,6 +131,7 @@ void ViewerCoreBase::setCommonViewerOptions()
 	m_OptionsMap->setPropertyAs<bool>("screenshotKeepAspectRatio", true);
 	m_OptionsMap->setPropertyAs<std::string>("lutAna", "standard_grey_values" );
 	m_OptionsMap->setPropertyAs<std::string>("lutZMap", "standard_zmap" );
+	m_OptionsMap->setPropertyAs<uint16_t>("timeseriesPlayDelayTime", 50 );
 	//logging
 	m_OptionsMap->setPropertyAs<uint16_t>( "logDelayTime", 6000 );
 	m_OptionsMap->setPropertyAs<bool>( "showErrorMessages", true );

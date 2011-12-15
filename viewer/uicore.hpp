@@ -71,6 +71,8 @@ public:
 
 	const ViewWidgetEnsembleListType &getEnsembleList() const { return m_EnsembleList; }
 	ViewWidgetEnsembleListType &getEnsembleList() { return m_EnsembleList; }
+	
+	void setViewPlaneOrientation( PlaneOrientation orientation, bool visible );
 
 	void rearrangeViewWidgets();
 

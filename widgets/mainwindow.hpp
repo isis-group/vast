@@ -72,6 +72,9 @@ public Q_SLOTS:
 	void loadSettings();
 	void saveSettings();
 	void createScreenshot();
+	void toggleSagittalView(bool);
+	void toggleAxialView(bool);
+	void toggleCoronalView(bool);
 
 
 private:
