@@ -18,6 +18,7 @@ MainWindow::MainWindow( QViewerCore *core ) :
 	startWidget( new widget::StartWidget( this, core ) ),
 	scalingWidget( new widget::ScalingWidget( this, core ) ),
 	keyCommandsdialog( new widget::KeyCommandsDialog( this ) ),
+	helpDialog( new widget::HelpDialog( this ) ),
 	m_ViewerCore( core ),
 	m_Toolbar( new QToolBar( this ) ),
 	m_RadiusSpin( new QSpinBox( this ) ),
@@ -76,6 +77,8 @@ MainWindow::MainWindow( QViewerCore *core ) :
 	connect( m_Interface.actionToggle_Zmap_Mode, SIGNAL( triggered( bool ) ), this, SLOT( toggleZMapMode( bool ) ) );
 	connect( m_Interface.actionKey_Commands, SIGNAL( triggered() ), this, SLOT( showKeyCommandDialog() ) );
 	connect( m_Interface.actionCreate_Screenshot, SIGNAL( triggered() ), this, SLOT( createScreenshot() ) );
+	connect( m_Interface.actionHelp, SIGNAL( triggered()), helpDialog, SLOT( show()) );
+	
 
 	//toolbar stuff
 	m_Toolbar->setOrientation( Qt::Horizontal );

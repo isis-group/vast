@@ -149,8 +149,9 @@
     <property name="title">
      <string>&amp;Help</string>
     </property>
-    <addaction name="actionKey_Commands"/>
+    <addaction name="actionHelp"/>
     <addaction name="separator"/>
+    <addaction name="actionKey_Commands"/>
    </widget>
    <addaction name="menu_File"/>
    <addaction name="menu_Preferences"/>
@@ -381,6 +382,14 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+Shift+Print</string>
+   </property>
+  </action>
+  <action name="actionHelp">
+   <property name="text">
+    <string>Help</string>
+   </property>
+   <property name="shortcut">
+    <string>F1</string>
    </property>
   </action>
  </widget>

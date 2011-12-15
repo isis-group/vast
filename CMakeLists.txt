@@ -7,6 +7,7 @@ PROJECT(vast)
 # set install infix for plugin installation path
 ############################################################
 set(VAST_PLUGIN_INFIX lib/vast/plugins)
+set(VAST_DOC_INFIX share/vast/doc/html)
 
 include_directories(widgets)
 
@@ -33,6 +34,7 @@ set(VIEWER_FILES_HPP
 	widgets/filedialog.hpp
 	widgets/startwidget.hpp
 	widgets/keycommandsdialog.hpp
+	widgets/helpdialog.hpp
 )
 
 set(WIDGET_FILES_HPP
@@ -56,8 +58,11 @@ add_definitions(-D_VAST_VERSION_PATCH=${VAST_VERSION_PATCH})
 option(ISIS_DOCUMENTATION "Build the documentation for vast" OFF)
 
 IF(ISIS_DOCUMENTATION)
-	add_subdirectory(documentation)
+	add_subdirectory(documentation)	
 ENDIF(ISIS_DOCUMENTATION)
+
+set_source_files_properties( "${CMAKE_CURRENT_SOURCE_DIR}/widgets/helpdialog.cpp" PROPERTIES COMPILE_FLAGS
+		"-DVAST_DOC_PATH=\\\"${CMAKE_INSTALL_PREFIX}/${VAST_DOC_INFIX}\\\"")
 
 ###########################################################
 # isis stuff
@@ -90,7 +95,7 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR} ${ISIS_INCLUDE_DIRS})
 # qt4 stuff
 ###########################################################
 
-FIND_PACKAGE(Qt4 COMPONENTS QtCore QtGui REQUIRED)
+FIND_PACKAGE(Qt4 COMPONENTS QtCore QtGui QtWebKit REQUIRED)
 
 set(QT_USE_QTUITOOLS TRUE)
 set(QT_USE_QTOPENGL TRUE)
@@ -125,8 +130,12 @@ SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ftemplate-depth-100")
 # library naming conventions
 ############################################################
 set_source_files_properties( "viewer/pluginloader.cpp" PROPERTIES COMPILE_FLAGS
-	"-DPLUGIN_PATH=\\\"${CMAKE_INSTALL_PREFIX}/${VAST_PLUGIN_INFIX}\\\" -DDL_SUFFIX=\\\"${CMAKE_SHARED_LIBRARY_SUFFIX}\\\" -DDL_PREFIX=\\\"${CMAKE_SHARED_LIBRARY_PREFIX}\\\""
+	"-D_VAST_PLUGIN_PATH=\\\"${CMAKE_INSTALL_PREFIX}/${VAST_PLUGIN_INFIX}\\\" -DDL_SUFFIX=\\\"${CMAKE_SHARED_LIBRARY_SUFFIX}\\\" -DDL_PREFIX=\\\"${CMAKE_SHARED_LIBRARY_PREFIX}\\\""
 )
+
+############################################################
+# set the documentation path
+############################################################
 
 ###########################################################
 # CPack config
@@ -175,8 +184,9 @@ target_link_libraries(vast ${NEEDED_LIBS})
 install(TARGETS vast RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin )
 
 # install header files
-install(FILES ${VIEWER_DEV_FILES} DESTINATION include/vast COMPONENT Development)
-install(FILES ${WIDGET_DEV_FILES} DESTINATION include/vast COMPONENT Development)
+install(FILES ${VIEWER_DEV_FILES} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/vast COMPONENT Development)
+
+#install(FILES ${WIDGET_DEV_FILES} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/vast COMPONENT Development)
 
 #install pixmap
 install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/resources/vast.xpm DESTINATION ${CMAKE_INSTALL_PREFIX}/share/pixmaps)

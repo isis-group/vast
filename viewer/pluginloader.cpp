@@ -138,8 +138,8 @@ PluginLoader::PluginLoader()
 		}
 	}
 
-	if( std::string( PLUGIN_PATH ).size() ) {
-		addPluginSearchPath( std::string ( PLUGIN_PATH ) );
+	if( std::string( _VAST_PLUGIN_PATH ).size() ) {
+		addPluginSearchPath( std::string ( _VAST_PLUGIN_PATH ) );
 	}
 
 	findPlugins( m_PluginSearchPaths );
