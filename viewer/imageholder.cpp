@@ -122,8 +122,8 @@ bool ImageHolder::setImage( const data::Image &image, const ImageType &_imageTyp
 	}
 
 	// get some image information
+	
 	majorTypeID = image.getMajorTypeID();
-	minMax = image.getMinMax();
 	m_ImageSize = image.getSizeAsVector();
 	LOG( Debug, verbose_info )  << "Fetched image of size " << m_ImageSize << " and type "
 								<< image.getMajorTypeName() << ".";
@@ -131,6 +131,7 @@ bool ImageHolder::setImage( const data::Image &image, const ImageType &_imageTyp
 
 	if( data::ValuePtr<util::color24>::staticID != majorTypeID && data::ValuePtr<util::color48>::staticID != majorTypeID ) {
 		isRGB = false;
+		minMax = image.getMinMax();
 		copyImageToVector<InternalImageType>( image );
 	} else {
 		copyImageToVector<InternalImageColorType>( image );
@@ -189,6 +190,7 @@ bool ImageHolder::setImage( const data::Image &image, const ImageType &_imageTyp
 	if( !isRGB ) {
 		extent = fabs( minMax.second->as<double>() - minMax.first->as<double>() );
 		optimalScalingOffset = getOptimalScaling();
+		
 		m_PropMap.setPropertyAs<double>( "scalingMinValue", minMax.first->as<double>() );
 		m_PropMap.setPropertyAs<double>( "scalingMaxValue", minMax.second->as<double>() );
 	}
