@@ -287,13 +287,21 @@ void UICore::refreshUI( )
 	m_VoxelInformationWidget->synchronize();
 	BOOST_FOREACH( WidgetMap::reference widget, getWidgets() ) {		
 		WidgetInterface::ImageVectorType iVector = widget.second.widgetImplementation->getImageVector();
-		
 		if( !iVector.size() ) {
 			widget.second.dockWidget->setVisible( false );
 		} else {
 			widget.second.dockWidget->setVisible( true );
 		}
-
+		//go through all the images and check if we need this widget ( 2d data? )TODO 
+		bool widgetNeeded = false;
+		BOOST_FOREACH( WidgetInterface::ImageVectorType::const_reference image, iVector )
+		{
+			const util::ivector4 mappedSize = QOrienationHandler::mapCoordsToOrientation( image->getImageSize(), image, widget.second.widgetImplementation->getPlaneOrientation() );
+			if( mappedSize[0] > 1 && mappedSize[1] > 1 ) {
+				widgetNeeded = true;
+			}
+		}
+		widget.second.dockWidget->setVisible(widgetNeeded);
 		widget.second.widgetImplementation->setCrossHairWidth( 1 );
 
 		if( std::find( iVector.begin(), iVector.end(), m_ViewerCore->getCurrentImage() ) != iVector.end() ) {
