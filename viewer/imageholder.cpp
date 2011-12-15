@@ -298,7 +298,9 @@ void ImageHolder::checkVoxelCoords( util::ivector4 &vc )
 
 void ImageHolder::updateColorMap()
 {
-	util::Singletons::get<color::Color, 10>().adaptColorMapToImage( this );
+	if( !isRGB ) {
+		util::Singletons::get<color::Color, 10>().adaptColorMapToImage( this );
+	}
 }
 
 void ImageHolder::removeWidget( WidgetInterface *widget )

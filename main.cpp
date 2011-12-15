@@ -24,6 +24,8 @@ int main( int argc, char *argv[] )
 	util::_internal::Log<data::Runtime>::setHandler( boost::shared_ptr<qt4::QDefaultMessagePrint>( isis_handler ) );
 	util::_internal::Log<image_io::Runtime>::setHandler( boost::shared_ptr<qt4::QDefaultMessagePrint>( imageio_handler ) );
 
+// 	qt4::QDefaultMessagePrint::stopBelow(warning);
+	
 	std::string appName = "vast";
 	std::string orgName = "cbs.mpg.de";
 
