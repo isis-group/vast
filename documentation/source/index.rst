@@ -6,6 +6,8 @@
 Welcome to vast's documentation!
 ================================
 
+**!!The documentation is currently under construction!!**
+
 Contents:
 
 .. toctree::
