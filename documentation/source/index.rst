@@ -11,7 +11,10 @@ Contents:
 .. toctree::
    :maxdepth: 2
 
-
+   introduction
+   fileformats
+   openingimages
+   screenshotfunction
 
 Indices and tables
 ==================
