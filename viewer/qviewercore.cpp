@@ -282,10 +282,6 @@ void QViewerCore::openPath( QStringList fileList, ImageHolder::ImageType imageTy
 
 void QViewerCore::closeImage( boost::shared_ptr<ImageHolder> image )
 {
-	BOOST_FOREACH( std::list< WidgetInterface *>::const_reference widget, image->getWidgetList() ) {
-		widget->removeImage( image );
-	}
-
 	if( getCurrentImage().get() == image.get() ) {
 		std::list<boost::shared_ptr< ImageHolder > > tmpList;
 		BOOST_FOREACH( DataContainer::const_reference image, getDataContainer() ) {
