@@ -45,7 +45,7 @@ set(WIDGET_FILES_HPP
 ##########################################################
 set(VAST_VERSION_MAJOR "0")
 set(VAST_VERSION_MINOR "2")
-set(VAST_VERSION_PATCH "3")
+set(VAST_VERSION_PATCH "4")
 
 add_definitions(-D_VAST_VERSION_MAJOR=${VAST_VERSION_MAJOR})
 add_definitions(-D_VAST_VERSION_MINOR=${VAST_VERSION_MINOR})
