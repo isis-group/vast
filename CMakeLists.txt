@@ -7,6 +7,7 @@ PROJECT(vast)
 # set install infix for plugin installation path
 ############################################################
 set(VAST_PLUGIN_INFIX lib/vast/plugins)
+set(VAST_DOC_INFIX share/vast/doc/html)
 
 include_directories(widgets)
 
@@ -33,6 +34,7 @@ set(VIEWER_FILES_HPP
 	widgets/filedialog.hpp
 	widgets/startwidget.hpp
 	widgets/keycommandsdialog.hpp
+	widgets/helpdialog.hpp
 )
 
 set(WIDGET_FILES_HPP
@@ -41,13 +43,26 @@ set(WIDGET_FILES_HPP
 ##########################################################
 # set viewer version number
 ##########################################################
-set(ISIS_VIEWER_VERSION_MAJOR "0")
-set(ISIS_VIEWER_VERSION_MINOR "2")
-set(ISIS_VIEWER_VERSION_PATCH "3")
+set(VAST_VERSION_MAJOR "0")
+set(VAST_VERSION_MINOR "2")
+set(VAST_VERSION_PATCH "3")
 
-add_definitions(-D_ISIS_VIEWER_VERSION_MAJOR=${ISIS_VIEWER_VERSION_MAJOR})
-add_definitions(-D_ISIS_VIEWER_VERSION_MINOR=${ISIS_VIEWER_VERSION_MINOR})
-add_definitions(-D_ISIS_VIEWER_VERSION_PATCH=${ISIS_VIEWER_VERSION_PATCH})
+add_definitions(-D_VAST_VERSION_MAJOR=${VAST_VERSION_MAJOR})
+add_definitions(-D_VAST_VERSION_MINOR=${VAST_VERSION_MINOR})
+add_definitions(-D_VAST_VERSION_PATCH=${VAST_VERSION_PATCH})
+
+
+###########################################################
+# documentation
+###########################################################
+option(ISIS_DOCUMENTATION "Build the documentation for vast" OFF)
+
+IF(ISIS_DOCUMENTATION)
+	add_subdirectory(documentation)	
+ENDIF(ISIS_DOCUMENTATION)
+
+set_source_files_properties( "${CMAKE_CURRENT_SOURCE_DIR}/widgets/helpdialog.cpp" PROPERTIES COMPILE_FLAGS
+		"-DVAST_DOC_PATH=\\\"${CMAKE_INSTALL_PREFIX}/${VAST_DOC_INFIX}\\\"")
 
 ###########################################################
 # isis stuff
@@ -80,7 +95,7 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR} ${ISIS_INCLUDE_DIRS})
 # qt4 stuff
 ###########################################################
 
-FIND_PACKAGE(Qt4 COMPONENTS QtCore QtGui REQUIRED)
+FIND_PACKAGE(Qt4 COMPONENTS QtCore QtGui QtWebKit REQUIRED)
 
 set(QT_USE_QTUITOOLS TRUE)
 set(QT_USE_QTOPENGL TRUE)
@@ -115,8 +130,12 @@ SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ftemplate-depth-100")
 # library naming conventions
 ############################################################
 set_source_files_properties( "viewer/pluginloader.cpp" PROPERTIES COMPILE_FLAGS
-	"-DPLUGIN_PATH=\\\"${CMAKE_INSTALL_PREFIX}/${VAST_PLUGIN_INFIX}\\\" -DDL_SUFFIX=\\\"${CMAKE_SHARED_LIBRARY_SUFFIX}\\\" -DDL_PREFIX=\\\"${CMAKE_SHARED_LIBRARY_PREFIX}\\\""
+	"-D_VAST_PLUGIN_PATH=\\\"${CMAKE_INSTALL_PREFIX}/${VAST_PLUGIN_INFIX}\\\" -DDL_SUFFIX=\\\"${CMAKE_SHARED_LIBRARY_SUFFIX}\\\" -DDL_PREFIX=\\\"${CMAKE_SHARED_LIBRARY_PREFIX}\\\""
 )
+
+############################################################
+# set the documentation path
+############################################################
 
 ###########################################################
 # CPack config
@@ -127,9 +146,9 @@ SET(CPACK_PACKAGE_CONTACT "tuerke@cbs.mpg.de")
 SET(CPACK_PACKAGE_NAME "vast")
 SET(CPACK_BUNDLE_NAME ${CPACK_PACKAGE_NAME})
 SET(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_SOURCE_DIR}/COPYING.txt")
-SET(CPACK_PACKAGE_VERSION_MAJOR ${ISIS_VIEWER_VERSION_MAJOR})
-SET(CPACK_PACKAGE_VERSION_MINOR ${ISIS_VIEWER_VERSION_MINOR})
-SET(CPACK_PACKAGE_VERSION_PATCH ${ISIS_VIEWER_VERSION_PATCH})
+SET(CPACK_PACKAGE_VERSION_MAJOR ${VAST_VERSION_MAJOR})
+SET(CPACK_PACKAGE_VERSION_MINOR ${VAST_VERSION_MINOR})
+SET(CPACK_PACKAGE_VERSION_PATCH ${VAST_VERSION_PATCH})
 SET(CPACK_PACKAGE_FILE_NAME ${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH}-${CMAKE_SYSTEM_NAME}-${CMAKE_SYSTEM_PROCESSOR}-${CMAKE_BUILD_TYPE})
 #SET(CPACK_PACKAGE_INSTALL_DIRECTORY "CMake ${${CMAKE_PROJECT_NAME}_VERSION_MAJOR}.${${CMAKE_PROJECT_NAME}_VERSION_MINOR}")
 INCLUDE(CPack)
@@ -165,8 +184,9 @@ target_link_libraries(vast ${NEEDED_LIBS})
 install(TARGETS vast RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin )
 
 # install header files
-install(FILES ${VIEWER_DEV_FILES} DESTINATION include/vast COMPONENT Development)
-install(FILES ${WIDGET_DEV_FILES} DESTINATION include/vast COMPONENT Development)
+install(FILES ${VIEWER_DEV_FILES} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/vast COMPONENT Development)
+
+#install(FILES ${WIDGET_DEV_FILES} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/vast COMPONENT Development)
 
 #install pixmap
 install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/resources/vast.xpm DESTINATION ${CMAKE_INSTALL_PREFIX}/share/pixmaps)

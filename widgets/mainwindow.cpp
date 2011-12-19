@@ -18,6 +18,7 @@ MainWindow::MainWindow( QViewerCore *core ) :
 	startWidget( new widget::StartWidget( this, core ) ),
 	scalingWidget( new widget::ScalingWidget( this, core ) ),
 	keyCommandsdialog( new widget::KeyCommandsDialog( this ) ),
+	helpDialog( new widget::HelpDialog( this ) ),
 	m_ViewerCore( core ),
 	m_Toolbar( new QToolBar( this ) ),
 	m_RadiusSpin( new QSpinBox( this ) ),
@@ -33,6 +34,9 @@ MainWindow::MainWindow( QViewerCore *core ) :
 	addAction( m_ActionAuto_Scaling );
 
 	m_Interface.actionInformation_Areas->setChecked( true );
+	m_Interface.actionAxial_View->setChecked(true);
+	m_Interface.actionSagittal_View->setChecked(true);
+	m_Interface.actionCoronal_View->setChecked(true);
 
 	m_Interface.action_Save_Image->setShortcut( QKeySequence::Save );
 	m_Interface.action_Save_Image->setIconVisibleInMenu( true );
@@ -76,6 +80,11 @@ MainWindow::MainWindow( QViewerCore *core ) :
 	connect( m_Interface.actionToggle_Zmap_Mode, SIGNAL( triggered( bool ) ), this, SLOT( toggleZMapMode( bool ) ) );
 	connect( m_Interface.actionKey_Commands, SIGNAL( triggered() ), this, SLOT( showKeyCommandDialog() ) );
 	connect( m_Interface.actionCreate_Screenshot, SIGNAL( triggered() ), this, SLOT( createScreenshot() ) );
+	connect( m_Interface.actionHelp, SIGNAL( triggered()), helpDialog, SLOT( show()) );
+	connect( m_Interface.actionAxial_View, SIGNAL( triggered(bool)), this, SLOT( toggleAxialView(bool)));
+	connect( m_Interface.actionSagittal_View, SIGNAL( triggered(bool)), this, SLOT( toggleSagittalView(bool)));
+	connect( m_Interface.actionCoronal_View, SIGNAL( triggered(bool)), this, SLOT( toggleCoronalView(bool)));
+	
 
 	//toolbar stuff
 	m_Toolbar->setOrientation( Qt::Horizontal );
@@ -123,6 +132,22 @@ void MainWindow::createScreenshot()
 
 
 }
+
+void MainWindow::toggleAxialView(bool visible )
+{
+	m_ViewerCore->getUICore()->setViewPlaneOrientation( axial, visible );
+}
+
+void MainWindow::toggleCoronalView(bool visible )
+{
+	m_ViewerCore->getUICore()->setViewPlaneOrientation( coronal, visible );
+}
+
+void MainWindow::toggleSagittalView(bool visible)
+{
+	m_ViewerCore->getUICore()->setViewPlaneOrientation( sagittal, visible );
+}
+
 
 
 void MainWindow::loadSettings()
@@ -347,6 +372,7 @@ void MainWindow::saveImageAs()
 
 		if( filename.size() ) {
 			isis::data::IOFactory::write( *m_ViewerCore->getCurrentImage()->getISISImage(), filename.toStdString(), "", "" );
+			m_ViewerCore->setCurrentPath( filename.toStdString() );
 		}
 	}
 

@@ -12,6 +12,7 @@
 #include "filedialog.hpp"
 #include "startwidget.hpp"
 #include "keycommandsdialog.hpp"
+#include "helpdialog.hpp"
 
 namespace isis
 {
@@ -25,6 +26,7 @@ class LoggingDialog;
 class FileDialog;
 class StartWidget;
 class KeyCommandsDialog;
+
 }
 
 class MainWindow : public QMainWindow
@@ -46,6 +48,7 @@ public:
 	widget::StartWidget *startWidget;
 	widget::ScalingWidget *scalingWidget;
 	widget::KeyCommandsDialog *keyCommandsdialog;
+	widget::HelpDialog *helpDialog;
 
 
 public Q_SLOTS:
@@ -69,6 +72,9 @@ public Q_SLOTS:
 	void loadSettings();
 	void saveSettings();
 	void createScreenshot();
+	void toggleSagittalView(bool);
+	void toggleAxialView(bool);
+	void toggleCoronalView(bool);
 
 
 private:

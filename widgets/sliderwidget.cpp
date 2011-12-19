@@ -69,7 +69,11 @@ void SliderWidget::opacityChanged( int sliderPos )
 		m_ViewerCore->getCurrentImage()->opacity = norm( 0.0, 1.0, sliderPos )  ;
 	} else {
 		BOOST_FOREACH( DataContainer::reference image, m_ViewerCore->getDataContainer() ) {
-			if( image.second->imageType == ImageHolder::z_map ) {
+			if( m_ViewerCore->getMode() == ViewerCoreBase::zmap ) {
+				if( image.second->imageType == ImageHolder::z_map ) {
+					image.second->opacity = norm( 0.0, 1.0, sliderPos )  ;
+				}
+			} else {
 				image.second->opacity = norm( 0.0, 1.0, sliderPos )  ;
 			}
 		}
@@ -133,30 +137,25 @@ void SliderWidget::synchronize()
 		m_Interface.zmapModeFrame->setVisible( false );
 	}
 
-	if( m_ViewerCore->hasImage() && !m_ViewerCore->getCurrentImage()->isRGB ) {
+	if( m_ViewerCore->hasImage() ) {
 		QWidget::setVisible( true );
+		m_Interface.opacitySlider->setSliderPosition( m_ViewerCore->getCurrentImage()->opacity * 1000 );
 
 		if( m_ViewerCore->getCurrentImage()->imageType == ImageHolder::z_map ) {
 			setSliderVisible( LowerThreshold, m_ViewerCore->getCurrentImage()->minMax.first->as<double>() < 0 );
 			setSliderVisible( UpperThreshold, m_ViewerCore->getCurrentImage()->minMax.second->as<double>() > 0 );
+			const unsigned short lowerThreshold = 1000 - abs( ( 1000 / m_ViewerCore->getCurrentImage()->minMax.first->as<double>() )
+				* m_ViewerCore->getCurrentImage()->lowerThreshold );
+			const unsigned short upperThreshold = 1000 - abs( ( 1000 / m_ViewerCore->getCurrentImage()->minMax.second->as<double>() )
+			  * m_ViewerCore->getCurrentImage()->upperThreshold );
+			m_Interface.minSlider->setSliderPosition( lowerThreshold );
+			m_Interface.maxSlider->setSliderPosition( upperThreshold );			
 			setSliderVisible( Opacity, true );
 		} else if ( m_ViewerCore->getCurrentImage()->imageType == ImageHolder::anatomical_image ) {
 			setSliderVisible( LowerThreshold, false );
 			setSliderVisible( UpperThreshold, false );
 			setSliderVisible( Opacity, true );
 		}
-
-		const unsigned short lowerThreshold = 1000 - abs( ( 1000 / m_ViewerCore->getCurrentImage()->minMax.first->as<double>() )
-											  * m_ViewerCore->getCurrentImage()->lowerThreshold );
-
-		const unsigned short upperThreshold = 1000 - abs( ( 1000 / m_ViewerCore->getCurrentImage()->minMax.second->as<double>() )
-											  * m_ViewerCore->getCurrentImage()->upperThreshold );
-
-		m_Interface.opacitySlider->setSliderPosition( m_ViewerCore->getCurrentImage()->opacity * 1000 );
-
-		m_Interface.minSlider->setSliderPosition( lowerThreshold );
-
-		m_Interface.maxSlider->setSliderPosition( upperThreshold );
 	} else {
 		QWidget::setVisible( false );
 	}

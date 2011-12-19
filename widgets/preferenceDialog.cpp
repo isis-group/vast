@@ -113,14 +113,12 @@ void PreferencesDialog::loadSettings()
 			preferencesUi.comboBox->insertItem( index++, util::Singletons::get<color::Color, 10>().getIcon( lut.first, size.width() , size.height() ), QString( lut.first.c_str() ) ) ;
 		}
 	}
-	m_ViewerCore->getSettings()->beginGroup( "UserProfile" );
-	preferencesUi.comboInterpolation->setCurrentIndex( m_ViewerCore->getSettings()->value( "interpolationType", 0 ).toUInt() );
+	preferencesUi.comboInterpolation->setCurrentIndex( m_ViewerCore->getOptionMap()->getPropertyAs<uint8_t>("interpolationType") );
 
 	if( m_ViewerCore->hasImage() ) {
 		preferencesUi.comboBox->setCurrentIndex( preferencesUi.comboBox->findText( m_ViewerCore->getCurrentImage()->lut.c_str() ) );
 	}
 
-	m_ViewerCore->getSettings()->endGroup();
 	preferencesUi.checkLoadingScreen->setChecked( m_ViewerCore->getOptionMap()->getPropertyAs<bool>( "showLoadingWidget" ) );
 	preferencesUi.checkStartUpScreen->setChecked( m_ViewerCore->getOptionMap()->getPropertyAs<bool>( "showStartWidget" ) );
 	preferencesUi.enableMultithreading->setVisible( m_ViewerCore->getOptionMap()->getPropertyAs<bool>( "ompAvailable" ) );
@@ -150,11 +148,7 @@ void PreferencesDialog::loadSettings()
 
 void PreferencesDialog::saveSettings()
 {
-	m_ViewerCore->getSettings()->beginGroup( "UserProfile" );
-	m_ViewerCore->getSettings()->setValue( "interpolationType", preferencesUi.comboInterpolation->currentIndex() );
-	m_ViewerCore->getSettings()->endGroup();
-	m_ViewerCore->getSettings()->sync();
-	
+	m_ViewerCore->getOptionMap()->setPropertyAs<uint8_t>("interpolationType", preferencesUi.comboInterpolation->currentIndex() );
 	m_ViewerCore->getOptionMap()->setPropertyAs<bool>( "showStartWidget", preferencesUi.checkStartUpScreen->isChecked() );
 	m_ViewerCore->getOptionMap()->setPropertyAs<bool>( "showLoadingWidget", preferencesUi.checkLoadingScreen->isChecked() );
 	//screenshot

@@ -40,8 +40,17 @@ boost::shared_ptr<ImageHolder> ViewerCoreBase::addImage( const isis::data::Image
 	//setting the lutAna
 	if( imageType == ImageHolder::anatomical_image ) {
 		retImage->lut = getOptionMap()->getPropertyAs<std::string>("lutAna");
+		if( !util::Singletons::get<color::Color, 10>().hasColormap( retImage->lut ) ) {	
+			retImage->lut = std::string( "standard_grey_values");
+			getOptionMap()->setPropertyAs<std::string>("lutAna", retImage->lut );
+		}
 	} else {
 		retImage->lut = getOptionMap()->getPropertyAs<std::string>("lutZMap" );
+		if( !util::Singletons::get<color::Color, 10>().hasColormap( retImage->lut ) ) {	
+			retImage->lut = std::string( "standard_zmap" );
+			getOptionMap()->setPropertyAs<std::string>("lutZMap", retImage->lut );
+		}
+		
 	}
 	retImage->updateColorMap();
 	if( imageType == ImageHolder::anatomical_image && image.getSizeAsVector()[3] == 1 ) {
@@ -84,15 +93,16 @@ void ViewerCoreBase::setImageList( std::list< data::Image > imgList, const Image
 
 std::string ViewerCoreBase::getVersion() const
 {
-	return STR( _ISIS_VIEWER_VERSION_MAJOR ) + "." + STR( _ISIS_VIEWER_VERSION_MINOR ) + "." + STR( _ISIS_VIEWER_VERSION_PATCH );
+	return STR( _VAST_VERSION_MAJOR ) + "." + STR( _VAST_VERSION_MINOR ) + "." + STR( _VAST_VERSION_PATCH );
 }
 
 
 
 void ViewerCoreBase::setCommonViewerOptions()
 {
-	m_OptionsMap->setPropertyAs<bool>("zmapGlobal", true );
+	m_OptionsMap->setPropertyAs<bool>("zmapGlobal", false );
 	m_OptionsMap->setPropertyAs<bool>( "propagateZooming", false );
+	m_OptionsMap->setPropertyAs<uint8_t>( "interpolationType" , 0 );
 	m_OptionsMap->setPropertyAs<bool>( "showLables", false );
 	m_OptionsMap->setPropertyAs<bool>( "showCrosshair", true );
 	m_OptionsMap->setPropertyAs<uint16_t>( "minMaxSearchRadius", 20 );
@@ -121,6 +131,7 @@ void ViewerCoreBase::setCommonViewerOptions()
 	m_OptionsMap->setPropertyAs<bool>("screenshotKeepAspectRatio", true);
 	m_OptionsMap->setPropertyAs<std::string>("lutAna", "standard_grey_values" );
 	m_OptionsMap->setPropertyAs<std::string>("lutZMap", "standard_zmap" );
+	m_OptionsMap->setPropertyAs<uint16_t>("timeseriesPlayDelayTime", 50 );
 	//logging
 	m_OptionsMap->setPropertyAs<uint16_t>( "logDelayTime", 6000 );
 	m_OptionsMap->setPropertyAs<bool>( "showErrorMessages", true );

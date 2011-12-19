@@ -138,7 +138,7 @@ bool Color::hasColormap( const std::string &name ) const
 }
 
 
-color::Color::ColormapType Color::getFallbackColormap() const
+Color::ColormapType Color::getFallbackColormap() const
 {
 	ColormapType retColormap;
 
@@ -150,12 +150,12 @@ color::Color::ColormapType Color::getFallbackColormap() const
 }
 
 
-void color::Color::adaptColorMapToImage( ImageHolder *image, bool split )
+void Color::adaptColorMapToImage( ImageHolder *image, bool split )
 {
 	LOG_IF( image->colorMap.size() != 256, Runtime, error ) << "The colormap is of size " << image->colorMap.size() << " but has to be of size 256!";
-	color::Color::ColormapType retMap ;
+	ColormapType retMap ;
 	retMap.resize( 256 );
-	color::Color::ColormapType tmpMap = util::Singletons::get<color::Color, 10>().getColormapMap().at( image->lut );
+	ColormapType tmpMap = util::Singletons::get<Color, 10>().getColormapMap().at( image->lut );
 	const double extent = image->extent;
 	const double min = image->minMax.first->as<double>();
 	const double max = image->minMax.second->as<double>();
@@ -172,8 +172,8 @@ void color::Color::adaptColorMapToImage( ImageHolder *image, bool split )
 		retMap[i] = tmpMap[scaledVal];
 	}
 
-	color::Color::ColormapType negVec( mid );
-	color::Color::ColormapType posVec( 256 - mid );
+	ColormapType negVec( mid );
+	ColormapType posVec( 256 - mid );
 
 	//only stuff necessary for colormaps
 	if( image->imageType == ImageHolder::z_map ) {

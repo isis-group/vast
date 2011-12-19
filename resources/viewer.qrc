@@ -1,5 +1,7 @@
 <RCC>
   <qresource prefix="common">
+    <file>pause.png</file>
+    <file>play.png</file>
     <file>vast_big.jpg</file>
     <file>close.gif</file>
     <file>saveAll.gif</file>

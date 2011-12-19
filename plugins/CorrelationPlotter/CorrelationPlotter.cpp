@@ -20,6 +20,7 @@ void isis::viewer::plugin::CorrelationPlotterDialog::lockClicked()
 {
 	if( m_Interface.lock->isChecked() )  {
 		calculateCorrelation( true );
+		m_CurrentCorrelationMap->syncImage();
 	}
 }
 
@@ -136,11 +137,10 @@ bool isis::viewer::plugin::CorrelationPlotterDialog::createCorrelationMap()
 					calloc( m_CurrentFunctionalImage->getISISImage()->getVolume(), sizeof( InternalFunctionalImageType ) ), m_CurrentFunctionalImage->getISISImage()->getVolume() );
 			m_CurrentFunctionalImage->getISISImage()->copyToMem<InternalFunctionalImageType>( &imagePtr[0], m_CurrentFunctionalImage->getISISImage()->getVolume() );
 			m_InternalChunk.reset( new isis::data::Chunk( imagePtr, size[0], size[1], size[2], size[3] ) );
-
+			m_CurrentCorrelationMap->updateColorMap();
 			return true;
 		}
 	}
-
 	return false;
 }
 
@@ -199,7 +199,6 @@ void isis::viewer::plugin::CorrelationPlotterDialog::calculateCorrelation( bool 
 	}
 
 
-
 }
 
 void isis::viewer::plugin::CorrelationPlotterDialog::_internCalculateCorrelation( const isis::util::ivector4 &vec, const double &s_x, const double &_x, const InternalFunctionalImageType *vx, const size_t &n, const size_t &vol )
@@ -230,7 +229,6 @@ void isis::viewer::plugin::CorrelationPlotterDialog::_internCalculateCorrelation
 	} else {
 		m_CurrentCorrelationMap->getChunkVector()[0].voxel<InternalImageType>( vec[0], vec[1], vec[2] ) = 128;
 	}
-
 
 }
 

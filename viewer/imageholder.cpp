@@ -122,8 +122,8 @@ bool ImageHolder::setImage( const data::Image &image, const ImageType &_imageTyp
 	}
 
 	// get some image information
+	
 	majorTypeID = image.getMajorTypeID();
-	minMax = image.getMinMax();
 	m_ImageSize = image.getSizeAsVector();
 	LOG( Debug, verbose_info )  << "Fetched image of size " << m_ImageSize << " and type "
 								<< image.getMajorTypeName() << ".";
@@ -131,6 +131,7 @@ bool ImageHolder::setImage( const data::Image &image, const ImageType &_imageTyp
 
 	if( data::ValuePtr<util::color24>::staticID != majorTypeID && data::ValuePtr<util::color48>::staticID != majorTypeID ) {
 		isRGB = false;
+		minMax = image.getMinMax();
 		copyImageToVector<InternalImageType>( image );
 	} else {
 		copyImageToVector<InternalImageColorType>( image );
@@ -189,6 +190,7 @@ bool ImageHolder::setImage( const data::Image &image, const ImageType &_imageTyp
 	if( !isRGB ) {
 		extent = fabs( minMax.second->as<double>() - minMax.first->as<double>() );
 		optimalScalingOffset = getOptimalScaling();
+		
 		m_PropMap.setPropertyAs<double>( "scalingMinValue", minMax.first->as<double>() );
 		m_PropMap.setPropertyAs<double>( "scalingMaxValue", minMax.second->as<double>() );
 	}
@@ -298,7 +300,9 @@ void ImageHolder::checkVoxelCoords( util::ivector4 &vc )
 
 void ImageHolder::updateColorMap()
 {
-	util::Singletons::get<color::Color, 10>().adaptColorMapToImage( this );
+	if( !isRGB ) {
+		util::Singletons::get<color::Color, 10>().adaptColorMapToImage( this );
+	}
 }
 
 void ImageHolder::removeWidget( WidgetInterface *widget )
@@ -308,6 +312,65 @@ void ImageHolder::removeWidget( WidgetInterface *widget )
 	if( iter != m_WidgetList.end() ) {
 		m_WidgetList.erase( iter );
 	}
+}
+
+void ImageHolder::syncImage()
+{
+	// first check if sizes coincide 
+	if( isRGB ) {
+		LOG( Runtime, warning ) << "Not yet capable of syncronizing rgb images.";
+		return;
+	}
+	
+	bool coincide = true;
+	for ( unsigned short i = 0; i < 4; i++ ) {
+		if( getImageSize()[i] != getISISImage()->getSizeAsVector()[i] ) {
+			coincide = false;
+		}
+	}
+	if( !coincide ) {
+		LOG( Runtime, error ) << "The size of the ImageHolder and the nested isis image do not coincide. Can not sync!";
+		return;
+	}
+	
+	if( coincide && !isRGB ) {
+		switch( majorTypeID ) {
+			case data::ValuePtr<bool>::staticID:
+				_syncImage<bool>();
+				break;
+			case data::ValuePtr<uint8_t>::staticID:
+				_syncImage<uint8_t>();
+				break;
+			case data::ValuePtr<int8_t>::staticID:
+				_syncImage<int8_t>();
+				break;
+			case data::ValuePtr<uint16_t>::staticID:
+				_syncImage<uint16_t>();
+				break;				
+			case data::ValuePtr<int16_t>::staticID:
+				_syncImage<int16_t>();
+				break;
+			case data::ValuePtr<uint32_t>::staticID:
+				_syncImage<uint32_t>();
+				break;
+			case data::ValuePtr<int32_t>::staticID:
+				_syncImage<int32_t>();
+				break;
+			case data::ValuePtr<uint64_t>::staticID:
+				_syncImage<uint64_t>();
+				break;
+			case data::ValuePtr<int64_t>::staticID:
+				_syncImage<int64_t>();
+				break;
+			case data::ValuePtr<float>::staticID:
+				_syncImage<float>();
+				break;
+			case data::ValuePtr<double>::staticID:
+				_syncImage<double>();
+				break;
+		}
+	}
+	
 }
 
 

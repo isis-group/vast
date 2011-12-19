@@ -285,15 +285,36 @@ void UICore::refreshUI( )
 	m_SliderWidget->synchronize();
 	m_ImageStackWidget->synchronize();
 	m_VoxelInformationWidget->synchronize();
-	BOOST_FOREACH( WidgetMap::reference widget, getWidgets() ) {
+	BOOST_FOREACH( WidgetMap::reference widget, getWidgets() ) {		
 		WidgetInterface::ImageVectorType iVector = widget.second.widgetImplementation->getImageVector();
-
 		if( !iVector.size() ) {
 			widget.second.dockWidget->setVisible( false );
 		} else {
 			widget.second.dockWidget->setVisible( true );
 		}
-
+		//go through all the images and check if we need this widget ( 2d data? )
+		if( getEnsembleList().size() == 1 ) {
+			bool widgetNeeded = false;
+			BOOST_FOREACH( WidgetInterface::ImageVectorType::const_reference image, iVector )
+			{
+				const util::ivector4 mappedSize = QOrienationHandler::mapCoordsToOrientation( image->getImageSize(), image, widget.second.widgetImplementation->getPlaneOrientation() );
+				if( mappedSize[0] > 1 && mappedSize[1] > 1 ) {
+					widgetNeeded = true;
+				}
+			}
+			widget.second.dockWidget->setVisible(widgetNeeded);
+			switch( widget.second.widgetImplementation->getPlaneOrientation() ) {
+				case axial:
+					getMainWindow()->getInterface().actionAxial_View->setChecked(widgetNeeded);
+					break;
+				case sagittal:
+					getMainWindow()->getInterface().actionSagittal_View->setChecked(widgetNeeded);
+					break;
+				case coronal:
+					getMainWindow()->getInterface().actionCoronal_View->setChecked(widgetNeeded);
+					break;
+			}
+		}
 		widget.second.widgetImplementation->setCrossHairWidth( 1 );
 
 		if( std::find( iVector.begin(), iVector.end(), m_ViewerCore->getCurrentImage() ) != iVector.end() ) {
@@ -414,6 +435,19 @@ QImage UICore::getScreenshot()
 	}
 	return QImage();
 }
+
+void UICore::setViewPlaneOrientation(PlaneOrientation orientation, bool visible)
+{
+	BOOST_FOREACH( ViewWidgetEnsembleListType::reference ensemble, getEnsembleList() )
+	{
+		for( unsigned short i = 0; i < 3; i++ ) {
+			if( ensemble[i].planeOrientation == orientation ) {
+				ensemble[i].dockWidget->setVisible( visible );
+			}
+		}
+	}	
+}
+
 
 
 }
