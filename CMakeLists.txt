@@ -121,8 +121,8 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/viewer)
 
 #this flags has to be set due to use parallel with boos::signal
 
-SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ftemplate-depth-100 -Wextra -Wall -Wfatal-errors" )
-SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}  -Wextra -Wall -Wfatal-errors " )
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ftemplate-depth-100 -Wextra -Wall -Wfatal-errors -std=c++0x" )
+SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}  -Wextra -Wall -Wfatal-errors -std=c++0x" )
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ftemplate-depth-100")
 
 ############################################################
