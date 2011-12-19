@@ -3,10 +3,6 @@ message(STATUS ${CMAKE_CURRENT_SOURCE_DIR})
 option(VAST_DOC_HTML "Build html documentation" ON)
 option(VAST_DOC_LATEX "Build vast documentation" ON)
 
-file (GLOB VAST_DOC_FILES_HTML  ${CMAKE_CURRENT_BINARY_DIR}/html/*.html ${CMAKE_CURRENT_BINARY_DIR}/html/*.js ${CMAKE_CURRENT_BINARY_DIR}/html/*.inv  )
-file (GLOB VAST_DOC_STATIC_FILES ${CMAKE_CURRENT_BINARY_DIR}/html/_static/* )
-file (GLOB VAST_DOC_IMAGES ${CMAKE_CURRENT_BINARY_DIR}/html/_images/*.png )
-
 #setting version and release info
 set( VAST_VERSION "${VAST_VERSION_MAJOR}.${VAST_VERSION_MINOR}" )
 set( VAST_RELEASE "${VAST_VERSION_MAJOR}.${VAST_VERSION_MINOR}.${VAST_VERSION_PATCH}" )
@@ -24,7 +20,17 @@ if(VAST_DOC_LATEX)
 	add_custom_target(latex ALL COMMAND sphinx-build ${SPHINX_OPTIONS_LATEX} "${CMAKE_CURRENT_SOURCE_DIR}/source" latex )
 endif(VAST_DOC_LATEX)
 
-install(FILES ${VAST_DOC_FILES_HTML} DESTINATION ${CMAKE_INSTALL_PREFIX}/share/vast/doc/html )
-install(FILES ${VAST_DOC_IMAGES} DESTINATION ${CMAKE_INSTALL_PREFIX}/share/vast/doc/html/_images )
-install(FILES ${VAST_DOC_STATIC_FILES} DESTINATION ${CMAKE_INSTALL_PREFIX}/share/vast/doc/html/_static )
+install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/html/ DESTINATION ${CMAKE_INSTALL_PREFIX}/share/vast/doc/html
+          FILES_MATCHING PATTERN "*.html")
 
+install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/html/ DESTINATION ${CMAKE_INSTALL_PREFIX}/share/vast/doc/html
+          FILES_MATCHING PATTERN "*.js")
+
+install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/html/ DESTINATION ${CMAKE_INSTALL_PREFIX}/share/vast/doc/html
+          FILES_MATCHING PATTERN "*.inv")
+
+install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/html/_images/ DESTINATION ${CMAKE_INSTALL_PREFIX}/share/vast/doc/html/_images
+          FILES_MATCHING PATTERN "*.png")
+
+install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/html/_static/ DESTINATION ${CMAKE_INSTALL_PREFIX}/share/vast/doc/html/_static
+          FILES_MATCHING PATTERN "*")
