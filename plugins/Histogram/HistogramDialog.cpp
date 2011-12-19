@@ -30,7 +30,7 @@ void isis::viewer::plugin::HistogramDialog::paintHistogram()
 	if( m_ViewerCore->hasImage() ) {
 		std::stringstream title;
 		QwtDoubleRect zoomBase;
-		title << "Histogram of " << boost::filesystem::path( m_ViewerCore->getCurrentImage()->getFileNames().front() ).filename();
+		title << "Histogram of " << boost::filesystem::path( m_ViewerCore->getCurrentImage()->getFileNames().front() ).leaf();
 
 		if( m_ViewerCore->getCurrentImage()->getImageSize()[3] > 1 ) {
 			title << " (volume " << m_ViewerCore->getCurrentImage()->voxelCoords[3] << ")";
