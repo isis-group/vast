@@ -121,8 +121,8 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/viewer)
 
 #this flags has to be set due to use parallel with boos::signal
 
-SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ftemplate-depth-100 -Wextra -Wall -Wfatal-errors -std=c++0x" )
-SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}  -Wextra -Wall -Wfatal-errors -std=c++0x" )
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ftemplate-depth-100 -Wextra -Wall -Wfatal-errors " )
+SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}  -Wextra -Wall -Wfatal-errors " )
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ftemplate-depth-100")
 
 ############################################################
@@ -156,7 +156,7 @@ INCLUDE(CPack)
 ###########################################################
 # OPenMP config
 ###########################################################
-option(VAST_OPENMP "Toggles the omp" OFF)
+option(VAST_OPENMP "Toggles the omp support for vast." OFF)
 
 IF(VAST_OPENMP)
 	SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fopenmp ")
