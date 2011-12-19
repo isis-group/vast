@@ -8,7 +8,7 @@ Standards-Version: 3.8.1
 Package: vast
 Section: science
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, libisiscore0 (>= 0.4.2), isis-qt4
+Depends: ${shlibs:Depends}, ${misc:Depends}, libisiscore0 (>= 0.4.2), libisis-qt4 (>= 0.4.2)
 Recommends: vast-correlationplotter, vast-timeplotter, vast-orientationcorrection, vast-maskedit, isisio0-vista, isisio0-nifti-sa, isisio0-dicom, isisio0-gz-proxy, isisio0-tar-proxy
 Description: vast is a viewer for medical image data. 
  It supports all image formats that are supportet by the isis package. With version 0.1.0 these are the following:
