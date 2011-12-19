@@ -55,11 +55,11 @@ add_definitions(-D_VAST_VERSION_PATCH=${VAST_VERSION_PATCH})
 ###########################################################
 # documentation
 ###########################################################
-option(ISIS_DOCUMENTATION "Build the documentation for vast" OFF)
+option(VAST_DOCUMENTATION "Build the documentation for vast" OFF)
 
-IF(ISIS_DOCUMENTATION)
+IF(VAST_DOCUMENTATION)
 	add_subdirectory(documentation)	
-ENDIF(ISIS_DOCUMENTATION)
+ENDIF(VAST_DOCUMENTATION)
 
 set_source_files_properties( "${CMAKE_CURRENT_SOURCE_DIR}/widgets/helpdialog.cpp" PROPERTIES COMPILE_FLAGS
 		"-DVAST_DOC_PATH=\\\"${CMAKE_INSTALL_PREFIX}/${VAST_DOC_INFIX}\\\"")
