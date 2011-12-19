@@ -35,7 +35,7 @@ File formats
 ------------
 
 | Furthermore, vast supports a list of file formats that can be loaded and/or saved. 
-| A list of all supported file formats can be found in the :doc:`Supported fileformats<fileformats>` section.
+| A list of all supported file formats can be found in the :doc:`Technical information<techinfo>` section.
 
 Opening vast and loading images
 -------------------------------
