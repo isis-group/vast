@@ -14,7 +14,7 @@ Contents:
    :maxdepth: 2
 
    introduction
-   fileformats
+   techinfo
    openingimages
    screenshotfunction
 

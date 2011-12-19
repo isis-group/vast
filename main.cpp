@@ -94,7 +94,7 @@ int main( int argc, char *argv[] )
 		//load the anatomical images
 		BOOST_FOREACH ( util::slist::const_reference fileName, fileList ) {
 			std::stringstream fileLoad;
-			fileLoad << "Loading \"" << boost::filesystem::path( fileName ).filename() << "\" ...";
+			fileLoad << "Loading \"" << boost::filesystem::path( fileName ).leaf() << "\" ...";
 			core->receiveMessage( fileLoad.str() );
 			std::list< data::Image > tmpList = data::IOFactory::load( fileName, app.parameters["rf"].toString(), app.parameters["rdialect"].toString() );
 			BOOST_FOREACH( std::list< data::Image >::reference imageRef, tmpList ) {
@@ -106,7 +106,7 @@ int main( int argc, char *argv[] )
 		BOOST_FOREACH ( util::slist::const_reference fileName, zmapFileList ) {
 			std::string dialect = app.parameters["rdialect"].toString();
 			std::stringstream fileLoad;
-			fileLoad << "Loading \"" << boost::filesystem::path( fileName ).filename() << "\" ...";
+			fileLoad << "Loading \"" << boost::filesystem::path( fileName ).leaf() << "\" ...";
 			core->receiveMessage( fileLoad.str() );
 
 			//what a nasty hack :-( but necessary, since only vista understands the onlyfirst dialect
