@@ -30,13 +30,14 @@
 #include <QMessageBox>
 #include <boost/filesystem.hpp>
 
-isis::viewer::widget::HelpDialog::HelpDialog(QWidget* parent)
-	: QDialog(parent)
+isis::viewer::widget::HelpDialog::HelpDialog( QWidget *parent )
+	: QDialog( parent )
 {
-	m_Interface.setupUi(this);
-	if( boost::filesystem::is_directory( boost::filesystem::path( std::string( VAST_DOC_PATH) ) ) ) {
-		std::string indexFile = std::string ( VAST_DOC_PATH ) + std::string("/index.html");
-		m_Interface.helpView->load( QUrl(indexFile.c_str() ) );
+	m_Interface.setupUi( this );
+
+	if( boost::filesystem::is_directory( boost::filesystem::path( std::string( VAST_DOC_PATH ) ) ) ) {
+		std::string indexFile = std::string ( VAST_DOC_PATH ) + std::string( "/index.html" );
+		m_Interface.helpView->load( QUrl( indexFile.c_str() ) );
 	} else {
 		QMessageBox msgBox;
 		msgBox.setText( "Could not find help path for vast." );

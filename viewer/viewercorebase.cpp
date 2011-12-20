@@ -63,23 +63,27 @@ ImageHolder::ImageListType ViewerCoreBase::addImageList( const std::list< data::
 boost::shared_ptr<ImageHolder> ViewerCoreBase::addImage( const isis::data::Image &image, const isis::viewer::ImageHolder::ImageType &imageType )
 {
 	boost::shared_ptr<ImageHolder> retImage = m_DataContainer.addImage( image, imageType );
-	
+
 	//setting the lutAna
 	if( imageType == ImageHolder::anatomical_image ) {
-		retImage->lut = getOptionMap()->getPropertyAs<std::string>("lutAna");
-		if( !util::Singletons::get<color::Color, 10>().hasColormap( retImage->lut ) ) {	
-			retImage->lut = std::string( "standard_grey_values");
-			getOptionMap()->setPropertyAs<std::string>("lutAna", retImage->lut );
+		retImage->lut = getOptionMap()->getPropertyAs<std::string>( "lutAna" );
+
+		if( !util::Singletons::get<color::Color, 10>().hasColormap( retImage->lut ) ) {
+			retImage->lut = std::string( "standard_grey_values" );
+			getOptionMap()->setPropertyAs<std::string>( "lutAna", retImage->lut );
 		}
 	} else {
-		retImage->lut = getOptionMap()->getPropertyAs<std::string>("lutZMap" );
-		if( !util::Singletons::get<color::Color, 10>().hasColormap( retImage->lut ) ) {	
+		retImage->lut = getOptionMap()->getPropertyAs<std::string>( "lutZMap" );
+
+		if( !util::Singletons::get<color::Color, 10>().hasColormap( retImage->lut ) ) {
 			retImage->lut = std::string( "standard_zmap" );
-			getOptionMap()->setPropertyAs<std::string>("lutZMap", retImage->lut );
+			getOptionMap()->setPropertyAs<std::string>( "lutZMap", retImage->lut );
 		}
-		
+
 	}
+
 	retImage->updateColorMap();
+
 	if( imageType == ImageHolder::anatomical_image && image.getSizeAsVector()[3] == 1 ) {
 		m_CurrentAnatomicalReference = retImage;
 	}
@@ -127,7 +131,7 @@ std::string ViewerCoreBase::getVersion() const
 
 void ViewerCoreBase::setCommonViewerOptions()
 {
-	m_OptionsMap->setPropertyAs<bool>("zmapGlobal", false );
+	m_OptionsMap->setPropertyAs<bool>( "zmapGlobal", false );
 	m_OptionsMap->setPropertyAs<bool>( "propagateZooming", false );
 	m_OptionsMap->setPropertyAs<uint8_t>( "interpolationType" , 0 );
 	m_OptionsMap->setPropertyAs<bool>( "showLables", false );
@@ -150,15 +154,15 @@ void ViewerCoreBase::setCommonViewerOptions()
 	m_OptionsMap->setPropertyAs<bool>( "enableMultithreading", false );
 	m_OptionsMap->setPropertyAs<bool>( "useAllAvailableThreads", false );
 	m_OptionsMap->setPropertyAs<uint8_t>( "screenshotQuality", 70 );
-	m_OptionsMap->setPropertyAs<uint16_t>("screenshotWidth", 700);
-	m_OptionsMap->setPropertyAs<uint16_t>("screenshotHeight", 700);
-	m_OptionsMap->setPropertyAs<uint16_t>("screenshotDPIX", 300);
-	m_OptionsMap->setPropertyAs<uint16_t>("screenshotDPIY", 300);	
-	m_OptionsMap->setPropertyAs<bool>("screenshotManualScaling", false );
-	m_OptionsMap->setPropertyAs<bool>("screenshotKeepAspectRatio", true);
-	m_OptionsMap->setPropertyAs<std::string>("lutAna", "standard_grey_values" );
-	m_OptionsMap->setPropertyAs<std::string>("lutZMap", "standard_zmap" );
-	m_OptionsMap->setPropertyAs<uint16_t>("timeseriesPlayDelayTime", 50 );
+	m_OptionsMap->setPropertyAs<uint16_t>( "screenshotWidth", 700 );
+	m_OptionsMap->setPropertyAs<uint16_t>( "screenshotHeight", 700 );
+	m_OptionsMap->setPropertyAs<uint16_t>( "screenshotDPIX", 300 );
+	m_OptionsMap->setPropertyAs<uint16_t>( "screenshotDPIY", 300 );
+	m_OptionsMap->setPropertyAs<bool>( "screenshotManualScaling", false );
+	m_OptionsMap->setPropertyAs<bool>( "screenshotKeepAspectRatio", true );
+	m_OptionsMap->setPropertyAs<std::string>( "lutAna", "standard_grey_values" );
+	m_OptionsMap->setPropertyAs<std::string>( "lutZMap", "standard_zmap" );
+	m_OptionsMap->setPropertyAs<uint16_t>( "timeseriesPlayDelayTime", 50 );
 	//logging
 	m_OptionsMap->setPropertyAs<uint16_t>( "logDelayTime", 6000 );
 	m_OptionsMap->setPropertyAs<bool>( "showErrorMessages", true );
@@ -166,10 +170,10 @@ void ViewerCoreBase::setCommonViewerOptions()
 	m_OptionsMap->setPropertyAs<bool>( "showWarningMessages", false );
 	m_OptionsMap->setPropertyAs<bool>( "showInfoMessages", false );
 	m_OptionsMap->setPropertyAs<bool>( "showVerboseInfoMessages", false );
-    
-    std::stringstream signature;
-    signature << "vast v" << getVersion() << "(isis " << m_OptionsMap->getPropertyAs<std::string>("isisVersion") << ")";
-    m_OptionsMap->setPropertyAs<std::string>("signature", signature.str() );
+
+	std::stringstream signature;
+	signature << "vast v" << getVersion() << "(isis " << m_OptionsMap->getPropertyAs<std::string>( "isisVersion" ) << ")";
+	m_OptionsMap->setPropertyAs<std::string>( "signature", signature.str() );
 }
 
 }

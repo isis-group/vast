@@ -50,11 +50,11 @@ int main( int argc, char *argv[] )
 	util::_internal::Log<viewer::Runtime>::setHandler( boost::shared_ptr<qt4::QDefaultMessagePrint>( viewer_handler ) );
 	util::_internal::Log<data::Runtime>::setHandler( boost::shared_ptr<qt4::QDefaultMessagePrint>( isis_handler ) );
 	util::_internal::Log<image_io::Runtime>::setHandler( boost::shared_ptr<qt4::QDefaultMessagePrint>( imageio_handler ) );
-    
+
 #ifndef NDEBUG
-	qt4::QDefaultMessagePrint::stopBelow(warning);
+	qt4::QDefaultMessagePrint::stopBelow( warning );
 #endif
-    
+
 	std::string appName = "vast";
 	std::string orgName = "cbs.mpg.de";
 
@@ -99,7 +99,7 @@ int main( int argc, char *argv[] )
 	app.init( argc, argv, true );
 
 	QViewerCore *core = new QViewerCore( appName, orgName );
-    core->getOptionMap()->setPropertyAs<std::string>("isisVersion", app.getCoreVersion());
+	core->getOptionMap()->setPropertyAs<std::string>( "isisVersion", app.getCoreVersion() );
 
 	core->addMessageHandler( viewer_handler );
 	core->addMessageHandler( isis_handler );
@@ -216,8 +216,8 @@ int main( int argc, char *argv[] )
 		core->getUICore()->getMainWindow()->startWidget->close();
 
 	}
-   
-    core->getUICore()->showMainWindow();
+
+	core->getUICore()->showMainWindow();
 
 	core->settingsChanged();
 

@@ -312,36 +312,40 @@ void UICore::refreshUI( )
 	m_SliderWidget->synchronize();
 	m_ImageStackWidget->synchronize();
 	m_VoxelInformationWidget->synchronize();
-	BOOST_FOREACH( WidgetMap::reference widget, getWidgets() ) {		
+	BOOST_FOREACH( WidgetMap::reference widget, getWidgets() ) {
 		WidgetInterface::ImageVectorType iVector = widget.second.widgetImplementation->getImageVector();
+
 		if( !iVector.size() ) {
 			widget.second.dockWidget->setVisible( false );
 		} else {
 			widget.second.dockWidget->setVisible( true );
 		}
+
 		//go through all the images and check if we need this widget ( 2d data? )
 		if( getEnsembleList().size() == 1 ) {
 			bool widgetNeeded = false;
-			BOOST_FOREACH( WidgetInterface::ImageVectorType::const_reference image, iVector )
-			{
+			BOOST_FOREACH( WidgetInterface::ImageVectorType::const_reference image, iVector ) {
 				const util::ivector4 mappedSize = QOrientationHandler::mapCoordsToOrientation( image->getImageSize(), image, widget.second.widgetImplementation->getPlaneOrientation() );
+
 				if( mappedSize[0] > 1 && mappedSize[1] > 1 ) {
 					widgetNeeded = true;
 				}
 			}
-			widget.second.dockWidget->setVisible(widgetNeeded);
+			widget.second.dockWidget->setVisible( widgetNeeded );
+
 			switch( widget.second.widgetImplementation->getPlaneOrientation() ) {
-				case axial:
-					getMainWindow()->getInterface().actionAxial_View->setChecked(widgetNeeded);
-					break;
-				case sagittal:
-					getMainWindow()->getInterface().actionSagittal_View->setChecked(widgetNeeded);
-					break;
-				case coronal:
-					getMainWindow()->getInterface().actionCoronal_View->setChecked(widgetNeeded);
-					break;
+			case axial:
+				getMainWindow()->getInterface().actionAxial_View->setChecked( widgetNeeded );
+				break;
+			case sagittal:
+				getMainWindow()->getInterface().actionSagittal_View->setChecked( widgetNeeded );
+				break;
+			case coronal:
+				getMainWindow()->getInterface().actionCoronal_View->setChecked( widgetNeeded );
+				break;
 			}
 		}
+
 		widget.second.widgetImplementation->setCrossHairWidth( 1 );
 
 		if( std::find( iVector.begin(), iVector.end(), m_ViewerCore->getCurrentImage() ) != iVector.end() ) {
@@ -433,6 +437,7 @@ QImage UICore::getScreenshot()
 		painter.setFont( font );
 		painter.setPen( QPen( Qt::white ) );
 		const int offset = -7;
+
 		if( m_ViewerCore->getMode() == ViewerCoreBase::zmap ) {
 			if( m_ViewerCore->getCurrentImage()->minMax.first->as<double>() < 0 ) {
 				const double lT = roundNumber<double>( m_ViewerCore->getCurrentImage()->lowerThreshold, 4 );
@@ -448,31 +453,32 @@ QImage UICore::getScreenshot()
 				painter.drawText( 280, widgetHeight * eIndex + 35, QString::number( roundNumber<double>( m_ViewerCore->getCurrentImage()->minMax.second->as<double>(), 4 )  ) );
 			}
 		}
+
 		painter.end();
 		refreshUI();
-		QImage screenshotImage ( m_ViewerCore->getOptionMap()->getPropertyAs<bool>("screenshotManualScaling") ? screenshot.scaled( m_ViewerCore->getOptionMap()->getPropertyAs<uint16_t>("screenshotWidth"),
-															m_ViewerCore->getOptionMap()->getPropertyAs<uint16_t>("screenshotHeight"), 
-															m_ViewerCore->getOptionMap()->getPropertyAs<bool>("screenshotKeepAspectRatio") ? Qt::KeepAspectRatioByExpanding : Qt::IgnoreAspectRatio,
-															Qt::SmoothTransformation  														
-  														).toImage() : screenshot.toImage() );
+		QImage screenshotImage ( m_ViewerCore->getOptionMap()->getPropertyAs<bool>( "screenshotManualScaling" ) ? screenshot.scaled( m_ViewerCore->getOptionMap()->getPropertyAs<uint16_t>( "screenshotWidth" ),
+								 m_ViewerCore->getOptionMap()->getPropertyAs<uint16_t>( "screenshotHeight" ),
+								 m_ViewerCore->getOptionMap()->getPropertyAs<bool>( "screenshotKeepAspectRatio" ) ? Qt::KeepAspectRatioByExpanding : Qt::IgnoreAspectRatio,
+								 Qt::SmoothTransformation
+																																   ).toImage() : screenshot.toImage() );
 		const double dpiMeter = 39.3700787;
-		screenshotImage.setDotsPerMeterX( m_ViewerCore->getOptionMap()->getPropertyAs<uint16_t>("screenshotDPIX") * dpiMeter );
-		screenshotImage.setDotsPerMeterY( m_ViewerCore->getOptionMap()->getPropertyAs<uint16_t>("screenshotDPIY") * dpiMeter );
+		screenshotImage.setDotsPerMeterX( m_ViewerCore->getOptionMap()->getPropertyAs<uint16_t>( "screenshotDPIX" ) * dpiMeter );
+		screenshotImage.setDotsPerMeterY( m_ViewerCore->getOptionMap()->getPropertyAs<uint16_t>( "screenshotDPIY" ) * dpiMeter );
 		return screenshotImage;
 	}
+
 	return QImage();
 }
 
-void UICore::setViewPlaneOrientation(PlaneOrientation orientation, bool visible)
+void UICore::setViewPlaneOrientation( PlaneOrientation orientation, bool visible )
 {
-	BOOST_FOREACH( ViewWidgetEnsembleListType::reference ensemble, getEnsembleList() )
-	{
+	BOOST_FOREACH( ViewWidgetEnsembleListType::reference ensemble, getEnsembleList() ) {
 		for( unsigned short i = 0; i < 3; i++ ) {
 			if( ensemble[i].planeOrientation == orientation ) {
 				ensemble[i].dockWidget->setVisible( visible );
 			}
 		}
-	}	
+	}
 }
 
 

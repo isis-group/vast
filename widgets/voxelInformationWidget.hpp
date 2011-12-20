@@ -40,36 +40,36 @@ namespace viewer
 namespace widget
 {
 
-	
+
 class VoxelInformationWidget : public QWidget
 {
 	Q_OBJECT
-	class TimePlayThread : public QThread 
+	class TimePlayThread : public QThread
 	{
 		QViewerCore *m_core;
 		int m_start;
 		int m_end;
 		Ui::voxelInformationWidget *m_interface;
-		
-	public: 
-		TimePlayThread( QViewerCore *core, Ui::voxelInformationWidget *interface ) : m_core(core), m_start(0), m_end(0), m_interface(interface) {} ;
-		void setStartStop( int start, int stop) { m_start = start; m_end = stop; }
-		void run()
-		{
-			uint16_t deleyTime = m_core->getOptionMap()->getPropertyAs<uint16_t>("timeseriesPlayDelayTime");
+
+	public:
+		TimePlayThread( QViewerCore *core, Ui::voxelInformationWidget *interface ) : m_core( core ), m_start( 0 ), m_end( 0 ), m_interface( interface ) {} ;
+		void setStartStop( int start, int stop ) { m_start = start; m_end = stop; }
+		void run() {
+			uint16_t deleyTime = m_core->getOptionMap()->getPropertyAs<uint16_t>( "timeseriesPlayDelayTime" );
 			uint16_t t = m_start;
-			while(true) {
+
+			while( true ) {
 				t = t == m_end ? 0 : t;
-				msleep(deleyTime);
-				m_interface->timestepSlider->setValue(t);
-				m_interface->timestepSpinBox->setValue(t);
+				msleep( deleyTime );
+				m_interface->timestepSlider->setValue( t );
+				m_interface->timestepSpinBox->setValue( t );
 				QApplication::processEvents();
 				t++;
-				
+
 			}
 		}
 	};
-	
+
 public:
 	VoxelInformationWidget( QWidget *parent, QViewerCore *core );
 
@@ -108,7 +108,7 @@ private:
 		const std::string intensityStr = static_cast<const util::_internal::ValueBase &>( vIntensity ).as<std::string>();
 		m_Interface.intensityValue->setText( intensityStr.c_str() );
 	}
-	
+
 };
 
 }

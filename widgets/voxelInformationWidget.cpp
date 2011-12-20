@@ -90,8 +90,8 @@ void VoxelInformationWidget::connectSignals()
 	connect( m_Interface.timestepSpinBox, SIGNAL( valueChanged( int ) ), m_ViewerCore, SLOT( timestepChanged( int ) ) );
 	connect( m_Interface.timestepSlider, SIGNAL( sliderMoved( int ) ), m_Interface.timestepSpinBox, SLOT( setValue( int ) ) );
 	connect( m_Interface.timestepSpinBox, SIGNAL( valueChanged( int ) ), m_Interface.timestepSlider, SLOT( setValue( int ) ) );
-	connect( m_tThread, SIGNAL( finished()), this, SLOT( timePlayFinished()));
-	connect( m_Interface.playButton, SIGNAL( clicked()), this, SLOT( playTimecourse()));
+	connect( m_tThread, SIGNAL( finished() ), this, SLOT( timePlayFinished() ) );
+	connect( m_Interface.playButton, SIGNAL( clicked() ), this, SLOT( playTimecourse() ) );
 	isConnected = true;
 }
 
@@ -110,11 +110,12 @@ void VoxelInformationWidget::playTimecourse()
 			m_tThread->terminate();
 			m_Interface.playButton->setIcon( QIcon( ":/common/play.png" ) );
 		} else {
-			if (QApplication::keyboardModifiers() == Qt::ControlModifier ) {
-				m_tThread->setStartStop( 0, m_ViewerCore->getCurrentImage()->getImageSize()[3]);
+			if ( QApplication::keyboardModifiers() == Qt::ControlModifier ) {
+				m_tThread->setStartStop( 0, m_ViewerCore->getCurrentImage()->getImageSize()[3] );
 			} else {
-				m_tThread->setStartStop( m_Interface.timestepSlider->value(), m_ViewerCore->getCurrentImage()->getImageSize()[3]);
+				m_tThread->setStartStop( m_Interface.timestepSlider->value(), m_ViewerCore->getCurrentImage()->getImageSize()[3] );
 			}
+
 			m_Interface.playButton->setIcon( QIcon( ":/common/pause.png" ) );
 			m_tThread->start();
 		}
@@ -123,7 +124,7 @@ void VoxelInformationWidget::playTimecourse()
 
 void VoxelInformationWidget::timePlayFinished()
 {
-	m_Interface.playButton->setIcon( QIcon( ":/common/play.png") );
+	m_Interface.playButton->setIcon( QIcon( ":/common/play.png" ) );
 }
 
 void VoxelInformationWidget::physPosChanged()

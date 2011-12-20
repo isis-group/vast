@@ -34,24 +34,27 @@
 #include <QIcon>
 #include <QKeySequence>
 
-namespace isis {
-namespace viewer {
+namespace isis
+{
+namespace viewer
+{
 
-class QViewerCore;	
+class QViewerCore;
 
-namespace plugin {
+namespace plugin
+{
 
-	
+
 /// Base class for all plugins that are aiming to do any operation on the images
 class PluginInterface
 {
 public:
 	PluginInterface() {};
-	void setViewerCore( isis::viewer::QViewerCore *core) { viewerCore = core; }
+	void setViewerCore( isis::viewer::QViewerCore *core ) { viewerCore = core; }
 	void setParentWidget( QWidget *p ) { parentWidget = p; }
-	
+
 	/**
-	 * Calls the plugin. This function should execute the plugin 
+	 * Calls the plugin. This function should execute the plugin
 	 * (e.g. showing a dialog or directly executing an operation)
 	 */
 	virtual bool call() = 0;
@@ -61,33 +64,35 @@ public:
 	 * and automaticall will be in the respective submenu (plugins/category/subcategory).
 	 */
 	virtual std::string getName() = 0;
-	
+
 	///returns a description of the plugin
 	virtual std::string getDescription() = 0;
-	
+
 	///returns the tooltip of the plugin
 	virtual std::string getTooltip() = 0;
-	
+
 	///returns the shortcut that can be used to call the plugin
 	virtual QKeySequence getShortcut() { return QKeySequence(); }
-	
+
 	///returns if the plugin uses a gui
 	virtual bool isGUI() = 0;
-	
+
 	///returns the string pointing to the toolbarIcon. If this string is empty the plugin will not be placed in the toolbar.
 	virtual QIcon *getToolbarIcon() { return new QIcon(); }
 	virtual ~PluginInterface() {}
-	
+
 	std::string plugin_file;
 protected:
 	QViewerCore *viewerCore;
 	QWidget *parentWidget;
-	
-	
+
+
 };
 
-	
-}}}
+
+}
+}
+}
 
 #else
 typedef struct PluginInterface PluginInterface;

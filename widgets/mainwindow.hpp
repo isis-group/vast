@@ -99,9 +99,9 @@ public Q_SLOTS:
 	void loadSettings();
 	void saveSettings();
 	void createScreenshot();
-	void toggleSagittalView(bool);
-	void toggleAxialView(bool);
-	void toggleCoronalView(bool);
+	void toggleSagittalView( bool );
+	void toggleAxialView( bool );
+	void toggleCoronalView( bool );
 
 
 private:
@@ -112,9 +112,9 @@ private:
 
 	QSpinBox *m_RadiusSpin;
 	QAction *m_RadiusSpinAction;
-    QLabel *m_SignatureLabel;
+	QLabel *m_SignatureLabel;
 
-    QAction *m_ActionReset_Scaling;
+	QAction *m_ActionReset_Scaling;
 	QAction *m_ActionAuto_Scaling;
 
 

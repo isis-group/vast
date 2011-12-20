@@ -139,12 +139,12 @@ void QImageWidgetImplementation::paintEvent( QPaintEvent */*event*/ )
 		m_Painter->begin( this );
 		m_ImageProperties.at( getWidgetSpecCurrentImage() ).viewPort
 		= QOrientationHandler::getViewPort( currentZoom,
-										   getWidgetSpecCurrentImage(),
-										   width(),
-										   height(),
-										   m_PlaneOrientation,
-										   m_Border
-										 );
+											getWidgetSpecCurrentImage(),
+											width(),
+											height(),
+											m_PlaneOrientation,
+											m_Border
+										  );
 		boost::shared_ptr<ImageHolder> cImage =  getWidgetSpecCurrentImage();
 
 		if( m_ViewerCore->getMode() == ViewerCoreBase::zmap ) {

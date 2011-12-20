@@ -65,7 +65,7 @@ public:
 	ColormapType getFallbackColormap() const;
 
 	void adaptColorMapToImage( ImageHolder *image, bool split = true );
-	
+
 
 
 private:

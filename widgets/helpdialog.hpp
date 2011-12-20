@@ -30,10 +30,13 @@
 
 #include "ui_helpDialog.h"
 
-namespace isis {
-namespace viewer {
-namespace widget {
-	
+namespace isis
+{
+namespace viewer
+{
+namespace widget
+{
+
 
 class HelpDialog : public QDialog
 {
@@ -45,8 +48,10 @@ private:
 	Ui::helpDialog m_Interface;
 };
 
-	
-}}}
+
+}
+}
+}
 
 
 #endif

@@ -59,13 +59,13 @@ SliderWidget::SliderWidget( QWidget *parent, isis::viewer::QViewerCore *core )
 	connect( m_Interface.opacitySlider, SIGNAL( sliderMoved( int ) ), this, SLOT( opacityChanged( int ) ) );
 	connect( m_Interface.maxSlider, SIGNAL( sliderMoved( int ) ), this, SLOT( upperThresholdChanged( int ) ) );
 	connect( m_Interface.minSlider, SIGNAL( sliderMoved( int ) ), this, SLOT( lowerThresholdChanged( int ) ) );
-	connect( m_Interface.checkGlobal, SIGNAL( toggled(bool)), this, SLOT( toggleGlobal(bool)));
+	connect( m_Interface.checkGlobal, SIGNAL( toggled( bool ) ), this, SLOT( toggleGlobal( bool ) ) );
 
 }
 
-void SliderWidget::toggleGlobal(bool global)
+void SliderWidget::toggleGlobal( bool global )
 {
-	m_ViewerCore->getOptionMap()->setPropertyAs<bool>("zmapGlobal", global);
+	m_ViewerCore->getOptionMap()->setPropertyAs<bool>( "zmapGlobal", global );
 }
 
 void SliderWidget::setSliderVisible( SliderWidget::SliderType slider , bool visible )
@@ -172,11 +172,11 @@ void SliderWidget::synchronize()
 			setSliderVisible( LowerThreshold, m_ViewerCore->getCurrentImage()->minMax.first->as<double>() < 0 );
 			setSliderVisible( UpperThreshold, m_ViewerCore->getCurrentImage()->minMax.second->as<double>() > 0 );
 			const unsigned short lowerThreshold = 1000 - abs( ( 1000 / m_ViewerCore->getCurrentImage()->minMax.first->as<double>() )
-				* m_ViewerCore->getCurrentImage()->lowerThreshold );
+												  * m_ViewerCore->getCurrentImage()->lowerThreshold );
 			const unsigned short upperThreshold = 1000 - abs( ( 1000 / m_ViewerCore->getCurrentImage()->minMax.second->as<double>() )
-			  * m_ViewerCore->getCurrentImage()->upperThreshold );
+												  * m_ViewerCore->getCurrentImage()->upperThreshold );
 			m_Interface.minSlider->setSliderPosition( lowerThreshold );
-			m_Interface.maxSlider->setSliderPosition( upperThreshold );			
+			m_Interface.maxSlider->setSliderPosition( upperThreshold );
 			setSliderVisible( Opacity, true );
 		} else if ( m_ViewerCore->getCurrentImage()->imageType == ImageHolder::anatomical_image ) {
 			setSliderVisible( LowerThreshold, false );
@@ -186,7 +186,8 @@ void SliderWidget::synchronize()
 	} else {
 		QWidget::setVisible( false );
 	}
-	m_Interface.checkGlobal->setChecked( m_ViewerCore->getOptionMap()->getPropertyAs<bool>("zmapGlobal"));
+
+	m_Interface.checkGlobal->setChecked( m_ViewerCore->getOptionMap()->getPropertyAs<bool>( "zmapGlobal" ) );
 
 }
 

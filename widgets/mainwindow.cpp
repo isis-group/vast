@@ -61,9 +61,9 @@ MainWindow::MainWindow( QViewerCore *core ) :
 	addAction( m_ActionAuto_Scaling );
 
 	m_Interface.actionInformation_Areas->setChecked( true );
-	m_Interface.actionAxial_View->setChecked(true);
-	m_Interface.actionSagittal_View->setChecked(true);
-	m_Interface.actionCoronal_View->setChecked(true);
+	m_Interface.actionAxial_View->setChecked( true );
+	m_Interface.actionSagittal_View->setChecked( true );
+	m_Interface.actionCoronal_View->setChecked( true );
 
 	m_Interface.action_Save_Image->setShortcut( QKeySequence::Save );
 	m_Interface.action_Save_Image->setIconVisibleInMenu( true );
@@ -106,12 +106,12 @@ MainWindow::MainWindow( QViewerCore *core ) :
 	connect( m_Interface.actionToggle_Zmap_Mode, SIGNAL( triggered( bool ) ), this, SLOT( toggleZMapMode( bool ) ) );
 	connect( m_Interface.actionKey_Commands, SIGNAL( triggered() ), this, SLOT( showKeyCommandDialog() ) );
 	connect( m_Interface.actionCreate_Screenshot, SIGNAL( triggered() ), this, SLOT( createScreenshot() ) );
-	connect( m_Interface.actionHelp, SIGNAL( triggered()), helpDialog, SLOT( show()) );
-    connect( m_Interface.actionLogging, SIGNAL( triggered()), this, SLOT( showLoggingDialog()));
-	connect( m_Interface.actionAxial_View, SIGNAL( triggered(bool)), this, SLOT( toggleAxialView(bool)));
-	connect( m_Interface.actionSagittal_View, SIGNAL( triggered(bool)), this, SLOT( toggleSagittalView(bool)));
-	connect( m_Interface.actionCoronal_View, SIGNAL( triggered(bool)), this, SLOT( toggleCoronalView(bool)));
-	
+	connect( m_Interface.actionHelp, SIGNAL( triggered() ), helpDialog, SLOT( show() ) );
+	connect( m_Interface.actionLogging, SIGNAL( triggered() ), this, SLOT( showLoggingDialog() ) );
+	connect( m_Interface.actionAxial_View, SIGNAL( triggered( bool ) ), this, SLOT( toggleAxialView( bool ) ) );
+	connect( m_Interface.actionSagittal_View, SIGNAL( triggered( bool ) ), this, SLOT( toggleSagittalView( bool ) ) );
+	connect( m_Interface.actionCoronal_View, SIGNAL( triggered( bool ) ), this, SLOT( toggleCoronalView( bool ) ) );
+
 
 	//toolbar stuff
 	m_Toolbar->setOrientation( Qt::Horizontal );
@@ -135,11 +135,13 @@ MainWindow::MainWindow( QViewerCore *core ) :
 	m_RadiusSpin->setMaximum( 500 );
 	m_RadiusSpin->setToolTip( "Search radius for finding local minimum/maximum. If radius is 0 it will search the entire image." );
 	m_Interface.statusbar->addPermanentWidget( m_ViewerCore->getProgressFeedback()->getProgressBar() );
-    if( m_ViewerCore->getOptionMap()->hasProperty("signature") ) {
-        m_SignatureLabel->setText( m_ViewerCore->getOptionMap()->getPropertyAs<std::string>("signature").c_str());
-    }
-    m_Interface.statusbar->addPermanentWidget(m_SignatureLabel);
-    
+
+	if( m_ViewerCore->getOptionMap()->hasProperty( "signature" ) ) {
+		m_SignatureLabel->setText( m_ViewerCore->getOptionMap()->getPropertyAs<std::string>( "signature" ).c_str() );
+	}
+
+	m_Interface.statusbar->addPermanentWidget( m_SignatureLabel );
+
 	scalingWidget->setVisible( false );
 	loadSettings();
 }
@@ -161,17 +163,17 @@ void MainWindow::createScreenshot()
 
 }
 
-void MainWindow::toggleAxialView(bool visible )
+void MainWindow::toggleAxialView( bool visible )
 {
 	m_ViewerCore->getUICore()->setViewPlaneOrientation( axial, visible );
 }
 
-void MainWindow::toggleCoronalView(bool visible )
+void MainWindow::toggleCoronalView( bool visible )
 {
 	m_ViewerCore->getUICore()->setViewPlaneOrientation( coronal, visible );
 }
 
-void MainWindow::toggleSagittalView(bool visible)
+void MainWindow::toggleSagittalView( bool visible )
 {
 	m_ViewerCore->getUICore()->setViewPlaneOrientation( sagittal, visible );
 }
@@ -455,15 +457,15 @@ void MainWindow::refreshUI()
 
 	if( m_ViewerCore->getMode() == ViewerCoreBase::zmap ) {
 		m_Interface.actionToggle_Zmap_Mode->setChecked( true );
-		m_Interface.actionFind_Global_Max->setVisible(true);
-		m_Interface.actionFind_Global_Min->setVisible(true);
-		m_RadiusSpinAction->setVisible(true);
+		m_Interface.actionFind_Global_Max->setVisible( true );
+		m_Interface.actionFind_Global_Min->setVisible( true );
+		m_RadiusSpinAction->setVisible( true );
 	} else {
 		m_Interface.actionToggle_Zmap_Mode->setChecked( false );
-		m_Interface.actionFind_Global_Max->setVisible(false);
-		m_Interface.actionFind_Global_Min->setVisible(false);
-		m_RadiusSpinAction->setVisible(false);
-		
+		m_Interface.actionFind_Global_Max->setVisible( false );
+		m_Interface.actionFind_Global_Min->setVisible( false );
+		m_RadiusSpinAction->setVisible( false );
+
 	}
 
 	m_Interface.action_Save_Image->setEnabled( m_ViewerCore->hasImage() );

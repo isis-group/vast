@@ -100,7 +100,7 @@ Q_SIGNALS:
 
 private:
 	QVBoxLayout *m_Layout;
-	
+
 	ImagePropertiesMapType m_ImageProperties;
 
 	void emitMousePressEvent( QMouseEvent *e );
