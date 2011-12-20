@@ -155,6 +155,7 @@
     </property>
     <addaction name="actionHelp"/>
     <addaction name="separator"/>
+    <addaction name="actionLogging"/>
     <addaction name="actionKey_Commands"/>
    </widget>
    <addaction name="menu_File"/>
@@ -427,6 +428,11 @@
    </property>
    <property name="shortcut">
     <string>A, V</string>
+   </property>
+  </action>
+  <action name="actionLogging">
+   <property name="text">
+    <string>Logging</string>
    </property>
   </action>
  </widget>

@@ -21,8 +21,7 @@ MainWindow::MainWindow( QViewerCore *core ) :
 	helpDialog( new widget::HelpDialog( this ) ),
 	m_ViewerCore( core ),
 	m_Toolbar( new QToolBar( this ) ),
-	m_RadiusSpin( new QSpinBox( this ) ),
-	m_LogButton( new QPushButton( this ) )
+	m_RadiusSpin( new QSpinBox( this ) )
 {
 	m_Interface.setupUi( this );
 	setWindowIcon( QIcon( ":/common/vast.jpg" ) );
@@ -71,7 +70,6 @@ MainWindow::MainWindow( QViewerCore *core ) :
 	connect( m_Interface.actionShow_scaling_option, SIGNAL( triggered() ), this, SLOT( showScalingOption() ) );
 	connect( m_Interface.actionIgnore_Orientation, SIGNAL( triggered( bool ) ), this, SLOT( ignoreOrientation( bool ) ) );
 	connect( m_Interface.action_Exit, SIGNAL( triggered() ), this, SLOT( close() ) );
-	connect( m_LogButton, SIGNAL( clicked() ), this, SLOT( showLoggingDialog() ) );
 	connect( m_Interface.actionPropagate_Zooming, SIGNAL( triggered( bool ) ), this, SLOT( propagateZooming( bool ) ) );
 	connect( m_ActionReset_Scaling, SIGNAL( triggered() ), this, SLOT( resetScaling() ) );
 	connect( m_ActionAuto_Scaling, SIGNAL( triggered() ), this, SLOT( autoScaling() ) );
@@ -81,6 +79,7 @@ MainWindow::MainWindow( QViewerCore *core ) :
 	connect( m_Interface.actionKey_Commands, SIGNAL( triggered() ), this, SLOT( showKeyCommandDialog() ) );
 	connect( m_Interface.actionCreate_Screenshot, SIGNAL( triggered() ), this, SLOT( createScreenshot() ) );
 	connect( m_Interface.actionHelp, SIGNAL( triggered()), helpDialog, SLOT( show()) );
+    connect( m_Interface.actionLogging, SIGNAL( triggered()), this, SLOT( showLoggingDialog()));
 	connect( m_Interface.actionAxial_View, SIGNAL( triggered(bool)), this, SLOT( toggleAxialView(bool)));
 	connect( m_Interface.actionSagittal_View, SIGNAL( triggered(bool)), this, SLOT( toggleSagittalView(bool)));
 	connect( m_Interface.actionCoronal_View, SIGNAL( triggered(bool)), this, SLOT( toggleCoronalView(bool)));
@@ -108,9 +107,6 @@ MainWindow::MainWindow( QViewerCore *core ) :
 	m_RadiusSpin->setMaximum( 500 );
 	m_RadiusSpin->setToolTip( "Search radius for finding local minimum/maximum. If radius is 0 it will search the entire image." );
 	m_Interface.statusbar->addPermanentWidget( m_ViewerCore->getProgressFeedback()->getProgressBar() );
-
-	m_LogButton->setText( "Show log" );
-	m_Interface.statusbar->addPermanentWidget( m_LogButton );
 
 	scalingWidget->setVisible( false );
 	loadSettings();
