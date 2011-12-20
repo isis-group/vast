@@ -26,8 +26,7 @@ isis::viewer::plugin::HistogramDialog::HistogramDialog( QWidget *parent, isis::v
 void isis::viewer::plugin::HistogramDialog::paintHistogram()
 {
 	m_Plotter->clear();
-	
-	if( m_ViewerCore->hasImage() ) {
+	if( m_ViewerCore->hasImage() && isVisible() ) {
 		std::stringstream title;
 		QwtDoubleRect zoomBase;
 		title << "Histogram of " << boost::filesystem::path( m_ViewerCore->getCurrentImage()->getFileNames().front() ).leaf();
@@ -40,8 +39,8 @@ void isis::viewer::plugin::HistogramDialog::paintHistogram()
 		double xData[256];
 		BOOST_FOREACH( DataContainer::const_reference image, m_ViewerCore->getDataContainer() ) {
 			if( !image.second->isRGB ) {
-				const double scaling = image.second->getISISImage()->getScalingTo( isis::data::ValuePtr<InternalImageType>::staticID ).first->as<double>();
-				const double offset = image.second->getISISImage()->getScalingTo( isis::data::ValuePtr<InternalImageType>::staticID ).second->as<double>();
+				const double scaling = image.second->scalingToInternalType.first->as<double>();
+				const double offset = image.second->scalingToInternalType.second->as<double>();
 
 				for( unsigned short i = 0; i < 256; i++ ) {
 					xData[i] = ( double )( i - offset ) / scaling ;

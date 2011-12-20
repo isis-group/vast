@@ -48,13 +48,14 @@ public:
 
 	};
 public Q_SLOTS:
+    void showEvent( QShowEvent * ) { updateScene(); }
 	void updateScene() { refresh ( m_CurrentPhysicalCoords ); }
 
 	virtual void refresh( util::fvector4 physicalCoords ) {
 		m_CurrentPhysicalCoords = physicalCoords;
 		plot->clear();
 
-		if( !ui.checkLock->isChecked() ) {
+		if( !ui.checkLock->isChecked() && isVisible()) {
 			BOOST_FOREACH( DataContainer::const_reference image, m_ViewerCore->getDataContainer() ) {
 				if( image.second->getImageSize()[3] > 1 ) {
 					QwtPlotCurve *curve = new QwtPlotCurve();
