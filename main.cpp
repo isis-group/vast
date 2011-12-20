@@ -99,7 +99,6 @@ int main( int argc, char *argv[] )
 	app.init( argc, argv, true );
 
 	QViewerCore *core = new QViewerCore( appName, orgName );
-	core->getOptionMap()->setPropertyAs<std::string>( "isisVersion", app.getCoreVersion() );
 
 	core->addMessageHandler( viewer_handler );
 	core->addMessageHandler( isis_handler );

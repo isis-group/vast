@@ -100,5 +100,5 @@ The following values are accepted:
 
 On UNIX platforms the graphics system can be changed by typing:
 
-   *export VAST_GRAPHICS_SYSTEM="raster"*
+   ``# export VAST_GRAPHICS_SYSTEM="raster"``
 
