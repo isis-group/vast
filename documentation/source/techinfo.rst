@@ -28,7 +28,7 @@ Dependencies
 Supported file formats
 ----------------------
 
-As mentioned in the :ref:`dependecies`-section vast supports all file formats as the isis project does. With version **0.4.2** of isis vast supports the following file formats:
+As mentioned in the :ref:`dependecies`-section vast supports all file formats as the isis project does. With version **0.4.2** of isis these are:
 
 +--------------+----------+----------+
 | File format  | Readable | Writable |
@@ -55,6 +55,7 @@ Furthermore, vast supports reading of zipped files with the following suffixes:
 * tgz
 * tbz
 * taz
+* gz
 
 .. _supported_data_types:
 

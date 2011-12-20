@@ -193,6 +193,7 @@ bool ImageHolder::setImage( const data::Image &image, const ImageType &_imageTyp
 		
 		m_PropMap.setPropertyAs<double>( "scalingMinValue", minMax.first->as<double>() );
 		m_PropMap.setPropertyAs<double>( "scalingMaxValue", minMax.second->as<double>() );
+        scalingToInternalType = image.getScalingTo( isis::data::ValuePtr<InternalImageType>::staticID );
 	}
 
 	alignedSize32 = get32BitAlignedSize( m_ImageSize );

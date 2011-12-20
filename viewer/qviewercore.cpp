@@ -62,12 +62,18 @@ void QViewerCore::physicalCoordsChanged( util::fvector4 physicalCoords )
 
 void QViewerCore::timestepChanged( int timestep )
 {
-	if( !getCurrentImage()->getImageSize()[3] > timestep ) {
-		timestep = getCurrentImage()->getImageSize()[3] - 1;
-	}
-
-	getCurrentImage()->voxelCoords[3] = timestep;
-	updateScene();
+    if( hasImage() ) {
+         
+     if( !getCurrentImage()->getImageSize()[3] > timestep ) {
+         timestep = getCurrentImage()->getImageSize()[3] - 1;
+     }
+     BOOST_FOREACH( DataContainer::reference image, getDataContainer() ) {
+      if( static_cast<size_t>( timestep ) < image.second->getImageSize()[3] ) {
+       image.second->voxelCoords[3] = timestep;
+      }
+     }
+     updateScene();
+    }
 }
 
 

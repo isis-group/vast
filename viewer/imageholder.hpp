@@ -102,6 +102,7 @@ public:
 	boost::numeric::ublas::matrix<double> latchedOrientation;
 	unsigned short majorTypeID;
 	std::vector< double *> histogramVector;
+    std::pair<util::ValueReference, util::ValueReference> scalingToInternalType;
 
 private:
 
