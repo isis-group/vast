@@ -1,3 +1,30 @@
+/****************************************************************
+ *
+ * <Copyright information>
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 3
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ *
+ * Author: Erik Türke, tuerke@cbs.mpg.de
+ *
+ * QImageWidgetImplementation.cpp
+ *
+ * Description:
+ *
+ *  Created on: Aug 12, 2011
+ *      Author: tuerke
+ ******************************************************************/
 #include "QImageWidgetImplementation.hpp"
 
 #include "QOrientationHandler.hpp"
@@ -65,7 +92,7 @@ void QImageWidgetImplementation::setMouseCursorIcon( QIcon icon )
 void QImageWidgetImplementation::addImage( const boost::shared_ptr< ImageHolder > image )
 {
 	ImageProperties imgProperties;
-	imgProperties.viewPort = QOrienationHandler::ViewPortType();
+	imgProperties.viewPort = QOrientationHandler::ViewPortType();
 	m_ImageProperties.insert( std::make_pair< boost::shared_ptr<ImageHolder> , ImageProperties >( image, imgProperties ) );
 	m_ImageVector.push_back( image );
 	image->addWidget( this );
@@ -111,7 +138,7 @@ void QImageWidgetImplementation::paintEvent( QPaintEvent */*event*/ )
 	if( m_ImageVector.size() ) {
 		m_Painter->begin( this );
 		m_ImageProperties.at( getWidgetSpecCurrentImage() ).viewPort
-		= QOrienationHandler::getViewPort( currentZoom,
+		= QOrientationHandler::getViewPort( currentZoom,
 										   getWidgetSpecCurrentImage(),
 										   width(),
 										   height(),
@@ -190,16 +217,16 @@ void QImageWidgetImplementation::paintEvent( QPaintEvent */*event*/ )
 void QImageWidgetImplementation::recalculateTranslation()
 {
 	const boost::shared_ptr<ImageHolder > image = getWidgetSpecCurrentImage();
-	const util::ivector4 mappedSize = QOrienationHandler::mapCoordsToOrientation( image->getImageSize(), image, m_PlaneOrientation );
-	const util::ivector4 mappedVoxelCoords = QOrienationHandler::mapCoordsToOrientation( image->voxelCoords, image, m_PlaneOrientation );
-	const util::ivector4 signVec = QOrienationHandler::mapCoordsToOrientation( util::ivector4( 1, 1, 1, 1 ), image, m_PlaneOrientation, false, false );
+	const util::ivector4 mappedSize = QOrientationHandler::mapCoordsToOrientation( image->getImageSize(), image, m_PlaneOrientation );
+	const util::ivector4 mappedVoxelCoords = QOrientationHandler::mapCoordsToOrientation( image->voxelCoords, image, m_PlaneOrientation );
+	const util::ivector4 signVec = QOrientationHandler::mapCoordsToOrientation( util::ivector4( 1, 1, 1, 1 ), image, m_PlaneOrientation, false, false );
 	const util::ivector4 center = mappedSize / 2;
 	const util::ivector4 diff = center - mappedVoxelCoords;
 	const float transXConst = ( ( center[0] + 2 ) - mappedSize[0] / ( 2 * currentZoom ) );
 	const float transYConst = ( ( center[1] + 2 ) - mappedSize[1] / ( 2 * currentZoom ) );
 	const float transX = transXConst * ( ( float )diff[0] / ( float )center[0] ) * signVec[0];
 	const float transY = transYConst * ( ( float )diff[1] / ( float )center[1] ) * signVec[1];
-	const QOrienationHandler::ViewPortType viewPort = m_ImageProperties.at( image ).viewPort;
+	const QOrientationHandler::ViewPortType viewPort = m_ImageProperties.at( image ).viewPort;
 	translationX = transX * viewPort[0] ;
 	translationY = transY * viewPort[1] ;
 }
@@ -218,12 +245,12 @@ void QImageWidgetImplementation::paintImage( boost::shared_ptr< ImageHolder > im
 		break;
 	}
 
-	const util::ivector4 mappedSizeAligned = QOrienationHandler::mapCoordsToOrientation( image->alignedSize32, image, m_PlaneOrientation );
+	const util::ivector4 mappedSizeAligned = QOrientationHandler::mapCoordsToOrientation( image->alignedSize32, image, m_PlaneOrientation );
 
 	m_Painter->resetMatrix();
 
 	if( image.get() != getWidgetSpecCurrentImage().get() ) {
-		imgProps.viewPort =  QOrienationHandler::getViewPort( currentZoom, image, width(), height(),
+		imgProps.viewPort =  QOrientationHandler::getViewPort( currentZoom, image, width(), height(),
 							 m_PlaneOrientation, m_Border );
 	}
 
@@ -234,7 +261,7 @@ void QImageWidgetImplementation::paintImage( boost::shared_ptr< ImageHolder > im
 	imgProps.viewPort[2] += translationX;
 	imgProps.viewPort[3] += translationY;
 
-	m_Painter->setTransform( QOrienationHandler::getTransform( imgProps.viewPort, image, m_PlaneOrientation ) );
+	m_Painter->setTransform( QOrientationHandler::getTransform( imgProps.viewPort, image, m_PlaneOrientation ) );
 
 	m_Painter->setOpacity( image->opacity );
 
@@ -332,8 +359,8 @@ void QImageWidgetImplementation::emitMousePressEvent( QMouseEvent *e )
 {
 	const boost::shared_ptr<ImageHolder> image = getWidgetSpecCurrentImage();
 	const ImageProperties &imgProps = m_ImageProperties.at( image );
-	const uint16_t slice = QOrienationHandler::mapCoordsToOrientation( image->voxelCoords, image, m_PlaneOrientation )[2];
-	const util::ivector4 &coords = QOrienationHandler::convertWindow2VoxelCoords( imgProps.viewPort, image, e->x(), e->y(), slice, m_PlaneOrientation );
+	const uint16_t slice = QOrientationHandler::mapCoordsToOrientation( image->voxelCoords, image, m_PlaneOrientation )[2];
+	const util::ivector4 &coords = QOrientationHandler::convertWindow2VoxelCoords( imgProps.viewPort, image, e->x(), e->y(), slice, m_PlaneOrientation );
 	physicalCoordsChanged( image->getISISImage()->getPhysicalCoordsFromIndex( coords ) );
 }
 
@@ -378,7 +405,7 @@ void QImageWidgetImplementation::paintCrosshair() const
 {
 	const boost::shared_ptr< ImageHolder > image = getWidgetSpecCurrentImage();
 	const ImageProperties &imgProps = m_ImageProperties.at( image );
-	std::pair<int, int> coords = QOrienationHandler::convertVoxel2WindowCoords( imgProps.viewPort, image, m_PlaneOrientation );
+	std::pair<int, int> coords = QOrientationHandler::convertVoxel2WindowCoords( imgProps.viewPort, image, m_PlaneOrientation );
 	short border = -5000;
 	const QLine xline1( coords.first, border, coords.first, coords.second - 15 );
 	const QLine xline2( coords.first, coords.second + 15, coords.first, height() - border  );
@@ -390,7 +417,7 @@ void QImageWidgetImplementation::paintCrosshair() const
 	pen.setColor( m_CrosshairColor );
 	pen.setWidth( m_CrosshairWidth );
 	m_Painter->setOpacity( 1.0 );
-	m_Painter->setTransform( QOrienationHandler::getTransform( imgProps.viewPort, image, m_PlaneOrientation ) );
+	m_Painter->setTransform( QOrientationHandler::getTransform( imgProps.viewPort, image, m_PlaneOrientation ) );
 	m_Painter->scale( 1.0 / imgProps.viewPort[0], 1.0 / imgProps.viewPort[1] );
 	m_Painter->translate( -imgProps.viewPort[2], -imgProps.viewPort[3] );
 	m_Painter->setPen( pen );

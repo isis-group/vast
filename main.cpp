@@ -1,3 +1,30 @@
+/****************************************************************
+ *
+ * <Copyright information>
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 3
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ *
+ * Author: Erik Türke, tuerke@cbs.mpg.de
+ *
+ * main.cpp
+ *
+ * Description:
+ *
+ *  Created on: Aug 12, 2011
+ *      Author: tuerke
+ ******************************************************************/
 #include <Adapter/qtapplication.hpp>
 #include <Adapter/qdefaultmessageprint.hpp>
 #include "qviewercore.hpp"
@@ -23,9 +50,11 @@ int main( int argc, char *argv[] )
 	util::_internal::Log<viewer::Runtime>::setHandler( boost::shared_ptr<qt4::QDefaultMessagePrint>( viewer_handler ) );
 	util::_internal::Log<data::Runtime>::setHandler( boost::shared_ptr<qt4::QDefaultMessagePrint>( isis_handler ) );
 	util::_internal::Log<image_io::Runtime>::setHandler( boost::shared_ptr<qt4::QDefaultMessagePrint>( imageio_handler ) );
-
+    
+#ifndef NDEBUG
 	qt4::QDefaultMessagePrint::stopBelow(warning);
-	
+#endif
+    
 	std::string appName = "vast";
 	std::string orgName = "cbs.mpg.de";
 
@@ -70,11 +99,11 @@ int main( int argc, char *argv[] )
 	app.init( argc, argv, true );
 
 	QViewerCore *core = new QViewerCore( appName, orgName );
+    core->getOptionMap()->setPropertyAs<std::string>("isisVersion", app.getCoreVersion());
 
 	core->addMessageHandler( viewer_handler );
 	core->addMessageHandler( isis_handler );
 	core->addMessageHandler( imageio_handler );
-	std::cout << "v" << core->getVersion() << " ( isis core: " << app.getCoreVersion() << " )" << std::endl;
 	//scan for plugins and hand them to the core
 	core->addPlugins( plugin::PluginLoader::get().getPlugins() );
 	core->getUICore()->reloadPluginsToGUI();
@@ -187,9 +216,8 @@ int main( int argc, char *argv[] )
 		core->getUICore()->getMainWindow()->startWidget->close();
 
 	}
-
-	LOG( isis::viewer::Runtime, info ) << "Welcome to vast ;-)";
-	core->getUICore()->showMainWindow();
+   
+    core->getUICore()->showMainWindow();
 
 	core->settingsChanged();
 

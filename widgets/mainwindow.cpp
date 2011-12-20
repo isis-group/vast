@@ -1,3 +1,30 @@
+/****************************************************************
+ *
+ * <Copyright information>
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 3
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ *
+ * Author: Erik Türke, tuerke@cbs.mpg.de
+ *
+ * mainwindow.cpp
+ *
+ * Description:
+ *
+ *  Created on: Aug 12, 2011
+ *      Author: tuerke
+ ******************************************************************/
 #include "mainwindow.hpp"
 #include <iostream>
 #include <QGridLayout>
@@ -21,7 +48,8 @@ MainWindow::MainWindow( QViewerCore *core ) :
 	helpDialog( new widget::HelpDialog( this ) ),
 	m_ViewerCore( core ),
 	m_Toolbar( new QToolBar( this ) ),
-	m_RadiusSpin( new QSpinBox( this ) )
+	m_RadiusSpin( new QSpinBox( this ) ),
+	m_SignatureLabel( new QLabel( this ) )
 {
 	m_Interface.setupUi( this );
 	setWindowIcon( QIcon( ":/common/vast.jpg" ) );
@@ -107,7 +135,11 @@ MainWindow::MainWindow( QViewerCore *core ) :
 	m_RadiusSpin->setMaximum( 500 );
 	m_RadiusSpin->setToolTip( "Search radius for finding local minimum/maximum. If radius is 0 it will search the entire image." );
 	m_Interface.statusbar->addPermanentWidget( m_ViewerCore->getProgressFeedback()->getProgressBar() );
-
+    if( m_ViewerCore->getOptionMap()->hasProperty("signature") ) {
+        m_SignatureLabel->setText( m_ViewerCore->getOptionMap()->getPropertyAs<std::string>("signature").c_str());
+    }
+    m_Interface.statusbar->addPermanentWidget(m_SignatureLabel);
+    
 	scalingWidget->setVisible( false );
 	loadSettings();
 }
