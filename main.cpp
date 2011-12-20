@@ -91,9 +91,9 @@ int main( int argc, char *argv[] )
 	app.parameters["rdialect"].needed() = false;
 	app.parameters["rdialect"].hidden() = true;
 	app.parameters["rdialect"].setDescription( "Dialect for reading" );
-	app.parameters["split"] = false;
-	app.parameters["split"].needed() = false;
-	app.parameters["split"].setDescription( "Show each image in a separate view" );
+	app.parameters["dist"] = false;
+	app.parameters["dist"].needed() = false;
+	app.parameters["dist"].setDescription( "Show each image in a separate view" );
 	boost::shared_ptr< util::ProgressFeedback > feedback = boost::shared_ptr<util::ProgressFeedback>( new util::ConsoleFeedback );
 	data::IOFactory::setProgressFeedback( feedback );
 	app.init( argc, argv, true );
@@ -187,8 +187,8 @@ int main( int argc, char *argv[] )
 		}
 		core->getUICore()->setOptionPosition( isis::viewer::UICore::bottom );
 		core->getUICore()->getMainWindow()->startWidget->close();
-		//only anatomical images with split option was specified
-	} else if ( app.parameters["in"].isSet() && app.parameters["split"].isSet() ) {
+		//only anatomical images with dist option was specified
+	} else if ( app.parameters["in"].isSet() && app.parameters["dist"].isSet() ) {
 		core->getUICore()->setViewWidgetArrangement( UICore::InRow );
 		BOOST_FOREACH( ImageListRef image, core->addImageList( imgList, ImageHolder::anatomical_image ) ) {
 			checkForCaCp( image );
