@@ -20,12 +20,12 @@ This is how an anatomical image might look like in vast [#f1]_:
 
 This is how a functional image might look like in vast [#f1]_:
 
-.. image:: _images/example_functional_image.png 
+.. image:: _images/example_functional_image.jpg 
    :width: 600
 
 This is how a statistical map might look like in vast [#f1]_:
 
-.. image:: _images/example_statistical_image.png 
+.. image:: _images/example_statistical_image.jpg
    :width: 600
 
 
