@@ -15,7 +15,7 @@ Those medical images can be divided into 3 groups:
 
 This is how an anatomical image might look like in vast [#f1]_:
 
-.. image:: _images/example_anatomical_image.png 
+.. image:: _images/example_anatomical_image.jpg 
    :width: 600
 
 This is how a functional image might look like in vast [#f1]_:

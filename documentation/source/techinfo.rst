@@ -98,7 +98,7 @@ The following values are accepted:
 * opengl
    This is an experimental graphics system mode of Qt which uses `OpenGl <http://www.opengl.org/>`_ for rendering purpose.
 
-On UNIX platforms the graphics system can be changed by typing:
+On UNIX platforms the graphics system can be changed (e.g. to raster) by typing:
 
    ``# export VAST_GRAPHICS_SYSTEM="raster"``
 

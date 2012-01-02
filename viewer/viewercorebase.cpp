@@ -172,7 +172,7 @@ void ViewerCoreBase::setCommonViewerOptions()
 	m_OptionsMap->setPropertyAs<bool>( "showVerboseInfoMessages", false );
 
 	std::stringstream signature;
-	signature << "vast v" << getVersion() << "(isis " << m_OptionsMap->getPropertyAs<std::string>( "isisVersion" ) << ")";
+	signature << "vast v" << getVersion() << ", \xA9 Copyright 2011, cbs.mpg.de";
 	m_OptionsMap->setPropertyAs<std::string>( "signature", signature.str() );
 }
 

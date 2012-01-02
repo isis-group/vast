@@ -30,7 +30,7 @@ install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/html/ DESTINATION ${CMAKE_INSTALL_
           FILES_MATCHING PATTERN "*.inv")
 
 install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/html/_images/ DESTINATION ${CMAKE_INSTALL_PREFIX}/share/vast/doc/html/_images
-          FILES_MATCHING PATTERN "*.png")
+          FILES_MATCHING PATTERN "*.jpg")
 
 install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/html/_static/ DESTINATION ${CMAKE_INSTALL_PREFIX}/share/vast/doc/html/_static
           FILES_MATCHING PATTERN "*")
