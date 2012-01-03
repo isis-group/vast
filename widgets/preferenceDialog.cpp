@@ -49,7 +49,6 @@ PreferencesDialog::PreferencesDialog( QWidget *parent, QViewerCore *core ):
 
 	QSize size( QSize( preferencesUi.comboBox->size().width() - 70, preferencesUi.comboBox->height() - 10 ) );
 	preferencesUi.comboBox->setIconSize( size );
-
 }
 
 void PreferencesDialog::screenshotXChanged( int val )
