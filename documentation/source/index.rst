@@ -16,6 +16,7 @@ Contents:
    introduction
    techinfo
    openingimages
+   zmap
    screenshotfunction
 
 Indices and tables

@@ -89,7 +89,26 @@ Advanced section
    
 If you do not see the advanced section you can make it visible by clicking the check box button (**1**).
 
+The type (**2**) denotes how vast interpretes the image it is going to load. Th choices are:
 
+* structural image
+   vast interpretes the image as a simple structural image. If not modified, the standard colortable will be used.
+  
+* zmap
+   vast interpretes the image as a statistical image. If not modified, the standard zmap-colortable will be used. Furthermore, vast will switch to a :doc:`zmap-mode <zmap>`.
+
+
+The readformat (**3**) tells vast which plugin it should use to load a file.
+Usually vast regognizes the file format by the filenames suffix (e.g. .nii for Nifti files). 
+Sometimes it can happen that this suffix is missing (e.g. some DICOM files lack of this suffix). So vast is not able to automatically detect the plugin it should use to load the file.
+In these cases the user has to specify manually which file format the image is supposed to be.
+
+
+**WARNING:** dialect (**4**) is not implemented yet
+
+| The options (**5**) and (**6**) will only be showed if you already have loaded an image(s) to vast.
+| If the option *Open in new widget* (**5**) is selected vast will create a new widget-ensemble [#f2]_ and insert the image into this widget-ensemble.
+| If the option *Insert in existing widget*  (**6**) is selected vast will insert into the top widget-ensemble [#f2]_.
 
 .. [#f1] You can mix any file formats vast is capable of reading.
 .. [#f2] A widget-ensemble is simply a set of 3 widgets (axial, sagittal and coronal).
