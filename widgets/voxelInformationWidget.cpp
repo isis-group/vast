@@ -97,7 +97,7 @@ void VoxelInformationWidget::connectSignals()
 
 void VoxelInformationWidget::updateLowerUpperThreshold()
 {
-    if( m_ViewerCore->hasImage()) {
+	if( m_ViewerCore->hasImage() ) {
 		m_Interface.lowerThresholdLabel->setText( QString::number( m_ViewerCore->getCurrentImage()->lowerThreshold, 'g', 4 ) );
 		m_Interface.upperThresholdLabel->setText( QString::number( m_ViewerCore->getCurrentImage()->upperThreshold, 'g', 4 ) );
 	}

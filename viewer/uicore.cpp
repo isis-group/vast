@@ -347,29 +347,31 @@ void UICore::refreshUI( )
 		}
 
 		widget.second.widgetImplementation->setCrossHairWidth( 1 );
-        if ( m_ViewerCore->hasImage() ) {
-            if( std::find( iVector.begin(), iVector.end(), m_ViewerCore->getCurrentImage() ) != iVector.end() ) {
-                QPalette pal;
-                pal.setColor( QPalette::Background, QColor( 119, 136, 153 ) );
-                widget.second.frame->setFrameStyle( QFrame::WinPanel | QFrame::Raised );
-                widget.second.frame->setLineWidth( 1 );
-                widget.second.frame->setPalette( pal );
-                widget.second.frame->setAutoFillBackground( true );
 
-                if( m_ViewerCore->getMode() == ViewerCoreBase::zmap ) {
-                    widget.second.widgetImplementation->setCrossHairColor( Qt::white );
-                    widget.second.widgetImplementation->updateScene();
-                }
-            } else {
-                widget.second.frame->setFrameStyle( 0 );
-                widget.second.frame->setAutoFillBackground( false );
+		if ( m_ViewerCore->hasImage() ) {
+			if( std::find( iVector.begin(), iVector.end(), m_ViewerCore->getCurrentImage() ) != iVector.end() ) {
+				QPalette pal;
+				pal.setColor( QPalette::Background, QColor( 119, 136, 153 ) );
+				widget.second.frame->setFrameStyle( QFrame::WinPanel | QFrame::Raised );
+				widget.second.frame->setLineWidth( 1 );
+				widget.second.frame->setPalette( pal );
+				widget.second.frame->setAutoFillBackground( true );
 
-                if ( m_ViewerCore->getMode() == ViewerCoreBase::zmap ) {
-                    widget.second.widgetImplementation->setCrossHairColor( QColor( 255, 102, 0 ) );
-                    widget.second.widgetImplementation->updateScene();
-                }
-            }
-        }
+				if( m_ViewerCore->getMode() == ViewerCoreBase::zmap ) {
+					widget.second.widgetImplementation->setCrossHairColor( Qt::white );
+					widget.second.widgetImplementation->updateScene();
+				}
+			} else {
+				widget.second.frame->setFrameStyle( 0 );
+				widget.second.frame->setAutoFillBackground( false );
+
+				if ( m_ViewerCore->getMode() == ViewerCoreBase::zmap ) {
+					widget.second.widgetImplementation->setCrossHairColor( QColor( 255, 102, 0 ) );
+					widget.second.widgetImplementation->updateScene();
+				}
+			}
+		}
+
 		if( m_ViewerCore->getMode() != ViewerCoreBase::zmap ) {
 			widget.second.widgetImplementation->setCrossHairColor( QColor( 255, 102, 0 ) );
 		}

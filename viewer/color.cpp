@@ -87,6 +87,7 @@ bool Color::addColormap( const std::string &path, const boost::regex &separator 
 	BOOST_FOREACH( std::list<std::string>::const_reference lineRef, lines ) {
 		std::list< unsigned short > values = util::stringToList< unsigned short >( lineRef, separator );
 		std::vector<unsigned short> colorVec( values.begin(), values.end() );
+
 		if( lutTyp == std::string( "rgb" ) ) {
 			lutVec.push_back( QColor( colorVec[0], colorVec[1], colorVec[2], 255 ).rgba() );
 		} else if ( lutTyp == std::string( "rgba" ) ) {
@@ -95,13 +96,13 @@ bool Color::addColormap( const std::string &path, const boost::regex &separator 
 			lutVec.push_back( QColor::fromHsv( colorVec[0], colorVec[1], colorVec[2] ).rgba() );
 		} else if ( lutTyp == std::string( "hsva" ) ) {
 			lutVec.push_back( QColor::fromHsv( colorVec[0], colorVec[1], colorVec[2], colorVec[3] ).rgba() );
-        } else if ( lutTyp == std::string( "cmyk" ) ) {
-            lutVec.push_back( QColor::fromCmyk( colorVec[0], colorVec[1], colorVec[2], colorVec[3] ).rgba() );            
+		} else if ( lutTyp == std::string( "cmyk" ) ) {
+			lutVec.push_back( QColor::fromCmyk( colorVec[0], colorVec[1], colorVec[2], colorVec[3] ).rgba() );
 		} else if ( lutTyp == std::string( "hsl" ) ) {
-            lutVec.push_back( QColor::fromHsl( colorVec[0], colorVec[1], colorVec[2] ).rgba() );
-        } else if ( lutTyp == std::string( "hsla" ) ) {
-            lutVec.push_back( QColor::fromHsl( colorVec[0], colorVec[1], colorVec[2], colorVec[3] ).rgba() );
-        }else {
+			lutVec.push_back( QColor::fromHsl( colorVec[0], colorVec[1], colorVec[2] ).rgba() );
+		} else if ( lutTyp == std::string( "hsla" ) ) {
+			lutVec.push_back( QColor::fromHsl( colorVec[0], colorVec[1], colorVec[2], colorVec[3] ).rgba() );
+		} else {
 			LOG( Runtime, warning ) << "Unknown lut type " << lutTyp << " !";
 			return false;
 		}
