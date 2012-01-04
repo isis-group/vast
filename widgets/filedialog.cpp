@@ -32,7 +32,7 @@ isis::viewer::widget::FileDialog::FileDialog( QWidget *parent, QViewerCore *core
 	: QDialog ( parent ),
 	  m_Mode( OPEN_FILE ),
 	  m_ViewerCore( core ),
-	  m_ImageType( ImageHolder::anatomical_image ),
+	  m_ImageType( ImageHolder::structural_image ),
 	  m_Completer( new QCompleter( this ) )
 {
 

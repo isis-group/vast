@@ -189,7 +189,7 @@ bool ImageHolder::setImage( const data::Image &image, const ImageType &_imageTyp
 		lowerThreshold = 0;
 		upperThreshold = 0;
 		lut = std::string( "standard_zmap" );
-	} else if( imageType == anatomical_image ) {
+	} else if( imageType == structural_image ) {
 		if( !isRGB ) {
 			lowerThreshold = minMax.first->as<double>() ;
 			lowerThreshold = minMax.second->as<double>();

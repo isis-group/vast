@@ -154,7 +154,7 @@ void VoxelInformationWidget::synchronize()
 		disconnectSignals();
 		m_Interface.colormapFrame->setVisible( !image->isRGB );
 
-		if( image->imageType == ImageHolder::anatomical_image ) {
+		if( image->imageType == ImageHolder::structural_image ) {
 			m_Interface.colormapGrid->addWidget( m_Interface.labelMin, 0, 0 );
 			m_Interface.colormapGrid->addWidget( m_Interface.upperHalfColormapLabel, 0, 1 );
 			m_Interface.colormapGrid->addWidget( m_Interface.labelMax, 0, 2 );

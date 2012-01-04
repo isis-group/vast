@@ -39,7 +39,7 @@ This will open vast and load all **3** images in **1** widget-ensemble [#f2]_. S
 
 If you want to vast to display each image in one widget you simply have to type:
 
-   ``# vast -in image1.nii image2.v image3.nii.gz -dist`` [#f1]_
+   ``# vast -in image1.nii image2.v image3.nii.gz -split`` [#f1]_
    
 This will open vast, load all **3** images and distribute them among **3** widget-ensembles [#f2]_. 
 
@@ -60,6 +60,8 @@ Using the vast open dialog
 
 The above image shows the open dialog with the *basic section* (green), the *advanced option section* (blue) and the *favorites section* (orange). 
 The two later ones can be hidden by clicking the respective check box buttons.
+
+.. _basic_section:
 
 Basic section
 `````````````
@@ -100,8 +102,9 @@ The type (**2**) denotes how vast interpretes the image it is going to load. Th 
 
 The readformat (**3**) tells vast which plugin it should use to load a file.
 Usually vast regognizes the file format by the filenames suffix (e.g. .nii for Nifti files). 
-Sometimes it can happen that this suffix is missing (e.g. some DICOM files lack of this suffix). So vast is not able to automatically detect the plugin it should use to load the file.
-In these cases the user has to specify manually which file format the image is supposed to be.
+Sometimes it can happen that this suffix is missing (e.g. some DICOM files lack of this suffix). 
+So vast is not able to automatically detect the plugin it should use to load the file(s).
+In these case the user has to specify manually which file format the image is supposed to be.
 
 
 **WARNING:** dialect (**4**) is not implemented yet
@@ -109,6 +112,25 @@ In these cases the user has to specify manually which file format the image is s
 | The options (**5**) and (**6**) will only be showed if you already have loaded an image(s) to vast.
 | If the option *Open in new widget* (**5**) is selected vast will create a new widget-ensemble [#f2]_ and insert the image into this widget-ensemble.
 | If the option *Insert in existing widget*  (**6**) is selected vast will insert into the top widget-ensemble [#f2]_.
+
+
+Favorites section
+`````````````````
+
+This section gives you the capability to add/remove images you often use to have quick access to them.
+
+.. image:: _images/open_dialog_fav_section.jpg
+   :width: 600
+   
+If you do not see the favorites section you can make it visible by clicking the check box button (**1**).
+
+| In the area denoted with the (**2**) you see a list of your favorite images. An entry is colored green if vast thinks it can open the image. Otherwise it will be colored red.
+To open an image from that list you just have to double-click on it.
+
+| To add a new image to the favorite list you first have to type a path pointing to the file you want to add as favorite into the text field (:ref:`basic_section` (**3**)) 
+and then click the *Add as favorite*-button (**3**).
+
+| To remove an image from the favorite-list you have mark it by clicking on it and using the *Remove*-button (**4**).
 
 .. [#f1] You can mix any file formats vast is capable of reading.
 .. [#f2] A widget-ensemble is simply a set of 3 widgets (axial, sagittal and coronal).

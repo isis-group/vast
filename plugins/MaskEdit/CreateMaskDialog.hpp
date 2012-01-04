@@ -98,7 +98,7 @@ private:
 			mask.setPropertyAs<std::string>( "source", "mask" );
 		}
 
-		retImage = m_MaskEditDialog->m_ViewerCore->addImage( mask, ImageHolder::anatomical_image );
+		retImage = m_MaskEditDialog->m_ViewerCore->addImage( mask, ImageHolder::structural_image );
 		retImage->minMax.first = isis::util::Value<TYPE>( std::numeric_limits<TYPE>::min() );
 		retImage->minMax.second = isis::util::Value<TYPE>( std::numeric_limits<TYPE>::max() );
 		retImage->internMinMax.first = isis::util::Value<TYPE>( std::numeric_limits<TYPE>::min() );

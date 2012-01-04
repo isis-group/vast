@@ -162,12 +162,15 @@ void QViewerCore::settingsChanged()
 		if( getCurrentImage()->imageType == ImageHolder::z_map ) {
 			getCurrentImage()->lut = getOptionMap()->getPropertyAs<std::string>( "lutZMap" );
 		} else {
-			getCurrentImage()->lut = getOptionMap()->getPropertyAs<std::string>( "lutAna" );
+			getCurrentImage()->lut = getOptionMap()->getPropertyAs<std::string>( "lutStructural" );
 		}
-
+        if( getMode() == ViewerCoreBase::zmap && getCurrentAnatomicalRefernce().get() ) {
+                getCurrentAnatomicalRefernce()->lut = getOptionMap()->getPropertyAs<std::string>( "lutStructural" );
+                getCurrentAnatomicalRefernce()->updateColorMap();
+        }
 		getCurrentImage()->updateColorMap();
 	}
-
+    
 	if( getMode() == ViewerCoreBase::zmap && getOptionMap()->getPropertyAs<bool>( "zmapGlobal" ) ) {
 		BOOST_FOREACH( DataContainer::reference image, getDataContainer() ) {
 			if( image.second->imageType == ImageHolder::z_map ) {
@@ -290,7 +293,7 @@ void QViewerCore::openPath( QStringList fileList, ImageHolder::ImageType imageTy
 				boost::shared_ptr<ImageHolder> imageHolder = addImage( image, imageType );
 				checkForCaCp( imageHolder );
 
-				if( !( getMode() == ViewerCoreBase::zmap && imageHolder->imageType == ImageHolder::anatomical_image ) ) {
+				if( !( getMode() == ViewerCoreBase::zmap && imageHolder->imageType == ImageHolder::structural_image ) ) {
 					if( newWidget ) {
 						ensemble = getUICore()->createViewWidgetEnsemble( "" );
 
@@ -346,7 +349,7 @@ void QViewerCore::loadSettings()
 {
 	getSettings()->beginGroup( "ViewerCore" );
 	getOptionMap()->setPropertyAs<std::string>( "lutZMap", getSettings()->value( "lutZMap", getOptionMap()->getPropertyAs<std::string>( "lutZMap" ).c_str() ).toString().toStdString() );
-	getOptionMap()->setPropertyAs<std::string>( "lutAna", getSettings()->value( "lutAna", getOptionMap()->getPropertyAs<std::string>( "lutAna" ).c_str() ).toString().toStdString() );
+	getOptionMap()->setPropertyAs<std::string>( "lutStructural", getSettings()->value( "lutStructural", getOptionMap()->getPropertyAs<std::string>( "lutStructural" ).c_str() ).toString().toStdString() );
 	getOptionMap()->setPropertyAs<bool>( "propagateZooming", getSettings()->value( "propagateZooming", false ).toBool() );
 	getOptionMap()->setPropertyAs<uint8_t>( "interpolationType", getSettings()->value( "interpolationType", getOptionMap()->getPropertyAs<uint8_t>( "interpolationType" ) ).toUInt() );
 	getOptionMap()->setPropertyAs<bool>( "showLabels", getSettings()->value( "showLabels", false ).toBool() );
@@ -377,7 +380,7 @@ void QViewerCore::saveSettings()
 	//saving the preferences to the profile file
 	getSettings()->beginGroup( "ViewerCore" );
 	getSettings()->setValue( "lutZMap", getOptionMap()->getPropertyAs<std::string>( "lutZMap" ).c_str() );
-	getSettings()->setValue( "lutAna", getOptionMap()->getPropertyAs<std::string>( "lutAna" ).c_str() );
+	getSettings()->setValue( "lutStructural", getOptionMap()->getPropertyAs<std::string>( "lutStructural" ).c_str() );
 	getSettings()->setValue( "interpolationType", getOptionMap()->getPropertyAs<uint8_t>( "interpolationType" ) );
 	getSettings()->setValue( "propagateZooming", getOptionMap()->getPropertyAs<bool>( "propagateZooming" ) );
 	getSettings()->setValue( "minMaxSearchRadius", getOptionMap()->getPropertyAs<uint16_t>( "minMaxSearchRadius" ) );

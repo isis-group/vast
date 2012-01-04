@@ -73,7 +73,7 @@ void StartWidget::openPath()
 	close();
 	QStringList fileList;
 	fileList.push_back( m_Interface.favList->currentItem()->text() );
-	m_ViewerCore->openPath( fileList, ImageHolder::anatomical_image, "", "", true );
+	m_ViewerCore->openPath( fileList, ImageHolder::structural_image, "", "", true );
 }
 
 void StartWidget::showEvent( QShowEvent * )

@@ -178,7 +178,7 @@ void SliderWidget::synchronize()
 			m_Interface.minSlider->setSliderPosition( lowerThreshold );
 			m_Interface.maxSlider->setSliderPosition( upperThreshold );
 			setSliderVisible( Opacity, true );
-		} else if ( m_ViewerCore->getCurrentImage()->imageType == ImageHolder::anatomical_image ) {
+		} else if ( m_ViewerCore->getCurrentImage()->imageType == ImageHolder::structural_image ) {
 			setSliderVisible( LowerThreshold, false );
 			setSliderVisible( UpperThreshold, false );
 			setSliderVisible( Opacity, true );

@@ -242,7 +242,7 @@ void QGLWidgetImplementation::paintGL()
 
 	//paint anatomical images
 	BOOST_FOREACH( StateMap::const_reference state, m_ImageStates ) {
-		if( state.first.get() != m_ViewerCore->getCurrentImage().get() && state.first->getPropMap().getPropertyAs<bool>( "isVisible" ) && state.first->getImageProperties().imageType == ImageHolder::anatomical_image ) {
+		if( state.first.get() != m_ViewerCore->getCurrentImage().get() && state.first->getPropMap().getPropertyAs<bool>( "isVisible" ) && state.first->getImageProperties().imageType == ImageHolder::structural_image ) {
 			paintImage( state );
 		}
 	}
@@ -310,7 +310,7 @@ void QGLWidgetImplementation::paintImage( const std::pair< boost::shared_ptr<Ima
 		m_LUTShader.addVariable<float>( "scaling", 1.0 );
 		m_LUTShader.addVariable<float>( "opacity", state.first->getPropMap().getPropertyAs<float>( "opacity" ) );
 		glDisable( GL_TEXTURE_1D );
-	} else if ( state.first->getImageProperties().imageType == ImageHolder::anatomical_image ) {
+	} else if ( state.first->getImageProperties().imageType == ImageHolder::structural_image ) {
 		m_ScalingShader.setEnabled( true );
 		m_ScalingShader.addVariable<float>( "max", state.first->getMinMax().second->as<float>() );
 		m_ScalingShader.addVariable<float>( "min", state.first->getMinMax().first->as<float>() );
@@ -542,7 +542,7 @@ void  QGLWidgetImplementation::setShowLabels( bool show )
 void QGLWidgetImplementation::setInterpolationType( isis::viewer::InterpolationType interpolation )
 {
 	m_InterplationType = interpolation;
-	util::Singletons::get<GL::GLTextureHandler, 10>().forceReloadingAllOfType( ImageHolder::anatomical_image, static_cast<GL::GLTextureHandler::InterpolationType>( interpolation ) );
+	util::Singletons::get<GL::GLTextureHandler, 10>().forceReloadingAllOfType( ImageHolder::structural_image, static_cast<GL::GLTextureHandler::InterpolationType>( interpolation ) );
 	util::Singletons::get<GL::GLTextureHandler, 10>().forceReloadingAllOfType( ImageHolder::z_map, static_cast<GL::GLTextureHandler::InterpolationType>( interpolation ) );
 	updateScene();
 }
