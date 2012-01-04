@@ -273,9 +273,6 @@
    </property>
   </action>
   <action name="actionShow_scaling_option">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
    <property name="icon">
     <iconset resource="../resources/viewer.qrc">
      <normaloff>:/common/autoscale.gif</normaloff>:/common/autoscale.gif</iconset>

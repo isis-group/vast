@@ -31,6 +31,7 @@
 #include "DataStorage/io_factory.hpp"
 #include "uicore.hpp"
 #include <qviewercore.hpp>
+#include "scalingWidget.hpp"
 
 
 namespace isis
@@ -233,6 +234,7 @@ void MainWindow::resetScaling()
 	BOOST_FOREACH( DataContainer::reference image, m_ViewerCore->getDataContainer() ) {
 		image.second->scaling = 1.0;
 		image.second->offset = 0.0;
+        image.second->updateColorMap();
 	}
 	m_ViewerCore->updateScene();
 	scalingWidget->synchronize();
@@ -281,7 +283,8 @@ void MainWindow::ignoreOrientation( bool ignore )
 void MainWindow::showScalingOption()
 {
 	scalingWidget->move( QCursor::pos().x() + m_Toolbar->height() / 2, QCursor::pos().y() + m_Toolbar->height() / 2 );
-	scalingWidget->showMe( m_Interface.actionShow_scaling_option->isChecked() );
+    scalingWidget->synchronize();
+	scalingWidget->show();
 }
 
 

@@ -45,7 +45,6 @@ class ScalingWidget : public QDialog
 	Q_OBJECT
 public:
 	ScalingWidget( QWidget *parent, QViewerCore *core );
-	virtual void keyPressEvent( QKeyEvent *event );
 
 public Q_SLOTS:
 	void synchronize();
@@ -55,7 +54,6 @@ public Q_SLOTS:
 	void offsetChanged( double );
 	void reset();
 	void autoScale();
-	void showMe( bool visible );
 	void applyScalingOffset( const double &scaling, const double &offset, bool global );
 
 
