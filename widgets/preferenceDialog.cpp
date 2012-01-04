@@ -48,7 +48,7 @@ PreferencesDialog::PreferencesDialog( QWidget *parent, QViewerCore *core ):
     connect( preferencesUi.numberOfThreads, SIGNAL( valueChanged( int ) ), this, SLOT( numberOfThreadsChanged( int ) ) );
     connect( preferencesUi.sizeX, SIGNAL( valueChanged( int ) ), this, SLOT( screenshotXChanged( int ) ) );
 
-    QSize size( QSize( preferencesUi.lutStructural->size().width() / 2, preferencesUi.lutStructural->height() - 10 ) );
+    QSize size( QSize( preferencesUi.lutStructural->size().width() / 4, preferencesUi.lutStructural->height() - 10 ) );
     preferencesUi.lutStructural->setIconSize( size );
     preferencesUi.lutZmap->setIconSize( size );
 }
@@ -68,11 +68,7 @@ void PreferencesDialog::screenshotXChanged( int val )
             preferencesUi.sizeY->setValue( val * ratio );
             m_ViewerCore->getUICore()->refreshUI();
         }
-
-
-
     }
-
 }
 
 

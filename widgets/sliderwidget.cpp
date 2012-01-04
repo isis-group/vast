@@ -149,8 +149,10 @@ void SliderWidget::synchronize()
 {
 	if( m_ViewerCore->getMode() == ViewerCoreBase::zmap ) {
 		m_Interface.zmapModeFrame->setVisible( true );
+        unsigned short zmapImages = 0;
 		BOOST_FOREACH( DataContainer::const_reference image, m_ViewerCore->getDataContainer() ) {
 			if( image.second->imageType == ImageHolder::z_map ) {
+                zmapImages++;
 				if( image.second->minMax.first->as<double>() < m_maxMin ) {
 					m_maxMin = image.second->minMax.first->as<double>();
 				}
@@ -160,6 +162,7 @@ void SliderWidget::synchronize()
 				}
 			}
 		}
+		m_Interface.checkGlobal->setVisible( zmapImages > 1 );
 	} else {
 		m_Interface.zmapModeFrame->setVisible( false );
 	}
@@ -188,7 +191,6 @@ void SliderWidget::synchronize()
 	}
 
 	m_Interface.checkGlobal->setChecked( m_ViewerCore->getOptionMap()->getPropertyAs<bool>( "zmapGlobal" ) );
-
 }
 
 
