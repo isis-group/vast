@@ -90,9 +90,10 @@ boost::shared_ptr<ImageHolder> ViewerCoreBase::addImage( const isis::data::Image
 
     m_ImageList.push_back( retImage );
 
-    if( getMode() == ViewerCoreBase::zmap && retImage->getImageSize()[3] > 1 ) {
+    if( getMode() == ViewerCoreBase::zmap && retImage->getImageSize()[3] > 1 && retImage->imageType != ImageHolder::z_map ) {
         retImage->isVisible = false;
-    } else if ( getMode() == ViewerCoreBase::zmap && retImage->imageType == ImageHolder::z_map ) {
+    } 
+    if ( getMode() == ViewerCoreBase::zmap && retImage->imageType == ImageHolder::z_map ) {
         setCurrentImage( retImage );
     } else if ( getMode() == ViewerCoreBase::standard ) {
         setCurrentImage( retImage );

@@ -157,7 +157,6 @@ void QViewerCore::settingsChanged()
 	}
 	emitShowLabels( getOptionMap()->getPropertyAs<bool>( "showLabels" ) );
 	m_UI->getMainWindow()->getInterface().actionPropagate_Zooming->setChecked( getOptionMap()->getPropertyAs<bool>( "propagateZooming" ) );
-
 	if( hasImage() ) {
 		if( getCurrentImage()->imageType == ImageHolder::z_map ) {
 			getCurrentImage()->lut = getOptionMap()->getPropertyAs<std::string>( "lutZMap" );
