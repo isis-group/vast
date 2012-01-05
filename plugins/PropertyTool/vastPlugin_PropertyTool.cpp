@@ -18,15 +18,15 @@
  *
  * Author: Erik Türke, tuerke@cbs.mpg.de
  *
- * vastPlugin_OrientationCorrection.cpp
+ * vastPlugin_PropertyTool.cpp
  *
  * Description:
  *
- *  Created on: Aug 12, 2011
+ *  Created on: Jan 05, 2012
  *      Author: tuerke
  ******************************************************************/
 #include "plugininterface.h"
-#include "OrientationCorrection.hpp"
+#include "PropertyToolDialog.hpp"
 
 namespace isis
 {
@@ -35,29 +35,29 @@ namespace viewer
 namespace plugin
 {
 
-class OrientationCorrection : public PluginInterface
+class PropertyTool : public PluginInterface
 {
 public:
-	OrientationCorrection() : isInitialized( false ) {}
-	virtual std::string getName() { return std::string( "OrienationCorrection" ) ; }
-	virtual std::string getDescription() { return std::string( "" ); }
-	virtual std::string getTooltip() { return std::string( "Allows you to correct the orientation of the image." ); }
-	virtual QKeySequence getShortcut() { return QKeySequence( "O, C" ) ;}
-	virtual bool isGUI() { return true; }
-	virtual bool call() {
-		if( !isInitialized ) {
-			m_OrienatationCorrectionDialog = new OrientatioCorrectionDialog( parentWidget, viewerCore );
-			isInitialized = true;
-		}
+    PropertyTool() : isInitialized( false ) {}
+    virtual std::string getName() { return std::string( "PropertyTool" ) ; }
+    virtual std::string getDescription() { return std::string( "" ); }
+    virtual std::string getTooltip() { return std::string( "Allows you to show and modify the meta data of the image." ); }
+    virtual QKeySequence getShortcut() { return QKeySequence( "P, T" ) ;}
+    virtual bool isGUI() { return true; }
+    virtual bool call() {
+        if( !isInitialized ) {
+            m_PropertyToolDialog = new PropertyToolDialog( parentWidget, viewerCore );
+            isInitialized = true;
+        }
 
-		m_OrienatationCorrectionDialog->show();
-		return true;
-	};
+        m_PropertyToolDialog->show();
+        return true;
+    };
 
-	virtual ~OrientationCorrection() {};
+    virtual ~PropertyTool() {};
 private:
-	OrientatioCorrectionDialog *m_OrienatationCorrectionDialog;
-	bool isInitialized;
+    PropertyToolDialog *m_PropertyToolDialog;
+    bool isInitialized;
 };
 
 }
@@ -66,5 +66,5 @@ private:
 
 isis::viewer::plugin::PluginInterface *loadPlugin()
 {
-	return new isis::viewer::plugin::OrientationCorrection();
+    return new isis::viewer::plugin::PropertyTool();
 }
