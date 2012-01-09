@@ -52,7 +52,7 @@ int main( int argc, char *argv[] )
     util::_internal::Log<image_io::Runtime>::setHandler( boost::shared_ptr<qt4::QDefaultMessagePrint>( imageio_handler ) );
 
 #ifndef NDEBUG
-    qt4::QDefaultMessagePrint::stopBelow( warning );
+//     qt4::QDefaultMessagePrint::stopBelow( warning );
 #endif
 
     std::string appName = "vast";

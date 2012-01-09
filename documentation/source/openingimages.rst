@@ -53,7 +53,7 @@ Using the vast open dialog
 --------------------------
 
 | If you are not familiar with using the terminal or just like clicking you can use the open dialog of vast. 
-| It can be showed by pressing either *Ctrl+O* or *File->Open Image(s)...*.
+| It can be showed by pressing either *Ctrl+O*, *File->Open Image(s)...* or pressing the respective toolbar icon.
 
 .. image:: _images/open_dialog_all_options.jpg
    :width: 600

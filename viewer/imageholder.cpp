@@ -150,6 +150,8 @@ bool ImageHolder::setImage( const data::Image &image, const ImageType &_imageTyp
 	// get some image information
 
 	majorTypeID = image.getMajorTypeID();
+    majorTypeName = image.getMajorTypeName();
+    majorTypeName = majorTypeName.substr( 0, majorTypeName.length() - 1 ).c_str();
 	m_ImageSize = image.getSizeAsVector();
 	LOG( Debug, verbose_info )  << "Fetched image of size " << m_ImageSize << " and type "
 								<< image.getMajorTypeName() << ".";

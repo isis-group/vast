@@ -45,10 +45,17 @@ class PropertyToolDialog : public QDialog
     Q_OBJECT
 public:
     PropertyToolDialog( QWidget *parent, QViewerCore *core );
+ 
+    
+public Q_SLOTS:
+    void updateProperties();
+    virtual void showEvent( QShowEvent * );
     
 private:
     Ui::propertyToolDialog m_Interface;
     QViewerCore *m_ViewerCore;
+    void setIfHas( const std::string &name, QLabel *nameLabel, QLabel *propLabel, const boost::shared_ptr<data::Image> image );
+
 };
  
 }}}
