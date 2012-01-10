@@ -1,3 +1,10 @@
+vast (0.2.5b-0) stable; urgency=low
+
+  * add property tool plugin
+  * fixed some bugs
+
+ -- ISIS Group (The friendly isis team) <gr_isis@cbs.mpg.de>  Tue, 10 Jan 2012 09:30:00 +0200 
+
 vast (0.2.3alpha-0) stable; urgency=low
 
   * fixed bugs
