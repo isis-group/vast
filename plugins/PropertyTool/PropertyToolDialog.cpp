@@ -87,6 +87,7 @@ void PropertyToolDialog::updateProperties()
         
         m_Interface.fileName->setText( m_ViewerCore->getCurrentImage()->getFileNames().front().c_str() );
         m_Interface.dataType->setText( m_ViewerCore->getCurrentImage()->majorTypeName.c_str() );
+        m_Interface.imageSize->setText( m_ViewerCore->getCurrentImage()->getISISImage()->getSizeAsString().c_str());
         setIfHas( std::string("sequenceStart"), m_Interface.L_sequenceStart, m_Interface.sequenceStart, isisImage );
         setIfHas( std::string("sequenceNumber"), m_Interface.L_sequenceNumber, m_Interface.sequenceNumber, isisImage );
         setIfHas( std::string("sequenceDescription"), m_Interface.L_sequenceDescription, m_Interface.sequenceDescription, isisImage );
