@@ -38,7 +38,10 @@ PropertyToolDialog::PropertyToolDialog(QWidget* parent, QViewerCore* core)
     m_ViewerCore( core )
 {
     m_Interface.setupUi( this );
+    m_Interface.tabWidget->setCurrentIndex(0);
+   
     connect( m_ViewerCore, SIGNAL( emitUpdateScene()), this, SLOT( updateProperties()));
+    connect( m_Interface.selection, SIGNAL( currentIndexChanged(int) ), this, SLOT( selectionChanged(int ) ) );
 }
 
 void PropertyToolDialog::showEvent(QShowEvent* )
@@ -106,11 +109,74 @@ void PropertyToolDialog::updateProperties()
         m_Interface.subjectGroup->setVisible(isisImage->hasProperty("subjectName") || isisImage->hasProperty("subjectAge")
             || isisImage->hasProperty("subjectBirth") || isisImage->hasProperty("subjectGender")
             || isisImage->hasProperty("subjectWeigth"));
+        m_Interface.selection->clear();
+        m_Interface.selection->addItem("Image");
+        const std::vector<data::Chunk> chunks = isisImage->copyChunksToVector();
+        
+        m_Interface.L_numberOfChunks->setVisible(chunks.size() > 1);
+        m_Interface.numberOfChunks->setVisible(chunks.size() > 1);
+        m_Interface.numberOfChunks->setText(QString::number(chunks.size()));
+        unsigned short chIndex = 0;
+        for ( unsigned short i = 0; i < chunks.size() - 1; i++ ) {
+            std::stringstream entry;
+            entry << "Chunk " << chIndex++;
+            m_Interface.selection->addItem( entry.str().c_str() );
+           
+        }
+        buildUpTree(static_cast<util::PropertyMap&>( *isisImage) );
     }
+    
+    
     adjustSize();
 }
 
+void PropertyToolDialog::selectionChanged(int select )
+{
+    if( m_ViewerCore->hasImage() ) {
+        const std::vector<data::Chunk> chunks = m_ViewerCore->getCurrentImage()->getISISImage()->copyChunksToVector(true);
+        if( select > 0 && select < chunks.size() ) {
+            buildUpTree( chunks[select - 1] );
+        }
+    }
+}
 
- 
+
+void PropertyToolDialog::buildUpTree(const util::PropertyMap &image)
+{
+    TreePropMap propMap = image;
+    propMap.fillTreeWidget( m_Interface.propertyTree );
+    
+    
+}
+
+void TreePropMap::walkTree(QTreeWidgetItem* item, const TreePropMap& propMap, bool topLevel)
+{
+    for ( const_iterator i = propMap.begin(); i != propMap.end(); i++ ) {
+        QTreeWidgetItem * newItem;
+        if( i->second.is_leaf() ) {
+            if( topLevel ) {
+                newItem = new QTreeWidgetItem( m_TreeWidget );
+            } else {
+                newItem = new QTreeWidgetItem(item);
+            }
+            newItem->setText(0, i->first.c_str() );
+            newItem->setText(1, i->second.toString().c_str());
+        } else {
+            item->setText( 0, i->first.c_str() );
+            walkTree(item, i->second.getBranch(), false );
+        }
+    }
+}
+
+
+void TreePropMap::fillTreeWidget(QTreeWidget* treeWidget)
+{
+    m_TreeWidget = treeWidget;
+    treeWidget->clear();
+    QTreeWidgetItem *item = new QTreeWidgetItem( treeWidget );
+    walkTree(item, *this, true );
+    
+}
+
 
 }}}

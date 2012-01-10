@@ -40,21 +40,34 @@ namespace viewer
 namespace plugin
 {
  
+class TreePropMap : public util::PropertyMap 
+{
+public:
+    void fillTreeWidget( QTreeWidget *treeWidget );
+    TreePropMap( const PropertyMap& propMap ) { static_cast<util::PropertyMap&>( *this ) = propMap; }
+private:
+    QTreeWidget *m_TreeWidget;
+    void walkTree( QTreeWidgetItem *item, const TreePropMap &propMap, bool topLevel );
+};
+    
 class PropertyToolDialog : public QDialog
 {
     Q_OBJECT
+    
 public:
     PropertyToolDialog( QWidget *parent, QViewerCore *core );
  
     
 public Q_SLOTS:
     void updateProperties();
+    void selectionChanged( int );
     virtual void showEvent( QShowEvent * );
     
 private:
     Ui::propertyToolDialog m_Interface;
     QViewerCore *m_ViewerCore;
     void setIfHas( const std::string &name, QLabel *nameLabel, QLabel *propLabel, const boost::shared_ptr<data::Image> image );
+    void buildUpTree( const util::PropertyMap &image );
 
 };
  
