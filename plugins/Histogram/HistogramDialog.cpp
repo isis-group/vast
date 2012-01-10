@@ -55,7 +55,6 @@ void isis::viewer::plugin::HistogramDialog::paintHistogram()
 	m_Plotter->clear();
 	if( m_ViewerCore->hasImage() && isVisible() ) {
 		std::stringstream title;
-		QwtDoubleRect zoomBase;
 		title << "Histogram of " << boost::filesystem::path( m_ViewerCore->getCurrentImage()->getFileNames().front() ).leaf();
 
 		if( m_ViewerCore->getCurrentImage()->getImageSize()[3] > 1 ) {
@@ -63,13 +62,13 @@ void isis::viewer::plugin::HistogramDialog::paintHistogram()
 		}
 		
 		m_Plotter->setTitle( title.str().c_str() );
-		double xData[256];
+		double xData[255];
 		BOOST_FOREACH( DataContainer::const_reference image, m_ViewerCore->getDataContainer() ) {
 			if( !image.second->isRGB ) {
 				const double scaling = image.second->scalingToInternalType.first->as<double>();
 				const double offset = image.second->scalingToInternalType.second->as<double>();
 
-				for( unsigned short i = 0; i < 256; i++ ) {
+				for( unsigned short i = 0; i < 255; i++ ) {
 					xData[i] = ( double )( i - offset ) / scaling ;
 				}
 
@@ -91,16 +90,10 @@ void isis::viewer::plugin::HistogramDialog::paintHistogram()
 
 				const uint16_t timestep = image.second->getImageSize()[3] > 1 ? image.second->voxelCoords[3] : 0;
 
-				curve->setData( xData, image.second->histogramVector[timestep], 256 );
-				
-				zoomBase.setLeft( image.second->minMax.first->as<int>() < zoomBase.left() ? image.second->minMax.first->as<int>() * 1.1 : zoomBase.left() );
-				zoomBase.setWidth( image.second->extent > zoomBase.width() ? image.second->extent * 1.1 : zoomBase.width() );
-				zoomBase.setTop( curve->maxYValue() > zoomBase.top() ? curve->maxYValue() * 1.1 : zoomBase.top() );
-				zoomBase.setBottom( curve->minYValue() < zoomBase.bottom() ? curve->minYValue() : zoomBase.bottom() );
+				curve->setData( xData, image.second->histogramVectorWOZero[timestep], 255 );
 			}
 		}
-		m_Zoomer->setZoomBase(zoomBase);
-		m_Plotter->replot();
+		m_Zoomer->setZoomBase(true);
 	}
 }
 void isis::viewer::plugin::HistogramDialog::showEvent( QShowEvent * )

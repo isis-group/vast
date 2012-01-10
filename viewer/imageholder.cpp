@@ -267,16 +267,23 @@ std::pair< double, double > ImageHolder::getOptimalScaling()
 	const InternalImageType extent = maxImage - minImage;
 	double *nHistogram = ( double * ) calloc( extent + 1, sizeof( double ) );
 	histogramVector.resize( getImageSize()[3] );
+    histogramVectorWOZero.resize( getImageSize()[3] );
 
 	for( unsigned short t = 0; t < getImageSize()[3]; t++ ) {
 		histogramVector[t] = ( double * ) calloc( extent + 1, sizeof( double ) ) ;
+        histogramVectorWOZero[t] = ( double * ) calloc( extent, sizeof(double ) );
 		InternalImageType *dataPtr = static_cast<InternalImageType *>( getImageVector()[t]->getRawAddress().get() );
 		//create the histogram
-		#pragma omp parallel for
-
+// 		#pragma omp parallel for
 		for( size_t i = 0; i < volume; i++ ) {
 			histogramVector[t][dataPtr[i]]++;
 		}
+// 		#pragma omp parallel for
+		for( size_t i = 0; i < volume; i++ ) {
+            if( dataPtr[i] > 0 ) {
+                histogramVectorWOZero[t][dataPtr[i]-1]++;
+            }
+        }
 	}
 
 	//normalize histogram
