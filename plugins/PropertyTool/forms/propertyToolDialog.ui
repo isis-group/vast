@@ -23,7 +23,7 @@
    <item row="0" column="0">
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>1</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="commonTab">
       <attribute name="title">
@@ -36,7 +36,7 @@
           <string>Common</string>
          </property>
          <layout class="QGridLayout" name="gridLayout_4">
-          <item row="10" column="1">
+          <item row="11" column="1">
            <widget class="QLabel" name="performingPhysician">
             <property name="text">
              <string>TextLabel</string>
@@ -46,7 +46,7 @@
             </property>
            </widget>
           </item>
-          <item row="3" column="1">
+          <item row="4" column="1">
            <widget class="QLabel" name="voxelSize">
             <property name="text">
              <string>TextLabel</string>
@@ -56,7 +56,7 @@
             </property>
            </widget>
           </item>
-          <item row="13" column="0">
+          <item row="14" column="0">
            <widget class="QLabel" name="L_positionCP">
             <property name="font">
              <font>
@@ -69,7 +69,7 @@
             </property>
            </widget>
           </item>
-          <item row="1" column="1">
+          <item row="2" column="1">
            <widget class="QLabel" name="dataType">
             <property name="text">
              <string>TextLabel</string>
@@ -79,7 +79,7 @@
             </property>
            </widget>
           </item>
-          <item row="11" column="0">
+          <item row="12" column="0">
            <widget class="QLabel" name="L_numberOfAverages">
             <property name="font">
              <font>
@@ -92,7 +92,7 @@
             </property>
            </widget>
           </item>
-          <item row="8" column="0">
+          <item row="9" column="0">
            <widget class="QLabel" name="L_transmitCoil">
             <property name="font">
              <font>
@@ -105,7 +105,7 @@
             </property>
            </widget>
           </item>
-          <item row="5" column="0">
+          <item row="6" column="0">
            <widget class="QLabel" name="L_sequenceDescription">
             <property name="font">
              <font>
@@ -118,7 +118,7 @@
             </property>
            </widget>
           </item>
-          <item row="7" column="0">
+          <item row="8" column="0">
            <widget class="QLabel" name="L_sequenceNumber">
             <property name="font">
              <font>
@@ -131,7 +131,7 @@
             </property>
            </widget>
           </item>
-          <item row="3" column="0">
+          <item row="4" column="0">
            <widget class="QLabel" name="L_voxelSize">
             <property name="font">
              <font>
@@ -154,7 +154,7 @@
             </property>
            </widget>
           </item>
-          <item row="12" column="0">
+          <item row="13" column="0">
            <widget class="QLabel" name="L_positionCA">
             <property name="font">
              <font>
@@ -167,7 +167,7 @@
             </property>
            </widget>
           </item>
-          <item row="5" column="1">
+          <item row="6" column="1">
            <widget class="QLabel" name="sequenceDescription">
             <property name="text">
              <string>TextLabel</string>
@@ -177,7 +177,7 @@
             </property>
            </widget>
           </item>
-          <item row="4" column="1">
+          <item row="5" column="1">
            <widget class="QLabel" name="voxelGap">
             <property name="text">
              <string>TextLabel</string>
@@ -187,7 +187,7 @@
             </property>
            </widget>
           </item>
-          <item row="7" column="1">
+          <item row="8" column="1">
            <widget class="QLabel" name="sequenceNumber">
             <property name="text">
              <string>TextLabel</string>
@@ -197,7 +197,7 @@
             </property>
            </widget>
           </item>
-          <item row="8" column="1">
+          <item row="9" column="1">
            <widget class="QLabel" name="transmitCoil">
             <property name="text">
              <string>TextLabel</string>
@@ -207,7 +207,7 @@
             </property>
            </widget>
           </item>
-          <item row="11" column="1">
+          <item row="12" column="1">
            <widget class="QLabel" name="numberOfAverages">
             <property name="text">
              <string>TextLabel</string>
@@ -217,7 +217,7 @@
             </property>
            </widget>
           </item>
-          <item row="12" column="1">
+          <item row="13" column="1">
            <widget class="QLabel" name="positionCA">
             <property name="text">
              <string>TextLabel</string>
@@ -227,7 +227,7 @@
             </property>
            </widget>
           </item>
-          <item row="6" column="1">
+          <item row="7" column="1">
            <widget class="QLabel" name="sequenceStart">
             <property name="text">
              <string>TextLabel</string>
@@ -237,7 +237,7 @@
             </property>
            </widget>
           </item>
-          <item row="14" column="0">
+          <item row="15" column="0">
            <widget class="QLabel" name="L_repetitionTime">
             <property name="font">
              <font>
@@ -250,7 +250,7 @@
             </property>
            </widget>
           </item>
-          <item row="6" column="0">
+          <item row="7" column="0">
            <widget class="QLabel" name="L_sequenceStart">
             <property name="font">
              <font>
@@ -276,7 +276,7 @@
             </property>
            </widget>
           </item>
-          <item row="9" column="1">
+          <item row="10" column="1">
            <widget class="QLabel" name="flipAngle">
             <property name="text">
              <string>TextLabel</string>
@@ -286,7 +286,7 @@
             </property>
            </widget>
           </item>
-          <item row="14" column="1">
+          <item row="15" column="1">
            <widget class="QLabel" name="repetitionTime">
             <property name="text">
              <string>TextLabel</string>
@@ -296,7 +296,7 @@
             </property>
            </widget>
           </item>
-          <item row="4" column="0">
+          <item row="5" column="0">
            <widget class="QLabel" name="L_voxelGap">
             <property name="font">
              <font>
@@ -309,7 +309,7 @@
             </property>
            </widget>
           </item>
-          <item row="10" column="0">
+          <item row="11" column="0">
            <widget class="QLabel" name="L_performingPhysician">
             <property name="font">
              <font>
@@ -322,7 +322,7 @@
             </property>
            </widget>
           </item>
-          <item row="1" column="0">
+          <item row="2" column="0">
            <widget class="QLabel" name="L_dataType">
             <property name="font">
              <font>
@@ -335,7 +335,7 @@
             </property>
            </widget>
           </item>
-          <item row="9" column="0">
+          <item row="10" column="0">
            <widget class="QLabel" name="L_flipAngle">
             <property name="font">
              <font>
@@ -348,7 +348,7 @@
             </property>
            </widget>
           </item>
-          <item row="13" column="1">
+          <item row="14" column="1">
            <widget class="QLabel" name="positionCP">
             <property name="text">
              <string>TextLabel</string>
@@ -358,7 +358,7 @@
             </property>
            </widget>
           </item>
-          <item row="15" column="0">
+          <item row="16" column="0">
            <widget class="QLabel" name="L_echoTime">
             <property name="font">
              <font>
@@ -371,7 +371,7 @@
             </property>
            </widget>
           </item>
-          <item row="15" column="1">
+          <item row="16" column="1">
            <widget class="QLabel" name="echoTime">
             <property name="text">
              <string>TextLabel</string>
@@ -381,7 +381,7 @@
             </property>
            </widget>
           </item>
-          <item row="2" column="0">
+          <item row="3" column="0">
            <widget class="QLabel" name="L_numberOfChunks">
             <property name="font">
              <font>
@@ -394,8 +394,31 @@
             </property>
            </widget>
           </item>
-          <item row="2" column="1">
+          <item row="3" column="1">
            <widget class="QLabel" name="numberOfChunks">
+            <property name="text">
+             <string>TextLabel</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="L_imageSize">
+            <property name="font">
+             <font>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string>Image size:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QLabel" name="imageSize">
             <property name="text">
              <string>TextLabel</string>
             </property>
@@ -944,6 +967,8 @@
    </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="../resources/propertytool.qrc"/>
+ </resources>
  <connections/>
 </ui>
