@@ -1,3 +1,30 @@
+/****************************************************************
+ *
+ * <Copyright information>
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 3
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ *
+ * Author: Erik Türke, tuerke@cbs.mpg.de
+ *
+ * qviewercore.cpp
+ *
+ * Description:
+ *
+ *  Created on: Aug 12, 2011
+ *      Author: tuerke
+ ******************************************************************/
 #include "qviewercore.hpp"
 #include <DataStorage/io_factory.hpp>
 #include "nativeimageops.hpp"
@@ -62,18 +89,19 @@ void QViewerCore::physicalCoordsChanged( util::fvector4 physicalCoords )
 
 void QViewerCore::timestepChanged( int timestep )
 {
-    if( hasImage() ) {
-         
-     if( !getCurrentImage()->getImageSize()[3] > timestep ) {
-         timestep = getCurrentImage()->getImageSize()[3] - 1;
-     }
-     BOOST_FOREACH( DataContainer::reference image, getDataContainer() ) {
-      if( static_cast<size_t>( timestep ) < image.second->getImageSize()[3] ) {
-       image.second->voxelCoords[3] = timestep;
-      }
-     }
-     updateScene();
-    }
+	if( hasImage() ) {
+
+		if( !getCurrentImage()->getImageSize()[3] > timestep ) {
+			timestep = getCurrentImage()->getImageSize()[3] - 1;
+		}
+
+		BOOST_FOREACH( DataContainer::reference image, getDataContainer() ) {
+			if( static_cast<size_t>( timestep ) < image.second->getImageSize()[3] ) {
+				image.second->voxelCoords[3] = timestep;
+			}
+		}
+		updateScene();
+	}
 }
 
 
@@ -125,29 +153,33 @@ void QViewerCore::setShowCrosshair( bool c )
 void QViewerCore::settingsChanged()
 {
 	BOOST_FOREACH( UICore::WidgetMap::const_reference widget, getUICore()->getWidgets() ) {
-		widget.first->setInterpolationType( static_cast<InterpolationType>( getOptionMap()->getPropertyAs<uint8_t>("interpolationType") ) );
+		widget.first->setInterpolationType( static_cast<InterpolationType>( getOptionMap()->getPropertyAs<uint8_t>( "interpolationType" ) ) );
 	}
 	emitShowLabels( getOptionMap()->getPropertyAs<bool>( "showLabels" ) );
 	m_UI->getMainWindow()->getInterface().actionPropagate_Zooming->setChecked( getOptionMap()->getPropertyAs<bool>( "propagateZooming" ) );
-	
 	if( hasImage() ) {
 		if( getCurrentImage()->imageType == ImageHolder::z_map ) {
-			getCurrentImage()->lut = getOptionMap()->getPropertyAs<std::string>("lutZMap");
-		}else {
-			getCurrentImage()->lut = getOptionMap()->getPropertyAs<std::string>("lutAna");
+			getCurrentImage()->lut = getOptionMap()->getPropertyAs<std::string>( "lutZMap" );
+		} else {
+			getCurrentImage()->lut = getOptionMap()->getPropertyAs<std::string>( "lutStructural" );
 		}
+        if( getMode() == ViewerCoreBase::zmap && getCurrentAnatomicalRefernce().get() ) {
+                getCurrentAnatomicalRefernce()->lut = getOptionMap()->getPropertyAs<std::string>( "lutStructural" );
+                getCurrentAnatomicalRefernce()->updateColorMap();
+        }
 		getCurrentImage()->updateColorMap();
 	}
-	if( getMode() == ViewerCoreBase::zmap && getOptionMap()->getPropertyAs<bool>("zmapGlobal")) {
-		BOOST_FOREACH( DataContainer::reference image, getDataContainer() )
-		{
+    
+	if( getMode() == ViewerCoreBase::zmap && getOptionMap()->getPropertyAs<bool>( "zmapGlobal" ) ) {
+		BOOST_FOREACH( DataContainer::reference image, getDataContainer() ) {
 			if( image.second->imageType == ImageHolder::z_map ) {
-				image.second->lut = getOptionMap()->getPropertyAs<std::string>("lutZMap");
+				image.second->lut = getOptionMap()->getPropertyAs<std::string>( "lutZMap" );
 				image.second->updateColorMap();
 			}
 		}
-		
+
 	}
+
 	updateScene();
 	m_UI->refreshUI();
 }
@@ -260,7 +292,7 @@ void QViewerCore::openPath( QStringList fileList, ImageHolder::ImageType imageTy
 				boost::shared_ptr<ImageHolder> imageHolder = addImage( image, imageType );
 				checkForCaCp( imageHolder );
 
-				if( !( getMode() == ViewerCoreBase::zmap && imageHolder->imageType == ImageHolder::anatomical_image ) ) {
+				if( !( getMode() == ViewerCoreBase::zmap && imageHolder->imageType == ImageHolder::structural_image ) ) {
 					if( newWidget ) {
 						ensemble = getUICore()->createViewWidgetEnsemble( "" );
 
@@ -315,10 +347,10 @@ void QViewerCore::closeImage( boost::shared_ptr<ImageHolder> image )
 void QViewerCore::loadSettings()
 {
 	getSettings()->beginGroup( "ViewerCore" );
-	getOptionMap()->setPropertyAs<std::string>("lutZMap", getSettings()->value( "lutZMap", getOptionMap()->getPropertyAs<std::string>("lutZMap").c_str() ).toString().toStdString() );
-	getOptionMap()->setPropertyAs<std::string>("lutAna", getSettings()->value( "lutAna", getOptionMap()->getPropertyAs<std::string>("lutAna").c_str() ).toString().toStdString() );
+	getOptionMap()->setPropertyAs<std::string>( "lutZMap", getSettings()->value( "lutZMap", getOptionMap()->getPropertyAs<std::string>( "lutZMap" ).c_str() ).toString().toStdString() );
+	getOptionMap()->setPropertyAs<std::string>( "lutStructural", getSettings()->value( "lutStructural", getOptionMap()->getPropertyAs<std::string>( "lutStructural" ).c_str() ).toString().toStdString() );
 	getOptionMap()->setPropertyAs<bool>( "propagateZooming", getSettings()->value( "propagateZooming", false ).toBool() );
-	getOptionMap()->setPropertyAs<uint8_t>( "interpolationType", getSettings()->value( "interpolationType", getOptionMap()->getPropertyAs<uint8_t>("interpolationType") ).toUInt() );
+	getOptionMap()->setPropertyAs<uint8_t>( "interpolationType", getSettings()->value( "interpolationType", getOptionMap()->getPropertyAs<uint8_t>( "interpolationType" ) ).toUInt() );
 	getOptionMap()->setPropertyAs<bool>( "showLabels", getSettings()->value( "showLabels", false ).toBool() );
 	getOptionMap()->setPropertyAs<bool>( "showCrosshair", getSettings()->value( "showCrosshair", true ).toBool() );
 	getOptionMap()->setPropertyAs<uint16_t>( "minMaxSearchRadius",
@@ -331,13 +363,13 @@ void QViewerCore::loadSettings()
 	getOptionMap()->setPropertyAs<bool>( "enableMultithreading", getSettings()->value( "enableMultithreading" ).toBool() );
 	getOptionMap()->setPropertyAs<bool>( "useAllAvailablethreads", getSettings()->value( "useAllAvailableThreads" ).toBool() );
 	//screenshot stuff
-	getOptionMap()->setPropertyAs<uint16_t>( "screenshotWidth", getSettings()->value( "screenshotWidth", getOptionMap()->getPropertyAs<uint16_t>("screenshotWidth") ).toUInt() );
-	getOptionMap()->setPropertyAs<uint16_t>( "screenshotHeight", getSettings()->value( "screenshotHeight", getOptionMap()->getPropertyAs<uint16_t>("screenshotHeight") ).toUInt() );
-	getOptionMap()->setPropertyAs<bool>( "screenshotKeepAspectRatio", getSettings()->value( "screenshotKeepAspectRatio", getOptionMap()->getPropertyAs<bool>("screenshotKeepAspectRatio") ).toBool() );
-	getOptionMap()->setPropertyAs<uint8_t>( "screenshotQuality", getSettings()->value( "screenshotQuality", getOptionMap()->getPropertyAs<uint8_t>("screenshotQuality") ).toUInt() );
-	getOptionMap()->setPropertyAs<uint16_t>( "screenshotDPIX", getSettings()->value( "screenshotDPIX", getOptionMap()->getPropertyAs<uint16_t>("screenshotDPIX") ).toUInt() );
-	getOptionMap()->setPropertyAs<uint16_t>( "screenshotDPIY", getSettings()->value( "screenshotDPIY", getOptionMap()->getPropertyAs<uint16_t>("screenshotDPIY") ).toUInt() );
-	getOptionMap()->setPropertyAs<bool>( "screenshotManualScaling", getSettings()->value( "screenshotManualScaling", getOptionMap()->getPropertyAs<bool>("screenshotManualScaling") ).toBool() );	
+	getOptionMap()->setPropertyAs<uint16_t>( "screenshotWidth", getSettings()->value( "screenshotWidth", getOptionMap()->getPropertyAs<uint16_t>( "screenshotWidth" ) ).toUInt() );
+	getOptionMap()->setPropertyAs<uint16_t>( "screenshotHeight", getSettings()->value( "screenshotHeight", getOptionMap()->getPropertyAs<uint16_t>( "screenshotHeight" ) ).toUInt() );
+	getOptionMap()->setPropertyAs<bool>( "screenshotKeepAspectRatio", getSettings()->value( "screenshotKeepAspectRatio", getOptionMap()->getPropertyAs<bool>( "screenshotKeepAspectRatio" ) ).toBool() );
+	getOptionMap()->setPropertyAs<uint8_t>( "screenshotQuality", getSettings()->value( "screenshotQuality", getOptionMap()->getPropertyAs<uint8_t>( "screenshotQuality" ) ).toUInt() );
+	getOptionMap()->setPropertyAs<uint16_t>( "screenshotDPIX", getSettings()->value( "screenshotDPIX", getOptionMap()->getPropertyAs<uint16_t>( "screenshotDPIX" ) ).toUInt() );
+	getOptionMap()->setPropertyAs<uint16_t>( "screenshotDPIY", getSettings()->value( "screenshotDPIY", getOptionMap()->getPropertyAs<uint16_t>( "screenshotDPIY" ) ).toUInt() );
+	getOptionMap()->setPropertyAs<bool>( "screenshotManualScaling", getSettings()->value( "screenshotManualScaling", getOptionMap()->getPropertyAs<bool>( "screenshotManualScaling" ) ).toBool() );
 	getSettings()->endGroup();
 }
 
@@ -347,7 +379,7 @@ void QViewerCore::saveSettings()
 	//saving the preferences to the profile file
 	getSettings()->beginGroup( "ViewerCore" );
 	getSettings()->setValue( "lutZMap", getOptionMap()->getPropertyAs<std::string>( "lutZMap" ).c_str() );
-	getSettings()->setValue( "lutAna", getOptionMap()->getPropertyAs<std::string>( "lutAna" ).c_str() );
+	getSettings()->setValue( "lutStructural", getOptionMap()->getPropertyAs<std::string>( "lutStructural" ).c_str() );
 	getSettings()->setValue( "interpolationType", getOptionMap()->getPropertyAs<uint8_t>( "interpolationType" ) );
 	getSettings()->setValue( "propagateZooming", getOptionMap()->getPropertyAs<bool>( "propagateZooming" ) );
 	getSettings()->setValue( "minMaxSearchRadius", getOptionMap()->getPropertyAs<uint16_t>( "minMaxSearchRadius" ) );
@@ -361,14 +393,14 @@ void QViewerCore::saveSettings()
 	getSettings()->setValue( "enableMultithreading", getOptionMap()->getPropertyAs<bool>( "enableMultithreading" ) );
 	getSettings()->setValue( "useAllAvailablethreads", getOptionMap()->getPropertyAs<bool>( "useAllAvailableThreads" ) );
 	//screenshot stuff
-	getSettings()->setValue( "screenshotWidth", getOptionMap()->getPropertyAs<uint16_t>("screenshotWidth") );
-	getSettings()->setValue( "screenshotHeight", getOptionMap()->getPropertyAs<uint16_t>("screenshotHeight") );
-	getSettings()->setValue( "screenshotKeepAspectRatio", getOptionMap()->getPropertyAs<bool>("screenshotKeepAspectRatio") );
-	getSettings()->setValue( "screenshotQuality", getOptionMap()->getPropertyAs<uint8_t>("screenshotQuality") );
-	getSettings()->setValue( "screenshotDPIX", getOptionMap()->getPropertyAs<uint16_t>("screenshotDPIX") );
-	getSettings()->setValue( "screenshotDPIY", getOptionMap()->getPropertyAs<uint16_t>("screenshotDPIY") );
-	getSettings()->setValue( "screenshotManualScaling", getOptionMap()->getPropertyAs<bool>("screenshotManualScaling") );
-	
+	getSettings()->setValue( "screenshotWidth", getOptionMap()->getPropertyAs<uint16_t>( "screenshotWidth" ) );
+	getSettings()->setValue( "screenshotHeight", getOptionMap()->getPropertyAs<uint16_t>( "screenshotHeight" ) );
+	getSettings()->setValue( "screenshotKeepAspectRatio", getOptionMap()->getPropertyAs<bool>( "screenshotKeepAspectRatio" ) );
+	getSettings()->setValue( "screenshotQuality", getOptionMap()->getPropertyAs<uint8_t>( "screenshotQuality" ) );
+	getSettings()->setValue( "screenshotDPIX", getOptionMap()->getPropertyAs<uint16_t>( "screenshotDPIX" ) );
+	getSettings()->setValue( "screenshotDPIY", getOptionMap()->getPropertyAs<uint16_t>( "screenshotDPIY" ) );
+	getSettings()->setValue( "screenshotManualScaling", getOptionMap()->getPropertyAs<bool>( "screenshotManualScaling" ) );
+
 	getSettings()->endGroup();
 	getSettings()->sync();
 }

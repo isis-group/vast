@@ -1,3 +1,30 @@
+/****************************************************************
+ *
+ * <Copyright information>
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 3
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ *
+ * Author: Erik Türke, tuerke@cbs.mpg.de
+ *
+ * imageStackWidget.cpp
+ *
+ * Description:
+ *
+ *  Created on: Aug 12, 2011
+ *      Author: tuerke
+ ******************************************************************/
 #include "imageStackWidget.hpp"
 #include <viewercorebase.hpp>
 #include <qviewercore.hpp>
@@ -75,7 +102,7 @@ void ImageStackWidget::synchronize()
 	m_Interface.frame->setMinimumHeight( m_ViewerCore->getOptionMap()->getPropertyAs<uint16_t>( "minOptionWidgetHeight" ) );
 	m_ImageStack->clear();
 	BOOST_FOREACH( DataContainer::const_reference imageRef, m_ViewerCore->getDataContainer() ) {
-		if( !( m_ViewerCore->getMode() == ViewerCoreBase::zmap && imageRef.second->imageType == ImageHolder::anatomical_image ) ) {
+		if( !( m_ViewerCore->getMode() == ViewerCoreBase::zmap && imageRef.second->imageType == ImageHolder::structural_image ) ) {
 			QListWidgetItem *item = new QListWidgetItem;
 			QString sD = imageRef.second->getPropMap().getPropertyAs<std::string>( "sequenceDescription" ).c_str();
 			item->setText( QString( imageRef.second->getFileNames().front().c_str() ) );

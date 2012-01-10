@@ -1,3 +1,30 @@
+/****************************************************************
+ *
+ * <Copyright information>
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 3
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ *
+ * Author: Erik Türke, tuerke@cbs.mpg.de
+ *
+ * mainwindow.hpp
+ *
+ * Description:
+ *
+ *  Created on: Aug 12, 2011
+ *      Author: tuerke
+ ******************************************************************/
 #ifndef ISISMAINWINDOW_HPP
 #define ISISMAINWINDOW_HPP
 
@@ -72,9 +99,9 @@ public Q_SLOTS:
 	void loadSettings();
 	void saveSettings();
 	void createScreenshot();
-	void toggleSagittalView(bool);
-	void toggleAxialView(bool);
-	void toggleCoronalView(bool);
+	void toggleSagittalView( bool );
+	void toggleAxialView( bool );
+	void toggleCoronalView( bool );
 
 
 private:
@@ -85,7 +112,7 @@ private:
 
 	QSpinBox *m_RadiusSpin;
 	QAction *m_RadiusSpinAction;
-	QPushButton *m_LogButton;
+	QLabel *m_SignatureLabel;
 
 	QAction *m_ActionReset_Scaling;
 	QAction *m_ActionAuto_Scaling;

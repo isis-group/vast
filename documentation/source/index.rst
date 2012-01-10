@@ -14,9 +14,12 @@ Contents:
    :maxdepth: 2
 
    introduction
-   techinfo
    openingimages
+   imagestack
+   savingimages
+   zmap
    screenshotfunction
+   techinfo
 
 Indices and tables
 ==================

@@ -1,0 +1,22 @@
+message(STATUS "Adding PropertyTool plugin")
+
+###########################################################
+# qt4 stuff
+###########################################################
+FIND_PACKAGE(Qt4 COMPONENTS QtCore QtGui REQUIRED)
+
+set(QT_USE_QTUITOOLS TRUE)
+set(QT_USE_QTOPENGL TRUE)
+set(QT_USE_OPENGL TRUE )
+
+INCLUDE(${QT_USE_FILE})
+
+include_directories(${CMAKE_CURRENT_BINARY_DIR})
+
+qt4_wrap_cpp(plugin_moc_files PropertyToolDialog.hpp)
+QT4_WRAP_UI(propertytool_ui_h forms/propertyToolDialog.ui)
+
+add_library(vastPlugin_PropertyTool SHARED vastPlugin_PropertyTool.cpp PropertyToolDialog.cpp  ${propertytool_ui_h} ${plugin_moc_files})
+target_link_libraries(vastPlugin_PropertyTool isis_core ${ISIS_LIB_DEPENDS} ${QT_LIBRARIES} )
+
+install(TARGETS vastPlugin_PropertyTool DESTINATION ${VAST_PLUGIN_INFIX} COMPONENT "vast plugins" )

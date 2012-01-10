@@ -1,3 +1,30 @@
+/****************************************************************
+ *
+ * <Copyright information>
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 3
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ *
+ * Author: Erik Türke, tuerke@cbs.mpg.de
+ *
+ * QOrientationHandler.cpp
+ *
+ * Description:
+ *
+ *  Created on: Aug 12, 2011
+ *      Author: tuerke
+ ******************************************************************/
 #include "QOrientationHandler.hpp"
 
 namespace isis
@@ -7,7 +34,7 @@ namespace viewer
 {
 
 
-util::fvector4 QOrienationHandler::mapCoordsToOrientation( const util::fvector4 &coords, const boost::shared_ptr< ImageHolder > image, PlaneOrientation orientation, bool back, bool absolute )
+util::fvector4 QOrientationHandler::mapCoordsToOrientation( const util::fvector4 &coords, const boost::shared_ptr< ImageHolder > image, PlaneOrientation orientation, bool back, bool absolute )
 {
 	using namespace boost::numeric::ublas;
 	matrix<float> transformMatrix = identity_matrix<float>( 4, 4 );
@@ -72,11 +99,11 @@ util::fvector4 QOrienationHandler::mapCoordsToOrientation( const util::fvector4 
 }
 
 
-QOrienationHandler::ViewPortType QOrienationHandler::getViewPort(  const float &zoom, const boost::shared_ptr< ImageHolder > image, const size_t &w, const size_t &h, PlaneOrientation orientation, unsigned short border )
+QOrientationHandler::ViewPortType QOrientationHandler::getViewPort(  const float &zoom, const boost::shared_ptr< ImageHolder > image, const size_t &w, const size_t &h, PlaneOrientation orientation, unsigned short border )
 {
 	ViewPortType viewPort;
-	const util::ivector4 mappedSize = QOrienationHandler::mapCoordsToOrientation( image->getImageSize(), image, orientation );
-	const util::fvector4 mappedScaling = QOrienationHandler::mapCoordsToOrientation( image->voxelSize, image, orientation );
+	const util::ivector4 mappedSize = QOrientationHandler::mapCoordsToOrientation( image->getImageSize(), image, orientation );
+	const util::fvector4 mappedScaling = QOrientationHandler::mapCoordsToOrientation( image->voxelSize, image, orientation );
 	const util::fvector4 physSize = mappedScaling * mappedSize;
 	const float scalew = ( w - border * 2 ) / float( physSize[0] );
 	const  float scaleh = ( h - border * 2 ) / float( physSize[1] );
@@ -96,11 +123,11 @@ QOrienationHandler::ViewPortType QOrienationHandler::getViewPort(  const float &
 }
 
 
-QTransform QOrienationHandler::getTransform( const ViewPortType &viewPort, const boost::shared_ptr< ImageHolder > image, PlaneOrientation orientation )
+QTransform QOrientationHandler::getTransform( const ViewPortType &viewPort, const boost::shared_ptr< ImageHolder > image, PlaneOrientation orientation )
 {
-	const util::ivector4 mappedSize = QOrienationHandler::mapCoordsToOrientation( image->getImageSize(), image, orientation );
-	const util::fvector4 flipVec = QOrienationHandler::mapCoordsToOrientation( util::fvector4( 1, 1, 1 ), image, orientation, false, false );
-	const util::ivector4 mappedVoxelCoords = QOrienationHandler::mapCoordsToOrientation( image->voxelCoords, image, orientation );
+	const util::ivector4 mappedSize = QOrientationHandler::mapCoordsToOrientation( image->getImageSize(), image, orientation );
+	const util::fvector4 flipVec = QOrientationHandler::mapCoordsToOrientation( util::fvector4( 1, 1, 1 ), image, orientation, false, false );
+	const util::ivector4 mappedVoxelCoords = QOrientationHandler::mapCoordsToOrientation( image->voxelCoords, image, orientation );
 	QTransform retTransform;
 	retTransform.setMatrix( flipVec[0], 0, 0,
 							0, flipVec[1], 0,
@@ -115,9 +142,9 @@ QTransform QOrienationHandler::getTransform( const ViewPortType &viewPort, const
 
 }
 
-util::ivector4 QOrienationHandler::convertWindow2VoxelCoords( const ViewPortType &viewPort, const boost::shared_ptr< ImageHolder > image, const size_t &x, const size_t &y, const size_t &slice, PlaneOrientation orientation )
+util::ivector4 QOrientationHandler::convertWindow2VoxelCoords( const ViewPortType &viewPort, const boost::shared_ptr< ImageHolder > image, const size_t &x, const size_t &y, const size_t &slice, PlaneOrientation orientation )
 {
-	const util::ivector4 mappedSize = QOrienationHandler::mapCoordsToOrientation( image->getImageSize(), image, orientation, false, false );
+	const util::ivector4 mappedSize = QOrientationHandler::mapCoordsToOrientation( image->getImageSize(), image, orientation, false, false );
 	const size_t voxCoordX = ( x - viewPort[2] ) / viewPort[0];
 	const size_t voxCoordY = ( y - viewPort[3] ) / viewPort[1];
 	util::ivector4 coords =  util::ivector4( voxCoordX, voxCoordY, slice );
@@ -131,12 +158,12 @@ util::ivector4 QOrienationHandler::convertWindow2VoxelCoords( const ViewPortType
 	}
 
 	coords[3] = image->voxelCoords[3];
-	return QOrienationHandler::mapCoordsToOrientation( coords, image, orientation, true );
+	return QOrientationHandler::mapCoordsToOrientation( coords, image, orientation, true );
 }
 
-std::pair< int, int > QOrienationHandler::convertVoxel2WindowCoords( const ViewPortType &viewPort, const boost::shared_ptr< ImageHolder > image, PlaneOrientation orientation )
+std::pair< int, int > QOrientationHandler::convertVoxel2WindowCoords( const ViewPortType &viewPort, const boost::shared_ptr< ImageHolder > image, PlaneOrientation orientation )
 {
-	const util::ivector4 mappedVoxelCoords = QOrienationHandler::mapCoordsToOrientation( image->voxelCoords, image, orientation );
+	const util::ivector4 mappedVoxelCoords = QOrientationHandler::mapCoordsToOrientation( image->voxelCoords, image, orientation );
 	const float halfVoxelX = viewPort[0] / 2;
 	const float halfVoxelY = viewPort[1] / 2;
 	const float x = mappedVoxelCoords[0] * viewPort[0] + viewPort[2] + halfVoxelX;

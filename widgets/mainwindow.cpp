@@ -1,9 +1,37 @@
+/****************************************************************
+ *
+ * <Copyright information>
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 3
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ *
+ * Author: Erik Türke, tuerke@cbs.mpg.de
+ *
+ * mainwindow.cpp
+ *
+ * Description:
+ *
+ *  Created on: Aug 12, 2011
+ *      Author: tuerke
+ ******************************************************************/
 #include "mainwindow.hpp"
 #include <iostream>
 #include <QGridLayout>
 #include "DataStorage/io_factory.hpp"
 #include "uicore.hpp"
 #include <qviewercore.hpp>
+#include "scalingWidget.hpp"
 
 
 namespace isis
@@ -22,7 +50,7 @@ MainWindow::MainWindow( QViewerCore *core ) :
 	m_ViewerCore( core ),
 	m_Toolbar( new QToolBar( this ) ),
 	m_RadiusSpin( new QSpinBox( this ) ),
-	m_LogButton( new QPushButton( this ) )
+	m_SignatureLabel( new QLabel( this ) )
 {
 	m_Interface.setupUi( this );
 	setWindowIcon( QIcon( ":/common/vast.jpg" ) );
@@ -34,9 +62,9 @@ MainWindow::MainWindow( QViewerCore *core ) :
 	addAction( m_ActionAuto_Scaling );
 
 	m_Interface.actionInformation_Areas->setChecked( true );
-	m_Interface.actionAxial_View->setChecked(true);
-	m_Interface.actionSagittal_View->setChecked(true);
-	m_Interface.actionCoronal_View->setChecked(true);
+	m_Interface.actionAxial_View->setChecked( true );
+	m_Interface.actionSagittal_View->setChecked( true );
+	m_Interface.actionCoronal_View->setChecked( true );
 
 	m_Interface.action_Save_Image->setShortcut( QKeySequence::Save );
 	m_Interface.action_Save_Image->setIconVisibleInMenu( true );
@@ -71,7 +99,6 @@ MainWindow::MainWindow( QViewerCore *core ) :
 	connect( m_Interface.actionShow_scaling_option, SIGNAL( triggered() ), this, SLOT( showScalingOption() ) );
 	connect( m_Interface.actionIgnore_Orientation, SIGNAL( triggered( bool ) ), this, SLOT( ignoreOrientation( bool ) ) );
 	connect( m_Interface.action_Exit, SIGNAL( triggered() ), this, SLOT( close() ) );
-	connect( m_LogButton, SIGNAL( clicked() ), this, SLOT( showLoggingDialog() ) );
 	connect( m_Interface.actionPropagate_Zooming, SIGNAL( triggered( bool ) ), this, SLOT( propagateZooming( bool ) ) );
 	connect( m_ActionReset_Scaling, SIGNAL( triggered() ), this, SLOT( resetScaling() ) );
 	connect( m_ActionAuto_Scaling, SIGNAL( triggered() ), this, SLOT( autoScaling() ) );
@@ -80,11 +107,12 @@ MainWindow::MainWindow( QViewerCore *core ) :
 	connect( m_Interface.actionToggle_Zmap_Mode, SIGNAL( triggered( bool ) ), this, SLOT( toggleZMapMode( bool ) ) );
 	connect( m_Interface.actionKey_Commands, SIGNAL( triggered() ), this, SLOT( showKeyCommandDialog() ) );
 	connect( m_Interface.actionCreate_Screenshot, SIGNAL( triggered() ), this, SLOT( createScreenshot() ) );
-	connect( m_Interface.actionHelp, SIGNAL( triggered()), helpDialog, SLOT( show()) );
-	connect( m_Interface.actionAxial_View, SIGNAL( triggered(bool)), this, SLOT( toggleAxialView(bool)));
-	connect( m_Interface.actionSagittal_View, SIGNAL( triggered(bool)), this, SLOT( toggleSagittalView(bool)));
-	connect( m_Interface.actionCoronal_View, SIGNAL( triggered(bool)), this, SLOT( toggleCoronalView(bool)));
-	
+	connect( m_Interface.actionHelp, SIGNAL( triggered() ), helpDialog, SLOT( show() ) );
+	connect( m_Interface.actionLogging, SIGNAL( triggered() ), this, SLOT( showLoggingDialog() ) );
+	connect( m_Interface.actionAxial_View, SIGNAL( triggered( bool ) ), this, SLOT( toggleAxialView( bool ) ) );
+	connect( m_Interface.actionSagittal_View, SIGNAL( triggered( bool ) ), this, SLOT( toggleSagittalView( bool ) ) );
+	connect( m_Interface.actionCoronal_View, SIGNAL( triggered( bool ) ), this, SLOT( toggleCoronalView( bool ) ) );
+
 
 	//toolbar stuff
 	m_Toolbar->setOrientation( Qt::Horizontal );
@@ -109,8 +137,11 @@ MainWindow::MainWindow( QViewerCore *core ) :
 	m_RadiusSpin->setToolTip( "Search radius for finding local minimum/maximum. If radius is 0 it will search the entire image." );
 	m_Interface.statusbar->addPermanentWidget( m_ViewerCore->getProgressFeedback()->getProgressBar() );
 
-	m_LogButton->setText( "Show log" );
-	m_Interface.statusbar->addPermanentWidget( m_LogButton );
+	if( m_ViewerCore->getOptionMap()->hasProperty( "signature" ) ) {
+		m_SignatureLabel->setText( m_ViewerCore->getOptionMap()->getPropertyAs<std::string>( "signature" ).c_str() );
+	}
+
+	m_Interface.statusbar->addPermanentWidget( m_SignatureLabel );
 
 	scalingWidget->setVisible( false );
 	loadSettings();
@@ -133,17 +164,17 @@ void MainWindow::createScreenshot()
 
 }
 
-void MainWindow::toggleAxialView(bool visible )
+void MainWindow::toggleAxialView( bool visible )
 {
 	m_ViewerCore->getUICore()->setViewPlaneOrientation( axial, visible );
 }
 
-void MainWindow::toggleCoronalView(bool visible )
+void MainWindow::toggleCoronalView( bool visible )
 {
 	m_ViewerCore->getUICore()->setViewPlaneOrientation( coronal, visible );
 }
 
-void MainWindow::toggleSagittalView(bool visible)
+void MainWindow::toggleSagittalView( bool visible )
 {
 	m_ViewerCore->getUICore()->setViewPlaneOrientation( sagittal, visible );
 }
@@ -203,6 +234,7 @@ void MainWindow::resetScaling()
 	BOOST_FOREACH( DataContainer::reference image, m_ViewerCore->getDataContainer() ) {
 		image.second->scaling = 1.0;
 		image.second->offset = 0.0;
+        image.second->updateColorMap();
 	}
 	m_ViewerCore->updateScene();
 	scalingWidget->synchronize();
@@ -251,7 +283,8 @@ void MainWindow::ignoreOrientation( bool ignore )
 void MainWindow::showScalingOption()
 {
 	scalingWidget->move( QCursor::pos().x() + m_Toolbar->height() / 2, QCursor::pos().y() + m_Toolbar->height() / 2 );
-	scalingWidget->showMe( m_Interface.actionShow_scaling_option->isChecked() );
+    scalingWidget->synchronize();
+	scalingWidget->show();
 }
 
 
@@ -427,15 +460,15 @@ void MainWindow::refreshUI()
 
 	if( m_ViewerCore->getMode() == ViewerCoreBase::zmap ) {
 		m_Interface.actionToggle_Zmap_Mode->setChecked( true );
-		m_Interface.actionFind_Global_Max->setVisible(true);
-		m_Interface.actionFind_Global_Min->setVisible(true);
-		m_RadiusSpinAction->setVisible(true);
+		m_Interface.actionFind_Global_Max->setVisible( true );
+		m_Interface.actionFind_Global_Min->setVisible( true );
+		m_RadiusSpinAction->setVisible( true );
 	} else {
 		m_Interface.actionToggle_Zmap_Mode->setChecked( false );
-		m_Interface.actionFind_Global_Max->setVisible(false);
-		m_Interface.actionFind_Global_Min->setVisible(false);
-		m_RadiusSpinAction->setVisible(false);
-		
+		m_Interface.actionFind_Global_Max->setVisible( false );
+		m_Interface.actionFind_Global_Min->setVisible( false );
+		m_RadiusSpinAction->setVisible( false );
+
 	}
 
 	m_Interface.action_Save_Image->setEnabled( m_ViewerCore->hasImage() );

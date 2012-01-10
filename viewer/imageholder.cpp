@@ -1,4 +1,30 @@
-
+/****************************************************************
+ *
+ * <Copyright information>
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 3
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ *
+ * Author: Erik Türke, tuerke@cbs.mpg.de
+ *
+ * imageholder.cpp
+ *
+ * Description:
+ *
+ *  Created on: Aug 12, 2011
+ *      Author: tuerke
+ ******************************************************************/
 #include "imageholder.hpp"
 
 namespace isis
@@ -122,8 +148,10 @@ bool ImageHolder::setImage( const data::Image &image, const ImageType &_imageTyp
 	}
 
 	// get some image information
-	
+
 	majorTypeID = image.getMajorTypeID();
+    majorTypeName = image.getMajorTypeName();
+    majorTypeName = majorTypeName.substr( 0, majorTypeName.length() - 1 ).c_str();
 	m_ImageSize = image.getSizeAsVector();
 	LOG( Debug, verbose_info )  << "Fetched image of size " << m_ImageSize << " and type "
 								<< image.getMajorTypeName() << ".";
@@ -163,7 +191,7 @@ bool ImageHolder::setImage( const data::Image &image, const ImageType &_imageTyp
 		lowerThreshold = 0;
 		upperThreshold = 0;
 		lut = std::string( "standard_zmap" );
-	} else if( imageType == anatomical_image ) {
+	} else if( imageType == structural_image ) {
 		if( !isRGB ) {
 			lowerThreshold = minMax.first->as<double>() ;
 			lowerThreshold = minMax.second->as<double>();
@@ -190,10 +218,10 @@ bool ImageHolder::setImage( const data::Image &image, const ImageType &_imageTyp
 	if( !isRGB ) {
 		extent = fabs( minMax.second->as<double>() - minMax.first->as<double>() );
 		optimalScalingOffset = getOptimalScaling();
-		
+
 		m_PropMap.setPropertyAs<double>( "scalingMinValue", minMax.first->as<double>() );
 		m_PropMap.setPropertyAs<double>( "scalingMaxValue", minMax.second->as<double>() );
-        scalingToInternalType = image.getScalingTo( isis::data::ValuePtr<InternalImageType>::staticID );
+		scalingToInternalType = image.getScalingTo( isis::data::ValuePtr<InternalImageType>::staticID );
 	}
 
 	alignedSize32 = get32BitAlignedSize( m_ImageSize );
@@ -317,61 +345,63 @@ void ImageHolder::removeWidget( WidgetInterface *widget )
 
 void ImageHolder::syncImage()
 {
-	// first check if sizes coincide 
+	// first check if sizes coincide
 	if( isRGB ) {
 		LOG( Runtime, warning ) << "Not yet capable of syncronizing rgb images.";
 		return;
 	}
-	
+
 	bool coincide = true;
+
 	for ( unsigned short i = 0; i < 4; i++ ) {
 		if( getImageSize()[i] != getISISImage()->getSizeAsVector()[i] ) {
 			coincide = false;
 		}
 	}
+
 	if( !coincide ) {
 		LOG( Runtime, error ) << "The size of the ImageHolder and the nested isis image do not coincide. Can not sync!";
 		return;
 	}
-	
+
 	if( coincide && !isRGB ) {
 		switch( majorTypeID ) {
-			case data::ValuePtr<bool>::staticID:
-				_syncImage<bool>();
-				break;
-			case data::ValuePtr<uint8_t>::staticID:
-				_syncImage<uint8_t>();
-				break;
-			case data::ValuePtr<int8_t>::staticID:
-				_syncImage<int8_t>();
-				break;
-			case data::ValuePtr<uint16_t>::staticID:
-				_syncImage<uint16_t>();
-				break;				
-			case data::ValuePtr<int16_t>::staticID:
-				_syncImage<int16_t>();
-				break;
-			case data::ValuePtr<uint32_t>::staticID:
-				_syncImage<uint32_t>();
-				break;
-			case data::ValuePtr<int32_t>::staticID:
-				_syncImage<int32_t>();
-				break;
-			case data::ValuePtr<uint64_t>::staticID:
-				_syncImage<uint64_t>();
-				break;
-			case data::ValuePtr<int64_t>::staticID:
-				_syncImage<int64_t>();
-				break;
-			case data::ValuePtr<float>::staticID:
-				_syncImage<float>();
-				break;
-			case data::ValuePtr<double>::staticID:
-				_syncImage<double>();
-				break;
+		case data::ValuePtr<bool>::staticID:
+			_syncImage<bool>();
+			break;
+		case data::ValuePtr<uint8_t>::staticID:
+			_syncImage<uint8_t>();
+			break;
+		case data::ValuePtr<int8_t>::staticID:
+			_syncImage<int8_t>();
+			break;
+		case data::ValuePtr<uint16_t>::staticID:
+			_syncImage<uint16_t>();
+			break;
+		case data::ValuePtr<int16_t>::staticID:
+			_syncImage<int16_t>();
+			break;
+		case data::ValuePtr<uint32_t>::staticID:
+			_syncImage<uint32_t>();
+			break;
+		case data::ValuePtr<int32_t>::staticID:
+			_syncImage<int32_t>();
+			break;
+		case data::ValuePtr<uint64_t>::staticID:
+			_syncImage<uint64_t>();
+			break;
+		case data::ValuePtr<int64_t>::staticID:
+			_syncImage<int64_t>();
+			break;
+		case data::ValuePtr<float>::staticID:
+			_syncImage<float>();
+			break;
+		case data::ValuePtr<double>::staticID:
+			_syncImage<double>();
+			break;
 		}
 	}
-	
+
 }
 
 

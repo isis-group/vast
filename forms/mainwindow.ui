@@ -155,6 +155,7 @@
     </property>
     <addaction name="actionHelp"/>
     <addaction name="separator"/>
+    <addaction name="actionLogging"/>
     <addaction name="actionKey_Commands"/>
    </widget>
    <addaction name="menu_File"/>
@@ -272,9 +273,6 @@
    </property>
   </action>
   <action name="actionShow_scaling_option">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
    <property name="icon">
     <iconset resource="../resources/viewer.qrc">
      <normaloff>:/common/autoscale.gif</normaloff>:/common/autoscale.gif</iconset>
@@ -427,6 +425,11 @@
    </property>
    <property name="shortcut">
     <string>A, V</string>
+   </property>
+  </action>
+  <action name="actionLogging">
+   <property name="text">
+    <string>Logging</string>
    </property>
   </action>
  </widget>

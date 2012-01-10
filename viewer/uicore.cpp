@@ -1,3 +1,30 @@
+/****************************************************************
+ *
+ * <Copyright information>
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 3
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ *
+ * Author: Erik Türke, tuerke@cbs.mpg.de
+ *
+ * uicore.cpp
+ *
+ * Description:
+ *
+ *  Created on: Aug 12, 2011
+ *      Author: tuerke
+ ******************************************************************/
 #include "uicore.hpp"
 #include <DataStorage/io_interface.h>
 #include "QImageWidgetImplementation.hpp"
@@ -285,57 +312,63 @@ void UICore::refreshUI( )
 	m_SliderWidget->synchronize();
 	m_ImageStackWidget->synchronize();
 	m_VoxelInformationWidget->synchronize();
-	BOOST_FOREACH( WidgetMap::reference widget, getWidgets() ) {		
+	BOOST_FOREACH( WidgetMap::reference widget, getWidgets() ) {
 		WidgetInterface::ImageVectorType iVector = widget.second.widgetImplementation->getImageVector();
+
 		if( !iVector.size() ) {
 			widget.second.dockWidget->setVisible( false );
 		} else {
 			widget.second.dockWidget->setVisible( true );
 		}
+
 		//go through all the images and check if we need this widget ( 2d data? )
 		if( getEnsembleList().size() == 1 ) {
 			bool widgetNeeded = false;
-			BOOST_FOREACH( WidgetInterface::ImageVectorType::const_reference image, iVector )
-			{
-				const util::ivector4 mappedSize = QOrienationHandler::mapCoordsToOrientation( image->getImageSize(), image, widget.second.widgetImplementation->getPlaneOrientation() );
+			BOOST_FOREACH( WidgetInterface::ImageVectorType::const_reference image, iVector ) {
+				const util::ivector4 mappedSize = QOrientationHandler::mapCoordsToOrientation( image->getImageSize(), image, widget.second.widgetImplementation->getPlaneOrientation() );
+
 				if( mappedSize[0] > 1 && mappedSize[1] > 1 ) {
 					widgetNeeded = true;
 				}
 			}
-			widget.second.dockWidget->setVisible(widgetNeeded);
+			widget.second.dockWidget->setVisible( widgetNeeded );
+
 			switch( widget.second.widgetImplementation->getPlaneOrientation() ) {
-				case axial:
-					getMainWindow()->getInterface().actionAxial_View->setChecked(widgetNeeded);
-					break;
-				case sagittal:
-					getMainWindow()->getInterface().actionSagittal_View->setChecked(widgetNeeded);
-					break;
-				case coronal:
-					getMainWindow()->getInterface().actionCoronal_View->setChecked(widgetNeeded);
-					break;
+			case axial:
+				getMainWindow()->getInterface().actionAxial_View->setChecked( widgetNeeded );
+				break;
+			case sagittal:
+				getMainWindow()->getInterface().actionSagittal_View->setChecked( widgetNeeded );
+				break;
+			case coronal:
+				getMainWindow()->getInterface().actionCoronal_View->setChecked( widgetNeeded );
+				break;
 			}
 		}
+
 		widget.second.widgetImplementation->setCrossHairWidth( 1 );
 
-		if( std::find( iVector.begin(), iVector.end(), m_ViewerCore->getCurrentImage() ) != iVector.end() ) {
-			QPalette pal;
-			pal.setColor( QPalette::Background, QColor( 119, 136, 153 ) );
-			widget.second.frame->setFrameStyle( QFrame::WinPanel | QFrame::Raised );
-			widget.second.frame->setLineWidth( 1 );
-			widget.second.frame->setPalette( pal );
-			widget.second.frame->setAutoFillBackground( true );
+		if ( m_ViewerCore->hasImage() ) {
+			if( std::find( iVector.begin(), iVector.end(), m_ViewerCore->getCurrentImage() ) != iVector.end() ) {
+				QPalette pal;
+				pal.setColor( QPalette::Background, QColor( 119, 136, 153 ) );
+				widget.second.frame->setFrameStyle( QFrame::WinPanel | QFrame::Raised );
+				widget.second.frame->setLineWidth( 1 );
+				widget.second.frame->setPalette( pal );
+				widget.second.frame->setAutoFillBackground( true );
 
-			if( m_ViewerCore->getMode() == ViewerCoreBase::zmap ) {
-				widget.second.widgetImplementation->setCrossHairColor( Qt::white );
-				widget.second.widgetImplementation->updateScene();
-			}
-		} else {
-			widget.second.frame->setFrameStyle( 0 );
-			widget.second.frame->setAutoFillBackground( false );
+				if( m_ViewerCore->getMode() == ViewerCoreBase::zmap ) {
+					widget.second.widgetImplementation->setCrossHairColor( Qt::white );
+					widget.second.widgetImplementation->updateScene();
+				}
+			} else {
+				widget.second.frame->setFrameStyle( 0 );
+				widget.second.frame->setAutoFillBackground( false );
 
-			if ( m_ViewerCore->getMode() == ViewerCoreBase::zmap ) {
-				widget.second.widgetImplementation->setCrossHairColor( QColor( 255, 102, 0 ) );
-				widget.second.widgetImplementation->updateScene();
+				if ( m_ViewerCore->getMode() == ViewerCoreBase::zmap ) {
+					widget.second.widgetImplementation->setCrossHairColor( QColor( 255, 102, 0 ) );
+					widget.second.widgetImplementation->updateScene();
+				}
 			}
 		}
 
@@ -406,6 +439,7 @@ QImage UICore::getScreenshot()
 		painter.setFont( font );
 		painter.setPen( QPen( Qt::white ) );
 		const int offset = -7;
+
 		if( m_ViewerCore->getMode() == ViewerCoreBase::zmap ) {
 			if( m_ViewerCore->getCurrentImage()->minMax.first->as<double>() < 0 ) {
 				const double lT = roundNumber<double>( m_ViewerCore->getCurrentImage()->lowerThreshold, 4 );
@@ -421,31 +455,32 @@ QImage UICore::getScreenshot()
 				painter.drawText( 280, widgetHeight * eIndex + 35, QString::number( roundNumber<double>( m_ViewerCore->getCurrentImage()->minMax.second->as<double>(), 4 )  ) );
 			}
 		}
+
 		painter.end();
 		refreshUI();
-		QImage screenshotImage ( m_ViewerCore->getOptionMap()->getPropertyAs<bool>("screenshotManualScaling") ? screenshot.scaled( m_ViewerCore->getOptionMap()->getPropertyAs<uint16_t>("screenshotWidth"),
-															m_ViewerCore->getOptionMap()->getPropertyAs<uint16_t>("screenshotHeight"), 
-															m_ViewerCore->getOptionMap()->getPropertyAs<bool>("screenshotKeepAspectRatio") ? Qt::KeepAspectRatioByExpanding : Qt::IgnoreAspectRatio,
-															Qt::SmoothTransformation  														
-  														).toImage() : screenshot.toImage() );
+		QImage screenshotImage ( m_ViewerCore->getOptionMap()->getPropertyAs<bool>( "screenshotManualScaling" ) ? screenshot.scaled( m_ViewerCore->getOptionMap()->getPropertyAs<uint16_t>( "screenshotWidth" ),
+								 m_ViewerCore->getOptionMap()->getPropertyAs<uint16_t>( "screenshotHeight" ),
+								 m_ViewerCore->getOptionMap()->getPropertyAs<bool>( "screenshotKeepAspectRatio" ) ? Qt::KeepAspectRatioByExpanding : Qt::IgnoreAspectRatio,
+								 Qt::SmoothTransformation
+																																   ).toImage() : screenshot.toImage() );
 		const double dpiMeter = 39.3700787;
-		screenshotImage.setDotsPerMeterX( m_ViewerCore->getOptionMap()->getPropertyAs<uint16_t>("screenshotDPIX") * dpiMeter );
-		screenshotImage.setDotsPerMeterY( m_ViewerCore->getOptionMap()->getPropertyAs<uint16_t>("screenshotDPIY") * dpiMeter );
+		screenshotImage.setDotsPerMeterX( m_ViewerCore->getOptionMap()->getPropertyAs<uint16_t>( "screenshotDPIX" ) * dpiMeter );
+		screenshotImage.setDotsPerMeterY( m_ViewerCore->getOptionMap()->getPropertyAs<uint16_t>( "screenshotDPIY" ) * dpiMeter );
 		return screenshotImage;
 	}
+
 	return QImage();
 }
 
-void UICore::setViewPlaneOrientation(PlaneOrientation orientation, bool visible)
+void UICore::setViewPlaneOrientation( PlaneOrientation orientation, bool visible )
 {
-	BOOST_FOREACH( ViewWidgetEnsembleListType::reference ensemble, getEnsembleList() )
-	{
+	BOOST_FOREACH( ViewWidgetEnsembleListType::reference ensemble, getEnsembleList() ) {
 		for( unsigned short i = 0; i < 3; i++ ) {
 			if( ensemble[i].planeOrientation == orientation ) {
 				ensemble[i].dockWidget->setVisible( visible );
 			}
 		}
-	}	
+	}
 }
 
 

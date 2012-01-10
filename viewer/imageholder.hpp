@@ -1,3 +1,30 @@
+/****************************************************************
+ *
+ * <Copyright information>
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 3
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ *
+ * Author: Erik Türke, tuerke@cbs.mpg.de
+ *
+ * imageholder.hpp
+ *
+ * Description:
+ *
+ *  Created on: Aug 12, 2011
+ *      Author: tuerke
+ ******************************************************************/
 #ifndef IMAGEHOLDER_HPP
 #define IMAGEHOLDER_HPP
 
@@ -34,7 +61,7 @@ public:
 	typedef std::list<boost::shared_ptr< ImageHolder > > ImageListType;
 	typedef data::_internal::ValuePtrBase::Reference ImagePointerType;
 
-	enum ImageType { anatomical_image, z_map };
+	enum ImageType { structural_image, z_map };
 
 	ImageHolder();
 
@@ -73,7 +100,7 @@ public:
 	std::list< WidgetInterface * > getWidgetList() { return m_WidgetList; }
 
 	void updateOrientation();
-	
+
 	void syncImage();
 
 	/**offset, scaling**/
@@ -101,8 +128,9 @@ public:
 	boost::numeric::ublas::matrix<double> orientation;
 	boost::numeric::ublas::matrix<double> latchedOrientation;
 	unsigned short majorTypeID;
+    std::string majorTypeName;
 	std::vector< double *> histogramVector;
-    std::pair<util::ValueReference, util::ValueReference> scalingToInternalType;
+	std::pair<util::ValueReference, util::ValueReference> scalingToInternalType;
 
 private:
 
@@ -137,15 +165,16 @@ private:
 			m_ImageVector.push_back( imagePtr );
 		}
 	}
-	
+
 	template<typename TYPE>
 	void _syncImage() {
-#pragma omp parallel for
+		#pragma omp parallel for
+
 		for( size_t t = 0; t < getImageSize()[3]; t++ ) {
 			for( size_t z = 0; z < getImageSize()[2]; z++ ) {
 				for( size_t y = 0; y < getImageSize()[1]; y++ ) {
 					for( size_t x = 0; x < getImageSize()[0]; x++ ) {
-						getISISImage()->voxel<TYPE>(x,y,z,t) = util::Value<InternalImageType> ( getChunkVector()[t].voxel<InternalImageType>(x,y,z) ).as<TYPE>();
+						getISISImage()->voxel<TYPE>( x, y, z, t ) = util::Value<InternalImageType> ( getChunkVector()[t].voxel<InternalImageType>( x, y, z ) ).as<TYPE>();
 					}
 				}
 			}

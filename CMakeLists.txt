@@ -45,7 +45,7 @@ set(WIDGET_FILES_HPP
 ##########################################################
 set(VAST_VERSION_MAJOR "0")
 set(VAST_VERSION_MINOR "2")
-set(VAST_VERSION_PATCH "4")
+set(VAST_VERSION_PATCH "5")
 
 add_definitions(-D_VAST_VERSION_MAJOR=${VAST_VERSION_MAJOR})
 add_definitions(-D_VAST_VERSION_MINOR=${VAST_VERSION_MINOR})
@@ -118,8 +118,6 @@ FIND_PACKAGE(Boost REQUIRED)
 INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIR})
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/QImageWidget)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/viewer)
-
-#this flags has to be set due to use parallel with boos::signal
 
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ftemplate-depth-100 -Wextra -Wall -Wfatal-errors"  )
 SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}  -Wextra -Wall -Wfatal-errors -Wall" )

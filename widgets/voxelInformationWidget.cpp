@@ -1,3 +1,30 @@
+/****************************************************************
+ *
+ * <Copyright information>
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 3
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ *
+ * Author: Erik Türke, tuerke@cbs.mpg.de
+ *
+ * voxelInformationWidget.cpp
+ *
+ * Description:
+ *
+ *  Created on: Aug 12, 2011
+ *      Author: tuerke
+ ******************************************************************/
 #include "voxelInformationWidget.hpp"
 #include <imageholder.hpp>
 #include <qviewercore.hpp>
@@ -63,14 +90,14 @@ void VoxelInformationWidget::connectSignals()
 	connect( m_Interface.timestepSpinBox, SIGNAL( valueChanged( int ) ), m_ViewerCore, SLOT( timestepChanged( int ) ) );
 	connect( m_Interface.timestepSlider, SIGNAL( sliderMoved( int ) ), m_Interface.timestepSpinBox, SLOT( setValue( int ) ) );
 	connect( m_Interface.timestepSpinBox, SIGNAL( valueChanged( int ) ), m_Interface.timestepSlider, SLOT( setValue( int ) ) );
-	connect( m_tThread, SIGNAL( finished()), this, SLOT( timePlayFinished()));
-	connect( m_Interface.playButton, SIGNAL( clicked()), this, SLOT( playTimecourse()));
+	connect( m_tThread, SIGNAL( finished() ), this, SLOT( timePlayFinished() ) );
+	connect( m_Interface.playButton, SIGNAL( clicked() ), this, SLOT( playTimecourse() ) );
 	isConnected = true;
 }
 
 void VoxelInformationWidget::updateLowerUpperThreshold()
 {
-	if( m_ViewerCore->getCurrentImage().get() ) {
+	if( m_ViewerCore->hasImage() ) {
 		m_Interface.lowerThresholdLabel->setText( QString::number( m_ViewerCore->getCurrentImage()->lowerThreshold, 'g', 4 ) );
 		m_Interface.upperThresholdLabel->setText( QString::number( m_ViewerCore->getCurrentImage()->upperThreshold, 'g', 4 ) );
 	}
@@ -83,11 +110,12 @@ void VoxelInformationWidget::playTimecourse()
 			m_tThread->terminate();
 			m_Interface.playButton->setIcon( QIcon( ":/common/play.png" ) );
 		} else {
-			if (QApplication::keyboardModifiers() == Qt::ControlModifier ) {
-				m_tThread->setStartStop( 0, m_ViewerCore->getCurrentImage()->getImageSize()[3]);
+			if ( QApplication::keyboardModifiers() == Qt::ControlModifier ) {
+				m_tThread->setStartStop( 0, m_ViewerCore->getCurrentImage()->getImageSize()[3] );
 			} else {
-				m_tThread->setStartStop( m_Interface.timestepSlider->value(), m_ViewerCore->getCurrentImage()->getImageSize()[3]);
+				m_tThread->setStartStop( m_Interface.timestepSlider->value(), m_ViewerCore->getCurrentImage()->getImageSize()[3] );
 			}
+
 			m_Interface.playButton->setIcon( QIcon( ":/common/pause.png" ) );
 			m_tThread->start();
 		}
@@ -96,7 +124,7 @@ void VoxelInformationWidget::playTimecourse()
 
 void VoxelInformationWidget::timePlayFinished()
 {
-	m_Interface.playButton->setIcon( QIcon( ":/common/play.png") );
+	m_Interface.playButton->setIcon( QIcon( ":/common/play.png" ) );
 }
 
 void VoxelInformationWidget::physPosChanged()
@@ -126,7 +154,7 @@ void VoxelInformationWidget::synchronize()
 		disconnectSignals();
 		m_Interface.colormapFrame->setVisible( !image->isRGB );
 
-		if( image->imageType == ImageHolder::anatomical_image ) {
+		if( image->imageType == ImageHolder::structural_image ) {
 			m_Interface.colormapGrid->addWidget( m_Interface.labelMin, 0, 0 );
 			m_Interface.colormapGrid->addWidget( m_Interface.upperHalfColormapLabel, 0, 1 );
 			m_Interface.colormapGrid->addWidget( m_Interface.labelMax, 0, 2 );

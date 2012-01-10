@@ -14,6 +14,8 @@ option(${CMAKE_PROJECT_NAME}_PLUGIN_MASKEDIT "Enable MaskEdit plugin" OFF)
 option(${CMAKE_PROJECT_NAME}_PLUGIN_CORRELATIONPLOTTER "Enable CorrelationPlotter plugin" OFF)
 option(${CMAKE_PROJECT_NAME}_PLUGIN_PYTHONINTERPRETER "Enable PythonInterpreter plugin" OFF)
 option(${CMAKE_PROJECT_NAME}_PLUGIN_HISTOGRAM "Enable Histogram plugin" OFF)
+option(${CMAKE_PROJECT_NAME}_PLUGIN_PROPERTYTOOL "Enable PropertyTool plugin" OFF)
+
 SET (CMAKE_SHARED_LINKER_FLAGS ${CMAKE_SHARED_LINKER_FLAGS_INIT} -Wl,-undefined,dynamic_lookup)
 
 ############################################################
@@ -57,3 +59,12 @@ endif(${CMAKE_PROJECT_NAME}_PLUGIN_PYTHONINTERPRETER)
 if(${CMAKE_PROJECT_NAME}_PLUGIN_HISTOGRAM)
 	add_subdirectory(Histogram)
 endif(${CMAKE_PROJECT_NAME}_PLUGIN_HISTOGRAM)
+
+############################################################
+# PropertyTool plugin
+############################################################
+if(${CMAKE_PROJECT_NAME}_PLUGIN_PROPERTYTOOL)
+	add_subdirectory(PropertyTool)
+endif(${CMAKE_PROJECT_NAME}_PLUGIN_PROPERTYTOOL)
+
+

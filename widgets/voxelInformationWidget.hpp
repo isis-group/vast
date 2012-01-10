@@ -1,3 +1,30 @@
+/****************************************************************
+ *
+ * <Copyright information>
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 3
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ *
+ * Author: Erik Türke, tuerke@cbs.mpg.de
+ *
+ * voxelInformationWidget.hpp
+ *
+ * Description:
+ *
+ *  Created on: Aug 12, 2011
+ *      Author: tuerke
+ ******************************************************************/
 #ifndef VOXELINFORMATIONWIDGET_HPP
 #define VOXELINFORMATIONWIDGET_HPP
 
@@ -13,36 +40,36 @@ namespace viewer
 namespace widget
 {
 
-	
+
 class VoxelInformationWidget : public QWidget
 {
 	Q_OBJECT
-	class TimePlayThread : public QThread 
+	class TimePlayThread : public QThread
 	{
 		QViewerCore *m_core;
 		int m_start;
 		int m_end;
 		Ui::voxelInformationWidget *m_interface;
-		
-	public: 
-		TimePlayThread( QViewerCore *core, Ui::voxelInformationWidget *interface ) : m_core(core), m_start(0), m_end(0), m_interface(interface) {} ;
-		void setStartStop( int start, int stop) { m_start = start; m_end = stop; }
-		void run()
-		{
-			uint16_t deleyTime = m_core->getOptionMap()->getPropertyAs<uint16_t>("timeseriesPlayDelayTime");
+
+	public:
+		TimePlayThread( QViewerCore *core, Ui::voxelInformationWidget *interface ) : m_core( core ), m_start( 0 ), m_end( 0 ), m_interface( interface ) {} ;
+		void setStartStop( int start, int stop ) { m_start = start; m_end = stop; }
+		void run() {
+			uint16_t deleyTime = m_core->getOptionMap()->getPropertyAs<uint16_t>( "timeseriesPlayDelayTime" );
 			uint16_t t = m_start;
-			while(true) {
+
+			while( true ) {
 				t = t == m_end ? 0 : t;
-				msleep(deleyTime);
-				m_interface->timestepSlider->setValue(t);
-				m_interface->timestepSpinBox->setValue(t);
+				msleep( deleyTime );
+				m_interface->timestepSlider->setValue( t );
+				m_interface->timestepSpinBox->setValue( t );
 				QApplication::processEvents();
 				t++;
-				
+
 			}
 		}
 	};
-	
+
 public:
 	VoxelInformationWidget( QWidget *parent, QViewerCore *core );
 
@@ -81,7 +108,7 @@ private:
 		const std::string intensityStr = static_cast<const util::_internal::ValueBase &>( vIntensity ).as<std::string>();
 		m_Interface.intensityValue->setText( intensityStr.c_str() );
 	}
-	
+
 };
 
 }

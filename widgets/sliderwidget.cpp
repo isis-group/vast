@@ -1,3 +1,30 @@
+/****************************************************************
+ *
+ * <Copyright information>
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 3
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ *
+ * Author: Erik Türke, tuerke@cbs.mpg.de
+ *
+ * sliderwidget.cpp
+ *
+ * Description:
+ *
+ *  Created on: Aug 12, 2011
+ *      Author: tuerke
+ ******************************************************************/
 #include "sliderwidget.hpp"
 #include <boost/concept_check.hpp>
 #include "imageholder.hpp"
@@ -32,13 +59,13 @@ SliderWidget::SliderWidget( QWidget *parent, isis::viewer::QViewerCore *core )
 	connect( m_Interface.opacitySlider, SIGNAL( sliderMoved( int ) ), this, SLOT( opacityChanged( int ) ) );
 	connect( m_Interface.maxSlider, SIGNAL( sliderMoved( int ) ), this, SLOT( upperThresholdChanged( int ) ) );
 	connect( m_Interface.minSlider, SIGNAL( sliderMoved( int ) ), this, SLOT( lowerThresholdChanged( int ) ) );
-	connect( m_Interface.checkGlobal, SIGNAL( toggled(bool)), this, SLOT( toggleGlobal(bool)));
+	connect( m_Interface.checkGlobal, SIGNAL( toggled( bool ) ), this, SLOT( toggleGlobal( bool ) ) );
 
 }
 
-void SliderWidget::toggleGlobal(bool global)
+void SliderWidget::toggleGlobal( bool global )
 {
-	m_ViewerCore->getOptionMap()->setPropertyAs<bool>("zmapGlobal", global);
+	m_ViewerCore->getOptionMap()->setPropertyAs<bool>( "zmapGlobal", global );
 }
 
 void SliderWidget::setSliderVisible( SliderWidget::SliderType slider , bool visible )
@@ -122,8 +149,10 @@ void SliderWidget::synchronize()
 {
 	if( m_ViewerCore->getMode() == ViewerCoreBase::zmap ) {
 		m_Interface.zmapModeFrame->setVisible( true );
+        unsigned short zmapImages = 0;
 		BOOST_FOREACH( DataContainer::const_reference image, m_ViewerCore->getDataContainer() ) {
 			if( image.second->imageType == ImageHolder::z_map ) {
+                zmapImages++;
 				if( image.second->minMax.first->as<double>() < m_maxMin ) {
 					m_maxMin = image.second->minMax.first->as<double>();
 				}
@@ -133,6 +162,7 @@ void SliderWidget::synchronize()
 				}
 			}
 		}
+		m_Interface.checkGlobal->setVisible( zmapImages > 1 );
 	} else {
 		m_Interface.zmapModeFrame->setVisible( false );
 	}
@@ -145,13 +175,13 @@ void SliderWidget::synchronize()
 			setSliderVisible( LowerThreshold, m_ViewerCore->getCurrentImage()->minMax.first->as<double>() < 0 );
 			setSliderVisible( UpperThreshold, m_ViewerCore->getCurrentImage()->minMax.second->as<double>() > 0 );
 			const unsigned short lowerThreshold = 1000 - abs( ( 1000 / m_ViewerCore->getCurrentImage()->minMax.first->as<double>() )
-				* m_ViewerCore->getCurrentImage()->lowerThreshold );
+												  * m_ViewerCore->getCurrentImage()->lowerThreshold );
 			const unsigned short upperThreshold = 1000 - abs( ( 1000 / m_ViewerCore->getCurrentImage()->minMax.second->as<double>() )
-			  * m_ViewerCore->getCurrentImage()->upperThreshold );
+												  * m_ViewerCore->getCurrentImage()->upperThreshold );
 			m_Interface.minSlider->setSliderPosition( lowerThreshold );
-			m_Interface.maxSlider->setSliderPosition( upperThreshold );			
+			m_Interface.maxSlider->setSliderPosition( upperThreshold );
 			setSliderVisible( Opacity, true );
-		} else if ( m_ViewerCore->getCurrentImage()->imageType == ImageHolder::anatomical_image ) {
+		} else if ( m_ViewerCore->getCurrentImage()->imageType == ImageHolder::structural_image ) {
 			setSliderVisible( LowerThreshold, false );
 			setSliderVisible( UpperThreshold, false );
 			setSliderVisible( Opacity, true );
@@ -159,8 +189,8 @@ void SliderWidget::synchronize()
 	} else {
 		QWidget::setVisible( false );
 	}
-	m_Interface.checkGlobal->setChecked( m_ViewerCore->getOptionMap()->getPropertyAs<bool>("zmapGlobal"));
 
+	m_Interface.checkGlobal->setChecked( m_ViewerCore->getOptionMap()->getPropertyAs<bool>( "zmapGlobal" ) );
 }
 
 
