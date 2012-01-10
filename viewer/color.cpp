@@ -98,11 +98,15 @@ bool Color::addColormap( const std::string &path, const boost::regex &separator 
 			lutVec.push_back( QColor::fromHsv( colorVec[0], colorVec[1], colorVec[2], colorVec[3] ).rgba() );
 		} else if ( lutTyp == std::string( "cmyk" ) ) {
 			lutVec.push_back( QColor::fromCmyk( colorVec[0], colorVec[1], colorVec[2], colorVec[3] ).rgba() );
-		} else if ( lutTyp == std::string( "hsl" ) ) {
+        }
+#if QT_VERSION >= 0x040500            
+		 else if ( lutTyp == std::string( "hsl" ) ) {
 			lutVec.push_back( QColor::fromHsl( colorVec[0], colorVec[1], colorVec[2] ).rgba() );
 		} else if ( lutTyp == std::string( "hsla" ) ) {
 			lutVec.push_back( QColor::fromHsl( colorVec[0], colorVec[1], colorVec[2], colorVec[3] ).rgba() );
-		} else {
+		} 
+#endif
+		else {
 			LOG( Runtime, warning ) << "Unknown lut type " << lutTyp << " !";
 			return false;
 		}
