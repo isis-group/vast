@@ -134,7 +134,7 @@ void PropertyToolDialog::selectionChanged(int select )
 {
     if( m_ViewerCore->hasImage() ) {
         const std::vector<data::Chunk> chunks = m_ViewerCore->getCurrentImage()->getISISImage()->copyChunksToVector(true);
-        if( select > 0 && select < chunks.size() ) {
+        if( select > 0 && select < static_cast<int>(chunks.size()) ) {
             buildUpTree( chunks[select - 1] );
         }
     }

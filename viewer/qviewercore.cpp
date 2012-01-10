@@ -362,6 +362,7 @@ void QViewerCore::loadSettings()
 	getOptionMap()->setPropertyAs<uint8_t>( "numberOfThreads", getSettings()->value( "numberOfThreads" ).toUInt() );
 	getOptionMap()->setPropertyAs<bool>( "enableMultithreading", getSettings()->value( "enableMultithreading" ).toBool() );
 	getOptionMap()->setPropertyAs<bool>( "useAllAvailablethreads", getSettings()->value( "useAllAvailableThreads" ).toBool() );
+    getOptionMap()->setPropertyAs<bool>( "histogramOmitZero", getSettings()->value( "histogramOmitZero" ).toBool() );
 	//screenshot stuff
 	getOptionMap()->setPropertyAs<uint16_t>( "screenshotWidth", getSettings()->value( "screenshotWidth", getOptionMap()->getPropertyAs<uint16_t>( "screenshotWidth" ) ).toUInt() );
 	getOptionMap()->setPropertyAs<uint16_t>( "screenshotHeight", getSettings()->value( "screenshotHeight", getOptionMap()->getPropertyAs<uint16_t>( "screenshotHeight" ) ).toUInt() );
@@ -392,6 +393,7 @@ void QViewerCore::saveSettings()
 	getSettings()->setValue( "numberOfThreads", getOptionMap()->getPropertyAs<uint8_t>( "numberOfThreads" ) );
 	getSettings()->setValue( "enableMultithreading", getOptionMap()->getPropertyAs<bool>( "enableMultithreading" ) );
 	getSettings()->setValue( "useAllAvailablethreads", getOptionMap()->getPropertyAs<bool>( "useAllAvailableThreads" ) );
+    getSettings()->setValue( "histogramOmitZero", getOptionMap()->getPropertyAs<bool>( "histogramOmitZero" ) );
 	//screenshot stuff
 	getSettings()->setValue( "screenshotWidth", getOptionMap()->getPropertyAs<uint16_t>( "screenshotWidth" ) );
 	getSettings()->setValue( "screenshotHeight", getOptionMap()->getPropertyAs<uint16_t>( "screenshotHeight" ) );

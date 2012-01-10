@@ -130,6 +130,7 @@ public:
 	unsigned short majorTypeID;
     std::string majorTypeName;
 	std::vector< double *> histogramVector;
+    std::vector< double *> histogramVectorWOZero;
 	std::pair<util::ValueReference, util::ValueReference> scalingToInternalType;
 
 private:

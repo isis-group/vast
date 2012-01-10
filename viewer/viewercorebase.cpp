@@ -164,6 +164,7 @@ void ViewerCoreBase::setCommonViewerOptions()
     m_OptionsMap->setPropertyAs<std::string>( "lutStructural", "standard_grey_values" );
     m_OptionsMap->setPropertyAs<std::string>( "lutZMap", "standard_zmap" );
     m_OptionsMap->setPropertyAs<uint16_t>( "timeseriesPlayDelayTime", 50 );
+    m_OptionsMap->setPropertyAs<bool>("histogramOmitZero", true );
     //logging
     m_OptionsMap->setPropertyAs<uint16_t>( "logDelayTime", 6000 );
     m_OptionsMap->setPropertyAs<bool>( "showErrorMessages", true );

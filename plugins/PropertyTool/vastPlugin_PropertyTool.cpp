@@ -43,14 +43,20 @@ public:
     virtual std::string getDescription() { return std::string( "" ); }
     virtual std::string getTooltip() { return std::string( "Allows you to show and modify the meta data of the image." ); }
     virtual QKeySequence getShortcut() { return QKeySequence( "P, T" ) ;}
+    virtual QIcon *getToolbarIcon() { return new QIcon( ":/common/properties.png" ); }
     virtual bool isGUI() { return true; }
     virtual bool call() {
         if( !isInitialized ) {
             m_PropertyToolDialog = new PropertyToolDialog( parentWidget, viewerCore );
             isInitialized = true;
         }
-
-        m_PropertyToolDialog->show();
+        if( viewerCore->hasImage() ) {
+            m_PropertyToolDialog->show();
+        } else {
+            QMessageBox msg(parentWidget);
+            msg.setText("No image has been loaded or selected!");
+            msg.exec();
+        }
         return true;
     };
 
