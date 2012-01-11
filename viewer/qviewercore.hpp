@@ -91,7 +91,7 @@ public Q_SLOTS:
 	virtual void receiveMessage( std::string message );
 	virtual void openPath( QStringList fileList, ImageHolder::ImageType imageType, const std::string &rdialect = "", const std::string &rf = "", bool newWidget = false );
 	virtual void centerImages( bool ca = false );
-	virtual void closeImage( boost::shared_ptr<ImageHolder> image );
+	virtual void closeImage( boost::shared_ptr<ImageHolder> image, bool refreshUI = true );
 	virtual void saveSettings();
 	virtual void loadSettings();
 
