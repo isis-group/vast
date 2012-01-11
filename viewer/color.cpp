@@ -99,7 +99,7 @@ bool Color::addColormap( const std::string &path, const boost::regex &separator 
 		} else if ( lutTyp == std::string( "cmyk" ) ) {
 			lutVec.push_back( QColor::fromCmyk( colorVec[0], colorVec[1], colorVec[2], colorVec[3] ).rgba() );
         }
-#if QT_VERSION >= 0x040500            
+#if QT_VERSION >= 0x040600            
 		 else if ( lutTyp == std::string( "hsl" ) ) {
 			lutVec.push_back( QColor::fromHsl( colorVec[0], colorVec[1], colorVec[2] ).rgba() );
 		} else if ( lutTyp == std::string( "hsla" ) ) {
