@@ -61,6 +61,7 @@ public:
 public Q_SLOTS:
     void updateProperties();
     void selectionChanged( int );
+    void onPropertyTreeClicked();
     virtual void showEvent( QShowEvent * );
     
 private:

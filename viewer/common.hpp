@@ -68,6 +68,8 @@ std::list<std::string> getSupportedTypeList() ;
 
 util::ivector4 get32BitAlignedSize( const util::ivector4 &origSize );
 
+size_t getInternalImageRange();
+
 typedef ViewerLog Runtime;
 typedef ViewerDebug Debug;
 template<typename HANDLE> void enable_log( LogLevel level )

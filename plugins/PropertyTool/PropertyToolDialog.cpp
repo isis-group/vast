@@ -42,6 +42,7 @@ PropertyToolDialog::PropertyToolDialog(QWidget* parent, QViewerCore* core)
    
     connect( m_ViewerCore, SIGNAL( emitUpdateScene()), this, SLOT( updateProperties()));
     connect( m_Interface.selection, SIGNAL( currentIndexChanged(int) ), this, SLOT( selectionChanged(int ) ) );
+//     connect( )
 }
 
 void PropertyToolDialog::showEvent(QShowEvent* )

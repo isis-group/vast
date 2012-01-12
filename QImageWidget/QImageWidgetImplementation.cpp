@@ -202,7 +202,7 @@ void QImageWidgetImplementation::paintEvent( QPaintEvent */*event*/ )
             m_Painter->setFont( QFont( "Chicago", 10 ) );
             m_Painter->setPen( Qt::red );
             std::stringstream scalingOffset;
-            boost::shared_ptr<ImageHolder> image = getWidgetSpecCurrentImage();
+            const boost::shared_ptr<ImageHolder> image = getWidgetSpecCurrentImage();
             scalingOffset << "Scaling: " << image->scaling
                           << " Offset: " << image->offset;
             m_Painter->drawText( 10, 30, scalingOffset.str().c_str() );
@@ -216,19 +216,23 @@ void QImageWidgetImplementation::paintEvent( QPaintEvent */*event*/ )
 
 void QImageWidgetImplementation::recalculateTranslation()
 {
-    const boost::shared_ptr<ImageHolder > image = getWidgetSpecCurrentImage();
-    const util::ivector4 mappedSize = QOrientationHandler::mapCoordsToOrientation( image->getImageSize(), image, m_PlaneOrientation );
-    const util::ivector4 mappedVoxelCoords = QOrientationHandler::mapCoordsToOrientation( image->voxelCoords, image, m_PlaneOrientation );
-    const util::ivector4 signVec = QOrientationHandler::mapCoordsToOrientation( util::ivector4( 1, 1, 1, 1 ), image, m_PlaneOrientation, false, false );
-    const util::ivector4 center = mappedSize / 2;
-    const util::ivector4 diff = center - mappedVoxelCoords;
-    const float transXConst = ( ( center[0] + 2 ) - mappedSize[0] / ( 2 * currentZoom ) );
-    const float transYConst = ( ( center[1] + 2 ) - mappedSize[1] / ( 2 * currentZoom ) );
-    const float transX = transXConst * ( ( float )diff[0] / ( float )center[0] ) * signVec[0];
-    const float transY = transYConst * ( ( float )diff[1] / ( float )center[1] ) * signVec[1];
-    const QOrientationHandler::ViewPortType viewPort = m_ImageProperties.at( image ).viewPort;
-    translationX = transX * viewPort[0] ;
-    translationY = transY * viewPort[1] ;
+    if( currentZoom != 1 ) {
+        const boost::shared_ptr<ImageHolder > image = getWidgetSpecCurrentImage();
+        const util::ivector4 mappedSize = QOrientationHandler::mapCoordsToOrientation( image->getImageSize(), image, m_PlaneOrientation );
+        const util::ivector4 mappedVoxelCoords = QOrientationHandler::mapCoordsToOrientation( image->voxelCoords, image, m_PlaneOrientation );
+        const util::ivector4 signVec = QOrientationHandler::mapCoordsToOrientation( util::ivector4( 1, 1, 1, 1 ), image, m_PlaneOrientation, false, false );
+        const util::ivector4 center = mappedSize / 2;
+        const util::ivector4 diff = center - mappedVoxelCoords;
+        const float transXConst = ( ( center[0] + 2 ) - mappedSize[0] / ( 2 * currentZoom ) );
+        const float transYConst = ( ( center[1] + 2 ) - mappedSize[1] / ( 2 * currentZoom ) );
+        const float transX = transXConst * ( ( float )diff[0] / ( float )center[0] ) * signVec[0];
+        const float transY = transYConst * ( ( float )diff[1] / ( float )center[1] ) * signVec[1];
+        const QOrientationHandler::ViewPortType viewPort = m_ImageProperties.at( image ).viewPort;
+        translationX = transX * viewPort[0] ;
+        translationY = transY * viewPort[1] ;
+    } else {
+        translationX = translationY = 0;
+    }
 }
 
 
@@ -265,21 +269,15 @@ void QImageWidgetImplementation::paintImage( boost::shared_ptr< ImageHolder > im
 
     m_Painter->setOpacity( image->opacity );
 
-    if ( !image->isRGB ) {
-        isis::data::MemChunk<InternalImageType> sliceChunk( mappedSizeAligned[0], mappedSizeAligned[1] );
-        m_MemoryHandler.fillSliceChunk<InternalImageType>( sliceChunk, image, m_PlaneOrientation, image->voxelCoords[3] );
-        QImage qImage( ( InternalImageType * ) sliceChunk.asValuePtr<InternalImageType>().getRawAddress().get(),
-                       mappedSizeAligned[0], mappedSizeAligned[1], QImage::Format_Indexed8 );
+    const QImage::Format format = image->isRGB ? QImage::Format_RGB888 : QImage::Format_Indexed8;
+    isis::data::MemChunk<u_int8_t> sliceChunk( mappedSizeAligned[0], mappedSizeAligned[1] );    
+    m_MemoryHandler.fillSliceChunk<uint8_t>( sliceChunk, image, m_PlaneOrientation, image->voxelCoords[3] );
+    QImage qImage( ( uint8_t * ) sliceChunk.asValuePtr<uint8_t>().getRawAddress().get(),
+                       mappedSizeAligned[0], mappedSizeAligned[1], format );
+    if( !image->isRGB ) {
         qImage.setColorTable( image->colorMap );
-        m_Painter->drawImage( 0, 0, qImage );
-    } else {
-        isis::data::MemChunk<InternalImageColorType> sliceChunk( mappedSizeAligned[0], mappedSizeAligned[1] );
-        m_MemoryHandler.fillSliceChunk<InternalImageColorType>( sliceChunk, image, m_PlaneOrientation, image->voxelCoords[3] );
-        QImage qImage( ( InternalImageType * ) sliceChunk.asValuePtr<InternalImageColorType>().getRawAddress().get(),
-                       mappedSizeAligned[0], mappedSizeAligned[1], QImage::Format_RGB888 );
-        m_Painter->drawImage( 0, 0, qImage );
-
     }
+    m_Painter->drawImage( 0, 0, qImage );
 
     //workaround to elimninate white edges
     m_Painter->resetMatrix();
