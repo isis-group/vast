@@ -111,10 +111,6 @@ std::list< std::string > getSupportedTypeList()
 	return boost::assign::list_of<std::string>( "boolean" )( "s8bit" )( "u8bit" )( "s16bit" )( "u16bit" )( "s32bit" )( "u32bit" )( "s64bit" )( "u64bit" )( "float" )( "double" )( "color24" )( "color32" );
 }
 
-size_t getInternalImageRange()
-{
-    return std::numeric_limits<InternalImageType>::max() - std::numeric_limits<InternalImageType>::min();
-}
 
 
 }

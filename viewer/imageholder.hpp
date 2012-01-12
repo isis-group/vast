@@ -92,7 +92,10 @@ public:
 	bool operator<( const ImageHolder &ref ) const { return m_ID < ref.getID(); }
 
 	void checkVoxelCoords( util::ivector4 &voxelCoords );
-
+    
+    void setZeroIsReserved( bool isReserved ) { m_ZeroIsReserved = isReserved; }
+    double getInternalExtent()  const;
+    
 	void updateColorMap();
 
 	void addWidget( WidgetInterface *widget ) { m_WidgetList.push_back( widget ); }
@@ -137,6 +140,9 @@ private:
 
 	util::FixedVector<size_t, 4> m_ImageSize;
 	util::PropertyMap m_PropMap;
+    
+    bool m_ZeroIsReserved;
+    InternalImageType m_ReservedValue;
 
 	boost::shared_ptr<data::Image> m_Image;
 	util::slist m_Filenames;
@@ -155,7 +161,19 @@ private:
 		data::ValuePtr<TYPE> imagePtr( ( TYPE * ) calloc( image.getVolume(), sizeof( TYPE ) ), image.getVolume() );
 		LOG( Debug, verbose_info ) << "Needed memory: " << image.getVolume() * sizeof( TYPE ) / ( 1024.0 * 1024.0 ) << " mb.";
 		data::TypedImage<TYPE> typedefImage ( image );
-		static_cast<data::Image &>( typedefImage ).copyToMem<TYPE>( &imagePtr[0], image.getVolume() );
+        if( m_ZeroIsReserved ) {
+            // calculate new scaling
+            data::scaling_pair scalingPair = image.getScalingTo( data::ValuePtr<TYPE>::staticID );
+            double scaling = scalingPair.first->as<double>();
+            double offset = scalingPair.second->as<double>();
+//             scaling /= static_cast<double>(getInternalExtent() + 1) / getInternalExtent();
+//             offset += 1;
+            const data::scaling_pair newScaling( std::make_pair< util::ValueReference, util::ValueReference>( util::Value<double>(scaling), util::Value<double>(offset) )) ;
+            scalingToInternalType = newScaling;
+        } else {
+            scalingToInternalType = image.getScalingTo( data::ValuePtr<TYPE>::staticID );
+        }
+        static_cast<data::Image &>( typedefImage ).copyToMem<TYPE>( &imagePtr[0], image.getVolume(), scalingToInternalType );
 		LOG( Debug, verbose_info ) << "Copied image to continuous memory space.";
 		internMinMax = imagePtr.getMinMax();
 
@@ -166,6 +184,26 @@ private:
 			m_ImageVector.push_back( imagePtr );
 		}
 	}
+	
+	template<typename TYPE> 
+	void _setTrueZero( const data::Image &image ) {
+    // first make shure the images datatype is consistent
+    data::TypedImage<TYPE> tImage ( image );
+    //now set all voxels to the m_ReservedValue that are 0 in the origin image
+#pragma omp parallel for
+        for( size_t t = 0; t < getImageSize()[3]; t++ ) {
+            for( size_t z = 0; z < getImageSize()[2]; z++ ) {
+                for( size_t y = 0; y < getImageSize()[1]; y++ ) {
+                    for( size_t x = 0; x < getImageSize()[0]; x++ ) {
+                        if( static_cast<data::Image&>(tImage).voxel<TYPE>(x,y,z,t) == static_cast<TYPE>(0) ) {
+                            m_ChunkVector[t].voxel<InternalImageType>(x,y,z) = m_ReservedValue;
+                        }
+                    }
+                }
+            }
+        }
+     
+    }
 
 	template<typename TYPE>
 	void _syncImage() {

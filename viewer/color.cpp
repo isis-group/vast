@@ -26,6 +26,7 @@
  *      Author: tuerke
  ******************************************************************/
 #include "color.hpp"
+#include "imageholder.hpp"
 #include <QResource>
 #include <QFile>
 #include <fstream>
@@ -112,7 +113,7 @@ bool Color::addColormap( const std::string &path, const boost::regex &separator 
 		}
 	}
 
-	if( lutVec.size() != (getInternalImageRange() + 1) ) {
+	if( lutVec.size() != 256 ) {
 		LOG( Runtime, warning ) << "The size of the colormap " << lutName
 								<< " is " << lutVec.size() << " but has to be 256!";
 		return false;
@@ -126,7 +127,6 @@ bool Color::addColormap( const std::string &path, const boost::regex &separator 
 QIcon Color::getIcon( const std::string &colormapName, size_t w, size_t h, icon_type type, bool flipped ) const
 {
 	const ColormapType lut = getColormapMap().at( colormapName );
-    const size_t internalImageRange = getInternalImageRange();
     
 	unsigned short start = 0;
 	unsigned short end = 0;
@@ -134,15 +134,15 @@ QIcon Color::getIcon( const std::string &colormapName, size_t w, size_t h, icon_
 	switch( type ) {
 	case both:
 		start = 0;
-		end = internalImageRange + 1;
+		end = 255;
 		break;
 	case lower_half:
 		start = 0;
-		end = (internalImageRange + 1) / 2;
+		end = 128;
 		break;
 	case upper_half:
-		start = (internalImageRange + 1) / 2;
-		end = (internalImageRange + 1);
+		start = 128;
+		end = 255;
 		break;
 	}
 
@@ -180,8 +180,8 @@ Color::ColormapType Color::getFallbackColormap() const
 {
 	ColormapType retColormap;
 
-	for ( unsigned short i = 0; i < (getInternalImageRange() + 1); i++ ) {
-		retColormap.push_back( QColor( i, i, i, getInternalImageRange() ).rgba() );
+	for ( unsigned short i = 0; i < 256; i++ ) {
+		retColormap.push_back( QColor( i, i, i, 255 ).rgba() );
 	}
 
 	return retColormap;
@@ -190,11 +190,10 @@ Color::ColormapType Color::getFallbackColormap() const
 
 void Color::adaptColorMapToImage( ImageHolder *image, bool split )
 {
-    const size_t internalImageRange = getInternalImageRange();
-	LOG_IF( image->colorMap.size() != (internalImageRange + 1), Runtime, error ) << "The colormap is of size " 
-        << image->colorMap.size() << " but has to be of size " << (internalImageRange + 1 ) << "!";
+	LOG_IF( image->colorMap.size() != 256, Runtime, error ) << "The colormap is of size " 
+        << image->colorMap.size() << " but has to be of size " << 256 << "!";
 	ColormapType retMap ;
-	retMap.resize( (internalImageRange + 1 ) );
+	retMap.resize( 256 );
 	ColormapType tmpMap = util::Singletons::get<Color, 10>().getColormapMap().at( image->lut );
 	const double extent = image->extent;
 	const double min = image->minMax.first->as<double>();
@@ -203,28 +202,28 @@ void Color::adaptColorMapToImage( ImageHolder *image, bool split )
 	const double upperThreshold = image->upperThreshold;
 	const double offset = image->offset;
 	const double scaling = image->scaling;
-	const double norm = (internalImageRange + 1) / extent;
+	const double norm = 256.0 / extent;
 	const unsigned short mid = norm * fabs( min );
 	unsigned short scaledVal;
 
-	for ( unsigned short i = 0; i <= internalImageRange; i++ ) {
-		scaledVal = i * scaling + offset * norm > internalImageRange ? internalImageRange : i * scaling + offset * norm;
+	for ( unsigned short i = 0; i < 256; i++ ) {
+		scaledVal = i * scaling + offset * norm > 255 ? 255 : i * scaling + offset * norm;
 		retMap[i] = tmpMap[scaledVal];
 	}
 
 	ColormapType negVec( mid );
-	ColormapType posVec( (internalImageRange + 1) - mid );
+	ColormapType posVec( 256 - mid );
 
 	//only stuff necessary for colormaps
 	if( image->imageType == ImageHolder::z_map ) {
 
 		if( split ) {
-			assert( negVec.size() + posVec.size() == (internalImageRange + 1) );
+			assert( negVec.size() + posVec.size() == 256 );
 
 			//fill negVec
 			if( min < 0 ) {
 				const double scaleMin = 1 - fabs( lowerThreshold / min );
-				const double normMin = ( (internalImageRange + 1 ) / 2 ) / mid;
+				const double normMin = 128.0 / mid;
 
 				for ( unsigned short i = 0; i < mid; i++ ) {
 					negVec[i * scaleMin] = retMap[i * normMin];
@@ -232,12 +231,12 @@ void Color::adaptColorMapToImage( ImageHolder *image, bool split )
 			}
 
 			if( max > 0 ) {
-				const double normMax = ( (internalImageRange + 1 ) / 2 ) / ( (internalImageRange + 1 ) - mid );
+				const double normMax = 128.0 / ( 256 - mid );
 				const double scaleMax = fabs( upperThreshold / max );
-				const double offset = ( (internalImageRange + 1 ) - mid ) * scaleMax;
+				const double offset = ( 256 - mid ) * scaleMax;
 
-				for( unsigned short i = 0; i < ((internalImageRange + 1 ) - mid); i++ ) {
-					posVec[( i * ( 1 - scaleMax ) + offset )] = retMap[( (internalImageRange + 1 ) / 2 ) + i * normMax];
+				for( unsigned short i = 0; i < (256 - mid); i++ ) {
+					posVec[( i * ( 1 - scaleMax ) + offset )] = retMap[128 + i * normMax];
 				}
 			}
 
@@ -246,7 +245,7 @@ void Color::adaptColorMapToImage( ImageHolder *image, bool split )
 	}
 
 	//kill the zero value
-// 	retMap[mid] = QColor( 0, 0, 0, 0 ).rgba();
+// 	retMap[0] = QColor( 0, 0, 0, 0 ).rgba();
 	image->colorMap = retMap;
 }
 
