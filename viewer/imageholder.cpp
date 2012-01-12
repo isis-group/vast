@@ -34,7 +34,7 @@ namespace viewer
 {
 
 ImageHolder::ImageHolder()
-    : m_ZeroIsReserved(false),
+    : m_ZeroIsReserved(true),
     m_ReservedValue(0)
     {}
 
@@ -314,7 +314,7 @@ std::pair< double, double > ImageHolder::getOptimalScaling()
 	for( unsigned short t = 0; t < getImageSize()[3]; t++ ) {
 		histogramVector[t] = ( double * ) calloc( extent + 1, sizeof( double ) ) ;
         histogramVectorWOZero[t] = ( double * ) calloc( extent, sizeof(double ) );
-		InternalImageType *dataPtr = static_cast<InternalImageType *>( getImageVector()[t]->getRawAddress().get() );
+		const InternalImageType *dataPtr = static_cast<InternalImageType *>( getImageVector()[t]->getRawAddress().get() );
 		//create the histogram
 // 		#pragma omp parallel for
 		for( size_t i = 0; i < volume; i++ ) {

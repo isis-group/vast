@@ -26,7 +26,6 @@
  *      Author: tuerke
  ******************************************************************/
 #include "color.hpp"
-#include "imageholder.hpp"
 #include <QResource>
 #include <QFile>
 #include <fstream>
@@ -134,7 +133,7 @@ QIcon Color::getIcon( const std::string &colormapName, size_t w, size_t h, icon_
 	switch( type ) {
 	case both:
 		start = 0;
-		end = 255;
+		end = 256;
 		break;
 	case lower_half:
 		start = 0;
@@ -142,7 +141,7 @@ QIcon Color::getIcon( const std::string &colormapName, size_t w, size_t h, icon_
 		break;
 	case upper_half:
 		start = 128;
-		end = 255;
+		end = 256;
 		break;
 	}
 
@@ -245,7 +244,7 @@ void Color::adaptColorMapToImage( ImageHolder *image, bool split )
 	}
 
 	//kill the zero value
-// 	retMap[0] = QColor( 0, 0, 0, 0 ).rgba();
+	retMap[0] = QColor( 0, 0, 0, 0 ).rgba();
 	image->colorMap = retMap;
 }
 
