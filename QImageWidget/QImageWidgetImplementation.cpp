@@ -269,15 +269,21 @@ void QImageWidgetImplementation::paintImage( boost::shared_ptr< ImageHolder > im
 
     m_Painter->setOpacity( image->opacity );
 
-    const QImage::Format format = image->isRGB ? QImage::Format_RGB888 : QImage::Format_Indexed8;
-    isis::data::MemChunk<u_int8_t> sliceChunk( mappedSizeAligned[0], mappedSizeAligned[1] );    
-    m_MemoryHandler.fillSliceChunk<uint8_t>( sliceChunk, image, m_PlaneOrientation, image->voxelCoords[3] );
-    QImage qImage( ( uint8_t * ) sliceChunk.asValuePtr<uint8_t>().getRawAddress().get(),
-                       mappedSizeAligned[0], mappedSizeAligned[1], format );
-    if( !image->isRGB ) {
+    if ( !image->isRGB ) {
+        isis::data::MemChunk<InternalImageType> sliceChunk( mappedSizeAligned[0], mappedSizeAligned[1] );
+        m_MemoryHandler.fillSliceChunk<InternalImageType>( sliceChunk, image, m_PlaneOrientation, image->voxelCoords[3] );
+        QImage qImage( ( InternalImageType * ) sliceChunk.asValuePtr<InternalImageType>().getRawAddress().get(),
+                       mappedSizeAligned[0], mappedSizeAligned[1], QImage::Format_Indexed8 );
         qImage.setColorTable( image->colorMap );
+        m_Painter->drawImage( 0, 0, qImage );
+    } else {
+        isis::data::MemChunk<InternalImageColorType> sliceChunk( mappedSizeAligned[0], mappedSizeAligned[1] );
+        m_MemoryHandler.fillSliceChunk<InternalImageColorType>( sliceChunk, image, m_PlaneOrientation, image->voxelCoords[3] );
+        QImage qImage( ( InternalImageType * ) sliceChunk.asValuePtr<InternalImageColorType>().getRawAddress().get(),
+                       mappedSizeAligned[0], mappedSizeAligned[1], QImage::Format_RGB888 );
+        m_Painter->drawImage( 0, 0, qImage );
+
     }
-    m_Painter->drawImage( 0, 0, qImage );
 
     //workaround to elimninate white edges
     m_Painter->resetMatrix();
