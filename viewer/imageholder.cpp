@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * Author: Erik Türke, tuerke@cbs.mpg.de
+ * Author: Erik TÃ¼rke, tuerke@cbs.mpg.de
  *
  * imageholder.cpp
  *
@@ -49,7 +49,7 @@ boost::numeric::ublas::matrix< double > ImageHolder::getNormalizedImageOrientati
 	size_t cB = columnVec.getBiggestVecElemAbs();
 	size_t sB = sliceVec.getBiggestVecElemAbs();
 
-	//if image is rotated of 45 °
+	//if image is rotated of 45 Â°
 	if( rB == cB ) {
 		if( sB == 0 ) {
 			rB = 1;
