@@ -160,9 +160,9 @@ private:
 	void copyImageToVector( const data::Image &image ) {
 		data::ValuePtr<TYPE> imagePtr( ( TYPE * ) calloc( image.getVolume(), sizeof( TYPE ) ), image.getVolume() );
 		LOG( Debug, verbose_info ) << "Needed memory: " << image.getVolume() * sizeof( TYPE ) / ( 1024.0 * 1024.0 ) << " mb.";
-        if( m_ZeroIsReserved && !isRGB ) {
+        if( m_ZeroIsReserved && imageType == z_map) {
             // calculate new scaling
-            data::scaling_pair scalingPair = image.getScalingTo( data::ValuePtr<TYPE>::staticID );
+            data::scaling_pair scalingPair = image.getScalingTo( data::ValuePtr<TYPE>::staticID, data::upscale );
             double scaling = scalingPair.first->as<double>();
             double offset = scalingPair.second->as<double>();
             scaling /= static_cast<double>(getInternalExtent() + 1) / getInternalExtent();
@@ -170,7 +170,7 @@ private:
             const data::scaling_pair newScaling( std::make_pair< util::ValueReference, util::ValueReference>( util::Value<double>(scaling), util::Value<double>(offset) )) ;
             scalingToInternalType = newScaling;
         } else {
-            scalingToInternalType = image.getScalingTo( data::ValuePtr<TYPE>::staticID );
+            scalingToInternalType = image.getScalingTo( data::ValuePtr<TYPE>::staticID, data::upscale );
         }
         image.copyToMem<TYPE>( &imagePtr[0], image.getVolume(), scalingToInternalType );
 		LOG( Debug, verbose_info ) << "Copied image to continuous memory space.";

@@ -152,7 +152,9 @@ bool ImageHolder::setImage( const data::Image &image, const ImageType &_imageTyp
 	}
 
 	// get some image information
-
+    //add some more properties
+    imageType = _imageType;
+    interpolationType = nn;
 	majorTypeID = image.getMajorTypeID();
     majorTypeName = image.getMajorTypeName();
     majorTypeName = majorTypeName.substr( 0, majorTypeName.length() - 1 ).c_str();
@@ -221,14 +223,12 @@ bool ImageHolder::setImage( const data::Image &image, const ImageType &_imageTyp
                  break;                 
          }
     }
-
+    
 	LOG( Debug, verbose_info ) << "Spliced image to " << m_ImageVector.size() << " volumes.";
 
 	//image seems to be ok...i guess
 
-	//add some more properties
-	imageType = _imageType;
-	interpolationType = nn;
+	
 
 	if( imageType == z_map ) {
 		lowerThreshold = 0;
