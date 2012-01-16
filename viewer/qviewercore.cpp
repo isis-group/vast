@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * Author: Erik Türke, tuerke@cbs.mpg.de
+ * Author: Erik TÃ¼rke, tuerke@cbs.mpg.de
  *
  * qviewercore.cpp
  *
@@ -318,12 +318,12 @@ void QViewerCore::openPath( QStringList fileList, ImageHolder::ImageType imageTy
 	}
 }
 
-void QViewerCore::closeImage( boost::shared_ptr<ImageHolder> image )
+void QViewerCore::closeImage( boost::shared_ptr<ImageHolder> image, bool refreshUI)
 {
 	BOOST_FOREACH( std::list< WidgetInterface *>::const_reference widget, image->getWidgetList() ) {
 		widget->removeImage( image );
 	}
-
+    
 	if( getCurrentImage().get() == image.get() ) {
 		std::list<boost::shared_ptr< ImageHolder > > tmpList;
 		BOOST_FOREACH( DataContainer::const_reference image, getDataContainer() ) {
@@ -337,11 +337,11 @@ void QViewerCore::closeImage( boost::shared_ptr<ImageHolder> image )
 			setCurrentImage( boost::shared_ptr<ImageHolder>() );
 		}
 	}
-
 	getDataContainer().erase(  image->getFileNames().front() );
-	getUICore()->refreshUI();
+	if( refreshUI ) {
+        getUICore()->refreshUI();
+    }
 	updateScene();
-
 }
 
 void QViewerCore::loadSettings()

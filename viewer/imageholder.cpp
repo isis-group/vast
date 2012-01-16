@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * Author: Erik Türke, tuerke@cbs.mpg.de
+ * Author: Erik TÃ¼rke, tuerke@cbs.mpg.de
  *
  * imageholder.cpp
  *
@@ -26,13 +26,17 @@
  *      Author: tuerke
  ******************************************************************/
 #include "imageholder.hpp"
+#include <numeric>
 
 namespace isis
 {
 namespace viewer
 {
 
-ImageHolder::ImageHolder() {}
+ImageHolder::ImageHolder()
+    : m_ZeroIsReserved(true),
+    m_ReservedValue(0)
+    {}
 
 boost::numeric::ublas::matrix< double > ImageHolder::getNormalizedImageOrientation( bool transposed ) const
 {
@@ -45,7 +49,7 @@ boost::numeric::ublas::matrix< double > ImageHolder::getNormalizedImageOrientati
 	size_t cB = columnVec.getBiggestVecElemAbs();
 	size_t sB = sliceVec.getBiggestVecElemAbs();
 
-	//if image is rotated of 45 °
+	//if image is rotated of 45 Â°
 	if( rB == cB ) {
 		if( sB == 0 ) {
 			rB = 1;
@@ -148,7 +152,9 @@ bool ImageHolder::setImage( const data::Image &image, const ImageType &_imageTyp
 	}
 
 	// get some image information
-
+    //add some more properties
+    imageType = _imageType;
+    interpolationType = nn;
 	majorTypeID = image.getMajorTypeID();
     majorTypeName = image.getMajorTypeName();
     majorTypeName = majorTypeName.substr( 0, majorTypeName.length() - 1 ).c_str();
@@ -179,13 +185,50 @@ bool ImageHolder::setImage( const data::Image &image, const ImageType &_imageTyp
 		m_ChunkVector.push_back( data::Chunk(  pointerRef, m_ImageSize[0], m_ImageSize[1], m_ImageSize[2] ) );
 	}
 
+    // if m_ZeroIsReserved is set we reserve a value (m_ReservedValue) in the internal image that indicates the true zero value in the origin image
+    if( m_ZeroIsReserved && _imageType == z_map ) {
+         switch ( majorTypeID ) {
+             case data::ValuePtr<bool>::staticID:
+                 _setTrueZero<bool>( image );
+                 break;
+             case data::ValuePtr<int8_t>::staticID:
+                 _setTrueZero<int8_t>( image );
+                 break;
+             case data::ValuePtr<uint8_t>::staticID:
+                 _setTrueZero<uint8_t>( image );
+                 break;
+             case data::ValuePtr<int16_t>::staticID:
+                 _setTrueZero<int16_t>( image );
+                 break;
+             case data::ValuePtr<uint16_t>::staticID:
+                 _setTrueZero<uint16_t>( image );
+                 break;
+             case data::ValuePtr<int32_t>::staticID:
+                 _setTrueZero<int32_t>( image );
+                 break;
+             case data::ValuePtr<uint32_t>::staticID:
+                 _setTrueZero<uint32_t>( image );
+                 break;
+             case data::ValuePtr<int64_t>::staticID:
+                 _setTrueZero<int64_t>( image );
+                 break;                 
+             case data::ValuePtr<uint64_t>::staticID:
+                 _setTrueZero<uint64_t>( image );
+                 break;
+             case data::ValuePtr<float>::staticID:
+                 _setTrueZero<float>( image );
+                 break;
+             case data::ValuePtr<double>::staticID:
+                 _setTrueZero<double>( image );
+                 break;                 
+         }
+    }
+    
 	LOG( Debug, verbose_info ) << "Spliced image to " << m_ImageVector.size() << " volumes.";
 
 	//image seems to be ok...i guess
 
-	//add some more properties
-	imageType = _imageType;
-	interpolationType = nn;
+	
 
 	if( imageType == z_map ) {
 		lowerThreshold = 0;
@@ -221,7 +264,6 @@ bool ImageHolder::setImage( const data::Image &image, const ImageType &_imageTyp
 
 		m_PropMap.setPropertyAs<double>( "scalingMinValue", minMax.first->as<double>() );
 		m_PropMap.setPropertyAs<double>( "scalingMaxValue", minMax.second->as<double>() );
-		scalingToInternalType = image.getScalingTo( isis::data::ValuePtr<InternalImageType>::staticID );
 	}
 
 	alignedSize32 = get32BitAlignedSize( m_ImageSize );
@@ -262,17 +304,17 @@ std::pair< double, double > ImageHolder::getOptimalScaling()
 	const float lowerCutOff = 0.01;
 	const float upperCutOff = 0.01;
 	const size_t volume = getImageSize()[0] * getImageSize()[1] * getImageSize()[2];
-	const InternalImageType minImage = internMinMax.first->as<InternalImageType>();
-	const InternalImageType maxImage = internMinMax.second->as<InternalImageType>();
-	const InternalImageType extent = maxImage - minImage;
-	double *nHistogram = ( double * ) calloc( extent + 1, sizeof( double ) );
+	const double extent = getInternalExtent();
+    
+    boost::scoped_array<double> nHistogram ( new double[(size_t)extent+1] );
+    
 	histogramVector.resize( getImageSize()[3] );
     histogramVectorWOZero.resize( getImageSize()[3] );
 
 	for( unsigned short t = 0; t < getImageSize()[3]; t++ ) {
 		histogramVector[t] = ( double * ) calloc( extent + 1, sizeof( double ) ) ;
         histogramVectorWOZero[t] = ( double * ) calloc( extent, sizeof(double ) );
-		InternalImageType *dataPtr = static_cast<InternalImageType *>( getImageVector()[t]->getRawAddress().get() );
+		const InternalImageType *dataPtr = static_cast<InternalImageType *>( getImageVector()[t]->getRawAddress().get() );
 		//create the histogram
 // 		#pragma omp parallel for
 		for( size_t i = 0; i < volume; i++ ) {
@@ -289,8 +331,8 @@ std::pair< double, double > ImageHolder::getOptimalScaling()
 	//normalize histogram
 	#pragma omp parallel for
 
-	for( InternalImageType i = 0; i < extent; i++ ) {
-		nHistogram[i] = histogramVector.front()[i] / volume;
+	for( size_t i = 0 ; i < (size_t)extent; i++ ) {
+		nHistogram.get()[i] = histogramVector.front()[i] / volume;
 	}
 
 	InternalImageType upperBorder = extent - 1;
@@ -298,20 +340,19 @@ std::pair< double, double > ImageHolder::getOptimalScaling()
 	double sum = 0;
 
 	while( sum < upperCutOff ) {
-		sum += nHistogram[upperBorder--];
+		sum += nHistogram.get()[upperBorder--];
 
 	}
 
 	sum = 0;
 
 	while ( sum < lowerCutOff ) {
-		sum += nHistogram[lowerBorder++];
+		sum += nHistogram.get()[lowerBorder++];
 	}
 
 	std::pair<double, double> retPair;
 	retPair.first = lowerBorder;
-	retPair.second = ( float )std::numeric_limits<InternalImageType>::max() / float( upperBorder - lowerBorder );
-	delete[] nHistogram;
+	retPair.second = ( double )std::numeric_limits<InternalImageType>::max() / double( upperBorder - lowerBorder );
 	return retPair;
 }
 
@@ -410,6 +451,16 @@ void ImageHolder::syncImage()
 	}
 
 }
+
+double ImageHolder::getInternalExtent() const
+{
+    if( m_ZeroIsReserved ) {
+        return std::numeric_limits<InternalImageType>::max() - std::numeric_limits<InternalImageType>::min();
+    } else {
+        return std::numeric_limits<InternalImageType>::max() - std::numeric_limits<InternalImageType>::min() + 1;
+    }
+}
+
 
 
 }

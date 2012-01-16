@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * Author: Erik Türke, tuerke@cbs.mpg.de
+ * Author: Erik TÃ¼rke, tuerke@cbs.mpg.de
  *
  * qviewercore.hpp
  *
@@ -91,7 +91,7 @@ public Q_SLOTS:
 	virtual void receiveMessage( std::string message );
 	virtual void openPath( QStringList fileList, ImageHolder::ImageType imageType, const std::string &rdialect = "", const std::string &rf = "", bool newWidget = false );
 	virtual void centerImages( bool ca = false );
-	virtual void closeImage( boost::shared_ptr<ImageHolder> image );
+	virtual void closeImage( boost::shared_ptr<ImageHolder> image, bool refreshUI = true );
 	virtual void saveSettings();
 	virtual void loadSettings();
 

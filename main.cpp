@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * Author: Erik Türke, tuerke@cbs.mpg.de
+ * Author: Erik TÃ¼rke, tuerke@cbs.mpg.de
  *
  * main.cpp
  *
@@ -72,6 +72,7 @@ int main( int argc, char *argv[] )
 #else
     std::cout << "Warning! Your Qt version is below Qt4.5. Not able to set graghics system." << std::endl;
 #endif
+    
     qt4::IOQtApplication app( appName.c_str(), false, false );
     app.parameters["in"] = util::slist();
     app.parameters["in"].needed() = false;
@@ -109,8 +110,8 @@ int main( int argc, char *argv[] )
 
     app.setLog<ViewerLog>( static_cast<LogLevel>( static_cast <unsigned short>( app.parameters["dViewer"]->as<util::Selection>() ) ) );
     app.setLog<ViewerDebug>( static_cast<LogLevel>( static_cast <unsigned short>( app.parameters["dViewer"]->as<util::Selection>() ) ) );
-    util::slist fileList = app.parameters["in"];
-    util::slist zmapFileList = app.parameters["zmap"];
+    const util::slist fileList = app.parameters["in"];
+    const util::slist zmapFileList = app.parameters["zmap"];
     std::list< data::Image > imgList;
     std::list< data::Image > zImgList;
 

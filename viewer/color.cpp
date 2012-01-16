@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * Author: Erik Türke, tuerke@cbs.mpg.de
+ * Author: Erik TÃ¼rke, tuerke@cbs.mpg.de
  *
  * color.cpp
  *
@@ -98,11 +98,15 @@ bool Color::addColormap( const std::string &path, const boost::regex &separator 
 			lutVec.push_back( QColor::fromHsv( colorVec[0], colorVec[1], colorVec[2], colorVec[3] ).rgba() );
 		} else if ( lutTyp == std::string( "cmyk" ) ) {
 			lutVec.push_back( QColor::fromCmyk( colorVec[0], colorVec[1], colorVec[2], colorVec[3] ).rgba() );
-		} else if ( lutTyp == std::string( "hsl" ) ) {
+        }
+#if QT_VERSION >= 0x040600            
+		 else if ( lutTyp == std::string( "hsl" ) ) {
 			lutVec.push_back( QColor::fromHsl( colorVec[0], colorVec[1], colorVec[2] ).rgba() );
 		} else if ( lutTyp == std::string( "hsla" ) ) {
 			lutVec.push_back( QColor::fromHsl( colorVec[0], colorVec[1], colorVec[2], colorVec[3] ).rgba() );
-		} else {
+		} 
+#endif
+		else {
 			LOG( Runtime, warning ) << "Unknown lut type " << lutTyp << " !";
 			return false;
 		}
@@ -122,7 +126,7 @@ bool Color::addColormap( const std::string &path, const boost::regex &separator 
 QIcon Color::getIcon( const std::string &colormapName, size_t w, size_t h, icon_type type, bool flipped ) const
 {
 	const ColormapType lut = getColormapMap().at( colormapName );
-
+    
 	unsigned short start = 0;
 	unsigned short end = 0;
 
@@ -185,7 +189,8 @@ Color::ColormapType Color::getFallbackColormap() const
 
 void Color::adaptColorMapToImage( ImageHolder *image, bool split )
 {
-	LOG_IF( image->colorMap.size() != 256, Runtime, error ) << "The colormap is of size " << image->colorMap.size() << " but has to be of size 256!";
+	LOG_IF( image->colorMap.size() != 256, Runtime, error ) << "The colormap is of size " 
+        << image->colorMap.size() << " but has to be of size " << 256 << "!";
 	ColormapType retMap ;
 	retMap.resize( 256 );
 	ColormapType tmpMap = util::Singletons::get<Color, 10>().getColormapMap().at( image->lut );
@@ -229,7 +234,7 @@ void Color::adaptColorMapToImage( ImageHolder *image, bool split )
 				const double scaleMax = fabs( upperThreshold / max );
 				const double offset = ( 256 - mid ) * scaleMax;
 
-				for( unsigned short i = 0; i < 256 - mid; i++ ) {
+				for( unsigned short i = 0; i < (256 - mid); i++ ) {
 					posVec[( i * ( 1 - scaleMax ) + offset )] = retMap[128 + i * normMax];
 				}
 			}
@@ -239,7 +244,7 @@ void Color::adaptColorMapToImage( ImageHolder *image, bool split )
 	}
 
 	//kill the zero value
-	retMap[mid] = QColor( 0, 0, 0, 0 ).rgba();
+	retMap[0] = QColor( 0, 0, 0, 0 ).rgba();
 	image->colorMap = retMap;
 }
 

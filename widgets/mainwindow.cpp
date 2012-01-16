@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * Author: Erik T¸rke, tuerke@cbs.mpg.de
+ * Author: Erik T√ºrke, tuerke@cbs.mpg.de
  *
  * mainwindow.cpp
  *
@@ -304,7 +304,7 @@ void MainWindow::saveImage()
 	if( m_ViewerCore->hasImage() ) {
 		if( !m_ViewerCore->getCurrentImage()->getPropMap().getPropertyAs<util::slist>( "changedAttributes" ).size() ) {
 			QMessageBox msgBox;
-			msgBox.setText( "The image that is currently selected has no changes! Won¥t save anything." );
+			msgBox.setText( "The image that is currently selected has no changes! Won≈Ωt save anything." );
 			msgBox.exec();
 		} else {
 			QMessageBox msgBox;
@@ -385,7 +385,7 @@ void MainWindow::saveAllImages()
 
 		} else {
 			QMessageBox msgBox;
-			msgBox.setText( "No image has changed attributes! Won¥t save anything." );
+			msgBox.setText( "No image has changed attributes! Won≈Ωt save anything." );
 			msgBox.exec();
 		}
 

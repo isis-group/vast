@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * Author: Erik Türke, tuerke@cbs.mpg.de
+ * Author: Erik TÃ¼rke, tuerke@cbs.mpg.de
  *
  * PropertyToolDialog.hpp
  *
@@ -26,8 +26,8 @@
  *      Author: tuerke
  ******************************************************************/
 
-#ifndef PROPERTYTOOLIALOG_HPP
-#define PROPERTYTOOLIALOG_HPP
+#ifndef PROPERTYTOOLDIALOG_HPP
+#define PROPERTYTOOLDIALOG_HPP
 
 #include <QDialog>
 #include "qviewercore.hpp"
@@ -39,6 +39,33 @@ namespace viewer
 {
 namespace plugin
 {
+ 
+namespace _internal {
+ 
+template<typename VTYPE>
+QString vectorToString( const VTYPE &vector ) {
+    std::stringstream vStream;
+    for( unsigned short i = 0; i < 4; i++ ) {
+         vStream << vector[i] << " ";
+    }
+    return QString( vStream.str().c_str() );
+}
+
+template<typename TYPE> struct printPropertyValue{
+QString operator()( const std::string &name, const util::PropertyMap &propMap ) {
+    return QString::number( propMap.getPropertyAs<TYPE>(name.c_str()) );
+}
+};
+
+template<typename TYPE> struct printPropertyValue<util::vector4<TYPE> >{
+QString operator()( const std::string &name, const util::PropertyMap &propMap ) {
+  util::dvector4 vec=propMap.getPropertyAs<util::dvector4>(name.c_str());
+  return util::listToString(vec.begin(),vec.end()," ","","").c_str() ;
+}
+};
+
+ 
+}
  
 class TreePropMap : public util::PropertyMap 
 {
@@ -61,6 +88,7 @@ public:
 public Q_SLOTS:
     void updateProperties();
     void selectionChanged( int );
+    void onPropertyTreeClicked(QTreeWidgetItem*,int);
     virtual void showEvent( QShowEvent * );
     
 private:
@@ -68,8 +96,18 @@ private:
     QViewerCore *m_ViewerCore;
     void setIfHas( const std::string &name, QLabel *nameLabel, QLabel *propLabel, const boost::shared_ptr<data::Image> image );
     void buildUpTree( const util::PropertyMap &image );
+    
+    template<typename TYPE> 
+    QString printPropertyValue( const std::string &name )  {
+        return _internal::printPropertyValue<TYPE>()(name, static_cast<util::PropertyMap&>( *m_ViewerCore->getCurrentImage()->getISISImage() ) );
+    }
+
+
+
+
 
 };
+
  
 }}}
 

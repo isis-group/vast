@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * Author: Erik Türke, tuerke@cbs.mpg.de
+ * Author: Erik TÃ¼rke, tuerke@cbs.mpg.de
  *
  * common.cpp
  *
@@ -29,6 +29,7 @@
 #include <DataStorage/io_factory.hpp>
 #include "imageholder.hpp"
 #include <boost/assign.hpp>
+#include <numeric>
 
 namespace isis
 {
@@ -107,8 +108,9 @@ util::ivector4 get32BitAlignedSize( const util::ivector4 &origSize )
 
 std::list< std::string > getSupportedTypeList()
 {
-	return boost::assign::list_of<std::string>( "boolean" )( "s8bit" )( "u8bit" )( "s16bit" )( "u16bit" )( "s32bit" )( "u32bit" )( "s64bit" )( "u64bit" )( "float" )( "double" );
+	return boost::assign::list_of<std::string>( "boolean" )( "s8bit" )( "u8bit" )( "s16bit" )( "u16bit" )( "s32bit" )( "u32bit" )( "s64bit" )( "u64bit" )( "float" )( "double" )( "color24" )( "color32" );
 }
+
 
 
 }

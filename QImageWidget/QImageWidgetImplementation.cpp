@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * Author: Erik Türke, tuerke@cbs.mpg.de
+ * Author: Erik TÃ¼rke, tuerke@cbs.mpg.de
  *
  * QImageWidgetImplementation.cpp
  *
@@ -202,7 +202,7 @@ void QImageWidgetImplementation::paintEvent( QPaintEvent */*event*/ )
             m_Painter->setFont( QFont( "Chicago", 10 ) );
             m_Painter->setPen( Qt::red );
             std::stringstream scalingOffset;
-            boost::shared_ptr<ImageHolder> image = getWidgetSpecCurrentImage();
+            const boost::shared_ptr<ImageHolder> image = getWidgetSpecCurrentImage();
             scalingOffset << "Scaling: " << image->scaling
                           << " Offset: " << image->offset;
             m_Painter->drawText( 10, 30, scalingOffset.str().c_str() );
@@ -216,19 +216,23 @@ void QImageWidgetImplementation::paintEvent( QPaintEvent */*event*/ )
 
 void QImageWidgetImplementation::recalculateTranslation()
 {
-    const boost::shared_ptr<ImageHolder > image = getWidgetSpecCurrentImage();
-    const util::ivector4 mappedSize = QOrientationHandler::mapCoordsToOrientation( image->getImageSize(), image, m_PlaneOrientation );
-    const util::ivector4 mappedVoxelCoords = QOrientationHandler::mapCoordsToOrientation( image->voxelCoords, image, m_PlaneOrientation );
-    const util::ivector4 signVec = QOrientationHandler::mapCoordsToOrientation( util::ivector4( 1, 1, 1, 1 ), image, m_PlaneOrientation, false, false );
-    const util::ivector4 center = mappedSize / 2;
-    const util::ivector4 diff = center - mappedVoxelCoords;
-    const float transXConst = ( ( center[0] + 2 ) - mappedSize[0] / ( 2 * currentZoom ) );
-    const float transYConst = ( ( center[1] + 2 ) - mappedSize[1] / ( 2 * currentZoom ) );
-    const float transX = transXConst * ( ( float )diff[0] / ( float )center[0] ) * signVec[0];
-    const float transY = transYConst * ( ( float )diff[1] / ( float )center[1] ) * signVec[1];
-    const QOrientationHandler::ViewPortType viewPort = m_ImageProperties.at( image ).viewPort;
-    translationX = transX * viewPort[0] ;
-    translationY = transY * viewPort[1] ;
+    if( currentZoom != 1 ) {
+        const boost::shared_ptr<ImageHolder > image = getWidgetSpecCurrentImage();
+        const util::ivector4 mappedSize = QOrientationHandler::mapCoordsToOrientation( image->getImageSize(), image, m_PlaneOrientation );
+        const util::ivector4 mappedVoxelCoords = QOrientationHandler::mapCoordsToOrientation( image->voxelCoords, image, m_PlaneOrientation );
+        const util::ivector4 signVec = QOrientationHandler::mapCoordsToOrientation( util::ivector4( 1, 1, 1, 1 ), image, m_PlaneOrientation, false, false );
+        const util::ivector4 center = mappedSize / 2;
+        const util::ivector4 diff = center - mappedVoxelCoords;
+        const float transXConst = ( ( center[0] + 2 ) - mappedSize[0] / ( 2 * currentZoom ) );
+        const float transYConst = ( ( center[1] + 2 ) - mappedSize[1] / ( 2 * currentZoom ) );
+        const float transX = transXConst * ( ( float )diff[0] / ( float )center[0] ) * signVec[0];
+        const float transY = transYConst * ( ( float )diff[1] / ( float )center[1] ) * signVec[1];
+        const QOrientationHandler::ViewPortType viewPort = m_ImageProperties.at( image ).viewPort;
+        translationX = transX * viewPort[0] ;
+        translationY = transY * viewPort[1] ;
+    } else {
+        translationX = translationY = 0;
+    }
 }
 
 

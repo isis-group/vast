@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * Author: Erik Türke, tuerke@cbs.mpg.de
+ * Author: Erik TÃ¼rke, tuerke@cbs.mpg.de
  *
  * CorrelationPlotter.cpp
  *
@@ -100,9 +100,9 @@ void isis::viewer::plugin::CorrelationPlotterDialog::showEvent( QShowEvent * )
 
 		if( !hasFunctionalImage ) {
 			disconnect( m_ViewerCore, SIGNAL( emitPhysicalCoordsChanged( util::fvector4 ) ), this, SLOT( physicalCoordsChanged( util::fvector4 ) ) );
-			LOG( Runtime, warning ) << "Can not find any functional dataset. Won´t calculate correlation map";
+			LOG( Runtime, warning ) << "Can not find any functional dataset. WonÅ½t calculate correlation map";
 			QMessageBox msgBox;
-			msgBox.setText( "Can not find any functional dataset. Won´t calculate correlation map!" );
+			msgBox.setText( "Can not find any functional dataset. WonÅ½t calculate correlation map!" );
 			msgBox.exec();
 			return;
 		} else {

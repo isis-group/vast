@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * Author: Erik Türke, tuerke@cbs.mpg.de
+ * Author: Erik TÃ¼rke, tuerke@cbs.mpg.de
  *
  * PropertyToolDialog.cpp
  *
@@ -39,9 +39,9 @@ PropertyToolDialog::PropertyToolDialog(QWidget* parent, QViewerCore* core)
 {
     m_Interface.setupUi( this );
     m_Interface.tabWidget->setCurrentIndex(0);
-   
     connect( m_ViewerCore, SIGNAL( emitUpdateScene()), this, SLOT( updateProperties()));
     connect( m_Interface.selection, SIGNAL( currentIndexChanged(int) ), this, SLOT( selectionChanged(int ) ) );
+    connect( m_Interface.propertyTree, SIGNAL( itemClicked(QTreeWidgetItem*,int)), this, SLOT(onPropertyTreeClicked(QTreeWidgetItem*,int)));
 }
 
 void PropertyToolDialog::showEvent(QShowEvent* )
@@ -129,6 +129,7 @@ void PropertyToolDialog::updateProperties()
     
     
     adjustSize();
+    m_Interface.propertyTree->setColumnWidth(0, m_Interface.propertyTree->width() / 3);
 }
 
 void PropertyToolDialog::selectionChanged(int select )
@@ -176,6 +177,23 @@ void TreePropMap::fillTreeWidget(QTreeWidget* treeWidget)
     treeWidget->clear();
     QTreeWidgetItem *item = new QTreeWidgetItem( treeWidget );
     walkTree(item, *this, true );
+    
+}
+void PropertyToolDialog::onPropertyTreeClicked(QTreeWidgetItem* item, int /*column*/)
+{
+    if( m_ViewerCore->hasImage() ) {
+        QString name = item->text( item->columnCount()-2 );
+        m_Interface.propertyName->setText( name );
+        switch ( m_ViewerCore->getCurrentImage()->getISISImage()->propertyValue( name.toStdString().c_str() )->getTypeID() ) {
+         case util::Value<uint8_t>::staticID:
+             m_Interface.propertyValue->setText( printPropertyValue<uint8_t>( name.toStdString() ) );
+             break;
+         case util::Value<util::fvector4>::staticID:
+             m_Interface.propertyValue->setText( printPropertyValue<util::fvector4>( name.toStdString() ) );
+             break;    
+        }
+     
+    }
     
 }
 
