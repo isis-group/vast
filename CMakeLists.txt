@@ -108,6 +108,7 @@ QT4_ADD_RESOURCES(vast_rcc_files ${RESOURCE_FILES})
 qt4_wrap_cpp(vast_moc_files ${VIEWER_FILES_HPP} ${WIDGET_FILES_HPP})
 QT4_WRAP_UI(vast_UIS_H ${UI_FILES})
 
+find_library(QT4_WEBKIT_LIB libQtWebKit.so)
 
 ###########################################################
 # boost and common stuff
@@ -165,8 +166,11 @@ ENDIF(VAST_OPENMP)
 add_executable(vast main.cpp ${QWIDGET_FILES_CPP} ${WIDGET_FILES_CPP} ${VIEWER_FILES_CPP} ${WIDGET_FILES_CPP} ${vast_UIS_H} ${vast_moc_files} ${vast_rcc_files})
 find_library(isisqt4_LIBRARY "isisAdapter_qt4")
 
+message(STATUS "QT libraries: ${QT_LIBRARIES} ")
+
 set(NEEDED_LIBS
 	${QT_LIBRARIES}
+    ${QT4_WEBKIT_LIB}
 	${Boost_LIBRARIES}
 	${ISIS_LIB}
 	${ISIS_LIB_DEPENDS}
