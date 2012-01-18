@@ -108,6 +108,7 @@ QT4_ADD_RESOURCES(vast_rcc_files ${RESOURCE_FILES})
 qt4_wrap_cpp(vast_moc_files ${VIEWER_FILES_HPP} ${WIDGET_FILES_HPP})
 QT4_WRAP_UI(vast_UIS_H ${UI_FILES})
 
+#for some reasons this is necessary on lenny 64 bit distributions
 find_library(QT4_WEBKIT_LIB QtWebKit)
 
 ###########################################################
