@@ -63,21 +63,21 @@ void ScalingWidget::synchronize()
 	if( m_ViewerCore->getCurrentImage().get() ) {
 		const boost::shared_ptr<ImageHolder> image = m_ViewerCore->getCurrentImage();
 
-        disconnect( m_Interface.min, SIGNAL( valueChanged( double ) ), this, SLOT( minChanged( double ) ) );
-        disconnect( m_Interface.max, SIGNAL( valueChanged( double ) ), this, SLOT( maxChanged( double ) ) );
-        disconnect( m_Interface.scaling, SIGNAL( valueChanged( double ) ), this, SLOT( scalingChanged( double ) ) );
-        disconnect( m_Interface.offset, SIGNAL( valueChanged( double ) ), this, SLOT( offsetChanged( double ) ) );
+		disconnect( m_Interface.min, SIGNAL( valueChanged( double ) ), this, SLOT( minChanged( double ) ) );
+		disconnect( m_Interface.max, SIGNAL( valueChanged( double ) ), this, SLOT( maxChanged( double ) ) );
+		disconnect( m_Interface.scaling, SIGNAL( valueChanged( double ) ), this, SLOT( scalingChanged( double ) ) );
+		disconnect( m_Interface.offset, SIGNAL( valueChanged( double ) ), this, SLOT( offsetChanged( double ) ) );
 		m_Interface.offset->setValue( image->offset );
 		m_Interface.scaling->setValue( image->scaling );
 		std::pair<double, double> minMax = getMinMaxFromScalingOffset( std::make_pair<double, double>(
 											   image->scaling, image->offset ), image );
 		m_Interface.min->setValue( minMax.first );
 		m_Interface.max->setValue( minMax.second );
-        connect( m_Interface.min, SIGNAL( valueChanged( double ) ), this, SLOT( minChanged( double ) ) );
-        connect( m_Interface.max, SIGNAL( valueChanged( double ) ), this, SLOT( maxChanged( double ) ) );
-        connect( m_Interface.scaling, SIGNAL( valueChanged( double ) ), this, SLOT( scalingChanged( double ) ) );
-        connect( m_Interface.offset, SIGNAL( valueChanged( double ) ), this, SLOT( offsetChanged( double ) ) );
-        
+		connect( m_Interface.min, SIGNAL( valueChanged( double ) ), this, SLOT( minChanged( double ) ) );
+		connect( m_Interface.max, SIGNAL( valueChanged( double ) ), this, SLOT( maxChanged( double ) ) );
+		connect( m_Interface.scaling, SIGNAL( valueChanged( double ) ), this, SLOT( scalingChanged( double ) ) );
+		connect( m_Interface.offset, SIGNAL( valueChanged( double ) ), this, SLOT( offsetChanged( double ) ) );
+
 		m_Interface.offset->setSingleStep( image->extent / 100 );
 	}
 }
@@ -117,7 +117,7 @@ void ScalingWidget::setMinMax( std::pair< double, double > minMax, boost::shared
 	image->getPropMap().setPropertyAs<double>( "scalingMinValue", minMax.first );
 	image->getPropMap().setPropertyAs<double>( "scalingMaxValue", minMax.second );
 	m_ViewerCore->updateScene();
-    synchronize();
+	synchronize();
 }
 
 void ScalingWidget::setScalingOffset( std::pair< double, double > scalingOffset )
@@ -137,7 +137,7 @@ void ScalingWidget::autoScale()
 
 void ScalingWidget::reset()
 {
-    m_ViewerCore->getUICore()->getMainWindow()->resetScaling();
+	m_ViewerCore->getUICore()->getMainWindow()->resetScaling();
 }
 
 std::pair< double, double > ScalingWidget::getMinMaxFromScalingOffset( const std::pair< double, double >& scalingOffset, boost::shared_ptr<ImageHolder> image )

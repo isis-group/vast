@@ -297,22 +297,23 @@ void isis::viewer::widget::FileDialog::modeChanged()
 void isis::viewer::widget::FileDialog::addToFavList()
 {
 	QString pathToAdd = m_Interface.fileDirEdit->currentText();
-    m_ViewerCore->getSettings()->beginGroup( "UserProfile" );    
-    QList<QVariant> favFiles = m_ViewerCore->getSettings()->value( "favoriteFiles" ).toList();
-    bool has = false;
-    BOOST_FOREACH( QList<QVariant>::const_reference entry, favFiles ) 
-    {
-        if( entry.toString() == pathToAdd ) {
-         has = true;
-        }
-    }
-    if( !has) {
-        m_Interface.favoriteList->addItem( pathToAdd );
-        favFiles.append( QVariant( pathToAdd ) );
-        m_ViewerCore->getSettings()->setValue( "favoriteFiles", favFiles );
-        m_ViewerCore->getSettings()->sync();
-    }
-    m_ViewerCore->getSettings()->endGroup();
+	m_ViewerCore->getSettings()->beginGroup( "UserProfile" );
+	QList<QVariant> favFiles = m_ViewerCore->getSettings()->value( "favoriteFiles" ).toList();
+	bool has = false;
+	BOOST_FOREACH( QList<QVariant>::const_reference entry, favFiles ) {
+		if( entry.toString() == pathToAdd ) {
+			has = true;
+		}
+	}
+
+	if( !has ) {
+		m_Interface.favoriteList->addItem( pathToAdd );
+		favFiles.append( QVariant( pathToAdd ) );
+		m_ViewerCore->getSettings()->setValue( "favoriteFiles", favFiles );
+		m_ViewerCore->getSettings()->sync();
+	}
+
+	m_ViewerCore->getSettings()->endGroup();
 
 }
 

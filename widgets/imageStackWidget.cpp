@@ -149,12 +149,13 @@ void ImageStackWidget::itemSelected( QListWidgetItem *item )
 void ImageStackWidget::closeAllImages()
 {
 	QList<QListWidgetItem *> items = m_ImageStack->findItems( QString( "*" ), Qt::MatchWrap | Qt::MatchWildcard );
-    DataContainer::iterator iter;
+	DataContainer::iterator iter;
 	BOOST_FOREACH( QList<QListWidgetItem *>::const_reference item, items ) {
-        iter = m_ViewerCore->getDataContainer().find( item->text().toStdString() );
-        if( iter != m_ViewerCore->getDataContainer().end() ) {
-            m_ViewerCore->closeImage(iter->second, false );
-        }
+		iter = m_ViewerCore->getDataContainer().find( item->text().toStdString() );
+
+		if( iter != m_ViewerCore->getDataContainer().end() ) {
+			m_ViewerCore->closeImage( iter->second, false );
+		}
 	}
 	m_ViewerCore->getUICore()->refreshUI();
 }

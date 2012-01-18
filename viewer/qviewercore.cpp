@@ -157,19 +157,22 @@ void QViewerCore::settingsChanged()
 	}
 	emitShowLabels( getOptionMap()->getPropertyAs<bool>( "showLabels" ) );
 	m_UI->getMainWindow()->getInterface().actionPropagate_Zooming->setChecked( getOptionMap()->getPropertyAs<bool>( "propagateZooming" ) );
+
 	if( hasImage() ) {
 		if( getCurrentImage()->imageType == ImageHolder::z_map ) {
 			getCurrentImage()->lut = getOptionMap()->getPropertyAs<std::string>( "lutZMap" );
 		} else {
 			getCurrentImage()->lut = getOptionMap()->getPropertyAs<std::string>( "lutStructural" );
 		}
-        if( getMode() == ViewerCoreBase::zmap && getCurrentAnatomicalRefernce().get() ) {
-                getCurrentAnatomicalRefernce()->lut = getOptionMap()->getPropertyAs<std::string>( "lutStructural" );
-                getCurrentAnatomicalRefernce()->updateColorMap();
-        }
+
+		if( getMode() == ViewerCoreBase::zmap && getCurrentAnatomicalRefernce().get() ) {
+			getCurrentAnatomicalRefernce()->lut = getOptionMap()->getPropertyAs<std::string>( "lutStructural" );
+			getCurrentAnatomicalRefernce()->updateColorMap();
+		}
+
 		getCurrentImage()->updateColorMap();
 	}
-    
+
 	if( getMode() == ViewerCoreBase::zmap && getOptionMap()->getPropertyAs<bool>( "zmapGlobal" ) ) {
 		BOOST_FOREACH( DataContainer::reference image, getDataContainer() ) {
 			if( image.second->imageType == ImageHolder::z_map ) {
@@ -318,12 +321,12 @@ void QViewerCore::openPath( QStringList fileList, ImageHolder::ImageType imageTy
 	}
 }
 
-void QViewerCore::closeImage( boost::shared_ptr<ImageHolder> image, bool refreshUI)
+void QViewerCore::closeImage( boost::shared_ptr<ImageHolder> image, bool refreshUI )
 {
 	BOOST_FOREACH( std::list< WidgetInterface *>::const_reference widget, image->getWidgetList() ) {
 		widget->removeImage( image );
 	}
-    
+
 	if( getCurrentImage().get() == image.get() ) {
 		std::list<boost::shared_ptr< ImageHolder > > tmpList;
 		BOOST_FOREACH( DataContainer::const_reference image, getDataContainer() ) {
@@ -337,10 +340,13 @@ void QViewerCore::closeImage( boost::shared_ptr<ImageHolder> image, bool refresh
 			setCurrentImage( boost::shared_ptr<ImageHolder>() );
 		}
 	}
+
 	getDataContainer().erase(  image->getFileNames().front() );
+
 	if( refreshUI ) {
-        getUICore()->refreshUI();
-    }
+		getUICore()->refreshUI();
+	}
+
 	updateScene();
 }
 
@@ -362,7 +368,7 @@ void QViewerCore::loadSettings()
 	getOptionMap()->setPropertyAs<uint8_t>( "numberOfThreads", getSettings()->value( "numberOfThreads" ).toUInt() );
 	getOptionMap()->setPropertyAs<bool>( "enableMultithreading", getSettings()->value( "enableMultithreading" ).toBool() );
 	getOptionMap()->setPropertyAs<bool>( "useAllAvailablethreads", getSettings()->value( "useAllAvailableThreads" ).toBool() );
-    getOptionMap()->setPropertyAs<bool>( "histogramOmitZero", getSettings()->value( "histogramOmitZero" ).toBool() );
+	getOptionMap()->setPropertyAs<bool>( "histogramOmitZero", getSettings()->value( "histogramOmitZero" ).toBool() );
 	//screenshot stuff
 	getOptionMap()->setPropertyAs<uint16_t>( "screenshotWidth", getSettings()->value( "screenshotWidth", getOptionMap()->getPropertyAs<uint16_t>( "screenshotWidth" ) ).toUInt() );
 	getOptionMap()->setPropertyAs<uint16_t>( "screenshotHeight", getSettings()->value( "screenshotHeight", getOptionMap()->getPropertyAs<uint16_t>( "screenshotHeight" ) ).toUInt() );
@@ -393,7 +399,7 @@ void QViewerCore::saveSettings()
 	getSettings()->setValue( "numberOfThreads", getOptionMap()->getPropertyAs<uint8_t>( "numberOfThreads" ) );
 	getSettings()->setValue( "enableMultithreading", getOptionMap()->getPropertyAs<bool>( "enableMultithreading" ) );
 	getSettings()->setValue( "useAllAvailablethreads", getOptionMap()->getPropertyAs<bool>( "useAllAvailableThreads" ) );
-    getSettings()->setValue( "histogramOmitZero", getOptionMap()->getPropertyAs<bool>( "histogramOmitZero" ) );
+	getSettings()->setValue( "histogramOmitZero", getOptionMap()->getPropertyAs<bool>( "histogramOmitZero" ) );
 	//screenshot stuff
 	getSettings()->setValue( "screenshotWidth", getOptionMap()->getPropertyAs<uint16_t>( "screenshotWidth" ) );
 	getSettings()->setValue( "screenshotHeight", getOptionMap()->getPropertyAs<uint16_t>( "screenshotHeight" ) );
