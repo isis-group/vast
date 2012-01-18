@@ -26,6 +26,7 @@
  *      Author: tuerke
  ******************************************************************/
 #include "color.hpp"
+#include "imageholder.hpp"
 #include <QResource>
 #include <QFile>
 #include <fstream>
@@ -242,10 +243,20 @@ void Color::adaptColorMapToImage( ImageHolder *image, bool split )
 			retMap = negVec << posVec;
 		}
 	}
-
-	//kill the zero value
-	retMap[0] = QColor( 0, 0, 0, 0 ).rgba();
-	image->colorMap = retMap;
+	if( image->imageType == ImageHolder::z_map ) {
+        ColormapType zmapLUT;
+        zmapLUT.resize(256);
+        for( unsigned short i = 0; i < 255; i++ ) {
+            zmapLUT[i+1] = retMap[i * (256.0 / 255.0)];
+        }
+        //kill the zero value
+        zmapLUT[0] = QColor( 0, 0, 0, 0 ).rgba();
+        image->colorMap = zmapLUT;
+    } else {
+        retMap[0] = QColor( 0, 0, 0, 0 ).rgba();
+        image->colorMap = retMap;
+    }
+    
 }
 
 

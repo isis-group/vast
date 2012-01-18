@@ -160,7 +160,7 @@ private:
 	void copyImageToVector( const data::Image &image ) {
 		data::ValuePtr<TYPE> imagePtr( ( TYPE * ) calloc( image.getVolume(), sizeof( TYPE ) ), image.getVolume() );
 		LOG( Debug, verbose_info ) << "Needed memory: " << image.getVolume() * sizeof( TYPE ) / ( 1024.0 * 1024.0 ) << " mb.";
-        if( m_ZeroIsReserved && imageType == z_map) {
+        if( m_ZeroIsReserved && !isRGB) {
             // calculate new scaling
             data::scaling_pair scalingPair = image.getScalingTo( data::ValuePtr<TYPE>::staticID, data::upscale );
             double scaling = scalingPair.first->as<double>();

@@ -186,7 +186,7 @@ bool ImageHolder::setImage( const data::Image &image, const ImageType &_imageTyp
 	}
 
     // if m_ZeroIsReserved is set we reserve a value (m_ReservedValue) in the internal image that indicates the true zero value in the origin image
-    if( m_ZeroIsReserved && _imageType == z_map ) {
+    if( m_ZeroIsReserved && !isRGB ) {
          switch ( majorTypeID ) {
              case data::ValuePtr<bool>::staticID:
                  _setTrueZero<bool>( image );
