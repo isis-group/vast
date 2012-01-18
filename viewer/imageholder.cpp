@@ -34,9 +34,9 @@ namespace viewer
 {
 
 ImageHolder::ImageHolder()
-    : m_ZeroIsReserved(true),
-    m_ReservedValue(0)
-    {}
+	: m_ZeroIsReserved( true ),
+	  m_ReservedValue( 0 )
+{}
 
 boost::numeric::ublas::matrix< double > ImageHolder::getNormalizedImageOrientation( bool transposed ) const
 {
@@ -152,12 +152,12 @@ bool ImageHolder::setImage( const data::Image &image, const ImageType &_imageTyp
 	}
 
 	// get some image information
-    //add some more properties
-    imageType = _imageType;
-    interpolationType = nn;
+	//add some more properties
+	imageType = _imageType;
+	interpolationType = nn;
 	majorTypeID = image.getMajorTypeID();
-    majorTypeName = image.getMajorTypeName();
-    majorTypeName = majorTypeName.substr( 0, majorTypeName.length() - 1 ).c_str();
+	majorTypeName = image.getMajorTypeName();
+	majorTypeName = majorTypeName.substr( 0, majorTypeName.length() - 1 ).c_str();
 	m_ImageSize = image.getSizeAsVector();
 	LOG( Debug, verbose_info )  << "Fetched image of size " << m_ImageSize << " and type "
 								<< image.getMajorTypeName() << ".";
@@ -185,50 +185,50 @@ bool ImageHolder::setImage( const data::Image &image, const ImageType &_imageTyp
 		m_ChunkVector.push_back( data::Chunk(  pointerRef, m_ImageSize[0], m_ImageSize[1], m_ImageSize[2] ) );
 	}
 
-    // if m_ZeroIsReserved is set we reserve a value (m_ReservedValue) in the internal image that indicates the true zero value in the origin image
-    if( m_ZeroIsReserved && !isRGB ) {
-         switch ( majorTypeID ) {
-             case data::ValuePtr<bool>::staticID:
-                 _setTrueZero<bool>( image );
-                 break;
-             case data::ValuePtr<int8_t>::staticID:
-                 _setTrueZero<int8_t>( image );
-                 break;
-             case data::ValuePtr<uint8_t>::staticID:
-                 _setTrueZero<uint8_t>( image );
-                 break;
-             case data::ValuePtr<int16_t>::staticID:
-                 _setTrueZero<int16_t>( image );
-                 break;
-             case data::ValuePtr<uint16_t>::staticID:
-                 _setTrueZero<uint16_t>( image );
-                 break;
-             case data::ValuePtr<int32_t>::staticID:
-                 _setTrueZero<int32_t>( image );
-                 break;
-             case data::ValuePtr<uint32_t>::staticID:
-                 _setTrueZero<uint32_t>( image );
-                 break;
-             case data::ValuePtr<int64_t>::staticID:
-                 _setTrueZero<int64_t>( image );
-                 break;                 
-             case data::ValuePtr<uint64_t>::staticID:
-                 _setTrueZero<uint64_t>( image );
-                 break;
-             case data::ValuePtr<float>::staticID:
-                 _setTrueZero<float>( image );
-                 break;
-             case data::ValuePtr<double>::staticID:
-                 _setTrueZero<double>( image );
-                 break;                 
-         }
-    }
-    
+	// if m_ZeroIsReserved is set we reserve a value (m_ReservedValue) in the internal image that indicates the true zero value in the origin image
+	if( m_ZeroIsReserved && !isRGB ) {
+		switch ( majorTypeID ) {
+		case data::ValuePtr<bool>::staticID:
+			_setTrueZero<bool>( image );
+			break;
+		case data::ValuePtr<int8_t>::staticID:
+			_setTrueZero<int8_t>( image );
+			break;
+		case data::ValuePtr<uint8_t>::staticID:
+			_setTrueZero<uint8_t>( image );
+			break;
+		case data::ValuePtr<int16_t>::staticID:
+			_setTrueZero<int16_t>( image );
+			break;
+		case data::ValuePtr<uint16_t>::staticID:
+			_setTrueZero<uint16_t>( image );
+			break;
+		case data::ValuePtr<int32_t>::staticID:
+			_setTrueZero<int32_t>( image );
+			break;
+		case data::ValuePtr<uint32_t>::staticID:
+			_setTrueZero<uint32_t>( image );
+			break;
+		case data::ValuePtr<int64_t>::staticID:
+			_setTrueZero<int64_t>( image );
+			break;
+		case data::ValuePtr<uint64_t>::staticID:
+			_setTrueZero<uint64_t>( image );
+			break;
+		case data::ValuePtr<float>::staticID:
+			_setTrueZero<float>( image );
+			break;
+		case data::ValuePtr<double>::staticID:
+			_setTrueZero<double>( image );
+			break;
+		}
+	}
+
 	LOG( Debug, verbose_info ) << "Spliced image to " << m_ImageVector.size() << " volumes.";
 
 	//image seems to be ok...i guess
 
-	
+
 
 	if( imageType == z_map ) {
 		lowerThreshold = 0;
@@ -305,33 +305,35 @@ std::pair< double, double > ImageHolder::getOptimalScaling()
 	const float upperCutOff = 0.01;
 	const size_t volume = getImageSize()[0] * getImageSize()[1] * getImageSize()[2];
 	const double extent = getInternalExtent();
-    
-    boost::scoped_array<double> nHistogram ( new double[(size_t)extent+1] );
-    
+
+	boost::scoped_array<double> nHistogram ( new double[( size_t )extent + 1] );
+
 	histogramVector.resize( getImageSize()[3] );
-    histogramVectorWOZero.resize( getImageSize()[3] );
+	histogramVectorWOZero.resize( getImageSize()[3] );
 
 	for( unsigned short t = 0; t < getImageSize()[3]; t++ ) {
 		histogramVector[t] = ( double * ) calloc( extent + 1, sizeof( double ) ) ;
-        histogramVectorWOZero[t] = ( double * ) calloc( extent, sizeof(double ) );
+		histogramVectorWOZero[t] = ( double * ) calloc( extent, sizeof( double ) );
 		const InternalImageType *dataPtr = static_cast<InternalImageType *>( getImageVector()[t]->getRawAddress().get() );
+
 		//create the histogram
-// 		#pragma omp parallel for
+		//      #pragma omp parallel for
 		for( size_t i = 0; i < volume; i++ ) {
 			histogramVector[t][dataPtr[i]]++;
 		}
-// 		#pragma omp parallel for
+
+		//      #pragma omp parallel for
 		for( size_t i = 0; i < volume; i++ ) {
-            if( dataPtr[i] > 0 ) {
-                histogramVectorWOZero[t][dataPtr[i]-1]++;
-            }
-        }
+			if( dataPtr[i] > 0 ) {
+				histogramVectorWOZero[t][dataPtr[i] - 1]++;
+			}
+		}
 	}
 
 	//normalize histogram
 	#pragma omp parallel for
 
-	for( size_t i = 0 ; i < (size_t)extent; i++ ) {
+	for( size_t i = 0 ; i < ( size_t )extent; i++ ) {
 		nHistogram.get()[i] = histogramVector.front()[i] / volume;
 	}
 
@@ -454,11 +456,11 @@ void ImageHolder::syncImage()
 
 double ImageHolder::getInternalExtent() const
 {
-    if( m_ZeroIsReserved ) {
-        return std::numeric_limits<InternalImageType>::max() - std::numeric_limits<InternalImageType>::min();
-    } else {
-        return std::numeric_limits<InternalImageType>::max() - std::numeric_limits<InternalImageType>::min() + 1;
-    }
+	if( m_ZeroIsReserved ) {
+		return std::numeric_limits<InternalImageType>::max() - std::numeric_limits<InternalImageType>::min();
+	} else {
+		return std::numeric_limits<InternalImageType>::max() - std::numeric_limits<InternalImageType>::min() + 1;
+	}
 }
 
 
