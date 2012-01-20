@@ -66,7 +66,6 @@ void PreferencesDialog::screenshotXChanged( int val )
 
 			const double ratio = ( double )widgetHeight / widgetWidth;
 			preferencesUi.sizeY->setValue( val * ratio );
-			m_ViewerCore->getUICore()->refreshUI();
 		}
 	}
 }
