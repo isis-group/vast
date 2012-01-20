@@ -150,10 +150,10 @@ void ViewerCoreBase::setCommonViewerOptions()
 	m_OptionsMap->setPropertyAs<uint16_t>( "startWidgetHeight", 500 );
 	m_OptionsMap->setPropertyAs<uint16_t>( "startWidgetWidth", 400 );
 	m_OptionsMap->setPropertyAs<uint16_t>( "viewerWidgetMargin", 5 );
-	m_OptionsMap->setPropertyAs<uint8_t>( "numberOfThreads", 1 );
+	m_OptionsMap->setPropertyAs<uint8_t>( "numberOfThreads", 0 );
 	m_OptionsMap->setPropertyAs<bool>( "ompAvailable", false );
-	m_OptionsMap->setPropertyAs<uint8_t>( "maxNumberOfThreads", 1 );
 	m_OptionsMap->setPropertyAs<bool>( "enableMultithreading", false );
+	m_OptionsMap->setPropertyAs<uint8_t>( "initialMaxNumberThreads", 4 );
 	m_OptionsMap->setPropertyAs<bool>( "useAllAvailableThreads", false );
 	m_OptionsMap->setPropertyAs<uint8_t>( "screenshotQuality", 70 );
 	m_OptionsMap->setPropertyAs<uint16_t>( "screenshotWidth", 700 );

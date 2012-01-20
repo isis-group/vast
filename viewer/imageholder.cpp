@@ -163,7 +163,7 @@ bool ImageHolder::setImage( const data::Image &image, const ImageType &_imageTyp
 								<< image.getMajorTypeName() << ".";
 	//copy the image into continuous memory space and assure consistent data type
 	isRGB = !(data::ValuePtr<util::color24>::staticID != majorTypeID && data::ValuePtr<util::color48>::staticID != majorTypeID);
-    const bool reserveZero = m_ZeroIsReserved && imageType == z_map && !isRGB;
+    const bool reserveZero = m_ZeroIsReserved && !isRGB;
 	if( !isRGB ) {
 		minMax = image.getMinMax();
 		copyImageToVector<InternalImageType>( image, reserveZero );

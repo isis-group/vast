@@ -52,9 +52,21 @@ QViewerCore::QViewerCore ( const std::string &appName, const std::string &orgNam
 	operation::NativeImageOps::setProgressFeedBack ( m_ProgressFeedback );
 	loadSettings();
 #ifdef _OPENMP
+	const uint8_t nMaxThreads = omp_get_num_procs();
+	if( getOptionMap()->getPropertyAs<uint8_t> ( "numberOfThreads" ) == 0 ) {
+		if( nMaxThreads <= getOptionMap()->getPropertyAs<uint8_t>("initialMaxNumberThreads" ) ) {
+			getOptionMap()->setPropertyAs<uint8_t> ( "numberOfThreads", nMaxThreads );
+			getOptionMap()->setPropertyAs<bool> ( "useAllAvailableThreads", true );
+		} else {
+			getOptionMap()->setPropertyAs<uint8_t> ( "numberOfThreads", getOptionMap()->getPropertyAs<uint8_t>("initialMaxNumberThreads" ) );
+		}
+		getOptionMap()->setPropertyAs<bool> ( "enableMultithreading", true );
+	}
+	if( getOptionMap()->getPropertyAs<bool>( "useAllAvailableThreads" ) ) {
+		getOptionMap()->setPropertyAs<uint8_t> ( "numberOfThreads", nMaxThreads );
+	}
 	omp_set_num_threads ( getOptionMap()->getPropertyAs<uint8_t> ( "numberOfThreads" ) );
 	getOptionMap()->setPropertyAs<bool> ( "ompAvailable", true );
-	getOptionMap()->setPropertyAs<uint8_t> ( "maxNumberOfThreads", omp_get_num_procs() );
 #else
 	getOptionMap()->setPropertyAs<bool> ( "ompAvailable", false );
 #endif
