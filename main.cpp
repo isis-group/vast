@@ -70,7 +70,7 @@ int main( int argc, char *argv[] )
 	}
 
 #else
-	std::cout << "Warning! Your Qt version is below Qt4.5. Not able to set graghics system." << std::endl;
+	std::cout << "Warning! Your Qt version is below Qt4.5. Not able to set graghics system. This will will have a big impact on the performance!" << std::endl;
 #endif
 
 	qt4::IOQtApplication app( appName.c_str(), false, false );
