@@ -27,6 +27,7 @@
  ******************************************************************/
 #include "filedialog.hpp"
 #include "common.hpp"
+#include <imageholder.hpp>
 
 isis::viewer::widget::FileDialog::FileDialog( QWidget *parent, QViewerCore *core )
 	: QDialog ( parent ),

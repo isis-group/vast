@@ -162,16 +162,16 @@ bool ImageHolder::setImage( const data::Image &image, const ImageType &_imageTyp
 	LOG( Debug, verbose_info )  << "Fetched image of size " << m_ImageSize << " and type "
 								<< image.getMajorTypeName() << ".";
 	//copy the image into continuous memory space and assure consistent data type
-
-	if( data::ValuePtr<util::color24>::staticID != majorTypeID && data::ValuePtr<util::color48>::staticID != majorTypeID ) {
-		isRGB = false;
+	isRGB = !(data::ValuePtr<util::color24>::staticID != majorTypeID && data::ValuePtr<util::color48>::staticID != majorTypeID);
+    const bool reserveZero = m_ZeroIsReserved && imageType == z_map && !isRGB;
+	if( !isRGB ) {
 		minMax = image.getMinMax();
-		copyImageToVector<InternalImageType>( image );
+		copyImageToVector<InternalImageType>( image, reserveZero );
 	} else {
-		copyImageToVector<InternalImageColorType>( image );
-		isRGB = true;
+		copyImageToVector<InternalImageColorType>( image, reserveZero );
 	}
-
+	
+	
 	LOG_IF( m_ImageVector.empty(), Runtime, error ) << "Size of image vector is 0!";
 
 	if( m_ImageVector.size() != m_ImageSize[3] ) {
@@ -186,7 +186,8 @@ bool ImageHolder::setImage( const data::Image &image, const ImageType &_imageTyp
 	}
 
 	// if m_ZeroIsReserved is set we reserve a value (m_ReservedValue) in the internal image that indicates the true zero value in the origin image
-	if( m_ZeroIsReserved && !isRGB && imageType == z_map) {
+	if( reserveZero ) {
+		 std::cout << "yeah" << std::endl;
 		switch ( majorTypeID ) {
 		case data::ValuePtr<bool>::staticID:
 			_setTrueZero<bool>( image );

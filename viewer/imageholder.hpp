@@ -157,11 +157,11 @@ private:
 	boost::shared_ptr<color::Color> m_ColorHandler;
 
 	template<typename TYPE>
-	void copyImageToVector( const data::Image &image ) {
+	void copyImageToVector( const data::Image &image, bool reserveZero ) {
 		data::ValuePtr<TYPE> imagePtr( ( TYPE * ) calloc( image.getVolume(), sizeof( TYPE ) ), image.getVolume() );
 		LOG( Debug, verbose_info ) << "Needed memory: " << image.getVolume() * sizeof( TYPE ) / ( 1024.0 * 1024.0 ) << " mb.";
 
-		if( m_ZeroIsReserved && !isRGB && imageType == z_map) {
+		if( reserveZero ) {
 			// calculate new scaling
 			data::scaling_pair scalingPair = image.getScalingTo( data::ValuePtr<TYPE>::staticID, data::upscale );
 			double scaling = scalingPair.first->as<double>();
@@ -191,11 +191,10 @@ private:
 		// first make shure the images datatype is consistent
 		data::TypedImage<TYPE> tImage ( image );
 		//now set all voxels to the m_ReservedValue that are 0 in the origin image
-		#pragma omp parallel for
-
 		for( size_t t = 0; t < getImageSize()[3]; t++ ) {
 			for( size_t z = 0; z < getImageSize()[2]; z++ ) {
 				for( size_t y = 0; y < getImageSize()[1]; y++ ) {
+#pragma omp parallel for
 					for( size_t x = 0; x < getImageSize()[0]; x++ ) {
 						if( static_cast<data::Image &>( tImage ).voxel<TYPE>( x, y, z, t ) == static_cast<TYPE>( 0 ) ) {
 							m_ChunkVector[t].voxel<InternalImageType>( x, y, z ) = m_ReservedValue;
@@ -209,11 +208,10 @@ private:
 
 	template<typename TYPE>
 	void _syncImage() {
-		#pragma omp parallel for
-
 		for( size_t t = 0; t < getImageSize()[3]; t++ ) {
 			for( size_t z = 0; z < getImageSize()[2]; z++ ) {
 				for( size_t y = 0; y < getImageSize()[1]; y++ ) {
+#pragma omp parallel for
 					for( size_t x = 0; x < getImageSize()[0]; x++ ) {
 						getISISImage()->voxel<TYPE>( x, y, z, t ) = util::Value<InternalImageType> ( getChunkVector()[t].voxel<InternalImageType>( x, y, z ) ).as<TYPE>();
 					}
