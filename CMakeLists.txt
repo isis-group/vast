@@ -35,6 +35,7 @@ set(VIEWER_FILES_HPP
 	widgets/startwidget.hpp
 	widgets/keycommandsdialog.hpp
 	widgets/helpdialog.hpp
+	widgets/aboutDialog.hpp
 )
 
 set(WIDGET_FILES_HPP
