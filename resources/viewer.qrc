@@ -1,5 +1,6 @@
 <RCC>
   <qresource prefix="common">
+    <file>minerva-MPG.png</file>
     <file>pause.png</file>
     <file>play.png</file>
     <file>vast_big.jpg</file>

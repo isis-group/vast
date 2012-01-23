@@ -120,10 +120,12 @@ void QViewerCore::timestepChanged ( int timestep )
 	}
 }
 
-
 std::list<boost::shared_ptr<ImageHolder> > QViewerCore::addImageList ( const std::list< data::Image > imageList, const ImageHolder::ImageType &imageType )
 {
+	getUICore()->getMainWindow()->setCursor( Qt::WaitCursor );
+	QApplication::processEvents();
 	std::list<boost::shared_ptr<ImageHolder> > retList = isis::viewer::ViewerCoreBase::addImageList ( imageList, imageType );
+	getUICore()->getMainWindow()->setCursor( Qt::ArrowCursor );
 	return retList;
 
 }

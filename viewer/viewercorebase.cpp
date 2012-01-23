@@ -173,6 +173,7 @@ void ViewerCoreBase::setCommonViewerOptions()
 	m_OptionsMap->setPropertyAs<bool>( "showWarningMessages", false );
 	m_OptionsMap->setPropertyAs<bool>( "showInfoMessages", false );
 	m_OptionsMap->setPropertyAs<bool>( "showVerboseInfoMessages", false );
+	m_OptionsMap->setPropertyAs<std::string>("vastSymbol", std::string(":/common/minerva-MPG.png") );
 
 	std::stringstream signature;
 	signature << "vast v" << getVersion() << ", MPG CBS";

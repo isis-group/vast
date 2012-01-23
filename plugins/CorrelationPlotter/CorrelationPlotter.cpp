@@ -158,8 +158,8 @@ bool isis::viewer::plugin::CorrelationPlotterDialog::createCorrelationMap()
 			m_CurrentCorrelationMap->minMax.second = util::Value<MapImageType>( 1 );
 			m_CurrentCorrelationMap->internMinMax.first = util::Value<MapImageType>( 0 );
 			m_CurrentCorrelationMap->internMinMax.second = util::Value<MapImageType>( 255 );
-			m_CurrentCorrelationMap->scalingToInternalType.first = util::Value<double>(128);
-			m_CurrentCorrelationMap->scalingToInternalType.second = util::Value<double>(127);
+			m_CurrentCorrelationMap->scalingToInternalType.first = util::Value<MapImageType>(128);
+			m_CurrentCorrelationMap->scalingToInternalType.second = util::Value<MapImageType>(127);
 			m_CurrentCorrelationMap->extent = m_CurrentCorrelationMap->minMax.second->as<double>() -  m_CurrentCorrelationMap->minMax.first->as<double>();
 			isis::data::ValuePtr<InternalFunctionalImageType> imagePtr( ( InternalFunctionalImageType * )
 					calloc( m_CurrentFunctionalImage->getISISImage()->getVolume(), sizeof( InternalFunctionalImageType ) ), m_CurrentFunctionalImage->getISISImage()->getVolume() );

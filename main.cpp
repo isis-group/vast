@@ -116,6 +116,8 @@ int main( int argc, char *argv[] )
 	std::list< data::Image > zImgList;
 
 	if( fileList.size() || zmapFileList.size() ) {
+		core->getUICore()->getMainWindow()->setCursor( Qt::WaitCursor );
+		QApplication::processEvents();
 		if( core->getOptionMap()->getPropertyAs<bool>( "showLoadingWidget" ) ) {
 			core->getUICore()->getMainWindow()->startWidget->showMe( false );
 		}
@@ -216,10 +218,10 @@ int main( int argc, char *argv[] )
 		core->getUICore()->getMainWindow()->startWidget->close();
 
 	}
-
+	
 	core->getUICore()->showMainWindow();
 
 	core->settingsChanged();
-
+	
 	return app.getQApplication().exec();
 }

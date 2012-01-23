@@ -27,6 +27,7 @@
  ******************************************************************/
 #include "startwidget.hpp"
 #include "uicore.hpp"
+#include <qviewercore.hpp>
 #include "filedialog.hpp"
 
 namespace isis
@@ -82,12 +83,14 @@ void StartWidget::showEvent( QShowEvent * )
 	uint16_t height = m_ViewerCore->getOptionMap()->getPropertyAs<uint16_t>( "startWidgetHeight" );
 	const QRect screen = QApplication::desktop()->screenGeometry();
 
-	setMaximumHeight( height );
+	setMaximumHeight( height * 1.1 );
 	setMaximumWidth( width );
-	setMinimumHeight( height );
+	setMinimumHeight( height * 1.1 );
 	setMinimumWidth( width );
-	QPixmap pixMap( ":/common/vast_big.jpg" );
+	QPixmap pixMap( m_ViewerCore->getOptionMap()->getPropertyAs<std::string>("vastSymbol").c_str() );
 	float ratio = pixMap.height() / ( float )pixMap.width();
+	m_Interface.imageLabel->setMinimumHeight( width * ratio );
+	m_Interface.imageLabel->setMinimumWidth( width );
 	m_Interface.imageLabel->setPixmap( pixMap.scaled( width, width * ratio ) );
 	m_Interface.buttonFrame->setMaximumHeight( height - width * ratio );
 	move( m_ViewerCore->getUICore()->getMainWindow()->rect().center().x() - this->width() / 2,  m_ViewerCore->getUICore()->getMainWindow()->rect().center().y() - this->height() / 2 );

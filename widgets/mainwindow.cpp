@@ -53,7 +53,7 @@ MainWindow::MainWindow( QViewerCore *core ) :
 	m_SignatureLabel( new QLabel( this ) )
 {
 	m_Interface.setupUi( this );
-	setWindowIcon( QIcon( ":/common/vast.jpg" ) );
+	setWindowIcon( QIcon( m_ViewerCore->getOptionMap()->getPropertyAs<std::string>("vastSymbol").c_str() ) );
 	m_ActionReset_Scaling = new QAction( this );
 	m_ActionAuto_Scaling = new QAction( this );
 	m_ActionReset_Scaling->setShortcut( QKeySequence( tr( "R, S" ) ) );

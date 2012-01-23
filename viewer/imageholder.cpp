@@ -127,7 +127,6 @@ boost::numeric::ublas::matrix< double > ImageHolder::getImageOrientation( bool t
 
 bool ImageHolder::setImage( const data::Image &image, const ImageType &_imageType, const std::string &filename )
 {
-
 	//some checks
 	if( image.isEmpty() ) {
 		LOG( Runtime, error ) << "Getting an empty image? Obviously something went wrong.";

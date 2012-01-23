@@ -1,0 +1,5 @@
+<RCC>
+  <qresource prefix="common">
+    <file>properties.png</file>
+  </qresource>
+</RCC>
