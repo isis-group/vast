@@ -47,7 +47,6 @@ void isis::viewer::plugin::CorrelationPlotterDialog::lockClicked()
 {
 	if( m_Interface.lock->isChecked() )  {
 		calculateCorrelation( true );
-		m_CurrentCorrelationMap->syncImage();
 	}
 }
 
@@ -100,9 +99,9 @@ void isis::viewer::plugin::CorrelationPlotterDialog::showEvent( QShowEvent * )
 
 		if( !hasFunctionalImage ) {
 			disconnect( m_ViewerCore, SIGNAL( emitPhysicalCoordsChanged( util::fvector4 ) ), this, SLOT( physicalCoordsChanged( util::fvector4 ) ) );
-			LOG( Runtime, warning ) << "Can not find any functional dataset. WonŽt calculate correlation map";
+			LOG( Runtime, warning ) << "Can not find any functional dataset. Will not calculate correlation map";
 			QMessageBox msgBox;
-			msgBox.setText( "Can not find any functional dataset. WonŽt calculate correlation map!" );
+			msgBox.setText( "Can not find any functional dataset. Will not calculate correlation map!" );
 			msgBox.exec();
 			return;
 		} else {
@@ -157,8 +156,10 @@ bool isis::viewer::plugin::CorrelationPlotterDialog::createCorrelationMap()
 			m_CurrentCorrelationMap->lut = std::string( "standard_zmap" );
 			m_CurrentCorrelationMap->minMax.first = util::Value<MapImageType>( -1 );
 			m_CurrentCorrelationMap->minMax.second = util::Value<MapImageType>( 1 );
-			m_CurrentCorrelationMap->internMinMax.first = util::Value<MapImageType>( -1 );
-			m_CurrentCorrelationMap->internMinMax.second = util::Value<MapImageType>( 1 );
+			m_CurrentCorrelationMap->internMinMax.first = util::Value<MapImageType>( 0 );
+			m_CurrentCorrelationMap->internMinMax.second = util::Value<MapImageType>( 255 );
+			m_CurrentCorrelationMap->scalingToInternalType.first = util::Value<double>(128);
+			m_CurrentCorrelationMap->scalingToInternalType.second = util::Value<double>(128);
 			m_CurrentCorrelationMap->extent = m_CurrentCorrelationMap->minMax.second->as<double>() -  m_CurrentCorrelationMap->minMax.first->as<double>();
 			isis::data::ValuePtr<InternalFunctionalImageType> imagePtr( ( InternalFunctionalImageType * )
 					calloc( m_CurrentFunctionalImage->getISISImage()->getVolume(), sizeof( InternalFunctionalImageType ) ), m_CurrentFunctionalImage->getISISImage()->getVolume() );
@@ -214,17 +215,19 @@ void isis::viewer::plugin::CorrelationPlotterDialog::calculateCorrelation( bool 
 			}
 		}
 	} else {
-		#pragma omp parallel for
+		
 
 		for( unsigned int z = 0; z < m_CurrentFunctionalImage->getImageSize()[2]; z++ ) {
 			for( unsigned int y = 0; y < m_CurrentFunctionalImage->getImageSize()[1]; y++ ) {
+				#pragma omp parallel for
 				for( unsigned int x = 0; x < m_CurrentFunctionalImage->getImageSize()[0]; x++ ) {
 					_internCalculateCorrelation( util::ivector4( x, y, z ), s_x, _x, vx, n, vol );
 				}
 			}
 		}
+		m_CurrentCorrelationMap->updateHistogram();;
 	}
-
+	
 
 }
 
@@ -248,13 +251,13 @@ void isis::viewer::plugin::CorrelationPlotterDialog::_internCalculateCorrelation
 	const double s_y = std::sqrt( ( 1 / float( n - 1 ) ) * ( sum_quad_y - n * _y * _y ) );
 
 	double r_xy = s_xy / ( s_x * s_y );
-
+	
 	if( !std::isnan( r_xy ) ) {
-		r_xy += 1;
-		r_xy *= 128;
-		m_CurrentCorrelationMap->getChunkVector()[0].voxel<InternalImageType>( vec[0], vec[1], vec[2] ) = r_xy;
+		m_CurrentCorrelationMap->getChunkVector()[0].voxel<InternalImageType>( vec[0], vec[1], vec[2] ) = ((r_xy + 1) * 128) - 1 ;
+		m_CurrentCorrelationMap->getISISImage()->voxel<MapImageType>(vec[0], vec[1], vec[2] ) = r_xy;
 	} else {
 		m_CurrentCorrelationMap->getChunkVector()[0].voxel<InternalImageType>( vec[0], vec[1], vec[2] ) = 128;
+		m_CurrentCorrelationMap->getISISImage()->voxel<MapImageType>(vec[0], vec[1], vec[2] ) = 0;
 	}
 
 }

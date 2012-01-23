@@ -392,7 +392,7 @@ void ImageHolder::removeWidget( WidgetInterface *widget )
 	}
 }
 
-void ImageHolder::syncImage()
+void ImageHolder::syncImage(bool copy)
 {
 	// first check if sizes coincide
 	if( isRGB ) {
@@ -413,7 +413,7 @@ void ImageHolder::syncImage()
 		return;
 	}
 
-	if( coincide && !isRGB ) {
+	if( coincide && !isRGB && copy) {
 		switch( majorTypeID ) {
 		case data::ValuePtr<bool>::staticID:
 			_syncImage<bool>();
@@ -450,8 +450,17 @@ void ImageHolder::syncImage()
 			break;
 		}
 	}
+	optimalScalingOffset = getOptimalScaling();
+	scalingToInternalType = getISISImage()->getScalingTo( data::ValuePtr<InternalImageType>::staticID );
+	
 
 }
+
+void ImageHolder::updateHistogram()
+{
+	optimalScalingOffset = getOptimalScaling();
+}
+
 
 double ImageHolder::getInternalExtent() const
 {

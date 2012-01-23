@@ -103,8 +103,9 @@ public:
 	std::list< WidgetInterface * > getWidgetList() { return m_WidgetList; }
 
 	void updateOrientation();
+	void updateHistogram();
 
-	void syncImage();
+	void syncImage(bool copy = false );
 
 	/**offset, scaling**/
 	std::pair<double, double> getOptimalScaling();
