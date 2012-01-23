@@ -159,13 +159,20 @@ bool isis::viewer::plugin::CorrelationPlotterDialog::createCorrelationMap()
 			m_CurrentCorrelationMap->internMinMax.first = util::Value<MapImageType>( 0 );
 			m_CurrentCorrelationMap->internMinMax.second = util::Value<MapImageType>( 255 );
 			m_CurrentCorrelationMap->scalingToInternalType.first = util::Value<double>(128);
-			m_CurrentCorrelationMap->scalingToInternalType.second = util::Value<double>(128);
+			m_CurrentCorrelationMap->scalingToInternalType.second = util::Value<double>(127);
 			m_CurrentCorrelationMap->extent = m_CurrentCorrelationMap->minMax.second->as<double>() -  m_CurrentCorrelationMap->minMax.first->as<double>();
 			isis::data::ValuePtr<InternalFunctionalImageType> imagePtr( ( InternalFunctionalImageType * )
 					calloc( m_CurrentFunctionalImage->getISISImage()->getVolume(), sizeof( InternalFunctionalImageType ) ), m_CurrentFunctionalImage->getISISImage()->getVolume() );
 			m_CurrentFunctionalImage->getISISImage()->copyToMem<InternalFunctionalImageType>( &imagePtr[0], m_CurrentFunctionalImage->getISISImage()->getVolume() );
 			m_InternalChunk.reset( new isis::data::Chunk( imagePtr, size[0], size[1], size[2], size[3] ) );
 			m_CurrentCorrelationMap->updateColorMap();
+			util::ivector4 voxelCoords = m_CurrentFunctionalImage->voxelCoords;
+			util::fvector4 physicalCoords = m_CurrentFunctionalImage->physicalCoords;
+			voxelCoords[3] = 0;
+			physicalCoords[3] = 0;
+			m_CurrentCorrelationMap->voxelCoords = voxelCoords;
+			m_CurrentCorrelationMap->physicalCoords = physicalCoords;
+			m_CurrentVoxelPos = voxelCoords;
 			return true;
 		}
 	}
