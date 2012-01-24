@@ -36,6 +36,7 @@
 #include "common.hpp"
 #include "color.hpp"
 #include "widgetinterface.hpp"
+#include "common.hpp"
 
 namespace isis
 {
@@ -160,10 +161,10 @@ private:
 	template<typename TYPE>
 	void copyImageToVector( const data::Image &image, bool reserveZero ) {
 		data::ValuePtr<TYPE> imagePtr( ( TYPE * ) calloc( image.getVolume(), sizeof( TYPE ) ), image.getVolume() );
-		LOG( Debug, verbose_info ) << "Needed memory: " << image.getVolume() * sizeof( TYPE ) / ( 1024.0 * 1024.0 ) << " mb.";
+		LOG( Trace, info) << "Needed memory: " << image.getVolume() * sizeof( TYPE ) / ( 1024.0 * 1024.0 ) << " mb.";
 
 		if( reserveZero ) {
-			// calculate new scaling
+			// calculate new scaling  
 			data::scaling_pair scalingPair = image.getScalingTo( data::ValuePtr<TYPE>::staticID, data::upscale );
 			double scaling = scalingPair.first->as<double>();
 			double offset = scalingPair.second->as<double>();

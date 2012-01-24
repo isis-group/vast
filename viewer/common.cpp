@@ -111,6 +111,13 @@ std::list< std::string > getSupportedTypeList()
 	return boost::assign::list_of<std::string>( "boolean" )( "s8bit" )( "u8bit" )( "s16bit" )( "u16bit" )( "s32bit" )( "u32bit" )( "s64bit" )( "u64bit" )( "float" )( "double" )( "color24" )( "color32" );
 }
 
+std::string getCrashLogFilePath()
+{
+	const std::string homePath = QDir::homePath().toStdString();
+	std::stringstream logFilePath;
+	logFilePath << homePath << "/vastCrashLog.log";
+	return logFilePath.str();
+}
 
 
 }

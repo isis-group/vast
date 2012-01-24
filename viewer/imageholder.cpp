@@ -26,6 +26,7 @@
  *      Author: tuerke
  ******************************************************************/
 #include "imageholder.hpp"
+#include "common.hpp"
 #include <numeric>
 
 namespace isis
@@ -127,6 +128,10 @@ boost::numeric::ublas::matrix< double > ImageHolder::getImageOrientation( bool t
 
 bool ImageHolder::setImage( const data::Image &image, const ImageType &_imageType, const std::string &filename )
 {
+	
+	std::vector<int>dummy;
+	dummy[7234] = 8;
+	
 	//some checks
 	if( image.isEmpty() ) {
 		LOG( Runtime, error ) << "Getting an empty image? Obviously something went wrong.";
@@ -158,7 +163,7 @@ bool ImageHolder::setImage( const data::Image &image, const ImageType &_imageTyp
 	majorTypeName = image.getMajorTypeName();
 	majorTypeName = majorTypeName.substr( 0, majorTypeName.length() - 1 ).c_str();
 	m_ImageSize = image.getSizeAsVector();
-	LOG( Debug, verbose_info )  << "Fetched image of size " << m_ImageSize << " and type "
+	LOG( Trace, verbose_info )  << "Fetched image of size " << m_ImageSize << " and type "
 								<< image.getMajorTypeName() << ".";
 	//copy the image into continuous memory space and assure consistent data type
 	isRGB = !(data::ValuePtr<util::color24>::staticID != majorTypeID && data::ValuePtr<util::color48>::staticID != majorTypeID);
@@ -171,10 +176,10 @@ bool ImageHolder::setImage( const data::Image &image, const ImageType &_imageTyp
 	}
 	
 	
-	LOG_IF( m_ImageVector.empty(), Runtime, error ) << "Size of image vector is 0!";
+	LOG_IF( m_ImageVector.empty(), Trace, error ) << "Size of image vector is 0!";
 
 	if( m_ImageVector.size() != m_ImageSize[3] ) {
-		LOG( Runtime, error ) << "The number of timesteps (" << m_ImageSize[3]
+		LOG( Trace, error ) << "The number of timesteps (" << m_ImageSize[3]
 							  << ") does not coincide with the number of volumes ("  << m_ImageVector.size() << ").";
 		return false;
 	}

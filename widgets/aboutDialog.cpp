@@ -34,8 +34,14 @@ isis::viewer::widget::AboutDialog::AboutDialog ( QWidget* parent, isis::viewer::
 	m_ViewerCore( core ) 
 
 {
+	m_Interface.setupUi(this);
+	QPixmap pixMap( m_ViewerCore->getOptionMap()->getPropertyAs<std::string>("vastSymbol").c_str() );
+	float ratio = pixMap.height() / ( float )pixMap.width();
+	m_Interface.vastSymbolLabel->setPixmap( QPixmap( 
+		m_ViewerCore->getOptionMap()->getPropertyAs<std::string>("vastSymbol").c_str() ).scaled(pixMap.width() / ratio , m_Interface.vastSymbolLabel->height(), Qt::KeepAspectRatio ) );
 
 }
+
 
 
 

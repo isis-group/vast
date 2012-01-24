@@ -27,8 +27,12 @@
  ******************************************************************/
 #include "qviewercore.hpp"
 #include <DataStorage/io_factory.hpp>
+#include <DataStorage/fileptr.hpp>
 #include "nativeimageops.hpp"
 #include "uicore.hpp"
+#include <fstream>
+
+#include <signal.h>
 
 namespace isis
 {
@@ -43,6 +47,8 @@ QViewerCore::QViewerCore ( const std::string &appName, const std::string &orgNam
 	  m_ProgressFeedback ( boost::shared_ptr<QProgressFeedback> ( new QProgressFeedback() ) ),
 	  m_UI ( new isis::viewer::UICore ( this ) )
 {
+	signal( SIGSEGV, sigsegv_ );
+	
 	QCoreApplication::setApplicationName ( QString ( appName.c_str() ) );
 	QCoreApplication::setOrganizationName ( QString ( orgName.c_str() ) );
 	QApplication::setStartDragTime ( 1000 );
@@ -70,6 +76,45 @@ QViewerCore::QViewerCore ( const std::string &appName, const std::string &orgNam
 #else
 	getOptionMap()->setPropertyAs<bool> ( "ompAvailable", false );
 #endif
+	checkForErrors();
+}
+
+void QViewerCore::checkForErrors()
+{
+	getSettings()->beginGroup("ErrorHandling");
+	const bool vastExitedSuccessfully = getSettings()->value( "vastExitedSuccessfully", true ).toBool();
+	if( !vastExitedSuccessfully && getOptionMap()->getPropertyAs<bool>("showCrashMessage") ) {
+		QMessageBox msgBox;
+		msgBox.setWindowFlags(Qt::WindowSystemMenuHint);
+		
+		QSpacerItem* horizontalSpacer = new QSpacerItem(700, 0, QSizePolicy::Minimum, QSizePolicy::Expanding);
+		QGridLayout* layout = (QGridLayout*)msgBox.layout();
+		layout->addItem(horizontalSpacer, layout->rowCount(), 0, 1, layout->columnCount());
+		msgBox.setIcon( QMessageBox::Information );
+		std::stringstream text;
+		text << "vast crashed last time!";
+		msgBox.setText( text.str().c_str() );
+		msgBox.setInformativeText( "Below you see the developer information. Feel free to copy it and send it to the vast developer." );
+		std::stringstream detailedText;
+		detailedText << "Developer information: " << std::endl;
+		data::FilePtr logFile( getCrashLogFilePath().c_str() );
+		if( !logFile.good() ) {
+			QMessageBox errorMessage;
+			errorMessage.setIcon( QMessageBox::Critical );
+			errorMessage.setText( "Could not open the crash log file!" );
+			errorMessage.exec();
+		} else {
+			msgBox.setDetailedText( reinterpret_cast<const char*>( &logFile.at<uint8_t>(0)[0] ) ); //do not do this at home!!
+			msgBox.setStandardButtons( QMessageBox::Ok );
+			msgBox.exec();
+		}
+		
+	} else {
+		getSettings()->setValue("vastExitedSuccessfully", false );
+		getSettings()->sync();
+	}
+	
+	getSettings()->endGroup();
 }
 
 
@@ -438,6 +483,7 @@ void QViewerCore::loadSettings()
 	getOptionMap()->setPropertyAs<bool> ( "showFavoriteFileList", getSettings()->value ( "showFavoriteFileList", false ).toBool() );
 	getOptionMap()->setPropertyAs<bool> ( "showStartWidget", getSettings()->value ( "showStartWidget", true ).toBool() );
 	getOptionMap()->setPropertyAs<bool> ( "showLoadingWidget", getSettings()->value ( "showLoadingWidget", true ).toBool() );
+	getOptionMap()->setPropertyAs<bool> ( "showCrashMessage", getSettings()->value ( "showCrashMessage", true ).toBool() );
 	getOptionMap()->setPropertyAs<uint8_t> ( "numberOfThreads", getSettings()->value ( "numberOfThreads" ).toUInt() );
 	getOptionMap()->setPropertyAs<bool> ( "enableMultithreading", getSettings()->value ( "enableMultithreading" ).toBool() );
 	getOptionMap()->setPropertyAs<bool> ( "useAllAvailablethreads", getSettings()->value ( "useAllAvailableThreads" ).toBool() );
@@ -457,6 +503,7 @@ void QViewerCore::loadSettings()
 void QViewerCore::saveSettings()
 {
 	//saving the preferences to the profile file
+	
 	getSettings()->beginGroup ( "ViewerCore" );
 	getSettings()->setValue ( "lutZMap", getOptionMap()->getPropertyAs<std::string> ( "lutZMap" ).c_str() );
 	getSettings()->setValue ( "lutStructural", getOptionMap()->getPropertyAs<std::string> ( "lutStructural" ).c_str() );
@@ -469,6 +516,7 @@ void QViewerCore::saveSettings()
 	getSettings()->setValue ( "showFavoriteFileList", getOptionMap()->getPropertyAs<bool> ( "showFavoriteFileList" ) );
 	getSettings()->setValue ( "showStartWidget", getOptionMap()->getPropertyAs<bool> ( "showStartWidget" ) );
 	getSettings()->setValue ( "showLoadingWidget", getOptionMap()->getPropertyAs<bool> ( "showLoadingWidget" ) );
+	getSettings()->setValue ( "showCrashMessage", getOptionMap()->getPropertyAs<bool> ( "showCrashMessage" ) );	
 	getSettings()->setValue ( "numberOfThreads", getOptionMap()->getPropertyAs<uint8_t> ( "numberOfThreads" ) );
 	getSettings()->setValue ( "enableMultithreading", getOptionMap()->getPropertyAs<bool> ( "enableMultithreading" ) );
 	getSettings()->setValue ( "useAllAvailablethreads", getOptionMap()->getPropertyAs<bool> ( "useAllAvailableThreads" ) );
@@ -486,6 +534,36 @@ void QViewerCore::saveSettings()
 	getSettings()->sync();
 }
 
+void QViewerCore::close ()
+{
+	getSettings()->beginGroup("ErrorHandling");
+	getSettings()->setValue( "vastExitedSuccessfully", true );
+	getSettings()->sync();
+	getSettings()->endGroup();
+	
+}
+
+
+void QViewerCore::sigsegv_ ( int exit_code )
+{
+#ifndef WIN32
+
+	std::ofstream logFile ( getCrashLogFilePath().c_str(), std::ofstream::binary );
+	const qt4::QMessageList &messageList = util::Singletons::get<qt4::QMessageList,10>();
+	for( qt4::QMessageList::const_iterator iter = messageList.begin(); iter != messageList.end(); iter++ ) {
+		logFile << iter->m_module << "(" << iter->time_str << ") [" << iter->m_file << ":" << iter->m_line << "] " << iter->message << std::endl;
+	}
+	logFile.close();
+	std::cout << "Seems like vast crashed :-( . Logfile was written to " << getCrashLogFilePath() << std::endl;
+	
+#else
+#warning implement me!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	
+#endif
+	
+// 	m_logger->writeLogging();
+	exit(exit_code);
+}
 
 
 }

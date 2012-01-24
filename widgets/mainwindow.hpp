@@ -39,6 +39,7 @@
 #include "filedialog.hpp"
 #include "startwidget.hpp"
 #include "keycommandsdialog.hpp"
+#include "aboutDialog.hpp"
 #include "helpdialog.hpp"
 
 namespace isis
@@ -53,6 +54,7 @@ class LoggingDialog;
 class FileDialog;
 class StartWidget;
 class KeyCommandsDialog;
+class AboutDialog;
 
 }
 
@@ -76,6 +78,7 @@ public:
 	widget::ScalingWidget *scalingWidget;
 	widget::KeyCommandsDialog *keyCommandsdialog;
 	widget::HelpDialog *helpDialog;
+	widget::AboutDialog *aboutDialog;
 
 
 public Q_SLOTS:

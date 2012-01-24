@@ -44,12 +44,10 @@ int main( int argc, char *argv[] )
 
 	using namespace isis;
 	using namespace viewer;
-	qt4::QDefaultMessagePrint *viewer_handler = new qt4::QDefaultMessagePrint( info );
-	qt4::QDefaultMessagePrint *isis_handler = new qt4::QDefaultMessagePrint( verbose_info );
-	qt4::QDefaultMessagePrint *imageio_handler = new qt4::QDefaultMessagePrint( verbose_info );
-	util::_internal::Log<viewer::Runtime>::setHandler( boost::shared_ptr<qt4::QDefaultMessagePrint>( viewer_handler ) );
-	util::_internal::Log<data::Runtime>::setHandler( boost::shared_ptr<qt4::QDefaultMessagePrint>( isis_handler ) );
-	util::_internal::Log<image_io::Runtime>::setHandler( boost::shared_ptr<qt4::QDefaultMessagePrint>( imageio_handler ) );
+	
+	
+	boost::shared_ptr<qt4::QDefaultMessagePrint> vast_logger ( new qt4::QDefaultMessagePrint( verbose_info ) );
+	util::_internal::Log<viewer::Trace>::setHandler( vast_logger );
 
 #ifndef NDEBUG
 	//     qt4::QDefaultMessagePrint::stopBelow( warning );
@@ -61,16 +59,21 @@ int main( int argc, char *argv[] )
 	util::Selection dbg_levels( "error,warning,info,verbose_info" );
 	dbg_levels.set( "warning" );
 #if QT_VERSION >= 0x040500
+	
 	const char *graphics_system = getenv( "VAST_GRAPHICS_SYSTEM" );
-
+    LOG(Trace, info) << "QT_VERSION >= 0x040500";
+	
 	if( graphics_system && ( !strcmp( graphics_system, "raster" ) || !strcmp( graphics_system, "opengl" ) || !strcmp( graphics_system, "native" ) ) ) {
 		QApplication::setGraphicsSystem( graphics_system );
+		LOG(Trace, info) << "Using graphics_system=\"" << std::string( graphics_system ) << "\"";
 	} else {
 		QApplication::setGraphicsSystem( "raster" );
+		LOG(Trace, info) << "Using graphics_system=\"raster\"";
 	}
 
 #else
 	std::cout << "Warning! Your Qt version is below Qt4.5. Not able to set graghics system." << std::endl;
+	LOG(Trace, warning) << "QT_VERSION < 0x040500";
 #endif
 
 	qt4::IOQtApplication app( appName.c_str(), false, false );
@@ -101,9 +104,7 @@ int main( int argc, char *argv[] )
 
 	QViewerCore *core = new QViewerCore( appName, orgName );
 
-	core->addMessageHandler( viewer_handler );
-	core->addMessageHandler( isis_handler );
-	core->addMessageHandler( imageio_handler );
+	core->addMessageHandler( vast_logger.get() );
 	//scan for plugins and hand them to the core
 	core->addPlugins( plugin::PluginLoader::get().getPlugins() );
 	core->getUICore()->reloadPluginsToGUI();

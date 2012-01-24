@@ -80,6 +80,7 @@ public:
 
 public Q_SLOTS:
 	virtual void settingsChanged();
+	virtual void close( );
 	virtual void zoomChanged( float zoomFactor );
 	virtual void physicalCoordsChanged( util::fvector4 );
 	virtual void timestepChanged( int );
@@ -108,6 +109,8 @@ Q_SIGNALS:
 
 private:
 
+	void checkForErrors();
+	
 	QSettings *m_Settings;
 	std::list< qt4::QMessage > m_MessageLog;
 
@@ -116,6 +119,8 @@ private:
 	std::string m_CurrentPath;
 	boost::shared_ptr< QProgressFeedback > m_ProgressFeedback;
 	UICore *m_UI;
+	
+	static void sigsegv_( int exit_code );
 
 };
 
