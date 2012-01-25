@@ -106,10 +106,15 @@ public:
 	void updateOrientation();
 	void updateHistogram();
 
-	void syncImage(bool copy = false );
+	void setVoxel( const size_t &first, const size_t &second, const size_t &third, const size_t &fourth, const double &value, bool sync = true );
 
-	/**offset, scaling**/
-	std::pair<double, double> getOptimalScaling();
+	template<typename TYPE>
+	void setTypedVoxel(  const size_t &first, const size_t &second, const size_t &third, const size_t &fourth, const TYPE &value, bool sync = true ) {
+		getChunkVector()[fourth].voxel<InternalImageType>(first, second, third) = static_cast<double>( value ) * scalingToInternalType.first->as<double>() + scalingToInternalType.second->as<double>();
+		if( sync ) {
+			getISISImage()->getChunk(first, second, third, fourth, false).voxel<TYPE>(first, second, third, fourth ) = value;
+		}
+	}
 
 	util::ivector4 voxelCoords;
 	util::fvector4 physicalCoords;
@@ -129,7 +134,6 @@ public:
 	InterpolationType interpolationType;
 	std::pair<util::ValueReference, util::ValueReference> minMax;
 	std::pair<util::ValueReference, util::ValueReference> internMinMax;
-	std::pair<double, double> optimalScalingOffset;
 	boost::numeric::ublas::matrix<double> orientation;
 	boost::numeric::ublas::matrix<double> latchedOrientation;
 	unsigned short majorTypeID;
@@ -140,6 +144,8 @@ public:
 
 private:
 
+	  void logImageProps() const;
+	
 	util::FixedVector<size_t, 4> m_ImageSize;
 	util::PropertyMap m_PropMap;
 
@@ -161,9 +167,10 @@ private:
 	template<typename TYPE>
 	void copyImageToVector( const data::Image &image, bool reserveZero ) {
 		data::ValuePtr<TYPE> imagePtr( ( TYPE * ) calloc( image.getVolume(), sizeof( TYPE ) ), image.getVolume() );
-		LOG( Trace, info) << "Needed memory: " << image.getVolume() * sizeof( TYPE ) / ( 1024.0 * 1024.0 ) << " mb.";
+		LOG( Dev, info) << "Needed memory: " << image.getVolume() * sizeof( TYPE ) / ( 1024.0 * 1024.0 ) << " mb.";
 
 		if( reserveZero ) {
+			LOG( Dev, info ) << "0 is reserved";
 			// calculate new scaling  
 			data::scaling_pair scalingPair = image.getScalingTo( data::ValuePtr<TYPE>::staticID, data::upscale );
 			double scaling = scalingPair.first->as<double>();
@@ -173,13 +180,14 @@ private:
 			const data::scaling_pair newScaling( std::make_pair< util::ValueReference, util::ValueReference>( util::Value<double>( scaling ), util::Value<double>( offset ) ) ) ;
 			scalingToInternalType = newScaling;
 		} else {
+			LOG( Dev, info ) << "0 is not reserved";
 			scalingToInternalType = image.getScalingTo( data::ValuePtr<TYPE>::staticID, data::upscale );
 		}
-
+		LOG( Dev, info ) << "scalingToInternalType: " << scalingToInternalType.first->as<double>() << " : " << scalingToInternalType.second->as<double>();
 		image.copyToMem<TYPE>( &imagePtr[0], image.getVolume(), scalingToInternalType );
-		LOG( Debug, verbose_info ) << "Copied image to continuous memory space.";
+		LOG( Dev, verbose_info ) << "Copied image to continuous memory space.";
 		internMinMax = imagePtr.getMinMax();
-
+		LOG( Dev, info ) << "internMinMax: " << internMinMax.first->as<double>() << " : " << internMinMax.second->as<double>();
 		//splice the image in its volumes -> we get a vector of t volumes
 		if( m_ImageSize[3] > 1 ) { //splicing is only necessary if we got more than 1 timestep
 			m_ImageVector = imagePtr.splice( m_ImageSize[0] * m_ImageSize[1] * m_ImageSize[2] );
@@ -207,21 +215,6 @@ private:
 		}
 
 	}
-
-	template<typename TYPE>
-	void _syncImage() {
-		for( size_t t = 0; t < getImageSize()[3]; t++ ) {
-			for( size_t z = 0; z < getImageSize()[2]; z++ ) {
-				for( size_t y = 0; y < getImageSize()[1]; y++ ) {
-#pragma omp parallel for
-					for( size_t x = 0; x < getImageSize()[0]; x++ ) {
-						getISISImage()->voxel<TYPE>( x, y, z, t ) = util::Value<InternalImageType> ( getChunkVector()[t].voxel<InternalImageType>( x, y, z ) ).as<TYPE>();
-					}
-				}
-			}
-		}
-	}
-
 };
 
 }

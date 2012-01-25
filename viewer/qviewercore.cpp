@@ -123,10 +123,20 @@ void QViewerCore::addMessageHandler ( qt4::QDefaultMessagePrint *handler )
 	connect ( handler, SIGNAL ( commitMessage ( qt4::QMessage ) ) , this, SLOT ( receiveMessage ( qt4::QMessage ) ) );
 }
 
+void QViewerCore::addMessageHandlerDev ( qt4::QDefaultMessagePrint *handler )
+{
+	connect ( handler, SIGNAL ( commitMessage ( qt4::QMessage ) ) , this, SLOT ( receiveMessageDev(qt4::QMessage)) );
+}
+
 void QViewerCore::receiveMessage ( qt4::QMessage message )
 {
 	m_MessageLog.push_back ( message );
 	getUICore()->showMessage ( message );
+}
+
+void QViewerCore::receiveMessageDev ( qt4::QMessage message )
+{
+	m_DevMessageLog.push_back( message );
 }
 
 void QViewerCore::receiveMessage ( std::string message )

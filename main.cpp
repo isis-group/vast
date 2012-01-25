@@ -46,34 +46,30 @@ int main( int argc, char *argv[] )
 	using namespace viewer;
 	
 	
-	boost::shared_ptr<qt4::QDefaultMessagePrint> vast_logger ( new qt4::QDefaultMessagePrint( verbose_info ) );
-	util::_internal::Log<viewer::Trace>::setHandler( vast_logger );
-
-#ifndef NDEBUG
-	//     qt4::QDefaultMessagePrint::stopBelow( warning );
-#endif
+	boost::shared_ptr<qt4::QDefaultMessagePrint> logging_hanlder_runtime ( new qt4::QDefaultMessagePrint( verbose_info ) );
+	boost::shared_ptr<qt4::QDefaultMessagePrint> logging_hanlder_dev ( new qt4::QDefaultMessagePrint( verbose_info ) );
+	util::_internal::Log<viewer::Dev>::setHandler( logging_hanlder_dev );
+	util::_internal::Log<viewer::Runtime>::setHandler( logging_hanlder_runtime );
 
 	std::string appName = "vast";
 	std::string orgName = "cbs.mpg.de";
 
-	util::Selection dbg_levels( "error,warning,info,verbose_info" );
-	dbg_levels.set( "warning" );
 #if QT_VERSION >= 0x040500
 	
 	const char *graphics_system = getenv( "VAST_GRAPHICS_SYSTEM" );
-    LOG(Trace, info) << "QT_VERSION >= 0x040500";
+    LOG(Dev, info) << "QT_VERSION >= 0x040500";
 	
 	if( graphics_system && ( !strcmp( graphics_system, "raster" ) || !strcmp( graphics_system, "opengl" ) || !strcmp( graphics_system, "native" ) ) ) {
 		QApplication::setGraphicsSystem( graphics_system );
-		LOG(Trace, info) << "Using graphics_system=\"" << std::string( graphics_system ) << "\"";
+		LOG(Dev, info) << "Using graphics_system=\"" << std::string( graphics_system ) << "\"";
 	} else {
 		QApplication::setGraphicsSystem( "raster" );
-		LOG(Trace, info) << "Using graphics_system=\"raster\"";
+		LOG(Dev, info) << "Using graphics_system=\"raster\"";
 	}
 
 #else
 	std::cout << "Warning! Your Qt version is below Qt4.5. Not able to set graghics system." << std::endl;
-	LOG(Trace, warning) << "QT_VERSION < 0x040500";
+	LOG(Dev, warning) << "QT_VERSION < 0x040500";
 #endif
 
 	qt4::IOQtApplication app( appName.c_str(), false, false );
@@ -83,10 +79,6 @@ int main( int argc, char *argv[] )
 	app.parameters["zmap"] = util::slist();
 	app.parameters["zmap"].needed() = false;
 	app.parameters["zmap"].setDescription( "The input image file list is interpreted as zmaps. " );
-	app.parameters["dViewer"] = dbg_levels;
-	app.parameters["dViewer"].setDescription( "Debugging level for the Viewer module" );
-	app.parameters["dViewer"].hidden() = true;
-	app.parameters["dViewer"].needed() = false;
 	app.parameters["rf"] = std::string();
 	app.parameters["rf"].needed() = false;
 	app.parameters["rf"].setDescription( "Override automatic detection of file suffix for reading with given value" );
@@ -102,15 +94,21 @@ int main( int argc, char *argv[] )
 	data::IOFactory::setProgressFeedback( feedback );
 	app.init( argc, argv, true );
 
+	util::_internal::Log<isis::data::Runtime>::setHandler( logging_hanlder_runtime );
+	util::_internal::Log<isis::util::Runtime>::setHandler( logging_hanlder_runtime );
+	util::_internal::Log<isis::util::Debug>::setHandler( logging_hanlder_runtime );
+	util::_internal::Log<isis::data::Debug>::setHandler( logging_hanlder_runtime );
+	util::_internal::Log<isis::image_io::Runtime>::setHandler( logging_hanlder_runtime );
+	util::_internal::Log<isis::image_io::Debug>::setHandler( logging_hanlder_runtime );
+
 	QViewerCore *core = new QViewerCore( appName, orgName );
 
-	core->addMessageHandler( vast_logger.get() );
+	core->addMessageHandler( logging_hanlder_runtime.get() );
+	core->addMessageHandlerDev( logging_hanlder_dev.get() );
 	//scan for plugins and hand them to the core
 	core->addPlugins( plugin::PluginLoader::get().getPlugins() );
 	core->getUICore()->reloadPluginsToGUI();
 
-	app.setLog<ViewerLog>( static_cast<LogLevel>( static_cast <unsigned short>( app.parameters["dViewer"]->as<util::Selection>() ) ) );
-	app.setLog<ViewerDebug>( static_cast<LogLevel>( static_cast <unsigned short>( app.parameters["dViewer"]->as<util::Selection>() ) ) );
 	const util::slist fileList = app.parameters["in"];
 	const util::slist zmapFileList = app.parameters["zmap"];
 	std::list< data::Image > imgList;

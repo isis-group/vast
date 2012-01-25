@@ -260,11 +260,9 @@ void isis::viewer::plugin::CorrelationPlotterDialog::_internCalculateCorrelation
 	double r_xy = s_xy / ( s_x * s_y );
 	
 	if( !std::isnan( r_xy ) ) {
-		m_CurrentCorrelationMap->getChunkVector()[0].voxel<InternalImageType>( vec[0], vec[1], vec[2] ) = ((r_xy + 1) * 128) - 1 ;
-		m_CurrentCorrelationMap->getISISImage()->voxel<MapImageType>(vec[0], vec[1], vec[2] ) = r_xy;
+		m_CurrentCorrelationMap->setTypedVoxel<MapImageType>(vec[0], vec[1], vec[2], 0, r_xy );
 	} else {
-		m_CurrentCorrelationMap->getChunkVector()[0].voxel<InternalImageType>( vec[0], vec[1], vec[2] ) = 128;
-		m_CurrentCorrelationMap->getISISImage()->voxel<MapImageType>(vec[0], vec[1], vec[2] ) = 0;
+		m_CurrentCorrelationMap->setTypedVoxel<MapImageType>(vec[0], vec[1], vec[2], 0, 0 );
 	}
 
 }

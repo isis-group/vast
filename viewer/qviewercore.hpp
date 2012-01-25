@@ -74,8 +74,10 @@ public:
 	const boost::shared_ptr< QProgressFeedback > getProgressFeedback() const { return m_ProgressFeedback; }
 
 	void addMessageHandler( qt4::QDefaultMessagePrint * );
+	void addMessageHandlerDev( qt4::QDefaultMessagePrint * );
 
 	std::list< qt4::QMessage> getMessageLog() const { return m_MessageLog; }
+	std::list< qt4::QMessage> getMessageLogDev() const { return m_DevMessageLog; }
 
 
 public Q_SLOTS:
@@ -88,8 +90,9 @@ public Q_SLOTS:
 	virtual void setShowCrosshair( bool );
 	virtual void updateScene( );
 	virtual bool callPlugin( QString name );
-	virtual void receiveMessage( qt4::QMessage message );
-	virtual void receiveMessage( std::string message );
+	virtual void receiveMessage( qt4::QMessage  );
+	virtual void receiveMessage( std::string  );
+	virtual void receiveMessageDev( qt4::QMessage );
 	virtual void openPath( QStringList fileList, ImageHolder::ImageType imageType, const std::string &rdialect = "", const std::string &rf = "", bool newWidget = false );
 	virtual void centerImages( bool ca = false );
 	virtual void closeImage( boost::shared_ptr<ImageHolder> image, bool refreshUI = true );
@@ -113,6 +116,7 @@ private:
 	
 	QSettings *m_Settings;
 	std::list< qt4::QMessage > m_MessageLog;
+	std::list< qt4::QMessage > m_DevMessageLog;
 
 	QWidget *m_Parent;
 	PluginListType m_PluginList;

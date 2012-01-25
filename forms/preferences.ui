@@ -197,6 +197,9 @@
                  </property>
                  <item>
                   <widget class="QCheckBox" name="checkStartUpScreen">
+                   <property name="toolTip">
+                    <string>vast will show you a start dialog when no image for loading was specified</string>
+                   </property>
                    <property name="text">
                     <string>Show startup screen</string>
                    </property>
@@ -212,7 +215,7 @@
                  <item>
                   <widget class="QCheckBox" name="checkCrashMessage">
                    <property name="text">
-                    <string>Show message crash message</string>
+                    <string>Show crash message</string>
                    </property>
                   </widget>
                  </item>

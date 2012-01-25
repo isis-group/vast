@@ -47,6 +47,7 @@ public:
 
 public Q_SLOTS:
 	void synchronize();
+	void printLog( std::list<qt4::QMessage> );
 
 private:
 	Ui::logDialog m_Interface;

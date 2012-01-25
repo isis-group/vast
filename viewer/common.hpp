@@ -42,8 +42,7 @@ namespace isis
 {
 
 struct ViewerLog {static const char *name() {return "Viewer";}; enum {use = _ENABLE_LOG};};
-struct ViewerDebug {static const char *name() {return "ViewerDebug";}; enum {use = _ENABLE_DEBUG};};
-struct ViewerTrace {static const char *name() { return "ViewerTrace";}; enum {use = _ENABLE_TRACE};};
+struct ViewerDev {static const char *name() { return "ViewerDev";}; enum {use = _ENABLE_DEV};};
 
 namespace viewer
 {
@@ -70,15 +69,9 @@ std::list<std::string> getSupportedTypeList() ;
 util::ivector4 get32BitAlignedSize( const util::ivector4 &origSize );
 
 typedef ViewerLog Runtime;
-typedef ViewerDebug Debug;
-typedef ViewerTrace Trace;
+typedef ViewerDev Dev;
 
-template<typename HANDLE> void enable_log( LogLevel level )
-{
-	ENABLE_LOG( Runtime, HANDLE, level );
-	ENABLE_LOG( Debug, HANDLE, level );
-	ENABLE_LOG( Trace, HANDLE, level );
-}
+
 
 std::string getCrashLogFilePath();
 

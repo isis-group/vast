@@ -74,7 +74,7 @@ find_package(ISIS REQUIRED)
 
 option(VAST_RUNTIME_LOG "Toggles the vast runtime logging" ON)
 option(VAST_DEBUG_LOG "Toggles the vast debug logging" OFF)
-option(VAST_ENABLE_TRACE "Toggles vast tracing" ON)
+option(VAST_ENABLE_DEV "Toggles vast development logging" ON)
 
 # we use the log definitions of the core
 IF(VAST_RUNTIME_LOG)
@@ -91,12 +91,12 @@ ELSE(VAST_DEBUG_LOG)
 	ADD_DEFINITIONS(-D_ENABLE_DEBUG=0)
 ENDIF(VAST_DEBUG_LOG)
 
-IF(VAST_ENABLE_TRACE)
-	add_definitions(-D_ENABLE_TRACE=1)
-else(VAST_ENABLE_TRACE)
-	add_definitions(-D_ENABLE_TRACE=0)
-	message(WARNING "vast tracing was turned off. Creating of log will not be possible!")
-endif(VAST_ENABLE_TRACE)
+IF(VAST_ENABLE_DEV)
+	add_definitions(-D_ENABLE_DEV=1)
+else(VAST_ENABLE_DEV)
+	add_definitions(-D_ENABLE_DEV=0)
+	message(WARNING "vast development logging was turned off. Creating of log will not be possible!")
+endif(VAST_ENABLE_DEV)
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR} ${ISIS_INCLUDE_DIRS})
 

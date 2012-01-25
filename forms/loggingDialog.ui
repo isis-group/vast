@@ -15,6 +15,20 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
+    <widget class="QCheckBox" name="checkRuntime">
+     <property name="text">
+      <string>Runtime</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QCheckBox" name="checkDev">
+     <property name="text">
+      <string>Development</string>
+     </property>
+    </widget>
+   </item>
+   <item>
     <widget class="QFrame" name="frame_2">
      <property name="frameShape">
       <enum>QFrame::StyledPanel</enum>
