@@ -170,6 +170,8 @@ void ViewerCoreBase::setCommonViewerOptions()
 	m_OptionsMap->setPropertyAs<std::string>( "lutZMap", "standard_zmap" );
 	m_OptionsMap->setPropertyAs<uint16_t>( "timeseriesPlayDelayTime", 50 );
 	m_OptionsMap->setPropertyAs<bool>( "histogramOmitZero", true );
+	m_OptionsMap->setPropertyAs<util::slist>("recentOpenList", util::slist() );
+	m_OptionsMap->setPropertyAs<uint16_t>("maxRecentOpenListSize", 10 );
 	//logging
 	m_OptionsMap->setPropertyAs<uint16_t>( "logDelayTime", 6000 );
 	m_OptionsMap->setPropertyAs<bool>( "showErrorMessages", true );

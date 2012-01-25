@@ -378,36 +378,24 @@ void QViewerCore::openPath ( QStringList fileList, ImageHolder::ImageType imageT
 		{
 			ensemble = getUICore()->getEnsembleList().front();
 		}
-
+        util::slist &recentOpenList = getOptionMap()->propertyValue("recentOpenList")->castTo<util::slist>();
 		BOOST_FOREACH ( QStringList::const_reference filename, fileList )
 		{
-			std::stringstream msg;
 			boost::filesystem::path p ( filename.toStdString() );
-
-			if ( boost::filesystem::is_directory ( p ) )
-			{
-				msg << "Loading images from directory \"" << p.leaf() << "\"...";
-			}
-			else
-			{
-				msg << "Loading image \"" << p.leaf() << "\"...";
-			}
 
 			if ( getOptionMap()->getPropertyAs<bool> ( "showLoadingWidget" ) )
 			{
 				getUICore()->getMainWindow()->startWidget->showMe ( false );
 			}
 
-			receiveMessage ( msg.str() );
 			std::list<data::Image> tempImgList = isis::data::IOFactory::load ( filename.toStdString() , rf, rdialect );
 			pathList.push_back ( filename.toStdString() );
 
-			if ( tempImgList.size() > 1 )
-			{
-				msg.clear();
-				msg << "Found " << tempImgList.size() << " images. Loading...";
+			
+			if( recentOpenList.size() > getOptionMap()->getPropertyAs<uint16_t>("maxRecentOpenListSize") - 1 ) {
+				recentOpenList.pop_front();
 			}
-
+			recentOpenList.push_back(filename.toStdString());
 			BOOST_FOREACH ( std::list<data::Image>::const_reference image, tempImgList )
 			{
 				boost::shared_ptr<ImageHolder> imageHolder = addImage ( image, imageType );
@@ -435,10 +423,12 @@ void QViewerCore::openPath ( QStringList fileList, ImageHolder::ImageType imageT
 				}
 			}
 		}
+		getOptionMap()->setPropertyAs<util::slist>("recentOpenList", recentOpenList );
 		getUICore()->rearrangeViewWidgets();
 		getUICore()->refreshUI();
 		centerImages();
 		getUICore()->getMainWindow()->startWidget->close();
+
 	}
 }
 
@@ -498,6 +488,13 @@ void QViewerCore::loadSettings()
 	getOptionMap()->setPropertyAs<bool> ( "enableMultithreading", getSettings()->value ( "enableMultithreading" ).toBool() );
 	getOptionMap()->setPropertyAs<bool> ( "useAllAvailablethreads", getSettings()->value ( "useAllAvailableThreads" ).toBool() );
 	getOptionMap()->setPropertyAs<bool> ( "histogramOmitZero", getSettings()->value ( "histogramOmitZero" ).toBool() );
+    QList<QVariant> recentOpenList = getSettings()->value( "recentOpenList").toList();
+	if( !recentOpenList.empty() ) {
+		util::slist &recentOpenListViewer = getOptionMap()->propertyValue("recentOpenList")->castTo<util::slist>();
+		BOOST_FOREACH( QList<QVariant>::reference listElem, recentOpenList ) {
+			recentOpenListViewer.push_back( listElem.toString().toStdString() );
+		}
+	}
 	//screenshot stuff
 	getOptionMap()->setPropertyAs<uint16_t> ( "screenshotWidth", getSettings()->value ( "screenshotWidth", getOptionMap()->getPropertyAs<uint16_t> ( "screenshotWidth" ) ).toUInt() );
 	getOptionMap()->setPropertyAs<uint16_t> ( "screenshotHeight", getSettings()->value ( "screenshotHeight", getOptionMap()->getPropertyAs<uint16_t> ( "screenshotHeight" ) ).toUInt() );
@@ -531,6 +528,11 @@ void QViewerCore::saveSettings()
 	getSettings()->setValue ( "enableMultithreading", getOptionMap()->getPropertyAs<bool> ( "enableMultithreading" ) );
 	getSettings()->setValue ( "useAllAvailablethreads", getOptionMap()->getPropertyAs<bool> ( "useAllAvailableThreads" ) );
 	getSettings()->setValue ( "histogramOmitZero", getOptionMap()->getPropertyAs<bool> ( "histogramOmitZero" ) );
+    QList<QVariant> recentOpenList;
+	BOOST_FOREACH( util::slist::const_reference path, getOptionMap()->getPropertyAs<util::slist>("recentOpenList") ) {
+		recentOpenList.push_back( QVariant( path.c_str() ) );
+	}
+	getSettings()->setValue ( "recentOpenList", recentOpenList );
 	//screenshot stuff
 	getSettings()->setValue ( "screenshotWidth", getOptionMap()->getPropertyAs<uint16_t> ( "screenshotWidth" ) );
 	getSettings()->setValue ( "screenshotHeight", getOptionMap()->getPropertyAs<uint16_t> ( "screenshotHeight" ) );

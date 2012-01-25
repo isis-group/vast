@@ -147,6 +147,8 @@ MainWindow::MainWindow( QViewerCore *core ) :
 
 	scalingWidget->setVisible( false );
 	loadSettings();
+	m_Interface.actionOpen_recent->setMenu( new QMenu() );
+
 }
 
 
@@ -452,6 +454,27 @@ void MainWindow::reloadPluginsToGUI()
 	}
 }
 
+void MainWindow::updateRecentOpenList()
+{
+	QSignalMapper *signalMapper = new QSignalMapper( this );
+	const util::slist recentOpenList = m_ViewerCore->getOptionMap()->getPropertyAs<util::slist>("recentOpenList");
+	m_Interface.actionOpen_recent->setEnabled(!recentOpenList.empty() );
+	BOOST_FOREACH( util::slist::const_reference path, recentOpenList ) {
+		QAction *recentAction = new QAction( path.c_str(), this );
+		signalMapper->setMapping( recentAction, path.c_str() );
+		m_Interface.actionOpen_recent->menu()->addAction( recentAction );
+		connect( recentAction, SIGNAL( triggered()), signalMapper, SLOT( map() ) );
+	}
+	connect( signalMapper, SIGNAL( mapped(QString)), this, SLOT( openRecentPath(QString)));
+}
+
+void MainWindow::openRecentPath ( QString path )
+{
+	QStringList fileList;
+	fileList.push_back( path );
+	m_ViewerCore->openPath( fileList, isis::viewer::ImageHolder::structural_image, "", "", true );
+}
+
 void MainWindow::refreshUI()
 {
 	m_Interface.actionShow_Labels->setChecked( m_ViewerCore->getOptionMap()->getPropertyAs<bool>( "showLabels" ) );
@@ -484,6 +507,7 @@ void MainWindow::refreshUI()
 	m_Interface.actionShow_Crosshair->setEnabled( m_ViewerCore->hasImage() );
 	m_Interface.actionShow_scaling_option->setEnabled( m_ViewerCore->hasImage() );
 	m_Interface.actionShow_Labels->setEnabled( m_ViewerCore->hasImage() );
+	updateRecentOpenList();
 }
 
 

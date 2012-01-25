@@ -105,9 +105,12 @@ public Q_SLOTS:
 	void toggleSagittalView( bool );
 	void toggleAxialView( bool );
 	void toggleCoronalView( bool );
-
+	void updateRecentOpenList();
+    void openRecentPath( QString );
 
 private:
+
+	
 	Ui::vastMainWindow m_Interface;
 	QViewerCore *m_ViewerCore;
 

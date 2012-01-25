@@ -117,7 +117,7 @@ private:
 	QSettings *m_Settings;
 	std::list< qt4::QMessage > m_MessageLog;
 	std::list< qt4::QMessage > m_DevMessageLog;
-
+	
 	QWidget *m_Parent;
 	PluginListType m_PluginList;
 	std::string m_CurrentPath;

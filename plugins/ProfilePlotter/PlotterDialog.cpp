@@ -62,9 +62,10 @@ isis::viewer::plugin::PlotterDialog::PlotterDialog ( QWidget* parent, isis::view
 
 void isis::viewer::plugin::PlotterDialog::refresh ( isis::util::fvector4 physicalCoords )
 {
-	m_CurrentPhysicalCoords = physicalCoords;
-	plot->clear();
+
 	if( !ui.checkLock->isChecked() && isVisible()) {
+		m_CurrentPhysicalCoords = physicalCoords;
+		plot->clear();
 		BOOST_FOREACH( DataContainer::const_reference image, m_ViewerCore->getDataContainer() ) {
 			const unsigned short axis = image.second->getISISImage()->mapScannerAxisToImageDimension(static_cast<isis::data::scannerAxis>( ui.comboAxis->currentIndex() ) );
 			if( image.second->getImageSize()[axis] > 1 ) {
