@@ -167,7 +167,7 @@ bool ImageHolder::setImage( const data::Image &image, const ImageType &_imageTyp
 								<< image.getMajorTypeName() << ".";
 	//copy the image into continuous memory space and assure consistent data type
 	isRGB = !(data::ValuePtr<util::color24>::staticID != majorTypeID && data::ValuePtr<util::color48>::staticID != majorTypeID);
-    const bool reserveZero = m_ZeroIsReserved && !isRGB;
+    const bool reserveZero = m_ZeroIsReserved && !isRGB && imageType == z_map;
 	if( !isRGB ) {
 		minMax = image.getMinMax();
 		copyImageToVector<InternalImageType>( image, reserveZero );
@@ -340,6 +340,11 @@ void ImageHolder::updateOrientation()
 	m_Image->updateOrientationMatrices();
 	latchedOrientation = getNormalizedImageOrientation();
 	orientation = getImageOrientation();
+	indexOrigin = getISISImage()->getPropertyAs<util::fvector4>("indexOrigin");
+	rowVec = getISISImage()->getPropertyAs<util::fvector4>("rowVec");
+	columnVec = getISISImage()->getPropertyAs<util::fvector4>("columnVec");
+	sliveVec = getISISImage()->getPropertyAs<util::fvector4>("sliveVec");
+
 }
 
 void ImageHolder::checkVoxelCoords( util::ivector4 &vc )

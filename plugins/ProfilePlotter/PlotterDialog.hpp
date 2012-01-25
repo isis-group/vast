@@ -65,12 +65,12 @@ private:
 	QViewerCore *m_ViewerCore;
 	util::fvector4 m_CurrentPhysicalCoords;
 	
-	void fillTimeCourse( boost::shared_ptr<ImageHolder> image, const util::ivector4 &voxCoords, QwtPlotCurve *curve );
-	void fillSpectrum(  boost::shared_ptr<ImageHolder> image, const util::ivector4 &voxCoords, QwtPlotCurve *curve ); 
+	void fillTimeCourse( boost::shared_ptr<ImageHolder> image, const util::ivector4 &voxCoords, QwtPlotCurve *curve, const unsigned short &axis );
+	void fillSpectrum(  boost::shared_ptr<ImageHolder> image, const util::ivector4 &voxCoords, QwtPlotCurve *curve, const unsigned short &axis ); 
 	
 	template<typename TYPE>
-	void fillVector( QVector<double> &iv, const size_t &t, const util::ivector4 &vox, boost::shared_ptr<ImageHolder> image ) {
-		iv.push_back( image->getISISImage()->voxel<TYPE>( vox[0], vox[1], vox[2], t ) );
+	void fillVector( QVector<double> &iv, const util::ivector4 &vox, boost::shared_ptr<ImageHolder> image ) {
+		iv.push_back( image->getISISImage()->voxel<TYPE>( vox[0], vox[1], vox[2], vox[3] ) );
 	}
 
 };

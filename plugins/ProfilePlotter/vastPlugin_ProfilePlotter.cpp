@@ -18,20 +18,16 @@
  *
  * Author: Erik Türke, tuerke@cbs.mpg.de
  *
- * vastPlugin_TimePlotter.hpp
+ * vastPlugin_TimePlotter.cpp
  *
  * Description:
  *
  *  Created on: Aug 12, 2011
  *      Author: tuerke
  ******************************************************************/
-#ifndef TIMEPLOTTER_HPP
-#define TIMEPLOTTER_HPP
+#include "vastPlugin_ProfilePlotter.hpp"
 
-#include "plugininterface.h"
-#include "PlotterDialog.hpp"
-#include "common.hpp"
-#include "viewercorebase.hpp"
+
 
 namespace isis
 {
@@ -41,34 +37,22 @@ namespace plugin
 {
 
 
-class TimePlotter : public PluginInterface
+bool ProfilePlotter::call()
 {
-public:
-	virtual QKeySequence getShortcut() { return QKeySequence( "T, P" ) ;}
-	virtual std::string getName() { return std::string( "TimePlotter" ) ; }
-	virtual std::string getDescription() { return std::string( "Plots a timeseries" ); }
-	virtual std::string getTooltip() { return std::string( "" ); }
-	virtual QIcon *getToolbarIcon() { return new QIcon( ":/common/graph.gif" ); }
-	virtual bool isGUI() { return true; }
-	virtual bool call();
+	m_PlotterDialog = new PlotterDialog( parentWidget, viewerCore );
+    if( viewerCore->hasImage() ) {
+        m_PlotterDialog->show();
+    } else {
+        QMessageBox msg(parentWidget);
+        msg.setText("No image has been loaded or selected!");
+        msg.exec();
+    }
+	return true;
+}
 
-	~TimePlotter() {};
 
-
-private:
-
-	PlotterDialog *m_PlotterDialog;
-
-};
 
 
 }
 }
 }
-
-isis::viewer::plugin::PluginInterface *loadPlugin()
-{
-	return new isis::viewer::plugin::TimePlotter();
-}
-
-#endif

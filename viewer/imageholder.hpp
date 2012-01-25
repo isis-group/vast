@@ -129,12 +129,16 @@ public:
 	double lowerThreshold;
 	double upperThreshold;
 	QVector<QRgb> colorMap;
+	util::fvector4 rowVec;
+	util::fvector4 columnVec;
+	util::fvector4 sliveVec;
 	std::string lut;
 	ImageType imageType;
 	InterpolationType interpolationType;
 	std::pair<util::ValueReference, util::ValueReference> minMax;
 	std::pair<util::ValueReference, util::ValueReference> internMinMax;
 	boost::numeric::ublas::matrix<double> orientation;
+	util::fvector4 indexOrigin;
 	boost::numeric::ublas::matrix<double> latchedOrientation;
 	unsigned short majorTypeID;
 	std::string majorTypeName;
@@ -200,7 +204,7 @@ private:
 	void _setTrueZero( const data::Image &image ) {
 		// first make shure the images datatype is consistent
 		data::TypedImage<TYPE> tImage ( image );
-		//now set all voxels to the m_ReservedValue that are 0 in the origin image
+// 		now set all voxels to the m_ReservedValue that are 0 in the origin image
 		for( size_t t = 0; t < getImageSize()[3]; t++ ) {
 			for( size_t z = 0; z < getImageSize()[2]; z++ ) {
 				for( size_t y = 0; y < getImageSize()[1]; y++ ) {

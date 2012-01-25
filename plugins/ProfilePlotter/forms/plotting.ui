@@ -66,16 +66,32 @@
        <number>2</number>
       </property>
       <item>
+       <widget class="QLabel" name="label">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="text">
+         <string>Axis:</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QComboBox" name="comboAxis"/>
+      </item>
+      <item>
        <widget class="QRadioButton" name="timeCourseRadio">
         <property name="text">
-         <string>Show Timecourse</string>
+         <string>Show profile</string>
         </property>
        </widget>
       </item>
       <item>
        <widget class="QRadioButton" name="spectrumRadio">
         <property name="text">
-         <string>Show Spectrum</string>
+         <string>Show spectrum</string>
         </property>
        </widget>
       </item>

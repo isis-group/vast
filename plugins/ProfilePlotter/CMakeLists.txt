@@ -1,6 +1,6 @@
 set(FILES_UI forms/plotting.ui)
 
-message(STATUS "Adding TimePlotter plugin")
+message(STATUS "Adding ProfilePlotter plugin")
 
 # add path for new modules
 SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH}
@@ -23,14 +23,14 @@ set(QT_USE_QTOPENGL TRUE)
 INCLUDE(${QT_USE_FILE})
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
-QT4_ADD_RESOURCES(timeplotter_rcc_files resources/timeplotter.qrc)
+QT4_ADD_RESOURCES(profileplotter_rcc_files resources/timeplotter.qrc)
 qt4_wrap_cpp(plugin_moc_files PlotterDialog.hpp)
-QT4_WRAP_UI(timeplotter_ui_h ${FILES_UI})
+QT4_WRAP_UI(profileplotter_ui_h ${FILES_UI})
 
 # look for fftw3
 FIND_PACKAGE(FFTW3 REQUIRED)
 
-add_library(vastPlugin_TimePlotter SHARED vastPlugin_TimePlotter.cpp PlotterDialog.cpp ${timeplotter_ui_h} ${plugin_moc_files} ${timeplotter_rcc_files})
-target_link_libraries(vastPlugin_TimePlotter isis_core  ${ISIS_LIB_DEPENDS} ${QWT5_library} ${QT_LIBRARIES} ${FFTW3_FFTW3_LIBRARY})
+add_library(vastPlugin_ProfilePlotter SHARED vastPlugin_ProfilePlotter.cpp PlotterDialog.cpp ${profileplotter_ui_h} ${plugin_moc_files} ${profileplotter_rcc_files})
+target_link_libraries(vastPlugin_ProfilePlotter isis_core  ${ISIS_LIB_DEPENDS} ${QWT5_library} ${QT_LIBRARIES} ${FFTW3_FFTW3_LIBRARY})
 
-install(TARGETS vastPlugin_TimePlotter DESTINATION ${VAST_PLUGIN_INFIX} COMPONENT "vast plugins" )
+install(TARGETS vastPlugin_ProfilePlotter DESTINATION ${VAST_PLUGIN_INFIX} COMPONENT "vast plugins" )
