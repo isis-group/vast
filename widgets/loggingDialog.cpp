@@ -38,25 +38,29 @@ isis::viewer::widget::LoggingDialog::LoggingDialog( QWidget *parent, isis::viewe
 	m_Interface.infoCheck->setCheckState( Qt::Unchecked );
 	m_Interface.verboseCheck->setCheckState( Qt::Unchecked );
 	m_Interface.noticeCheck->setCheckState( Qt::Unchecked );
+	m_Interface.checkRuntime->setChecked(true);
+	m_Interface.checkDev->setChecked(false);
 	connect( m_Interface.verboseCheck, SIGNAL( clicked() ), this, SLOT( synchronize() ) );
 	connect( m_Interface.infoCheck, SIGNAL( clicked() ), this, SLOT( synchronize() ) );
 	connect( m_Interface.warningCheck, SIGNAL( clicked() ), this, SLOT( synchronize() ) );
 	connect( m_Interface.errorCheck, SIGNAL( clicked() ), this, SLOT( synchronize() ) );
 	connect( m_Interface.noticeCheck, SIGNAL( clicked() ), this, SLOT( synchronize() ) );
+	connect( m_Interface.checkDev, SIGNAL( clicked()), this, SLOT( synchronize()) );
+	connect( m_Interface.checkRuntime, SIGNAL( clicked()), this, SLOT( synchronize()) );
 	QPalette pal;
 	pal.setBrush( QPalette::Base, Qt::red );
 	m_Interface.errorCheck->setPalette( pal );
-	//  pal.setColor( QPalette::WindowText, QColor(218,165,32 ) );
-	//  m_Interface.warningCheck->setPalette( pal );
-
-
+	pal.setBrush( QPalette::Base, QColor( 218, 165, 32 ) );
+	m_Interface.warningCheck->setPalette( pal );
+	pal.setBrush( QPalette::Base, Qt::darkBlue );
+	m_Interface.infoCheck->setPalette( pal );
+	pal.setBrush( QPalette::Base, QColor( 34, 139, 34 ) );
+	m_Interface.noticeCheck->setPalette( pal );
 }
 
-
-void isis::viewer::widget::LoggingDialog::synchronize()
+void isis::viewer::widget::LoggingDialog::printLog ( std::list< isis::qt4::QMessage > messageList )
 {
-	m_Interface.logList->clear();
-	BOOST_FOREACH( std::list< qt4::QMessage>::const_reference message, m_ViewerCore->getMessageLog() ) {
+BOOST_FOREACH( std::list< qt4::QMessage>::const_reference message, messageList ) {
 		QListWidgetItem *item = new QListWidgetItem();
 		std::stringstream logStream;
 		logStream << message.m_module << "(" << message.time_str << ") -> " << message.message ;
@@ -106,4 +110,17 @@ void isis::viewer::widget::LoggingDialog::synchronize()
 		}
 
 	}
+}
+
+void isis::viewer::widget::LoggingDialog::synchronize()
+{
+	m_Interface.logList->clear();
+	if( m_Interface.checkDev->isChecked() ) {
+		printLog( m_ViewerCore->getMessageLogDev() );
+	}
+	if( m_Interface.checkRuntime->isChecked() ) {
+		printLog( m_ViewerCore->getMessageLog() );
+	}
+
+	
 }

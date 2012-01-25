@@ -66,7 +66,6 @@ void PreferencesDialog::screenshotXChanged( int val )
 
 			const double ratio = ( double )widgetHeight / widgetWidth;
 			preferencesUi.sizeY->setValue( val * ratio );
-			m_ViewerCore->getUICore()->refreshUI();
 		}
 	}
 }
@@ -153,6 +152,7 @@ void PreferencesDialog::loadSettings()
 
 	preferencesUi.checkLoadingScreen->setChecked( m_ViewerCore->getOptionMap()->getPropertyAs<bool>( "showLoadingWidget" ) );
 	preferencesUi.checkStartUpScreen->setChecked( m_ViewerCore->getOptionMap()->getPropertyAs<bool>( "showStartWidget" ) );
+	preferencesUi.checkCrashMessage->setChecked( m_ViewerCore->getOptionMap()->getPropertyAs<bool>( "showCrashMessage" ) );
 	preferencesUi.enableMultithreading->setVisible( m_ViewerCore->getOptionMap()->getPropertyAs<bool>( "ompAvailable" ) );
 	preferencesUi.multithreadingFrame->setVisible( m_ViewerCore->getOptionMap()->getPropertyAs<bool>( "ompAvailable" ) );
 
@@ -184,6 +184,7 @@ void PreferencesDialog::saveSettings()
 	m_ViewerCore->getOptionMap()->setPropertyAs<uint8_t>( "interpolationType", preferencesUi.comboInterpolation->currentIndex() );
 	m_ViewerCore->getOptionMap()->setPropertyAs<bool>( "showStartWidget", preferencesUi.checkStartUpScreen->isChecked() );
 	m_ViewerCore->getOptionMap()->setPropertyAs<bool>( "showLoadingWidget", preferencesUi.checkLoadingScreen->isChecked() );
+	m_ViewerCore->getOptionMap()->setPropertyAs<bool>( "showCrashMessage", preferencesUi.checkCrashMessage->isChecked() );
 	//screenshot
 	m_ViewerCore->getOptionMap()->setPropertyAs<bool>( "screenshotKeepAspectRatio", preferencesUi.keepRatio->isChecked() );
 	m_ViewerCore->getOptionMap()->setPropertyAs<uint8_t>( "screenshotQuality", preferencesUi.screenshotQuality->value() );

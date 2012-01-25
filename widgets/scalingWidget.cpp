@@ -41,6 +41,8 @@ ScalingWidget::ScalingWidget( QWidget *parent, isis::viewer::QViewerCore *core )
 	  m_ViewerCore( core )
 {
 	m_Interface.setupUi( this );
+//TODO	
+	m_Interface.autoButton->setVisible( false );
 	connect( m_Interface.min, SIGNAL( valueChanged( double ) ), this, SLOT( minChanged( double ) ) );
 	connect( m_Interface.max, SIGNAL( valueChanged( double ) ), this, SLOT( maxChanged( double ) ) );
 	connect( m_Interface.scaling, SIGNAL( valueChanged( double ) ), this, SLOT( scalingChanged( double ) ) );
@@ -129,10 +131,11 @@ void ScalingWidget::setScalingOffset( std::pair< double, double > scalingOffset 
 
 void ScalingWidget::autoScale()
 {
-	boost::shared_ptr<ImageHolder> image = m_ViewerCore->getCurrentImage();
-	std::pair<double, double> scalingOffset = image->optimalScalingOffset;
-	setScalingOffset( scalingOffset );
-	setMinMax( getMinMaxFromScalingOffset( scalingOffset, image ), image );
+//TODO	
+// 	boost::shared_ptr<ImageHolder> image = m_ViewerCore->getCurrentImage();
+// 	std::pair<double, double> scalingOffset = image->scaling;
+// 	setScalingOffset( scalingOffset );
+// 	setMinMax( getMinMaxFromScalingOffset( scalingOffset, image ), image );
 }
 
 void ScalingWidget::reset()

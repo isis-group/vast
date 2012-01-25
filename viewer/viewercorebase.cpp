@@ -28,6 +28,8 @@
 #include "viewercorebase.hpp"
 #include "common.hpp"
 
+#include <signal.h>
+
 #define STR(s) _xstr_(s)
 #define _xstr_(s) std::string(#s)
 
@@ -41,6 +43,7 @@ ViewerCoreBase::ViewerCoreBase( )
 	  m_CurrentAnatomicalReference( boost::shared_ptr<ImageHolder>() ),
 	  m_Mode( standard )
 {
+	
 	util::Singletons::get<color::Color, 10>().initStandardColormaps();
 	setCommonViewerOptions();
 }
@@ -147,13 +150,14 @@ void ViewerCoreBase::setCommonViewerOptions()
 	m_OptionsMap->setPropertyAs<uint16_t>( "minOptionWidgetHeight", 90 );
 	m_OptionsMap->setPropertyAs<bool>( "showStartWidget", true );
 	m_OptionsMap->setPropertyAs<bool>( "showLoadingWidget", true );
+	m_OptionsMap->setPropertyAs<bool>( "showCrashMessage", true );
 	m_OptionsMap->setPropertyAs<uint16_t>( "startWidgetHeight", 500 );
 	m_OptionsMap->setPropertyAs<uint16_t>( "startWidgetWidth", 400 );
 	m_OptionsMap->setPropertyAs<uint16_t>( "viewerWidgetMargin", 5 );
-	m_OptionsMap->setPropertyAs<uint8_t>( "numberOfThreads", 1 );
+	m_OptionsMap->setPropertyAs<uint8_t>( "numberOfThreads", 0 );
 	m_OptionsMap->setPropertyAs<bool>( "ompAvailable", false );
-	m_OptionsMap->setPropertyAs<uint8_t>( "maxNumberOfThreads", 1 );
 	m_OptionsMap->setPropertyAs<bool>( "enableMultithreading", false );
+	m_OptionsMap->setPropertyAs<uint8_t>( "initialMaxNumberThreads", 4 );
 	m_OptionsMap->setPropertyAs<bool>( "useAllAvailableThreads", false );
 	m_OptionsMap->setPropertyAs<uint8_t>( "screenshotQuality", 70 );
 	m_OptionsMap->setPropertyAs<uint16_t>( "screenshotWidth", 700 );
@@ -173,11 +177,15 @@ void ViewerCoreBase::setCommonViewerOptions()
 	m_OptionsMap->setPropertyAs<bool>( "showWarningMessages", false );
 	m_OptionsMap->setPropertyAs<bool>( "showInfoMessages", false );
 	m_OptionsMap->setPropertyAs<bool>( "showVerboseInfoMessages", false );
+	m_OptionsMap->setPropertyAs<std::string>("vastSymbol", std::string(":/common/minerva-MPG.png") );
 
 	std::stringstream signature;
 	signature << "vast v" << getVersion() << ", MPG CBS";
 	m_OptionsMap->setPropertyAs<std::string>( "signature", signature.str() );
 }
+
+
+
 
 }
 } // end namespace

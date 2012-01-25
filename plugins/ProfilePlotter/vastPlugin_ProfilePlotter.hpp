@@ -25,8 +25,8 @@
  *  Created on: Aug 12, 2011
  *      Author: tuerke
  ******************************************************************/
-#ifndef TIMEPLOTTER_HPP
-#define TIMEPLOTTER_HPP
+#ifndef PROFILEPLOTTER_HPP
+#define PROFILEPLOTTER_HPP
 
 #include "plugininterface.h"
 #include "PlotterDialog.hpp"
@@ -41,18 +41,18 @@ namespace plugin
 {
 
 
-class TimePlotter : public PluginInterface
+class ProfilePlotter : public PluginInterface
 {
 public:
 	virtual QKeySequence getShortcut() { return QKeySequence( "T, P" ) ;}
-	virtual std::string getName() { return std::string( "TimePlotter" ) ; }
-	virtual std::string getDescription() { return std::string( "Plots a timeseries" ); }
+	virtual std::string getName() { return std::string( "ProfilePlotter" ) ; }
+	virtual std::string getDescription() { return std::string( "Plots profiles along X,Y,Z and time" ); }
 	virtual std::string getTooltip() { return std::string( "" ); }
 	virtual QIcon *getToolbarIcon() { return new QIcon( ":/common/graph.gif" ); }
 	virtual bool isGUI() { return true; }
 	virtual bool call();
 
-	~TimePlotter() {};
+	~ProfilePlotter() {};
 
 
 private:
@@ -68,7 +68,7 @@ private:
 
 isis::viewer::plugin::PluginInterface *loadPlugin()
 {
-	return new isis::viewer::plugin::TimePlotter();
+	return new isis::viewer::plugin::ProfilePlotter();
 }
 
 #endif

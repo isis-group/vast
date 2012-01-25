@@ -27,6 +27,7 @@
  ******************************************************************/
 #include "color.hpp"
 #include "imageholder.hpp"
+#include "common.hpp"
 #include <QResource>
 #include <QFile>
 #include <fstream>
@@ -61,11 +62,12 @@ void Color::initStandardColormaps()
 
 bool Color::addColormap( const std::string &path, const boost::regex &separator )
 {
+	LOG( Dev, verbose_info ) << "Adding colormap " << path;
 	QFile lutFile( path.c_str() );
 	lutFile.open( QIODevice::ReadOnly );
 
 	if( !lutFile.isReadable() ) {
-		LOG( Runtime, warning ) << "The QResource \"" << path << "\" is not readable!";
+		LOG( Dev, warning ) << "The QResource \"" << path << "\" is not readable!";
 		return false;
 	}
 
@@ -78,7 +80,7 @@ bool Color::addColormap( const std::string &path, const boost::regex &separator 
 	boost::cmatch results;
 
 	if( !boost::regex_match( lines.front().c_str(), results, descriptionRegex ) ) {
-		LOG( Runtime, warning ) << "Can not read colormap " << path << " because header is missing or has wrong syntax (name:type)!";
+		LOG( Dev, warning ) << "Can not read colormap " << path << " because header is missing or has wrong syntax (name:type)!";
 		return false;
 	}
 
@@ -107,7 +109,8 @@ bool Color::addColormap( const std::string &path, const boost::regex &separator 
 		} else if ( lutTyp == std::string( "hsla" ) ) {
 			lutVec.push_back( QColor::fromHsl( colorVec[0], colorVec[1], colorVec[2], colorVec[3] ).rgba() );
 		}
-
+#else
+	LOG( Dev, info ) << "QT_VERSION < 0x040600 QColor::fromHsl is not supported";
 #endif
 		else {
 			LOG( Runtime, warning ) << "Unknown lut type " << lutTyp << " !";
@@ -118,16 +121,19 @@ bool Color::addColormap( const std::string &path, const boost::regex &separator 
 	if( lutVec.size() != 256 ) {
 		LOG( Runtime, warning ) << "The size of the colormap " << lutName
 								<< " is " << lutVec.size() << " but has to be 256!";
+		LOG( Dev, warning ) << "lutVec.size() != 256";
 		return false;
 	}
 
 	m_ColormapMap[lutName] = lutVec;
+	LOG( Dev, verbose_info ) << "Added colormap " << path;
 	return true;
 }
 
 
 QIcon Color::getIcon( const std::string &colormapName, size_t w, size_t h, icon_type type, bool flipped ) const
 {
+	LOG( Dev, verbose_info ) << "Color::getIcon of " << colormapName << "; w: " << w << " h: " << h;
 	const ColormapType lut = getColormapMap().at( colormapName );
 
 	unsigned short start = 0;
@@ -168,12 +174,14 @@ QIcon Color::getIcon( const std::string &colormapName, size_t w, size_t h, icon_
 	}
 
 	QPixmap pixmap( QPixmap::fromImage( tmpImage ) );
+	LOG(Dev, verbose_info) << "Created Icon " << colormapName;
 	return QIcon( pixmap.scaled( w, h ) );
 }
 
 
 bool Color::hasColormap( const std::string &name ) const
 {
+	LOG( Dev, verbose_info ) << "Color::hasColormap";
 	return m_ColormapMap.find( name ) != m_ColormapMap.end();
 }
 
@@ -181,7 +189,6 @@ bool Color::hasColormap( const std::string &name ) const
 Color::ColormapType Color::getFallbackColormap() const
 {
 	ColormapType retColormap;
-
 	for ( unsigned short i = 0; i < 256; i++ ) {
 		retColormap.push_back( QColor( i, i, i, 255 ).rgba() );
 	}

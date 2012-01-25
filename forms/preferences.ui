@@ -53,7 +53,7 @@
          </sizepolicy>
         </property>
         <property name="currentIndex">
-         <number>0</number>
+         <number>1</number>
         </property>
         <widget class="QWidget" name="Common">
          <attribute name="title">
@@ -197,6 +197,9 @@
                  </property>
                  <item>
                   <widget class="QCheckBox" name="checkStartUpScreen">
+                   <property name="toolTip">
+                    <string>vast will show you a start dialog when no image for loading was specified</string>
+                   </property>
                    <property name="text">
                     <string>Show startup screen</string>
                    </property>
@@ -206,6 +209,13 @@
                   <widget class="QCheckBox" name="checkLoadingScreen">
                    <property name="text">
                     <string>Show loading screen</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QCheckBox" name="checkCrashMessage">
+                   <property name="text">
+                    <string>Show crash message</string>
                    </property>
                   </widget>
                  </item>

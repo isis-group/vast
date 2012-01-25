@@ -18,46 +18,44 @@
  *
  * Author: Erik Türke, tuerke@cbs.mpg.de
  *
- * loggingDialog.hpp
+ * aboutDialog.hpp
  *
  * Description:
  *
  *  Created on: Aug 12, 2011
  *      Author: tuerke
  ******************************************************************/
-#ifndef LOGGINGDIALOG_HPP
-#define LOGGINGDIALOG_HPP
-#include <QDialog>
 
-#include "ui_loggingDialog.h"
+#ifndef ABOUTDIALOG_HPP
+#define ABOUTDIALOG_HPP
+
+
+#include "ui_aboutDialog.h"
+
 #include "qviewercore.hpp"
 
-namespace isis
-{
-namespace viewer
-{
-namespace widget
-{
+namespace isis {
+namespace viewer {
+namespace widget {
+	
 
-class LoggingDialog : public QDialog
+class AboutDialog : public QDialog
 {
 	Q_OBJECT
 public:
-	LoggingDialog( QWidget *parent, QViewerCore *core );
-
-public Q_SLOTS:
-	void synchronize();
-	void printLog( std::list<qt4::QMessage> );
-
+	AboutDialog( QWidget *parent,  QViewerCore *core);
+	
 private:
-	Ui::logDialog m_Interface;
 	QViewerCore *m_ViewerCore;
+	Ui::aboutDialog m_Interface;
 };
+	
+	
+	
+}}}
 
 
-}
-}
-}
+
 
 
 #endif

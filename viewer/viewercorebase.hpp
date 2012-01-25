@@ -81,8 +81,7 @@ private:
 	DataContainer m_DataContainer;
 	boost::shared_ptr<ImageHolder>  m_CurrentImage;
 	void setCommonViewerOptions();
-
-
+	
 protected:
 	boost::shared_ptr<util::PropertyMap> m_OptionsMap;
 	//additional imagelist for finding purpose

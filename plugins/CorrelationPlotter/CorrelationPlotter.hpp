@@ -43,7 +43,7 @@ namespace plugin
 class CorrelationPlotterDialog : public QDialog
 {
 	Q_OBJECT
-	typedef float MapImageType;
+	typedef double MapImageType;
 	typedef uint16_t InternalFunctionalImageType;
 public:
 	CorrelationPlotterDialog( QWidget *parent, QViewerCore *core );

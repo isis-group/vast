@@ -36,6 +36,7 @@
 #include "common.hpp"
 #include "color.hpp"
 #include "widgetinterface.hpp"
+#include "common.hpp"
 
 namespace isis
 {
@@ -103,11 +104,17 @@ public:
 	std::list< WidgetInterface * > getWidgetList() { return m_WidgetList; }
 
 	void updateOrientation();
+	void updateHistogram();
 
-	void syncImage();
+	void setVoxel( const size_t &first, const size_t &second, const size_t &third, const size_t &fourth, const double &value, bool sync = true );
 
-	/**offset, scaling**/
-	std::pair<double, double> getOptimalScaling();
+	template<typename TYPE>
+	void setTypedVoxel(  const size_t &first, const size_t &second, const size_t &third, const size_t &fourth, const TYPE &value, bool sync = true ) {
+		getChunkVector()[fourth].voxel<InternalImageType>(first, second, third) = static_cast<double>( value ) * scalingToInternalType.first->as<double>() + scalingToInternalType.second->as<double>();
+		if( sync ) {
+			getISISImage()->getChunk(first, second, third, fourth, false).voxel<TYPE>(first, second, third, fourth ) = value;
+		}
+	}
 
 	util::ivector4 voxelCoords;
 	util::fvector4 physicalCoords;
@@ -122,13 +129,16 @@ public:
 	double lowerThreshold;
 	double upperThreshold;
 	QVector<QRgb> colorMap;
+	util::fvector4 rowVec;
+	util::fvector4 columnVec;
+	util::fvector4 sliveVec;
 	std::string lut;
 	ImageType imageType;
 	InterpolationType interpolationType;
 	std::pair<util::ValueReference, util::ValueReference> minMax;
 	std::pair<util::ValueReference, util::ValueReference> internMinMax;
-	std::pair<double, double> optimalScalingOffset;
 	boost::numeric::ublas::matrix<double> orientation;
+	util::fvector4 indexOrigin;
 	boost::numeric::ublas::matrix<double> latchedOrientation;
 	unsigned short majorTypeID;
 	std::string majorTypeName;
@@ -138,6 +148,8 @@ public:
 
 private:
 
+	  void logImageProps() const;
+	
 	util::FixedVector<size_t, 4> m_ImageSize;
 	util::PropertyMap m_PropMap;
 
@@ -157,12 +169,13 @@ private:
 	boost::shared_ptr<color::Color> m_ColorHandler;
 
 	template<typename TYPE>
-	void copyImageToVector( const data::Image &image ) {
+	void copyImageToVector( const data::Image &image, bool reserveZero ) {
 		data::ValuePtr<TYPE> imagePtr( ( TYPE * ) calloc( image.getVolume(), sizeof( TYPE ) ), image.getVolume() );
-		LOG( Debug, verbose_info ) << "Needed memory: " << image.getVolume() * sizeof( TYPE ) / ( 1024.0 * 1024.0 ) << " mb.";
+		LOG( Dev, info) << "Needed memory: " << image.getVolume() * sizeof( TYPE ) / ( 1024.0 * 1024.0 ) << " mb.";
 
-		if( m_ZeroIsReserved && !isRGB && imageType == z_map) {
-			// calculate new scaling
+		if( reserveZero ) {
+			LOG( Dev, info ) << "0 is reserved";
+			// calculate new scaling  
 			data::scaling_pair scalingPair = image.getScalingTo( data::ValuePtr<TYPE>::staticID, data::upscale );
 			double scaling = scalingPair.first->as<double>();
 			double offset = scalingPair.second->as<double>();
@@ -171,13 +184,14 @@ private:
 			const data::scaling_pair newScaling( std::make_pair< util::ValueReference, util::ValueReference>( util::Value<double>( scaling ), util::Value<double>( offset ) ) ) ;
 			scalingToInternalType = newScaling;
 		} else {
+			LOG( Dev, info ) << "0 is not reserved";
 			scalingToInternalType = image.getScalingTo( data::ValuePtr<TYPE>::staticID, data::upscale );
 		}
-
+		LOG( Dev, info ) << "scalingToInternalType: " << scalingToInternalType.first->as<double>() << " : " << scalingToInternalType.second->as<double>();
 		image.copyToMem<TYPE>( &imagePtr[0], image.getVolume(), scalingToInternalType );
-		LOG( Debug, verbose_info ) << "Copied image to continuous memory space.";
+		LOG( Dev, verbose_info ) << "Copied image to continuous memory space.";
 		internMinMax = imagePtr.getMinMax();
-
+		LOG( Dev, info ) << "internMinMax: " << internMinMax.first->as<double>() << " : " << internMinMax.second->as<double>();
 		//splice the image in its volumes -> we get a vector of t volumes
 		if( m_ImageSize[3] > 1 ) { //splicing is only necessary if we got more than 1 timestep
 			m_ImageVector = imagePtr.splice( m_ImageSize[0] * m_ImageSize[1] * m_ImageSize[2] );
@@ -190,12 +204,11 @@ private:
 	void _setTrueZero( const data::Image &image ) {
 		// first make shure the images datatype is consistent
 		data::TypedImage<TYPE> tImage ( image );
-		//now set all voxels to the m_ReservedValue that are 0 in the origin image
-		#pragma omp parallel for
-
+// 		now set all voxels to the m_ReservedValue that are 0 in the origin image
 		for( size_t t = 0; t < getImageSize()[3]; t++ ) {
 			for( size_t z = 0; z < getImageSize()[2]; z++ ) {
 				for( size_t y = 0; y < getImageSize()[1]; y++ ) {
+#pragma omp parallel for
 					for( size_t x = 0; x < getImageSize()[0]; x++ ) {
 						if( static_cast<data::Image &>( tImage ).voxel<TYPE>( x, y, z, t ) == static_cast<TYPE>( 0 ) ) {
 							m_ChunkVector[t].voxel<InternalImageType>( x, y, z ) = m_ReservedValue;
@@ -206,22 +219,6 @@ private:
 		}
 
 	}
-
-	template<typename TYPE>
-	void _syncImage() {
-		#pragma omp parallel for
-
-		for( size_t t = 0; t < getImageSize()[3]; t++ ) {
-			for( size_t z = 0; z < getImageSize()[2]; z++ ) {
-				for( size_t y = 0; y < getImageSize()[1]; y++ ) {
-					for( size_t x = 0; x < getImageSize()[0]; x++ ) {
-						getISISImage()->voxel<TYPE>( x, y, z, t ) = util::Value<InternalImageType> ( getChunkVector()[t].voxel<InternalImageType>( x, y, z ) ).as<TYPE>();
-					}
-				}
-			}
-		}
-	}
-
 };
 
 }

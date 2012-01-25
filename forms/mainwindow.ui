@@ -157,6 +157,8 @@
     <addaction name="separator"/>
     <addaction name="actionLogging"/>
     <addaction name="actionKey_Commands"/>
+    <addaction name="separator"/>
+    <addaction name="actionAbout_Dialog"/>
    </widget>
    <addaction name="menu_File"/>
    <addaction name="menu_Preferences"/>
@@ -430,6 +432,11 @@
   <action name="actionLogging">
    <property name="text">
     <string>Logging</string>
+   </property>
+  </action>
+  <action name="actionAbout_Dialog">
+   <property name="text">
+    <string>About vast</string>
    </property>
   </action>
  </widget>

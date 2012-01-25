@@ -446,7 +446,7 @@ QImage UICore::getScreenshot()
 				const double min = roundNumber<double>( m_ViewerCore->getCurrentImage()->minMax.first->as<double>(), 4 );
 				painter.drawPixmap( 100, widgetHeight * eIndex + 50, util::Singletons::get<color::Color, 10>().getIcon( m_ViewerCore->getCurrentImage()->lut, 150, 15, color::Color::lower_half ).pixmap( 150, 15 ) );
 				painter.drawText( 20 + ( lT < 0 ? offset : 0 ), widgetHeight * eIndex + 65, QString::number( lT  ) );
-				painter.drawText( 280 + ( min < 0 ? offset : 0 ), widgetHeight * eIndex + 65, QString::number( roundNumber<double>( m_ViewerCore->getCurrentImage()->minMax.first->as<double>(), 4 )  ) );
+				painter.drawText( 28.0 + ( min < 0 ? offset : 0 ), widgetHeight * eIndex + 65, QString::number( roundNumber<double>( m_ViewerCore->getCurrentImage()->minMax.first->as<double>(), 4 )  ) );
 			}
 
 			if ( m_ViewerCore->getCurrentImage()->minMax.second->as<double>() > 0  ) {

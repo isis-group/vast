@@ -47,13 +47,14 @@ MainWindow::MainWindow( QViewerCore *core ) :
 	scalingWidget( new widget::ScalingWidget( this, core ) ),
 	keyCommandsdialog( new widget::KeyCommandsDialog( this ) ),
 	helpDialog( new widget::HelpDialog( this ) ),
+	aboutDialog( new widget::AboutDialog( this, core ) ),
 	m_ViewerCore( core ),
 	m_Toolbar( new QToolBar( this ) ),
 	m_RadiusSpin( new QSpinBox( this ) ),
 	m_SignatureLabel( new QLabel( this ) )
 {
 	m_Interface.setupUi( this );
-	setWindowIcon( QIcon( ":/common/vast.jpg" ) );
+	setWindowIcon( QIcon( m_ViewerCore->getOptionMap()->getPropertyAs<std::string>("vastSymbol").c_str() ) );
 	m_ActionReset_Scaling = new QAction( this );
 	m_ActionAuto_Scaling = new QAction( this );
 	m_ActionReset_Scaling->setShortcut( QKeySequence( tr( "R, S" ) ) );
@@ -108,6 +109,7 @@ MainWindow::MainWindow( QViewerCore *core ) :
 	connect( m_Interface.actionKey_Commands, SIGNAL( triggered() ), this, SLOT( showKeyCommandDialog() ) );
 	connect( m_Interface.actionCreate_Screenshot, SIGNAL( triggered() ), this, SLOT( createScreenshot() ) );
 	connect( m_Interface.actionHelp, SIGNAL( triggered() ), helpDialog, SLOT( show() ) );
+	connect( m_Interface.actionAbout_Dialog, SIGNAL( triggered()), aboutDialog, SLOT( show() ) );
 	connect( m_Interface.actionLogging, SIGNAL( triggered() ), this, SLOT( showLoggingDialog() ) );
 	connect( m_Interface.actionAxial_View, SIGNAL( triggered( bool ) ), this, SLOT( toggleAxialView( bool ) ) );
 	connect( m_Interface.actionSagittal_View, SIGNAL( triggered( bool ) ), this, SLOT( toggleSagittalView( bool ) ) );
@@ -487,6 +489,7 @@ void MainWindow::refreshUI()
 
 void MainWindow::closeEvent( QCloseEvent * )
 {
+	m_ViewerCore->close();
 	saveSettings();
 	m_ViewerCore->saveSettings();
 }

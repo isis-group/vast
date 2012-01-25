@@ -18,41 +18,30 @@
  *
  * Author: Erik Türke, tuerke@cbs.mpg.de
  *
- * vastPlugin_TimePlotter.cpp
+ * aboutDialog.cpp
  *
  * Description:
  *
  *  Created on: Aug 12, 2011
  *      Author: tuerke
  ******************************************************************/
-#include "vastPlugin_TimePlotter.hpp"
+
+#include "aboutDialog.hpp"
 
 
+isis::viewer::widget::AboutDialog::AboutDialog ( QWidget* parent, isis::viewer::QViewerCore* core ) 
+	: QDialog ( parent ),
+	m_ViewerCore( core ) 
 
-namespace isis
 {
-namespace viewer
-{
-namespace plugin
-{
+	m_Interface.setupUi(this);
+	QPixmap pixMap( m_ViewerCore->getOptionMap()->getPropertyAs<std::string>("vastSymbol").c_str() );
+	float ratio = pixMap.height() / ( float )pixMap.width();
+	m_Interface.vastSymbolLabel->setPixmap( QPixmap( 
+		m_ViewerCore->getOptionMap()->getPropertyAs<std::string>("vastSymbol").c_str() ).scaled(pixMap.width() / ratio , m_Interface.vastSymbolLabel->height(), Qt::KeepAspectRatio ) );
 
-
-bool TimePlotter::call()
-{
-	m_PlotterDialog = new PlotterDialog( parentWidget, viewerCore );
-    if( viewerCore->hasImage() ) {
-        m_PlotterDialog->show();
-    } else {
-        QMessageBox msg(parentWidget);
-        msg.setText("No image has been loaded or selected!");
-        msg.exec();
-    }
-	return true;
 }
 
 
 
 
-}
-}
-}

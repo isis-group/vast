@@ -18,46 +18,41 @@
  *
  * Author: Erik Türke, tuerke@cbs.mpg.de
  *
- * loggingDialog.hpp
+ * vastPlugin_TimePlotter.cpp
  *
  * Description:
  *
  *  Created on: Aug 12, 2011
  *      Author: tuerke
  ******************************************************************/
-#ifndef LOGGINGDIALOG_HPP
-#define LOGGINGDIALOG_HPP
-#include <QDialog>
+#include "vastPlugin_ProfilePlotter.hpp"
 
-#include "ui_loggingDialog.h"
-#include "qviewercore.hpp"
+
 
 namespace isis
 {
 namespace viewer
 {
-namespace widget
+namespace plugin
 {
 
-class LoggingDialog : public QDialog
+
+bool ProfilePlotter::call()
 {
-	Q_OBJECT
-public:
-	LoggingDialog( QWidget *parent, QViewerCore *core );
+	m_PlotterDialog = new PlotterDialog( parentWidget, viewerCore );
+    if( viewerCore->hasImage() ) {
+        m_PlotterDialog->show();
+    } else {
+        QMessageBox msg(parentWidget);
+        msg.setText("No image has been loaded or selected!");
+        msg.exec();
+    }
+	return true;
+}
 
-public Q_SLOTS:
-	void synchronize();
-	void printLog( std::list<qt4::QMessage> );
 
-private:
-	Ui::logDialog m_Interface;
-	QViewerCore *m_ViewerCore;
-};
 
 
 }
 }
 }
-
-
-#endif

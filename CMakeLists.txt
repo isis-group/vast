@@ -35,6 +35,7 @@ set(VIEWER_FILES_HPP
 	widgets/startwidget.hpp
 	widgets/keycommandsdialog.hpp
 	widgets/helpdialog.hpp
+	widgets/aboutDialog.hpp
 )
 
 set(WIDGET_FILES_HPP
@@ -71,23 +72,31 @@ SET(ISIS_DIR /usr/share/isis/cmake CACHE PATH
     "The directory where the isis cmake configuration script is located.")
 find_package(ISIS REQUIRED)
 
-option(ISIS_RUNTIME_LOG "Toggles the isis runtime logging" ON)
-option(ISIS_DEBUG_LOG "Toggles the isis debug logging" OFF)
+option(VAST_RUNTIME_LOG "Toggles the vast runtime logging" ON)
+option(VAST_DEBUG_LOG "Toggles the vast debug logging" OFF)
+option(VAST_ENABLE_DEV "Toggles vast development logging" ON)
 
 # we use the log definitions of the core
-IF(ISIS_RUNTIME_LOG)
+IF(VAST_RUNTIME_LOG)
 	ADD_DEFINITIONS(-D_ENABLE_LOG=1)
-ELSE(ISIS_RUNTIME_LOG)
+ELSE(VAST_RUNTIME_LOG)
 	ADD_DEFINITIONS(-D_ENABLE_LOG=0)
-ENDIF(ISIS_RUNTIME_LOG)
+ENDIF(VAST_RUNTIME_LOG)
 
 # enable DEBUG_LOG
-IF(ISIS_DEBUG_LOG)
+IF(VAST_DEBUG_LOG)
 	ADD_DEFINITIONS(-D_ENABLE_DEBUG=1)
 	MESSAGE(STATUS "Debug code enabled, this will will have a big impact on the performance")
-ELSE(ISIS_DEBUG_LOG)
+ELSE(VAST_DEBUG_LOG)
 	ADD_DEFINITIONS(-D_ENABLE_DEBUG=0)
-ENDIF(ISIS_DEBUG_LOG)
+ENDIF(VAST_DEBUG_LOG)
+
+IF(VAST_ENABLE_DEV)
+	add_definitions(-D_ENABLE_DEV=1)
+else(VAST_ENABLE_DEV)
+	add_definitions(-D_ENABLE_DEV=0)
+	message(WARNING "vast development logging was turned off. Creating of log will not be possible!")
+endif(VAST_ENABLE_DEV)
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR} ${ISIS_INCLUDE_DIRS})
 

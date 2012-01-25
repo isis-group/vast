@@ -27,6 +27,7 @@
  ******************************************************************/
 #include "filedialog.hpp"
 #include "common.hpp"
+#include <imageholder.hpp>
 
 isis::viewer::widget::FileDialog::FileDialog( QWidget *parent, QViewerCore *core )
 	: QDialog ( parent ),
@@ -259,6 +260,7 @@ void isis::viewer::widget::FileDialog::browse()
 void isis::viewer::widget::FileDialog::openPath()
 {
 	close();
+	QApplication::processEvents();
 	m_ViewerCore->openPath( m_PathList, m_ImageType, m_Dialect, m_Suffix == "auto" ? "" : m_Suffix, m_Interface.newWidgetCheck->isChecked() );
 }
 

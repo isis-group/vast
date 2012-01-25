@@ -8,7 +8,7 @@ include_directories(${CMAKE_SOURCE_DIR}/viewer)
 # add global options
 ############################################################
 
-option(${CMAKE_PROJECT_NAME}_PLUGIN_TIMEPLOTTER "Enable TimePlotter plugin" OFF)
+option(${CMAKE_PROJECT_NAME}_PLUGIN_PROFILEPLOTTER "Enable ProfilePlotter plugin" OFF)
 option(${CMAKE_PROJECT_NAME}_PLUGIN_ORIENTATIONCORRECTION "Enable OrientationCorrection plugin" OFF)
 option(${CMAKE_PROJECT_NAME}_PLUGIN_MASKEDIT "Enable MaskEdit plugin" OFF)
 option(${CMAKE_PROJECT_NAME}_PLUGIN_CORRELATIONPLOTTER "Enable CorrelationPlotter plugin" OFF)
@@ -21,9 +21,9 @@ SET (CMAKE_SHARED_LINKER_FLAGS ${CMAKE_SHARED_LINKER_FLAGS_INIT} -Wl,-undefined,
 ############################################################
 # TimePlotter plugin
 ############################################################
-if(${CMAKE_PROJECT_NAME}_PLUGIN_TIMEPLOTTER)
-	add_subdirectory(TimePlotter)
-endif(${CMAKE_PROJECT_NAME}_PLUGIN_TIMEPLOTTER)
+if(${CMAKE_PROJECT_NAME}_PLUGIN_PROFILEPLOTTER)
+	add_subdirectory(ProfilePlotter)
+endif(${CMAKE_PROJECT_NAME}_PLUGIN_PROFILEPLOTTER)
 
 ############################################################
 # OrientationCorrection plugin
