@@ -88,6 +88,7 @@ void isis::viewer::widget::FileDialog::imageTypeChanged( int imageType )
 void isis::viewer::widget::FileDialog::rfChanged( int rfIndex )
 {
 	m_Interface.dialectComboBox->clear();
+	m_Interface.dialectComboBox->addItem("");
 	m_Suffix = m_Interface.rfComboBox->itemText( rfIndex ).toStdString();
 	m_Suffix = m_Suffix == std::string( "auto" ) ? std::string( "" ) : m_Suffix;
 	typedef std::map<std::string, std::list<std::string> > DialectsMapType;
@@ -199,6 +200,14 @@ void isis::viewer::widget::FileDialog::parsePath()
 		m_Interface.openSaveButton->setEnabled( false );
 		m_Interface.addToListButton->setEnabled( false );
 	} else {
+		m_Interface.dialectComboBox->clear();
+		m_Interface.dialectComboBox->addItem("");
+		util::istring extension = boost::filesystem::extension( boost::filesystem::path( m_Interface.fileDirEdit->currentText().toStdString() ) ).c_str();
+		extension.erase( 0, 1 );
+		std::list<std::string > dialects = getDialectsAsMap( isis::image_io::FileFormat::read_only ).at( extension.c_str() );
+		BOOST_FOREACH( std::list<std::string>::const_reference dialect, dialects ) {
+			m_Interface.dialectComboBox->addItem( dialect.c_str() );
+		}		
 		pal.setColor( QPalette::Text, QColor( 34, 139, 34 ) );
 		m_Interface.openSaveButton->setEnabled( true );
 		m_Interface.addToListButton->setEnabled( true );
