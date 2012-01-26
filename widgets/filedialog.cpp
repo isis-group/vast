@@ -65,7 +65,14 @@ isis::viewer::widget::FileDialog::FileDialog( QWidget *parent, QViewerCore *core
 	connect( m_Interface.favoriteList, SIGNAL( itemSelectionChanged() ), this, SLOT( onFavListClicked() ) );
 	connect( m_Interface.removeFromListButton, SIGNAL( clicked() ), this, SLOT( removeFromFavList() ) );
 	connect( m_Interface.favoriteList, SIGNAL( doubleClicked( QModelIndex ) ), this, SLOT( openPath() ) );
+	connect( m_Interface.dialectComboBox, SIGNAL( currentIndexChanged(QString)), this , SLOT( fileDialectChanged(QString)));
 }
+
+void isis::viewer::widget::FileDialog::fileDialectChanged ( QString dialect)
+{
+	m_Dialect = dialect.toStdString();
+}
+
 
 void isis::viewer::widget::FileDialog::showEvent( QShowEvent * )
 {
@@ -80,8 +87,22 @@ void isis::viewer::widget::FileDialog::imageTypeChanged( int imageType )
 
 void isis::viewer::widget::FileDialog::rfChanged( int rfIndex )
 {
+	m_Interface.dialectComboBox->clear();
 	m_Suffix = m_Interface.rfComboBox->itemText( rfIndex ).toStdString();
 	m_Suffix = m_Suffix == std::string( "auto" ) ? std::string( "" ) : m_Suffix;
+	typedef std::map<std::string, std::list<std::string> > DialectsMapType;
+	if( m_Suffix.empty() ) {
+        BOOST_FOREACH( DialectsMapType::const_reference dialects, getDialectsAsMap( isis::image_io::FileFormat::read_only )  ) {
+			BOOST_FOREACH( std::list<std::string>::const_reference dialect, dialects.second ) {
+				m_Interface.dialectComboBox->addItem( dialect.c_str() );
+			}
+		}
+	} else {
+		std::list<std::string > dialects = getDialectsAsMap( isis::image_io::FileFormat::read_only ).at( m_Suffix );
+		BOOST_FOREACH( std::list<std::string>::const_reference dialect, dialects ) {
+			m_Interface.dialectComboBox->addItem( dialect.c_str() );
+		}
+	}
 	parsePath();
 }
 

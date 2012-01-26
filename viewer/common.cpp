@@ -89,6 +89,19 @@ std::list<util::istring> getFileFormatsAsList( image_io::FileFormat::io_modes mo
 	return retList;
 }
 
+std::map< std::string, std::list< std::string > > getDialectsAsMap ( image_io::FileFormat::io_modes mode )
+{
+	std::map<std::string, std::list< std::string > > retMap;
+	BOOST_FOREACH( isis::data::IOFactory::FileFormatList::const_reference format, isis::data::IOFactory::getFormats() ) {
+		std::list<std::string> dialectList = util::stringToList<std::string>(format->dialects(""));
+        BOOST_FOREACH( std::list< util::istring>::const_reference suffix, format->getSuffixes( mode ) ) {
+			retMap[suffix.c_str()]  = dialectList;
+		}
+	}
+	return retMap;
+}
+
+
 util::ivector4 get32BitAlignedSize( const util::ivector4 &origSize )
 {
 	util::ivector4 retSize;
