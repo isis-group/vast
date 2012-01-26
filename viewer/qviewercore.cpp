@@ -359,7 +359,7 @@ void QViewerCore::openPath ( const _internal::FileInformation &fileInfo )
 {
 	if ( !fileInfo.getFileName().empty() )
 	{
-		getUICore()->getMainWindow()->toggleLoadingIcon( true, QString( "Opening image " ) + fileInfo.getFileName().c_str() );
+		getUICore()->getMainWindow()->toggleLoadingIcon( true, QString( "Opening image " ) + fileInfo.getFileName().c_str() + QString("...") );
 		QDir dir;
 		setCurrentPath ( dir.absoluteFilePath ( fileInfo.getFileName().c_str() ).toStdString() );
 		UICore::ViewWidgetEnsembleType ensemble;

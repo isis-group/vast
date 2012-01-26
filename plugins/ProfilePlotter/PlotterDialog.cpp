@@ -46,11 +46,12 @@ isis::viewer::plugin::PlotterDialog::PlotterDialog ( QWidget* parent, isis::view
 	connect( m_ViewerCore, SIGNAL( emitPhysicalCoordsChanged( util::fvector4 ) ), this, ( SLOT( refresh( util::fvector4 ) ) ) );
 	connect( m_ViewerCore, SIGNAL( emitUpdateScene() ), this, SLOT( updateScene() ) );
 	connect( ui.comboAxis, SIGNAL( currentIndexChanged(int)), this, SLOT( updateScene() ) );
+	connect( ui.timeCourseRadio, SIGNAL( clicked(bool)), this, SLOT( updateScene() ) );
+	connect( ui.spectrumRadio, SIGNAL(clicked(bool)), this, SLOT( updateScene()));
 	ui.comboAxis->addItem( "X" );
 	ui.comboAxis->addItem( "Y" );
 	ui.comboAxis->addItem( "Z" );
 	ui.comboAxis->addItem( "time" );
-	ui.comboAxis->setCurrentIndex(3);
 	if( m_ViewerCore->hasImage() ) {
 		refresh( m_ViewerCore->getCurrentImage()->physicalCoords );
 	}
@@ -59,6 +60,19 @@ isis::viewer::plugin::PlotterDialog::PlotterDialog ( QWidget* parent, isis::view
 	setMaximumHeight( 500 );
 
 }
+
+void isis::viewer::plugin::PlotterDialog::showEvent ( QShowEvent* )
+{
+	if( m_ViewerCore->hasImage() ) {
+		int i=3;
+		while ( m_ViewerCore->getCurrentImage()->getImageSize()[i] <= 1 && i >= 0 ) {
+			i--;
+		}
+		ui.comboAxis->setCurrentIndex(i);
+	}
+	updateScene();
+}
+
 
 void isis::viewer::plugin::PlotterDialog::refresh ( isis::util::fvector4 physicalCoords )
 {

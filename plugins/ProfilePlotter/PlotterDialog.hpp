@@ -53,10 +53,11 @@ class PlotterDialog : public QDialog
 public:
 	PlotterDialog( QWidget *parent, QViewerCore *core );
 public Q_SLOTS:
-    void showEvent( QShowEvent * ) { updateScene(); }
+    void showEvent( QShowEvent * );
 	void updateScene() { refresh ( m_CurrentPhysicalCoords ); }
 
 	virtual void refresh( util::fvector4 physicalCoords );
+	
 private:
 	Ui::plottingDialog ui;
 	QwtPlot *plot;
