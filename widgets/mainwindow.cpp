@@ -459,6 +459,11 @@ void MainWindow::updateRecentOpenList()
 	QSignalMapper *signalMapper = new QSignalMapper( this );
 	const util::slist recentOpenList = m_ViewerCore->getOptionMap()->getPropertyAs<util::slist>("recentOpenList");
 	m_Interface.actionOpen_recent->setEnabled(!recentOpenList.empty() );
+	//first we have to remove all actions
+	BOOST_FOREACH( QList<QAction*>::const_reference action, m_Interface.actionOpen_recent->menu()->actions() )
+	{
+		m_Interface.actionOpen_recent->menu()->removeAction( action );
+	}
 	BOOST_FOREACH( util::slist::const_reference path, recentOpenList ) {
 		QAction *recentAction = new QAction( path.c_str(), this );
 		signalMapper->setMapping( recentAction, path.c_str() );

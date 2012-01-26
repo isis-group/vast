@@ -391,11 +391,12 @@ void QViewerCore::openPath ( QStringList fileList, ImageHolder::ImageType imageT
 			std::list<data::Image> tempImgList = isis::data::IOFactory::load ( filename.toStdString() , rf, rdialect );
 			pathList.push_back ( filename.toStdString() );
 
-			
-			if( recentOpenList.size() > getOptionMap()->getPropertyAs<uint16_t>("maxRecentOpenListSize") - 1 ) {
-				recentOpenList.pop_front();
+			if( std::find( recentOpenList.begin(), recentOpenList.end(), filename.toStdString() ) == recentOpenList.end() ) {
+				if( recentOpenList.size() >= getOptionMap()->getPropertyAs<uint16_t>("maxRecentOpenListSize") ) {
+					recentOpenList.pop_front();
+				}
+				recentOpenList.push_back(filename.toStdString());
 			}
-			recentOpenList.push_back(filename.toStdString());
 			BOOST_FOREACH ( std::list<data::Image>::const_reference image, tempImgList )
 			{
 				boost::shared_ptr<ImageHolder> imageHolder = addImage ( image, imageType );
