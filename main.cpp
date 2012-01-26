@@ -25,10 +25,14 @@
  *  Created on: Aug 12, 2011
  *      Author: tuerke
  ******************************************************************/
+#include <iostream>
+#include <signal.h>
 #include <Adapter/qtapplication.hpp>
 #include <Adapter/qdefaultmessageprint.hpp>
 #include "qviewercore.hpp"
 #include <iostream>
+
+
 #include <DataStorage/io_factory.hpp>
 #include "CoreUtils/singletons.hpp"
 #include <DataStorage/image.hpp>
@@ -38,13 +42,14 @@
 #include "uicore.hpp"
 
 #include "common.hpp"
+#include "internal/error.hpp"
 
 int main( int argc, char *argv[] )
 {
 
 	using namespace isis;
 	using namespace viewer;
-	
+    signal( SIGSEGV, error::sigsegv);
 	
 	boost::shared_ptr<qt4::QDefaultMessagePrint> logging_hanlder_runtime ( new qt4::QDefaultMessagePrint( verbose_info ) );
 	boost::shared_ptr<qt4::QDefaultMessagePrint> logging_hanlder_dev ( new qt4::QDefaultMessagePrint( verbose_info ) );
@@ -117,10 +122,6 @@ int main( int argc, char *argv[] )
 	if( fileList.size() || zmapFileList.size() ) {
 		core->getUICore()->getMainWindow()->setCursor( Qt::WaitCursor );
 		QApplication::processEvents();
-		if( core->getOptionMap()->getPropertyAs<bool>( "showLoadingWidget" ) ) {
-			core->getUICore()->getMainWindow()->startWidget->showMe( false );
-		}
-
 		//load the anatomical images
 		BOOST_FOREACH ( util::slist::const_reference fileName, fileList ) {
 			std::stringstream fileLoad;
@@ -153,7 +154,7 @@ int main( int argc, char *argv[] )
 			}
 		}
 	} else if( core->getOptionMap()->getPropertyAs<bool>( "showStartWidget" ) ) {
-		core->getUICore()->getMainWindow()->startWidget->showMe( true );
+		core->getUICore()->getMainWindow()->startWidget->show();
 	}
 
 	//*****************************************************************************************
@@ -164,7 +165,8 @@ int main( int argc, char *argv[] )
 
 	if( app.parameters["zmap"].isSet() ) {
 		core->setMode( ViewerCoreBase::zmap );
-		core->getUICore()->getMainWindow()->setWindowTitle( "vast (zmap mode)" );
+	}  else {
+		core->setMode( ViewerCoreBase::standard );
 	}
 
 	//particular distribution of images in widgets

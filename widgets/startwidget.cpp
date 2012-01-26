@@ -27,8 +27,9 @@
  ******************************************************************/
 #include "startwidget.hpp"
 #include "uicore.hpp"
-#include <qviewercore.hpp>
+#include "qviewercore.hpp"
 #include "filedialog.hpp"
+#include "internal/fileinformation.hpp"
 
 namespace isis
 {
@@ -44,9 +45,9 @@ StartWidget::StartWidget( QWidget *parent, QViewerCore *core )
 {
 	m_Interface.setupUi( this );
 	connect( m_Interface.openImageButton, SIGNAL( clicked() ), this, SLOT( openImageButtonClicked() ) );
-	connect( m_ViewerCore, SIGNAL( emitStatus( QString ) ), this, SLOT( statusChanged( QString ) ) );
 	connect( m_Interface.showMeCheck, SIGNAL( clicked( bool ) ), this, SLOT( showMeChecked( bool ) ) );
-	connect( m_Interface.favList, SIGNAL( doubleClicked( QModelIndex ) ), this, SLOT( openPath() ) );
+	connect( m_Interface.favList, SIGNAL( doubleClicked(QModelIndex) ), this, SLOT( openFavPath() ) );
+	connect( m_Interface.recentList, SIGNAL( doubleClicked(QModelIndex)), this, SLOT( openRecentPath() ) );
 
 }
 
@@ -69,12 +70,16 @@ void StartWidget::closeEvent( QCloseEvent * )
 }
 
 
-void StartWidget::openPath()
+void StartWidget::openFavPath()
 {
 	close();
-	QStringList fileList;
-	fileList.push_back( m_Interface.favList->currentItem()->text() );
-	m_ViewerCore->openPath( fileList, ImageHolder::structural_image, "", "", true );
+	m_ViewerCore->openPath( m_ViewerCore->getFavFiles().at( m_Interface.favList->currentItem()->text().toStdString()) );
+}
+
+void StartWidget::openRecentPath()
+{
+	close();
+	m_ViewerCore->openPath(	m_ViewerCore->getRecentFiles().at( m_Interface.recentList->currentItem()->text().toStdString() ) );
 }
 
 void StartWidget::showEvent( QShowEvent * )
@@ -83,67 +88,56 @@ void StartWidget::showEvent( QShowEvent * )
 	uint16_t height = m_ViewerCore->getOptionMap()->getPropertyAs<uint16_t>( "startWidgetHeight" );
 	const QRect screen = QApplication::desktop()->screenGeometry();
 
-	setMaximumHeight( height * 1.1 );
+	setMaximumHeight( height  );
 	setMaximumWidth( width );
-	setMinimumHeight( height * 1.1 );
+	setMinimumHeight( height );
 	setMinimumWidth( width );
+	const float scale = 0.9;
 	QPixmap pixMap( m_ViewerCore->getOptionMap()->getPropertyAs<std::string>("vastSymbol").c_str() );
-	float ratio = pixMap.height() / ( float )pixMap.width();
+	float ratio = pixMap.height() / ( float )pixMap.width() * scale;
 	m_Interface.imageLabel->setMinimumHeight( width * ratio );
-	m_Interface.imageLabel->setMinimumWidth( width );
+	m_Interface.imageLabel->setMaximumHeight( width * ratio );
 	m_Interface.imageLabel->setPixmap( pixMap.scaled( width, width * ratio ) );
-	m_Interface.buttonFrame->setMaximumHeight( height - width * ratio );
+	m_Interface.imageLabel->setAlignment( Qt::AlignCenter);
 	move( m_ViewerCore->getUICore()->getMainWindow()->rect().center().x() - this->width() / 2,  m_ViewerCore->getUICore()->getMainWindow()->rect().center().y() - this->height() / 2 );
 
 
 	m_ViewerCore->getUICore()->getMainWindow()->setEnabled( false );
 	setEnabled( true );
-}
-
-
-void StartWidget::showMe( bool asStartDialog )
-{
-
-	if( asStartDialog ) {
 		m_Interface.buttonFrame->setVisible( true );
-		m_Interface.statusLabel->setText( m_ViewerCore->getVersion().c_str() );
-		m_Interface.showMeCheck->setChecked( m_ViewerCore->getOptionMap()->getPropertyAs<bool>( "showStartWidget" ) );
-		m_ViewerCore->getSettings()->beginGroup( "UserProfile" );
-		QList<QVariant> favFiles = m_ViewerCore->getSettings()->value( "favoriteFiles" ).toList();
-		m_ViewerCore->getSettings()->endGroup();
-		m_Interface.favList->clear();
+	m_Interface.showMeCheck->setChecked( m_ViewerCore->getOptionMap()->getPropertyAs<bool>( "showStartWidget" ) );
+	
+    m_Interface.favoritesLabel->setVisible( fillList( m_ViewerCore->getFavFiles(), m_Interface.favList ) );
+	m_Interface.recentLabel->setVisible( fillList( m_ViewerCore->getRecentFiles(), m_Interface.recentList ) );
+// 	adjustSize();
 
-		if( favFiles.size() ) {
-			BOOST_FOREACH( QList<QVariant>::const_reference path, favFiles ) {
-				unsigned short validFiles;
-				QListWidgetItem *item = new QListWidgetItem( path.toString() );
-
-				if( FileDialog::checkIfPathIsValid( path.toString(), validFiles, "" ) ) {
-					item->setTextColor( QColor( 34, 139, 34 ) );
-				} else {
-					item->setTextColor( Qt::red );
-				}
-
-				m_Interface.favList->addItem( item );
-			}
-		} else {
-			m_Interface.favList->setVisible( false );
-		}
-
-		adjustSize();
-		show();
-	} else {
-		m_Interface.buttonFrame->setVisible( false );
-		show();
-	}
 }
 
-void StartWidget::statusChanged( QString status )
+bool StartWidget::fillList ( const _internal::FileInformationMap& fileInfoList, QListWidget* list )
 {
+	if( !fileInfoList.empty() ) {
+		list->clear();
+		list->setVisible(true);
+		BOOST_FOREACH( _internal::FileInformationMap::const_reference fileInfo, fileInfoList ) {
+			unsigned short validFiles;
+			QListWidgetItem *item = new QListWidgetItem( fileInfo.first.c_str() );
 
-	m_Interface.statusLabel->setText( status );
-	QCoreApplication::processEvents();
+			if( FileDialog::checkIfPathIsValid( fileInfo.first.c_str(), validFiles, "" ) ) {
+				item->setTextColor( QColor( 34, 139, 34 ) );
+			} else {
+				item->setTextColor( Qt::red );
+			}
+
+			list->addItem( item );
+		}
+		return true;
+	} else {
+		list->setVisible(false);
+		return false;
+	}
+	return false; // supress warning
 }
+
 
 
 void StartWidget::openImageButtonClicked()

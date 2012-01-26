@@ -48,17 +48,18 @@ public:
 
 public Q_SLOTS:
 	void openImageButtonClicked();
-	void showMe( bool asStartDialog = false );
-	void statusChanged( QString );
 	void showMeChecked( bool );
 	virtual void showEvent( QShowEvent * ) ;
 	virtual void closeEvent( QCloseEvent * );
 	virtual void keyPressEvent( QKeyEvent * );
-	void openPath();
+	void openFavPath();
+	void openRecentPath();
 
 private:
 	Ui::startDialog m_Interface;
 	QViewerCore *m_ViewerCore;
+
+	bool fillList( const _internal::FileInformationMap &fileInfoList, QListWidget *list );
 };
 
 

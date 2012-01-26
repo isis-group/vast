@@ -53,10 +53,11 @@ class PlotterDialog : public QDialog
 public:
 	PlotterDialog( QWidget *parent, QViewerCore *core );
 public Q_SLOTS:
-    void showEvent( QShowEvent * ) { updateScene(); }
+    void showEvent( QShowEvent * );
 	void updateScene() { refresh ( m_CurrentPhysicalCoords ); }
 
 	virtual void refresh( util::fvector4 physicalCoords );
+	
 private:
 	Ui::plottingDialog ui;
 	QwtPlot *plot;
@@ -65,7 +66,7 @@ private:
 	QViewerCore *m_ViewerCore;
 	util::fvector4 m_CurrentPhysicalCoords;
 	
-	void fillTimeCourse( boost::shared_ptr<ImageHolder> image, const util::ivector4 &voxCoords, QwtPlotCurve *curve, const unsigned short &axis );
+	void fillProfile( boost::shared_ptr<ImageHolder> image, const util::ivector4 &voxCoords, QwtPlotCurve *curve, const unsigned short &axis );
 	void fillSpectrum(  boost::shared_ptr<ImageHolder> image, const util::ivector4 &voxCoords, QwtPlotCurve *curve, const unsigned short &axis ); 
 	
 	template<typename TYPE>

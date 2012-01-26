@@ -17,7 +17,7 @@ file (GLOB WIDGET_FILES_CPP widgets/*.cpp )
 file (GLOB QWIDGET_FILES_CPP QImageWidget/*.cpp )
 file (GLOB UI_FILES forms/*.ui)
 file (GLOB RESOURCE_FILES resources/*.qrc)
-
+file (GLOB INTERNAL_FILES_CPP viewer/internal/*.cpp )
 file (GLOB VIEWER_DEV_FILES viewer/*.hpp )
 file (GLOB WIDGET_DEV_FILES widgets/*.hpp )
 
@@ -45,8 +45,8 @@ set(WIDGET_FILES_HPP
 # set viewer version number
 ##########################################################
 set(VAST_VERSION_MAJOR "0")
-set(VAST_VERSION_MINOR "2")
-set(VAST_VERSION_PATCH "6")
+set(VAST_VERSION_MINOR "3")
+set(VAST_VERSION_PATCH "0")
 
 add_definitions(-D_VAST_VERSION_MAJOR=${VAST_VERSION_MAJOR})
 add_definitions(-D_VAST_VERSION_MINOR=${VAST_VERSION_MINOR})
@@ -173,7 +173,7 @@ ENDIF(VAST_OPENMP)
 
 
 
-add_executable(vast main.cpp ${QWIDGET_FILES_CPP} ${WIDGET_FILES_CPP} ${VIEWER_FILES_CPP} ${WIDGET_FILES_CPP} ${vast_UIS_H} ${vast_moc_files} ${vast_rcc_files})
+add_executable(vast main.cpp ${QWIDGET_FILES_CPP} ${WIDGET_FILES_CPP} ${VIEWER_FILES_CPP} ${WIDGET_FILES_CPP} ${vast_UIS_H} ${vast_moc_files} ${vast_rcc_files} ${INTERNAL_FILES_CPP})
 find_library(isisqt4_LIBRARY "isisAdapter_qt4")
 
 message(STATUS "QT libraries: ${QT_LIBRARIES} ")
@@ -201,3 +201,4 @@ install(FILES ${VIEWER_DEV_FILES} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/va
 
 #install pixmap
 install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/resources/vast.xpm DESTINATION ${CMAKE_INSTALL_PREFIX}/share/pixmaps)
+

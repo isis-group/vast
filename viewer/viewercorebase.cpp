@@ -149,9 +149,8 @@ void ViewerCoreBase::setCommonViewerOptions()
 	m_OptionsMap->setPropertyAs<uint16_t>( "maxOptionWidgetHeight", 90 );
 	m_OptionsMap->setPropertyAs<uint16_t>( "minOptionWidgetHeight", 90 );
 	m_OptionsMap->setPropertyAs<bool>( "showStartWidget", true );
-	m_OptionsMap->setPropertyAs<bool>( "showLoadingWidget", true );
 	m_OptionsMap->setPropertyAs<bool>( "showCrashMessage", true );
-	m_OptionsMap->setPropertyAs<uint16_t>( "startWidgetHeight", 500 );
+	m_OptionsMap->setPropertyAs<uint16_t>( "startWidgetHeight", 600 );
 	m_OptionsMap->setPropertyAs<uint16_t>( "startWidgetWidth", 400 );
 	m_OptionsMap->setPropertyAs<uint16_t>( "viewerWidgetMargin", 5 );
 	m_OptionsMap->setPropertyAs<uint8_t>( "numberOfThreads", 0 );
@@ -170,6 +169,7 @@ void ViewerCoreBase::setCommonViewerOptions()
 	m_OptionsMap->setPropertyAs<std::string>( "lutZMap", "standard_zmap" );
 	m_OptionsMap->setPropertyAs<uint16_t>( "timeseriesPlayDelayTime", 50 );
 	m_OptionsMap->setPropertyAs<bool>( "histogramOmitZero", true );
+	m_OptionsMap->setPropertyAs<uint16_t>("maxRecentOpenListSize", 10 );
 	//logging
 	m_OptionsMap->setPropertyAs<uint16_t>( "logDelayTime", 6000 );
 	m_OptionsMap->setPropertyAs<bool>( "showErrorMessages", true );
@@ -180,10 +180,9 @@ void ViewerCoreBase::setCommonViewerOptions()
 	m_OptionsMap->setPropertyAs<std::string>("vastSymbol", std::string(":/common/minerva-MPG.png") );
 
 	std::stringstream signature;
-	signature << "vast v" << getVersion() << ", MPG CBS";
+	signature << "vast v" << getVersion() << ", Max Planck Institut for human cognitive and brain sciences";
 	m_OptionsMap->setPropertyAs<std::string>( "signature", signature.str() );
 }
-
 
 
 

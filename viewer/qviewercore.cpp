@@ -30,9 +30,9 @@
 #include <DataStorage/fileptr.hpp>
 #include "nativeimageops.hpp"
 #include "uicore.hpp"
-#include <fstream>
+#include <mainwindow.hpp>
 
-#include <signal.h>
+#include <fstream>
 
 namespace isis
 {
@@ -47,8 +47,8 @@ QViewerCore::QViewerCore ( const std::string &appName, const std::string &orgNam
 	  m_ProgressFeedback ( boost::shared_ptr<QProgressFeedback> ( new QProgressFeedback() ) ),
 	  m_UI ( new isis::viewer::UICore ( this ) )
 {
-	signal( SIGSEGV, sigsegv_ );
-	
+	m_FavFiles.setLimit(1000);
+	m_RecentFiles.setLimit( getOptionMap()->getPropertyAs<uint16_t>("maxRecentOpenListSize") );
 	QCoreApplication::setApplicationName ( QString ( appName.c_str() ) );
 	QCoreApplication::setOrganizationName ( QString ( orgName.c_str() ) );
 	QApplication::setStartDragTime ( 1000 );
@@ -57,6 +57,7 @@ QViewerCore::QViewerCore ( const std::string &appName, const std::string &orgNam
 	data::IOFactory::setProgressFeedback ( m_ProgressFeedback );
 	operation::NativeImageOps::setProgressFeedBack ( m_ProgressFeedback );
 	loadSettings();
+	getUICore()->refreshUI();
 #ifdef _OPENMP
 	const uint8_t nMaxThreads = omp_get_num_procs();
 	if( getOptionMap()->getPropertyAs<uint8_t> ( "numberOfThreads" ) == 0 ) {
@@ -143,7 +144,6 @@ void QViewerCore::receiveMessage ( std::string message )
 {
 	qt4::QMessage qmessage;
 	qmessage.message = message;
-	emitStatus ( QString ( message.c_str() ) );
 	receiveMessage ( qmessage );
 }
 
@@ -355,91 +355,56 @@ bool QViewerCore::attachImageToWidget ( boost::shared_ptr<ImageHolder> image, Wi
 	return true;
 }
 
-void QViewerCore::openPath ( QStringList fileList, ImageHolder::ImageType imageType, const std::string &rdialect, const std::string &rf, bool newWidget )
+void QViewerCore::openPath ( const _internal::FileInformation &fileInfo )
 {
-	if ( !fileList.empty() )
+	if ( !fileInfo.getFileName().empty() )
 	{
+		getUICore()->getMainWindow()->toggleLoadingIcon( true, QString( "Opening image " ) + fileInfo.getFileName().c_str() + QString("...") );
 		QDir dir;
-		setCurrentPath ( dir.absoluteFilePath ( fileList.front() ).toStdString() );
-		util::slist pathList;
-
-		if ( ( getDataContainer().size() + fileList.size() ) > 1 )
-		{
-			getUICore()->setViewWidgetArrangement ( isis::viewer::UICore::InRow );
-		}
-		else
-		{
-			getUICore()->setViewWidgetArrangement ( isis::viewer::UICore::Default );
-		}
-
+		setCurrentPath ( dir.absoluteFilePath ( fileInfo.getFileName().c_str() ).toStdString() );
 		UICore::ViewWidgetEnsembleType ensemble;
 
 		if ( getUICore()->getEnsembleList().size() )
 		{
 			ensemble = getUICore()->getEnsembleList().front();
 		}
+		boost::filesystem::path p ( fileInfo.getFileName() );
 
-		BOOST_FOREACH ( QStringList::const_reference filename, fileList )
+		std::list<data::Image> tempImgList = isis::data::IOFactory::load ( fileInfo.getFileName() , fileInfo.getReadFormat(), fileInfo.getDialect() );
+
+		m_RecentFiles.insert( std::make_pair<std::string, _internal::FileInformation>(fileInfo.getFileName(), fileInfo ) );
+		BOOST_FOREACH ( std::list<data::Image>::const_reference image, tempImgList )
 		{
-			std::stringstream msg;
-			boost::filesystem::path p ( filename.toStdString() );
+			boost::shared_ptr<ImageHolder> imageHolder = addImage ( image, fileInfo.getImageType() );
+			checkForCaCp ( imageHolder );
 
-			if ( boost::filesystem::is_directory ( p ) )
+			if ( ! ( getMode() == ViewerCoreBase::zmap && imageHolder->imageType == ImageHolder::structural_image ) )
 			{
-				msg << "Loading images from directory \"" << p.leaf() << "\"...";
-			}
-			else
-			{
-				msg << "Loading image \"" << p.leaf() << "\"...";
-			}
-
-			if ( getOptionMap()->getPropertyAs<bool> ( "showLoadingWidget" ) )
-			{
-				getUICore()->getMainWindow()->startWidget->showMe ( false );
-			}
-
-			receiveMessage ( msg.str() );
-			std::list<data::Image> tempImgList = isis::data::IOFactory::load ( filename.toStdString() , rf, rdialect );
-			pathList.push_back ( filename.toStdString() );
-
-			if ( tempImgList.size() > 1 )
-			{
-				msg.clear();
-				msg << "Found " << tempImgList.size() << " images. Loading...";
-			}
-
-			BOOST_FOREACH ( std::list<data::Image>::const_reference image, tempImgList )
-			{
-				boost::shared_ptr<ImageHolder> imageHolder = addImage ( image, imageType );
-				checkForCaCp ( imageHolder );
-
-				if ( ! ( getMode() == ViewerCoreBase::zmap && imageHolder->imageType == ImageHolder::structural_image ) )
+				if ( fileInfo.isNewEnsemble() )
 				{
-					if ( newWidget )
+					ensemble = getUICore()->createViewWidgetEnsemble ( "" );
+
+					//if we load a zmap we additionally add an anatomical image to the widget to make things easier for the user....
+					if ( fileInfo.getImageType() == ImageHolder::z_map && m_CurrentAnatomicalReference.get() )
 					{
-						ensemble = getUICore()->createViewWidgetEnsemble ( "" );
-
-						//if we load a zmap we additionally add an anatomical image to the widget to make things easier for the user....
-						if ( imageType == ImageHolder::z_map && m_CurrentAnatomicalReference.get() )
-						{
-							attachImageToWidget ( m_CurrentAnatomicalReference, ensemble[0].widgetImplementation );
-							attachImageToWidget ( m_CurrentAnatomicalReference, ensemble[1].widgetImplementation );
-							attachImageToWidget ( m_CurrentAnatomicalReference, ensemble[2].widgetImplementation );
-						}
+						attachImageToWidget ( m_CurrentAnatomicalReference, ensemble[0].widgetImplementation );
+						attachImageToWidget ( m_CurrentAnatomicalReference, ensemble[1].widgetImplementation );
+						attachImageToWidget ( m_CurrentAnatomicalReference, ensemble[2].widgetImplementation );
 					}
-
-					attachImageToWidget ( imageHolder, ensemble[0].widgetImplementation );
-					attachImageToWidget ( imageHolder, ensemble[1].widgetImplementation );
-					attachImageToWidget ( imageHolder, ensemble[2].widgetImplementation );
-					setCurrentImage ( imageHolder );
 				}
+
+				attachImageToWidget ( imageHolder, ensemble[0].widgetImplementation );
+				attachImageToWidget ( imageHolder, ensemble[1].widgetImplementation );
+				attachImageToWidget ( imageHolder, ensemble[2].widgetImplementation );
+				setCurrentImage ( imageHolder );
 			}
 		}
 		getUICore()->rearrangeViewWidgets();
 		getUICore()->refreshUI();
 		centerImages();
-		getUICore()->getMainWindow()->startWidget->close();
+		getUICore()->getMainWindow()->toggleLoadingIcon( false );
 	}
+	
 }
 
 void QViewerCore::closeImage ( boost::shared_ptr<ImageHolder> image, bool refreshUI )
@@ -480,6 +445,7 @@ void QViewerCore::closeImage ( boost::shared_ptr<ImageHolder> image, bool refres
 
 void QViewerCore::loadSettings()
 {
+	getUICore()->getMainWindow()->toggleLoadingIcon(true, QString("Loading user settings..." ) );
 	getSettings()->beginGroup ( "ViewerCore" );
 	getOptionMap()->setPropertyAs<std::string> ( "lutZMap", getSettings()->value ( "lutZMap", getOptionMap()->getPropertyAs<std::string> ( "lutZMap" ).c_str() ).toString().toStdString() );
 	getOptionMap()->setPropertyAs<std::string> ( "lutStructural", getSettings()->value ( "lutStructural", getOptionMap()->getPropertyAs<std::string> ( "lutStructural" ).c_str() ).toString().toStdString() );
@@ -492,7 +458,6 @@ void QViewerCore::loadSettings()
 	getOptionMap()->setPropertyAs<bool> ( "showAdvancedFileDialogOptions", getSettings()->value ( "showAdvancedFileDialogOptions", false ).toBool() );
 	getOptionMap()->setPropertyAs<bool> ( "showFavoriteFileList", getSettings()->value ( "showFavoriteFileList", false ).toBool() );
 	getOptionMap()->setPropertyAs<bool> ( "showStartWidget", getSettings()->value ( "showStartWidget", true ).toBool() );
-	getOptionMap()->setPropertyAs<bool> ( "showLoadingWidget", getSettings()->value ( "showLoadingWidget", true ).toBool() );
 	getOptionMap()->setPropertyAs<bool> ( "showCrashMessage", getSettings()->value ( "showCrashMessage", true ).toBool() );
 	getOptionMap()->setPropertyAs<uint8_t> ( "numberOfThreads", getSettings()->value ( "numberOfThreads" ).toUInt() );
 	getOptionMap()->setPropertyAs<bool> ( "enableMultithreading", getSettings()->value ( "enableMultithreading" ).toBool() );
@@ -507,6 +472,9 @@ void QViewerCore::loadSettings()
 	getOptionMap()->setPropertyAs<uint16_t> ( "screenshotDPIY", getSettings()->value ( "screenshotDPIY", getOptionMap()->getPropertyAs<uint16_t> ( "screenshotDPIY" ) ).toUInt() );
 	getOptionMap()->setPropertyAs<bool> ( "screenshotManualScaling", getSettings()->value ( "screenshotManualScaling", getOptionMap()->getPropertyAs<bool> ( "screenshotManualScaling" ) ).toBool() );
 	getSettings()->endGroup();
+	m_RecentFiles.readFileInfortmationMap(getSettings(), "RecentImages");
+	m_FavFiles.readFileInfortmationMap(getSettings(), "FavoriteImages");
+	getUICore()->getMainWindow()->toggleLoadingIcon(false);
 }
 
 
@@ -525,7 +493,6 @@ void QViewerCore::saveSettings()
 	getSettings()->setValue ( "showAdvancedFileDialogOptions", getOptionMap()->getPropertyAs<bool> ( "showAdvancedFileDialogOptions" ) );
 	getSettings()->setValue ( "showFavoriteFileList", getOptionMap()->getPropertyAs<bool> ( "showFavoriteFileList" ) );
 	getSettings()->setValue ( "showStartWidget", getOptionMap()->getPropertyAs<bool> ( "showStartWidget" ) );
-	getSettings()->setValue ( "showLoadingWidget", getOptionMap()->getPropertyAs<bool> ( "showLoadingWidget" ) );
 	getSettings()->setValue ( "showCrashMessage", getOptionMap()->getPropertyAs<bool> ( "showCrashMessage" ) );	
 	getSettings()->setValue ( "numberOfThreads", getOptionMap()->getPropertyAs<uint8_t> ( "numberOfThreads" ) );
 	getSettings()->setValue ( "enableMultithreading", getOptionMap()->getPropertyAs<bool> ( "enableMultithreading" ) );
@@ -541,6 +508,8 @@ void QViewerCore::saveSettings()
 	getSettings()->setValue ( "screenshotManualScaling", getOptionMap()->getPropertyAs<bool> ( "screenshotManualScaling" ) );
 
 	getSettings()->endGroup();
+	m_RecentFiles.writeFileInformationMap(getSettings(), "RecentImages" );
+	m_FavFiles.writeFileInformationMap(getSettings(), "FavoriteImages" );
 	getSettings()->sync();
 }
 
@@ -553,27 +522,16 @@ void QViewerCore::close ()
 	
 }
 
-
-void QViewerCore::sigsegv_ ( int exit_code )
+void QViewerCore::setMode ( ViewerCoreBase::Mode mode )
 {
-#ifndef WIN32
-
-	std::ofstream logFile ( getCrashLogFilePath().c_str(), std::ofstream::binary );
-	const qt4::QMessageList &messageList = util::Singletons::get<qt4::QMessageList,10>();
-	for( qt4::QMessageList::const_iterator iter = messageList.begin(); iter != messageList.end(); iter++ ) {
-		logFile << iter->m_module << "(" << iter->time_str << ") [" << iter->m_file << ":" << iter->m_line << "] " << iter->message << std::endl;
+	m_Mode = mode;
+	if( m_Mode == zmap ) {
+		getUICore()->getMainWindow()->setWindowTitle( QString( m_OptionsMap->getPropertyAs<std::string>("signature").c_str() ) + QString("(zmap mode)" ) );
+	} else {
+		getUICore()->getMainWindow()->setWindowTitle( QString( m_OptionsMap->getPropertyAs<std::string>("signature").c_str() ) );
 	}
-	logFile.close();
-	std::cout << "Seems like vast crashed :-( . Logfile was written to " << getCrashLogFilePath() << std::endl;
-	
-#else
-#warning implement me!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-	
-#endif
-	
-// 	m_logger->writeLogging();
-	exit(exit_code);
 }
+
 
 
 }

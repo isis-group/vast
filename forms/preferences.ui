@@ -206,13 +206,6 @@
                   </widget>
                  </item>
                  <item>
-                  <widget class="QCheckBox" name="checkLoadingScreen">
-                   <property name="text">
-                    <string>Show loading screen</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
                   <widget class="QCheckBox" name="checkCrashMessage">
                    <property name="text">
                     <string>Show crash message</string>

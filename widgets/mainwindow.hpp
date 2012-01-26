@@ -105,9 +105,13 @@ public Q_SLOTS:
 	void toggleSagittalView( bool );
 	void toggleAxialView( bool );
 	void toggleCoronalView( bool );
-
+	void updateRecentOpenList();
+    void openRecentPath( QString );
+	void toggleLoadingIcon( bool start, const QString &text = QString() );
 
 private:
+
+	
 	Ui::vastMainWindow m_Interface;
 	QViewerCore *m_ViewerCore;
 
@@ -115,10 +119,13 @@ private:
 
 	QSpinBox *m_RadiusSpin;
 	QAction *m_RadiusSpinAction;
-	QLabel *m_SignatureLabel;
+	QLabel *m_StatusTextLabel;
 
 	QAction *m_ActionReset_Scaling;
 	QAction *m_ActionAuto_Scaling;
+
+	QLabel * m_StatusMovieLabel;
+	QMovie * m_StatusMovie;
 
 
 };
