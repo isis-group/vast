@@ -88,16 +88,17 @@ void StartWidget::showEvent( QShowEvent * )
 	uint16_t height = m_ViewerCore->getOptionMap()->getPropertyAs<uint16_t>( "startWidgetHeight" );
 	const QRect screen = QApplication::desktop()->screenGeometry();
 
-	setMaximumHeight( height * 1.1 );
+	setMaximumHeight( height  );
 	setMaximumWidth( width );
-	setMinimumHeight( height * 1.1 );
+	setMinimumHeight( height );
 	setMinimumWidth( width );
+	const float scale = 0.9;
 	QPixmap pixMap( m_ViewerCore->getOptionMap()->getPropertyAs<std::string>("vastSymbol").c_str() );
-	float ratio = pixMap.height() / ( float )pixMap.width();
+	float ratio = pixMap.height() / ( float )pixMap.width() * scale;
 	m_Interface.imageLabel->setMinimumHeight( width * ratio );
-	m_Interface.imageLabel->setMinimumWidth( width );
+	m_Interface.imageLabel->setMaximumHeight( width * ratio );
 	m_Interface.imageLabel->setPixmap( pixMap.scaled( width, width * ratio ) );
-	m_Interface.buttonFrame->setMaximumHeight( height - width * ratio );
+	m_Interface.imageLabel->setAlignment( Qt::AlignCenter);
 	move( m_ViewerCore->getUICore()->getMainWindow()->rect().center().x() - this->width() / 2,  m_ViewerCore->getUICore()->getMainWindow()->rect().center().y() - this->height() / 2 );
 
 
@@ -108,7 +109,7 @@ void StartWidget::showEvent( QShowEvent * )
 	
     m_Interface.favoritesLabel->setVisible( fillList( m_ViewerCore->getFavFiles(), m_Interface.favList ) );
 	m_Interface.recentLabel->setVisible( fillList( m_ViewerCore->getRecentFiles(), m_Interface.recentList ) );
-	adjustSize();
+// 	adjustSize();
 
 }
 
