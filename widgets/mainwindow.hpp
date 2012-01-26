@@ -107,6 +107,7 @@ public Q_SLOTS:
 	void toggleCoronalView( bool );
 	void updateRecentOpenList();
     void openRecentPath( QString );
+	void toggleLoadingIcon( bool start, const QString &text = QString() );
 
 private:
 
@@ -118,10 +119,13 @@ private:
 
 	QSpinBox *m_RadiusSpin;
 	QAction *m_RadiusSpinAction;
-	QLabel *m_SignatureLabel;
+	QLabel *m_StatusTextLabel;
 
 	QAction *m_ActionReset_Scaling;
 	QAction *m_ActionAuto_Scaling;
+
+	QLabel * m_StatusMovieLabel;
+	QMovie * m_StatusMovie;
 
 
 };

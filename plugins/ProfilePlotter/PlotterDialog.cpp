@@ -62,7 +62,6 @@ isis::viewer::plugin::PlotterDialog::PlotterDialog ( QWidget* parent, isis::view
 
 void isis::viewer::plugin::PlotterDialog::refresh ( isis::util::fvector4 physicalCoords )
 {
-
 	if( !ui.checkLock->isChecked() && isVisible()) {
 		m_CurrentPhysicalCoords = physicalCoords;
 		plot->clear();
@@ -74,7 +73,7 @@ void isis::viewer::plugin::PlotterDialog::refresh ( isis::util::fvector4 physica
 				
 				const util::ivector4 voxCoords = image.second->getISISImage()->getIndexFromPhysicalCoords( physicalCoords, true );
 				if( ui.timeCourseRadio->isChecked() ) {
-					fillTimeCourse( image.second, voxCoords, curve, axis );
+					fillProfile( image.second, voxCoords, curve, axis );
 				} else {
 					fillSpectrum( image.second, voxCoords, curve, axis );
 				}
@@ -106,7 +105,7 @@ void isis::viewer::plugin::PlotterDialog::refresh ( isis::util::fvector4 physica
 
 
 
-void isis::viewer::plugin::PlotterDialog::fillTimeCourse ( boost::shared_ptr< isis::viewer::ImageHolder > image, const isis::util::ivector4& voxCoords, QwtPlotCurve* curve, const unsigned short &axis )
+void isis::viewer::plugin::PlotterDialog::fillProfile ( boost::shared_ptr< isis::viewer::ImageHolder > image, const isis::util::ivector4& voxCoords, QwtPlotCurve* curve, const unsigned short &axis )
 {
 	std::stringstream title;
 	std::stringstream coordsAsString;

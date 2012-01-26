@@ -72,7 +72,6 @@ public:
 
 	bool hasImage() const { return getDataContainer().size(); }
 
-	void setMode( Mode mode ) { m_Mode = mode; }
 	Mode getMode() const { return m_Mode; }
 
 

@@ -31,6 +31,7 @@
 #include "DataStorage/io_factory.hpp"
 #include "uicore.hpp"
 #include <qviewercore.hpp>
+#include "internal/fileinformation.hpp"
 #include "scalingWidget.hpp"
 
 
@@ -51,7 +52,9 @@ MainWindow::MainWindow( QViewerCore *core ) :
 	m_ViewerCore( core ),
 	m_Toolbar( new QToolBar( this ) ),
 	m_RadiusSpin( new QSpinBox( this ) ),
-	m_SignatureLabel( new QLabel( this ) )
+	m_StatusTextLabel( new QLabel( this ) ),
+	m_StatusMovieLabel( new QLabel(this ) ),
+	m_StatusMovie( new QMovie( this ) )
 {
 	m_Interface.setupUi( this );
 	setWindowIcon( QIcon( m_ViewerCore->getOptionMap()->getPropertyAs<std::string>("vastSymbol").c_str() ) );
@@ -140,10 +143,17 @@ MainWindow::MainWindow( QViewerCore *core ) :
 	m_Interface.statusbar->addPermanentWidget( m_ViewerCore->getProgressFeedback()->getProgressBar() );
 
 	if( m_ViewerCore->getOptionMap()->hasProperty( "signature" ) ) {
-		m_SignatureLabel->setText( m_ViewerCore->getOptionMap()->getPropertyAs<std::string>( "signature" ).c_str() );
+		m_StatusTextLabel->setText( m_ViewerCore->getOptionMap()->getPropertyAs<std::string>( "signature" ).c_str() );
 	}
-
-	m_Interface.statusbar->addPermanentWidget( m_SignatureLabel );
+	m_Interface.statusbar->insertPermanentWidget(0, m_StatusTextLabel );
+	m_Interface.statusbar->insertPermanentWidget(1, m_StatusMovieLabel );
+	m_StatusMovie->setFileName( ":/common/loading.gif" );
+	m_StatusMovie->setScaledSize(QSize( m_Interface.statusbar->height(), m_Interface.statusbar->height() ) );
+	m_StatusMovieLabel->setMovie( m_StatusMovie );
+	m_StatusMovieLabel->setVisible( false );
+	m_Interface.statusbar->setVisible(false);
+	
+	
 
 	scalingWidget->setVisible( false );
 	loadSettings();
@@ -151,18 +161,33 @@ MainWindow::MainWindow( QViewerCore *core ) :
 
 }
 
+void MainWindow::toggleLoadingIcon ( bool start, const QString &text )
+{
+	m_StatusMovieLabel->setVisible(start);
+	m_Interface.statusbar->setVisible( start );
+	if( start ) {
+		m_StatusMovie->start();
+		m_StatusTextLabel->setText( text );
+	} else {
+		m_StatusMovie->stop();
+	}
+	QApplication::processEvents();	
+}
 
 void MainWindow::createScreenshot()
 {
 	if( m_ViewerCore->hasImage() ) {
+		
 		QString fileName = QFileDialog::getSaveFileName( this, tr( "Save Screenshot" ),
 						   m_ViewerCore->getCurrentPath().c_str(),
 						   tr( "Images (*.png *.xpm *.jpg)" ) );
 
 		if( fileName.size() ) {
+			toggleLoadingIcon(true, QString("Creating and saving screenshot to ") + fileName );
 			m_ViewerCore->getUICore()->getScreenshot().save( fileName, 0, m_ViewerCore->getOptionMap()->getPropertyAs<uint8_t>( "screenshotQuality" ) );
 			m_ViewerCore->setCurrentPath( fileName.toStdString() );
 		}
+		toggleLoadingIcon(false);
 	}
 
 
@@ -200,12 +225,14 @@ void MainWindow::loadSettings()
 
 void MainWindow::saveSettings()
 {
+	toggleLoadingIcon( true );
 	m_ViewerCore->getSettings()->beginGroup( "MainWindow" );
 	m_ViewerCore->getSettings()->setValue( "size", size() );
 	m_ViewerCore->getSettings()->setValue( "maximized", isMaximized() );
 	m_ViewerCore->getSettings()->setValue( "pos", pos() );
 	m_ViewerCore->getSettings()->endGroup();
 	m_ViewerCore->getSettings()->sync();
+	toggleLoadingIcon( false );
 }
 
 
@@ -331,7 +358,9 @@ void MainWindow::saveImage()
 				return;
 				break;
 			case QMessageBox::Yes:
+				toggleLoadingIcon( true, QString( "Saving image to ") + m_ViewerCore->getCurrentImage()->getFileNames().front().c_str() );
 				isis::data::IOFactory::write( *m_ViewerCore->getCurrentImage()->getISISImage(), m_ViewerCore->getCurrentImage()->getFileNames().front(), "", "" );
+				toggleLoadingIcon( false );
 				break;
 			}
 		}
@@ -381,15 +410,16 @@ void MainWindow::saveAllImages()
 				break;
 			case QMessageBox::Yes:
 				BOOST_FOREACH( DataContainer::const_reference image, m_ViewerCore->getDataContainer() ) {
+					toggleLoadingIcon( true, QString( "Saving image to ") + image.second->getFileNames().front().c_str() );
 					isis::data::IOFactory::write( *image.second->getISISImage(), image.second->getFileNames().front(), "", "" );
 				}
-
+                toggleLoadingIcon(false);
 				break;
 			}
 
 		} else {
 			QMessageBox msgBox;
-			msgBox.setText( "No image has changed attributes! WonŽt save anything." );
+			msgBox.setText( "No image has changed attributes! Will not save anything." );
 			msgBox.exec();
 		}
 
@@ -408,8 +438,10 @@ void MainWindow::saveImageAs()
 						   tr( fileFormats.str().c_str() ) );
 
 		if( filename.size() ) {
+			toggleLoadingIcon( true, QString( "Saving image to ") + filename );
 			isis::data::IOFactory::write( *m_ViewerCore->getCurrentImage()->getISISImage(), filename.toStdString(), "", "" );
 			m_ViewerCore->setCurrentPath( filename.toStdString() );
+			toggleLoadingIcon(false);
 		}
 	}
 
@@ -457,16 +489,28 @@ void MainWindow::reloadPluginsToGUI()
 void MainWindow::updateRecentOpenList()
 {
 	QSignalMapper *signalMapper = new QSignalMapper( this );
-	const util::slist recentOpenList = m_ViewerCore->getOptionMap()->getPropertyAs<util::slist>("recentOpenList");
-	m_Interface.actionOpen_recent->setEnabled(!recentOpenList.empty() );
+	m_Interface.actionOpen_recent->setEnabled(!m_ViewerCore->getRecentFiles().empty() );
 	//first we have to remove all actions
 	BOOST_FOREACH( QList<QAction*>::const_reference action, m_Interface.actionOpen_recent->menu()->actions() )
 	{
 		m_Interface.actionOpen_recent->menu()->removeAction( action );
 	}
-	BOOST_FOREACH( util::slist::const_reference path, recentOpenList ) {
-		QAction *recentAction = new QAction( path.c_str(), this );
-		signalMapper->setMapping( recentAction, path.c_str() );
+	BOOST_FOREACH( _internal::FileInformationMap::const_reference path, m_ViewerCore->getRecentFiles() ) {
+		std::stringstream recentFileName;
+		recentFileName << path.first;
+        if( path.second.getImageType() == ImageHolder::z_map ) {
+			recentFileName << " (zmap)";
+		}
+		if( !path.second.getDialect().empty() ) {
+			recentFileName << " (Dialect: " << path.second.getDialect() <<  ")";
+		}
+		if( !path.second.getReadFormat().empty() ) {
+			recentFileName << " (Readformat: " << path.second.getReadFormat() << ")";
+		}
+		QAction *recentAction = new QAction( recentFileName.str().c_str() , this );
+		recentAction->setData( QVariant( path.first.c_str() ) );
+		signalMapper->setMapping( recentAction, recentAction->data().toString() );
+		
 		m_Interface.actionOpen_recent->menu()->addAction( recentAction );
 		connect( recentAction, SIGNAL( triggered()), signalMapper, SLOT( map() ) );
 	}
@@ -475,9 +519,7 @@ void MainWindow::updateRecentOpenList()
 
 void MainWindow::openRecentPath ( QString path )
 {
-	QStringList fileList;
-	fileList.push_back( path );
-	m_ViewerCore->openPath( fileList, isis::viewer::ImageHolder::structural_image, "", "", true );
+	m_ViewerCore->openPath( m_ViewerCore->getRecentFiles().at(path.toStdString() ) );
 }
 
 void MainWindow::refreshUI()
@@ -527,20 +569,24 @@ void MainWindow::closeEvent( QCloseEvent * )
 void MainWindow::findGlobalMin()
 {
 	if( m_ViewerCore->hasImage() ) {
+		toggleLoadingIcon(true, QString( "Searching for global min of ") + m_ViewerCore->getCurrentImage()->getFileNames().front().c_str() );
 		const util::ivector4 minVoxel = operation::NativeImageOps::getGlobalMin( m_ViewerCore->getCurrentImage(),
 										m_ViewerCore->getCurrentImage()->voxelCoords,
 										m_RadiusSpin->value() );
 		m_ViewerCore->physicalCoordsChanged( m_ViewerCore->getCurrentImage()->getISISImage()->getPhysicalCoordsFromIndex( minVoxel ) );
+		toggleLoadingIcon(false);
 	}
 }
 
 void MainWindow::findGlobalMax()
 {
 	if( m_ViewerCore->hasImage() ) {
+		toggleLoadingIcon(true, QString( "Searching for global max of ") + m_ViewerCore->getCurrentImage()->getFileNames().front().c_str() );
 		const util::ivector4 maxVoxel = operation::NativeImageOps::getGlobalMax( m_ViewerCore->getCurrentImage(),
 										m_ViewerCore->getCurrentImage()->voxelCoords,
 										m_RadiusSpin->value() );
 		m_ViewerCore->physicalCoordsChanged( m_ViewerCore->getCurrentImage()->getISISImage()->getPhysicalCoordsFromIndex( maxVoxel ) );
+		toggleLoadingIcon(false);
 	}
 }
 

@@ -31,8 +31,10 @@
 
 #include "viewercorebase.hpp"
 #include "widgetinterface.hpp"
-#include <QtGui>
+#include "internal/fileinformation.hpp"
 #include "qprogressfeedback.hpp"
+
+#include <QtGui>
 #include <Adapter/qtapplication.hpp>
 
 
@@ -41,6 +43,11 @@ namespace isis
 namespace viewer
 {
 class UICore;
+
+namespace _internal {
+class FileInformation;
+class FileInformationMap;
+}
 
 class QViewerCore : public QObject, public ViewerCoreBase
 {
@@ -79,6 +86,9 @@ public:
 	std::list< qt4::QMessage> getMessageLog() const { return m_MessageLog; }
 	std::list< qt4::QMessage> getMessageLogDev() const { return m_DevMessageLog; }
 
+	isis::viewer::_internal::FileInformationMap &getRecentFiles() { return m_RecentFiles; }
+	isis::viewer::_internal::FileInformationMap &getFavFiles() { return m_FavFiles; }
+
 
 public Q_SLOTS:
 	virtual void settingsChanged();
@@ -93,11 +103,12 @@ public Q_SLOTS:
 	virtual void receiveMessage( qt4::QMessage  );
 	virtual void receiveMessage( std::string  );
 	virtual void receiveMessageDev( qt4::QMessage );
-	virtual void openPath( QStringList fileList, ImageHolder::ImageType imageType, const std::string &rdialect = "", const std::string &rf = "", bool newWidget = false );
+	virtual void openPath( const _internal::FileInformation& );
 	virtual void centerImages( bool ca = false );
 	virtual void closeImage( boost::shared_ptr<ImageHolder> image, bool refreshUI = true );
 	virtual void saveSettings();
 	virtual void loadSettings();
+	virtual void setMode( Mode mode );
 
 Q_SIGNALS:
 	void emitZoomChanged( float zoom );
@@ -108,7 +119,6 @@ Q_SIGNALS:
 	void emitShowLabels( bool );
 	void emitUpdateScene( );
 	void emitSetEnableCrosshair( bool enable );
-	void emitStatus( QString );
 
 private:
 
@@ -124,7 +134,9 @@ private:
 	boost::shared_ptr< QProgressFeedback > m_ProgressFeedback;
 	UICore *m_UI;
 	
-	static void sigsegv_( int exit_code );
+    _internal::FileInformationMap m_RecentFiles;
+	_internal::FileInformationMap m_FavFiles;
+	
 
 };
 
