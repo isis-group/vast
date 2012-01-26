@@ -371,8 +371,9 @@ void QViewerCore::openPath ( const _internal::FileInformation &fileInfo )
 		boost::filesystem::path p ( fileInfo.getFileName() );
 
 		std::list<data::Image> tempImgList = isis::data::IOFactory::load ( fileInfo.getFileName() , fileInfo.getReadFormat(), fileInfo.getDialect() );
-
-		m_RecentFiles.insert( std::make_pair<std::string, _internal::FileInformation>(fileInfo.getFileName(), fileInfo ) );
+		if( !tempImgList.empty() ) {
+			m_RecentFiles.insert( std::make_pair<std::string, _internal::FileInformation>(fileInfo.getFileName(), fileInfo ) );
+		}
 		BOOST_FOREACH ( std::list<data::Image>::const_reference image, tempImgList )
 		{
 			boost::shared_ptr<ImageHolder> imageHolder = addImage ( image, fileInfo.getImageType() );

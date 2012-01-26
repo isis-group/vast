@@ -398,7 +398,13 @@
       <item>
        <widget class="QListWidget" name="favoriteList">
         <property name="selectionMode">
-         <enum>QAbstractItemView::MultiSelection</enum>
+         <enum>QAbstractItemView::SingleSelection</enum>
+        </property>
+        <property name="horizontalScrollMode">
+         <enum>QAbstractItemView::ScrollPerPixel</enum>
+        </property>
+        <property name="viewMode">
+         <enum>QListView::ListMode</enum>
         </property>
        </widget>
       </item>

@@ -89,7 +89,6 @@ void isis::viewer::plugin::HistogramDialog::paintHistogram()
 				}
 
 				const uint16_t timestep = image.second->getImageSize()[3] > 1 ? image.second->voxelCoords[3] : 0;
-
 				curve->setData( xData, image.second->histogramVectorWOZero[timestep], 255 );
 			}
 		}

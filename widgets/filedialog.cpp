@@ -352,12 +352,7 @@ void isis::viewer::widget::FileDialog::removeFromFavList()
 	QListWidgetItem *itemToRemove = m_Interface.favoriteList->currentItem();
 
 	if( itemToRemove ) {
-		m_ViewerCore->getSettings()->beginGroup( "UserProfile" );
-		QList<QVariant> favFiles = m_ViewerCore->getSettings()->value( "favoriteFiles" ).toList();
-		favFiles.removeOne( QVariant( itemToRemove->text() ) );
-		m_ViewerCore->getSettings()->setValue( "favoriteFiles", favFiles );
-		m_ViewerCore->getSettings()->sync();
-		m_ViewerCore->getSettings()->endGroup();
+		m_ViewerCore->getFavFiles().erase( m_ViewerCore->getFavFiles().find( itemToRemove->text().toStdString() ) );
 		m_Interface.fileDirEdit->clearEditText();
 		setup();
 	}
