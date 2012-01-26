@@ -73,6 +73,13 @@ void isis::viewer::plugin::PlotterDialog::showEvent ( QShowEvent* )
 	updateScene();
 }
 
+void isis::viewer::plugin::PlotterDialog::updateScene()
+{
+	if( m_ViewerCore->hasImage() ) {
+		m_ViewerCore->getCurrentImage()->physicalCoords = m_ViewerCore->getCurrentImage()->getISISImage()->getPhysicalCoordsFromIndex( m_ViewerCore->getCurrentImage()->voxelCoords) ;
+		refresh( m_ViewerCore->getCurrentImage()->physicalCoords );
+	}
+}
 
 void isis::viewer::plugin::PlotterDialog::refresh ( isis::util::fvector4 physicalCoords )
 {
@@ -147,7 +154,7 @@ void isis::viewer::plugin::PlotterDialog::fillProfile ( boost::shared_ptr< isis:
 		plot->setAxisTitle(2, axisTitle.str().c_str() );
 		setWindowTitle( title.str().c_str() );
 	}
-	plotMarker->setXValue( image->getISISImage()->getPhysicalCoordsFromIndex(voxCoords)[ui.comboAxis->currentIndex()]);
+	plotMarker->setXValue( image->getISISImage()->getPhysicalCoordsFromIndex(voxCoords)[ui.comboAxis->currentIndex()] * factor );
 	
 	QVector<double> xValues;
 	QVector<double> intensityValues;
