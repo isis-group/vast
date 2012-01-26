@@ -140,13 +140,6 @@ int main( int argc, char *argv[] )
 			fileLoad << "Loading \"" << boost::filesystem::path( fileName ).leaf() << "\" ...";
 			core->receiveMessage( fileLoad.str() );
 
-			//what a nasty hack :-( but necessary, since only vista understands the onlyfirst dialect
-			if( boost::filesystem::extension( boost::filesystem::path( fileName ) ) == std::string( ".v" ) ) {
-				if( !dialect.size() ) {
-					dialect = std::string( "onlyfirst" );
-				}
-			}
-
 			std::list< data::Image > tmpList = data::IOFactory::load( fileName, app.parameters["rf"].toString(), dialect );
 			BOOST_FOREACH( std::list< data::Image >::reference imageRef, tmpList ) {
 				zImgList.push_back( imageRef );
