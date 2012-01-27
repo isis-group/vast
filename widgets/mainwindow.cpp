@@ -575,10 +575,13 @@ void MainWindow::closeEvent( QCloseEvent * )
 void MainWindow::findGlobalMin()
 {
 	if( m_ViewerCore->hasImage() ) {
-		toggleLoadingIcon(true, QString( "Searching for global min of ") + m_ViewerCore->getCurrentImage()->getFileNames().front().c_str() );
+		const int radius = m_RadiusSpin->value();
+		if( m_ViewerCore->getCurrentImage()->getISISImage()->getVolume() >= 1e6 && radius == 0 ) {
+			toggleLoadingIcon(true, QString( "Searching for global min of ") + m_ViewerCore->getCurrentImage()->getFileNames().front().c_str() );
+		}
 		const util::ivector4 minVoxel = operation::NativeImageOps::getGlobalMin( m_ViewerCore->getCurrentImage(),
 										m_ViewerCore->getCurrentImage()->voxelCoords,
-										m_RadiusSpin->value() );
+										radius );
 		m_ViewerCore->physicalCoordsChanged( m_ViewerCore->getCurrentImage()->getISISImage()->getPhysicalCoordsFromIndex( minVoxel ) );
 		toggleLoadingIcon(false);
 	}
@@ -587,10 +590,13 @@ void MainWindow::findGlobalMin()
 void MainWindow::findGlobalMax()
 {
 	if( m_ViewerCore->hasImage() ) {
-		toggleLoadingIcon(true, QString( "Searching for global max of ") + m_ViewerCore->getCurrentImage()->getFileNames().front().c_str() );
+		const int radius = m_RadiusSpin->value();
+		if( m_ViewerCore->getCurrentImage()->getISISImage()->getVolume() >= 1e6 && radius == 0  ) {
+			toggleLoadingIcon(true, QString( "Searching for global max of ") + m_ViewerCore->getCurrentImage()->getFileNames().front().c_str() );
+		}
 		const util::ivector4 maxVoxel = operation::NativeImageOps::getGlobalMax( m_ViewerCore->getCurrentImage(),
 										m_ViewerCore->getCurrentImage()->voxelCoords,
-										m_RadiusSpin->value() );
+										radius );
 		m_ViewerCore->physicalCoordsChanged( m_ViewerCore->getCurrentImage()->getISISImage()->getPhysicalCoordsFromIndex( maxVoxel ) );
 		toggleLoadingIcon(false);
 	}
