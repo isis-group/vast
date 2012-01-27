@@ -1,3 +1,11 @@
+vast (0.3.0beta-0) stable; urgency=low
+
+  * fixed some bugs
+  * add capability to visualize profiles of x,y and z
+  * gui cosmetics 
+
+ -- ISIS Group (The friendly isis team) <gr_isis@cbs.mpg.de>  Wed, 30 Jan 2012 15:00:00 +0200 
+
 vast (0.2.6-0) stable; urgency=low
 
   * fixed some bugs
