@@ -137,8 +137,9 @@ std::string ViewerCoreBase::getVersion() const
 void ViewerCoreBase::setCommonViewerOptions()
 {
 	m_OptionsMap->setPropertyAs<bool>( "zmapGlobal", false );
+	m_OptionsMap->setPropertyAs<bool>("visualizeOnlyFirstVista", false );
 	m_OptionsMap->setPropertyAs<bool>( "propagateZooming", false );
-	m_OptionsMap->setPropertyAs<uint8_t>( "interpolationType" , 0 );
+	m_OptionsMap->setPropertyAs<uint16_t>( "interpolationType" , 0 );
 	m_OptionsMap->setPropertyAs<bool>( "showLables", false );
 	m_OptionsMap->setPropertyAs<bool>( "showCrosshair", true );
 	m_OptionsMap->setPropertyAs<uint16_t>( "minMaxSearchRadius", 20 );
@@ -153,20 +154,25 @@ void ViewerCoreBase::setCommonViewerOptions()
 	m_OptionsMap->setPropertyAs<uint16_t>( "startWidgetHeight", 600 );
 	m_OptionsMap->setPropertyAs<uint16_t>( "startWidgetWidth", 400 );
 	m_OptionsMap->setPropertyAs<uint16_t>( "viewerWidgetMargin", 5 );
-	m_OptionsMap->setPropertyAs<uint8_t>( "numberOfThreads", 0 );
+	//omp
+	m_OptionsMap->setPropertyAs<uint16_t>( "numberOfThreads", 0 );
 	m_OptionsMap->setPropertyAs<bool>( "ompAvailable", false );
 	m_OptionsMap->setPropertyAs<bool>( "enableMultithreading", false );
-	m_OptionsMap->setPropertyAs<uint8_t>( "initialMaxNumberThreads", 4 );
+	m_OptionsMap->setPropertyAs<uint16_t>( "initialMaxNumberThreads", 4 );
 	m_OptionsMap->setPropertyAs<bool>( "useAllAvailableThreads", false );
-	m_OptionsMap->setPropertyAs<uint8_t>( "screenshotQuality", 70 );
+	m_OptionsMap->setPropertyAs<uint16_t>( "maxNumberOfThreads", 1 );
+	//screenshot
+	m_OptionsMap->setPropertyAs<uint16_t>( "screenshotQuality", 70 );
 	m_OptionsMap->setPropertyAs<uint16_t>( "screenshotWidth", 700 );
 	m_OptionsMap->setPropertyAs<uint16_t>( "screenshotHeight", 700 );
 	m_OptionsMap->setPropertyAs<uint16_t>( "screenshotDPIX", 300 );
 	m_OptionsMap->setPropertyAs<uint16_t>( "screenshotDPIY", 300 );
 	m_OptionsMap->setPropertyAs<bool>( "screenshotManualScaling", false );
 	m_OptionsMap->setPropertyAs<bool>( "screenshotKeepAspectRatio", true );
+	//lut
 	m_OptionsMap->setPropertyAs<std::string>( "lutStructural", "standard_grey_values" );
 	m_OptionsMap->setPropertyAs<std::string>( "lutZMap", "standard_zmap" );
+	//misc
 	m_OptionsMap->setPropertyAs<uint16_t>( "timeseriesPlayDelayTime", 50 );
 	m_OptionsMap->setPropertyAs<bool>( "histogramOmitZero", true );
 	m_OptionsMap->setPropertyAs<uint16_t>("maxRecentOpenListSize", 10 );

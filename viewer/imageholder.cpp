@@ -263,7 +263,7 @@ bool ImageHolder::setImage( const data::Image &image, const ImageType &_imageTyp
 
 	if( !isRGB ) {
 		extent = fabs( minMax.second->as<double>() - minMax.first->as<double>() );
-
+        updateHistogram();
 		m_PropMap.setPropertyAs<double>( "scalingMinValue", minMax.first->as<double>() );
 		m_PropMap.setPropertyAs<double>( "scalingMaxValue", minMax.second->as<double>() );
 	}

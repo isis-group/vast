@@ -43,6 +43,7 @@
 
 #include "common.hpp"
 #include "internal/error.hpp"
+#include <mainwindow.hpp>
 
 int main( int argc, char *argv[] )
 {
@@ -120,14 +121,20 @@ int main( int argc, char *argv[] )
 	std::list< data::Image > zImgList;
 
 	if( fileList.size() || zmapFileList.size() ) {
-		core->getUICore()->getMainWindow()->setCursor( Qt::WaitCursor );
-		QApplication::processEvents();
 		//load the anatomical images
 		BOOST_FOREACH ( util::slist::const_reference fileName, fileList ) {
+			std::string dialect = app.parameters["rdialect"].toString();
 			std::stringstream fileLoad;
 			fileLoad << "Loading \"" << boost::filesystem::path( fileName ).leaf() << "\" ...";
-			core->receiveMessage( fileLoad.str() );
-			std::list< data::Image > tmpList = data::IOFactory::load( fileName, app.parameters["rf"].toString(), app.parameters["rdialect"].toString() );
+			core->getUICore()->getMainWindow()->toggleLoadingIcon( true, fileLoad.str().c_str() );
+
+           if( boost::filesystem::extension( boost::filesystem::path( fileName ) ) == std::string( ".v" ) && core->getOptionMap()->getPropertyAs<bool>("visualizeOnlyFirstVista") ) {
+				if( !dialect.size() ) {
+					dialect = std::string( "onlyfirst" );
+				}
+			}
+			
+			std::list< data::Image > tmpList = data::IOFactory::load( fileName, app.parameters["rf"].toString(), dialect );
 			BOOST_FOREACH( std::list< data::Image >::reference imageRef, tmpList ) {
 				imgList.push_back( imageRef );
 
@@ -138,15 +145,14 @@ int main( int argc, char *argv[] )
 			std::string dialect = app.parameters["rdialect"].toString();
 			std::stringstream fileLoad;
 			fileLoad << "Loading \"" << boost::filesystem::path( fileName ).leaf() << "\" ...";
-			core->receiveMessage( fileLoad.str() );
+			core->getUICore()->getMainWindow()->toggleLoadingIcon(true, fileLoad.str().c_str() );
 
-			//what a nasty hack :-( but necessary, since only vista understands the onlyfirst dialect
-			if( boost::filesystem::extension( boost::filesystem::path( fileName ) ) == std::string( ".v" ) ) {
+           if( boost::filesystem::extension( boost::filesystem::path( fileName ) ) == std::string( ".v" ) && core->getOptionMap()->getPropertyAs<bool>("visualizeOnlyFirstVista") ) {
 				if( !dialect.size() ) {
 					dialect = std::string( "onlyfirst" );
 				}
 			}
-
+			
 			std::list< data::Image > tmpList = data::IOFactory::load( fileName, app.parameters["rf"].toString(), dialect );
 			BOOST_FOREACH( std::list< data::Image >::reference imageRef, tmpList ) {
 				zImgList.push_back( imageRef );
@@ -174,6 +180,10 @@ int main( int argc, char *argv[] )
 		core->getUICore()->setViewWidgetArrangement( UICore::InRow );
 		BOOST_FOREACH( ImageListRef image, core->addImageList( zImgList, ImageHolder::z_map ) ) {
 			checkForCaCp( image );
+			core->getRecentFiles().insertSave( _internal::FileInformation( image->getFileNames().front(),
+																			app.parameters["rdialect"].toString(),
+																			app.parameters["rf"].toString(),
+																			image->imageType) );
 			UICore::ViewWidgetEnsembleType ensemble = core->getUICore()->createViewWidgetEnsemble( "", image );
 
 			if( app.parameters["in"].isSet() ) {
@@ -196,6 +206,10 @@ int main( int argc, char *argv[] )
 		core->getUICore()->setViewWidgetArrangement( UICore::InRow );
 		BOOST_FOREACH( ImageListRef image, core->addImageList( imgList, ImageHolder::structural_image ) ) {
 			checkForCaCp( image );
+			core->getRecentFiles().insertSave( _internal::FileInformation( image->getFileNames().front(),
+																			app.parameters["rdialect"].toString(),
+																			app.parameters["rf"].toString(),
+																			image->imageType) );
 			core->getUICore()->createViewWidgetEnsemble( "", image );
 		}
 		core->getUICore()->setOptionPosition( isis::viewer::UICore::bottom );
@@ -205,12 +219,20 @@ int main( int argc, char *argv[] )
 		UICore::ViewWidgetEnsembleType ensemble = core->getUICore()->createViewWidgetEnsemble( "" );
 		BOOST_FOREACH( ImageListRef image, core->addImageList( imgList, ImageHolder::structural_image ) ) {
 			checkForCaCp( image );
+			core->getRecentFiles().insertSave( _internal::FileInformation( image->getFileNames().front(),
+																			app.parameters["rdialect"].toString(),
+																			app.parameters["rf"].toString(),
+																			image->imageType) );
 			core->attachImageToWidget( image, ensemble[0]. widgetImplementation );
 			core->attachImageToWidget( image, ensemble[1]. widgetImplementation );
 			core->attachImageToWidget( image, ensemble[2]. widgetImplementation );
 		}
 		BOOST_FOREACH( ImageListRef image, core->addImageList( zImgList, ImageHolder::z_map ) ) {
 			checkForCaCp( image );
+			core->getRecentFiles().insertSave( _internal::FileInformation( image->getFileNames().front(),
+																			app.parameters["rdialect"].toString(),
+																			app.parameters["rf"].toString(),
+																			image->imageType) );
 			core->attachImageToWidget( image, ensemble[0]. widgetImplementation );
 			core->attachImageToWidget( image, ensemble[1]. widgetImplementation );
 			core->attachImageToWidget( image, ensemble[2]. widgetImplementation );
@@ -219,7 +241,7 @@ int main( int argc, char *argv[] )
 		core->getUICore()->getMainWindow()->startWidget->close();
 
 	}
-	
+	core->getUICore()->getMainWindow()->toggleLoadingIcon(false);
 	core->getUICore()->showMainWindow();
 
 	core->settingsChanged();

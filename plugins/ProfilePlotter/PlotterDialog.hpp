@@ -54,7 +54,7 @@ public:
 	PlotterDialog( QWidget *parent, QViewerCore *core );
 public Q_SLOTS:
     void showEvent( QShowEvent * );
-	void updateScene() { refresh ( m_CurrentPhysicalCoords ); }
+	void updateScene();
 
 	virtual void refresh( util::fvector4 physicalCoords );
 	

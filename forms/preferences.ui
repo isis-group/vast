@@ -53,7 +53,7 @@
          </sizepolicy>
         </property>
         <property name="currentIndex">
-         <number>1</number>
+         <number>0</number>
         </property>
         <widget class="QWidget" name="Common">
          <attribute name="title">
@@ -198,22 +198,40 @@
                  <item>
                   <widget class="QCheckBox" name="checkStartUpScreen">
                    <property name="toolTip">
-                    <string>vast will show you a start dialog when no image for loading was specified</string>
+                    <string>If no image for loading was specified via commandline option &quot;-in&quot; or &quot;-zmap&quot; vast will show you a welcome screen.</string>
                    </property>
                    <property name="text">
-                    <string>Show startup screen</string>
+                    <string>Show welcome screen</string>
                    </property>
                   </widget>
                  </item>
                  <item>
                   <widget class="QCheckBox" name="checkCrashMessage">
+                   <property name="toolTip">
+                    <string>If, for some obscure reason, vast crashes a message containing logging information will be shown at the next start.</string>
+                   </property>
                    <property name="text">
                     <string>Show crash message</string>
                    </property>
                   </widget>
                  </item>
                  <item>
+                  <widget class="QCheckBox" name="checkOnlyFirst">
+                   <property name="toolTip">
+                    <string>If an image contains multiple image objects this option determines if vast should only visualize the first one. (unique to Vista images)</string>
+                   </property>
+                   <property name="text">
+                    <string>Visualize only first image object</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
                   <widget class="QCheckBox" name="enableMultithreading">
+                   <property name="toolTip">
+                    <string>This option toggles the multithreading support of vast.
+If switched on a frame with further options will appear.
+Vast uses multithreading for visualization and all image operations (including the plugins).</string>
+                   </property>
                    <property name="text">
                     <string>Enable multithreading</string>
                    </property>
@@ -236,16 +254,27 @@
                     </property>
                     <item>
                      <widget class="QLabel" name="label">
+                      <property name="toolTip">
+                       <string>This determines the number of threads you want vast to use. </string>
+                      </property>
                       <property name="text">
                        <string>Number of threads:</string>
                       </property>
                      </widget>
                     </item>
                     <item>
-                     <widget class="QSpinBox" name="numberOfThreads"/>
+                     <widget class="QSpinBox" name="numberOfThreads">
+                      <property name="toolTip">
+                       <string>This determines the number of threads you want vast to use. </string>
+                      </property>
+                     </widget>
                     </item>
                     <item>
                      <widget class="QCheckBox" name="useAllThreads">
+                      <property name="toolTip">
+                       <string>If this option is switched on vast will use all available threads on the computer on which it is running currently.
+Be careful using this option.</string>
+                      </property>
                       <property name="text">
                        <string>Use all available threads</string>
                       </property>

@@ -365,11 +365,6 @@
     <string>S, K, C</string>
    </property>
   </action>
-  <action name="actionAbout">
-   <property name="text">
-    <string>About</string>
-   </property>
-  </action>
   <action name="actionInformation_Areas">
    <property name="checkable">
     <bool>true</bool>

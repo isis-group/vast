@@ -159,10 +159,16 @@ MainWindow::MainWindow( QViewerCore *core ) :
 	loadSettings();
 	m_Interface.actionOpen_recent->setMenu( new QMenu() );
 
+	//TODO
+	m_Interface.actionAbout_Dialog->setVisible(false);
+
 }
 
 void MainWindow::toggleLoadingIcon ( bool start, const QString &text )
 {
+	if( text.length() ) {
+		m_ViewerCore->receiveMessage( text.toStdString() );
+	}
 	m_StatusMovieLabel->setVisible(start);
 	m_Interface.statusbar->setVisible( start );
 	if( start ) {
@@ -184,7 +190,7 @@ void MainWindow::createScreenshot()
 
 		if( fileName.size() ) {
 			toggleLoadingIcon(true, QString("Creating and saving screenshot to ") + fileName );
-			m_ViewerCore->getUICore()->getScreenshot().save( fileName, 0, m_ViewerCore->getOptionMap()->getPropertyAs<uint8_t>( "screenshotQuality" ) );
+			m_ViewerCore->getUICore()->getScreenshot().save( fileName, 0, m_ViewerCore->getOptionMap()->getPropertyAs<uint16_t>( "screenshotQuality" ) );
 			m_ViewerCore->setCurrentPath( fileName.toStdString() );
 		}
 		toggleLoadingIcon(false);
@@ -569,10 +575,13 @@ void MainWindow::closeEvent( QCloseEvent * )
 void MainWindow::findGlobalMin()
 {
 	if( m_ViewerCore->hasImage() ) {
-		toggleLoadingIcon(true, QString( "Searching for global min of ") + m_ViewerCore->getCurrentImage()->getFileNames().front().c_str() );
+		const int radius = m_RadiusSpin->value();
+		if( m_ViewerCore->getCurrentImage()->getISISImage()->getVolume() >= 1e6 && radius == 0 ) {
+			toggleLoadingIcon(true, QString( "Searching for global min of ") + m_ViewerCore->getCurrentImage()->getFileNames().front().c_str() );
+		}
 		const util::ivector4 minVoxel = operation::NativeImageOps::getGlobalMin( m_ViewerCore->getCurrentImage(),
 										m_ViewerCore->getCurrentImage()->voxelCoords,
-										m_RadiusSpin->value() );
+										radius );
 		m_ViewerCore->physicalCoordsChanged( m_ViewerCore->getCurrentImage()->getISISImage()->getPhysicalCoordsFromIndex( minVoxel ) );
 		toggleLoadingIcon(false);
 	}
@@ -581,10 +590,13 @@ void MainWindow::findGlobalMin()
 void MainWindow::findGlobalMax()
 {
 	if( m_ViewerCore->hasImage() ) {
-		toggleLoadingIcon(true, QString( "Searching for global max of ") + m_ViewerCore->getCurrentImage()->getFileNames().front().c_str() );
+		const int radius = m_RadiusSpin->value();
+		if( m_ViewerCore->getCurrentImage()->getISISImage()->getVolume() >= 1e6 && radius == 0  ) {
+			toggleLoadingIcon(true, QString( "Searching for global max of ") + m_ViewerCore->getCurrentImage()->getFileNames().front().c_str() );
+		}
 		const util::ivector4 maxVoxel = operation::NativeImageOps::getGlobalMax( m_ViewerCore->getCurrentImage(),
 										m_ViewerCore->getCurrentImage()->voxelCoords,
-										m_RadiusSpin->value() );
+										radius );
 		m_ViewerCore->physicalCoordsChanged( m_ViewerCore->getCurrentImage()->getISISImage()->getPhysicalCoordsFromIndex( maxVoxel ) );
 		toggleLoadingIcon(false);
 	}

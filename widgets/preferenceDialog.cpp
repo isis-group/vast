@@ -73,7 +73,7 @@ void PreferencesDialog::screenshotXChanged( int val )
 
 void PreferencesDialog::numberOfThreadsChanged( int threads )
 {
-	m_ViewerCore->getOptionMap()->setPropertyAs<uint8_t>( "numberOfThreads", threads );
+	m_ViewerCore->getOptionMap()->setPropertyAs<uint16_t>( "numberOfThreads", threads );
 }
 
 
@@ -83,14 +83,14 @@ void PreferencesDialog::toggleMultithreading( bool toggle )
 	preferencesUi.multithreadingFrame->setVisible( toggle );
 
 	if( !toggle ) {
-		m_ViewerCore->getOptionMap()->setPropertyAs<uint8_t>( "numberOfThreads", 1 );
+		m_ViewerCore->getOptionMap()->setPropertyAs<uint16_t>( "numberOfThreads", 1 );
 	} else {
-		m_ViewerCore->getOptionMap()->setPropertyAs<uint8_t>( "numberOfThreads", preferencesUi.numberOfThreads->value() );
+		m_ViewerCore->getOptionMap()->setPropertyAs<uint16_t>( "numberOfThreads", preferencesUi.numberOfThreads->value() );
 
 		if( preferencesUi.useAllThreads->isChecked() ) {
-			preferencesUi.numberOfThreads->setValue( m_ViewerCore->getOptionMap()->getPropertyAs<uint8_t>( "maxNumberOfThreads" ) );
+			preferencesUi.numberOfThreads->setValue( m_ViewerCore->getOptionMap()->getPropertyAs<uint16_t>( "maxNumberOfThreads" ) );
 		} else {
-			preferencesUi.numberOfThreads->setValue( m_ViewerCore->getOptionMap()->getPropertyAs<uint8_t>( "numberOfThreads" ) );
+			preferencesUi.numberOfThreads->setValue( m_ViewerCore->getOptionMap()->getPropertyAs<uint16_t>( "numberOfThreads" ) );
 		}
 	}
 }
@@ -101,9 +101,9 @@ void PreferencesDialog::toggleUseAllThreads( bool toggle )
 	m_ViewerCore->getOptionMap()->setPropertyAs<bool>( "useAllAvailableThreads", toggle );
 
 	if( toggle ) {
-		preferencesUi.numberOfThreads->setValue( m_ViewerCore->getOptionMap()->getPropertyAs<uint8_t>( "maxNumberOfThreads" ) );
+		preferencesUi.numberOfThreads->setValue( m_ViewerCore->getOptionMap()->getPropertyAs<uint16_t>( "maxNumberOfThreads" ) );
 	} else {
-		preferencesUi.numberOfThreads->setValue( m_ViewerCore->getOptionMap()->getPropertyAs<uint8_t>( "numberOfThreads" ) );
+		preferencesUi.numberOfThreads->setValue( m_ViewerCore->getOptionMap()->getPropertyAs<uint16_t>( "numberOfThreads" ) );
 	}
 }
 
@@ -115,7 +115,7 @@ void PreferencesDialog::apply( int /*dummy*/ )
 	m_ViewerCore->settingsChanged();
 	m_ViewerCore->updateScene();
 #ifdef _OPENMP
-	omp_set_num_threads( m_ViewerCore->getOptionMap()->getPropertyAs<uint8_t>( "numberOfThreads" ) );
+	omp_set_num_threads( m_ViewerCore->getOptionMap()->getPropertyAs<uint16_t>( "numberOfThreads" ) );
 #endif
 }
 
@@ -138,7 +138,7 @@ void PreferencesDialog::loadSettings()
 			preferencesUi.lutZmap->insertItem( index++, util::Singletons::get<color::Color, 10>().getIcon( lut.first, size.width() , size.height() ), QString( lut.first.c_str() ) ) ;
 		}
 	}
-	preferencesUi.comboInterpolation->setCurrentIndex( m_ViewerCore->getOptionMap()->getPropertyAs<uint8_t>( "interpolationType" ) );
+	preferencesUi.comboInterpolation->setCurrentIndex( m_ViewerCore->getOptionMap()->getPropertyAs<uint16_t>( "interpolationType" ) );
 
 	if( m_ViewerCore->hasImage() ) {
 		if( m_ViewerCore->getCurrentImage()->imageType == ImageHolder::z_map ) {
@@ -152,11 +152,12 @@ void PreferencesDialog::loadSettings()
 
 	preferencesUi.checkStartUpScreen->setChecked( m_ViewerCore->getOptionMap()->getPropertyAs<bool>( "showStartWidget" ) );
 	preferencesUi.checkCrashMessage->setChecked( m_ViewerCore->getOptionMap()->getPropertyAs<bool>( "showCrashMessage" ) );
+	preferencesUi.checkOnlyFirst->setChecked( m_ViewerCore->getOptionMap()->getPropertyAs<bool>("visualizeOnlyFirstVista") );
 	preferencesUi.enableMultithreading->setVisible( m_ViewerCore->getOptionMap()->getPropertyAs<bool>( "ompAvailable" ) );
 	preferencesUi.multithreadingFrame->setVisible( m_ViewerCore->getOptionMap()->getPropertyAs<bool>( "ompAvailable" ) );
 
 	//screenshot
-	preferencesUi.screenshotQuality->setValue( m_ViewerCore->getOptionMap()->getPropertyAs<uint8_t>( "screenshotQuality" ) );
+	preferencesUi.screenshotQuality->setValue( m_ViewerCore->getOptionMap()->getPropertyAs<uint16_t>( "screenshotQuality" ) );
 	preferencesUi.dpiX->setValue( m_ViewerCore->getOptionMap()->getPropertyAs<uint16_t>( "screenshotDPIX" ) );
 	preferencesUi.dpiY->setValue( m_ViewerCore->getOptionMap()->getPropertyAs<uint16_t>( "screenshotDPIY" ) );
 	preferencesUi.sizeX->setValue( m_ViewerCore->getOptionMap()->getPropertyAs<uint16_t>( "screenshotWidth" ) );
@@ -167,12 +168,12 @@ void PreferencesDialog::loadSettings()
 
 	if( m_ViewerCore->getOptionMap()->getPropertyAs<bool>( "ompAvailable" ) ) {
 		preferencesUi.enableMultithreading->setChecked( m_ViewerCore->getOptionMap()->getPropertyAs<bool>( "enableMultithreading" ) );
-		preferencesUi.numberOfThreads->setValue( m_ViewerCore->getOptionMap()->getPropertyAs<uint8_t>( "numberOfThreads" ) );
+		preferencesUi.numberOfThreads->setValue( m_ViewerCore->getOptionMap()->getPropertyAs<uint16_t>( "numberOfThreads" ) );
 		preferencesUi.useAllThreads->setChecked( m_ViewerCore->getOptionMap()->getPropertyAs<bool>( "useAllAvailablethreads" ) );
 		preferencesUi.multithreadingFrame->setVisible( m_ViewerCore->getOptionMap()->getPropertyAs<bool>( "enableMultithreading" ) );
 		preferencesUi.numberOfThreads->setEnabled( !m_ViewerCore->getOptionMap()->getPropertyAs<bool>( "useAllAvailableThreads" ) );
 		preferencesUi.numberOfThreads->setMinimum( 1 );
-		preferencesUi.numberOfThreads->setMaximum( m_ViewerCore->getOptionMap()->getPropertyAs<uint8_t>( "maxNumberOfThreads" ) );
+		preferencesUi.numberOfThreads->setMaximum( m_ViewerCore->getOptionMap()->getPropertyAs<uint16_t>( "maxNumberOfThreads" ) );
 	}
 
 	screenshotXChanged( preferencesUi.sizeX->value() );
@@ -180,12 +181,13 @@ void PreferencesDialog::loadSettings()
 
 void PreferencesDialog::saveSettings()
 {
-	m_ViewerCore->getOptionMap()->setPropertyAs<uint8_t>( "interpolationType", preferencesUi.comboInterpolation->currentIndex() );
+	m_ViewerCore->getOptionMap()->setPropertyAs<uint16_t>( "interpolationType", preferencesUi.comboInterpolation->currentIndex() );
 	m_ViewerCore->getOptionMap()->setPropertyAs<bool>( "showStartWidget", preferencesUi.checkStartUpScreen->isChecked() );
 	m_ViewerCore->getOptionMap()->setPropertyAs<bool>( "showCrashMessage", preferencesUi.checkCrashMessage->isChecked() );
+	m_ViewerCore->getOptionMap()->setPropertyAs<bool>( "visualizeOnlyFirstVista", preferencesUi.checkOnlyFirst->isChecked() );
 	//screenshot
 	m_ViewerCore->getOptionMap()->setPropertyAs<bool>( "screenshotKeepAspectRatio", preferencesUi.keepRatio->isChecked() );
-	m_ViewerCore->getOptionMap()->setPropertyAs<uint8_t>( "screenshotQuality", preferencesUi.screenshotQuality->value() );
+	m_ViewerCore->getOptionMap()->setPropertyAs<uint16_t>( "screenshotQuality", preferencesUi.screenshotQuality->value() );
 	m_ViewerCore->getOptionMap()->setPropertyAs<uint16_t>( "screenshotDPIX", preferencesUi.dpiX->value() );
 	m_ViewerCore->getOptionMap()->setPropertyAs<uint16_t>( "screenshotDPIY", preferencesUi.dpiY->value() );
 	m_ViewerCore->getOptionMap()->setPropertyAs<uint16_t>( "screenshotWidth", preferencesUi.sizeX->value() );
