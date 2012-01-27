@@ -178,10 +178,7 @@ void QViewerCore::timestepChanged ( int timestep )
 
 std::list<boost::shared_ptr<ImageHolder> > QViewerCore::addImageList ( const std::list< data::Image > imageList, const ImageHolder::ImageType &imageType )
 {
-	getUICore()->getMainWindow()->setCursor( Qt::WaitCursor );
-	QApplication::processEvents();
 	std::list<boost::shared_ptr<ImageHolder> > retList = isis::viewer::ViewerCoreBase::addImageList ( imageList, imageType );
-	getUICore()->getMainWindow()->setCursor( Qt::ArrowCursor );
 	return retList;
 
 }
@@ -465,6 +462,7 @@ void QViewerCore::loadSettings()
 	getOptionMap()->setPropertyAs<bool> ( "enableMultithreading", getSettings()->value ( "enableMultithreading" ).toBool() );
 	getOptionMap()->setPropertyAs<bool> ( "useAllAvailablethreads", getSettings()->value ( "useAllAvailableThreads" ).toBool() );
 	getOptionMap()->setPropertyAs<bool> ( "histogramOmitZero", getSettings()->value ( "histogramOmitZero" ).toBool() );
+	getOptionMap()->setPropertyAs<bool>( "visualizeOnlyFirstVista", getSettings()->value( "visualizeOnlyFirstVista", getOptionMap()->getPropertyAs<bool>("visualizeOnlyFirstVista") ).toBool() );
 	//screenshot stuff
 	getOptionMap()->setPropertyAs<uint16_t> ( "screenshotWidth", getSettings()->value ( "screenshotWidth", getOptionMap()->getPropertyAs<uint16_t> ( "screenshotWidth" ) ).toUInt() );
 	getOptionMap()->setPropertyAs<uint16_t> ( "screenshotHeight", getSettings()->value ( "screenshotHeight", getOptionMap()->getPropertyAs<uint16_t> ( "screenshotHeight" ) ).toUInt() );
@@ -486,6 +484,7 @@ void QViewerCore::saveSettings()
 	
 	getSettings()->beginGroup ( "ViewerCore" );
 	getSettings()->setValue ( "lutZMap", getOptionMap()->getPropertyAs<std::string> ( "lutZMap" ).c_str() );
+	getSettings()->setValue( "visualizeOnlyFirstVista", getOptionMap()->getPropertyAs<bool>("visualizeOnlyFirstVista") );
 	getSettings()->setValue ( "lutStructural", getOptionMap()->getPropertyAs<std::string> ( "lutStructural" ).c_str() );
 	getSettings()->setValue ( "interpolationType", getOptionMap()->getPropertyAs<uint16_t> ( "interpolationType" ) );
 	getSettings()->setValue ( "propagateZooming", getOptionMap()->getPropertyAs<bool> ( "propagateZooming" ) );

@@ -152,6 +152,7 @@ void PreferencesDialog::loadSettings()
 
 	preferencesUi.checkStartUpScreen->setChecked( m_ViewerCore->getOptionMap()->getPropertyAs<bool>( "showStartWidget" ) );
 	preferencesUi.checkCrashMessage->setChecked( m_ViewerCore->getOptionMap()->getPropertyAs<bool>( "showCrashMessage" ) );
+	preferencesUi.checkOnlyFirst->setChecked( m_ViewerCore->getOptionMap()->getPropertyAs<bool>("visualizeOnlyFirstVista") );
 	preferencesUi.enableMultithreading->setVisible( m_ViewerCore->getOptionMap()->getPropertyAs<bool>( "ompAvailable" ) );
 	preferencesUi.multithreadingFrame->setVisible( m_ViewerCore->getOptionMap()->getPropertyAs<bool>( "ompAvailable" ) );
 
@@ -183,6 +184,7 @@ void PreferencesDialog::saveSettings()
 	m_ViewerCore->getOptionMap()->setPropertyAs<uint16_t>( "interpolationType", preferencesUi.comboInterpolation->currentIndex() );
 	m_ViewerCore->getOptionMap()->setPropertyAs<bool>( "showStartWidget", preferencesUi.checkStartUpScreen->isChecked() );
 	m_ViewerCore->getOptionMap()->setPropertyAs<bool>( "showCrashMessage", preferencesUi.checkCrashMessage->isChecked() );
+	m_ViewerCore->getOptionMap()->setPropertyAs<bool>( "visualizeOnlyFirstVista", preferencesUi.checkOnlyFirst->isChecked() );
 	//screenshot
 	m_ViewerCore->getOptionMap()->setPropertyAs<bool>( "screenshotKeepAspectRatio", preferencesUi.keepRatio->isChecked() );
 	m_ViewerCore->getOptionMap()->setPropertyAs<uint16_t>( "screenshotQuality", preferencesUi.screenshotQuality->value() );

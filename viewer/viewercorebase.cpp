@@ -137,6 +137,7 @@ std::string ViewerCoreBase::getVersion() const
 void ViewerCoreBase::setCommonViewerOptions()
 {
 	m_OptionsMap->setPropertyAs<bool>( "zmapGlobal", false );
+	m_OptionsMap->setPropertyAs<bool>("visualizeOnlyFirstVista", false );
 	m_OptionsMap->setPropertyAs<bool>( "propagateZooming", false );
 	m_OptionsMap->setPropertyAs<uint16_t>( "interpolationType" , 0 );
 	m_OptionsMap->setPropertyAs<bool>( "showLables", false );

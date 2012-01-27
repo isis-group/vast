@@ -159,10 +159,16 @@ MainWindow::MainWindow( QViewerCore *core ) :
 	loadSettings();
 	m_Interface.actionOpen_recent->setMenu( new QMenu() );
 
+	//TODO
+	m_Interface.actionAbout_Dialog->setVisible(false);
+
 }
 
 void MainWindow::toggleLoadingIcon ( bool start, const QString &text )
 {
+	if( text.length() ) {
+		m_ViewerCore->receiveMessage( text.toStdString() );
+	}
 	m_StatusMovieLabel->setVisible(start);
 	m_Interface.statusbar->setVisible( start );
 	if( start ) {

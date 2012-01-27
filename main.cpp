@@ -43,6 +43,7 @@
 
 #include "common.hpp"
 #include "internal/error.hpp"
+#include <mainwindow.hpp>
 
 int main( int argc, char *argv[] )
 {
@@ -124,10 +125,18 @@ int main( int argc, char *argv[] )
 		QApplication::processEvents();
 		//load the anatomical images
 		BOOST_FOREACH ( util::slist::const_reference fileName, fileList ) {
+			std::string dialect = app.parameters["rdialect"].toString();
 			std::stringstream fileLoad;
 			fileLoad << "Loading \"" << boost::filesystem::path( fileName ).leaf() << "\" ...";
-			core->receiveMessage( fileLoad.str() );
-			std::list< data::Image > tmpList = data::IOFactory::load( fileName, app.parameters["rf"].toString(), app.parameters["rdialect"].toString() );
+			core->getUICore()->getMainWindow()->toggleLoadingIcon( true, fileLoad.str().c_str() );
+
+           if( boost::filesystem::extension( boost::filesystem::path( fileName ) ) == std::string( ".v" ) && core->getOptionMap()->getPropertyAs<bool>("visualizeOnlyFirstVista") ) {
+				if( !dialect.size() ) {
+					dialect = std::string( "onlyfirst" );
+				}
+			}
+			
+			std::list< data::Image > tmpList = data::IOFactory::load( fileName, app.parameters["rf"].toString(), dialect );
 			BOOST_FOREACH( std::list< data::Image >::reference imageRef, tmpList ) {
 				imgList.push_back( imageRef );
 
@@ -138,8 +147,14 @@ int main( int argc, char *argv[] )
 			std::string dialect = app.parameters["rdialect"].toString();
 			std::stringstream fileLoad;
 			fileLoad << "Loading \"" << boost::filesystem::path( fileName ).leaf() << "\" ...";
-			core->receiveMessage( fileLoad.str() );
+			core->getUICore()->getMainWindow()->toggleLoadingIcon(true, fileLoad.str().c_str() );
 
+           if( boost::filesystem::extension( boost::filesystem::path( fileName ) ) == std::string( ".v" ) && core->getOptionMap()->getPropertyAs<bool>("visualizeOnlyFirstVista") ) {
+				if( !dialect.size() ) {
+					dialect = std::string( "onlyfirst" );
+				}
+			}
+			
 			std::list< data::Image > tmpList = data::IOFactory::load( fileName, app.parameters["rf"].toString(), dialect );
 			BOOST_FOREACH( std::list< data::Image >::reference imageRef, tmpList ) {
 				zImgList.push_back( imageRef );
@@ -212,7 +227,7 @@ int main( int argc, char *argv[] )
 		core->getUICore()->getMainWindow()->startWidget->close();
 
 	}
-	
+	core->getUICore()->getMainWindow()->toggleLoadingIcon(false);
 	core->getUICore()->showMainWindow();
 
 	core->settingsChanged();
