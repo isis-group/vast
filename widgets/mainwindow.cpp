@@ -184,7 +184,7 @@ void MainWindow::createScreenshot()
 
 		if( fileName.size() ) {
 			toggleLoadingIcon(true, QString("Creating and saving screenshot to ") + fileName );
-			m_ViewerCore->getUICore()->getScreenshot().save( fileName, 0, m_ViewerCore->getOptionMap()->getPropertyAs<uint8_t>( "screenshotQuality" ) );
+			m_ViewerCore->getUICore()->getScreenshot().save( fileName, 0, m_ViewerCore->getOptionMap()->getPropertyAs<uint16_t>( "screenshotQuality" ) );
 			m_ViewerCore->setCurrentPath( fileName.toStdString() );
 		}
 		toggleLoadingIcon(false);

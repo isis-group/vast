@@ -59,20 +59,21 @@ QViewerCore::QViewerCore ( const std::string &appName, const std::string &orgNam
 	loadSettings();
 	getUICore()->refreshUI();
 #ifdef _OPENMP
-	const uint8_t nMaxThreads = omp_get_num_procs();
-	if( getOptionMap()->getPropertyAs<uint8_t> ( "numberOfThreads" ) == 0 ) {
-		if( nMaxThreads <= getOptionMap()->getPropertyAs<uint8_t>("initialMaxNumberThreads" ) ) {
-			getOptionMap()->setPropertyAs<uint8_t> ( "numberOfThreads", nMaxThreads );
+	const uint16_t nMaxThreads = omp_get_num_procs();
+	getOptionMap()->setPropertyAs<uint16_t>("maxNumberOfThreads", nMaxThreads);
+	if( getOptionMap()->getPropertyAs<uint16_t> ( "numberOfThreads" ) == 0 ) {
+		if( nMaxThreads <= getOptionMap()->getPropertyAs<uint16_t>("initialMaxNumberThreads" ) ) {
+			getOptionMap()->setPropertyAs<uint16_t> ( "numberOfThreads", nMaxThreads );
 			getOptionMap()->setPropertyAs<bool> ( "useAllAvailableThreads", true );
 		} else {
-			getOptionMap()->setPropertyAs<uint8_t> ( "numberOfThreads", getOptionMap()->getPropertyAs<uint8_t>("initialMaxNumberThreads" ) );
+			getOptionMap()->setPropertyAs<uint16_t> ( "numberOfThreads", getOptionMap()->getPropertyAs<uint16_t>("initialMaxNumberThreads" ) );
 		}
 		getOptionMap()->setPropertyAs<bool> ( "enableMultithreading", true );
 	}
 	if( getOptionMap()->getPropertyAs<bool>( "useAllAvailableThreads" ) ) {
-		getOptionMap()->setPropertyAs<uint8_t> ( "numberOfThreads", nMaxThreads );
+		getOptionMap()->setPropertyAs<uint16_t> ( "numberOfThreads", nMaxThreads );
 	}
-	omp_set_num_threads ( getOptionMap()->getPropertyAs<uint8_t> ( "numberOfThreads" ) );
+	omp_set_num_threads ( getOptionMap()->getPropertyAs<uint16_t> ( "numberOfThreads" ) );
 	getOptionMap()->setPropertyAs<bool> ( "ompAvailable", true );
 #else
 	getOptionMap()->setPropertyAs<bool> ( "ompAvailable", false );
@@ -231,7 +232,7 @@ void QViewerCore::settingsChanged()
 {
 	BOOST_FOREACH ( UICore::WidgetMap::const_reference widget, getUICore()->getWidgets() )
 	{
-		widget.first->setInterpolationType ( static_cast<InterpolationType> ( getOptionMap()->getPropertyAs<uint8_t> ( "interpolationType" ) ) );
+		widget.first->setInterpolationType ( static_cast<InterpolationType> ( getOptionMap()->getPropertyAs<uint16_t> ( "interpolationType" ) ) );
 	}
 	emitShowLabels ( getOptionMap()->getPropertyAs<bool> ( "showLabels" ) );
 	m_UI->getMainWindow()->getInterface().actionPropagate_Zooming->setChecked ( getOptionMap()->getPropertyAs<bool> ( "propagateZooming" ) );
@@ -451,7 +452,7 @@ void QViewerCore::loadSettings()
 	getOptionMap()->setPropertyAs<std::string> ( "lutZMap", getSettings()->value ( "lutZMap", getOptionMap()->getPropertyAs<std::string> ( "lutZMap" ).c_str() ).toString().toStdString() );
 	getOptionMap()->setPropertyAs<std::string> ( "lutStructural", getSettings()->value ( "lutStructural", getOptionMap()->getPropertyAs<std::string> ( "lutStructural" ).c_str() ).toString().toStdString() );
 	getOptionMap()->setPropertyAs<bool> ( "propagateZooming", getSettings()->value ( "propagateZooming", false ).toBool() );
-	getOptionMap()->setPropertyAs<uint8_t> ( "interpolationType", getSettings()->value ( "interpolationType", getOptionMap()->getPropertyAs<uint8_t> ( "interpolationType" ) ).toUInt() );
+	getOptionMap()->setPropertyAs<uint16_t> ( "interpolationType", getSettings()->value ( "interpolationType", getOptionMap()->getPropertyAs<uint16_t> ( "interpolationType" ) ).toUInt() );
 	getOptionMap()->setPropertyAs<bool> ( "showLabels", getSettings()->value ( "showLabels", false ).toBool() );
 	getOptionMap()->setPropertyAs<bool> ( "showCrosshair", getSettings()->value ( "showCrosshair", true ).toBool() );
 	getOptionMap()->setPropertyAs<uint16_t> ( "minMaxSearchRadius",
@@ -460,7 +461,7 @@ void QViewerCore::loadSettings()
 	getOptionMap()->setPropertyAs<bool> ( "showFavoriteFileList", getSettings()->value ( "showFavoriteFileList", false ).toBool() );
 	getOptionMap()->setPropertyAs<bool> ( "showStartWidget", getSettings()->value ( "showStartWidget", true ).toBool() );
 	getOptionMap()->setPropertyAs<bool> ( "showCrashMessage", getSettings()->value ( "showCrashMessage", true ).toBool() );
-	getOptionMap()->setPropertyAs<uint8_t> ( "numberOfThreads", getSettings()->value ( "numberOfThreads" ).toUInt() );
+	getOptionMap()->setPropertyAs<uint16_t> ( "numberOfThreads", getSettings()->value ( "numberOfThreads" ).toUInt() );
 	getOptionMap()->setPropertyAs<bool> ( "enableMultithreading", getSettings()->value ( "enableMultithreading" ).toBool() );
 	getOptionMap()->setPropertyAs<bool> ( "useAllAvailablethreads", getSettings()->value ( "useAllAvailableThreads" ).toBool() );
 	getOptionMap()->setPropertyAs<bool> ( "histogramOmitZero", getSettings()->value ( "histogramOmitZero" ).toBool() );
@@ -468,7 +469,7 @@ void QViewerCore::loadSettings()
 	getOptionMap()->setPropertyAs<uint16_t> ( "screenshotWidth", getSettings()->value ( "screenshotWidth", getOptionMap()->getPropertyAs<uint16_t> ( "screenshotWidth" ) ).toUInt() );
 	getOptionMap()->setPropertyAs<uint16_t> ( "screenshotHeight", getSettings()->value ( "screenshotHeight", getOptionMap()->getPropertyAs<uint16_t> ( "screenshotHeight" ) ).toUInt() );
 	getOptionMap()->setPropertyAs<bool> ( "screenshotKeepAspectRatio", getSettings()->value ( "screenshotKeepAspectRatio", getOptionMap()->getPropertyAs<bool> ( "screenshotKeepAspectRatio" ) ).toBool() );
-	getOptionMap()->setPropertyAs<uint8_t> ( "screenshotQuality", getSettings()->value ( "screenshotQuality", getOptionMap()->getPropertyAs<uint8_t> ( "screenshotQuality" ) ).toUInt() );
+	getOptionMap()->setPropertyAs<uint16_t> ( "screenshotQuality", getSettings()->value ( "screenshotQuality", getOptionMap()->getPropertyAs<uint16_t> ( "screenshotQuality" ) ).toUInt() );
 	getOptionMap()->setPropertyAs<uint16_t> ( "screenshotDPIX", getSettings()->value ( "screenshotDPIX", getOptionMap()->getPropertyAs<uint16_t> ( "screenshotDPIX" ) ).toUInt() );
 	getOptionMap()->setPropertyAs<uint16_t> ( "screenshotDPIY", getSettings()->value ( "screenshotDPIY", getOptionMap()->getPropertyAs<uint16_t> ( "screenshotDPIY" ) ).toUInt() );
 	getOptionMap()->setPropertyAs<bool> ( "screenshotManualScaling", getSettings()->value ( "screenshotManualScaling", getOptionMap()->getPropertyAs<bool> ( "screenshotManualScaling" ) ).toBool() );
@@ -486,7 +487,7 @@ void QViewerCore::saveSettings()
 	getSettings()->beginGroup ( "ViewerCore" );
 	getSettings()->setValue ( "lutZMap", getOptionMap()->getPropertyAs<std::string> ( "lutZMap" ).c_str() );
 	getSettings()->setValue ( "lutStructural", getOptionMap()->getPropertyAs<std::string> ( "lutStructural" ).c_str() );
-	getSettings()->setValue ( "interpolationType", getOptionMap()->getPropertyAs<uint8_t> ( "interpolationType" ) );
+	getSettings()->setValue ( "interpolationType", getOptionMap()->getPropertyAs<uint16_t> ( "interpolationType" ) );
 	getSettings()->setValue ( "propagateZooming", getOptionMap()->getPropertyAs<bool> ( "propagateZooming" ) );
 	getSettings()->setValue ( "minMaxSearchRadius", getOptionMap()->getPropertyAs<uint16_t> ( "minMaxSearchRadius" ) );
 	getSettings()->setValue ( "showLabels", getOptionMap()->getPropertyAs<bool> ( "showLabels" ) );
@@ -495,7 +496,7 @@ void QViewerCore::saveSettings()
 	getSettings()->setValue ( "showFavoriteFileList", getOptionMap()->getPropertyAs<bool> ( "showFavoriteFileList" ) );
 	getSettings()->setValue ( "showStartWidget", getOptionMap()->getPropertyAs<bool> ( "showStartWidget" ) );
 	getSettings()->setValue ( "showCrashMessage", getOptionMap()->getPropertyAs<bool> ( "showCrashMessage" ) );	
-	getSettings()->setValue ( "numberOfThreads", getOptionMap()->getPropertyAs<uint8_t> ( "numberOfThreads" ) );
+	getSettings()->setValue ( "numberOfThreads", getOptionMap()->getPropertyAs<uint16_t> ( "numberOfThreads" ) );
 	getSettings()->setValue ( "enableMultithreading", getOptionMap()->getPropertyAs<bool> ( "enableMultithreading" ) );
 	getSettings()->setValue ( "useAllAvailablethreads", getOptionMap()->getPropertyAs<bool> ( "useAllAvailableThreads" ) );
 	getSettings()->setValue ( "histogramOmitZero", getOptionMap()->getPropertyAs<bool> ( "histogramOmitZero" ) );
@@ -503,7 +504,7 @@ void QViewerCore::saveSettings()
 	getSettings()->setValue ( "screenshotWidth", getOptionMap()->getPropertyAs<uint16_t> ( "screenshotWidth" ) );
 	getSettings()->setValue ( "screenshotHeight", getOptionMap()->getPropertyAs<uint16_t> ( "screenshotHeight" ) );
 	getSettings()->setValue ( "screenshotKeepAspectRatio", getOptionMap()->getPropertyAs<bool> ( "screenshotKeepAspectRatio" ) );
-	getSettings()->setValue ( "screenshotQuality", getOptionMap()->getPropertyAs<uint8_t> ( "screenshotQuality" ) );
+	getSettings()->setValue ( "screenshotQuality", getOptionMap()->getPropertyAs<uint16_t> ( "screenshotQuality" ) );
 	getSettings()->setValue ( "screenshotDPIX", getOptionMap()->getPropertyAs<uint16_t> ( "screenshotDPIX" ) );
 	getSettings()->setValue ( "screenshotDPIY", getOptionMap()->getPropertyAs<uint16_t> ( "screenshotDPIY" ) );
 	getSettings()->setValue ( "screenshotManualScaling", getOptionMap()->getPropertyAs<bool> ( "screenshotManualScaling" ) );
