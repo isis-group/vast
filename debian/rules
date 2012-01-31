@@ -1,7 +1,17 @@
 #!/usr/bin/make -f
 
+srcpkg = $(shell LC_ALL=C dpkg-parsechangelog | grep '^Sorce:' | cut -d ' ' -f 2,2)
+debver = $(shell LC_ALL=C dpkg-parsechangelog | grep '^Version:' | cut -d ' ' -f 2,2)
+upstreamver = $(shell echo $(debver) | cut -d '-' -f 1,1 )
+
+gitver = $(shell [ -x /usr/bin/git ] && git describe --tags --match '*\.*\.*' $$(git merge-base -a HEAD master ) | sed -e 's/_/./g' -e 's/-/+git/')
+
 include /usr/share/cdbs/1/rules/debhelper.mk
 include /usr/share/cdbs/1/class/cmake.mk
+
+# one ring to rule them all...
+%:
+	dh $@ --buildsystem=cmake
 
 DEB_CMAKE_EXTRA_FLAGS = \
 	-DCMAKE_BUILD_TYPE="Release" \
@@ -15,12 +25,10 @@ DEB_CMAKE_EXTRA_FLAGS = \
 	-Dvast_PLUGIN_HISTOGRAM:BOOL=ON \
 	-Dvast_PLUGIN_PROPERTYTOOL:BOOL=ON \
 	-DVAST_DOCUMENTATION:BOOL=ON \
-	-DVAST_OPENMP:BOOL=ON
+	-DVAST_OPENMP:BOOL=ON \
+	-DGIT_REVISION="Debian-$(debver)"
 
 
-# get number of parallel builds from the default environment
-# variable DEB_BUILD_OPTIONS. The expected value is 'parrallel=#'.
-ifneq (,$(filter parallel=%,$(DEB_BUILD_OPTIONS)))
-	NUMJOBS = $(patsubst parallel=%,%,$(filter parallel=%,$(DEB_BUILD_OPTIONS)))
-    MAKEFLAGS += -j$(NUMJOBS)
-endif
+get-orig-source:
+	git archive --format=tar --prefix=$(srcpkg)-$(gitver)/ HEAD | \
+		gzip -9 > $(srcpkg(_$(gitver).orig.tar.gz
