@@ -6,16 +6,15 @@ upstreamver = $(shell echo $(debver) | cut -d '-' -f 1,1 )
 
 gitver = $(shell [ -x /usr/bin/git ] && git describe --tags --match '*\.*\.*' $$(git merge-base -a HEAD master ) | sed -e 's/_/./g' -e 's/-/+git/')
 
-include /usr/share/cdbs/1/rules/debhelper.mk
-include /usr/share/cdbs/1/class/cmake.mk
-
 # one ring to rule them all...
 %:
 	dh $@ --buildsystem=cmake
 
 DEB_CMAKE_EXTRA_FLAGS = \
 	-DCMAKE_BUILD_TYPE="Release" \
+	-DCMAKE_INSTALL_PREFIX:PATH=/usr \
 	-DCMAKE_C_COMPILER="/usr/bin/gcc" \
+	-DCMAKE_EXE_LINKER_FLAGS="-Wl,--no-undefined" \
 	-DISIS_DEBUG_LOG:BOOL=OFF \
 	-DQT_QMAKE_EXECUTABLE=/usr/bin/qmake-qt4 \
 	-Dvast_PLUGIN_PROFILEPLOTTER:BOOL=ON \
@@ -28,6 +27,11 @@ DEB_CMAKE_EXTRA_FLAGS = \
 	-DVAST_OPENMP:BOOL=ON \
 	-DGIT_REVISION="Debian-$(debver)"
 
+override_dh_auto_test:
+	# don't work ATM
+
+override_dh_auto_configure:
+	dh_auto_configure -- $(DEB_CMAKE_EXTRA_FLAGS)
 
 get-orig-source:
 	git archive --format=tar --prefix=$(srcpkg)-$(gitver)/ HEAD | \

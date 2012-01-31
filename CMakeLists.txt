@@ -208,7 +208,7 @@ message(STATUS "QT libraries: ${QT_LIBRARIES} ")
 
 set(NEEDED_LIBS
 	${QT_LIBRARIES}
-    ${QT4_WEBKIT_LIB}
+	${QT4_WEBKIT_LIB}
 	${Boost_LIBRARIES}
 	${ISIS_LIB}
 	${ISIS_LIB_DEPENDS}
