@@ -220,7 +220,7 @@ add_subdirectory(plugins)
 
 target_link_libraries(vast ${NEEDED_LIBS})
 
-install(TARGETS vast RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin )
+install(TARGETS vast RUNTIME DESTINATION bin )
 
 # install header files
 install(FILES ${VIEWER_DEV_FILES} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/vast COMPONENT Development)
