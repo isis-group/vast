@@ -129,7 +129,11 @@ void ViewerCoreBase::setImageList( std::list< data::Image > imgList, const Image
 
 std::string ViewerCoreBase::getVersion() const
 {
-	return STR( _VAST_VERSION_MAJOR ) + "." + STR( _VAST_VERSION_MINOR ) + "." + STR( _VAST_VERSION_PATCH );
+#ifdef VAST_RCS_REVISION
+        return STR( _VAST_VERSION_MAJOR ) + "." + STR( _VAST_VERSION_MINOR ) + "." + STR( _VAST_VERSION_PATCH ) + " [" + STR( VAST_RCS_REVISION ) + "]";
+#else
+        return STR( _VAST_VERSION_MAJOR ) + "." + STR( _VAST_VERSION_MINOR ) + "." + STR( _VAST_VERSION_PATCH );
+#endif
 }
 
 
