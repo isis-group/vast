@@ -132,6 +132,34 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/viewer)
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ftemplate-depth-100 -Wextra -Wall -Wfatal-errors"  )
 SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}  -Wextra -Wall -Wfatal-errors -Wall" )
 
+
+############################################################
+# RCS revision number
+############################################################
+# The revision number is based on GIT commit informations.
+# It will be stored in GIT_REVISION.
+find_program(GIT_COMMAND git DOC "The rcs revision description information tool.")
+
+if (NOT GIT_REVISION)
+  if (GIT_COMMAND)
+    execute_process(COMMAND ${GIT_COMMAND} describe OUTPUT_VARIABLE OUT WORKING_DIRECTORY ${CMAKE_SOURCE_DIR} OUTPUT_STRIP_TRAILING_WHITESPACE)
+    string(REGEX MATCH "[0-9]+-[^-]+$" GIT_REVISION "${OUT}") #@todo wont work with more complex revisions/modified sources
+    set(CPACK_PACKAGE_FILE_NAME ${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH}-${GIT_REVISION}-${CMAKE_SYSTEM_NAME}-${PROCESSOR}-${CMAKE_BUILD_TYPE})
+  else(GIT_COMMAND)
+    message(STATUS "git not found")
+  endif (GIT_COMMAND)
+endif (NOT GIT_REVISION)
+
+if (GIT_REVISION)
+  message(STATUS "RCS Revision: ${GIT_REVISION}")
+  add_definitions(-DVAST_RCS_REVISION=${GIT_REVISION})
+  set(ISIS_CORE_REV_STRING ${${CMAKE_PROJECT_NAME}_VERSION_MAJOR}.${${CMAKE_PROJECT_NAME}_VERSION_MINOR}.${${CMAKE_PROJECT_NAME}_VERSION_PATCH}-${GIT_REVISION})
+else(GIT_REVISION)
+  set(ISIS_CORE_REV_STRING ${${CMAKE_PROJECT_NAME}_VERSION_MAJOR}.${${CMAKE_PROJECT_NAME}_VERSION_MINOR}.${${CMAKE_PROJECT_NAME}_VERSION_PATCH})
+endif(GIT_REVISION)
+
+
+
 ############################################################
 # set the plugin directory and the system dependend shared
 # library naming conventions
