@@ -2,14 +2,14 @@ Source: vast
 Section: science
 Priority: optional
 Maintainer: ISIS Group (The friendly isis team) <gr_isis@cbs.mpg.de>
-Build-Depends: libqwt5-qt4-dev, libqt4-dev
+Build-Depends: libqwt5-qt4-dev, libqt4-dev, libboost-filesystem-dev
 Standards-Version: 3.8.1
 
 Package: vast
 Section: science
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}, libisis-core0, libisis-qt4-0
-Recommends: vast-correlationplotter, vast-profileplotter, vast-orientationcorrection, vast-maskedit, vast-propertytool, isisio0-vista, isisio0-nifti-sa, isisio0-dicom, isisio0-gz-proxy, isisio0-tar-proxy, vast-histogram, vast-propertytool
+Recommends: libisis-ioplugins
 Description: vast is a viewer for medical image data. 
  It supports all image formats that are supportet by the isis package. With version 0.1.0 these are the following:
  nifti, vista, dicom, tar.gz, raw, img, hdr.
