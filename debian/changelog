@@ -1,4 +1,4 @@
-vast (0.3.0beta-0) UNRELEASED; urgency=low
+vast (0.3.0beta-1) UNRELEASED; urgency=low
 
   * fixed some bugs
   * add capability to visualize profiles of x,y and z

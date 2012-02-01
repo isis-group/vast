@@ -10,7 +10,15 @@ Section: science
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}, libisis-core0, libisis-qt4-0
 Recommends: libisis-ioplugins
-Description: vast is a viewer for medical image data. 
- It supports all image formats that are supportet by the isis package. With version 0.1.0 these are the following:
- nifti, vista, dicom, tar.gz, raw, img, hdr.
- The viewer is capable of visualizing anatomical images, statistical images and functional images.
+Description: Viewer for medical image data. 
+ It supports all image formats that are supportet by the isis package. 
+ With version 0.1.0 these are the following:
+ nifti, dicom, vista, png, tar.gz, raw.
+ The viewer is capable of visualizing anatomical images, 
+ statistical images and functional images, independent from their resolution. 
+ It comes with a handful of plugins like a histogram, a profile plotter that 
+ visualizes the profile along X,Y,Z and time, a tool to correct the image 
+ orientation, a mask painting tool, a real time correlation plotter for 
+ functional images and a plugin for modifying the metadata of the image. 
+ Due to its ability to save images it can be used as an image file format converter.
+ Furthermore, it is capable of visualizing images with different resolution. 
