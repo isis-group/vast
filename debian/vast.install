@@ -1,7 +1,1 @@
 debian/vast.desktop usr/share/applications
-debian/tmp/usr/bin/* 
-debian/tmp/usr/share/pixmaps/*
-
-debian/tmp/usr/share/vast/doc/*
-
-debian/tmp/usr/lib/plugins/*
