@@ -20,5 +20,6 @@ Description: Viewer for medical image data.
  visualizes the profile along X,Y,Z and time, a tool to correct the image 
  orientation, a mask painting tool, a real time correlation plotter for 
  functional images and a plugin for modifying the metadata of the image. 
- Due to its ability to save images it can be used as an image file format converter.
- Furthermore, it is capable of visualizing images with different resolution. 
+ Due to its ability to save images it can be used as an image file format 
+ converter. Furthermore, it is capable of visualizing images with different 
+ resolution. 
