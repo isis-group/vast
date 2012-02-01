@@ -1,25 +1,25 @@
-vast (0.3.0beta-0) stable; urgency=low
+vast (0.3.0beta-0) UNRELEASED; urgency=low
 
   * fixed some bugs
   * add capability to visualize profiles of x,y and z
   * gui cosmetics 
 
- -- ISIS Group (The friendly isis team) <gr_isis@cbs.mpg.de>  Wed, 30 Jan 2012 15:00:00 +0200 
+ -- Michael Hanke <mih@debian.org>  Wed, 01 Feb 2012 13:15:26 +0100
 
-vast (0.2.6-0) stable; urgency=low
+vast (0.2.6-0) UNRELEASED; urgency=low
 
   * fixed some bugs
 
  -- ISIS Group (The friendly isis team) <gr_isis@cbs.mpg.de>  Wed, 18 Jan 2012 15:21:00 +0200 
 
-vast (0.2.5b-0) stable; urgency=low
+vast (0.2.5b-0) UNRELEASED; urgency=low
 
   * add property tool plugin
   * fixed some bugs
 
  -- ISIS Group (The friendly isis team) <gr_isis@cbs.mpg.de>  Tue, 10 Jan 2012 09:30:00 +0200 
 
-vast (0.2.3alpha-0) stable; urgency=low
+vast (0.2.3alpha-0) UNRELEASED; urgency=low
 
   * fixed bugs
   * add capability to save screenshots
@@ -27,84 +27,84 @@ vast (0.2.3alpha-0) stable; urgency=low
 
  -- ISIS Group (The friendly isis team) <gr_isis@cbs.mpg.de>  Wed, 14 Dec 2011 13:24:35 +0200
 
-vast (0.2.2alpha-0) stable; urgency=low
+vast (0.2.2alpha-0) UNRELEASED; urgency=low
 
   * fixed some bugs 
 
  -- ISIS Group (The friendly isis team) <gr_isis@cbs.mpg.de>  Wed, 8 Nov 2011 13:16:35 +0200
 
-vast (0.2.1alpha-0) stable; urgency=low
+vast (0.2.1alpha-0) UNRELEASED; urgency=low
 
   * fixed some bugs
   * changed and fixed design 
 
  -- ISIS Group (The friendly isis team) <gr_isis@cbs.mpg.de>  Wed, 7 Nov 2011 10:40:35 +0200
 
-vast (0.1.9alpha-0) stable; urgency=low
+vast (0.1.9alpha-0) UNRELEASED; urgency=low
 
   * add multithreading support 
 
  -- ISIS Group (The friendly isis team) <gr_isis@cbs.mpg.de>  Wed, 31 Nov 2011 15:40:35 +0200
 
-vast (0.1.8alpha-0) stable; urgency=low
+vast (0.1.8alpha-0) UNRELEASED; urgency=low
 
   * some new features
 
  -- ISIS Group (The friendly isis team) <gr_isis@cbs.mpg.de>  Wed, 30 Nov 2011 14:38:35 +0200
 
-vast (0.1.7alpha-2) stable; urgency=low
+vast (0.1.7alpha-2) UNRELEASED; urgency=low
 
   * add debian menu entry for vast
 
  -- ISIS Group (The friendly isis team) <gr_isis@cbs.mpg.de>  Wed, 30 Nov 2011 9:23:35 +0200
 
-vast (0.1.7alpha-1) stable; urgency=low
+vast (0.1.7alpha-1) UNRELEASED; urgency=low
 
   * new isis version 0.4.1
 
  -- ISIS Group (The friendly isis team) <gr_isis@cbs.mpg.de>  Thu, 22 Nov 2011 17:45:35 +0200
 
-vast (0.1.7alpha-0) stable; urgency=low
+vast (0.1.7alpha-0) UNRELEASED; urgency=low
 
   * add correlation plotting plugin
   * some fixes
 
  -- ISIS Group (The friendly isis team) <gr_isis@cbs.mpg.de>  Thu, 22 Nov 2011 17:45:35 +0200
 
-vast (0.1.6alpha-0) stable; urgency=low
+vast (0.1.6alpha-0) UNRELEASED; urgency=low
 
   * add zmap mode
   * add mask edit plugin
 
  -- ISIS Group (The friendly isis team) <gr_isis@cbs.mpg.de>  Thu, 17 Nov 2011 12:25:35 +0200
 
-vast (0.1.5alpha-0) stable; urgency=low
+vast (0.1.5alpha-0) UNRELEASED; urgency=low
 
   * startscreen
   * a lot of fixes
 
  -- ISIS Group (The friendly isis team) <gr_isis@cbs.mpg.de>  Thu, 17 Nov 2011 12:25:35 +0200
 
-vast (0.1.4gec4b5d5-0) stable; urgency=low
+vast (0.1.4gec4b5d5-0) UNRELEASED; urgency=low
 
   * a lot of fixes
 
  -- ISIS Group (The friendly isis team) <gr_isis@cbs.mpg.de>  Tue, 15 Nov 2011 18:25:35 +0200
 
-vast (0.1.3gitce7b97c-0) stable; urgency=low
+vast (0.1.3gitce7b97c-0) UNRELEASED; urgency=low
 
   * alpha version of vast meant to be installed on pandamonium for testing
     purpose
 
  -- ISIS Group (The friendly isis team) <gr_isis@cbs.mpg.de>  Mon, 10 Nov 2011 10:25:35 +0200
 
-vast (0.1.2-0) stable; urgency=low
+vast (0.1.2-0) UNRELEASED; urgency=low
 
   * add parameter "rdialect"
 
  -- ISIS Group (The friendly isis team) <gr_isis@cbs.mpg.de>  Mon, 22 Aug 2011 15:28:35 +0200
 
-vast (0.1.1-0) stable; urgency=low
+vast (0.1.1-0) UNRELEASED; urgency=low
 
   * add progress bar for dicom import
   * add transformation of the physical coords to correctly show mni coords.
@@ -113,7 +113,7 @@ vast (0.1.1-0) stable; urgency=low
 
  -- ISIS Group (The friendly isis team) <gr_isis@cbs.mpg.de>  Thu, 05 May 2011 15:38:35 +0200
 
-vast (0.1.0-0) stable; urgency=low
+vast (0.1.0-0) UNRELEASED; urgency=low
 
   * first debian package of the new lipsia viewer vast. This viewer is
     based on the isis package.
