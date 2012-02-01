@@ -31,20 +31,20 @@ vast (0.2.2alpha-0) UNRELEASED; urgency=low
 
   * fixed some bugs 
 
- -- ISIS Group (The friendly isis team) <gr_isis@cbs.mpg.de>  Wed, 8 Nov 2011 13:16:35 +0200
+ -- ISIS Group (The friendly isis team) <gr_isis@cbs.mpg.de>  Thu, 8 Dec 2011 13:16:35 +0200
 
 vast (0.2.1alpha-0) UNRELEASED; urgency=low
 
   * fixed some bugs
   * changed and fixed design 
 
- -- ISIS Group (The friendly isis team) <gr_isis@cbs.mpg.de>  Wed, 7 Nov 2011 10:40:35 +0200
+ -- ISIS Group (The friendly isis team) <gr_isis@cbs.mpg.de>  Wed, 7 Dec 2011 10:40:35 +0200
 
 vast (0.1.9alpha-0) UNRELEASED; urgency=low
 
   * add multithreading support 
 
- -- ISIS Group (The friendly isis team) <gr_isis@cbs.mpg.de>  Wed, 31 Nov 2011 15:40:35 +0200
+ -- ISIS Group (The friendly isis team) <gr_isis@cbs.mpg.de>  Thu, 1 Dec 2011 15:40:35 +0200
 
 vast (0.1.8alpha-0) UNRELEASED; urgency=low
 
