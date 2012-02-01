@@ -11,9 +11,7 @@ gitver = $(shell [ -x /usr/bin/git ] && git describe --tags --match '*\.*\.*' $$
 	dh $@ --buildsystem=cmake
 
 DEB_CMAKE_EXTRA_FLAGS = \
-	-DCMAKE_BUILD_TYPE="Release" \
 	-DCMAKE_INSTALL_PREFIX:PATH=/usr \
-	-DCMAKE_C_COMPILER="/usr/bin/gcc" \
 	-DCMAKE_EXE_LINKER_FLAGS="-Wl,--no-undefined" \
 	-DISIS_DEBUG_LOG:BOOL=OFF \
 	-DQT_QMAKE_EXECUTABLE=/usr/bin/qmake-qt4 \
