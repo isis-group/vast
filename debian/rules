@@ -35,4 +35,4 @@ override_dh_auto_configure:
 
 get-orig-source:
 	git archive --format=tar --prefix=$(srcpkg)-$(gitver)/ HEAD | \
-		gzip -9 > $(srcpkg(_$(gitver).orig.tar.gz
+		gzip -9 > $(srcpkg)_$(gitver).orig.tar.gz
