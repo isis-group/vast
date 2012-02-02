@@ -527,7 +527,7 @@ void QViewerCore::setMode ( ViewerCoreBase::Mode mode )
 {
 	m_Mode = mode;
 	if( m_Mode == zmap ) {
-		getUICore()->getMainWindow()->setWindowTitle( QString( m_OptionsMap->getPropertyAs<std::string>("signature").c_str() ) + QString("(zmap mode)" ) );
+		getUICore()->getMainWindow()->setWindowTitle( QString(  m_OptionsMap->getPropertyAs<std::string>("signature").c_str() ) + QString("(zmap mode)" ) );
 	} else {
 		getUICore()->getMainWindow()->setWindowTitle( QString( m_OptionsMap->getPropertyAs<std::string>("signature").c_str() ) );
 	}
