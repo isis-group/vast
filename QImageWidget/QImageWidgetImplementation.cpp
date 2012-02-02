@@ -337,7 +337,7 @@ void QImageWidgetImplementation::mouseMoveEvent( QMouseEvent *e )
 			BOOST_FOREACH( DataContainer::reference image, m_ViewerCore->getDataContainer() ) {
 				const double offset =  ( m_StartCoordsPair.second - e->y() ) / ( float )height() * image.second->extent;
 				const double scaling = 1.0 - ( m_StartCoordsPair.first - e->x() ) / ( float )width() * 5;
-				image.second->offset = offset < 0 ? 0 : offset;
+				image.second->offset = offset;
 				image.second->scaling = scaling < 0.0 ? 0.0 : scaling;
 				image.second->updateColorMap();
 			}
