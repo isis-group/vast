@@ -159,9 +159,6 @@ MainWindow::MainWindow( QViewerCore *core ) :
 	loadSettings();
 	m_Interface.actionOpen_recent->setMenu( new QMenu() );
 
-	//TODO
-	m_Interface.actionAbout_Dialog->setVisible(false);
-
 }
 
 void MainWindow::toggleLoadingIcon ( bool start, const QString &text )

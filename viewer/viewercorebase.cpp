@@ -190,8 +190,9 @@ void ViewerCoreBase::setCommonViewerOptions()
 	m_OptionsMap->setPropertyAs<std::string>("vastSymbol", std::string(":/common/minerva-MPG.png") );
 
 	std::stringstream signature;
-	signature << "vast v" << getVersion() << ", Max Planck Institut for human cognitive and brain sciences";
+	signature << "vast v" << getVersion() ;
 	m_OptionsMap->setPropertyAs<std::string>( "signature", signature.str() );
+        m_OptionsMap->setPropertyAs<std::string>( "copyright", "2012 Max Planck Institute for Human and Brain Science Leipzig");
 }
 
 

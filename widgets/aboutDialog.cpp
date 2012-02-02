@@ -35,13 +35,43 @@ isis::viewer::widget::AboutDialog::AboutDialog ( QWidget* parent, isis::viewer::
 
 {
 	m_Interface.setupUi(this);
+
+    connect( m_Interface.authorsList, SIGNAL( currentTextChanged(QString)), this, SLOT( onAuthorClicked(QString)) );
+    connect( m_Interface.sendMailButton, SIGNAL( pressed()), this, SLOT( sendEmailClicked()) );
+    m_Interface.sendMailButton->setIcon( QIcon( ":/common/icon_email.gif") );
+
+    m_Interface.sendMailButton->setEnabled( false );
+    
 	QPixmap pixMap( m_ViewerCore->getOptionMap()->getPropertyAs<std::string>("vastSymbol").c_str() );
-	float ratio = pixMap.height() / ( float )pixMap.width();
+	const float ratio = pixMap.height() / ( float )pixMap.width();
 	m_Interface.vastSymbolLabel->setPixmap( QPixmap( 
-		m_ViewerCore->getOptionMap()->getPropertyAs<std::string>("vastSymbol").c_str() ).scaled(pixMap.width() / ratio , m_Interface.vastSymbolLabel->height(), Qt::KeepAspectRatio ) );
+		m_ViewerCore->getOptionMap()->getPropertyAs<std::string>("vastSymbol").c_str() ).scaled(200 / ratio , m_Interface.vastSymbolLabel->height(), Qt::KeepAspectRatio ) );
+    QPalette pal;
+    pal.setColor( QPalette::Text, Qt::blue );
+    m_Interface.contactEdit->setPalette( pal );
+
+    m_authorMap["Erik Tuerke"] = std::string("tuerke@cbs.mpg.de");
+    m_authorMap["Enrico Reimer"] = std::string( "reimer@cbs.mpg.de");
 
 }
 
+void isis::viewer::widget::AboutDialog::showEvent(QShowEvent* )
+{
+    m_Interface.labelCopyright->setText( m_ViewerCore->getOptionMap()->getPropertyAs<std::string>("copyright").c_str() );
+    m_Interface.labelVersion->setText( m_ViewerCore->getVersion().c_str() );
+    BOOST_FOREACH( AboutDialog::AuthorMapType::const_reference author, m_authorMap ) {
+        m_Interface.authorsList->addItem( author.first.c_str() );
+    }
+}
 
+void isis::viewer::widget::AboutDialog::onAuthorClicked ( QString author)
+{
+    m_Interface.contactEdit->setText( m_authorMap.at( author.toStdString() ).c_str() );
+    m_Interface.sendMailButton->setEnabled(true);
+}
 
+void isis::viewer::widget::AboutDialog::sendEmailClicked()
+{
+    QDesktopServices::openUrl( QUrl( m_Interface.contactEdit->text() ) );
+}
 
