@@ -1,5 +1,6 @@
 <RCC>
   <qresource prefix="common">
+    <file>icon_email.gif</file>
     <file>loading.gif</file>
     <file>minerva-MPG.png</file>
     <file>pause.png</file>
