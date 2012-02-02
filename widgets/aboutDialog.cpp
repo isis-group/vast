@@ -62,6 +62,7 @@ void isis::viewer::widget::AboutDialog::showEvent(QShowEvent* )
     BOOST_FOREACH( AboutDialog::AuthorMapType::const_reference author, m_authorMap ) {
         m_Interface.authorsList->addItem( author.first.c_str() );
     }
+    m_Interface.labelISISVersion->setText( util::Application::getCoreVersion().c_str() );
 }
 
 void isis::viewer::widget::AboutDialog::onAuthorClicked ( QString author)
