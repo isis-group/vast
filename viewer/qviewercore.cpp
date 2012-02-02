@@ -133,7 +133,6 @@ void QViewerCore::addMessageHandlerDev ( qt4::QDefaultMessagePrint *handler )
 void QViewerCore::receiveMessage ( qt4::QMessage message )
 {
 	m_MessageLog.push_back ( message );
-	getUICore()->showMessage ( message );
 }
 
 void QViewerCore::receiveMessageDev ( qt4::QMessage message )
