@@ -98,7 +98,7 @@ int main( int argc, char *argv[] )
 	app.parameters["split"].setDescription( "Show each image in a separate view" );
 	boost::shared_ptr< util::ProgressFeedback > feedback = boost::shared_ptr<util::ProgressFeedback>( new util::ConsoleFeedback );
 	data::IOFactory::setProgressFeedback( feedback );
-	app.init( argc, argv, true );
+	app.init( argc, argv, false );
 
 	util::_internal::Log<isis::data::Runtime>::setHandler( logging_hanlder_runtime );
 	util::_internal::Log<isis::util::Runtime>::setHandler( logging_hanlder_runtime );
@@ -115,10 +115,14 @@ int main( int argc, char *argv[] )
 	core->addPlugins( plugin::PluginLoader::get().getPlugins() );
 	core->getUICore()->reloadPluginsToGUI();
 
-	const util::slist fileList = app.parameters["in"];
+	util::slist fileList = app.parameters["in"];
 	const util::slist zmapFileList = app.parameters["zmap"];
 	std::list< data::Image > imgList;
 	std::list< data::Image > zImgList;
+        
+        if( argc > 1 && !app.parameters["in"].isSet() && !app.parameters["zmap"].isSet() ) {
+            fileList.push_back( std::string( argv[1] ) );
+        }
 
 	if( fileList.size() || zmapFileList.size() ) {
 		//load the anatomical images
@@ -161,7 +165,7 @@ int main( int argc, char *argv[] )
 		}
 	} else if( core->getOptionMap()->getPropertyAs<bool>( "showStartWidget" ) ) {
 		core->getUICore()->getMainWindow()->startWidget->show();
-	}
+	} 
 
 	//*****************************************************************************************
 	//distribution of images
