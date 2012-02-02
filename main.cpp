@@ -120,10 +120,6 @@ int main( int argc, char *argv[] )
 	std::list< data::Image > imgList;
 	std::list< data::Image > zImgList;
         
-        if( argc > 1 && !app.parameters["in"].isSet() && !app.parameters["zmap"].isSet() ) {
-            fileList.push_back( std::string( argv[1] ) );
-        }
-
 	if( fileList.size() || zmapFileList.size() ) {
 		//load the anatomical images
 		BOOST_FOREACH ( util::slist::const_reference fileName, fileList ) {
