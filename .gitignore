@@ -6,6 +6,10 @@ files
 # cmake build dirs
 release/
 Release/
+build_tmp/
+obj-i486-linux-gnu/
+obj-i686-linux-gnu/
+
 debug/
 Debug/
 build/
