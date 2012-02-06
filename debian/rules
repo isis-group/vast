@@ -30,6 +30,12 @@ override_dh_auto_test:
 override_dh_auto_configure:
 	dh_auto_configure -- $(CMAKE_FLAGS)
 
+override_dh_auto_install:
+	dh_auto_install
+	# remove embedded javascript libs -- provided by other packages
+	rm -f debian/vast/usr/share/vast/doc/html/_static/jquery.js
+	rm -f debian/vast/usr/share/vast/doc/html/_static/underscore.js
+
 get-orig-source:
 	git archive --format=tar --prefix=$(srcpkg)-$(gitver)/ HEAD | \
 		gzip -9 > $(srcpkg)_$(gitver).orig.tar.gz
