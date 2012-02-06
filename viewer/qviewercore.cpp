@@ -133,7 +133,6 @@ void QViewerCore::addMessageHandlerDev ( qt4::QDefaultMessagePrint *handler )
 void QViewerCore::receiveMessage ( qt4::QMessage message )
 {
 	m_MessageLog.push_back ( message );
-	getUICore()->showMessage ( message );
 }
 
 void QViewerCore::receiveMessageDev ( qt4::QMessage message )
@@ -527,7 +526,7 @@ void QViewerCore::setMode ( ViewerCoreBase::Mode mode )
 {
 	m_Mode = mode;
 	if( m_Mode == zmap ) {
-		getUICore()->getMainWindow()->setWindowTitle( QString( m_OptionsMap->getPropertyAs<std::string>("signature").c_str() ) + QString("(zmap mode)" ) );
+		getUICore()->getMainWindow()->setWindowTitle( QString(  m_OptionsMap->getPropertyAs<std::string>("signature").c_str() ) + QString("(zmap mode)" ) );
 	} else {
 		getUICore()->getMainWindow()->setWindowTitle( QString( m_OptionsMap->getPropertyAs<std::string>("signature").c_str() ) );
 	}

@@ -142,9 +142,6 @@ MainWindow::MainWindow( QViewerCore *core ) :
 	m_RadiusSpin->setToolTip( "Search radius for finding local minimum/maximum. If radius is 0 it will search the entire image." );
 	m_Interface.statusbar->addPermanentWidget( m_ViewerCore->getProgressFeedback()->getProgressBar() );
 
-	if( m_ViewerCore->getOptionMap()->hasProperty( "signature" ) ) {
-		m_StatusTextLabel->setText( m_ViewerCore->getOptionMap()->getPropertyAs<std::string>( "signature" ).c_str() );
-	}
 	m_Interface.statusbar->insertPermanentWidget(0, m_StatusTextLabel );
 	m_Interface.statusbar->insertPermanentWidget(1, m_StatusMovieLabel );
 	m_StatusMovie->setFileName( ":/common/loading.gif" );
@@ -158,9 +155,6 @@ MainWindow::MainWindow( QViewerCore *core ) :
 	scalingWidget->setVisible( false );
 	loadSettings();
 	m_Interface.actionOpen_recent->setMenu( new QMenu() );
-
-	//TODO
-	m_Interface.actionAbout_Dialog->setVisible(false);
 
 }
 

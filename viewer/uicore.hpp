@@ -108,7 +108,6 @@ public:
 public Q_SLOTS:
 	virtual void reloadPluginsToGUI();
 	virtual void refreshUI();
-	void showMessage( const qt4::QMessage &message );
 	void showInformationAreas( bool );
 
 
