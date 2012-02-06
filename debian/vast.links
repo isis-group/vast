@@ -1,0 +1,3 @@
+/usr/share/vast/doc /usr/share/doc/vast/html
+/usr/share/javascript/jquery/jquery.js /usr/share/vast/doc/html/_static/jquery.js
+/usr/share/javascript/underscore/underscore.js /usr/share/vast/doc/html/_static/underscore.js

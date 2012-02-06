@@ -1,6 +1,6 @@
 ?package(vast): \
 	needs="X11" \
-	section="Applications/Science" \
+	section="Applications/Science/Medicine" \
 	title="vast" \
 	longtitle="vast Image Viewer" \
 	icon="vast.xpm" \

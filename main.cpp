@@ -108,7 +108,6 @@ int main( int argc, char *argv[] )
 	util::_internal::Log<isis::image_io::Debug>::setHandler( logging_hanlder_runtime );
 
 	QViewerCore *core = new QViewerCore( appName, orgName );
-
 	core->addMessageHandler( logging_hanlder_runtime.get() );
 	core->addMessageHandlerDev( logging_hanlder_dev.get() );
 	//scan for plugins and hand them to the core
