@@ -1,25 +1,26 @@
 Source: vast
 Section: science
-Priority: optional
+Priority: extra
 Maintainer: ISIS Group (The friendly isis team) <gr_isis@cbs.mpg.de>
-Build-Depends: libqwt5-qt4-dev, libqt4-dev, libboost-filesystem-dev
-Standards-Version: 3.8.1
+Uploaders: Michael Hanke <mih@debian.org>
+Build-Depends: debhelper (>= 7.0.50~), libqwt5-qt4-dev, libqt4-dev,
+ libboost-filesystem-dev, libisis-core-dev, libisis-qt4-dev, python-sphinx
+Standards-Version: 3.9.2
+Vcs-Git: git://github.com/isis-group/vast.git
+Vcs-Browser: http://github.com/isis-group/vast
 
 Package: vast
 Section: science
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, libisis-core0, libisis-qt4-0
-Recommends: libisis-ioplugins
-Description: Viewer for medical image data. 
- It supports all image formats that are supportet by the isis package. 
- With version 0.1.0 these are the following:
- nifti, dicom, vista, png, tar.gz, raw.
- The viewer is capable of visualizing anatomical images, 
- statistical images and functional images, independent from their resolution. 
- It comes with a handful of plugins like a histogram, a profile plotter that 
- visualizes the profile along X,Y,Z and time, a tool to correct the image 
- orientation, a mask painting tool, a real time correlation plotter for 
- functional images and a plugin for modifying the metadata of the image. 
- Due to its ability to save images it can be used as an image file format 
- converter. Furthermore, it is capable of visualizing images with different 
- resolution. 
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Recommends: libisis-ioplugins, libjs-jquery, libjs-underscore
+Description: Viewer for medical image data
+ Vast supports all image formats that are supportet by the isis package,
+ including nifti, dicom, vista, png, tar.gz, and raw. The viewer is capable
+ of visualizing anatomical images, statistical images and functional images.
+ it is possible to create overlays of images with different resolutions.
+ A number of plugins are provided: histogram, profile visualization along
+ all spatial and temporal axes, image orientation correction, mask drawing,
+ real time correlation visualization for functional images and an image
+ metadata editor. Vast is able to save images in a number of file formats
+ independent of the original image format.
