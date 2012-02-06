@@ -88,7 +88,8 @@ public:
 public Q_SLOTS:
     void updateProperties();
     void selectionChanged( int );
-    void onPropertyTreeClicked(QTreeWidgetItem*,int);
+    void onPropertyTreeClicked();
+	QString getItemName( QTreeWidgetItem* item );
     virtual void showEvent( QShowEvent * );
     
 private:
@@ -102,6 +103,10 @@ private:
         return _internal::printPropertyValue<TYPE>()(name, static_cast<util::PropertyMap&>( *m_ViewerCore->getCurrentImage()->getISISImage() ) );
     }
 
+	QString genericPrintPropertyValue( const std::string &name ) {
+		return QString( static_cast<util::PropertyMap&>( *m_ViewerCore->getCurrentImage()->getISISImage() ).propertyValue(name.c_str()).toString().c_str() );
+		
+	}
 
 
 

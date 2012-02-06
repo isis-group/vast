@@ -41,7 +41,8 @@ PropertyToolDialog::PropertyToolDialog(QWidget* parent, QViewerCore* core)
     m_Interface.tabWidget->setCurrentIndex(0);
     connect( m_ViewerCore, SIGNAL( emitUpdateScene()), this, SLOT( updateProperties()));
     connect( m_Interface.selection, SIGNAL( currentIndexChanged(int) ), this, SLOT( selectionChanged(int ) ) );
-    connect( m_Interface.propertyTree, SIGNAL( itemClicked(QTreeWidgetItem*,int)), this, SLOT(onPropertyTreeClicked(QTreeWidgetItem*,int)));
+    connect( m_Interface.propertyTree, SIGNAL( itemSelectionChanged()) , this, SLOT(onPropertyTreeClicked()));
+	connect( m_Interface.propertyTree, SIGNAL( itemClicked(QTreeWidgetItem*,int)), SLOT( onPropertyTreeClicked()));
 }
 
 void PropertyToolDialog::showEvent(QShowEvent* )
@@ -179,19 +180,28 @@ void TreePropMap::fillTreeWidget(QTreeWidget* treeWidget)
     walkTree(item, *this, true );
     
 }
-void PropertyToolDialog::onPropertyTreeClicked(QTreeWidgetItem* item, int /*column*/)
+
+QString PropertyToolDialog::getItemName ( QTreeWidgetItem* item )
 {
-    if( m_ViewerCore->hasImage() ) {
-        QString name = item->text( item->columnCount()-2 );
-        m_Interface.propertyName->setText( name );
-        switch ( m_ViewerCore->getCurrentImage()->getISISImage()->propertyValue( name.toStdString().c_str() )->getTypeID() ) {
-         case util::Value<uint8_t>::staticID:
-             m_Interface.propertyValue->setText( printPropertyValue<uint8_t>( name.toStdString() ) );
-             break;
-         case util::Value<util::fvector4>::staticID:
-             m_Interface.propertyValue->setText( printPropertyValue<util::fvector4>( name.toStdString() ) );
-             break;    
-        }
+		QString retName;
+		retName.append( item->text( item->columnCount() > 1 ? item->columnCount() - 2 : 0 ) );
+		if( item->parent() ){
+			retName.prepend("/");
+			retName.prepend( getItemName( item->parent() ) );
+			return retName;
+		}
+}
+
+
+void PropertyToolDialog::onPropertyTreeClicked()
+{
+	if( m_ViewerCore->hasImage() ) {
+		QTreeWidgetItem *item = m_Interface.propertyTree->currentItem();
+		if( item->columnCount() > 1 ) {
+			QString name = getItemName( item );
+			m_Interface.propertyName->setText( name );
+			m_Interface.propertyValue->setText( genericPrintPropertyValue( name.toStdString() ) );
+		}
      
     }
     
