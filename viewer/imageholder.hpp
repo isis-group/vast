@@ -131,7 +131,7 @@ public:
 	QVector<QRgb> colorMap;
 	util::fvector4 rowVec;
 	util::fvector4 columnVec;
-	util::fvector4 sliveVec;
+	util::fvector4 sliceVec;
 	std::string lut;
 	ImageType imageType;
 	InterpolationType interpolationType;
