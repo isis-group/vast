@@ -1,10 +1,20 @@
-vast (0.3.0beta-1) UNRELEASED; urgency=low
+vast (0.3.0~beta-1) UNRELEASED; urgency=low
 
+  [ ISIS Group (The friendly isis team) ]
   * fixed some bugs
   * add capability to visualize profiles of x,y and z
   * gui cosmetics 
 
- -- Michael Hanke <mih@debian.org>  Wed, 01 Feb 2012 13:15:26 +0100
+  [ Michael Hanke ]
+  * Various packaging improvements, including reworded package description.
+  * Added missing build-deps, modernized debian/control.
+  * Fixed typo in desktop file.
+  * Use policy compliant section name in Debian menu specification.
+  * Symlink HTML documentation into /usr/share/doc/vast/html
+  * Replace embedded javascript libs with symlinks to systemwide
+    versions, and added respective dependencies.
+
+ -- Michael Hanke <mih@debian.org>  Mon, 06 Feb 2012 12:24:18 +0100
 
 vast (0.2.6-0) UNRELEASED; urgency=low
 

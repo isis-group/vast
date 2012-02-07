@@ -1,9 +1,9 @@
 [Desktop Entry]
 Encoding=UTF-8
-GernericName=MRI/fMRI Image Viewer
-GernericName[de]=Betrachter fuer MRT-Daten
+GenericName=MRI/fMRI Image Viewer
+GenericName[de]=Betrachter fuer MRT-Daten
 Name=vast
-Exec=vast %F
+Exec=vast -in %F
 TryExec=vast
 Type=Application
 Terminal=false
