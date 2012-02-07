@@ -344,9 +344,7 @@ void ImageHolder::updateOrientation()
 	rowVec = getISISImage()->getPropertyAs<util::fvector4>("rowVec");
 	columnVec = getISISImage()->getPropertyAs<util::fvector4>("columnVec");
 	sliceVec = getISISImage()->getPropertyAs<util::fvector4>("sliceVec");
-	voxelSize = getISISImage()->getPropertyAs<util::fvector4>("voxelSize") + (getISISImage()->hasProperty("voxelGap") ? getISISImage()->getPropertyAs<util::fvector4>("voxelGap") : util::fvector4());
-	
-
+	voxelSize = getISISImage()->getPropertyAs<util::fvector4>("voxelSize") + ( getISISImage()->hasProperty("voxelGap") ? getISISImage()->getPropertyAs<util::fvector4>("voxelGap") : util::fvector4() );
 }
 
 void ImageHolder::checkVoxelCoords( util::ivector4 &vc )
