@@ -344,6 +344,7 @@ void ImageHolder::updateOrientation()
 	rowVec = getISISImage()->getPropertyAs<util::fvector4>("rowVec");
 	columnVec = getISISImage()->getPropertyAs<util::fvector4>("columnVec");
 	sliveVec = getISISImage()->getPropertyAs<util::fvector4>("sliveVec");
+	voxelSize = getISISImage()->getPropertyAs<util::fvector4>("voxelSize");
 
 }
 
