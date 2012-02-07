@@ -60,7 +60,7 @@ template<typename TYPE> struct fromString<util::vector4<TYPE> >{
 			unsigned short index = 0;
 			for( std::list<std::string>::const_iterator iter = elems.begin(); iter != elems.end(); iter++, index++ ) {
 				boost::regex e("^\\-?[[:digit:]]+\\.?[[:digit:]]*");
-				if( !iter->length() | !boost::regex_match( iter->c_str(),  e) ) {
+				if( !iter->length() || !boost::regex_match( iter->c_str(),  e) ) {
 					ok = false;
 				}
 				ret[index] = util::Value<std::string>(*iter).as<TYPE>();
