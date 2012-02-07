@@ -41,7 +41,10 @@ PropertyToolDialog::PropertyToolDialog(QWidget* parent, QViewerCore* core)
     m_Interface.tabWidget->setCurrentIndex(0);
     connect( m_ViewerCore, SIGNAL( emitUpdateScene()), this, SLOT( updateProperties()));
     connect( m_Interface.selection, SIGNAL( currentIndexChanged(int) ), this, SLOT( selectionChanged(int ) ) );
-    connect( m_Interface.propertyTree, SIGNAL( itemClicked(QTreeWidgetItem*,int)), this, SLOT(onPropertyTreeClicked(QTreeWidgetItem*,int)));
+    connect( m_Interface.propertyTree, SIGNAL( itemSelectionChanged()) , this, SLOT(onPropertyTreeClicked()));
+	connect( m_Interface.propertyTree, SIGNAL( itemClicked(QTreeWidgetItem*,int)), SLOT( onPropertyTreeClicked()));
+	connect( m_Interface.editButton, SIGNAL( clicked(bool)), this, SLOT( editRequested()));
+	connect( m_Interface.propertyTree, SIGNAL( doubleClicked(QModelIndex)), this, SLOT( editRequested()));
 }
 
 void PropertyToolDialog::showEvent(QShowEvent* )
@@ -126,10 +129,9 @@ void PropertyToolDialog::updateProperties()
         }
         buildUpTree(static_cast<util::PropertyMap&>( *isisImage) );
     }
-    
-    
     adjustSize();
     m_Interface.propertyTree->setColumnWidth(0, m_Interface.propertyTree->width() / 3);
+	adjustSize();
 }
 
 void PropertyToolDialog::selectionChanged(int select )
@@ -179,23 +181,106 @@ void TreePropMap::fillTreeWidget(QTreeWidget* treeWidget)
     walkTree(item, *this, true );
     
 }
-void PropertyToolDialog::onPropertyTreeClicked(QTreeWidgetItem* item, int /*column*/)
+
+QString PropertyToolDialog::getItemName ( QTreeWidgetItem* item )
 {
-    if( m_ViewerCore->hasImage() ) {
-        QString name = item->text( item->columnCount()-2 );
-        m_Interface.propertyName->setText( name );
-        switch ( m_ViewerCore->getCurrentImage()->getISISImage()->propertyValue( name.toStdString().c_str() )->getTypeID() ) {
-         case util::Value<uint8_t>::staticID:
-             m_Interface.propertyValue->setText( printPropertyValue<uint8_t>( name.toStdString() ) );
-             break;
-         case util::Value<util::fvector4>::staticID:
-             m_Interface.propertyValue->setText( printPropertyValue<util::fvector4>( name.toStdString() ) );
-             break;    
-        }
-     
+	QString retName;
+	retName.append( item->text( item->columnCount() > 1 ? item->columnCount() - 2 : 0 ) );
+	if( item->parent() ){
+		retName.prepend("/");
+		retName.prepend( getItemName( item->parent() ) );
+	}
+	return retName;
+}
+
+
+void PropertyToolDialog::onPropertyTreeClicked()
+{
+	if( m_ViewerCore->hasImage() ) {
+		QTreeWidgetItem *item = m_Interface.propertyTree->currentItem();
+		if( item->columnCount() > 1 ) {
+			QString name = getItemName( item );
+			m_Interface.propertyName->setText( name );
+			m_Interface.propertyValue->setText( static_cast<util::PropertyMap&>( *m_ViewerCore->getCurrentImage()->getISISImage() ).propertyValue(name.toStdString().c_str() ).toString().c_str() );
+		}
     }
     
 }
+
+void PropertyToolDialog::editRequested()
+{
+	const QString propName = m_Interface.propertyName->text();
+	const QString propValue = m_Interface.propertyValue->text();
+	if( !propName.isEmpty() ) {
+		bool ok;
+    	QString text = QInputDialog::getText(this, tr("Edit property"),
+											propName, QLineEdit::Normal,
+											propValue, &ok);
+		if( ok && !text.isEmpty() ) {
+			const util::PropertyMap::PropPath propNameStr = propName.toStdString().c_str();
+			util::PropertyMap &propMap = static_cast<util::PropertyMap&>( *m_ViewerCore->getCurrentImage()->getISISImage() );
+			switch( propMap.propertyValue( propNameStr )->getTypeID() ) {
+				case util::Value<std::string>::staticID:
+					checkAndSet<std::string>( propMap, propNameStr, text );
+					break;
+				case util::Value<int8_t>::staticID:
+					checkAndSet<int8_t>( propMap, propNameStr, text );
+					break;
+				case util::Value<uint8_t>::staticID:
+					checkAndSet<uint8_t>( propMap, propNameStr, text );
+					break;
+				case util::Value<int16_t>::staticID:
+					checkAndSet<int16_t>( propMap, propNameStr, text );
+					break;
+				case util::Value<uint16_t>::staticID:
+					checkAndSet<uint16_t>( propMap, propNameStr, text );
+					break;
+				case util::Value<int32_t>::staticID:
+					checkAndSet<int32_t>( propMap, propNameStr, text );
+					break;
+				case util::Value<uint32_t>::staticID:
+					checkAndSet<uint32_t>( propMap, propNameStr, text );
+					break;
+				case util::Value<int64_t>::staticID:
+					checkAndSet<int64_t>( propMap, propNameStr, text );
+					break;
+				case util::Value<uint64_t>::staticID:
+					checkAndSet<uint64_t>( propMap, propNameStr, text );
+					break;
+				case util::Value<float>::staticID:
+					checkAndSet<float>( propMap, propNameStr, text );
+					break;
+				case util::Value<double>::staticID:
+					checkAndSet<double>( propMap, propNameStr, text );
+					break;
+				case util::Value<util::fvector4>::staticID:
+					checkAndSet<util::fvector4>( propMap, propNameStr, text );
+					break;
+				case util::Value<util::dvector4>::staticID:
+					checkAndSet<util::dvector4>( propMap, propNameStr, text );
+					break;
+				case util::Value<util::ivector4>::staticID:
+					checkAndSet<util::ivector4>( propMap, propNameStr, text );
+					break;
+					
+				
+				
+			}
+			updateProperties();
+			m_ViewerCore->getCurrentImage()->updateOrientation();
+			m_ViewerCore->updateScene();
+			m_ViewerCore->getUICore()->refreshUI();
+			std::stringstream ss;
+			ss << propName.toStdString() << " changed to " << text.toStdString();
+			m_ViewerCore->getCurrentImage()->addChangedAttribute(ss.str());
+			
+		}
+
+		
+	}
+		
+}
+
 
 
 }}}

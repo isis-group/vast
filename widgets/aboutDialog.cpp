@@ -59,9 +59,11 @@ void isis::viewer::widget::AboutDialog::showEvent(QShowEvent* )
 {
     m_Interface.labelCopyright->setText( m_ViewerCore->getOptionMap()->getPropertyAs<std::string>("copyright").c_str() );
     m_Interface.labelVersion->setText( m_ViewerCore->getVersion().c_str() );
+	m_Interface.authorsList->clear();
     BOOST_FOREACH( AboutDialog::AuthorMapType::const_reference author, m_authorMap ) {
         m_Interface.authorsList->addItem( author.first.c_str() );
     }
+    m_Interface.labelISISVersion->setText( util::Application::getCoreVersion().c_str() );
 }
 
 void isis::viewer::widget::AboutDialog::onAuthorClicked ( QString author)
