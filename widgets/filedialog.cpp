@@ -50,7 +50,7 @@ isis::viewer::widget::FileDialog::FileDialog( QWidget *parent, QViewerCore *core
 	fileFormats << "Image files (" << getFileFormatsAsString( isis::image_io::FileFormat::read_only, std::string( "*." ) ) << ")";
 	m_FileDialog.setNameFilter( fileFormats.str().c_str() );
 	m_Interface.typeComboBox->addItem( "structural image" );
-	m_Interface.typeComboBox->addItem( "zmap" );
+	m_Interface.typeComboBox->addItem( "statistical image" );
 	connect( m_Interface.browseButton, SIGNAL( clicked() ), this, SLOT( browse() ) );
 	connect( m_Interface.fileDirEdit, SIGNAL( editTextChanged( QString ) ), this, SLOT( parsePath() ) );
 	connect( m_Interface.advancedOptionsCheck, SIGNAL( clicked( bool ) ), this, SLOT( advancedChecked( bool ) ) );

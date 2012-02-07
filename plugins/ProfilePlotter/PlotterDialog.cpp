@@ -167,42 +167,43 @@ void isis::viewer::plugin::PlotterDialog::fillProfile ( boost::shared_ptr< isis:
 		} else {
 			xValues.push_back( factor * i );
 		}
-		switch( image->getISISImage()->getChunk( _coords[0], _coords[1], _coords[2], _coords[3] ).getTypeID() ) {
-		case ValuePtr<bool>::staticID:
-			fillVector<bool>( intensityValues, _coords, image );
-			break;
-		case ValuePtr<int8_t>::staticID:
-			fillVector<int8_t>( intensityValues, _coords, image );
-			break;
-		case ValuePtr<uint8_t>::staticID:
-			fillVector<uint8_t>( intensityValues, _coords, image );
-			break;
-		case ValuePtr<int16_t>::staticID:
-			fillVector<int16_t>( intensityValues, _coords, image );
-			break;
-		case ValuePtr<uint16_t>::staticID:
-			fillVector<uint16_t>( intensityValues, _coords, image );
-			break;
-		case ValuePtr<int32_t>::staticID:
-			fillVector<int32_t>( intensityValues, _coords, image );
-			break;
-		case ValuePtr<uint32_t>::staticID:
-			fillVector<uint32_t>( intensityValues, _coords, image );
-			break;
-		case ValuePtr<int64_t>::staticID:
-			fillVector<int64_t>( intensityValues, _coords, image );
-			break;
-		case ValuePtr<uint64_t>::staticID:
-			fillVector<uint64_t>( intensityValues, _coords, image );
-			break;
-		case ValuePtr<float>::staticID:
-			fillVector<float>( intensityValues, _coords, image );
-			break;
-		case ValuePtr<double>::staticID:
-			fillVector<double>( intensityValues, _coords, image );
-			break;
-		}
 	}
+	switch( image->getISISImage()->getMajorTypeID() ) {
+	case ValuePtr<bool>::staticID:
+		fillVector<bool>( intensityValues, _coords, image, axis );
+		break;
+	case ValuePtr<int8_t>::staticID:
+		fillVector<int8_t>( intensityValues, _coords, image, axis );
+		break;
+	case ValuePtr<uint8_t>::staticID:
+		fillVector<uint8_t>( intensityValues, _coords, image, axis );
+		break;
+	case ValuePtr<int16_t>::staticID:
+		fillVector<int16_t>( intensityValues, _coords, image, axis );
+		break;
+	case ValuePtr<uint16_t>::staticID:
+		fillVector<uint16_t>( intensityValues, _coords, image, axis );
+		break;
+	case ValuePtr<int32_t>::staticID:
+		fillVector<int32_t>( intensityValues, _coords, image, axis );
+		break;
+	case ValuePtr<uint32_t>::staticID:
+		fillVector<uint32_t>( intensityValues, _coords, image, axis );
+		break;
+	case ValuePtr<int64_t>::staticID:
+		fillVector<int64_t>( intensityValues, _coords, image, axis);
+		break;
+	case ValuePtr<uint64_t>::staticID:
+		fillVector<uint64_t>( intensityValues, _coords, image, axis );
+		break;
+	case ValuePtr<float>::staticID:
+		fillVector<float>( intensityValues, _coords, image, axis );
+		break;
+	case ValuePtr<double>::staticID:
+		fillVector<double>( intensityValues, _coords, image, axis );
+		break;
+	}
+	
 	curve->setData( xValues, intensityValues );
 
 }
@@ -227,7 +228,6 @@ void isis::viewer::plugin::PlotterDialog::fillSpectrum ( boost::shared_ptr< isis
 		_coords[axis] = i;
 		in[i] = image->getISISImage()->voxel<int16_t>(_coords[0], _coords[1], _coords[2], _coords[3] );
 	}
-	
 	fftw_execute(plan); 
 	QVector<double> yVec(nc + 2);
 	QVector<double> xVec(nc + 2);

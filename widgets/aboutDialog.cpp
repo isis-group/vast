@@ -64,7 +64,7 @@ void isis::viewer::widget::AboutDialog::showEvent(QShowEvent* )
         m_Interface.authorsList->addItem( author.first.c_str() );
     }
     m_Interface.labelISISVersion->setText( util::Application::getCoreVersion().c_str() );
-	m_Interface.authorsList->setCurrentIndex(0);
+	m_Interface.authorsList->setCurrentRow(0);
 }
 
 void isis::viewer::widget::AboutDialog::onAuthorClicked ( QString author)

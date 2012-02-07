@@ -40,10 +40,13 @@ public:
 
 public Q_SLOTS:
 	void itemClicked( QListWidgetItem * );
+	void itemChanged( QListWidgetItem * );
 	void itemSelected( QListWidgetItem * );
 	void closeImage();
 	void distributeImages();
 	void closeAllImages();
+	void toggleStatsType();
+	void toggleStructsType();
 
 private:
 	QViewerCore *m_ViewerCore;

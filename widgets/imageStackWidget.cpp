@@ -50,10 +50,15 @@ ImageStack::ImageStack( QWidget *parent, ImageStackWidget *widget )
 
 void ImageStack::contextMenuEvent( QContextMenuEvent *event )
 {
+	
 	QMenu menu( this );
 	menu.addAction( m_Widget->m_Interface.actionClose_image );
-	menu.addAction( m_Widget->m_Interface.actionDistribute_images );
+	QMenu *imageTypeMenu = new QMenu( tr("Image type"), this );
+	imageTypeMenu->addAction( m_Widget->m_Interface.actionStructural_image );
+	imageTypeMenu->addAction( m_Widget->m_Interface.actionImage_type_stats );
+	menu.addMenu( imageTypeMenu );
 	menu.addSeparator();
+	menu.addAction( m_Widget->m_Interface.actionDistribute_images );
 	menu.addAction( m_Widget->m_Interface.actionClose_all_images );
 	menu.exec( event->globalPos() );
 }
@@ -89,12 +94,43 @@ ImageStackWidget::ImageStackWidget( QWidget *parent, QViewerCore *core )
 
 	m_ImageStack->setEditTriggers( QAbstractItemView::NoEditTriggers );
 	connect( m_ImageStack, SIGNAL( itemActivated( QListWidgetItem * ) ), this, SLOT( itemSelected( QListWidgetItem * ) ) );
-	connect( m_ImageStack, SIGNAL( itemChanged( QListWidgetItem * ) ), this, SLOT( itemClicked( QListWidgetItem * ) ) );
+	connect( m_ImageStack, SIGNAL( itemChanged( QListWidgetItem * ) ), this, SLOT( itemChanged( QListWidgetItem * ) ) );
+	connect( m_ImageStack, SIGNAL( itemPressed(QListWidgetItem*)), this, SLOT( itemClicked(QListWidgetItem*)));
 	connect( m_Interface.actionClose_image, SIGNAL( triggered() ), this, SLOT( closeImage() ) );
 	connect( m_Interface.actionDistribute_images, SIGNAL( triggered() ), this, SLOT( distributeImages() ) );
 	connect( m_Interface.actionClose_all_images, SIGNAL( triggered() ), this, SLOT( closeAllImages() ) );
+	connect( m_Interface.actionImage_type_stats, SIGNAL( triggered(bool)), this, SLOT(toggleStatsType()));
+	connect( m_Interface.actionStructural_image, SIGNAL( triggered(bool)), this, SLOT( toggleStructsType()));
 
 }
+
+void ImageStackWidget::toggleStatsType()
+{
+	m_Interface.actionStructural_image->setChecked( false );
+	m_Interface.actionImage_type_stats->setChecked( true );
+	boost::shared_ptr< ImageHolder> image = m_ViewerCore->getDataContainer().at( m_ImageStack->currentItem()->text().toStdString() );
+	image->imageType = ImageHolder::z_map;
+	image->lut = m_ViewerCore->getOptionMap()->getPropertyAs<std::string>("LutZMap");
+	image->updateColorMap();
+	m_ViewerCore->setMode( ViewerCoreBase::zmap );
+	m_ViewerCore->getUICore()->refreshUI();
+	m_ViewerCore->updateScene();
+}
+
+void ImageStackWidget::toggleStructsType()
+{
+	m_Interface.actionStructural_image->setChecked( true );
+	m_Interface.actionImage_type_stats->setChecked( false );
+	boost::shared_ptr< ImageHolder> image = m_ViewerCore->getDataContainer().at( m_ImageStack->currentItem()->text().toStdString() );
+	image->imageType = ImageHolder::structural_image;
+	image->lut = m_ViewerCore->getOptionMap()->getPropertyAs<std::string>("lutStructural");
+	image->updateColorMap();
+	m_ViewerCore->setMode( ViewerCoreBase::standard );
+	m_ViewerCore->getUICore()->refreshUI();
+	m_ViewerCore->updateScene();
+}
+
+
 
 void ImageStackWidget::synchronize()
 {
@@ -123,18 +159,33 @@ void ImageStackWidget::synchronize()
 	}
 
 }
-
-
-void ImageStackWidget::itemClicked( QListWidgetItem *item )
+void ImageStackWidget::itemClicked ( QListWidgetItem* item)
 {
-	if( item->checkState() == Qt::Checked ) {
-		m_ViewerCore->getDataContainer().at( item->text().toStdString() )->isVisible = true ;
-	} else {
-		m_ViewerCore->getDataContainer().at( item->text().toStdString() )->isVisible = false ;
+	if( m_ViewerCore->hasImage() ) {
+		boost::shared_ptr< ImageHolder > image = m_ViewerCore->getDataContainer().at( item->text().toStdString() );
+		if( image->imageType == ImageHolder::z_map ) {
+			m_Interface.actionImage_type_stats->setChecked(true);
+			m_Interface.actionStructural_image->setChecked(false);
+		} else {
+			m_Interface.actionImage_type_stats->setChecked(false);
+			m_Interface.actionStructural_image->setChecked(true);
+		}
 	}
+}
 
-	m_ViewerCore->getUICore()->refreshUI();
-	m_ViewerCore->updateScene();
+
+void ImageStackWidget::itemChanged( QListWidgetItem *item )
+{
+	if( m_ViewerCore->hasImage() ) {
+		boost::shared_ptr< ImageHolder > image = m_ViewerCore->getDataContainer().at( item->text().toStdString() );
+		if( item->checkState() == Qt::Checked ) {
+			image->isVisible = true ;
+		} else {
+			image->isVisible = false ;
+		}
+		m_ViewerCore->getUICore()->refreshUI();
+		m_ViewerCore->updateScene();
+	}
 
 }
 

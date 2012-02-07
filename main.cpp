@@ -84,7 +84,11 @@ int main( int argc, char *argv[] )
 	app.parameters["in"].setDescription( "The input image file list." );
 	app.parameters["zmap"] = util::slist();
 	app.parameters["zmap"].needed() = false;
-	app.parameters["zmap"].setDescription( "The input image file list is interpreted as zmaps. " );
+	app.parameters["zmap"].setDescription( "The input image file list is interpreted as statistical maps. " );
+	//alias to zmap
+	app.parameters["stats"] = util::slist();
+	app.parameters["stats"].needed() = false;
+	app.parameters["stats"].setDescription( "The input image file list is interpreted as statistical maps. " );
 	app.parameters["rf"] = std::string();
 	app.parameters["rf"].needed() = false;
 	app.parameters["rf"].setDescription( "Override automatic detection of file suffix for reading with given value" );
@@ -115,7 +119,11 @@ int main( int argc, char *argv[] )
 	core->getUICore()->reloadPluginsToGUI();
 
 	util::slist fileList = app.parameters["in"];
-	const util::slist zmapFileList = app.parameters["zmap"];
+	const bool zmapIsSet = app.parameters["zmap"].isSet() || app.parameters["stats"].isSet();
+	util::slist zmapFileList = app.parameters["zmap"];
+	if( !zmapFileList.size() ) {
+		zmapFileList = app.parameters["stats"];	
+	}
 	std::list< data::Image > imgList;
 	std::list< data::Image > zImgList;
         
@@ -168,14 +176,14 @@ int main( int argc, char *argv[] )
 
 	typedef std::list< boost::shared_ptr<ImageHolder > >::const_reference ImageListRef;
 
-	if( app.parameters["zmap"].isSet() ) {
+	if( zmapIsSet ) {
 		core->setMode( ViewerCoreBase::zmap );
 	}  else {
 		core->setMode( ViewerCoreBase::standard );
 	}
 
 	//particular distribution of images in widgets
-	if( app.parameters["zmap"].isSet() && zImgList.size() > 1 ) {
+	if( zmapIsSet && zImgList.size() > 1 ) {
 		core->getUICore()->setViewWidgetArrangement( UICore::InRow );
 		BOOST_FOREACH( ImageListRef image, core->addImageList( zImgList, ImageHolder::z_map ) ) {
 			checkForCaCp( image );
@@ -213,7 +221,7 @@ int main( int argc, char *argv[] )
 		}
 		core->getUICore()->setOptionPosition( isis::viewer::UICore::bottom );
 		core->getUICore()->getMainWindow()->startWidget->close();
-	} else if ( app.parameters["in"].isSet() || app.parameters["zmap"].isSet() ) {
+	} else if ( app.parameters["in"].isSet() || zmapIsSet ) {
 		core->getUICore()->setViewWidgetArrangement( UICore::InRow );
 		UICore::ViewWidgetEnsembleType ensemble = core->getUICore()->createViewWidgetEnsemble( "" );
 		BOOST_FOREACH( ImageListRef image, core->addImageList( imgList, ImageHolder::structural_image ) ) {

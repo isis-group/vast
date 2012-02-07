@@ -158,6 +158,8 @@ void VoxelInformationWidget::synchronize()
 			m_Interface.colormapGrid->addWidget( m_Interface.labelMin, 0, 0 );
 			m_Interface.colormapGrid->addWidget( m_Interface.upperHalfColormapLabel, 0, 1 );
 			m_Interface.colormapGrid->addWidget( m_Interface.labelMax, 0, 2 );
+			m_Interface.labelMin->setVisible( true );
+			m_Interface.labelMax->setVisible( true );
 			m_Interface.lowerHalfColormapLabel->setVisible( false );
 			m_Interface.lowerThresholdLabel->setVisible( false );
 			m_Interface.upperThresholdLabel->setVisible( false );
