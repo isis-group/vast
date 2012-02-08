@@ -103,6 +103,7 @@ void isis::viewer::plugin::CorrelationPlotterDialog::showEvent( QShowEvent * )
 			QMessageBox msgBox;
 			msgBox.setText( "Can not find any functional dataset. Will not calculate correlation map!" );
 			msgBox.exec();
+			setVisible(false);
 			return;
 		} else {
 			if ( !m_CurrentCorrelationMap ) {
@@ -112,7 +113,6 @@ void isis::viewer::plugin::CorrelationPlotterDialog::showEvent( QShowEvent * )
 
 					for( unsigned short i = 0; i < 3; i++ ) {
 						iVector = ensemble[i].widgetImplementation->getImageVector();
-
 						if( std::find( iVector.begin(), iVector.end(), m_CurrentFunctionalImage ) != iVector.end() ) {
 							m_ViewerCore->attachImageToWidget( m_CurrentCorrelationMap, ensemble[i].widgetImplementation ) ;
 						}

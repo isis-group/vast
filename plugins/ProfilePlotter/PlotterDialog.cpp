@@ -59,6 +59,10 @@ isis::viewer::plugin::PlotterDialog::PlotterDialog ( QWidget* parent, isis::view
 	setMinimumHeight( 200 );
 	setMaximumHeight( 500 );
 
+	//TODO
+	ui.spectrumRadio->setEnabled(false);
+	ui.spectrumRadio->setToolTip(tr("Not yet supported."));
+
 }
 
 void isis::viewer::plugin::PlotterDialog::showEvent ( QShowEvent* )

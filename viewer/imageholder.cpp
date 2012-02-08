@@ -39,6 +39,16 @@ ImageHolder::ImageHolder()
 	  m_ReservedValue( 0 )
 {}
 
+boost::shared_ptr< const void > ImageHolder::getRawAdress ( size_t timestep ) const
+{
+	if( isRGB ) {
+		return m_ChunkVector.operator[](timestep).getValuePtr<InternalImageColorType>().getRawAddress();
+	} else {
+		return m_ChunkVector.operator[](timestep).getValuePtr<InternalImageType>().getRawAddress();
+	}
+}
+
+
 boost::numeric::ublas::matrix< double > ImageHolder::getNormalizedImageOrientation( bool transposed ) const
 {
 	boost::numeric::ublas::matrix<double> retMatrix = boost::numeric::ublas::zero_matrix<double>( 4, 4 );
@@ -170,64 +180,18 @@ bool ImageHolder::setImage( const data::Image &image, const ImageType &_imageTyp
     const bool reserveZero = m_ZeroIsReserved && !isRGB && imageType == z_map;
 	if( !isRGB ) {
 		minMax = image.getMinMax();
-		copyImageToVector<InternalImageType>( image, reserveZero );
-	} else {
-		copyImageToVector<InternalImageColorType>( image, reserveZero );
 	}
+	synchronize(reserveZero);
 	
-	
-	LOG_IF( m_ImageVector.empty(), Dev, error ) << "Size of image vector is 0!";
+	LOG_IF( m_ChunkVector.empty(), Dev, error ) << "Size of chunk vector is 0!";
 
-	if( m_ImageVector.size() != m_ImageSize[3] ) {
+	if( m_ChunkVector.size() != m_ImageSize[3] ) {
 		LOG( Dev, error ) << "The number of timesteps (" << m_ImageSize[3]
-							  << ") does not coincide with the number of volumes ("  << m_ImageVector.size() << ").";
+							  << ") does not coincide with the number of volumes ("  << m_ChunkVector.size() << ").";
 		return false;
 	}
 
-	//create the chunk vector
-	BOOST_FOREACH( std::vector< ImagePointerType >::const_reference pointerRef, m_ImageVector ) {
-		m_ChunkVector.push_back( data::Chunk(  pointerRef, m_ImageSize[0], m_ImageSize[1], m_ImageSize[2] ) );
-	}
-
-	// if m_ZeroIsReserved is set we reserve a value (m_ReservedValue) in the internal image that indicates the true zero value in the origin image
-	if( reserveZero ) {
-		switch ( majorTypeID ) {
-		case data::ValuePtr<bool>::staticID:
-			_setTrueZero<bool>( image );
-			break;
-		case data::ValuePtr<int8_t>::staticID:
-			_setTrueZero<int8_t>( image );
-			break;
-		case data::ValuePtr<uint8_t>::staticID:
-			_setTrueZero<uint8_t>( image );
-			break;
-		case data::ValuePtr<int16_t>::staticID:
-			_setTrueZero<int16_t>( image );
-			break;
-		case data::ValuePtr<uint16_t>::staticID:
-			_setTrueZero<uint16_t>( image );
-			break;
-		case data::ValuePtr<int32_t>::staticID:
-			_setTrueZero<int32_t>( image );
-			break;
-		case data::ValuePtr<uint32_t>::staticID:
-			_setTrueZero<uint32_t>( image );
-			break;
-		case data::ValuePtr<int64_t>::staticID:
-			_setTrueZero<int64_t>( image );
-			break;
-		case data::ValuePtr<uint64_t>::staticID:
-			_setTrueZero<uint64_t>( image );
-			break;
-		case data::ValuePtr<float>::staticID:
-			_setTrueZero<float>( image );
-			break;
-		case data::ValuePtr<double>::staticID:
-			_setTrueZero<double>( image );
-			break;
-		}
-	}
-	LOG( Dev, verbose_info ) << "Spliced image to " << m_ImageVector.size() << " volumes.";
+	LOG( Dev, verbose_info ) << "Spliced image to " << m_ChunkVector.size() << " volumes.";
 
 	//image seems to be ok...i guess
 
@@ -315,15 +279,12 @@ void ImageHolder::updateHistogram()
 	for( unsigned short t = 0; t < getImageSize()[3]; t++ ) {
 		histogramVector[t] = ( double * ) calloc( extent + 1, sizeof( double ) ) ;
 		histogramVectorWOZero[t] = ( double * ) calloc( extent, sizeof( double ) );
-		const InternalImageType *dataPtr = static_cast<InternalImageType *>( getImageVector()[t]->getRawAddress().get() );
-
+		const InternalImageType *dataPtr = boost::shared_static_cast<const InternalImageType>( getRawAdress(t) ).get();
 		//create the histogram
-		//      #pragma omp parallel for
 		for( size_t i = 0; i < volume; i++ ) {
 			histogramVector[t][dataPtr[i]]++;
 		}
 
-		//      #pragma omp parallel for
 		for( size_t i = 0; i < volume; i++ ) {
 			if( dataPtr[i] > 0 ) {
 				histogramVectorWOZero[t][dataPtr[i] - 1]++;
@@ -433,6 +394,54 @@ void ImageHolder::setVoxel ( const size_t& first, const size_t& second, const si
 				LOG( Runtime, error ) << "Tried to set voxel of chunk with type " << chunk.getTypeName() << " to double";
 				LOG( Dev, error ) << "ImageHolder::setVoxel with type " << chunk.getTypeName();
 
+		}
+	}
+}
+
+void ImageHolder::synchronize ( bool isReserved )
+{
+	m_ZeroIsReserved = isReserved;
+	if( isRGB ) {
+		copyImageToVector<InternalImageColorType>( *getISISImage(), isReserved );
+	} else {
+		copyImageToVector<InternalImageType>( *getISISImage(), isReserved );
+	}
+
+	if( m_ZeroIsReserved ) {
+		switch ( majorTypeID ) {
+		case data::ValuePtr<bool>::staticID:
+			_setTrueZero<bool>( *getISISImage() );
+			break;
+		case data::ValuePtr<int8_t>::staticID:
+			_setTrueZero<int8_t>( *getISISImage() );
+			break;
+		case data::ValuePtr<uint8_t>::staticID:
+			_setTrueZero<uint8_t>( *getISISImage() );
+			break;
+		case data::ValuePtr<int16_t>::staticID:
+			_setTrueZero<int16_t>( *getISISImage() );
+			break;
+		case data::ValuePtr<uint16_t>::staticID:
+			_setTrueZero<uint16_t>( *getISISImage() );
+			break;
+		case data::ValuePtr<int32_t>::staticID:
+			_setTrueZero<int32_t>( *getISISImage() );
+			break;
+		case data::ValuePtr<uint32_t>::staticID:
+			_setTrueZero<uint32_t>( *getISISImage() );
+			break;
+		case data::ValuePtr<int64_t>::staticID:
+			_setTrueZero<int64_t>( *getISISImage() );
+			break;
+		case data::ValuePtr<uint64_t>::staticID:
+			_setTrueZero<uint64_t>( *getISISImage() );
+			break;
+		case data::ValuePtr<float>::staticID:
+			_setTrueZero<float>( *getISISImage() );
+			break;
+		case data::ValuePtr<double>::staticID:
+			_setTrueZero<double>( *getISISImage() );
+			break;
 		}
 	}
 }

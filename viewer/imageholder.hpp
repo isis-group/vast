@@ -70,8 +70,7 @@ public:
 
 	size_t getID() const { return m_ID; }
 	void setID( size_t id ) { m_ID = id; }
-
-	std::vector< ImagePointerType > getImageVector() const { return m_ImageVector; }
+	
 	const std::vector< data::Chunk > &getChunkVector() const { return m_ChunkVector; }
 	std::vector< data::Chunk > &getChunkVector() { return m_ChunkVector; }
 	util::PropertyMap &getPropMap() { return m_PropMap; }
@@ -83,10 +82,8 @@ public:
 	void addChangedAttribute( const std::string &attribute );
 	bool removeChangedAttribute( const std::string &attribute );
 
-	boost::weak_ptr<void>
-	getImageWeakPointer( size_t timestep = 0 ) const {
-		return getImageVector()[timestep]->getRawAddress();
-	}
+	boost::shared_ptr<const void>
+	getRawAdress( size_t timestep = 0 ) const;
 
 	util::slist getFileNames() const { return m_Filenames; }
 
@@ -94,7 +91,7 @@ public:
 
 	void checkVoxelCoords( util::ivector4 &voxelCoords );
 
-	void setZeroIsReserved( bool isReserved ) { m_ZeroIsReserved = isReserved; }
+	void synchronize( bool isReserved );
 	double getInternalExtent()  const;
 
 	void updateColorMap();
@@ -161,7 +158,6 @@ private:
 	size_t m_ID;
 	std::pair<double, double> m_OptimalScalingPair;
 
-	std::vector< ImagePointerType > m_ImageVector;
 	std::vector< data::Chunk > m_ChunkVector;
 
 	std::list<WidgetInterface *> m_WidgetList;
@@ -194,9 +190,12 @@ private:
 		LOG( Dev, info ) << "internMinMax: " << internMinMax.first->as<double>() << " : " << internMinMax.second->as<double>();
 		//splice the image in its volumes -> we get a vector of t volumes
 		if( m_ImageSize[3] > 1 ) { //splicing is only necessary if we got more than 1 timestep
-			m_ImageVector = imagePtr.splice( m_ImageSize[0] * m_ImageSize[1] * m_ImageSize[2] );
+			std::vector< data::ValuePtrReference > refVec = imagePtr.splice( m_ImageSize[0] * m_ImageSize[1] * m_ImageSize[2] );
+			for ( std::vector< data::ValuePtrReference >::const_iterator iter = refVec.begin(); iter != refVec.end(); iter++ ) {
+				m_ChunkVector.push_back( data::Chunk(*iter, m_ImageSize[0], m_ImageSize[1], m_ImageSize[2] ) );
+			}
 		} else {
-			m_ImageVector.push_back( imagePtr );
+			m_ChunkVector.push_back( data::Chunk( imagePtr, m_ImageSize[0], m_ImageSize[1], m_ImageSize[2] ) );
 		}
 	}
 
