@@ -106,12 +106,12 @@ public Q_SLOTS:
 	void toggleAxialView( bool );
 	void toggleCoronalView( bool );
 	void updateRecentOpenList();
-    void openRecentPath( QString );
+	void openRecentPath( QString );
 	void toggleLoadingIcon( bool start, const QString &text = QString() );
 
 private:
 
-	
+
 	Ui::vastMainWindow m_Interface;
 	QViewerCore *m_ViewerCore;
 
@@ -124,8 +124,8 @@ private:
 	QAction *m_ActionReset_Scaling;
 	QAction *m_ActionAuto_Scaling;
 
-	QLabel * m_StatusMovieLabel;
-	QMovie * m_StatusMovie;
+	QLabel *m_StatusMovieLabel;
+	QMovie *m_StatusMovie;
 
 
 };

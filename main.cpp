@@ -50,8 +50,8 @@ int main( int argc, char *argv[] )
 
 	using namespace isis;
 	using namespace viewer;
-    signal( SIGSEGV, error::sigsegv);
-	
+	signal( SIGSEGV, error::sigsegv );
+
 	boost::shared_ptr<qt4::QDefaultMessagePrint> logging_hanlder_runtime ( new qt4::QDefaultMessagePrint( verbose_info ) );
 	boost::shared_ptr<qt4::QDefaultMessagePrint> logging_hanlder_dev ( new qt4::QDefaultMessagePrint( verbose_info ) );
 	util::_internal::Log<viewer::Dev>::setHandler( logging_hanlder_dev );
@@ -61,21 +61,21 @@ int main( int argc, char *argv[] )
 	std::string orgName = "cbs.mpg.de";
 
 #if QT_VERSION >= 0x040500
-	
+
 	const char *graphics_system = getenv( "VAST_GRAPHICS_SYSTEM" );
-    LOG(Dev, info) << "QT_VERSION >= 0x040500";
-	
+	LOG( Dev, info ) << "QT_VERSION >= 0x040500";
+
 	if( graphics_system && ( !strcmp( graphics_system, "raster" ) || !strcmp( graphics_system, "opengl" ) || !strcmp( graphics_system, "native" ) ) ) {
 		QApplication::setGraphicsSystem( graphics_system );
-		LOG(Dev, info) << "Using graphics_system=\"" << std::string( graphics_system ) << "\"";
+		LOG( Dev, info ) << "Using graphics_system=\"" << std::string( graphics_system ) << "\"";
 	} else {
 		QApplication::setGraphicsSystem( "raster" );
-		LOG(Dev, info) << "Using graphics_system=\"raster\"";
+		LOG( Dev, info ) << "Using graphics_system=\"raster\"";
 	}
 
 #else
 	std::cout << "Warning! Your Qt version is below Qt4.5. Not able to set graghics system." << std::endl;
-	LOG(Dev, warning) << "QT_VERSION < 0x040500";
+	LOG( Dev, warning ) << "QT_VERSION < 0x040500";
 #endif
 
 	qt4::IOQtApplication app( appName.c_str(), false, false );
@@ -121,12 +121,14 @@ int main( int argc, char *argv[] )
 	util::slist fileList = app.parameters["in"];
 	const bool zmapIsSet = app.parameters["zmap"].isSet() || app.parameters["stats"].isSet();
 	util::slist zmapFileList = app.parameters["zmap"];
+
 	if( !zmapFileList.size() ) {
-		zmapFileList = app.parameters["stats"];	
+		zmapFileList = app.parameters["stats"];
 	}
+
 	std::list< data::Image > imgList;
 	std::list< data::Image > zImgList;
-        
+
 	if( fileList.size() || zmapFileList.size() ) {
 		//load the anatomical images
 		BOOST_FOREACH ( util::slist::const_reference fileName, fileList ) {
@@ -135,12 +137,12 @@ int main( int argc, char *argv[] )
 			fileLoad << "Loading \"" << boost::filesystem::path( fileName ).leaf() << "\" ...";
 			core->getUICore()->getMainWindow()->toggleLoadingIcon( true, fileLoad.str().c_str() );
 
-           if( boost::filesystem::extension( boost::filesystem::path( fileName ) ) == std::string( ".v" ) && core->getOptionMap()->getPropertyAs<bool>("visualizeOnlyFirstVista") ) {
+			if( boost::filesystem::extension( boost::filesystem::path( fileName ) ) == std::string( ".v" ) && core->getOptionMap()->getPropertyAs<bool>( "visualizeOnlyFirstVista" ) ) {
 				if( !dialect.size() ) {
 					dialect = std::string( "onlyfirst" );
 				}
 			}
-			
+
 			std::list< data::Image > tmpList = data::IOFactory::load( fileName, app.parameters["rf"].toString(), dialect );
 			BOOST_FOREACH( std::list< data::Image >::reference imageRef, tmpList ) {
 				imgList.push_back( imageRef );
@@ -152,14 +154,14 @@ int main( int argc, char *argv[] )
 			std::string dialect = app.parameters["rdialect"].toString();
 			std::stringstream fileLoad;
 			fileLoad << "Loading \"" << boost::filesystem::path( fileName ).leaf() << "\" ...";
-			core->getUICore()->getMainWindow()->toggleLoadingIcon(true, fileLoad.str().c_str() );
+			core->getUICore()->getMainWindow()->toggleLoadingIcon( true, fileLoad.str().c_str() );
 
-           if( boost::filesystem::extension( boost::filesystem::path( fileName ) ) == std::string( ".v" ) && core->getOptionMap()->getPropertyAs<bool>("visualizeOnlyFirstVista") ) {
+			if( boost::filesystem::extension( boost::filesystem::path( fileName ) ) == std::string( ".v" ) && core->getOptionMap()->getPropertyAs<bool>( "visualizeOnlyFirstVista" ) ) {
 				if( !dialect.size() ) {
 					dialect = std::string( "onlyfirst" );
 				}
 			}
-			
+
 			std::list< data::Image > tmpList = data::IOFactory::load( fileName, app.parameters["rf"].toString(), dialect );
 			BOOST_FOREACH( std::list< data::Image >::reference imageRef, tmpList ) {
 				zImgList.push_back( imageRef );
@@ -168,7 +170,7 @@ int main( int argc, char *argv[] )
 		}
 	} else if( core->getOptionMap()->getPropertyAs<bool>( "showStartWidget" ) ) {
 		core->getUICore()->getMainWindow()->startWidget->show();
-	} 
+	}
 
 	//*****************************************************************************************
 	//distribution of images
@@ -188,9 +190,9 @@ int main( int argc, char *argv[] )
 		BOOST_FOREACH( ImageListRef image, core->addImageList( zImgList, ImageHolder::z_map ) ) {
 			checkForCaCp( image );
 			core->getRecentFiles().insertSave( _internal::FileInformation( image->getFileNames().front(),
-																			app.parameters["rdialect"].toString(),
-																			app.parameters["rf"].toString(),
-																			image->imageType) );
+											   app.parameters["rdialect"].toString(),
+											   app.parameters["rf"].toString(),
+											   image->imageType ) );
 			UICore::ViewWidgetEnsembleType ensemble = core->getUICore()->createViewWidgetEnsemble( "", image );
 
 			if( app.parameters["in"].isSet() ) {
@@ -214,9 +216,9 @@ int main( int argc, char *argv[] )
 		BOOST_FOREACH( ImageListRef image, core->addImageList( imgList, ImageHolder::structural_image ) ) {
 			checkForCaCp( image );
 			core->getRecentFiles().insertSave( _internal::FileInformation( image->getFileNames().front(),
-																			app.parameters["rdialect"].toString(),
-																			app.parameters["rf"].toString(),
-																			image->imageType) );
+											   app.parameters["rdialect"].toString(),
+											   app.parameters["rf"].toString(),
+											   image->imageType ) );
 			core->getUICore()->createViewWidgetEnsemble( "", image );
 		}
 		core->getUICore()->setOptionPosition( isis::viewer::UICore::bottom );
@@ -227,9 +229,9 @@ int main( int argc, char *argv[] )
 		BOOST_FOREACH( ImageListRef image, core->addImageList( imgList, ImageHolder::structural_image ) ) {
 			checkForCaCp( image );
 			core->getRecentFiles().insertSave( _internal::FileInformation( image->getFileNames().front(),
-																			app.parameters["rdialect"].toString(),
-																			app.parameters["rf"].toString(),
-																			image->imageType) );
+											   app.parameters["rdialect"].toString(),
+											   app.parameters["rf"].toString(),
+											   image->imageType ) );
 			core->attachImageToWidget( image, ensemble[0]. widgetImplementation );
 			core->attachImageToWidget( image, ensemble[1]. widgetImplementation );
 			core->attachImageToWidget( image, ensemble[2]. widgetImplementation );
@@ -237,9 +239,9 @@ int main( int argc, char *argv[] )
 		BOOST_FOREACH( ImageListRef image, core->addImageList( zImgList, ImageHolder::z_map ) ) {
 			checkForCaCp( image );
 			core->getRecentFiles().insertSave( _internal::FileInformation( image->getFileNames().front(),
-																			app.parameters["rdialect"].toString(),
-																			app.parameters["rf"].toString(),
-																			image->imageType) );
+											   app.parameters["rdialect"].toString(),
+											   app.parameters["rf"].toString(),
+											   image->imageType ) );
 			core->attachImageToWidget( image, ensemble[0]. widgetImplementation );
 			core->attachImageToWidget( image, ensemble[1]. widgetImplementation );
 			core->attachImageToWidget( image, ensemble[2]. widgetImplementation );
@@ -248,10 +250,11 @@ int main( int argc, char *argv[] )
 		core->getUICore()->getMainWindow()->startWidget->close();
 
 	}
-	core->getUICore()->getMainWindow()->toggleLoadingIcon(false);
+
+	core->getUICore()->getMainWindow()->toggleLoadingIcon( false );
 	core->getUICore()->showMainWindow();
 
 	core->settingsChanged();
-	
+
 	return app.getQApplication().exec();
 }

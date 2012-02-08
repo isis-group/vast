@@ -48,7 +48,7 @@ public:
 		const util::ivector4 mappedCoords = QOrientationHandler::mapCoordsToOrientation( image->voxelCoords, image, orientation );
 		const util::ivector4 mapping = QOrientationHandler::mapCoordsToOrientation( util::ivector4( 0, 1, 2, 3 ), image, orientation, true );
 		const data::Chunk chunk = image->getChunkVector()[timestep];
-		#pragma omp parallel for
+#pragma omp parallel for
 
 		for ( int32_t y = 0; y < mappedSize[1]; y++ ) {
 			for ( int32_t x = 0; x < mappedSize[0]; x++ ) {

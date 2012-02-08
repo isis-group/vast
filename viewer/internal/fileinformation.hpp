@@ -34,28 +34,32 @@
 #include "imageholder.hpp"
 
 
-namespace isis {
-namespace viewer {
+namespace isis
+{
+namespace viewer
+{
 
 class QViewerCore;
 
-namespace _internal {
+namespace _internal
+{
 
-class FileInformation {
+class FileInformation
+{
 public:
 	FileInformation( const std::string &filename,
 					 const std::string &dialect = std::string(),
 					 const std::string &readformat = std::string(),
 					 const ImageHolder::ImageType &imagetype = ImageHolder::structural_image,
 					 bool newensemble = true );
-	
+
 	std::string getFileName() const  { return m_filename; }
 	std::string getDialect() const { return m_dialect; }
 	std::string getReadFormat() const  { return m_readformat; }
 	bool isNewEnsemble() const { return m_newensemble; }
 	ImageHolder::ImageType getImageType() const { return m_imagetype; }
 
-	
+
 
 private:
 	FileInformation() {};
@@ -64,23 +68,25 @@ private:
 	std::string m_readformat;
 	ImageHolder::ImageType m_imagetype;
 	bool m_newensemble;
-	
+
 };
 
-class FileInformationMap : public std::map<std::string,FileInformation>
+class FileInformationMap : public std::map<std::string, FileInformation>
 {
 public:
-    FileInformationMap();
+	FileInformationMap();
 	void insertSave( const FileInformation &fileInfo );
 	void writeFileInformationMap( QSettings *settings, const std::string &section );
 	void readFileInfortmationMap( QSettings *settings, const std::string &section );
-    void setLimit( size_t limit ) { m_limit = limit; }
-	
+	void setLimit( size_t limit ) { m_limit = limit; }
+
 private:
 	size_t m_limit;
 	std::list<std::string> m_lookup;
 };
 
-}}}
+}
+}
+}
 #include "qviewercore.hpp"
 #endif

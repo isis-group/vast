@@ -44,7 +44,8 @@ namespace viewer
 {
 class UICore;
 
-namespace _internal {
+namespace _internal
+{
 class FileInformation;
 class FileInformationMap;
 }
@@ -103,7 +104,7 @@ public Q_SLOTS:
 	virtual void receiveMessage( qt4::QMessage  );
 	virtual void receiveMessage( std::string  );
 	virtual void receiveMessageDev( qt4::QMessage );
-	virtual void openPath( const _internal::FileInformation& );
+	virtual void openPath( const _internal::FileInformation & );
 	virtual void centerImages( bool ca = false );
 	virtual void closeImage( boost::shared_ptr<ImageHolder> image, bool refreshUI = true );
 	virtual void saveSettings();
@@ -123,20 +124,20 @@ Q_SIGNALS:
 private:
 
 	void checkForErrors();
-	
+
 	QSettings *m_Settings;
 	std::list< qt4::QMessage > m_MessageLog;
 	std::list< qt4::QMessage > m_DevMessageLog;
-	
+
 	QWidget *m_Parent;
 	PluginListType m_PluginList;
 	std::string m_CurrentPath;
 	boost::shared_ptr< QProgressFeedback > m_ProgressFeedback;
 	UICore *m_UI;
-	
-    _internal::FileInformationMap m_RecentFiles;
+
+	_internal::FileInformationMap m_RecentFiles;
 	_internal::FileInformationMap m_FavFiles;
-	
+
 
 };
 

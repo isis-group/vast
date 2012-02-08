@@ -52,7 +52,7 @@ public:
 	///returns a boost::shared_ptr_ptr of the images data. Actually this also is a convinient function.
 	boost::shared_ptr<const void>
 	getRawAdress( const boost::shared_ptr<ImageHolder> image, size_t timestep = 0 ) const {
-		return image->getRawAdress(timestep);
+		return image->getRawAdress( timestep );
 	}
 
 

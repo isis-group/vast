@@ -53,11 +53,11 @@ class PlotterDialog : public QDialog
 public:
 	PlotterDialog( QWidget *parent, QViewerCore *core );
 public Q_SLOTS:
-    void showEvent( QShowEvent * );
+	void showEvent( QShowEvent * );
 	void updateScene();
 
 	virtual void refresh( util::fvector4 physicalCoords );
-	
+
 private:
 	Ui::plottingDialog ui;
 	QwtPlot *plot;
@@ -65,17 +65,18 @@ private:
 	QwtPlotMarker *plotMarker;
 	QViewerCore *m_ViewerCore;
 	util::fvector4 m_CurrentPhysicalCoords;
-	
+
 	void fillProfile( boost::shared_ptr<ImageHolder> image, const util::ivector4 &voxCoords, QwtPlotCurve *curve, const unsigned short &axis );
-	void fillSpectrum(  boost::shared_ptr<ImageHolder> image, const util::ivector4 &voxCoords, QwtPlotCurve *curve, const unsigned short &axis ); 
-	
+	void fillSpectrum(  boost::shared_ptr<ImageHolder> image, const util::ivector4 &voxCoords, QwtPlotCurve *curve, const unsigned short &axis );
+
 	template<typename TYPE>
-	void fillVector( QVector<double> &iv, const util::ivector4 &vox, boost::shared_ptr<ImageHolder> image, const unsigned short &axis) {
-		isis::data::TypedImage<TYPE> tImage( *(image->getISISImage()) );
+	void fillVector( QVector<double> &iv, const util::ivector4 &vox, boost::shared_ptr<ImageHolder> image, const unsigned short &axis ) {
+		isis::data::TypedImage<TYPE> tImage( *( image->getISISImage() ) );
 		util::ivector4 _coords = vox;
+
 		for ( size_t i = 0; i < image->getImageSize()[axis]; i++ ) {
 			_coords[axis] = i;
-			iv.push_back( static_cast<isis::data::Image&>(tImage).voxel<TYPE>( _coords[0], _coords[1], _coords[2], _coords[3] ) );
+			iv.push_back( static_cast<isis::data::Image &>( tImage ).voxel<TYPE>( _coords[0], _coords[1], _coords[2], _coords[3] ) );
 		}
 	}
 
