@@ -56,7 +56,8 @@ void ImageStack::contextMenuEvent( QContextMenuEvent *event )
 	QMenu *imageTypeMenu = new QMenu( tr("Image type"), this );
 	imageTypeMenu->addAction( m_Widget->m_Interface.actionStructural_image );
 	imageTypeMenu->addAction( m_Widget->m_Interface.actionImage_type_stats );
-	menu.addMenu( imageTypeMenu );
+	//TODO
+// 	menu.addMenu( imageTypeMenu );
 	menu.addSeparator();
 	menu.addAction( m_Widget->m_Interface.actionDistribute_images );
 	menu.addAction( m_Widget->m_Interface.actionClose_all_images );

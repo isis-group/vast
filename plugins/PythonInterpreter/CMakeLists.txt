@@ -23,6 +23,6 @@ include_directories(${PYTHON_INCLUDE_PATH})
 
 add_library(vastPlugin_PythonInterpreter SHARED vastPlugin_PythonInterpreter.cpp PythonInterpreterDialog.cpp PythonBridge.cpp PythonStdIORedirect.cpp
 	${pythoninterpreter_ui_h} ${plugin_moc_files} ${pythoninterpreter_rcc_files})
-target_link_libraries(vastPlugin_PythonInterpreter isis_core  ${ISIS_LIB_DEPENDS} ${PYTHON_LIBRARIES} ${Boost_LIBRARIES} )
+target_link_libraries(vastPlugin_PythonInterpreter ${ISIS_LIB}  ${ISIS_LIB_DEPENDS} ${PYTHON_LIBRARIES} ${Boost_LIBRARIES} )
 
 install(TARGETS vastPlugin_PythonInterpreter DESTINATION ${VAST_PLUGIN_INFIX} COMPONENT "vast plugins" )
