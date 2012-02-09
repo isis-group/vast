@@ -66,7 +66,15 @@ ImageHolder::ImageListType ViewerCoreBase::addImageList( const std::list< data::
 boost::shared_ptr<ImageHolder> ViewerCoreBase::addImage( const isis::data::Image &image, const isis::viewer::ImageHolder::ImageType &imageType )
 {
 	boost::shared_ptr<ImageHolder> retImage = m_DataContainer.addImage( image, imageType );
-
+	if( retImage->hasAmbiguousOrientation() ) {
+		QMessageBox msgBox;
+		msgBox.setIcon(QMessageBox::Warning);
+		std::stringstream message;
+		message << "The image " << retImage->getFileNames().front()
+			<< " has an ambiguous orientation (rotated through 45 degrees).\n\n Alignment might look wrong.";
+		msgBox.setText( message.str().c_str() );
+		msgBox.exec();
+	}
 	//setting the lutStructural
 	if( imageType == ImageHolder::structural_image ) {
 		retImage->lut = getOptionMap()->getPropertyAs<std::string>( "lutStructural" );

@@ -39,7 +39,7 @@ class OrientationCorrection : public PluginInterface
 {
 public:
 	OrientationCorrection() : isInitialized( false ) {}
-	virtual std::string getName() { return std::string( "OrienationCorrection" ) ; }
+	virtual std::string getName() { return std::string( "Orienation Correction" ) ; }
 	virtual std::string getDescription() { return std::string( "" ); }
 	virtual std::string getTooltip() { return std::string( "Allows you to correct the orientation of the image." ); }
 	virtual QKeySequence getShortcut() { return QKeySequence( "O, C" ) ;}

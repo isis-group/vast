@@ -93,6 +93,10 @@ private:
 	void disconnectSignals();
 	void reconnectSignals();
 	TimePlayThread *m_tThread;
+	QLabel *m_UpperHalfColormapLabel;
+	QWidget *m_sepWidget;
+	QLabel *m_LowerHalfColormapLabel;
+	
 
 	template<typename TYPE>
 	void displayIntensity( const util::ivector4 &coords ) const {

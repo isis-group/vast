@@ -77,7 +77,7 @@ public:
 	const util::PropertyMap &getPropMap() const { return m_PropMap; }
 	const util::FixedVector<size_t, 4> &getImageSize() const { return m_ImageSize; }
 	boost::shared_ptr< data::Image >getISISImage() const { return m_Image; }
-	boost::numeric::ublas::matrix<double> getNormalizedImageOrientation( bool transposed = false ) const;
+	boost::numeric::ublas::matrix<double> getNormalizedImageOrientation( bool transposed = false );
 	boost::numeric::ublas::matrix<double> getImageOrientation( bool transposed = false ) const;
 	void addChangedAttribute( const std::string &attribute );
 	bool removeChangedAttribute( const std::string &attribute );
@@ -95,6 +95,8 @@ public:
 	double getInternalExtent()  const;
 
 	void updateColorMap();
+
+	bool hasAmbiguousOrientation() const { return m_AmbiguousOrientation; }
 
 	void addWidget( WidgetInterface *widget ) { m_WidgetList.push_back( widget ); }
 	void removeWidget( WidgetInterface *widget );
@@ -153,6 +155,8 @@ private:
 
 	bool m_ZeroIsReserved;
 	InternalImageType m_ReservedValue;
+
+	bool m_AmbiguousOrientation;
 
 	boost::shared_ptr<data::Image> m_Image;
 	util::slist m_Filenames;

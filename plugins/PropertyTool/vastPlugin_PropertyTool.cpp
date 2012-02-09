@@ -39,7 +39,7 @@ class PropertyTool : public PluginInterface
 {
 public:
     PropertyTool() : isInitialized( false ) {}
-    virtual std::string getName() { return std::string( "PropertyTool" ) ; }
+    virtual std::string getName() { return std::string( "Property Tool" ) ; }
     virtual std::string getDescription() { return std::string( "" ); }
     virtual std::string getTooltip() { return std::string( "Allows you to show and modify the meta data of the image." ); }
     virtual QKeySequence getShortcut() { return QKeySequence( "P, T" ) ;}

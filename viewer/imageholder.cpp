@@ -36,7 +36,8 @@ namespace viewer
 
 ImageHolder::ImageHolder()
 	: m_ZeroIsReserved( true ),
-	  m_ReservedValue( 0 )
+	  m_ReservedValue( 0 ),
+	  m_AmbiguousOrientation( false )
 {}
 
 boost::shared_ptr< const void > ImageHolder::getRawAdress ( size_t timestep ) const
@@ -49,41 +50,44 @@ boost::shared_ptr< const void > ImageHolder::getRawAdress ( size_t timestep ) co
 }
 
 
-boost::numeric::ublas::matrix< double > ImageHolder::getNormalizedImageOrientation( bool transposed ) const
+boost::numeric::ublas::matrix< double > ImageHolder::getNormalizedImageOrientation( bool transposed )
 {
 	boost::numeric::ublas::matrix<double> retMatrix = boost::numeric::ublas::zero_matrix<double>( 4, 4 );
 	retMatrix( 3, 3 ) = 1;
 	const util::fvector4 &rowVec = m_Image->propertyValue( "rowVec" )->castTo<util::fvector4>();
 	const util::fvector4 &columnVec = m_Image->propertyValue( "columnVec" )->castTo<util::fvector4>();
 	const util::fvector4 &sliceVec = m_Image->propertyValue( "sliceVec" )->castTo<util::fvector4>();
+
 	size_t rB = rowVec.getBiggestVecElemAbs();
 	size_t cB = columnVec.getBiggestVecElemAbs();
 	size_t sB = sliceVec.getBiggestVecElemAbs();
 
-	//if image is rotated of 45 °
+	//if image is rotated of 45 degrees
+	m_AmbiguousOrientation = ( rB == cB ) || ( rB == sB ) || ( cB == sB );
+	
 	if( rB == cB ) {
 		if( sB == 0 ) {
 			rB = 1;
 			cB = 2;
 		} else if ( sB == 1 ) {
-			rB = 0;
-			cB = 2;
+			rB = 2;
+			cB = 0;
 		} else if ( sB == 2 ) {
-			rB = 0;
 			rB = 1;
+			rB = 0;
 		}
 	}
 
 	if( rB == sB ) {
 		if( cB == 0 ) {
-			rB = 1;
-			sB = 2;
-		} else if ( cB == 1 ) {
-			rB = 0;
-			sB = 2;
-		} else if ( cB == 2 ) {
-			rB = 0;
+			rB = 2;
 			sB = 1;
+		} else if ( cB == 1 ) {
+			rB = 2;
+			sB = 0;
+		} else if ( cB == 2 ) {
+			rB = 1;
+			sB = 0;
 		}
 	}
 
@@ -92,11 +96,11 @@ boost::numeric::ublas::matrix< double > ImageHolder::getNormalizedImageOrientati
 			cB = 1;
 			sB = 2;
 		} else if ( rB == 1 ) {
-			cB = 0;
-			sB = 2;
+			cB = 2;
+			sB = 0;
 		} else if ( rB == 2 ) {
-			cB = 0;
-			sB = 1;
+			cB = 1;
+			sB = 0;
 		}
 	}
 
