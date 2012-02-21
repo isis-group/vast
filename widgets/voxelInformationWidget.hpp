@@ -84,6 +84,7 @@ public Q_SLOTS:
 	void updateLowerUpperThreshold(  );
 	void playTimecourse();
 	void timePlayFinished();
+	void onLUTMenuClicked();
 
 private:
 	isis::viewer::QViewerCore *m_ViewerCore;

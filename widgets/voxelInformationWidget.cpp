@@ -101,6 +101,7 @@ void VoxelInformationWidget::connectSignals()
 	connect( m_Interface.timestepSpinBox, SIGNAL( valueChanged( int ) ), m_Interface.timestepSlider, SLOT( setValue( int ) ) );
 	connect( m_tThread, SIGNAL( finished() ), this, SLOT( timePlayFinished() ) );
 	connect( m_Interface.playButton, SIGNAL( clicked() ), this, SLOT( playTimecourse() ) );
+	connect( m_Interface.colormapButton, SIGNAL( clicked()), this, SLOT( onLUTMenuClicked()) );
 	isConnected = true;
 }
 
@@ -352,6 +353,12 @@ void VoxelInformationWidget::synchronizePos( util::ivector4 voxelCoords )
 	m_Interface.zBox->setValue( physCoords[2] );
 	reconnectSignals();
 
+}
+
+void VoxelInformationWidget::onLUTMenuClicked()
+{
+	m_ViewerCore->getUICore()->getMainWindow()->preferencesDialog->getUI().tabWidget->setCurrentIndex(0);
+	m_ViewerCore->getUICore()->getMainWindow()->preferencesDialog->show();
 }
 
 
