@@ -439,7 +439,9 @@ void QImageWidgetImplementation::lookAtPhysicalCoords( const isis::util::fvector
 {
 	BOOST_FOREACH( DataContainer::reference image, m_ViewerCore->getDataContainer() ) {
 		image.second->physicalCoords = physicalCoords;
+		const size_t timestep = image.second->voxelCoords[3];
 		image.second->voxelCoords = image.second->getISISImage()->getIndexFromPhysicalCoords( physicalCoords, true );
+		image.second->voxelCoords[3] = timestep;
 	}
 	update();
 }
