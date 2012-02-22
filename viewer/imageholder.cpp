@@ -285,11 +285,9 @@ void ImageHolder::updateHistogram()
 		histogramVectorWOZero[t] = ( double * ) calloc( extent, sizeof( double ) );
 		const InternalImageType *dataPtr = boost::shared_static_cast<const InternalImageType>( getRawAdress(t) ).get();
 		//create the histogram
+#pragma omp parallel for
 		for( size_t i = 0; i < volume; i++ ) {
 			histogramVector[t][dataPtr[i]]++;
-		}
-
-		for( size_t i = 0; i < volume; i++ ) {
 			if( dataPtr[i] > 0 ) {
 				histogramVectorWOZero[t][dataPtr[i] - 1]++;
 			}

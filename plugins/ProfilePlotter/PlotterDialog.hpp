@@ -70,7 +70,7 @@ private:
 	void fillSpectrum(  boost::shared_ptr<ImageHolder> image, const util::ivector4 &voxCoords, QwtPlotCurve *curve, const unsigned short &axis );
 
 	template<typename TYPE>
-	void fillVector( QVector<double> &iv, const util::ivector4 &vox, boost::shared_ptr<ImageHolder> image, const unsigned short &axis ) {
+	void fillVector( QVector<double> &iv, const util::ivector4 &vox, const boost::shared_ptr<ImageHolder> image, const unsigned short &axis ) {
 		isis::data::TypedImage<TYPE> tImage( *( image->getISISImage() ) );
 		util::ivector4 _coords = vox;
 

@@ -54,11 +54,13 @@ VoxelInformationWidget::VoxelInformationWidget( QWidget *parent, QViewerCore *co
 	m_Interface.playButton->setIcon( QIcon( ":/common/play.png" ) );
 	m_tThread = new TimePlayThread( m_ViewerCore, &m_Interface );
 	QVBoxLayout *layout = new QVBoxLayout( );
-	layout->setContentsMargins(5,5,5,5);
+	layout->setContentsMargins(5,0,5,0);
 	layout->addWidget( m_UpperHalfColormapLabel );
 	layout->addWidget( m_sepWidget );
 	layout->addWidget( m_LowerHalfColormapLabel );
 	m_Interface.colormapButton->setLayout( layout );
+	m_Interface.colormapButton->setSizePolicy( QSizePolicy::Minimum, QSizePolicy::Minimum );
+	m_Interface.colormapButton->setMinimumHeight( 10 );
 
 }
 
@@ -191,9 +193,9 @@ void VoxelInformationWidget::synchronize()
 			m_Interface.upperThresholdLabel->setText( QString::number( image->upperThreshold, 'g', 4 ) );
 			QSize size = m_Interface.colormapButton->size();
 			m_UpperHalfColormapLabel->setPixmap(
-				util::Singletons::get<color::Color, 10>().getIcon( image->lut, size.width(), size.height() - 10, color::Color::upper_half ).pixmap( size.width(), size.height() - 10 ) );
+				util::Singletons::get<color::Color, 10>().getIcon( image->lut, size.width(), size.height() - 15, color::Color::upper_half ).pixmap( size.width(), size.height() - 15 ) );
 			m_LowerHalfColormapLabel->setPixmap(
-				util::Singletons::get<color::Color, 10>().getIcon( image->lut, size.width(), size.height() - 10, color::Color::lower_half, true ).pixmap( size.width(), size.height() - 10 ) );
+				util::Singletons::get<color::Color, 10>().getIcon( image->lut, size.width(), size.height() - 15, color::Color::lower_half, true ).pixmap( size.width(), size.height() - 15 ) );
 
 			if( image->minMax.first->as<double>() >= 0 ) {
 				m_LowerHalfColormapLabel->setVisible( false );
