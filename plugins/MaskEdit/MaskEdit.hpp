@@ -85,10 +85,11 @@ private:
 		}
 
 		unsigned short radSquare = m_Radius * m_Radius;
-#pragma omp parallel for
+
 
 		for( unsigned short k = start[2] + 1; k < end[2]; k++ ) {
 			for( unsigned short j = start[1] + 1; j < end[1]; j++ ) {
+#pragma omp parallel for				
 				for( unsigned short i = start[0] + 1; i < end[0]; i++ ) {
 					int x = voxel[0] - i;
 					int y = voxel[1] - j;

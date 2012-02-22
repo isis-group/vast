@@ -76,7 +76,7 @@ public:
 	util::PropertyMap &getPropMap() { return m_PropMap; }
 	const util::PropertyMap &getPropMap() const { return m_PropMap; }
 	const util::FixedVector<size_t, 4> &getImageSize() const { return m_ImageSize; }
-	boost::shared_ptr< data::Image >getISISImage() const { return m_Image; }
+	boost::shared_ptr< data::Image >getISISImage(bool typed = false ) const;
 	boost::numeric::ublas::matrix<double> getNormalizedImageOrientation( bool transposed = false );
 	boost::numeric::ublas::matrix<double> getImageOrientation( bool transposed = false ) const;
 	void addChangedAttribute( const std::string &attribute );
@@ -159,6 +159,7 @@ private:
 	bool m_AmbiguousOrientation;
 
 	boost::shared_ptr<data::Image> m_Image;
+	boost::shared_ptr<data::Image> m_TypedImage;
 	util::slist m_Filenames;
 	size_t m_ID;
 	std::pair<double, double> m_OptimalScalingPair;

@@ -149,8 +149,6 @@ util::ivector4 QOrientationHandler::convertWindow2VoxelCoords( const ViewPortTyp
 	const size_t voxCoordY = ( y - viewPort[3] ) / viewPort[1];
 	util::ivector4 coords =  util::ivector4( voxCoordX, voxCoordY, slice );
 
-	#pragma omp parallel for
-
 	for ( short i = 0; i < 2; i++ ) {
 		coords[i] = mappedSize[i] < 0 ? abs( mappedSize[i] ) - coords[i] - 1 : coords[i];
 		coords[i] = coords[i] < 0 ? 0 : coords[i];

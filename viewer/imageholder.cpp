@@ -140,6 +140,16 @@ boost::numeric::ublas::matrix< double > ImageHolder::getImageOrientation( bool t
 	return retMatrix;
 }
 
+boost::shared_ptr< data::Image > ImageHolder::getISISImage ( bool typed ) const
+{
+	if( typed ) {
+		return m_TypedImage;
+	} else {
+		return m_Image;
+	}
+}
+
+
 bool ImageHolder::setImage( const data::Image &image, const ImageType &_imageType, const std::string &filename )
 {
 	LOG( Dev, info ) << "setImage of " << filename;
@@ -174,6 +184,47 @@ bool ImageHolder::setImage( const data::Image &image, const ImageType &_imageTyp
 	imageType = _imageType;
 	interpolationType = nn;
 	majorTypeID = image.getMajorTypeID();
+	switch( majorTypeID ) {
+		case data::ValuePtr<bool>::staticID:
+			m_TypedImage.reset( new data::Image( data::TypedImage<bool>( image ) ) );
+			break;
+		case data::ValuePtr<uint8_t>::staticID:
+			m_TypedImage.reset( new data::Image( data::TypedImage<uint8_t>( image ) ) );
+			break;
+		case data::ValuePtr<int8_t>::staticID:
+			m_TypedImage.reset( new data::Image( data::TypedImage<int8_t>( image ) ) );
+			break;
+		case data::ValuePtr<uint16_t>::staticID:
+			m_TypedImage.reset( new data::Image( data::TypedImage<uint16_t>( image ) ) );
+			break;
+		case data::ValuePtr<int16_t>::staticID:
+			m_TypedImage.reset( new data::Image( data::TypedImage<int16_t>( image ) ) );
+			break;
+		case data::ValuePtr<uint32_t>::staticID:
+			m_TypedImage.reset( new data::Image( data::TypedImage<uint32_t>( image ) ) );
+			break;
+		case data::ValuePtr<int32_t>::staticID:
+			m_TypedImage.reset( new data::Image( data::TypedImage<int32_t>( image ) ) );
+			break;
+		case data::ValuePtr<uint64_t>::staticID:
+			m_TypedImage.reset( new data::Image( data::TypedImage<uint64_t>( image ) ) );
+			break;
+		case data::ValuePtr<int64_t>::staticID:
+			m_TypedImage.reset( new data::Image( data::TypedImage<int64_t>( image ) ) );
+			break;
+		case data::ValuePtr<float>::staticID:
+			m_TypedImage.reset( new data::Image( data::TypedImage<float>( image ) ) );
+			break;
+		case data::ValuePtr<double>::staticID:
+			m_TypedImage.reset( new data::Image( data::TypedImage<double>( image ) ) );
+			break;
+		case data::ValuePtr<util::color24>::staticID:
+			m_TypedImage.reset( new data::Image( data::TypedImage<util::color24>( image ) ) );
+			break;
+		case data::ValuePtr<util::color48>::staticID:
+			m_TypedImage.reset( new data::Image( data::TypedImage<util::color48>( image ) ) );
+			break;
+	}
 	majorTypeName = image.getMajorTypeName();
 	majorTypeName = majorTypeName.substr( 0, majorTypeName.length() - 1 ).c_str();
 	m_ImageSize = image.getSizeAsVector();

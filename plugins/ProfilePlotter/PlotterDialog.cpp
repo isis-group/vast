@@ -172,7 +172,7 @@ void isis::viewer::plugin::PlotterDialog::fillProfile ( boost::shared_ptr< isis:
 			xValues.push_back( factor * i );
 		}
 	}
-	switch( image->getISISImage()->getMajorTypeID() ) {
+	switch( image->majorTypeID ) {
 	case ValuePtr<bool>::staticID:
 		fillVector<bool>( intensityValues, _coords, image, axis );
 		break;
