@@ -117,6 +117,76 @@ boost::numeric::ublas::matrix< double > ImageHolder::getNormalizedImageOrientati
 	return retMatrix;
 }
 
+
+short unsigned int ImageHolder::getMajorTypeID() const
+{
+	if( minMax.first->getTypeID() == minMax.second->getTypeID() ) { // ok min and max are the same type - trivial case
+		return minMax.first->getTypeID() << 8; // btw: we do the shift, because min and max are Value - but we want the ID's ValuePtr
+	} else if( minMax.first->fitsInto( minMax.second->getTypeID() ) ) { // if min fits into the type of max, use that
+		return minMax.second->getTypeID() << 8; //@todo maybe use a global static function here instead of a obscure shit operation
+	} else if( minMax.second->fitsInto( minMax.first->getTypeID() ) ) { // if max fits into the type of min, use that
+		return minMax.first->getTypeID() << 8;
+	} else {
+		LOG( Runtime, error ) << "Sorry I dont know which datatype I should use. (" << minMax.first->getTypeName()
+			<< " or " << minMax.second->getTypeName() << ")";
+		std::stringstream o;
+		o << "Type selection failed. Range was: " << minMax;
+	}
+	return 0;
+
+}
+
+void ImageHolder::collectImageInfo()
+{
+		minMax = getISISImage()->getMinMax();
+		majorTypeID = getMajorTypeID();
+		isRGB = (data::ValuePtr<util::color24>::staticID == majorTypeID || data::ValuePtr<util::color48>::staticID == majorTypeID);
+		majorTypeName = isis::util::getTypeMap(false, true).at( majorTypeID );
+		majorTypeName = majorTypeName.substr( 0, majorTypeName.length() - 1 ).c_str();
+
+		switch( majorTypeID ) {
+		case data::ValuePtr<bool>::staticID:
+			m_TypedImage.reset( new data::Image( data::TypedImage<bool>( *m_Image ) ) );
+			break;
+		case data::ValuePtr<uint8_t>::staticID:
+			m_TypedImage.reset( new data::Image( data::TypedImage<uint8_t>( *m_Image ) ) );
+			break;
+		case data::ValuePtr<int8_t>::staticID:
+			m_TypedImage.reset( new data::Image( data::TypedImage<int8_t>( *m_Image ) ) );
+			break;
+		case data::ValuePtr<uint16_t>::staticID:
+			m_TypedImage.reset( new data::Image( data::TypedImage<uint16_t>( *m_Image ) ) );
+			break;
+		case data::ValuePtr<int16_t>::staticID:
+			m_TypedImage.reset( new data::Image( data::TypedImage<int16_t>( *m_Image ) ) );
+			break;
+		case data::ValuePtr<uint32_t>::staticID:
+			m_TypedImage.reset( new data::Image( data::TypedImage<uint32_t>( *m_Image ) ) );
+			break;
+		case data::ValuePtr<int32_t>::staticID:
+			m_TypedImage.reset( new data::Image( data::TypedImage<int32_t>( *m_Image ) ) );
+			break;
+		case data::ValuePtr<uint64_t>::staticID:
+			m_TypedImage.reset( new data::Image( data::TypedImage<uint64_t>( *m_Image ) ) );
+			break;
+		case data::ValuePtr<int64_t>::staticID:
+			m_TypedImage.reset( new data::Image( data::TypedImage<int64_t>( *m_Image ) ) );
+			break;
+		case data::ValuePtr<float>::staticID:
+			m_TypedImage.reset( new data::Image( data::TypedImage<float>( *m_Image ) ) );
+			break;
+		case data::ValuePtr<double>::staticID:
+			m_TypedImage.reset( new data::Image( data::TypedImage<double>( *m_Image ) ) );
+			break;
+		case data::ValuePtr<util::color24>::staticID:
+			m_TypedImage.reset( new data::Image( data::TypedImage<util::color24>( *m_Image ) ) );
+			break;
+		case data::ValuePtr<util::color48>::staticID:
+			m_TypedImage.reset( new data::Image( data::TypedImage<util::color48>( *m_Image ) ) );
+			break;
+	}
+}
+
 boost::numeric::ublas::matrix< double > ImageHolder::getImageOrientation( bool transposed ) const
 {
 	boost::numeric::ublas::matrix<double> retMatrix = boost::numeric::ublas::zero_matrix<double>( 4, 4 );
@@ -183,59 +253,12 @@ bool ImageHolder::setImage( const data::Image &image, const ImageType &_imageTyp
 	//add some more properties
 	imageType = _imageType;
 	interpolationType = nn;
-	majorTypeID = image.getMajorTypeID();
-	switch( majorTypeID ) {
-		case data::ValuePtr<bool>::staticID:
-			m_TypedImage.reset( new data::Image( data::TypedImage<bool>( image ) ) );
-			break;
-		case data::ValuePtr<uint8_t>::staticID:
-			m_TypedImage.reset( new data::Image( data::TypedImage<uint8_t>( image ) ) );
-			break;
-		case data::ValuePtr<int8_t>::staticID:
-			m_TypedImage.reset( new data::Image( data::TypedImage<int8_t>( image ) ) );
-			break;
-		case data::ValuePtr<uint16_t>::staticID:
-			m_TypedImage.reset( new data::Image( data::TypedImage<uint16_t>( image ) ) );
-			break;
-		case data::ValuePtr<int16_t>::staticID:
-			m_TypedImage.reset( new data::Image( data::TypedImage<int16_t>( image ) ) );
-			break;
-		case data::ValuePtr<uint32_t>::staticID:
-			m_TypedImage.reset( new data::Image( data::TypedImage<uint32_t>( image ) ) );
-			break;
-		case data::ValuePtr<int32_t>::staticID:
-			m_TypedImage.reset( new data::Image( data::TypedImage<int32_t>( image ) ) );
-			break;
-		case data::ValuePtr<uint64_t>::staticID:
-			m_TypedImage.reset( new data::Image( data::TypedImage<uint64_t>( image ) ) );
-			break;
-		case data::ValuePtr<int64_t>::staticID:
-			m_TypedImage.reset( new data::Image( data::TypedImage<int64_t>( image ) ) );
-			break;
-		case data::ValuePtr<float>::staticID:
-			m_TypedImage.reset( new data::Image( data::TypedImage<float>( image ) ) );
-			break;
-		case data::ValuePtr<double>::staticID:
-			m_TypedImage.reset( new data::Image( data::TypedImage<double>( image ) ) );
-			break;
-		case data::ValuePtr<util::color24>::staticID:
-			m_TypedImage.reset( new data::Image( data::TypedImage<util::color24>( image ) ) );
-			break;
-		case data::ValuePtr<util::color48>::staticID:
-			m_TypedImage.reset( new data::Image( data::TypedImage<util::color48>( image ) ) );
-			break;
-	}
-	majorTypeName = image.getMajorTypeName();
-	majorTypeName = majorTypeName.substr( 0, majorTypeName.length() - 1 ).c_str();
+	collectImageInfo();
 	m_ImageSize = image.getSizeAsVector();
 	LOG( Dev, verbose_info )  << "Fetched image of size " << m_ImageSize << " and type "
 								<< image.getMajorTypeName() << ".";
 	//copy the image into continuous memory space and assure consistent data type
-	isRGB = !(data::ValuePtr<util::color24>::staticID != majorTypeID && data::ValuePtr<util::color48>::staticID != majorTypeID);
     const bool reserveZero = m_ZeroIsReserved && !isRGB && imageType == z_map;
-	if( !isRGB ) {
-		minMax = image.getMinMax();
-	}
 	synchronize(reserveZero);
 	
 	LOG_IF( m_ChunkVector.empty(), Dev, error ) << "Size of chunk vector is 0!";

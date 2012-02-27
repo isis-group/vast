@@ -149,6 +149,8 @@ public:
 private:
 
 	void logImageProps() const;
+	unsigned short getMajorTypeID() const;
+	void collectImageInfo();
 
 	util::FixedVector<size_t, 4> m_ImageSize;
 	util::PropertyMap m_PropMap;
@@ -210,6 +212,7 @@ private:
 
 	template<typename TYPE>
 	void _setTrueZero( const data::Image &image ) {
+		LOG( Dev, info ) << "Setting true zero for " << getFileNames().front();
 		// first make shure the images datatype is consistent
 		data::TypedImage<TYPE> tImage ( image );
 
