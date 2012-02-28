@@ -11,17 +11,19 @@ PROJECT(vast)
 set(VAST_PLUGIN_INFIX lib/vast/plugins)
 set(VAST_DOC_INFIX share/vast/doc/html)
 
+option(VAST_USE_VTK_WIDGET "Enable VTK volume rendering widget" OFF )
+
 include_directories(widgets)
 
 # collecting files
 file (GLOB VIEWER_FILES_CPP  viewer/*.cpp)
 file (GLOB WIDGET_FILES_CPP widgets/*.cpp )
-file (GLOB QWIDGET_FILES_CPP QImageWidget/*.cpp )
 file (GLOB UI_FILES forms/*.ui)
 file (GLOB RESOURCE_FILES resources/*.qrc)
 file (GLOB INTERNAL_FILES_CPP viewer/internal/*.cpp )
 file (GLOB VIEWER_DEV_FILES viewer/*.hpp )
 file (GLOB WIDGET_DEV_FILES widgets/*.hpp )
+file (GLOB IMAGE_WIDGET_FILES_CPP QImageWidget/*.cpp )
 
 set(VIEWER_FILES_HPP
 	viewer/qviewercore.hpp
@@ -40,7 +42,17 @@ set(VIEWER_FILES_HPP
 	widgets/aboutDialog.hpp
 )
 
-set(WIDGET_FILES_HPP
+if( VAST_USE_VTK_WIDGET )
+	find_package(VTK REQUIRED)
+	include(${VTK_USE_FILE})
+	set( NEEDED_LIBS QVTK ${VTK_LIBRARIES} )
+	set( WIDGET_FILES_HPP VTKImageWidget/VTKImageWidgetImplementation.hpp )
+	set( IMAGE_WIDGET_FILES_CPP ${IMAGE_WIDGET_FILES_CPP} VTKImageWidget/VTKImageWidgetImplementation.cpp VTKImageWidget/VolumeHandler.cpp)
+	include_directories(VTKImageWidget)
+	add_definitions(-D_VAST_USE_VTK_WIDGET=1)
+endif( VAST_USE_VTK_WIDGET )
+
+set(WIDGET_FILES_HPP ${WIDGET_FILES_HPP}
 	QImageWidget/QImageWidgetImplementation.hpp)
 
 ##########################################################
@@ -200,12 +212,13 @@ IF(VAST_OPENMP)
 	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fopenmp ")
 ENDIF(VAST_OPENMP)
 
-add_executable(vast main.cpp ${QWIDGET_FILES_CPP} ${WIDGET_FILES_CPP} ${VIEWER_FILES_CPP} ${WIDGET_FILES_CPP} ${vast_UIS_H} ${vast_moc_files} ${vast_rcc_files} ${INTERNAL_FILES_CPP})
+add_executable(vast main.cpp ${IMAGE_WIDGET_FILES_CPP} ${WIDGET_FILES_CPP} ${VIEWER_FILES_CPP} ${WIDGET_FILES_CPP} ${vast_UIS_H} ${vast_moc_files} ${vast_rcc_files} ${INTERNAL_FILES_CPP})
 find_library(isisqt4_LIBRARY "isisAdapter_qt4")
 
 message(STATUS "QT libraries: ${QT_LIBRARIES} ")
 
 set(NEEDED_LIBS
+	${NEEDED_LIBS}
 	${QT_LIBRARIES}
     ${QT4_WEBKIT_LIB}
 	${Boost_LIBRARIES}

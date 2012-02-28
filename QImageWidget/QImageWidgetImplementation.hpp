@@ -40,10 +40,8 @@
 
 namespace isis
 {
-
 namespace viewer
 {
-
 
 class QImageWidgetImplementation : public QWidget, public WidgetInterface
 {

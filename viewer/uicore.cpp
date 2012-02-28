@@ -28,6 +28,11 @@
 #include "uicore.hpp"
 #include <DataStorage/io_interface.h>
 #include "QImageWidgetImplementation.hpp"
+
+#ifdef _VAST_USE_VTK_WIDGET
+#include "VTKImageWidgetImplementation.hpp"
+#endif
+
 #include <QSignalMapper>
 
 namespace isis
@@ -228,7 +233,7 @@ UICore::ViewWidget UICore::createViewWidget( const std::string &widgetType, Plan
 	frameWidget->layout()->setMargin( m_ViewerCore->getOptionMap()->getPropertyAs<uint16_t>( "viewerWidgetMargin" ) );
 
 
-	WidgetInterface *widgetImpl = new QImageWidgetImplementation( m_ViewerCore, placeHolder, planeOrientation );
+	WidgetInterface *widgetImpl = new vtk::VTKImageWidgetImplementation( m_ViewerCore, placeHolder, planeOrientation );
 
 	ViewWidget viewWidget;
 	viewWidget.placeHolder = placeHolder;
