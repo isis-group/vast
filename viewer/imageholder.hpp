@@ -125,6 +125,7 @@ public:
 	util::ivector4 alignedSize32;
 	double offset;
 	double scaling;
+	double memSizeInternal;
 	double extent;
 	double lowerThreshold;
 	double upperThreshold;
@@ -175,7 +176,8 @@ private:
 	template<typename TYPE>
 	void copyImageToVector( const data::Image &image, bool reserveZero ) {
 		data::ValuePtr<TYPE> imagePtr( ( TYPE * ) calloc( image.getVolume(), sizeof( TYPE ) ), image.getVolume() );
-		LOG( Dev, info ) << "Needed memory: " << image.getVolume() * sizeof( TYPE ) / ( 1024.0 * 1024.0 ) << " mb.";
+		memSizeInternal = image.getVolume() * sizeof( TYPE );
+		LOG( Dev, info ) << "Needed memory: " << memSizeInternal / ( 1024.0 * 1024.0 ) << " mb.";
 
 		if( reserveZero ) {
 			LOG( Dev, info ) << "0 is reserved";

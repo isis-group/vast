@@ -469,7 +469,6 @@ void ImageHolder::setVoxel ( const size_t& first, const size_t& second, const si
 			default:
 				LOG( Runtime, error ) << "Tried to set voxel of chunk with type " << chunk.getTypeName() << " to double";
 				LOG( Dev, error ) << "ImageHolder::setVoxel with type " << chunk.getTypeName();
-
 		}
 	}
 }

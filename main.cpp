@@ -59,7 +59,6 @@ int main( int argc, char *argv[] )
 
 	std::string appName = "vast";
 	std::string orgName = "cbs.mpg.de";
-
 #if QT_VERSION >= 0x040500
 
 	const char *graphics_system = getenv( "VAST_GRAPHICS_SYSTEM" );

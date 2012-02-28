@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * Author: Erik Türke, tuerke@cbs.mpg.de
+ * Author: Erik Tuerke, tuerke@cbs.mpg.de
  *
  * QMemoryHandler.hpp
  *
@@ -31,7 +31,6 @@
 #include "qviewercore.hpp"
 #include "QOrientationHandler.hpp"
 
-struct stat;
 namespace isis
 {
 namespace viewer
@@ -47,7 +46,7 @@ public:
 		const util::ivector4 mappedSize = QOrientationHandler::mapCoordsToOrientation( image->getImageSize(), image, orientation );
 		const util::ivector4 mappedCoords = QOrientationHandler::mapCoordsToOrientation( image->voxelCoords, image, orientation );
 		const util::ivector4 mapping = QOrientationHandler::mapCoordsToOrientation( util::ivector4( 0, 1, 2, 3 ), image, orientation, true );
-		const data::Chunk chunk = image->getChunkVector()[timestep];
+		const data::Chunk &chunk = image->getChunkVector()[timestep];
 
 
 		for ( int32_t y = 0; y < mappedSize[1]; y++ ) {
