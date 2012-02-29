@@ -31,6 +31,7 @@
 #ifdef __cplusplus
 #include "common.hpp"
 #include "imageholder.hpp"
+#include <CoreUtils/propmap.hpp>
 #include <QtGui>
 
 namespace isis
@@ -101,18 +102,18 @@ extern "C" {
 #if defined(__STDC__) || defined(__cplusplus)
 #ifdef WIN32
 	extern __declspec( dllexport ) isis::viewer::widget::WidgetInterface *loadWidget();
-	extern __declspec( dllexport ) const char* getIdentifier();
+	extern __declspec( dllexport ) const isis::util::PropertyMap* getProperties();
 #else
 	extern isis::viewer::widget::WidgetInterface *loadWidget();
-	extern const char* getIdentifier();
+	extern const isis::util::PropertyMap* getProperties();
 #endif
 #else
 #ifdef WIN32
 	extern __declspec( dllexport ) WidgetInterface *loadWidget();
-	extern __declspec( dllexport ) const char *getIdentifier();
+	extern __declspec( dllexport ) const isis::util::PropertyMap* getProperties();
 #else
 	extern WidgetInterface *loadWidget();
-	extern const char* getIdentifier();
+	extern const isis::util::PropertyMap* getProperties();
 #endif
 #endif
 

@@ -607,7 +607,10 @@ isis::viewer::widget::WidgetInterface *loadWidget()
 	return new isis::viewer::widget::QImageWidgetImplementation();
 }
 
-const char* getIdentifier()
+const isis::util::PropertyMap* getProperties()
 {
-	return "qt4_image_widget";
+	isis::util::PropertyMap *properties = new isis::util::PropertyMap();
+	properties->setPropertyAs<std::string>("widgetIdent", "qt4_image_widget");
+	properties->setPropertyAs<uint8_t>("numberOfEntitiesInEnsemble", 3);
+	return properties;
 }

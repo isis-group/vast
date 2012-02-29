@@ -301,11 +301,11 @@ widget::WidgetInterface* QViewerCore::getWidget ( const std::string& identifier 
 		throw( std::runtime_error( "Could not find any widget!" ) );
 	}
 	if( widgetMap.find(identifier) != widgetMap.end() ) {
-		LOG(Dev, info ) << "Loading widget of identifier " << identifier;
+		LOG(Dev, info ) << "Loading widget of identifier \"" << identifier << "\".";
 		return widgetMap.at(identifier)();
 	} else {
-		LOG( Dev, error ) << "Can not find any widget with identifier " << identifier
-			<< "! Returning first widget type i can find.";
+		LOG( Dev, error ) << "Can not find any widget with identifier \"" << identifier
+			<< "\"! Returning first widget type i can find.";
 		return widgetMap.begin()->second();
 	}
 }

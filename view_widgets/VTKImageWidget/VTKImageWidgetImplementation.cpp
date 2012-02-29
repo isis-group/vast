@@ -166,7 +166,10 @@ isis::viewer::widget::WidgetInterface *loadWidget()
 	return new isis::viewer::widget::VTKImageWidgetImplementation();
 }
 
-const char* getIdentifier()
+const isis::util::PropertyMap* getProperties()
 {
-	return "vtk_rendering_widget";
+	isis::util::PropertyMap *properties = new isis::util::PropertyMap();
+	properties->setPropertyAs<std::string>("widgetIdent", "vtk_rendering_widget");
+	properties->setPropertyAs<uint8_t>("numberOfEntitiesInEnsemble", 1);
+	return properties;
 }

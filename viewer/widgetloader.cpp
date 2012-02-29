@@ -98,17 +98,21 @@ unsigned int WidgetLoader::findWidgets( std::list< std::string > paths )
 #endif
 					if ( handle ) {
 #ifdef WIN32
-						const char* ( *loadIdentifier_func )() = ( const char* ( * )() )GetProcAddress( handle, "getIdentifier" );
+						const util::PropertyMap* ( *loadProperties_func )() = ( const util::PropertyMap* ( * )() )GetProcAddress( handle, "getProperties" );
 						loadWidget_func loadFunc = ( isis::viewer::widget::WidgetInterface * ( * )() )GetProcAddress( handle, "loadWidget" );
 #else
-						const char* ( *loadIdentifier_func )() = ( const char* ( * )() )dlsym( handle, "getIdentifier" );
+						const util::PropertyMap* ( *loadProperties_func )() = ( const util::PropertyMap* ( * )() )dlsym( handle, "getProperties" );
 						loadWidget_func loadFunc = ( isis::viewer::widget::WidgetInterface * ( * )() )dlsym( handle, "loadWidget" );
 #endif
-						if ( loadFunc && loadIdentifier_func ) {
-
-							widgetMap[loadIdentifier_func()] = loadFunc;
-							ret++;
-							LOG( Dev, info ) << "Added widget " << loadIdentifier_func();
+						if ( loadFunc && loadProperties_func ) {
+							if( loadProperties_func()->hasProperty("widgetIdent") ) {
+								const std::string widgetIdent = loadProperties_func()->getPropertyAs<std::string>("widgetIdent");
+								widgetMap[widgetIdent] = loadFunc;
+								ret++;
+								LOG( Dev, info ) << "Added widget " << widgetIdent;
+							} else {
+								LOG( Dev, error ) << "The widget " << widgetName << " has no property \"widgetIdent\" ! Will not load it.";
+							}
 						} else {
 #ifdef WIN32
 							LOG( Dev, warning )
