@@ -60,7 +60,6 @@ void QImageWidgetImplementation::setup ( QViewerCore* core, QWidget* parent, Pla
 	WidgetInterface::setup( core, parent, orientation );
 	setParent(parent);
 	m_Layout = new QVBoxLayout(parent);
-	
 	commonInit();
 }
 
@@ -610,5 +609,5 @@ isis::viewer::widget::WidgetInterface *loadWidget()
 
 const char* getIdentifier()
 {
-	return "QtDefault";
+	return "qt4_image_widget";
 }

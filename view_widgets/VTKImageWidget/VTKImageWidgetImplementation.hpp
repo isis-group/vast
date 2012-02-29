@@ -56,12 +56,13 @@ class VTKImageWidgetImplementation : public QVTKWidget, public WidgetInterface
 {
 	Q_OBJECT
 public:
-	VTKImageWidgetImplementation() {};
+	VTKImageWidgetImplementation();
 	VTKImageWidgetImplementation( QViewerCore *core, QWidget *parent = 0, PlaneOrientation orientation = axial );
 
 public Q_SLOTS:
 
 	virtual unsigned short getNumberOfInstancesInEnsemble() const { return 1; }
+	virtual void setup( QViewerCore *, QWidget *, PlaneOrientation );
 	virtual void setZoom( float zoom );
 	virtual void updateScene();
 	virtual void setEnableCrosshair( bool enable );

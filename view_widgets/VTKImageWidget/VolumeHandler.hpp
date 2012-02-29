@@ -29,6 +29,7 @@
 
 #include <vtkImageAppendComponents.h>
 #include <vtkImageData.h>
+#include <vtkImageImport.h>
 #include "qviewercore.hpp"
 
 namespace isis {
@@ -48,6 +49,7 @@ public:
 private:
 	vtkImageAppendComponents* m_Merger;
 	vtkImageData* m_MergedImage;
+	vtkImageImport * m_Importer;
 
 	std::list<boost::shared_ptr<ImageHolder > > m_ImageList;
 };

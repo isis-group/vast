@@ -35,6 +35,17 @@ namespace isis {
 namespace viewer {
 namespace widget {
 
+
+VTKImageWidgetImplementation::VTKImageWidgetImplementation()
+	: m_RenderWindow( vtkRenderWindow::New() ),
+	  m_Renderer( vtkRenderer::New() ),
+	  m_Mapper( vtkFixedPointVolumeRayCastMapper::New() ),
+	  m_Volume( vtkVolume::New() ),
+	  m_VolumeProperty( vtkVolumeProperty::New() )
+{
+	
+}
+	
 VTKImageWidgetImplementation::VTKImageWidgetImplementation ( QViewerCore* core, QWidget* parent, PlaneOrientation orientation )
 	: QVTKWidget( parent ),
 	  m_Layout( new QVBoxLayout( parent ) ),
@@ -45,10 +56,18 @@ VTKImageWidgetImplementation::VTKImageWidgetImplementation ( QViewerCore* core, 
 	  m_VolumeProperty( vtkVolumeProperty::New() )
 {
 	setup( core, parent, orientation );
-	m_Layout->addWidget( this );
-	m_Layout->setMargin( 0 );
+
 	commonInit();
 }
+
+void VTKImageWidgetImplementation::setup ( QViewerCore* core, QWidget* parent, PlaneOrientation orientation )
+{
+	WidgetInterface::setup( core, parent, orientation );
+	setParent( parent );
+	m_Layout = new QVBoxLayout( parent );
+	commonInit();
+}
+
 
 void VTKImageWidgetImplementation::paintEvent ( QPaintEvent* event )
 {
@@ -74,6 +93,8 @@ void VTKImageWidgetImplementation::wheelEvent ( QWheelEvent* e )
 
 void VTKImageWidgetImplementation::commonInit()
 {
+	m_Layout->addWidget( this );
+	m_Layout->setMargin( 0 );
 	connect( m_ViewerCore, SIGNAL( emitUpdateScene( ) ), this, SLOT( updateScene( ) ) );
 	setFocus();
 	SetRenderWindow(m_RenderWindow);
@@ -113,9 +134,7 @@ void VTKImageWidgetImplementation::addImage ( const boost::shared_ptr< ImageHold
 }
 
 void VTKImageWidgetImplementation::lookAtPhysicalCoords ( const util::fvector4& physicalCoords )
-{
-
-}
+{}
 
 bool VTKImageWidgetImplementation::removeImage ( const boost::shared_ptr< ImageHolder > image )
 {
@@ -149,5 +168,5 @@ isis::viewer::widget::WidgetInterface *loadWidget()
 
 const char* getIdentifier()
 {
-	return "VTKRendering";
+	return "vtk_rendering_widget";
 }

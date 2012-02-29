@@ -34,7 +34,8 @@ namespace widget {
 
 VolumeHandler::VolumeHandler( )
 	:m_Merger( vtkImageAppendComponents::New() ),
-	m_MergedImage( vtkImageData::New() )
+	m_MergedImage( vtkImageData::New() ),
+	m_Importer( vtkImageImport::New() )
 {
 }
 
@@ -46,21 +47,20 @@ bool VolumeHandler::addImage ( boost::shared_ptr< ImageHolder > image, const siz
 		const util::fvector4 physSize = size * image->voxelSize;
 		vtkImageData *newImage = vtkImageData::New();
 		newImage->SetScalarTypeToUnsignedChar();
+		m_Importer->SetDataScalarTypeToUnsignedChar();
 
-		
+		m_Importer->SetImportVoidPointer( &image->getChunkVector().operator[](timestep).voxel<InternalImageType>(0) );
 		
 		newImage->SetSpacing( image->voxelSize[0], image->voxelSize[1], image->voxelSize[2] );
 		newImage->SetDimensions( size[0], size[1], size[2] );
 		newImage->SetOrigin( image->indexOrigin[0], image->indexOrigin[1], image->indexOrigin[2] );
 		newImage->SetExtent(0, physSize[0], 0, physSize[1], 0, physSize[2] );
 
-		for( int64_t slice = 0; slice < size[2]; slice++ ) {
-			for( int64_t column = 0; column < size[2]; column++ ) {
-				for( int64_t row = 0; row < size[2]; row++ ) {
-					newImage->SetScalarComponentFromFloat( row, column, slice, 0, image->getChunkVector().operator[](timestep).voxel<InternalImageType>(row, column, slice ) );
-				}
-			}
-		}
+		m_Importer->SetWholeExtent( 0, size[0] - 1, 0, size[1] - 1, 0, size[2] - 1 );
+		m_Importer->SetDataExtentToWholeExtent();
+		m_Importer->Update();
+		newImage = m_Importer->GetOutput();
+		
 		if( m_ImageList.size() > 1 ) {
 			m_Merger->SetInput(0, m_MergedImage );
 			m_Merger->SetInput(1, newImage);

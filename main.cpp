@@ -99,9 +99,14 @@ int main( int argc, char *argv[] )
 	app.parameters["split"] = false;
 	app.parameters["split"].needed() = false;
 	app.parameters["split"].setDescription( "Show each image in a separate view" );
+	app.parameters["widget"] = std::string();
+	app.parameters["widget"].needed() = false;
+	app.parameters["widget"].setDescription( "Use specific widget" );
 	boost::shared_ptr< util::ProgressFeedback > feedback = boost::shared_ptr<util::ProgressFeedback>( new util::ConsoleFeedback );
 	data::IOFactory::setProgressFeedback( feedback );
 	app.init( argc, argv, false );
+
+	const std::string widget_name = app.parameters["widget"].toString();
 
 	util::_internal::Log<isis::data::Runtime>::setHandler( logging_hanlder_runtime );
 	util::_internal::Log<isis::util::Runtime>::setHandler( logging_hanlder_runtime );
@@ -192,7 +197,7 @@ int main( int argc, char *argv[] )
 											   app.parameters["rdialect"].toString(),
 											   app.parameters["rf"].toString(),
 											   image->imageType ) );
-			UICore::ViewWidgetEnsembleType ensemble = core->getUICore()->createViewWidgetEnsemble( "", image );
+			UICore::ViewWidgetEnsembleType ensemble = core->getUICore()->createViewWidgetEnsemble( widget_name, image );
 
 			if( app.parameters["in"].isSet() ) {
 				BOOST_FOREACH( std::list<data::Image>::const_reference image, imgList ) {
@@ -218,13 +223,13 @@ int main( int argc, char *argv[] )
 											   app.parameters["rdialect"].toString(),
 											   app.parameters["rf"].toString(),
 											   image->imageType ) );
-			core->getUICore()->createViewWidgetEnsemble( "", image );
+			core->getUICore()->createViewWidgetEnsemble( widget_name, image );
 		}
 		core->getUICore()->setOptionPosition( isis::viewer::UICore::bottom );
 		core->getUICore()->getMainWindow()->startWidget->close();
 	} else if ( app.parameters["in"].isSet() || zmapIsSet ) {
 		core->getUICore()->setViewWidgetArrangement( UICore::InRow );
-		UICore::ViewWidgetEnsembleType ensemble = core->getUICore()->createViewWidgetEnsemble( "" );
+		UICore::ViewWidgetEnsembleType ensemble = core->getUICore()->createViewWidgetEnsemble( widget_name );
 		BOOST_FOREACH( ImageListRef image, core->addImageList( imgList, ImageHolder::structural_image ) ) {
 			checkForCaCp( image );
 			core->getRecentFiles().insertSave( _internal::FileInformation( image->getFileNames().front(),
