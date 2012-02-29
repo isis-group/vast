@@ -140,10 +140,10 @@ MainWindow::MainWindow( QViewerCore *core ) :
 	m_RadiusSpin->setMinimum( 0 );
 	m_RadiusSpin->setMaximum( 500 );
 	m_RadiusSpin->setToolTip( "Search radius for finding local minimum/maximum. If radius is 0 it will search the entire image." );
+	
 	m_Interface.statusbar->addPermanentWidget( m_ViewerCore->getProgressFeedback()->getProgressBar() );
-
-	m_Interface.statusbar->insertPermanentWidget(0, m_StatusTextLabel );
-	m_Interface.statusbar->insertPermanentWidget(1, m_StatusMovieLabel );
+	m_Interface.statusbar->addPermanentWidget( m_StatusTextLabel );
+	m_Interface.statusbar->addPermanentWidget( m_StatusMovieLabel );
 	m_StatusMovie->setFileName( ":/common/loading.gif" );
 	m_StatusMovie->setScaledSize(QSize( m_Interface.statusbar->height(), m_Interface.statusbar->height() ) );
 	m_StatusMovieLabel->setMovie( m_StatusMovie );

@@ -204,10 +204,12 @@ void isis::viewer::ui::FileDialog::parsePath()
 		m_Interface.dialectComboBox->addItem("");
 		util::istring extension = boost::filesystem::extension( boost::filesystem::path( m_Interface.fileDirEdit->currentText().toStdString() ) ).c_str();
 		extension.erase( 0, 1 );
-		std::list<std::string > dialects = getDialectsAsMap( isis::image_io::FileFormat::read_only ).at( extension.c_str() );
-		BOOST_FOREACH( std::list<std::string>::const_reference dialect, dialects ) {
-			m_Interface.dialectComboBox->addItem( dialect.c_str() );
-		}		
+		if( !extension.empty() ) {
+			std::list<std::string > dialects = getDialectsAsMap( isis::image_io::FileFormat::read_only ).at( extension.c_str() );
+			BOOST_FOREACH( std::list<std::string>::const_reference dialect, dialects ) {
+				m_Interface.dialectComboBox->addItem( dialect.c_str() );
+			}
+		}
 		pal.setColor( QPalette::Text, QColor( 34, 139, 34 ) );
 		m_Interface.openSaveButton->setEnabled( true );
 		m_Interface.addToListButton->setEnabled( true );
