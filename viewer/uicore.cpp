@@ -172,7 +172,7 @@ UICore::ViewWidgetEnsembleType UICore::detachViewWidgetEnsemble( widget::WidgetI
 
 UICore::ViewWidgetEnsembleType  UICore::detachViewWidgetEnsemble( UICore::ViewWidgetEnsembleType ensemble )
 {
-	for( unsigned short i = 0; i < 3; i++ ) {
+	for( unsigned short i = 0; i < ensemble.size(); i++ ) {
 		m_MainWindow->getInterface().centralGridLayout->removeWidget( ensemble[i].dockWidget );
 	}
 

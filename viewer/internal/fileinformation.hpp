@@ -50,12 +50,14 @@ public:
 	FileInformation( const std::string &filename,
 					 const std::string &dialect = std::string(),
 					 const std::string &readformat = std::string(),
+					 const std::string &widgetidentifier = std::string(),
 					 const ImageHolder::ImageType &imagetype = ImageHolder::structural_image,
 					 bool newensemble = true );
 
 	std::string getFileName() const  { return m_filename; }
 	std::string getDialect() const { return m_dialect; }
 	std::string getReadFormat() const  { return m_readformat; }
+	std::string getWidgetIdentifier() const { return m_widgetIdentifier; }
 	bool isNewEnsemble() const { return m_newensemble; }
 	ImageHolder::ImageType getImageType() const { return m_imagetype; }
 
@@ -66,6 +68,7 @@ private:
 	std::string m_filename;
 	std::string m_dialect;
 	std::string m_readformat;
+	std::string m_widgetIdentifier;
 	ImageHolder::ImageType m_imagetype;
 	bool m_newensemble;
 

@@ -166,6 +166,7 @@ void ViewerCoreBase::setCommonViewerOptions()
 	m_OptionsMap->setPropertyAs<uint16_t>( "startWidgetHeight", 600 );
 	m_OptionsMap->setPropertyAs<uint16_t>( "startWidgetWidth", 400 );
 	m_OptionsMap->setPropertyAs<uint16_t>( "viewerWidgetMargin", 5 );
+	m_OptionsMap->setPropertyAs<std::string>("fallbackWidgetIdentifier", "qt4_plane_widget" );
 	//omp
 	m_OptionsMap->setPropertyAs<uint16_t>( "numberOfThreads", 0 );
 	m_OptionsMap->setPropertyAs<bool>( "ompAvailable", false );

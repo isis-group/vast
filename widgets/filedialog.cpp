@@ -29,6 +29,7 @@
 #include "common.hpp"
 #include "imageholder.hpp"
 #include "qviewercore.hpp"
+#include "widgetloader.hpp"
 #include "internal/fileinformation.hpp"
 
 
@@ -66,7 +67,15 @@ isis::viewer::ui::FileDialog::FileDialog( QWidget *parent, QViewerCore *core )
 	connect( m_Interface.removeFromListButton, SIGNAL( clicked() ), this, SLOT( removeFromFavList() ) );
 	connect( m_Interface.favoriteList, SIGNAL( doubleClicked( QModelIndex ) ), this, SLOT( openPath() ) );
 	connect( m_Interface.dialectComboBox, SIGNAL( currentIndexChanged(QString)), this , SLOT( fileDialectChanged(QString)));
+	connect( m_Interface.insertInWidgetCheck, SIGNAL( clicked(bool)), this, SLOT( openingMethodChanged()));
+	connect( m_Interface.newWidgetCheck, SIGNAL( clicked(bool)), this, SLOT( openingMethodChanged()));
 }
+
+void isis::viewer::ui::FileDialog::openingMethodChanged()
+{
+	m_Interface.widgetTypeframe->setEnabled( m_Interface.newWidgetCheck->isChecked() );
+}
+
 
 void isis::viewer::ui::FileDialog::fileDialectChanged ( QString dialect)
 {
@@ -169,6 +178,13 @@ void isis::viewer::ui::FileDialog::setup()
 		}
 
 		m_Interface.favoriteList->addItem( item );
+	}
+	m_Interface.widgetTypeComboBox->clear();
+	typedef widget::WidgetLoader::WidgetMapType::const_reference WRef;
+	const widget::WidgetLoader::WidgetMapType &widgetMap = util::Singletons::get<widget::WidgetLoader, 10>().getWidgetMap();
+	BOOST_FOREACH( WRef w, widgetMap )
+	{
+		m_Interface.widgetTypeComboBox->addItem( w.first.c_str() );
 	}
 	adjustSize();
 }
@@ -296,7 +312,9 @@ void isis::viewer::ui::FileDialog::openPath()
 	BOOST_FOREACH( QStringList::const_reference path, m_PathList )
 	{
 		m_ViewerCore->openPath( _internal::FileInformation( path.toStdString(),
-															m_Dialect, m_Suffix == "auto" ? "" : m_Suffix,
+															m_Dialect,
+															m_Interface.widgetTypeComboBox->currentText().toStdString(),
+															m_Suffix == "auto" ? "" : m_Suffix,
 															m_ImageType,
 															m_Interface.newWidgetCheck->isChecked() ) ) ;
 	}
@@ -345,7 +363,10 @@ void isis::viewer::ui::FileDialog::addToFavList()
 	}
 	if( !has ) {
 		m_Interface.favoriteList->addItem( pathToAdd );
-		m_ViewerCore->getFavFiles().insertSave( _internal::FileInformation( pathToAdd.toStdString(), m_Dialect, m_Suffix == "auto" ? "" : m_Suffix, m_ImageType, m_Interface.newWidgetCheck->isChecked() ) );
+		m_ViewerCore->getFavFiles().insertSave( _internal::FileInformation( pathToAdd.toStdString(),
+																			m_Dialect,
+																			m_Interface.widgetTypeComboBox->currentText().toStdString(),
+																			m_Suffix == "auto" ? "" : m_Suffix, m_ImageType, m_Interface.newWidgetCheck->isChecked() ) );
 	}
 }
 

@@ -305,11 +305,11 @@ widget::WidgetInterface* QViewerCore::getWidget ( const std::string& identifier 
 		return widgetMap.at(identifier)();
 	} else {
 		LOG( Dev, error ) << "Can not find any widget with identifier \"" << identifier
-			<< "\"! Returning first widget type i can find.";
-		return widgetMap.begin()->second();
+			<< "\"! Returning fallback widget.";
+		return getWidget( getOptionMap()->getPropertyAs<std::string>("fallbackWidgetIdentifier") );
 	}
 }
-const util::PropertyMap* QViewerCore::getWidgetProperties ( const std::string& identifier ) const
+const util::PropertyMap* QViewerCore::getWidgetProperties ( const std::string& identifier ) 
 {
 	widget::WidgetLoader::WidgetPropertyMapType widgetPropertyMap = util::Singletons::get<widget::WidgetLoader, 10>().getWidgetPropertyMap();
 	if( widgetPropertyMap.empty() ) {
@@ -320,8 +320,8 @@ const util::PropertyMap* QViewerCore::getWidgetProperties ( const std::string& i
 		return widgetPropertyMap.at(identifier);
 	} else {
 		LOG( Dev, error ) << "Can not find any widget properties with identifier \"" << identifier
-			<< "\"! Returning properties of first widget i can find.";
-		return widgetPropertyMap.begin()->second;
+			<< "\"! Returning properties of fallback widget i can find.";
+		return getWidgetProperties( getOptionMap()->getPropertyAs<std::string>("fallbackWidgetIdentifier") );
 	}
 }
 
@@ -412,20 +412,19 @@ void QViewerCore::openPath ( const _internal::FileInformation &fileInfo )
 			{
 				if ( fileInfo.isNewEnsemble() )
 				{
-					ensemble = getUICore()->createViewWidgetEnsemble ( "" );
+					ensemble = getUICore()->createViewWidgetEnsemble ( fileInfo.getWidgetIdentifier() );
 
 					//if we load a zmap we additionally add an anatomical image to the widget to make things easier for the user....
 					if ( fileInfo.getImageType() == ImageHolder::z_map && m_CurrentAnatomicalReference.get() )
 					{
-						attachImageToWidget ( m_CurrentAnatomicalReference, ensemble[0].widgetImplementation );
-						attachImageToWidget ( m_CurrentAnatomicalReference, ensemble[1].widgetImplementation );
-						attachImageToWidget ( m_CurrentAnatomicalReference, ensemble[2].widgetImplementation );
+						for ( uint8_t i = 0; i < ensemble.size(); i++ ) {
+							attachImageToWidget ( m_CurrentAnatomicalReference, ensemble[i].widgetImplementation );
+						}
 					}
 				}
-
-				attachImageToWidget ( imageHolder, ensemble[0].widgetImplementation );
-				attachImageToWidget ( imageHolder, ensemble[1].widgetImplementation );
-				attachImageToWidget ( imageHolder, ensemble[2].widgetImplementation );
+				for ( uint8_t i = 0; i < ensemble.size(); i++ ) {
+					attachImageToWidget ( imageHolder, ensemble[i].widgetImplementation );
+				}
 				setCurrentImage ( imageHolder );
 			}
 		}

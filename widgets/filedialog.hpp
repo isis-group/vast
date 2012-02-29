@@ -67,6 +67,7 @@ public Q_SLOTS:
 	void removeFromFavList();
 	void onFavListClicked();
 	void fileDialectChanged( QString );
+	void openingMethodChanged();
 
 	static bool checkIfPathIsValid( QString path, unsigned short &validFiles, const std::string &suffix, FileMode mode = OPEN_FILE, bool acceptNoSuffix = false );
 

@@ -29,10 +29,11 @@
 #include "fileinformation.hpp"
 
 
-isis::viewer::_internal::FileInformation::FileInformation ( const std::string& filename, const std::string& dialect, const std::string& readformat, const isis::viewer::ImageHolder::ImageType& imagetype, bool newEnsemble )
+isis::viewer::_internal::FileInformation::FileInformation ( const std::string& filename, const std::string& dialect, const std::string &widgetidentifier, const std::string& readformat, const isis::viewer::ImageHolder::ImageType& imagetype, bool newEnsemble )
 	: m_filename( filename ),
 	m_dialect( dialect ),
 	m_readformat( readformat ),
+	m_widgetIdentifier( widgetidentifier ),
 	m_imagetype( imagetype ),
 	m_newensemble( newEnsemble )
 {}
@@ -41,10 +42,12 @@ void isis::viewer::_internal::FileInformationMap::writeFileInformationMap ( QSet
 {
 	QStringList fileNames;
 	QStringList dialects;
+	QStringList widgetidentifierList;
 	QStringList readFormats;
 	QList<QVariant> imageTypes;
     BOOST_FOREACH( const_reference elem, *this ) {
 		fileNames.push_back( elem.second.getFileName().c_str() );
+		widgetidentifierList.push_back( elem.second.getWidgetIdentifier().c_str() );
 		dialects.push_back( elem.second.getDialect().c_str() );
 		readFormats.push_back( elem.second.getReadFormat().c_str() );
 		imageTypes.push_back( QVariant( static_cast<uint>( elem.second.getImageType() ) ) );
@@ -53,6 +56,7 @@ void isis::viewer::_internal::FileInformationMap::writeFileInformationMap ( QSet
 	settings->setValue( "fileNames", fileNames );
 	settings->setValue( "readFormats", readFormats );
 	settings->setValue( "dialects", dialects );
+	settings->setValue( "widgetidentifierList", widgetidentifierList );
 	settings->setValue( "imageTypes", imageTypes );
 	settings->endGroup();
 	settings->sync();
@@ -64,16 +68,19 @@ void isis::viewer::_internal::FileInformationMap::readFileInfortmationMap ( QSet
 	QStringList fileNames = settings->value( "fileNames" ).toStringList();
 	QStringList dialects = settings->value( "dialects" ).toStringList();
 	QStringList readFormats = settings->value( "readFormats" ).toStringList();
+	QStringList widgetidentifierList = settings->value( "widgetidentifierList").toStringList();
 	QList<QVariant> imageTypes = settings->value( "imageTypes" ).toList();
 	
     QStringList::iterator fileNameIter = fileNames.begin();
 	QStringList::iterator dialectsIter = dialects.begin();
 	QStringList::iterator readFormatsIter = readFormats.begin();
+	QStringList::iterator widgetIdentifierIter = widgetidentifierList.begin();
 	QList<QVariant>::iterator imageTypesIter = imageTypes.begin();
 	while( fileNameIter != fileNames.end() ) {
-		insertSave(  _internal::FileInformation( (*fileNameIter).toStdString(), (*dialectsIter).toStdString(), (*readFormatsIter).toStdString(), static_cast<ImageHolder::ImageType>( (*imageTypesIter).toUInt() ), true ) );
+		insertSave(  _internal::FileInformation( (*fileNameIter).toStdString(), (*dialectsIter).toStdString(), (*widgetIdentifierIter).toStdString(), (*readFormatsIter).toStdString(), static_cast<ImageHolder::ImageType>( (*imageTypesIter).toUInt() ), true ) );
 		fileNameIter++;
 		readFormatsIter++;
+		widgetIdentifierIter++;
 		dialectsIter++;
 		imageTypesIter++;
 	}

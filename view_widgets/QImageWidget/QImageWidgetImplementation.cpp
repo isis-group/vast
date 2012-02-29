@@ -610,7 +610,7 @@ isis::viewer::widget::WidgetInterface *loadWidget()
 const isis::util::PropertyMap* getProperties()
 {
 	isis::util::PropertyMap *properties = new isis::util::PropertyMap();
-	properties->setPropertyAs<std::string>("widgetIdent", "qt4_image_widget");
+	properties->setPropertyAs<std::string>("widgetIdent", "qt4_plane_widget");
 	properties->setPropertyAs<uint8_t>("numberOfEntitiesInEnsemble", 3);
 	return properties;
 }
