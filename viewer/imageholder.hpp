@@ -35,7 +35,7 @@
 #include <DataStorage/image.hpp>
 #include "common.hpp"
 #include "color.hpp"
-#include "widgetinterface.hpp"
+#include "widgetinterface.h"
 #include "common.hpp"
 
 namespace isis
@@ -47,7 +47,9 @@ namespace color
 {
 class Color;
 }
+namespace widget {
 class WidgetInterface;
+}
 /**
  * Class that holds one image in a vector of data::ValuePtr's
  * It ensures the data is hold in continuous memory and only consists of one type.
@@ -98,9 +100,9 @@ public:
 
 	bool hasAmbiguousOrientation() const { return m_AmbiguousOrientation; }
 
-	void addWidget( WidgetInterface *widget ) { m_WidgetList.push_back( widget ); }
-	void removeWidget( WidgetInterface *widget );
-	std::list< WidgetInterface * > getWidgetList() { return m_WidgetList; }
+	void addWidget( widget::WidgetInterface *widget ) { m_WidgetList.push_back( widget ); }
+	void removeWidget( widget::WidgetInterface *widget );
+	std::list< widget::WidgetInterface * > getWidgetList() { return m_WidgetList; }
 
 	void updateOrientation();
 	void updateHistogram();
@@ -169,7 +171,7 @@ private:
 
 	std::vector< data::Chunk > m_ChunkVector;
 
-	std::list<WidgetInterface *> m_WidgetList;
+	std::list<widget::WidgetInterface *> m_WidgetList;
 
 	boost::shared_ptr<color::Color> m_ColorHandler;
 

@@ -33,7 +33,7 @@ namespace isis
 {
 namespace viewer
 {
-namespace widget
+namespace ui
 {
 
 VoxelInformationWidget::VoxelInformationWidget( QWidget *parent, QViewerCore *core )

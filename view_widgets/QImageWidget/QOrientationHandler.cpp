@@ -32,7 +32,7 @@ namespace isis
 
 namespace viewer
 {
-
+namespace widget {
 
 util::fvector4 QOrientationHandler::mapCoordsToOrientation( const util::fvector4 &coords, const boost::shared_ptr< ImageHolder > image, PlaneOrientation orientation, bool back, bool absolute )
 {
@@ -169,5 +169,6 @@ std::pair< int, int > QOrientationHandler::convertVoxel2WindowCoords( const View
 	return std::make_pair<int, int>( round( x ), round( y ) );
 }
 
+}
 }
 } // end namespace

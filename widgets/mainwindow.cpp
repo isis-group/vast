@@ -41,14 +41,14 @@ namespace viewer
 {
 
 MainWindow::MainWindow( QViewerCore *core ) :
-	preferencesDialog( new widget::PreferencesDialog( this, core ) ),
-	loggingDialog( new widget::LoggingDialog( this, core ) ),
-	fileDialog( new widget::FileDialog( this, core ) ),
-	startWidget( new widget::StartWidget( this, core ) ),
-	scalingWidget( new widget::ScalingWidget( this, core ) ),
-	keyCommandsdialog( new widget::KeyCommandsDialog( this ) ),
-	helpDialog( new widget::HelpDialog( this ) ),
-	aboutDialog( new widget::AboutDialog( this, core ) ),
+	preferencesDialog( new ui::PreferencesDialog( this, core ) ),
+	loggingDialog( new ui::LoggingDialog( this, core ) ),
+	fileDialog( new ui::FileDialog( this, core ) ),
+	startWidget( new ui::StartWidget( this, core ) ),
+	scalingWidget( new ui::ScalingWidget( this, core ) ),
+	keyCommandsdialog( new ui::KeyCommandsDialog( this ) ),
+	helpDialog( new ui::HelpDialog( this ) ),
+	aboutDialog( new ui::AboutDialog( this, core ) ),
 	m_ViewerCore( core ),
 	m_Toolbar( new QToolBar( this ) ),
 	m_RadiusSpin( new QSpinBox( this ) ),
@@ -326,7 +326,7 @@ void MainWindow::spinRadiusChanged( int radius )
 
 void MainWindow::openImage()
 {
-	fileDialog->setMode( isis::viewer::widget::FileDialog::OPEN_FILE );
+	fileDialog->setMode( isis::viewer::ui::FileDialog::OPEN_FILE );
 	fileDialog->show();
 }
 
@@ -458,7 +458,7 @@ void MainWindow::reloadPluginsToGUI()
 		getInterface().menu_Tools->addMenu( processMenu );
 
 		QSignalMapper *signalMapper = new QSignalMapper( this );
-		BOOST_FOREACH( ViewerCoreBase::PluginListType::const_reference plugin, m_ViewerCore->getPlugins() ) {
+		BOOST_FOREACH( plugin::PluginLoader::PluginListType::const_reference plugin, m_ViewerCore->getPlugins() ) {
 			std::list<std::string> sepName = isis::util::stringToList<std::string>( plugin->getName(), boost::regex( "/" ) );
 			QMenu *tmpMenu = processMenu;
 			std::list<std::string>::iterator iter = sepName.begin();

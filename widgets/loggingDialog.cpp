@@ -28,7 +28,7 @@
 #include "loggingDialog.hpp"
 
 
-isis::viewer::widget::LoggingDialog::LoggingDialog( QWidget *parent, isis::viewer::QViewerCore *core )
+isis::viewer::ui::LoggingDialog::LoggingDialog( QWidget *parent, isis::viewer::QViewerCore *core )
 	: QDialog( parent ),
 	  m_ViewerCore( core )
 {
@@ -58,7 +58,7 @@ isis::viewer::widget::LoggingDialog::LoggingDialog( QWidget *parent, isis::viewe
 	m_Interface.noticeCheck->setPalette( pal );
 }
 
-void isis::viewer::widget::LoggingDialog::printLog ( std::list< isis::qt4::QMessage > messageList )
+void isis::viewer::ui::LoggingDialog::printLog ( std::list< isis::qt4::QMessage > messageList )
 {
 BOOST_FOREACH( std::list< qt4::QMessage>::const_reference message, messageList ) {
 		QListWidgetItem *item = new QListWidgetItem();
@@ -112,7 +112,7 @@ BOOST_FOREACH( std::list< qt4::QMessage>::const_reference message, messageList )
 	}
 }
 
-void isis::viewer::widget::LoggingDialog::synchronize()
+void isis::viewer::ui::LoggingDialog::synchronize()
 {
 	m_Interface.logList->clear();
 	if( m_Interface.checkDev->isChecked() ) {

@@ -126,7 +126,7 @@ void CreateMaskDialog::createMask()
 		m_MaskEditDialog->m_CurrentMask->updateColorMap();
 		m_MaskEditDialog->m_CurrentMask->updateOrientation();
 		BOOST_FOREACH( UICore::ViewWidgetEnsembleListType::const_reference ensemble, m_MaskEditDialog->m_ViewerCore->getUICore()->getEnsembleList() ) {
-			WidgetInterface::ImageVectorType iVector;
+			widget::WidgetInterface::ImageVectorType iVector;
 
 			for( unsigned short i = 0; i < 3; i++ ) {
 				iVector = ensemble[i].widgetImplementation->getImageVector();

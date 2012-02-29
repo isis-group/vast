@@ -31,6 +31,7 @@
 #include "datacontainer.hpp"
 #include <map>
 #include "pluginloader.hpp"
+#include "widgetloader.hpp"
 
 
 #ifdef _OPENMP
@@ -49,7 +50,6 @@ public:
 
 	enum Mode { standard, zmap };
 
-	typedef std::list<boost::shared_ptr< plugin::PluginInterface > > PluginListType;
 	ViewerCoreBase( );
 
 	std::string getVersion() const;

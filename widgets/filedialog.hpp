@@ -39,7 +39,7 @@ namespace isis
 {
 namespace viewer
 {
-namespace widget
+namespace ui
 {
 
 class FileDialog : public QDialog

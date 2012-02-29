@@ -35,12 +35,11 @@ namespace isis
 {
 namespace viewer
 {
+namespace widget {
 
 class QMemoryHandler
 {
 public:
-	QMemoryHandler( QViewerCore *core );
-
 	template< typename TYPE>
 	void fillSliceChunk( data::MemChunk<TYPE> &sliceChunk, const boost::shared_ptr< ImageHolder > image, const PlaneOrientation &orientation, const size_t &timestep = 0 ) const {
 		const util::ivector4 mappedSize = QOrientationHandler::mapCoordsToOrientation( image->getImageSize(), image, orientation );
@@ -59,11 +58,10 @@ public:
 	}
 
 private:
-	QViewerCore *m_ViewerCore;
 };
 
 
-
+}
 }
 } // end namespace
 

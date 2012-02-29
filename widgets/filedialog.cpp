@@ -32,7 +32,7 @@
 #include "internal/fileinformation.hpp"
 
 
-isis::viewer::widget::FileDialog::FileDialog( QWidget *parent, QViewerCore *core )
+isis::viewer::ui::FileDialog::FileDialog( QWidget *parent, QViewerCore *core )
 	: QDialog ( parent ),
 	  m_Mode( OPEN_FILE ),
 	  m_ViewerCore( core ),
@@ -68,24 +68,24 @@ isis::viewer::widget::FileDialog::FileDialog( QWidget *parent, QViewerCore *core
 	connect( m_Interface.dialectComboBox, SIGNAL( currentIndexChanged(QString)), this , SLOT( fileDialectChanged(QString)));
 }
 
-void isis::viewer::widget::FileDialog::fileDialectChanged ( QString dialect)
+void isis::viewer::ui::FileDialog::fileDialectChanged ( QString dialect)
 {
 	m_Dialect = dialect.toStdString();
 }
 
 
-void isis::viewer::widget::FileDialog::showEvent( QShowEvent * )
+void isis::viewer::ui::FileDialog::showEvent( QShowEvent * )
 {
 	setup();
 	adjustSize();
 }
 
-void isis::viewer::widget::FileDialog::imageTypeChanged( int imageType )
+void isis::viewer::ui::FileDialog::imageTypeChanged( int imageType )
 {
 	m_ImageType = static_cast<ImageHolder::ImageType>( imageType );
 }
 
-void isis::viewer::widget::FileDialog::rfChanged( int rfIndex )
+void isis::viewer::ui::FileDialog::rfChanged( int rfIndex )
 {
 	m_Interface.dialectComboBox->clear();
 	m_Interface.dialectComboBox->addItem("");
@@ -108,7 +108,7 @@ void isis::viewer::widget::FileDialog::rfChanged( int rfIndex )
 }
 
 
-void isis::viewer::widget::FileDialog::setup()
+void isis::viewer::ui::FileDialog::setup()
 {
 	std::string fileDialogTitle;
 	m_FileDialog.setViewMode( QFileDialog::Detail );
@@ -174,7 +174,7 @@ void isis::viewer::widget::FileDialog::setup()
 }
 
 
-void isis::viewer::widget::FileDialog::parsePath()
+void isis::viewer::ui::FileDialog::parsePath()
 {
 	unsigned short validFiles = 0;
 	QPalette pal;
@@ -221,7 +221,7 @@ void isis::viewer::widget::FileDialog::parsePath()
 
 }
 
-bool isis::viewer::widget::FileDialog::checkIfPathIsValid( QString path, unsigned short &validFiles, const std::string &suffix, FileMode mode, bool /*acceptNoSuffix*/ )
+bool isis::viewer::ui::FileDialog::checkIfPathIsValid( QString path, unsigned short &validFiles, const std::string &suffix, FileMode mode, bool /*acceptNoSuffix*/ )
 {
 	boost::filesystem::path p( path.toStdString() );
 	std::list<util::istring> fileFormatList = getFileFormatsAsList( isis::image_io::FileFormat::read_only );
@@ -262,7 +262,7 @@ bool isis::viewer::widget::FileDialog::checkIfPathIsValid( QString path, unsigne
 }
 
 
-void isis::viewer::widget::FileDialog::browse()
+void isis::viewer::ui::FileDialog::browse()
 {
 	boost::filesystem::path p( m_Interface.fileDirEdit->currentText().toStdString() );
 
@@ -287,7 +287,7 @@ void isis::viewer::widget::FileDialog::browse()
 }
 
 
-void isis::viewer::widget::FileDialog::openPath()
+void isis::viewer::ui::FileDialog::openPath()
 {
 	close();
 	QApplication::processEvents();
@@ -300,14 +300,14 @@ void isis::viewer::widget::FileDialog::openPath()
 	}
 }
 
-void isis::viewer::widget::FileDialog::advancedChecked( bool advanced )
+void isis::viewer::ui::FileDialog::advancedChecked( bool advanced )
 {
 	m_ViewerCore->getOptionMap()->setPropertyAs<bool>( "showAdvancedFileDialogOptions", advanced );
 	m_Interface.advancedOptionsFrame->setVisible( advanced );
 	adjustSize();
 }
 
-void isis::viewer::widget::FileDialog::favoritesChecked( bool favorites )
+void isis::viewer::ui::FileDialog::favoritesChecked( bool favorites )
 {
 	m_ViewerCore->getOptionMap()->setPropertyAs<bool>( "showFavoriteFileList", favorites );
 	m_Interface.favoritesFrame->setVisible( favorites );
@@ -316,12 +316,12 @@ void isis::viewer::widget::FileDialog::favoritesChecked( bool favorites )
 
 
 
-void isis::viewer::widget::FileDialog::closeEvent( QCloseEvent * )
+void isis::viewer::ui::FileDialog::closeEvent( QCloseEvent * )
 {
 
 }
 
-void isis::viewer::widget::FileDialog::modeChanged()
+void isis::viewer::ui::FileDialog::modeChanged()
 {
 	if( m_Interface.dirRadio->isChecked() ) {
 		m_Mode = OPEN_DIR;
@@ -332,7 +332,7 @@ void isis::viewer::widget::FileDialog::modeChanged()
 	setup();
 }
 
-void isis::viewer::widget::FileDialog::addToFavList()
+void isis::viewer::ui::FileDialog::addToFavList()
 {
 	QString pathToAdd = m_Interface.fileDirEdit->currentText();
 	bool has = false;
@@ -347,7 +347,7 @@ void isis::viewer::widget::FileDialog::addToFavList()
 	}
 }
 
-void isis::viewer::widget::FileDialog::removeFromFavList()
+void isis::viewer::ui::FileDialog::removeFromFavList()
 {
 	QListWidgetItem *itemToRemove = m_Interface.favoriteList->currentItem();
 
@@ -359,7 +359,7 @@ void isis::viewer::widget::FileDialog::removeFromFavList()
 }
 
 
-void isis::viewer::widget::FileDialog::onFavListClicked()
+void isis::viewer::ui::FileDialog::onFavListClicked()
 {
 	m_Interface.fileDirEdit->setEditText( m_Interface.favoriteList->currentItem()->text() );
 }

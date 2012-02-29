@@ -27,11 +27,6 @@
  ******************************************************************/
 #include "uicore.hpp"
 #include <DataStorage/io_interface.h>
-#include "QImageWidgetImplementation.hpp"
-
-#ifdef _VAST_USE_VTK_WIDGET
-#include "VTKImageWidgetImplementation.hpp"
-#endif
 
 #include <QSignalMapper>
 
@@ -45,9 +40,9 @@ UICore::UICore( QViewerCore *core )
 	: m_ViewerCore( core ),
 	  m_MainWindow( new MainWindow( core ) )
 {
-	m_VoxelInformationWidget = new widget::VoxelInformationWidget( m_MainWindow, core );
-	m_SliderWidget = new widget::SliderWidget( m_MainWindow, core );
-	m_ImageStackWidget = new widget::ImageStackWidget( m_MainWindow, core );
+	m_VoxelInformationWidget = new ui::VoxelInformationWidget( m_MainWindow, core );
+	m_SliderWidget = new ui::SliderWidget( m_MainWindow, core );
+	m_ImageStackWidget = new ui::ImageStackWidget( m_MainWindow, core );
 	m_ViewWidgetArrangement = InRow;
 	m_RowCount = m_MainWindow->getInterface().centralGridLayout->rowCount();
 	m_VoxelInformationWidget->setVisible( false );
@@ -111,22 +106,22 @@ QDockWidget *UICore::createDockingEnsemble( QWidget *widget )
 
 }
 
-UICore::ViewWidgetEnsembleType UICore::createViewWidgetEnsemble( const std::string &widgetType, boost::shared_ptr< ImageHolder > image, bool show )
+UICore::ViewWidgetEnsembleType UICore::createViewWidgetEnsemble( const std::string &widgetIdentifier, boost::shared_ptr< ImageHolder > image, bool show )
 {
-	ViewWidgetEnsembleType ensemble = createViewWidgetEnsemble( widgetType, show );
-	ensemble[0].widgetImplementation->addImage( image );
-	ensemble[1].widgetImplementation->addImage( image );
-	ensemble[2].widgetImplementation->addImage( image );
+	ViewWidgetEnsembleType ensemble = createViewWidgetEnsemble( widgetIdentifier, show );
+	BOOST_FOREACH( ViewWidgetEnsembleType::reference widget, ensemble ) {
+		widget.widgetImplementation->addImage( image );
+	}
 	return ensemble;
 }
 
 
-UICore::ViewWidgetEnsembleType UICore::createViewWidgetEnsemble( const std::string &widgetType, bool show )
+UICore::ViewWidgetEnsembleType UICore::createViewWidgetEnsemble( const std::string &widgetIdentifier, bool show )
 {
 	ViewWidgetEnsembleType ensemble;
-	ensemble[0] =  createViewWidget( widgetType, axial );
-	ensemble[1] =  createViewWidget( widgetType, sagittal );
-	ensemble[2] =  createViewWidget( widgetType, coronal );
+	ensemble.push_back( createViewWidget( widgetIdentifier, axial ) );
+	ensemble.push_back( createViewWidget( widgetIdentifier, sagittal ) );
+	ensemble.push_back(createViewWidget( widgetIdentifier, coronal ) );
 
 	if( show ) {
 		attachViewWidgetEnsemble( ensemble );
@@ -136,7 +131,7 @@ UICore::ViewWidgetEnsembleType UICore::createViewWidgetEnsemble( const std::stri
 	return ensemble;
 }
 
-void UICore::removeViewWidgetEnsemble( WidgetInterface *widgetImplementation )
+void UICore::removeViewWidgetEnsemble( widget::WidgetInterface *widgetImplementation )
 {
 	BOOST_FOREACH( ViewWidgetEnsembleListType::reference ref, m_EnsembleList ) {
 		if( ref[0].widgetImplementation == widgetImplementation
@@ -156,7 +151,7 @@ void UICore::removeViewWidgetEnsemble( UICore::ViewWidgetEnsembleType ensemble )
 	m_EnsembleList.erase( std::find( m_EnsembleList.begin(), m_EnsembleList.end(), ensemble ) );
 }
 
-UICore::ViewWidgetEnsembleType UICore::detachViewWidgetEnsemble( WidgetInterface *widgetImplementation )
+UICore::ViewWidgetEnsembleType UICore::detachViewWidgetEnsemble( widget::WidgetInterface *widgetImplementation )
 {
 	BOOST_FOREACH( ViewWidgetEnsembleListType::reference ref, m_EnsembleList ) {
 		if( ref[0].widgetImplementation == widgetImplementation
@@ -219,7 +214,7 @@ void UICore::rearrangeViewWidgets()
 	setOptionPosition( bottom );
 }
 
-UICore::ViewWidget UICore::createViewWidget( const std::string &widgetType, PlaneOrientation planeOrientation )
+UICore::ViewWidget UICore::createViewWidget( const std::string &widgetIdentifier, PlaneOrientation planeOrientation )
 {
 	QFrame *frameWidget = new QFrame();
 	QWidget *placeHolder = new QWidget( frameWidget );
@@ -232,8 +227,8 @@ UICore::ViewWidget UICore::createViewWidget( const std::string &widgetType, Plan
 	frameWidget->layout()->addWidget( placeHolder );
 	frameWidget->layout()->setMargin( m_ViewerCore->getOptionMap()->getPropertyAs<uint16_t>( "viewerWidgetMargin" ) );
 
-
-	WidgetInterface *widgetImpl = new vtk::VTKImageWidgetImplementation( m_ViewerCore, placeHolder, planeOrientation );
+	widget::WidgetInterface * widgetImpl = m_ViewerCore->getWidget(widgetIdentifier);
+	widgetImpl->setup( m_ViewerCore, placeHolder, planeOrientation );
 
 	ViewWidget viewWidget;
 	viewWidget.placeHolder = placeHolder;
@@ -241,7 +236,7 @@ UICore::ViewWidget UICore::createViewWidget( const std::string &widgetType, Plan
 	viewWidget.frame = frameWidget;
 	viewWidget.widgetImplementation = widgetImpl;
 	viewWidget.planeOrientation = planeOrientation;
-	viewWidget.widgetType = widgetType;
+	viewWidget.widgetType = widgetIdentifier;
 	registerWidget( viewWidget );
 	return viewWidget;
 
@@ -258,38 +253,38 @@ void UICore::refreshUI( )
 	m_ImageStackWidget->synchronize();
 	m_VoxelInformationWidget->synchronize();
 	BOOST_FOREACH( WidgetMap::reference widget, getWidgets() ) {
-		WidgetInterface::ImageVectorType iVector = widget.second.widgetImplementation->getImageVector();
+		widget::WidgetInterface::ImageVectorType iVector = widget.second.widgetImplementation->getImageVector();
 
 		if( !iVector.size() ) {
 			widget.second.dockWidget->setVisible( false );
 		} else {
 			widget.second.dockWidget->setVisible( true );
 		}
-
+#warning implement this!!!!!!!!
 		//go through all the images and check if we need this widget ( 2d data? )
-		if( getEnsembleList().size() == 1 ) {
-			bool widgetNeeded = false;
-			BOOST_FOREACH( WidgetInterface::ImageVectorType::const_reference image, iVector ) {
-				const util::ivector4 mappedSize = QOrientationHandler::mapCoordsToOrientation( image->getImageSize(), image, widget.second.widgetImplementation->getPlaneOrientation() );
-
-				if( mappedSize[0] > 1 && mappedSize[1] > 1 ) {
-					widgetNeeded = true;
-				}
-			}
-			widget.second.dockWidget->setVisible( widgetNeeded );
-
-			switch( widget.second.widgetImplementation->getPlaneOrientation() ) {
-			case axial:
-				getMainWindow()->getInterface().actionAxial_View->setChecked( widgetNeeded );
-				break;
-			case sagittal:
-				getMainWindow()->getInterface().actionSagittal_View->setChecked( widgetNeeded );
-				break;
-			case coronal:
-				getMainWindow()->getInterface().actionCoronal_View->setChecked( widgetNeeded );
-				break;
-			}
-		}
+// 		if( getEnsembleList().size() == 1 ) {
+// 			bool widgetNeeded = false;
+// 			BOOST_FOREACH( widget::WidgetInterface::ImageVectorType::const_reference image, iVector ) {
+// 				const util::ivector4 mappedSize = QOrientationHandler::mapCoordsToOrientation( image->getImageSize(), image, widget.second.widgetImplementation->getPlaneOrientation() );
+// 
+// 				if( mappedSize[0] > 1 && mappedSize[1] > 1 ) {
+// 					widgetNeeded = true;
+// 				}
+// 			}
+// 			widget.second.dockWidget->setVisible( widgetNeeded );
+// 
+// 			switch( widget.second.widgetImplementation->getPlaneOrientation() ) {
+// 			case axial:
+// 				getMainWindow()->getInterface().actionAxial_View->setChecked( widgetNeeded );
+// 				break;
+// 			case sagittal:
+// 				getMainWindow()->getInterface().actionSagittal_View->setChecked( widgetNeeded );
+// 				break;
+// 			case coronal:
+// 				getMainWindow()->getInterface().actionCoronal_View->setChecked( widgetNeeded );
+// 				break;
+// 			}
+// 		}
 
 		widget.second.widgetImplementation->setCrossHairWidth( 1 );
 

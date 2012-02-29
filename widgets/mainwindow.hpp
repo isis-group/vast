@@ -46,7 +46,7 @@ namespace isis
 {
 namespace viewer
 {
-namespace widget
+namespace ui
 {
 class PreferencesDialog;
 class ScalingWidget;
@@ -71,14 +71,14 @@ public:
 
 	void reloadPluginsToGUI( );
 
-	widget::PreferencesDialog *preferencesDialog;
-	widget::LoggingDialog *loggingDialog;
-	widget::FileDialog *fileDialog;
-	widget::StartWidget *startWidget;
-	widget::ScalingWidget *scalingWidget;
-	widget::KeyCommandsDialog *keyCommandsdialog;
-	widget::HelpDialog *helpDialog;
-	widget::AboutDialog *aboutDialog;
+	ui::PreferencesDialog *preferencesDialog;
+	ui::LoggingDialog *loggingDialog;
+	ui::FileDialog *fileDialog;
+	ui::StartWidget *startWidget;
+	ui::ScalingWidget *scalingWidget;
+	ui::KeyCommandsDialog *keyCommandsdialog;
+	ui::HelpDialog *helpDialog;
+	ui::AboutDialog *aboutDialog;
 
 
 public Q_SLOTS:

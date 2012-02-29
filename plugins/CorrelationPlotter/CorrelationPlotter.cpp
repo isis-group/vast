@@ -109,7 +109,7 @@ void isis::viewer::plugin::CorrelationPlotterDialog::showEvent( QShowEvent * )
 			if ( !m_CurrentCorrelationMap ) {
 				createCorrelationMap() ;
 				BOOST_FOREACH( UICore::ViewWidgetEnsembleListType::const_reference ensemble, m_ViewerCore->getUICore()->getEnsembleList() ) {
-					WidgetInterface::ImageVectorType iVector;
+					widget::WidgetInterface::ImageVectorType iVector;
 
 					for( unsigned short i = 0; i < 3; i++ ) {
 						iVector = ensemble[i].widgetImplementation->getImageVector();

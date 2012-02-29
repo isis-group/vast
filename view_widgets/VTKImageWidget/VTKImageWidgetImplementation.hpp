@@ -30,7 +30,7 @@
 
 #include "VolumeHandler.hpp"
 
-#include "widgetinterface.hpp"
+#include "widgetinterface.h"
 #include "qviewercore.hpp"
 #include <QVTKWidget.h>
 //vtk
@@ -50,22 +50,24 @@
 
 namespace isis {
 namespace viewer {
-namespace vtk {
+namespace widget {
 
 class VTKImageWidgetImplementation : public QVTKWidget, public WidgetInterface
 {
 	Q_OBJECT
 public:
+	VTKImageWidgetImplementation() {};
 	VTKImageWidgetImplementation( QViewerCore *core, QWidget *parent = 0, PlaneOrientation orientation = axial );
 
 public Q_SLOTS:
+
+	virtual unsigned short getNumberOfInstancesInEnsemble() const { return 1; }
 	virtual void setZoom( float zoom );
 	virtual void updateScene();
 	virtual void setEnableCrosshair( bool enable );
 	virtual void addImage( const boost::shared_ptr<ImageHolder> image );
 	virtual bool removeImage( const boost::shared_ptr< ImageHolder > image );
-	virtual void setWidgetName( const std::string &name);
-	virtual std::string getWidgetName() const;
+	virtual std::string getWidgetName() const { return std::string( "vtk_rendering_widget" ); }
 	virtual void setInterpolationType( InterpolationType interpolation );
 	virtual void setMouseCursorIcon( QIcon );
 	virtual void lookAtPhysicalCoords( const util::fvector4 &physicalCoords );

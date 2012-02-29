@@ -42,8 +42,8 @@ namespace isis
 {
 namespace viewer
 {
-
-
+namespace widget
+{
 class QOrientationHandler
 {
 
@@ -59,7 +59,7 @@ public:
 };
 
 
-
+}
 }
 }// end namespace
 

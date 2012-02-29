@@ -294,6 +294,24 @@ void QViewerCore::zoomChanged ( float zoomFactor )
 	}
 }
 
+widget::WidgetInterface* QViewerCore::getWidget ( const std::string& identifier ) throw( std::runtime_error & )
+{
+	widget::WidgetLoader::WidgetMapType widgetMap = util::Singletons::get<widget::WidgetLoader, 10>().getWidgetMap();
+	if( widgetMap.empty() ) {
+		throw( std::runtime_error( "Could not find any widget!" ) );
+	}
+
+	if( widgetMap.find(identifier) != widgetMap.end() ) {
+		LOG(Dev, info ) << "Loading widget of identifier " << identifier;
+		return widgetMap.at(identifier)();
+	} else {
+		LOG( Dev, error ) << "Can not find any widget with identifier " << identifier
+			<< "! Returning first widget type i can find.";
+		return widgetMap.begin()->second();
+	}
+}
+
+
 
 void QViewerCore::addPlugin ( boost::shared_ptr< plugin::PluginInterface > plugin )
 {
@@ -312,7 +330,7 @@ void QViewerCore::addPlugin ( boost::shared_ptr< plugin::PluginInterface > plugi
 
 void QViewerCore::addPlugins ( isis::viewer::plugin::PluginLoader::PluginListType plugins )
 {
-	BOOST_FOREACH ( PluginListType::const_reference plugin, plugins )
+	BOOST_FOREACH ( plugin::PluginLoader::PluginListType::const_reference plugin, plugins )
 	{
 		addPlugin ( plugin );
 	}
@@ -321,7 +339,7 @@ void QViewerCore::addPlugins ( isis::viewer::plugin::PluginLoader::PluginListTyp
 
 bool QViewerCore::callPlugin ( QString name )
 {
-	BOOST_FOREACH ( PluginListType::const_reference plugin, m_PluginList )
+	BOOST_FOREACH ( plugin::PluginLoader::PluginListType::const_reference plugin, m_PluginList )
 	{
 		if ( plugin->getName() == name.toStdString() )
 		{
@@ -332,7 +350,7 @@ bool QViewerCore::callPlugin ( QString name )
 	return false;
 }
 
-bool QViewerCore::attachImageToWidget ( boost::shared_ptr<ImageHolder> image, WidgetInterface *widget )
+bool QViewerCore::attachImageToWidget ( boost::shared_ptr<ImageHolder> image, widget::WidgetInterface *widget )
 {
 	if ( getUICore()->getWidgets().find ( widget ) == getUICore()->getWidgets().end() )
 	{
@@ -407,7 +425,7 @@ void QViewerCore::openPath ( const _internal::FileInformation &fileInfo )
 
 void QViewerCore::closeImage ( boost::shared_ptr<ImageHolder> image, bool refreshUI )
 {
-	BOOST_FOREACH ( std::list< WidgetInterface *>::const_reference widget, image->getWidgetList() )
+	BOOST_FOREACH ( std::list< widget::WidgetInterface *>::const_reference widget, image->getWidgetList() )
 	{
 		widget->removeImage ( image );
 	}

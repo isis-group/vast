@@ -30,7 +30,7 @@
 #include <QMessageBox>
 #include <boost/filesystem.hpp>
 
-isis::viewer::widget::HelpDialog::HelpDialog( QWidget *parent )
+isis::viewer::ui::HelpDialog::HelpDialog( QWidget *parent )
 	: QDialog( parent )
 {
 	m_Interface.setupUi( this );

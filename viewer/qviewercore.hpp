@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * Author: Erik Türke, tuerke@cbs.mpg.de
+ * Author: Erik Tuerke, tuerke@cbs.mpg.de
  *
  * qviewercore.hpp
  *
@@ -30,7 +30,7 @@
 
 
 #include "viewercorebase.hpp"
-#include "widgetinterface.hpp"
+#include "widgetinterface.h"
 #include "internal/fileinformation.hpp"
 #include "qprogressfeedback.hpp"
 
@@ -60,16 +60,16 @@ public:
 	virtual std::list<boost::shared_ptr<ImageHolder> > addImageList( const std::list< data::Image > imageList, const ImageHolder::ImageType &imageType );
 	virtual void setImageList( const std::list< data::Image > imageList, const ImageHolder::ImageType &imageType );
 
-
+	widget::WidgetInterface* getWidget( const std::string &identifier ) throw( std::runtime_error & );
+	
 	const QSettings *getSettings() const { return m_Settings; }
 	QSettings *getSettings() { return m_Settings; }
 
-
 	void addPlugin( boost::shared_ptr< plugin::PluginInterface > plugin );
 	void addPlugins( plugin::PluginLoader::PluginListType plugins );
-	PluginListType getPlugins() const { return m_PluginList; }
+	plugin::PluginLoader::PluginListType getPlugins() const { return m_PluginList; }
 
-	virtual bool attachImageToWidget( boost::shared_ptr<ImageHolder> image, WidgetInterface *widget );
+	virtual bool attachImageToWidget( boost::shared_ptr<ImageHolder> image, widget::WidgetInterface *widget );
 
 	void setParentWidget( QWidget *parent ) { m_Parent = parent; }
 
@@ -130,7 +130,7 @@ private:
 	std::list< qt4::QMessage > m_DevMessageLog;
 
 	QWidget *m_Parent;
-	PluginListType m_PluginList;
+	plugin::PluginLoader::PluginListType m_PluginList;
 	std::string m_CurrentPath;
 	boost::shared_ptr< QProgressFeedback > m_ProgressFeedback;
 	UICore *m_UI;

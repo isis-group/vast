@@ -35,7 +35,7 @@ namespace isis
 {
 namespace viewer
 {
-namespace widget
+namespace ui
 {
 
 SliderWidget::SliderWidget( QWidget *parent, isis::viewer::QViewerCore *core )

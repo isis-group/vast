@@ -9,9 +9,8 @@ PROJECT(vast)
 # set install infix for plugin installation path
 ############################################################
 set(VAST_PLUGIN_INFIX lib/vast/plugins)
+set(VAST_WIDGET_INFIX lib/vast/widgets)
 set(VAST_DOC_INFIX share/vast/doc/html)
-
-option(VAST_USE_VTK_WIDGET "Enable VTK volume rendering widget" OFF )
 
 include_directories(widgets)
 
@@ -23,7 +22,6 @@ file (GLOB RESOURCE_FILES resources/*.qrc)
 file (GLOB INTERNAL_FILES_CPP viewer/internal/*.cpp )
 file (GLOB VIEWER_DEV_FILES viewer/*.hpp )
 file (GLOB WIDGET_DEV_FILES widgets/*.hpp )
-file (GLOB IMAGE_WIDGET_FILES_CPP QImageWidget/*.cpp )
 
 set(VIEWER_FILES_HPP
 	viewer/qviewercore.hpp
@@ -41,19 +39,6 @@ set(VIEWER_FILES_HPP
 	widgets/helpdialog.hpp
 	widgets/aboutDialog.hpp
 )
-
-if( VAST_USE_VTK_WIDGET )
-	find_package(VTK REQUIRED)
-	include(${VTK_USE_FILE})
-	set( NEEDED_LIBS QVTK ${VTK_LIBRARIES} )
-	set( WIDGET_FILES_HPP VTKImageWidget/VTKImageWidgetImplementation.hpp )
-	set( IMAGE_WIDGET_FILES_CPP ${IMAGE_WIDGET_FILES_CPP} VTKImageWidget/VTKImageWidgetImplementation.cpp VTKImageWidget/VolumeHandler.cpp)
-	include_directories(VTKImageWidget)
-	add_definitions(-D_VAST_USE_VTK_WIDGET=1)
-endif( VAST_USE_VTK_WIDGET )
-
-set(WIDGET_FILES_HPP ${WIDGET_FILES_HPP}
-	QImageWidget/QImageWidgetImplementation.hpp)
 
 ##########################################################
 # set viewer version number
@@ -121,14 +106,12 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR} ${ISIS_INCLUDE_DIRS})
 FIND_PACKAGE(Qt4 COMPONENTS QtCore QtGui QtWebKit REQUIRED)
 
 set(QT_USE_QTUITOOLS TRUE)
-set(QT_USE_QTOPENGL TRUE)
-set(QT_USE_OPENGL TRUE )
 
 INCLUDE(${QT_USE_FILE})
 
 QT4_ADD_RESOURCES(vast_rcc_files ${RESOURCE_FILES})
 
-qt4_wrap_cpp(vast_moc_files ${VIEWER_FILES_HPP} ${WIDGET_FILES_HPP})
+qt4_wrap_cpp(vast_moc_files ${VIEWER_FILES_HPP} )
 QT4_WRAP_UI(vast_UIS_H ${UI_FILES})
 
 find_library(QT4_WEBKIT_LIB QtWebKit)
@@ -182,9 +165,10 @@ set_source_files_properties( "viewer/pluginloader.cpp" PROPERTIES COMPILE_FLAGS
 	"-D_VAST_PLUGIN_PATH=\\\"${CMAKE_INSTALL_PREFIX}/${VAST_PLUGIN_INFIX}\\\" -DDL_SUFFIX=\\\"${CMAKE_SHARED_LIBRARY_SUFFIX}\\\" -DDL_PREFIX=\\\"${CMAKE_SHARED_LIBRARY_PREFIX}\\\""
 )
 
-############################################################
-# set the documentation path
-############################################################
+set_source_files_properties( "viewer/widgetloader.cpp" PROPERTIES COMPILE_FLAGS
+	"-D_VAST_WIDGET_PATH=\\\"${CMAKE_INSTALL_PREFIX}/${VAST_WIDGET_INFIX}\\\" -DDL_SUFFIX=\\\"${CMAKE_SHARED_LIBRARY_SUFFIX}\\\" -DDL_PREFIX=\\\"${CMAKE_SHARED_LIBRARY_PREFIX}\\\""
+)
+
 
 ###########################################################
 # CPack config
@@ -203,7 +187,7 @@ SET(CPACK_PACKAGE_FILE_NAME ${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION_MAJOR}
 INCLUDE(CPack)
 
 ###########################################################
-# OPenMP config
+# OpenMP config
 ###########################################################
 option(VAST_OPENMP "Toggles the omp support for vast." OFF)
 
@@ -212,13 +196,17 @@ IF(VAST_OPENMP)
 	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fopenmp ")
 ENDIF(VAST_OPENMP)
 
-add_executable(vast main.cpp ${IMAGE_WIDGET_FILES_CPP} ${WIDGET_FILES_CPP} ${VIEWER_FILES_CPP} ${WIDGET_FILES_CPP} ${vast_UIS_H} ${vast_moc_files} ${vast_rcc_files} ${INTERNAL_FILES_CPP})
+
+###########################################################
+# Build stuff
+###########################################################
+
+add_executable(vast main.cpp ${VIEWER_FILES_CPP} ${WIDGET_FILES_CPP} ${vast_UIS_H} ${vast_moc_files} ${vast_rcc_files} ${INTERNAL_FILES_CPP})
 find_library(isisqt4_LIBRARY "isisAdapter_qt4")
 
 message(STATUS "QT libraries: ${QT_LIBRARIES} ")
 
 set(NEEDED_LIBS
-	${NEEDED_LIBS}
 	${QT_LIBRARIES}
     ${QT4_WEBKIT_LIB}
 	${Boost_LIBRARIES}
@@ -229,6 +217,9 @@ set(NEEDED_LIBS
 
 #add the plugin directory
 add_subdirectory(plugins)
+
+#add the view_widgets directory
+add_subdirectory(view_widgets)
 
 target_link_libraries(vast ${NEEDED_LIBS})
 

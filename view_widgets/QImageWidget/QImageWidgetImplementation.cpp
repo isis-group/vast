@@ -34,16 +34,16 @@ namespace isis
 {
 namespace viewer
 {
-
+namespace widget
+{
 
 QImageWidgetImplementation::QImageWidgetImplementation( QViewerCore *core, QWidget *parent, PlaneOrientation orientation )
 	: QWidget( parent ),
-	  WidgetInterface( core, parent, orientation ),
 	  m_Layout( new QVBoxLayout( parent ) ),
-	  m_MemoryHandler( core ),
 	  m_Painter( new QPainter() ),
 	  m_ShowLabels( false )
 {
+	setup(core, parent, orientation );
 	m_Layout->addWidget( this );
 	m_Layout->setMargin( 0 );
 	commonInit();
@@ -271,14 +271,14 @@ void QImageWidgetImplementation::paintImage( boost::shared_ptr< ImageHolder > im
 
 	if ( !image->isRGB ) {
 		isis::data::MemChunk<InternalImageType> sliceChunk( mappedSizeAligned[0], mappedSizeAligned[1] );
-		m_MemoryHandler.fillSliceChunk<InternalImageType>( sliceChunk, image, m_PlaneOrientation, image->voxelCoords[3] );
+		util::Singletons::get<isis::viewer::widget::QMemoryHandler,10>().fillSliceChunk<InternalImageType>( sliceChunk, image, m_PlaneOrientation, image->voxelCoords[3] );
 		QImage qImage( ( InternalImageType * ) sliceChunk.asValuePtr<InternalImageType>().getRawAddress().get(),
 					   mappedSizeAligned[0], mappedSizeAligned[1], QImage::Format_Indexed8 );
 		qImage.setColorTable( image->colorMap );
 		m_Painter->drawImage( 0, 0, qImage );
 	} else {
 		isis::data::MemChunk<InternalImageColorType> sliceChunk( mappedSizeAligned[0], mappedSizeAligned[1] );
-		m_MemoryHandler.fillSliceChunk<InternalImageColorType>( sliceChunk, image, m_PlaneOrientation, image->voxelCoords[3] );
+		util::Singletons::get<isis::viewer::widget::QMemoryHandler,10>().fillSliceChunk<InternalImageColorType>( sliceChunk, image, m_PlaneOrientation, image->voxelCoords[3] );
 		QImage qImage( ( InternalImageType * ) sliceChunk.asValuePtr<InternalImageColorType>().getRawAddress().get(),
 					   mappedSizeAligned[0], mappedSizeAligned[1], QImage::Format_RGB888 );
 		m_Painter->drawImage( 0, 0, qImage );
@@ -483,17 +483,6 @@ void QImageWidgetImplementation::updateScene()
 	update();
 }
 
-std::string QImageWidgetImplementation::getWidgetName() const
-{
-	return windowTitle().toStdString();
-}
-
-void QImageWidgetImplementation::setWidgetName( const std::string &wName )
-{
-	setWindowTitle( QString( wName.c_str() ) );
-	m_WidgetProperties.setPropertyAs<std::string>( "widgetName", wName );
-}
-
 void QImageWidgetImplementation::keyPressEvent( QKeyEvent *e )
 {
 	float oldZoom = currentZoom;
@@ -593,6 +582,11 @@ void QImageWidgetImplementation::dropEvent( QDropEvent *e )
 	m_ViewerCore->getUICore()->refreshUI();
 }
 
-
+}
 }
 } //end namespace
+
+isis::viewer::widget::WidgetInterface *loadWidget()
+{
+	return new isis::viewer::widget::QImageWidgetImplementation();
+}

@@ -29,7 +29,7 @@
 #define UICORE_HPP
 
 #include <list>
-#include "widgetinterface.hpp"
+#include "widgetinterface.h"
 #include "mainwindow.hpp"
 #include <map>
 
@@ -38,7 +38,7 @@ namespace isis
 namespace viewer
 {
 
-namespace widget
+namespace ui
 {
 class VoxelInformationWidget;
 class ImageStackWidget;
@@ -61,13 +61,13 @@ public:
 		QDockWidget *dockWidget;
 		QFrame *frame;
 		QWidget *placeHolder;
-		WidgetInterface *widgetImplementation;
+		widget::WidgetInterface *widgetImplementation;
 		PlaneOrientation planeOrientation;
 		std::string widgetType;
 		bool operator==( const ViewWidget &other ) const { return widgetImplementation == other.widgetImplementation; }
 	};
-	typedef std::map<WidgetInterface *, ViewWidget > WidgetMap;
-	typedef util::FixedVector<ViewWidget, 3> ViewWidgetEnsembleType;
+	typedef std::map<widget::WidgetInterface *, ViewWidget > WidgetMap;
+	typedef std::vector<ViewWidget> ViewWidgetEnsembleType;
 	typedef std::list< ViewWidgetEnsembleType > ViewWidgetEnsembleListType;
 
 	bool registerWidget( ViewWidget widget );
@@ -81,10 +81,10 @@ public:
 	virtual ViewWidgetEnsembleType createViewWidgetEnsemble( const std::string &widgetType, bool show = true  );
 	virtual ViewWidgetEnsembleType createViewWidgetEnsemble( const std::string &widgetType, boost::shared_ptr< ImageHolder > image, bool show = true );
 
-	virtual void removeViewWidgetEnsemble( WidgetInterface *widgetImplementation );
+	virtual void removeViewWidgetEnsemble( widget::WidgetInterface *widgetImplementation );
 	virtual void removeViewWidgetEnsemble( ViewWidgetEnsembleType ensemble );
 
-	virtual ViewWidgetEnsembleType detachViewWidgetEnsemble( WidgetInterface *widgetImplementation );
+	virtual ViewWidgetEnsembleType detachViewWidgetEnsemble( widget::WidgetInterface *widgetImplementation );
 	virtual ViewWidgetEnsembleType detachViewWidgetEnsemble( ViewWidgetEnsembleType ensemble );
 
 	virtual void attachViewWidgetEnsemble( ViewWidgetEnsembleType ensemble );
@@ -124,9 +124,9 @@ private:
 	MainWindow *m_MainWindow;
 	ViewWidgetEnsembleListType m_EnsembleList;
 
-	widget::VoxelInformationWidget *m_VoxelInformationWidget;
-	widget::ImageStackWidget *m_ImageStackWidget;
-	widget::SliderWidget *m_SliderWidget;
+	ui::VoxelInformationWidget *m_VoxelInformationWidget;
+	ui::ImageStackWidget *m_ImageStackWidget;
+	ui::SliderWidget *m_SliderWidget;
 
 	ViewWidgetArragment m_ViewWidgetArrangement;
 

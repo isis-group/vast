@@ -32,7 +32,7 @@
 #include <QWidget>
 #include <QPainter>
 #include <QtGui>
-#include "widgetinterface.hpp"
+#include "widgetinterface.h"
 #include "qviewercore.hpp"
 #include "QMemoryHandler.hpp"
 #include "QOrientationHandler.hpp"
@@ -42,22 +42,25 @@ namespace isis
 {
 namespace viewer
 {
-
+namespace widget {
+	
 class QImageWidgetImplementation : public QWidget, public WidgetInterface
 {
 	Q_OBJECT
 	struct ImageProperties {
 		/**scaling, offset, size**/
-		isis::viewer::QOrientationHandler::ViewPortType viewPort;
+		QOrientationHandler::ViewPortType viewPort;
 	};
 	typedef std::map<boost::shared_ptr<ImageHolder>, ImageProperties> ImagePropertiesMapType;
 
 public:
 
 	QImageWidgetImplementation( QViewerCore *core, QWidget *parent = 0, PlaneOrientation orientation = axial );
+	QImageWidgetImplementation() {};
 
 public Q_SLOTS:
 
+	virtual unsigned short getNumberOfInstancesInEnsemble() const { return 3; }
 	virtual void setEnableCrosshair( bool enable ) { m_ShowCrosshair = enable; }
 
 	virtual void setZoom( float zoom );
@@ -74,8 +77,7 @@ public Q_SLOTS:
 	virtual void setCrossHairColor( QColor color ) { m_CrosshairColor = color; }
 	virtual void setCrossHairWidth( int width ) { m_CrosshairWidth = width; }
 
-	virtual std::string getWidgetName() const;
-	virtual void setWidgetName( const std::string &wName );
+	virtual std::string getWidgetName() const { return std::string( "qt4_image_widget" ); }
 	virtual void keyPressEvent( QKeyEvent *e );
 
 	virtual void dragEnterEvent( QDragEnterEvent * );
@@ -107,8 +109,6 @@ private:
 
 	boost::shared_ptr<ImageHolder> getWidgetSpecCurrentImage() const;
 
-	QMemoryHandler m_MemoryHandler;
-
 	void commonInit();
 	util::PropertyMap m_WidgetProperties;
 	QPainter *m_Painter;
@@ -130,7 +130,7 @@ private:
 
 };
 
-
+}
 }
 } // end namespace
 #endif

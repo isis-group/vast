@@ -33,7 +33,7 @@
 
 namespace isis {
 namespace viewer {
-namespace vtk {
+namespace widget {
 
 VTKImageWidgetImplementation::VTKImageWidgetImplementation ( QViewerCore* core, QWidget* parent, PlaneOrientation orientation )
 	: QVTKWidget( parent ),
@@ -52,17 +52,16 @@ VTKImageWidgetImplementation::VTKImageWidgetImplementation ( QViewerCore* core, 
 
 void VTKImageWidgetImplementation::paintEvent ( QPaintEvent* event )
 {
-	
 	for( unsigned short i = 0; i < m_ImageVector.size(); i++ ) {
 		vtkColorTransferFunction* colorFun = vtkColorTransferFunction::New();
 		vtkPiecewiseFunction* opacityFun = vtkPiecewiseFunction::New();
 		boost::shared_ptr<ImageHolder> image = m_ImageVector[i];
 		for( unsigned short ci = 0; ci < 255; ci++ ) {
-			colorFun->AddRGBPoint(ci, QColor( image->colorMap[ci] ).redF(), QColor( image->colorMap[ci] ).greenF(), QColor( image->colorMap[ci] ).blueF() );
-			opacityFun->AddPoint(ci, image->opacity );
-			
+			colorFun->AddRGBPoint(ci, QColor( image->colorMap[ci] ).redF(), QColor( image->colorMap[ci] ).greenF(), QColor( image->colorMap[ci] ).blueF() );			
 		}
 		m_VolumeProperty->SetColor(i, colorFun );
+		opacityFun->AddPoint(image->minMax.first->as<double>(), 0 );
+		opacityFun->AddPoint(image->minMax.second->as<double>(), image->opacity );
 		m_VolumeProperty->SetScalarOpacity(i, opacityFun);
 	}
 	QVTKWidget::paintEvent(event);
@@ -137,15 +136,7 @@ void VTKImageWidgetImplementation::setMouseCursorIcon ( QIcon )
 {
 
 }
-void VTKImageWidgetImplementation::setWidgetName ( const std::string& name )
-{
 
-}
-
-std::string VTKImageWidgetImplementation::getWidgetName() const
-{
-
-}
 
 
 }}} //end namespace

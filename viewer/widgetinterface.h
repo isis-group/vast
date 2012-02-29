@@ -28,6 +28,7 @@
 #ifndef QWIDGETIMPLEMENTATIONBASE_HPP
 #define QWIDGETIMPLEMENTATIONBASE_HPP
 
+#ifdef __cplusplus
 #include "common.hpp"
 #include "imageholder.hpp"
 #include <QtGui>
@@ -40,46 +41,85 @@ namespace viewer
 
 class QViewerCore;
 
+namespace widget {
+	
 class WidgetInterface
 {
-
 public:
+	virtual void setup( QViewerCore *core, QWidget *parent, PlaneOrientation orientation ){
+		m_ViewerCore = core;
+		m_Parent = parent;
+		m_PlaneOrientation = orientation;
+		m_IsSetup = true;
+	};
+	
 	typedef std::vector<boost::shared_ptr<ImageHolder> > ImageVectorType;
 
+	virtual unsigned short getNumberOfInstancesInEnsemble() const = 0;
 	virtual void setEnableCrosshair( bool enable ) = 0;
 	virtual void updateScene() = 0;
 	virtual void setZoom( float zoom ) = 0;
 	virtual void addImage( const boost::shared_ptr<ImageHolder> image ) = 0;
 	virtual bool removeImage( const boost::shared_ptr< ImageHolder > image ) = 0;
-	virtual void setWidgetName( const std::string &name ) = 0;
 	virtual std::string getWidgetName() const = 0;
 	virtual void setInterpolationType( InterpolationType interpolation ) = 0;
 	virtual void setMouseCursorIcon( QIcon ) = 0;
 	virtual void setCrossHairColor( QColor ) {}
 	virtual void setCrossHairWidth( int ) {}
 
-	virtual QWidget *getParent( ) const { return m_Parent; }
-	virtual PlaneOrientation getPlaneOrientation() { return m_PlaneOrientation; }
+	QWidget *getParent( ) const { return m_Parent; }
+	PlaneOrientation getPlaneOrientation() { return m_PlaneOrientation; }
 
 	virtual void lookAtPhysicalCoords( const util::fvector4 &physicalCoords ) = 0;
 
 	ImageVectorType getImageVector() const { return m_ImageVector; }
-
+	std::string widget_file;
 protected:
-	WidgetInterface( QViewerCore *core, QWidget *parent, PlaneOrientation orientation )
-		: m_ViewerCore( core ),
-		  m_PlaneOrientation( orientation ),
-		  m_Parent( parent ) {}
+	WidgetInterface() : m_IsSetup(false) {}
 
 	QViewerCore *m_ViewerCore;
 	PlaneOrientation m_PlaneOrientation;
 	QWidget *m_Parent;
 	ImageVectorType m_ImageVector;
+
+private:
+	bool m_IsSetup;
 };
 
-
+}
 }
 } //end namespace
+
+#else
+typedef struct WidgetInterface WidgetInterface;
+#endif
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+#if defined(__STDC__) || defined(__cplusplus)
+#ifdef WIN32
+	extern __declspec( dllexport ) isis::viewer::widget::WidgetInterface *loadWidget();
+	extern __declspec( dllexport ) const char* getIdentifier();
+#else
+	extern isis::viewer::widget::WidgetInterface *loadWidget();
+	extern const char* getIdentifier();
+#endif
+#else
+#ifdef WIN32
+	extern __declspec( dllexport ) WidgetInterface *loadWidget();
+	extern __declspec( dllexport ) const char *getIdentifier();
+#else
+	extern WidgetInterface *loadWidget();
+	extern const char* getIdentifier();
+#endif
+#endif
+
+#ifdef __cplusplus
+}
+#endif
+
 
 
 #endif

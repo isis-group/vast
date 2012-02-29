@@ -33,7 +33,7 @@ namespace isis
 {
 namespace viewer
 {
-namespace widget
+namespace ui
 {
 
 ScalingWidget::ScalingWidget( QWidget *parent, isis::viewer::QViewerCore *core )

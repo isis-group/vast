@@ -29,7 +29,7 @@
 #include "aboutDialog.hpp"
 
 
-isis::viewer::widget::AboutDialog::AboutDialog ( QWidget* parent, isis::viewer::QViewerCore* core ) 
+isis::viewer::ui::AboutDialog::AboutDialog ( QWidget* parent, isis::viewer::QViewerCore* core )
 	: QDialog ( parent ),
 	m_ViewerCore( core ) 
 
@@ -55,7 +55,7 @@ isis::viewer::widget::AboutDialog::AboutDialog ( QWidget* parent, isis::viewer::
 
 }
 
-void isis::viewer::widget::AboutDialog::showEvent(QShowEvent* )
+void isis::viewer::ui::AboutDialog::showEvent(QShowEvent* )
 {
     m_Interface.labelCopyright->setText( m_ViewerCore->getOptionMap()->getPropertyAs<std::string>("copyright").c_str() );
     m_Interface.labelVersion->setText( m_ViewerCore->getVersion().c_str() );
@@ -67,13 +67,13 @@ void isis::viewer::widget::AboutDialog::showEvent(QShowEvent* )
 	m_Interface.authorsList->setCurrentRow(0);
 }
 
-void isis::viewer::widget::AboutDialog::onAuthorClicked ( QString author)
+void isis::viewer::ui::AboutDialog::onAuthorClicked ( QString author)
 {
     m_Interface.contactEdit->setText( m_authorMap.at( author.toStdString() ).c_str() );
     m_Interface.sendMailButton->setEnabled(true);
 }
 
-void isis::viewer::widget::AboutDialog::sendEmailClicked()
+void isis::viewer::ui::AboutDialog::sendEmailClicked()
 {
     QDesktopServices::openUrl( QUrl( m_Interface.contactEdit->text() ) );
 }

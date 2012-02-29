@@ -16,29 +16,45 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * Author: Erik Türke, tuerke@cbs.mpg.de
+ * Author: Erik Tuerke, tuerke@cbs.mpg.de, Samuel Eckermann, Hans-Christian Heinz
  *
- * QMemoryHandler.cpp
+ * VolumeHandler.cpp
  *
  * Description:
  *
- *  Created on: Aug 12, 2011
- *      Author: tuerke
+ *  Created on: Feb 28, 2012
  ******************************************************************/
-#include "QMemoryHandler.hpp"
+#ifndef VAST_VOLUME_HANDLER_HPP
+#define VAST_VOLUME_HANDLER_HPP
 
+#include <vtkImageAppendComponents.h>
+#include <vtkImageData.h>
+#include "qviewercore.hpp"
 
-namespace isis
+namespace isis {
+namespace viewer {
+namespace widget {
+
+class VolumeHandler
 {
-namespace viewer
-{
 
-QMemoryHandler::QMemoryHandler( QViewerCore *core )
-	: m_ViewerCore( core )
-{
+public:
+	VolumeHandler();
 
-}
+	bool addImage( boost::shared_ptr<ImageHolder> image, const size_t &timestep = 0 );
+
+	vtkImageData* getMergedImage();
+	
+private:
+	vtkImageAppendComponents* m_Merger;
+	vtkImageData* m_MergedImage;
+
+	std::list<boost::shared_ptr<ImageHolder > > m_ImageList;
+};
+
+	
+
+}}} //end namespace
 
 
-}
-} // end namespace
+#endif //VAST_VOLUME_HANDLER_HPP

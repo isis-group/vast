@@ -32,7 +32,7 @@ namespace isis
 {
 namespace viewer
 {
-namespace widget
+namespace ui
 {
 
 PreferencesDialog::PreferencesDialog( QWidget *parent, QViewerCore *core ):
