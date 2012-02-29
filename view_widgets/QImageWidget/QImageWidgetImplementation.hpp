@@ -56,13 +56,14 @@ class QImageWidgetImplementation : public QWidget, public WidgetInterface
 public:
 
 	QImageWidgetImplementation( QViewerCore *core, QWidget *parent = 0, PlaneOrientation orientation = axial );
-	QImageWidgetImplementation() {};
+	QImageWidgetImplementation();
 
 public Q_SLOTS:
 
 	virtual unsigned short getNumberOfInstancesInEnsemble() const { return 3; }
 	virtual void setEnableCrosshair( bool enable ) { m_ShowCrosshair = enable; }
 
+	virtual void setup( QViewerCore *, QWidget*, PlaneOrientation );
 	virtual void setZoom( float zoom );
 	virtual void addImage( const boost::shared_ptr<ImageHolder> image );
 	virtual bool removeImage( const boost::shared_ptr<ImageHolder> image );

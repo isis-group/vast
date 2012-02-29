@@ -37,6 +37,14 @@ namespace viewer
 namespace widget
 {
 
+QImageWidgetImplementation::QImageWidgetImplementation()
+	: QWidget(),
+	m_Painter( new QPainter() ),
+	m_ShowLabels( false )
+{
+}
+
+	
 QImageWidgetImplementation::QImageWidgetImplementation( QViewerCore *core, QWidget *parent, PlaneOrientation orientation )
 	: QWidget( parent ),
 	  m_Layout( new QVBoxLayout( parent ) ),
@@ -44,14 +52,23 @@ QImageWidgetImplementation::QImageWidgetImplementation( QViewerCore *core, QWidg
 	  m_ShowLabels( false )
 {
 	setup(core, parent, orientation );
-	m_Layout->addWidget( this );
-	m_Layout->setMargin( 0 );
+	commonInit();
+}
+
+void QImageWidgetImplementation::setup ( QViewerCore* core, QWidget* parent, PlaneOrientation orientation)
+{
+	WidgetInterface::setup( core, parent, orientation );
+	setParent(parent);
+	m_Layout = new QVBoxLayout(parent);
+	
 	commonInit();
 }
 
 
 void QImageWidgetImplementation::commonInit()
 {
+	m_Layout->addWidget( this );
+	m_Layout->setMargin( 0 );
 	connect( this, SIGNAL( zoomChanged( float ) ), m_ViewerCore, SLOT( zoomChanged( float ) ) );
 	connect( this, SIGNAL( physicalCoordsChanged( util::fvector4 ) ), m_ViewerCore, SLOT( physicalCoordsChanged( util::fvector4 ) ) );
 	connect( m_ViewerCore, SIGNAL( emitUpdateScene( ) ), this, SLOT( updateScene( ) ) );
@@ -589,4 +606,9 @@ void QImageWidgetImplementation::dropEvent( QDropEvent *e )
 isis::viewer::widget::WidgetInterface *loadWidget()
 {
 	return new isis::viewer::widget::QImageWidgetImplementation();
+}
+
+const char* getIdentifier()
+{
+	return "QtDefault";
 }

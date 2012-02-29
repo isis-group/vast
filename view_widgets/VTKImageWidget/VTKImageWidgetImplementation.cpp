@@ -37,7 +37,6 @@ namespace widget {
 
 VTKImageWidgetImplementation::VTKImageWidgetImplementation ( QViewerCore* core, QWidget* parent, PlaneOrientation orientation )
 	: QVTKWidget( parent ),
-	  WidgetInterface( core, parent, orientation ),
 	  m_Layout( new QVBoxLayout( parent ) ),
 	  m_RenderWindow( vtkRenderWindow::New() ),
 	  m_Renderer( vtkRenderer::New() ),
@@ -45,6 +44,7 @@ VTKImageWidgetImplementation::VTKImageWidgetImplementation ( QViewerCore* core, 
 	  m_Volume( vtkVolume::New() ),
 	  m_VolumeProperty( vtkVolumeProperty::New() )
 {
+	setup( core, parent, orientation );
 	m_Layout->addWidget( this );
 	m_Layout->setMargin( 0 );
 	commonInit();
@@ -140,3 +140,14 @@ void VTKImageWidgetImplementation::setMouseCursorIcon ( QIcon )
 
 
 }}} //end namespace
+
+
+isis::viewer::widget::WidgetInterface *loadWidget()
+{
+	return new isis::viewer::widget::VTKImageWidgetImplementation();
+}
+
+const char* getIdentifier()
+{
+	return "VTKRendering";
+}

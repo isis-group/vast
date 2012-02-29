@@ -14,7 +14,7 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 qt4_wrap_cpp(widget_moc_files QImageWidgetImplementation.hpp )
 
-add_library(vastImageWidget_QtDefault SHARED QImageWidgetImplementation.cpp ${widget_moc_files} )
+add_library(vastImageWidget_QtDefault SHARED QImageWidgetImplementation.cpp QOrientationHandler.cpp ${widget_moc_files} )
 target_link_libraries(vastImageWidget_QtDefault ${ISIS_LIB}  ${ISIS_LIB_DEPENDS} ${QT_LIBRARIES})
 
 install(TARGETS vastImageWidget_QtDefault DESTINATION ${VAST_WIDGET_INFIX} COMPONENT "vast widgets" )

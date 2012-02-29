@@ -300,7 +300,6 @@ widget::WidgetInterface* QViewerCore::getWidget ( const std::string& identifier 
 	if( widgetMap.empty() ) {
 		throw( std::runtime_error( "Could not find any widget!" ) );
 	}
-
 	if( widgetMap.find(identifier) != widgetMap.end() ) {
 		LOG(Dev, info ) << "Loading widget of identifier " << identifier;
 		return widgetMap.at(identifier)();

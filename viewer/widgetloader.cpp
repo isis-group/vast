@@ -71,16 +71,16 @@ unsigned int WidgetLoader::findWidgets( std::list< std::string > paths )
 		boost::filesystem::path p( pathRef );
 
 		if( !boost::filesystem::exists( p ) ) {
-			LOG( Runtime, warning ) << "Widgetpath " << util::MSubject( p.native_file_string() ) << " not found!";
+			LOG( Dev, warning ) << "Widgetpath " << util::MSubject( p.native_file_string() ) << " not found!";
 			pathOk = false;
 		}
 
 		if( !boost::filesystem::is_directory( p ) ) {
-			LOG( Runtime, warning ) << util::MSubject( p.native_file_string() ) << " is not a directory!";
+			LOG( Dev, warning ) << util::MSubject( p.native_file_string() ) << " is not a directory!";
 			pathOk = false;
 		}
 
-		LOG( Runtime, info ) << "Scanning " << util::MSubject( p ) << " for widgets...";
+		LOG( Dev, info ) << "Scanning " << util::MSubject( p ) << " for widgets...";
 		LOG( Dev, info ) << "Scanning " << util::MSubject( p ) << " for widgets...";
 
 		boost::regex widgetFilter( std::string( "^" ) + DL_PREFIX + "vastImageWidget" + "[[:word:]]+" + DL_SUFFIX + "$" );
@@ -111,11 +111,11 @@ unsigned int WidgetLoader::findWidgets( std::list< std::string > paths )
 							LOG( Dev, info ) << "Added widget " << loadIdentifier_func();
 						} else {
 #ifdef WIN32
-							LOG( Runtime, warning )
+							LOG( Dev, warning )
 									<< "could not get format factory function from " << util::MSubject( widgetName );
 							FreeLibrary( handle );
 #else
-							LOG( Runtime, warning )
+							LOG( Dev, warning )
 									<< "could not get format factory function from " << util::MSubject( widgetName ) << ":" << util::MSubject( dlerror() );
 							dlclose( handle );
 #endif
@@ -125,10 +125,10 @@ unsigned int WidgetLoader::findWidgets( std::list< std::string > paths )
 						LOG( Runtime, warning ) << "Could not load library " << util::MSubject( widgetName );
 
 #else
-						LOG( Runtime, warning ) << "Could not load library " << util::MSubject( widgetName ) << ":" <<  util::MSubject( dlerror() );
+						LOG( Dev, warning ) << "Could not load library " << util::MSubject( widgetName ) << ":" <<  util::MSubject( dlerror() );
 #endif
 				} else {
-					LOG( Runtime, verbose_info )
+					LOG( Dev, verbose_info )
 							<< "Ignoring " << util::MSubject( itr->path() )
 							<< " because it doesn't match " << widgetFilter.str();
 				}

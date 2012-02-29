@@ -22,7 +22,6 @@ find_package(VTK REQUIRED)
 include(${VTK_USE_FILE})
 set( NEEDED_LIBS QVTK ${VTK_LIBRARIES} )
 
-
 add_library(vastImageWidget_VTK SHARED VTKImageWidgetImplementation.cpp VolumeHandler.cpp ${widget_moc_files} )
 target_link_libraries(vastImageWidget_VTK QVTK ${ISIS_LIB}  ${ISIS_LIB_DEPENDS} ${QT_LIBRARIES} ${VTK_LIBRARIES})
 
