@@ -309,6 +309,21 @@ widget::WidgetInterface* QViewerCore::getWidget ( const std::string& identifier 
 		return widgetMap.begin()->second();
 	}
 }
+const util::PropertyMap* QViewerCore::getWidgetProperties ( const std::string& identifier ) const
+{
+	widget::WidgetLoader::WidgetPropertyMapType widgetPropertyMap = util::Singletons::get<widget::WidgetLoader, 10>().getWidgetPropertyMap();
+	if( widgetPropertyMap.empty() ) {
+		throw( std::runtime_error( "Could not find any widget!" ) );
+	}
+	if( widgetPropertyMap.find(identifier) != widgetPropertyMap.end() ) {
+		LOG(Dev, info ) << "Loading widget properties of identifier \"" << identifier << "\".";
+		return widgetPropertyMap.at(identifier);
+	} else {
+		LOG( Dev, error ) << "Can not find any widget properties with identifier \"" << identifier
+			<< "\"! Returning properties of first widget i can find.";
+		return widgetPropertyMap.begin()->second;
+	}
+}
 
 
 

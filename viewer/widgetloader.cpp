@@ -108,6 +108,7 @@ unsigned int WidgetLoader::findWidgets( std::list< std::string > paths )
 							if( loadProperties_func()->hasProperty("widgetIdent") ) {
 								const std::string widgetIdent = loadProperties_func()->getPropertyAs<std::string>("widgetIdent");
 								widgetMap[widgetIdent] = loadFunc;
+								widgetPropertyMap[widgetIdent] = loadProperties_func();
 								ret++;
 								LOG( Dev, info ) << "Added widget " << widgetIdent;
 							} else {

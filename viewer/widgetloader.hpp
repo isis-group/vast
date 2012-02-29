@@ -46,6 +46,7 @@ public:
 
 	typedef isis::viewer::widget::WidgetInterface* ( *loadWidget_func )() ;
 	typedef std::map<std::string, loadWidget_func > WidgetMapType;
+	typedef std::map<std::string, const util::PropertyMap *> WidgetPropertyMapType;
 	
 	typedef std::list<std::string> PathsType;
 
@@ -53,6 +54,7 @@ public:
 	PathsType getWidgetSearchPaths() const { return m_WidgetSearchPaths; }
 
 	WidgetMapType getWidgetMap() const { return widgetMap; }
+	WidgetPropertyMapType getWidgetPropertyMap() const { return widgetPropertyMap; }
 
 	static WidgetLoader &get();
 
@@ -60,6 +62,7 @@ protected:
 	WidgetLoader();
 
 	unsigned int findWidgets( std::list<std::string> paths );
+	WidgetPropertyMapType widgetPropertyMap;
 	WidgetMapType widgetMap;
 
 private:

@@ -119,14 +119,21 @@ UICore::ViewWidgetEnsembleType UICore::createViewWidgetEnsemble( const std::stri
 UICore::ViewWidgetEnsembleType UICore::createViewWidgetEnsemble( const std::string &widgetIdentifier, bool show )
 {
 	ViewWidgetEnsembleType ensemble;
-	ensemble.push_back( createViewWidget( widgetIdentifier, axial ) );
-	ensemble.push_back( createViewWidget( widgetIdentifier, sagittal ) );
-	ensemble.push_back(createViewWidget( widgetIdentifier, coronal ) );
-
+	const uint8_t numberWidgets = m_ViewerCore->getWidgetProperties(widgetIdentifier)->getPropertyAs<uint8_t>("numberOfEntitiesInEnsemble");
+	if( numberWidgets == 1 ) {
+		ensemble.push_back( createViewWidget( widgetIdentifier, not_specified) );
+	} else if ( numberWidgets == 3 ) {
+		ensemble.push_back( createViewWidget( widgetIdentifier, axial ) );
+		ensemble.push_back( createViewWidget( widgetIdentifier, sagittal ) );
+		ensemble.push_back(createViewWidget( widgetIdentifier, coronal ) );
+	} else {
+		for( uint8_t i = 0; i < numberWidgets; i++ ) {
+			ensemble.push_back( createViewWidget( widgetIdentifier, not_specified ) );
+		}
+	}
 	if( show ) {
 		attachViewWidgetEnsemble( ensemble );
 	}
-
 	m_EnsembleList.push_back( ensemble );
 	return ensemble;
 }
@@ -175,33 +182,19 @@ UICore::ViewWidgetEnsembleType  UICore::detachViewWidgetEnsemble( UICore::ViewWi
 void UICore::attachViewWidgetEnsemble( UICore::ViewWidgetEnsembleType ensemble )
 {
 	switch ( m_ViewWidgetArrangement ) {
-	case Default: {
-		if( m_EnsembleList.size() > 0 ) {
-			m_MainWindow->getInterface().centralGridLayout->addWidget( ensemble[0].dockWidget, m_RowCount, 0 );
-			m_MainWindow->getInterface().centralGridLayout->addWidget( ensemble[1].dockWidget, m_RowCount, 1 );
-			m_MainWindow->getInterface().centralGridLayout->addWidget( ensemble[2].dockWidget, m_RowCount, 2 );
-		} else {
-			m_MainWindow->getInterface().centralGridLayout->addWidget( ensemble[0].dockWidget, 0, 0 );
-			m_MainWindow->getInterface().centralGridLayout->addWidget( ensemble[1].dockWidget, 0, 1 );
-			m_MainWindow->getInterface().centralGridLayout->addWidget( ensemble[2].dockWidget, 1, 0 );
+		case InRow: {
+			for ( uint8_t i = 0; i < ensemble.size(); i++ ) {
+				m_MainWindow->getInterface().centralGridLayout->addWidget( ensemble[i].dockWidget, m_RowCount, i );
+			}
+			break;
 		}
-
-		break;
+		case InColumn: {
+			int currentColumn = m_MainWindow->getInterface().centralGridLayout->columnCount() ;
+			for ( uint8_t i = 0; i < ensemble.size(); i++ ) {
+				m_MainWindow->getInterface().centralGridLayout->addWidget( ensemble[i].dockWidget, i, currentColumn );
+			}
+		}
 	}
-	case InRow: {
-		m_MainWindow->getInterface().centralGridLayout->addWidget( ensemble[0].dockWidget, m_RowCount, 0 );
-		m_MainWindow->getInterface().centralGridLayout->addWidget( ensemble[1].dockWidget, m_RowCount, 1 );
-		m_MainWindow->getInterface().centralGridLayout->addWidget( ensemble[2].dockWidget, m_RowCount, 2 );
-		break;
-	}
-	case InColumn: {
-		int currentColumn = m_MainWindow->getInterface().centralGridLayout->columnCount() ;
-		m_MainWindow->getInterface().centralGridLayout->addWidget( ensemble[0].dockWidget, 0, currentColumn );
-		m_MainWindow->getInterface().centralGridLayout->addWidget( ensemble[1].dockWidget, 1, currentColumn );
-		m_MainWindow->getInterface().centralGridLayout->addWidget( ensemble[2].dockWidget, 2, currentColumn );
-	}
-	}
-
 	m_RowCount++;
 }
 

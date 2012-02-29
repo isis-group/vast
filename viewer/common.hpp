@@ -50,8 +50,7 @@ class ImageHolder;
 typedef uint8_t InternalImageType;
 typedef isis::util::color24 InternalImageColorType;
 
-enum PlaneOrientation { axial, sagittal, coronal };
-enum WidgetType { type_gl, type_qt };
+enum PlaneOrientation { axial, sagittal, coronal, not_specified };
 enum InterpolationType { nn = 0, lin };
 
 template<typename TYPE>
