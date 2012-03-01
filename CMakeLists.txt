@@ -44,7 +44,7 @@ set(VIEWER_FILES_HPP
 # set viewer version number
 ##########################################################
 set(VAST_VERSION_MAJOR "0")
-set(VAST_VERSION_MINOR "3")
+set(VAST_VERSION_MINOR "4")
 set(VAST_VERSION_PATCH "0")
 
 add_definitions(-D_VAST_VERSION_MAJOR=${VAST_VERSION_MAJOR})
