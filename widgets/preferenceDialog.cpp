@@ -177,6 +177,15 @@ void PreferencesDialog::loadSettings()
 	}
 
 	screenshotXChanged( preferencesUi.sizeX->value() );
+
+	preferencesUi.defaultViewWidgetComboBox->clear();
+	const widget::WidgetLoader::WidgetMapType &widgetMap = util::Singletons::get<widget::WidgetLoader, 10>().getWidgetMap();
+	preferencesUi.defaultViewWidgetFrame->setVisible( widgetMap.size() > 1 );
+	BOOST_FOREACH( widget::WidgetLoader::WidgetMapType::const_reference w, widgetMap )
+	{
+		preferencesUi.defaultViewWidgetComboBox->addItem( w.first.c_str() );
+	}
+	preferencesUi.defaultViewWidgetComboBox->setCurrentIndex( preferencesUi.defaultViewWidgetComboBox->findText( m_ViewerCore->getOptionMap()->getPropertyAs<std::string>("defaultViewWidgetIdentifier").c_str() ) );
 }
 
 void PreferencesDialog::saveSettings()
@@ -193,6 +202,7 @@ void PreferencesDialog::saveSettings()
 	m_ViewerCore->getOptionMap()->setPropertyAs<uint16_t>( "screenshotWidth", preferencesUi.sizeX->value() );
 	m_ViewerCore->getOptionMap()->setPropertyAs<uint16_t>( "screenshotHeight", preferencesUi.sizeY->value() );
 	m_ViewerCore->getOptionMap()->setPropertyAs<bool>( "screenshotManualScaling", preferencesUi.manualScaling->isChecked() );
+	m_ViewerCore->getOptionMap()->setPropertyAs<std::string>( "defaultViewWidgetIdentifier", preferencesUi.defaultViewWidgetComboBox->currentText().toStdString() );
 
 	if( m_ViewerCore->hasImage() ) {
 		if( m_ViewerCore->getCurrentImage()->imageType == ImageHolder::z_map ) {

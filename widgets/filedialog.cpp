@@ -186,6 +186,8 @@ void isis::viewer::ui::FileDialog::setup()
 	{
 		m_Interface.widgetTypeComboBox->addItem( w.first.c_str() );
 	}
+	m_Interface.widgetTypeframe->setVisible( widgetMap.size() > 1 );
+	m_Interface.widgetTypeComboBox->setCurrentIndex( m_Interface.widgetTypeComboBox->findText( m_ViewerCore->getOptionMap()->getPropertyAs<std::string>("defaultViewWidgetIdentifier").c_str() ) );
 	adjustSize();
 }
 

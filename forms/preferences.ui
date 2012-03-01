@@ -221,7 +221,7 @@
                     <string>If an image contains multiple image objects this option determines if vast should only visualize the first one. (unique to Vista images)</string>
                    </property>
                    <property name="text">
-                    <string>Visualize only first image object</string>
+                    <string>Visualize only first image object </string>
                    </property>
                   </widget>
                  </item>
@@ -298,6 +298,31 @@ Be careful using this option.</string>
                     </size>
                    </property>
                   </spacer>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+              <item row="0" column="0">
+               <widget class="QFrame" name="defaultViewWidgetFrame">
+                <property name="frameShape">
+                 <enum>QFrame::StyledPanel</enum>
+                </property>
+                <property name="frameShadow">
+                 <enum>QFrame::Raised</enum>
+                </property>
+                <layout class="QHBoxLayout" name="horizontalLayout_2">
+                 <property name="margin">
+                  <number>2</number>
+                 </property>
+                 <item>
+                  <widget class="QLabel" name="label_11">
+                   <property name="text">
+                    <string>Default view widget type:</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QComboBox" name="defaultViewWidgetComboBox"/>
                  </item>
                 </layout>
                </widget>
