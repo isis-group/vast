@@ -47,6 +47,8 @@
 #include <vtkInteractorStyleTrackballCamera.h>
 #include <vtkSliderRepresentation2D.h>
 #include <vtkRenderWindow.h>
+#include <vtkPolyDataMapper.h>
+#include <vtkCursor3D.h>
 
 namespace isis
 {
@@ -78,6 +80,8 @@ class VTKImageWidgetImplementation : public QVTKWidget, public WidgetInterface
 			mapper->SetInput( image );
 			imageData = image;
 		}
+		vtkImageData* getVTKImageData() const { return imageData; }
+		
 		vtkVolume *volume;
 		vtkVolumeProperty *property;
 		vtkFixedPointVolumeRayCastMapper *mapper;
@@ -122,6 +126,10 @@ private:
 	//vtk stuff
 	vtkRenderWindow *m_RenderWindow;
 	vtkRenderer *m_Renderer;
+	vtkActor *m_Actor;
+	vtkPolyDataMapper *m_CursorMapper;
+	vtkCursor3D *m_Cursor;
+	
 	ComponentsMapType m_VTKImageComponentsMap;
 
 	float m_OpacityGradientFactor;
