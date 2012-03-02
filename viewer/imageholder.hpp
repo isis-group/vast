@@ -28,25 +28,25 @@
 #ifndef IMAGEHOLDER_HPP
 #define IMAGEHOLDER_HPP
 
+// #include "common.hpp"
+#include "color.hpp"
 #include <boost/foreach.hpp>
 #include <boost/numeric/ublas/matrix.hpp>
 #include <vector>
 #include <CoreUtils/propmap.hpp>
 #include <DataStorage/image.hpp>
-#include "common.hpp"
-#include "color.hpp"
 #include "widgetinterface.h"
-#include "common.hpp"
+
 
 namespace isis
 {
 namespace viewer
 {
 
-namespace color
-{
-class Color;
-}
+// namespace color
+// {
+// class Color;
+// }
 namespace widget {
 class WidgetInterface;
 }
@@ -58,7 +58,10 @@ class WidgetInterface;
 
 class ImageHolder
 {
-
+	struct ImageProperties
+	{
+		
+	};
 
 public:
 	typedef std::list<boost::shared_ptr< ImageHolder > > ImageListType;
@@ -107,6 +110,8 @@ public:
 	void updateOrientation();
 	void updateHistogram();
 
+	bool zeroIsReserved() const { return m_ZeroIsReserved; }
+
 	void setVoxel( const size_t &first, const size_t &second, const size_t &third, const size_t &fourth, const double &value, bool sync = true );
 
 	template<typename TYPE>
@@ -131,7 +136,8 @@ public:
 	double extent;
 	double lowerThreshold;
 	double upperThreshold;
-	QVector<QRgb> colorMap;
+	color::Color::ColormapType colorMap;
+	color::Color::AlphamapType alphaMap;
 	util::fvector4 rowVec;
 	util::fvector4 columnVec;
 	util::fvector4 sliceVec;
@@ -148,6 +154,9 @@ public:
 	std::vector< double *> histogramVector;
 	std::vector< double *> histogramVectorWOZero;
 	std::pair<util::ValueReference, util::ValueReference> scalingToInternalType;
+	InternalImageType scaledZeroValue;
+	InternalImageType scaledMax;
+	InternalImageType scaledMin;
 
 private:
 
@@ -240,5 +249,6 @@ private:
 
 }
 } //end namespace
+
 
 #endif

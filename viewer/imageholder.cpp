@@ -258,8 +258,8 @@ bool ImageHolder::setImage( const data::Image &image, const ImageType &_imageTyp
 	LOG( Dev, verbose_info )  << "Fetched image of size " << m_ImageSize << " and type "
 								<< image.getMajorTypeName() << ".";
 	//copy the image into continuous memory space and assure consistent data type
-    const bool reserveZero = m_ZeroIsReserved && !isRGB && imageType == z_map;
-	synchronize(reserveZero);
+	m_ZeroIsReserved  = !isRGB && imageType == z_map;
+	synchronize(m_ZeroIsReserved);
 	
 	LOG_IF( m_ChunkVector.empty(), Dev, error ) << "Size of chunk vector is 0!";
 
@@ -309,7 +309,7 @@ bool ImageHolder::setImage( const data::Image &image, const ImageType &_imageTyp
 		m_PropMap.setPropertyAs<double>( "scalingMinValue", minMax.first->as<double>() );
 		m_PropMap.setPropertyAs<double>( "scalingMaxValue", minMax.second->as<double>() );
 	}
-
+	alphaMap.resize(256 );
 	alignedSize32 = get32BitAlignedSize( m_ImageSize );
 	m_PropMap.setPropertyAs<bool>( "init", true );
 	m_PropMap.setPropertyAs<util::slist>( "changedAttributes", util::slist() );
@@ -397,6 +397,7 @@ void ImageHolder::checkVoxelCoords( util::ivector4 &vc )
 void ImageHolder::updateColorMap()
 {
 	if( !isRGB ) {
+		alphaMap.fill( 1 );
 		util::Singletons::get<color::Color, 10>().adaptColorMapToImage( this );
 	}
 }

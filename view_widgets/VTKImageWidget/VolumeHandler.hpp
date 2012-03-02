@@ -27,9 +27,11 @@
 #ifndef VAST_VOLUME_HANDLER_HPP
 #define VAST_VOLUME_HANDLER_HPP
 
-#include <vtkImageAppendComponents.h>
 #include <vtkImageData.h>
 #include <vtkImageImport.h>
+#include <vtkTransform.h>
+#include <vtkImageReslice.h>
+#include <vtkMatrix4x4.h>
 #include "qviewercore.hpp"
 
 namespace isis {
@@ -42,16 +44,8 @@ class VolumeHandler
 public:
 	VolumeHandler();
 
-	bool addImage( boost::shared_ptr<ImageHolder> image, const size_t &timestep = 0 );
+	static vtkImageData *getVTKImageData( boost::shared_ptr<ImageHolder> image, const size_t &timestep = 0 );
 
-	vtkImageData* getMergedImage();
-	
-private:
-	vtkImageAppendComponents* m_Merger;
-	vtkImageData* m_MergedImage;
-	vtkImageImport * m_Importer;
-
-	std::list<boost::shared_ptr<ImageHolder > > m_ImageList;
 };
 
 	

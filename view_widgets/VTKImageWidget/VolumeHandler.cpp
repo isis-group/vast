@@ -26,55 +26,64 @@
  ******************************************************************/
 #include "VolumeHandler.hpp"
 
-
 namespace isis {
 namespace viewer {
 namespace widget {
 
 
 VolumeHandler::VolumeHandler( )
-	:m_Merger( vtkImageAppendComponents::New() ),
-	m_MergedImage( vtkImageData::New() ),
-	m_Importer( vtkImageImport::New() )
 {
 }
 
-bool VolumeHandler::addImage ( boost::shared_ptr< ImageHolder > image, const size_t &timestep )
+vtkImageData* VolumeHandler::getVTKImageData( boost::shared_ptr< ImageHolder > image, const size_t &timestep )
 {
-	if( std::find( m_ImageList.begin(), m_ImageList.end(), image ) == m_ImageList.end() ) {
-		m_ImageList.push_back( image );
-		const util::ivector4 size = image->getImageSize();
-		const util::fvector4 physSize = size * image->voxelSize;
-		vtkImageData *newImage = vtkImageData::New();
-		newImage->SetScalarTypeToUnsignedChar();
-		m_Importer->SetDataScalarTypeToUnsignedChar();
+	using namespace boost::numeric::ublas;
+	const util::ivector4 size = image->getImageSize();
+	vtkImageData *newImage = vtkImageData::New();
+	vtkImageImport *importer = vtkImageImport::New();
+	vtkTransform* transform = vtkTransform::New();
+	vtkImageReslice *reslicer = vtkImageReslice::New();
+	vtkMatrix4x4 *orientationMatrix = vtkMatrix4x4::New();
+	transform->Identity();
+	newImage->SetScalarTypeToUnsignedChar();
+	importer->SetDataScalarTypeToUnsignedChar();
+	importer->SetImportVoidPointer( &image->getChunkVector().operator[](timestep).voxel<InternalImageType>(0) );
+	importer->SetWholeExtent( 0, size[0] - 1, 0, size[1] - 1, 0, size[2] - 1 );
+	importer->SetDataExtentToWholeExtent();
+	importer->Update();
+	newImage = importer->GetOutput();
 
-		m_Importer->SetImportVoidPointer( &image->getChunkVector().operator[](timestep).voxel<InternalImageType>(0) );
-		
-		newImage->SetSpacing( image->voxelSize[0], image->voxelSize[1], image->voxelSize[2] );
-		newImage->SetDimensions( size[0], size[1], size[2] );
-		newImage->SetOrigin( image->indexOrigin[0], image->indexOrigin[1], image->indexOrigin[2] );
-		newImage->SetExtent(0, physSize[0], 0, physSize[1], 0, physSize[2] );
-
-		m_Importer->SetWholeExtent( 0, size[0] - 1, 0, size[1] - 1, 0, size[2] - 1 );
-		m_Importer->SetDataExtentToWholeExtent();
-		m_Importer->Update();
-		newImage = m_Importer->GetOutput();
-		
-		if( m_ImageList.size() > 1 ) {
-			m_Merger->SetInput(0, m_MergedImage );
-			m_Merger->SetInput(1, newImage);
-			m_Merger->Update();
-			m_MergedImage = m_Merger->GetOutput();
-		} else {
-			m_MergedImage = newImage;
-		}		
+	//transform the image with orientation matrix
+	const vector<float> mappedSize = prod( image->latchedOrientation, size.getBoostVector() );
+	const vector<float> mappedSpacing = prod( image->latchedOrientation, image->voxelSize.getBoostVector() );
+	orientationMatrix->SetElement(3,3,1);
+	for( uint8_t i = 0; i< 4; i++ ) {
+		for ( uint8_t j = 0; j < 4; j++ ) {
+			orientationMatrix->SetElement(i,j, image->latchedOrientation(j,i) / fabs( mappedSpacing[j]) );
+		}
 	}
-}
+	transform->SetMatrix( orientationMatrix );
 
-vtkImageData* VolumeHandler::getMergedImage()
-{
-	return m_MergedImage;
+	reslicer->SetInput( newImage );
+	util::fvector4 start;
+	util::fvector4 end;
+	for( uint8_t i = 0; i < 4; i++ ) {
+		if( mappedSize[i] > 0 ) {
+			start[i] = -image->indexOrigin[i];
+			end[i] = mappedSize[i] * fabs(mappedSpacing[i]) - image->indexOrigin[i];
+		} else {
+			start[i] = mappedSize[i] * fabs(mappedSpacing[i]) - image->indexOrigin[i];
+			end[i] = -image->indexOrigin[i];
+		}
+	}
+	
+	reslicer->SetOutputExtent( start[0], end[0], start[1], end[1], start[2] , end[2]  );
+	reslicer->SetOutputOrigin( image->indexOrigin[0], image->indexOrigin[1], image->indexOrigin[2] );
+	reslicer->SetOutputSpacing(1,1,1);
+	reslicer->SetInterpolationModeToNearestNeighbor();
+	reslicer->SetResliceTransform( transform );
+	reslicer->Update();
+	return reslicer->GetOutput();
 }
 
 

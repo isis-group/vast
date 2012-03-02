@@ -27,7 +27,6 @@
  ******************************************************************/
 #include "color.hpp"
 #include "imageholder.hpp"
-#include "common.hpp"
 #include <QResource>
 #include <QFile>
 #include <fstream>
@@ -225,8 +224,11 @@ void Color::adaptColorMapToImage( ImageHolder *image, bool split )
 	}
 
 	ColormapType negVec( mid );
+	AlphamapType negAlphas( mid );
 	ColormapType posVec( 256 - mid );
-
+	AlphamapType posAlphas( 256 - mid );
+	negAlphas.fill(0);
+	posAlphas.fill(0);
 	//only stuff necessary for colormaps
 	if( image->imageType == ImageHolder::z_map ) {
 
@@ -237,9 +239,10 @@ void Color::adaptColorMapToImage( ImageHolder *image, bool split )
 			if( min < 0 ) {
 				const double scaleMin = 1 - fabs( lowerThreshold / min );
 				const double normMin = 128.0 / mid;
-
+				
 				for ( unsigned short i = 0; i < mid; i++ ) {
 					negVec[i * scaleMin] = retMap[i * normMin];
+					negAlphas[i * scaleMin] = 1;
 				}
 			}
 
@@ -247,29 +250,39 @@ void Color::adaptColorMapToImage( ImageHolder *image, bool split )
 				const double normMax = 128.0 / ( 256 - mid );
 				const double scaleMax = fabs( upperThreshold / max );
 				const double offset = ( 256 - mid ) * scaleMax;
-
+				
 				for( unsigned short i = 0; i < ( 256 - mid ); i++ ) {
-					posVec[( i * ( 1 - scaleMax ) + offset )] = retMap[128 + i * normMax];
+					const unsigned short index = ( i * ( 1 - scaleMax ) + offset );
+					posVec[index] = retMap[128 + i * normMax];
+					posAlphas[index] = 1;
 				}
 			}
 
 			retMap = negVec << posVec;
+			image->alphaMap = negAlphas << posAlphas;
+			
 		}
 	}
 
-	if( image->imageType == ImageHolder::z_map ) {
-		ColormapType zmapLUT;
-		zmapLUT.resize( 256 );
+	if( image->zeroIsReserved() ) {
+		ColormapType zrLUT;
+		AlphamapType tmpAM;
+		zrLUT.resize( 256 );
+		tmpAM.resize( 256 );
 
 		for( unsigned short i = 0; i < 255; i++ ) {
-			zmapLUT[i + 1] = retMap[i * ( 256.0 / 255.0 )];
+			zrLUT[i + 1] = retMap[i * ( 256.0 / 255.0 )];
+			tmpAM[i + 1] = image->alphaMap[i * ( 256.0 / 255.0 )];
 		}
-
+		
 		//kill the zero value
-		zmapLUT[0] = QColor( 0, 0, 0, 0 ).rgba();
-		image->colorMap = zmapLUT;
+		zrLUT[0] = QColor( 0, 0, 0, 0 ).rgba();
+		tmpAM[0] = 0;
+		image->colorMap = zrLUT;
+		image->alphaMap = tmpAM;
 	} else {
 		retMap[0] = QColor( 0, 0, 0, 0 ).rgba();
+		image->alphaMap[0] = 0;
 		image->colorMap = retMap;
 	}
 

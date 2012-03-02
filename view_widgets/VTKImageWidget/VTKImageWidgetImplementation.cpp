@@ -38,10 +38,7 @@ namespace widget {
 
 VTKImageWidgetImplementation::VTKImageWidgetImplementation()
 	: m_RenderWindow( vtkRenderWindow::New() ),
-	  m_Renderer( vtkRenderer::New() ),
-	  m_Mapper( vtkFixedPointVolumeRayCastMapper::New() ),
-	  m_Volume( vtkVolume::New() ),
-	  m_VolumeProperty( vtkVolumeProperty::New() )
+	  m_Renderer( vtkRenderer::New() )
 {
 	
 }
@@ -50,10 +47,7 @@ VTKImageWidgetImplementation::VTKImageWidgetImplementation ( QViewerCore* core, 
 	: QVTKWidget( parent ),
 	  m_Layout( new QVBoxLayout( parent ) ),
 	  m_RenderWindow( vtkRenderWindow::New() ),
-	  m_Renderer( vtkRenderer::New() ),
-	  m_Mapper( vtkFixedPointVolumeRayCastMapper::New() ),
-	  m_Volume( vtkVolume::New() ),
-	  m_VolumeProperty( vtkVolumeProperty::New() )
+	  m_Renderer( vtkRenderer::New() )
 {
 	setup( core, parent, orientation );
 
@@ -71,17 +65,24 @@ void VTKImageWidgetImplementation::setup ( QViewerCore* core, QWidget* parent, P
 
 void VTKImageWidgetImplementation::paintEvent ( QPaintEvent* event )
 {
-	for( unsigned short i = 0; i < m_ImageVector.size(); i++ ) {
-		vtkColorTransferFunction* colorFun = vtkColorTransferFunction::New();
-		vtkPiecewiseFunction* opacityFun = vtkPiecewiseFunction::New();
-		boost::shared_ptr<ImageHolder> image = m_ImageVector[i];
-		for( unsigned short ci = 0; ci < 255; ci++ ) {
-			colorFun->AddRGBPoint(ci, QColor( image->colorMap[ci] ).redF(), QColor( image->colorMap[ci] ).greenF(), QColor( image->colorMap[ci] ).blueF() );			
+	BOOST_FOREACH( ComponentsMapType::reference component, m_VTKImageComponentsMap ) {
+		component.second.opacityFunction->RemoveAllPoints();
+		component.second.colurFunction->RemoveAllPoints();
+		for( unsigned short ci = 0; ci < 256; ci++ ) {
+				component.second.colurFunction->AddRGBPoint(ci, QColor( component.first->colorMap[ci] ).redF(),
+																QColor( component.first->colorMap[ci] ).greenF(),
+																QColor( component.first->colorMap[ci] ).blueF() );
 		}
-		m_VolumeProperty->SetColor(i, colorFun );
-		opacityFun->AddPoint(image->minMax.first->as<double>(), 0 );
-		opacityFun->AddPoint(image->minMax.second->as<double>(), image->opacity );
-		m_VolumeProperty->SetScalarOpacity(i, opacityFun);
+		if( component.first->imageType == ImageHolder::z_map ) {
+			for( unsigned short ci =0 ; ci < 256; ci++ ) {
+				component.second.opacityFunction->AddPoint( ci, component.first->alphaMap[ci] * component.first->opacity );
+			}
+		} else {
+			component.second.opacityFunction->AddPoint(0,0);
+			component.second.opacityFunction->AddPoint(1, m_OpacityGradientFactor * component.first->opacity );
+			component.second.opacityFunction->AddPoint(256,component.first->opacity);
+		}
+
 	}
 	QVTKWidget::paintEvent(event);
 }
@@ -100,14 +101,9 @@ void VTKImageWidgetImplementation::commonInit()
 	SetRenderWindow(m_RenderWindow);
 	
 	m_RenderWindow->AddRenderer( m_Renderer );
-	m_Volume->SetMapper( m_Mapper );
-	m_Renderer->AddVolume( m_Volume );
 	m_Renderer->SetBackground( 0.1, 0.2, 0.4 );
-	m_Volume->SetProperty( m_VolumeProperty );
+	m_OpacityGradientFactor = 0;
 
-	m_Mapper->SetImageSampleDistance(1.5);
-	m_Mapper->SetSampleDistance(0.3);
-	
 }
 
 void VTKImageWidgetImplementation::updateScene()
@@ -127,11 +123,21 @@ void VTKImageWidgetImplementation::setEnableCrosshair ( bool enable )
 
 void VTKImageWidgetImplementation::addImage ( const boost::shared_ptr< ImageHolder > image )
 {
-	util::Singletons::get<VolumeHandler, 10>().addImage( image, image->voxelCoords[3] );
+
+	VTKImageComponents component = m_VTKImageComponentsMap[image];
 	m_ImageVector.push_back(image);
-	m_Mapper->SetInput( util::Singletons::get<VolumeHandler, 10>().getMergedImage() );
+	m_Renderer->AddVolume( component.volume );
+	component.setVTKImageData( VolumeHandler::getVTKImageData(image, image->voxelCoords[3]) );
+	component.mapper->SetImageSampleDistance( 1.5 );
+	component.mapper->SetSampleDistance( 0.3 );
+	if( m_ImageVector.size() == 1 ) {
+		m_Renderer->GetActiveCamera()->SetPosition( image->indexOrigin[0] * 2, image->indexOrigin[1] * 2, image->indexOrigin[2] * 1.5 );
+		m_Renderer->GetActiveCamera()->Roll(-45);
+	}
 	m_Renderer->ResetCamera();
+	
 }
+
 
 void VTKImageWidgetImplementation::lookAtPhysicalCoords ( const util::fvector4& physicalCoords )
 {}
@@ -142,13 +148,15 @@ bool VTKImageWidgetImplementation::removeImage ( const boost::shared_ptr< ImageH
 }
 void VTKImageWidgetImplementation::setInterpolationType ( InterpolationType interpolation )
 {
-	switch( interpolation ) {
+	BOOST_FOREACH( ComponentsMapType::reference component, m_VTKImageComponentsMap ) {
+		switch( interpolation ) {
 		case nn:
-			m_VolumeProperty->SetInterpolationTypeToNearest();
+			component.second.property->SetInterpolationTypeToNearest();
 			break;
 		case lin:
-			m_VolumeProperty->SetInterpolationTypeToLinear();
+			component.second.property->SetInterpolationTypeToLinear();
 			break;
+		}
 	}
 }
 void VTKImageWidgetImplementation::setMouseCursorIcon ( QIcon )

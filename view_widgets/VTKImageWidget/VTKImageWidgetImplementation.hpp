@@ -55,7 +55,40 @@ namespace widget {
 class VTKImageWidgetImplementation : public QVTKWidget, public WidgetInterface
 {
 	Q_OBJECT
+
+	struct VTKImageComponents
+	{
+		VTKImageComponents()
+			: volume( vtkVolume::New() ),
+			property( vtkVolumeProperty::New() ),
+			mapper( vtkFixedPointVolumeRayCastMapper::New() ),
+			colurFunction( vtkColorTransferFunction::New() ),
+			opacityFunction( vtkPiecewiseFunction::New() ),
+			imageData( vtkImageData::New() )
+			{
+				volume->SetMapper( mapper );
+				volume->SetProperty( property );
+				property->SetColor( colurFunction );
+				property->SetScalarOpacity( opacityFunction );
+				mapper->SetInput( imageData );
+			}
+
+		void setVTKImageData( vtkImageData * image ) {
+			mapper->SetInput( image );
+			imageData = image;
+		}
+		vtkVolume *volume;
+		vtkVolumeProperty* property;
+		vtkFixedPointVolumeRayCastMapper* mapper;
+		vtkColorTransferFunction* colurFunction;
+		vtkPiecewiseFunction* opacityFunction;
+	private:
+		vtkImageData* imageData;
+	};
 public:
+
+	typedef std::map< boost::shared_ptr<ImageHolder>, VTKImageComponents > ComponentsMapType;
+	
 	VTKImageWidgetImplementation();
 	VTKImageWidgetImplementation( QViewerCore *core, QWidget *parent = 0, PlaneOrientation orientation = axial );
 
@@ -73,6 +106,9 @@ public Q_SLOTS:
 	virtual void setMouseCursorIcon( QIcon );
 	virtual void lookAtPhysicalCoords( const util::fvector4 &physicalCoords );
 
+
+	void setOpacityGradientFactor( float factor ) { m_OpacityGradientFactor = factor; }
+
 protected:
 	void paintEvent( QPaintEvent *event );
 	virtual void wheelEvent( QWheelEvent *e );
@@ -81,14 +117,14 @@ private:
 	QVBoxLayout *m_Layout;
 
 	void commonInit();
-
+	
 	//vtk stuff
 	vtkRenderWindow* m_RenderWindow;
 	vtkRenderer* m_Renderer;
-	vtkVolume* m_Volume;
-	vtkFixedPointVolumeRayCastMapper *m_Mapper;
-	vtkVolumeProperty *m_VolumeProperty;
+	ComponentsMapType m_VTKImageComponentsMap;
 
+	float m_OpacityGradientFactor;
+	
 	
 };
 
