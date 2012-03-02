@@ -48,47 +48,48 @@
 #include <vtkSliderRepresentation2D.h>
 #include <vtkRenderWindow.h>
 
-namespace isis {
-namespace viewer {
-namespace widget {
+namespace isis
+{
+namespace viewer
+{
+namespace widget
+{
 
 class VTKImageWidgetImplementation : public QVTKWidget, public WidgetInterface
 {
 	Q_OBJECT
 
-	struct VTKImageComponents
-	{
+	struct VTKImageComponents {
 		VTKImageComponents()
 			: volume( vtkVolume::New() ),
-			property( vtkVolumeProperty::New() ),
-			mapper( vtkFixedPointVolumeRayCastMapper::New() ),
-			colurFunction( vtkColorTransferFunction::New() ),
-			opacityFunction( vtkPiecewiseFunction::New() ),
-			imageData( vtkImageData::New() )
-			{
-				volume->SetMapper( mapper );
-				volume->SetProperty( property );
-				property->SetColor( colurFunction );
-				property->SetScalarOpacity( opacityFunction );
-				mapper->SetInput( imageData );
-			}
+			  property( vtkVolumeProperty::New() ),
+			  mapper( vtkFixedPointVolumeRayCastMapper::New() ),
+			  colurFunction( vtkColorTransferFunction::New() ),
+			  opacityFunction( vtkPiecewiseFunction::New() ),
+			  imageData( vtkImageData::New() ) {
+			volume->SetMapper( mapper );
+			volume->SetProperty( property );
+			property->SetColor( colurFunction );
+			property->SetScalarOpacity( opacityFunction );
+			mapper->SetInput( imageData );
+		}
 
-		void setVTKImageData( vtkImageData * image ) {
+		void setVTKImageData( vtkImageData *image ) {
 			mapper->SetInput( image );
 			imageData = image;
 		}
 		vtkVolume *volume;
-		vtkVolumeProperty* property;
-		vtkFixedPointVolumeRayCastMapper* mapper;
-		vtkColorTransferFunction* colurFunction;
-		vtkPiecewiseFunction* opacityFunction;
+		vtkVolumeProperty *property;
+		vtkFixedPointVolumeRayCastMapper *mapper;
+		vtkColorTransferFunction *colurFunction;
+		vtkPiecewiseFunction *opacityFunction;
 	private:
-		vtkImageData* imageData;
+		vtkImageData *imageData;
 	};
 public:
 
 	typedef std::map< boost::shared_ptr<ImageHolder>, VTKImageComponents > ComponentsMapType;
-	
+
 	VTKImageWidgetImplementation();
 	VTKImageWidgetImplementation( QViewerCore *core, QWidget *parent = 0, PlaneOrientation orientation = axial );
 
@@ -112,25 +113,27 @@ public Q_SLOTS:
 protected:
 	void paintEvent( QPaintEvent *event );
 	virtual void wheelEvent( QWheelEvent *e );
-	
+
 private:
 	QVBoxLayout *m_Layout;
 
 	void commonInit();
-	
+
 	//vtk stuff
-	vtkRenderWindow* m_RenderWindow;
-	vtkRenderer* m_Renderer;
+	vtkRenderWindow *m_RenderWindow;
+	vtkRenderer *m_Renderer;
 	ComponentsMapType m_VTKImageComponentsMap;
 
 	float m_OpacityGradientFactor;
-	
-	
+
+
 };
 
-	
 
-}}} //end namespace
+
+}
+}
+} //end namespace
 
 
 

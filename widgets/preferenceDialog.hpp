@@ -58,7 +58,7 @@ public Q_SLOTS:
 	void numberOfThreadsChanged( int );
 	void screenshotXChanged( int );
 	virtual void showEvent( QShowEvent * ) { loadSettings(); }
-	Ui::preferencesDialog &getUI() { return preferencesUi; } 
+	Ui::preferencesDialog &getUI() { return preferencesUi; }
 
 private:
 	QViewerCore *m_ViewerCore;

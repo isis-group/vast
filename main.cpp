@@ -106,7 +106,7 @@ int main( int argc, char *argv[] )
 	data::IOFactory::setProgressFeedback( feedback );
 	app.init( argc, argv, false );
 
-	
+
 
 	util::_internal::Log<isis::data::Runtime>::setHandler( logging_hanlder_runtime );
 	util::_internal::Log<isis::util::Runtime>::setHandler( logging_hanlder_runtime );
@@ -116,18 +116,19 @@ int main( int argc, char *argv[] )
 	util::_internal::Log<isis::image_io::Debug>::setHandler( logging_hanlder_runtime );
 
 	QViewerCore *core = new QViewerCore( appName, orgName );
-	
+
 	core->addMessageHandler( logging_hanlder_runtime.get() );
 	core->addMessageHandlerDev( logging_hanlder_dev.get() );
 	//scan for plugins and hand them to the core
 	core->addPlugins( plugin::PluginLoader::get().getPlugins() );
 	core->getUICore()->reloadPluginsToGUI();
-	
+
 	std::string widget_name = app.parameters["widget"].toString();
+
 	if( widget_name.empty() ) {
-		widget_name = core->getOptionMap()->getPropertyAs<std::string>("defaultViewWidgetIdentifier");
+		widget_name = core->getOptionMap()->getPropertyAs<std::string>( "defaultViewWidgetIdentifier" );
 	}
-	
+
 	util::slist fileList = app.parameters["in"];
 	const bool zmapIsSet = app.parameters["zmap"].isSet() || app.parameters["stats"].isSet();
 	util::slist zmapFileList = app.parameters["zmap"];
@@ -200,10 +201,10 @@ int main( int argc, char *argv[] )
 		BOOST_FOREACH( ImageListRef image, core->addImageList( zImgList, ImageHolder::z_map ) ) {
 			checkForCaCp( image );
 			core->getRecentFiles().insertSave( _internal::FileInformation( image->getFileNames().front(),
-												app.parameters["rdialect"].toString(),
-												widget_name,
-												app.parameters["rf"].toString(),
-												image->getImageProperties().imageType ) );
+											   app.parameters["rdialect"].toString(),
+											   widget_name,
+											   app.parameters["rf"].toString(),
+											   image->getImageProperties().imageType ) );
 			UICore::ViewWidgetEnsembleType ensemble = core->getUICore()->createViewWidgetEnsemble( widget_name, image );
 
 			if( app.parameters["in"].isSet() ) {
@@ -227,10 +228,10 @@ int main( int argc, char *argv[] )
 		BOOST_FOREACH( ImageListRef image, core->addImageList( imgList, ImageHolder::structural_image ) ) {
 			checkForCaCp( image );
 			core->getRecentFiles().insertSave( _internal::FileInformation( image->getFileNames().front(),
-												app.parameters["rdialect"].toString(),
-												widget_name,
-												app.parameters["rf"].toString(),
-												image->getImageProperties().imageType ) );
+											   app.parameters["rdialect"].toString(),
+											   widget_name,
+											   app.parameters["rf"].toString(),
+											   image->getImageProperties().imageType ) );
 			core->getUICore()->createViewWidgetEnsemble( widget_name, image );
 		}
 		core->getUICore()->setOptionPosition( isis::viewer::UICore::bottom );
@@ -241,10 +242,10 @@ int main( int argc, char *argv[] )
 		BOOST_FOREACH( ImageListRef image, core->addImageList( imgList, ImageHolder::structural_image ) ) {
 			checkForCaCp( image );
 			core->getRecentFiles().insertSave( _internal::FileInformation( image->getFileNames().front(),
-												app.parameters["rdialect"].toString(),
-												widget_name,
-												app.parameters["rf"].toString(),
-												image->getImageProperties().imageType ) );
+											   app.parameters["rdialect"].toString(),
+											   widget_name,
+											   app.parameters["rf"].toString(),
+											   image->getImageProperties().imageType ) );
 			core->attachImageToWidget( image, ensemble[0]. widgetImplementation );
 			core->attachImageToWidget( image, ensemble[1]. widgetImplementation );
 			core->attachImageToWidget( image, ensemble[2]. widgetImplementation );
@@ -252,10 +253,10 @@ int main( int argc, char *argv[] )
 		BOOST_FOREACH( ImageListRef image, core->addImageList( zImgList, ImageHolder::z_map ) ) {
 			checkForCaCp( image );
 			core->getRecentFiles().insertSave( _internal::FileInformation( image->getFileNames().front(),
-												app.parameters["rdialect"].toString(),
-												widget_name,
-												app.parameters["rf"].toString(),
-												image->getImageProperties().imageType ) );
+											   app.parameters["rdialect"].toString(),
+											   widget_name,
+											   app.parameters["rf"].toString(),
+											   image->getImageProperties().imageType ) );
 			core->attachImageToWidget( image, ensemble[0]. widgetImplementation );
 			core->attachImageToWidget( image, ensemble[1]. widgetImplementation );
 			core->attachImageToWidget( image, ensemble[2]. widgetImplementation );

@@ -42,8 +42,9 @@ namespace isis
 {
 namespace viewer
 {
-namespace widget {
-	
+namespace widget
+{
+
 class QImageWidgetImplementation : public QWidget, public WidgetInterface
 {
 	Q_OBJECT
@@ -63,7 +64,7 @@ public Q_SLOTS:
 	virtual unsigned short getNumberOfInstancesInEnsemble() const { return 3; }
 	virtual void setEnableCrosshair( bool enable ) { m_ShowCrosshair = enable; }
 
-	virtual void setup( QViewerCore *, QWidget*, PlaneOrientation );
+	virtual void setup( QViewerCore *, QWidget *, PlaneOrientation );
 	virtual void setZoom( float zoom );
 	virtual void addImage( const boost::shared_ptr<ImageHolder> image );
 	virtual bool removeImage( const boost::shared_ptr<ImageHolder> image );

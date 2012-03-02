@@ -36,18 +36,22 @@
 #include <boost/foreach.hpp>
 #include <list>
 
-namespace isis {
-namespace viewer {
-namespace widget {
+namespace isis
+{
+namespace viewer
+{
+namespace widget
+{
 
-class WidgetLoader {
+class WidgetLoader
+{
 public:
 	typedef boost::shared_ptr< WidgetInterface > WidgetInterfacePointer;
 
 	typedef isis::viewer::widget::WidgetInterface* ( *loadWidget_func )() ;
 	typedef std::map<std::string, loadWidget_func > WidgetMapType;
 	typedef std::map<std::string, const util::PropertyMap *> WidgetPropertyMapType;
-	
+
 	typedef std::list<std::string> PathsType;
 
 	void addWidgetSearchPath( const std::string &path ) { m_WidgetSearchPaths.push_back( path ); }
@@ -69,11 +73,13 @@ private:
 	PathsType m_WidgetSearchPaths;
 };
 
-	
 
 
-	
-}}} //end namespace
+
+
+}
+}
+} //end namespace
 
 
 

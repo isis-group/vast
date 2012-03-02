@@ -60,9 +60,9 @@ public:
 	virtual std::list<boost::shared_ptr<ImageHolder> > addImageList( const std::list< data::Image > imageList, const ImageHolder::ImageType &imageType );
 	virtual void setImageList( const std::list< data::Image > imageList, const ImageHolder::ImageType &imageType );
 
-	widget::WidgetInterface* getWidget( const std::string &identifier ) throw( std::runtime_error & );
-	const util::PropertyMap* getWidgetProperties( const std::string &identifier ) ;
-	
+	widget::WidgetInterface *getWidget( const std::string &identifier ) throw( std::runtime_error & );
+	const util::PropertyMap *getWidgetProperties( const std::string &identifier ) ;
+
 	const QSettings *getSettings() const { return m_Settings; }
 	QSettings *getSettings() { return m_Settings; }
 

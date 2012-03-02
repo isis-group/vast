@@ -43,7 +43,8 @@ namespace isis
 namespace viewer
 {
 
-namespace widget {
+namespace widget
+{
 class WidgetInterface;
 }
 /**
@@ -57,8 +58,7 @@ class ImageHolder
 public:
 	enum ImageType { structural_image, z_map };
 private:
-	struct ImageProperties
-	{
+	struct ImageProperties {
 		util::ivector4 voxelCoords;
 		util::fvector4 physicalCoords;
 		util::fvector4 voxelSize;
@@ -96,7 +96,7 @@ public:
 	typedef std::list<boost::shared_ptr< ImageHolder > > ImageListType;
 	typedef data::_internal::ValuePtrBase::Reference ImagePointerType;
 
-	
+
 
 	ImageHolder();
 
@@ -110,7 +110,7 @@ public:
 	util::PropertyMap &getPropMap() { return m_PropMap; }
 	const util::PropertyMap &getPropMap() const { return m_PropMap; }
 	const util::FixedVector<size_t, 4> &getImageSize() const { return m_ImageSize; }
-	boost::shared_ptr< data::Image >getISISImage(bool typed = false ) const;
+	boost::shared_ptr< data::Image >getISISImage( bool typed = false ) const;
 	boost::numeric::ublas::matrix<double> getNormalizedImageOrientation( bool transposed = false );
 	boost::numeric::ublas::matrix<double> getImageOrientation( bool transposed = false ) const;
 	void addChangedAttribute( const std::string &attribute );
@@ -149,7 +149,7 @@ public:
 	template<typename TYPE>
 	void setTypedVoxel(  const size_t &first, const size_t &second, const size_t &third, const size_t &fourth, const TYPE &value, bool sync = true ) {
 		getChunkVector()[fourth].voxel<InternalImageType>( first, second, third )
-			= static_cast<double>( value ) * getImageProperties().scalingToInternalType.first->as<double>() + getImageProperties().scalingToInternalType.second->as<double>();
+		= static_cast<double>( value ) * getImageProperties().scalingToInternalType.first->as<double>() + getImageProperties().scalingToInternalType.second->as<double>();
 
 		if( sync ) {
 			getISISImage()->getChunk( first, second, third, fourth, false ).voxel<TYPE>( first, second, third, fourth ) = value;

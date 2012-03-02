@@ -34,9 +34,12 @@
 #include <vtkMatrix4x4.h>
 #include "qviewercore.hpp"
 
-namespace isis {
-namespace viewer {
-namespace widget {
+namespace isis
+{
+namespace viewer
+{
+namespace widget
+{
 
 class VolumeHandler
 {
@@ -48,9 +51,11 @@ public:
 
 };
 
-	
 
-}}} //end namespace
+
+}
+}
+} //end namespace
 
 
 #endif //VAST_VOLUME_HANDLER_HPP
