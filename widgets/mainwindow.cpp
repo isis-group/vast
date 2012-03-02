@@ -263,8 +263,8 @@ void MainWindow::toggleZMapMode( bool zmap )
 void MainWindow::resetScaling()
 {
 	BOOST_FOREACH( DataContainer::reference image, m_ViewerCore->getDataContainer() ) {
-		image.second->scaling = 1.0;
-		image.second->offset = 0.0;
+		image.second->getImageProperties().scaling = 1.0;
+		image.second->getImageProperties().offset = 0.0;
 		image.second->updateColorMap();
 	}
 	m_ViewerCore->updateScene();
@@ -302,7 +302,7 @@ void MainWindow::ignoreOrientation( bool ignore )
 			checkForCaCp( image.second );
 		}
 
-		image.second->physicalCoords = image.second->getISISImage()->getPhysicalCoordsFromIndex( image.second->voxelCoords );
+		image.second->getImageProperties().physicalCoords = image.second->getISISImage()->getPhysicalCoordsFromIndex( image.second->getImageProperties().voxelCoords );
 	}
 
 	m_ViewerCore->getUICore()->refreshUI();
@@ -574,7 +574,7 @@ void MainWindow::findGlobalMin()
 			toggleLoadingIcon(true, QString( "Searching for global min of ") + m_ViewerCore->getCurrentImage()->getFileNames().front().c_str() );
 		}
 		const util::ivector4 minVoxel = operation::NativeImageOps::getGlobalMin( m_ViewerCore->getCurrentImage(),
-										m_ViewerCore->getCurrentImage()->voxelCoords,
+										m_ViewerCore->getCurrentImage()->getImageProperties().voxelCoords,
 										radius );
 		m_ViewerCore->physicalCoordsChanged( m_ViewerCore->getCurrentImage()->getISISImage()->getPhysicalCoordsFromIndex( minVoxel ) );
 		toggleLoadingIcon(false);
@@ -589,7 +589,7 @@ void MainWindow::findGlobalMax()
 			toggleLoadingIcon(true, QString( "Searching for global max of ") + m_ViewerCore->getCurrentImage()->getFileNames().front().c_str() );
 		}
 		const util::ivector4 maxVoxel = operation::NativeImageOps::getGlobalMax( m_ViewerCore->getCurrentImage(),
-										m_ViewerCore->getCurrentImage()->voxelCoords,
+										m_ViewerCore->getCurrentImage()->getImageProperties().voxelCoords,
 										radius );
 		m_ViewerCore->physicalCoordsChanged( m_ViewerCore->getCurrentImage()->getISISImage()->getPhysicalCoordsFromIndex( maxVoxel ) );
 		toggleLoadingIcon(false);

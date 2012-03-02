@@ -54,12 +54,12 @@ vtkImageData* VolumeHandler::getVTKImageData( boost::shared_ptr< ImageHolder > i
 	newImage = importer->GetOutput();
 
 	//transform the image with orientation matrix
-	const vector<float> mappedSize = prod( image->latchedOrientation, size.getBoostVector() );
-	const vector<float> mappedSpacing = prod( image->latchedOrientation, image->voxelSize.getBoostVector() );
+	const vector<float> mappedSize = prod( image->getImageProperties().orientation, size.getBoostVector() );
+	const vector<float> mappedSpacing = prod( image->getImageProperties().orientation, image->getImageProperties().voxelSize.getBoostVector() );
 	orientationMatrix->SetElement(3,3,1);
 	for( uint8_t i = 0; i< 4; i++ ) {
 		for ( uint8_t j = 0; j < 4; j++ ) {
-			orientationMatrix->SetElement(i,j, image->latchedOrientation(j,i) / fabs( mappedSpacing[j]) );
+			orientationMatrix->SetElement(i,j, image->getImageProperties().orientation(j,i) / fabs( mappedSpacing[j]) );
 		}
 	}
 	transform->SetMatrix( orientationMatrix );
@@ -69,16 +69,16 @@ vtkImageData* VolumeHandler::getVTKImageData( boost::shared_ptr< ImageHolder > i
 	util::fvector4 end;
 	for( uint8_t i = 0; i < 4; i++ ) {
 		if( mappedSize[i] > 0 ) {
-			start[i] = -image->indexOrigin[i];
-			end[i] = mappedSize[i] * fabs(mappedSpacing[i]) - image->indexOrigin[i];
+			start[i] = -image->getImageProperties().indexOrigin[i];
+			end[i] = mappedSize[i] * fabs(mappedSpacing[i]) - image->getImageProperties().indexOrigin[i];
 		} else {
-			start[i] = mappedSize[i] * fabs(mappedSpacing[i]) - image->indexOrigin[i];
-			end[i] = -image->indexOrigin[i];
+			start[i] = mappedSize[i] * fabs(mappedSpacing[i]) - image->getImageProperties().indexOrigin[i];
+			end[i] = -image->getImageProperties().indexOrigin[i];
 		}
 	}
 	
 	reslicer->SetOutputExtent( start[0], end[0], start[1], end[1], start[2] , end[2]  );
-	reslicer->SetOutputOrigin( image->indexOrigin[0], image->indexOrigin[1], image->indexOrigin[2] );
+	reslicer->SetOutputOrigin( image->getImageProperties().indexOrigin[0], image->getImageProperties().indexOrigin[1], image->getImageProperties().indexOrigin[2] );
 	reslicer->SetOutputSpacing(1,1,1);
 	reslicer->SetInterpolationModeToNearestNeighbor();
 	reslicer->SetResliceTransform( transform );

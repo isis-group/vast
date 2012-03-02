@@ -54,7 +54,7 @@ void isis::viewer::plugin::CorrelationPlotterDialog::lockClicked()
 void isis::viewer::plugin::CorrelationPlotterDialog::physicalCoordsChanged( isis::util::fvector4 /*physicalCoords*/ )
 {
 	if( !m_Interface.lock->isChecked() ) {
-		m_CurrentVoxelPos = m_CurrentFunctionalImage->voxelCoords;
+		m_CurrentVoxelPos = m_CurrentFunctionalImage->getImageProperties().voxelCoords;
 		calculateCorrelation();
 		m_ViewerCore->updateScene();
 	}
@@ -130,7 +130,7 @@ void isis::viewer::plugin::CorrelationPlotterDialog::showEvent( QShowEvent * )
 
 		}
 
-		physicalCoordsChanged( m_CurrentFunctionalImage->physicalCoords );
+		physicalCoordsChanged( m_CurrentFunctionalImage->getImageProperties().physicalCoords );
 	}
 
 }
@@ -153,25 +153,25 @@ bool isis::viewer::plugin::CorrelationPlotterDialog::createCorrelationMap()
 			corrMap.setPropertyAs<std::string>( "source", "correlation_map" );
 
 			m_CurrentCorrelationMap = m_ViewerCore->addImage( corrMap, ImageHolder::z_map );
-			m_CurrentCorrelationMap->lut = std::string( "standard_zmap" );
-			m_CurrentCorrelationMap->minMax.first = util::Value<MapImageType>( -1 );
-			m_CurrentCorrelationMap->minMax.second = util::Value<MapImageType>( 1 );
-			m_CurrentCorrelationMap->internMinMax.first = util::Value<MapImageType>( 0 );
-			m_CurrentCorrelationMap->internMinMax.second = util::Value<MapImageType>( 255 );
-			m_CurrentCorrelationMap->scalingToInternalType.first = util::Value<MapImageType>(128);
-			m_CurrentCorrelationMap->scalingToInternalType.second = util::Value<MapImageType>(127);
-			m_CurrentCorrelationMap->extent = m_CurrentCorrelationMap->minMax.second->as<double>() -  m_CurrentCorrelationMap->minMax.first->as<double>();
+			m_CurrentCorrelationMap->getImageProperties().lut = std::string( "standard_zmap" );
+			m_CurrentCorrelationMap->getImageProperties().minMax.first = util::Value<MapImageType>( -1 );
+			m_CurrentCorrelationMap->getImageProperties().minMax.second = util::Value<MapImageType>( 1 );
+			m_CurrentCorrelationMap->getImageProperties().internMinMax.first = util::Value<MapImageType>( 0 );
+			m_CurrentCorrelationMap->getImageProperties().internMinMax.second = util::Value<MapImageType>( 255 );
+			m_CurrentCorrelationMap->getImageProperties().scalingToInternalType.first = util::Value<MapImageType>(128);
+			m_CurrentCorrelationMap->getImageProperties().scalingToInternalType.second = util::Value<MapImageType>(127);
+			m_CurrentCorrelationMap->getImageProperties().extent = m_CurrentCorrelationMap->getImageProperties().minMax.second->as<double>() -  m_CurrentCorrelationMap->getImageProperties().minMax.first->as<double>();
 			isis::data::ValuePtr<InternalFunctionalImageType> imagePtr( ( InternalFunctionalImageType * )
 					calloc( m_CurrentFunctionalImage->getISISImage()->getVolume(), sizeof( InternalFunctionalImageType ) ), m_CurrentFunctionalImage->getISISImage()->getVolume() );
 			m_CurrentFunctionalImage->getISISImage()->copyToMem<InternalFunctionalImageType>( &imagePtr[0], m_CurrentFunctionalImage->getISISImage()->getVolume() );
 			m_InternalChunk.reset( new isis::data::Chunk( imagePtr, size[0], size[1], size[2], size[3] ) );
 			m_CurrentCorrelationMap->updateColorMap();
-			util::ivector4 voxelCoords = m_CurrentFunctionalImage->voxelCoords;
-			util::fvector4 physicalCoords = m_CurrentFunctionalImage->physicalCoords;
+			util::ivector4 voxelCoords = m_CurrentFunctionalImage->getImageProperties().voxelCoords;
+			util::fvector4 physicalCoords = m_CurrentFunctionalImage->getImageProperties().physicalCoords;
 			voxelCoords[3] = 0;
 			physicalCoords[3] = 0;
-			m_CurrentCorrelationMap->voxelCoords = voxelCoords;
-			m_CurrentCorrelationMap->physicalCoords = physicalCoords;
+			m_CurrentCorrelationMap->getImageProperties().voxelCoords = voxelCoords;
+			m_CurrentCorrelationMap->getImageProperties().physicalCoords = physicalCoords;
 			m_CurrentVoxelPos = voxelCoords;
 			return true;
 		}

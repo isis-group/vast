@@ -203,7 +203,7 @@ int main( int argc, char *argv[] )
 												app.parameters["rdialect"].toString(),
 												widget_name,
 												app.parameters["rf"].toString(),
-												image->imageType ) );
+												image->getImageProperties().imageType ) );
 			UICore::ViewWidgetEnsembleType ensemble = core->getUICore()->createViewWidgetEnsemble( widget_name, image );
 
 			if( app.parameters["in"].isSet() ) {
@@ -230,7 +230,7 @@ int main( int argc, char *argv[] )
 												app.parameters["rdialect"].toString(),
 												widget_name,
 												app.parameters["rf"].toString(),
-												image->imageType ) );
+												image->getImageProperties().imageType ) );
 			core->getUICore()->createViewWidgetEnsemble( widget_name, image );
 		}
 		core->getUICore()->setOptionPosition( isis::viewer::UICore::bottom );
@@ -244,7 +244,7 @@ int main( int argc, char *argv[] )
 												app.parameters["rdialect"].toString(),
 												widget_name,
 												app.parameters["rf"].toString(),
-												image->imageType ) );
+												image->getImageProperties().imageType ) );
 			core->attachImageToWidget( image, ensemble[0]. widgetImplementation );
 			core->attachImageToWidget( image, ensemble[1]. widgetImplementation );
 			core->attachImageToWidget( image, ensemble[2]. widgetImplementation );
@@ -255,7 +255,7 @@ int main( int argc, char *argv[] )
 												app.parameters["rdialect"].toString(),
 												widget_name,
 												app.parameters["rf"].toString(),
-												image->imageType ) );
+												image->getImageProperties().imageType ) );
 			core->attachImageToWidget( image, ensemble[0]. widgetImplementation );
 			core->attachImageToWidget( image, ensemble[1]. widgetImplementation );
 			core->attachImageToWidget( image, ensemble[2]. widgetImplementation );

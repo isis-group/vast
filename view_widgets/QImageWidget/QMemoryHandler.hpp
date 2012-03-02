@@ -43,7 +43,7 @@ public:
 	template< typename TYPE>
 	void fillSliceChunk( data::MemChunk<TYPE> &sliceChunk, const boost::shared_ptr< ImageHolder > image, const PlaneOrientation &orientation, const size_t &timestep = 0 ) const {
 		const util::ivector4 mappedSize = QOrientationHandler::mapCoordsToOrientation( image->getImageSize(), image, orientation );
-		const util::ivector4 mappedCoords = QOrientationHandler::mapCoordsToOrientation( image->voxelCoords, image, orientation );
+		const util::ivector4 mappedCoords = QOrientationHandler::mapCoordsToOrientation( image->getImageProperties().voxelCoords, image, orientation );
 		const util::ivector4 mapping = QOrientationHandler::mapCoordsToOrientation( util::ivector4( 0, 1, 2, 3 ), image, orientation, true );
 		const data::Chunk &chunk = image->getChunkVector()[timestep];
 

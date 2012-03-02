@@ -99,10 +99,10 @@ private:
 		}
 
 		retImage = m_MaskEditDialog->m_ViewerCore->addImage( mask, ImageHolder::structural_image );
-		retImage->minMax.first = isis::util::Value<TYPE>( std::numeric_limits<TYPE>::min() );
-		retImage->minMax.second = isis::util::Value<TYPE>( std::numeric_limits<TYPE>::max() );
-		retImage->internMinMax.first = isis::util::Value<TYPE>( std::numeric_limits<TYPE>::min() );
-		retImage->internMinMax.second = isis::util::Value<TYPE>( std::numeric_limits<TYPE>::max() );
+		retImage->getImageProperties().minMax.first = isis::util::Value<TYPE>( std::numeric_limits<TYPE>::min() );
+		retImage->getImageProperties().minMax.second = isis::util::Value<TYPE>( std::numeric_limits<TYPE>::max() );
+		retImage->getImageProperties().internMinMax.first = isis::util::Value<TYPE>( std::numeric_limits<TYPE>::min() );
+		retImage->getImageProperties().internMinMax.second = isis::util::Value<TYPE>( std::numeric_limits<TYPE>::max() );
 
 		return retImage;
 	}

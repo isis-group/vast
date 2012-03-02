@@ -111,7 +111,7 @@ void MaskEditDialog::physicalCoordChanged( util::fvector4 physCoord )
 {
 	if( m_ViewerCore->hasImage() ) {
 		if( m_CurrentMask ) {
-			switch( m_CurrentMask->majorTypeID ) {
+			switch( m_CurrentMask->getImageProperties().majorTypeID ) {
 			case isis::data::ValuePtr<bool>::staticID:
 				manipulateVoxel<bool>( physCoord, std::numeric_limits<bool>::max(), m_CurrentMask );
 				break;
@@ -146,7 +146,7 @@ void MaskEditDialog::physicalCoordChanged( util::fvector4 physCoord )
 				manipulateVoxel<float>( physCoord, std::numeric_limits<float>::max(), m_CurrentMask );
 				break;
 			default:
-				LOG( Runtime, error ) << "Unknown type ID " << m_CurrentMask->majorTypeID << " when trying to paint mask";
+				LOG( Runtime, error ) << "Unknown type ID " << m_CurrentMask->getImageProperties().majorTypeID << " when trying to paint mask";
 				break;
 			}
 

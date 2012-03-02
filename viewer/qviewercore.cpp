@@ -168,7 +168,7 @@ void QViewerCore::timestepChanged ( int timestep )
 		{
 			if ( static_cast<size_t> ( timestep ) < image.second->getImageSize() [3] )
 			{
-				image.second->voxelCoords[3] = timestep;
+				image.second->getImageProperties().voxelCoords[3] = timestep;
 			}
 		}
 		updateScene();
@@ -196,12 +196,12 @@ void QViewerCore::centerImages ( bool ca )
 		{
 			const util::ivector4 size = getCurrentImage()->getImageSize();
 			const util::ivector4 center ( size[0] / 2, size[1] / 2, size[2] / 2,
-										  getCurrentImage()->voxelCoords[3] );
-			getCurrentImage()->voxelCoords = center;
+										  getCurrentImage()->getImageProperties().voxelCoords[3] );
+			getCurrentImage()->getImageProperties().voxelCoords = center;
 		}
 		else
 		{
-			getCurrentImage()->physicalCoords = util::fvector4();
+			getCurrentImage()->getImageProperties().physicalCoords = util::fvector4();
 		}
 
 		updateScene();
@@ -235,18 +235,18 @@ void QViewerCore::settingsChanged()
 
 	if ( hasImage() )
 	{
-		if ( getCurrentImage()->imageType == ImageHolder::z_map )
+		if ( getCurrentImage()->getImageProperties().imageType == ImageHolder::z_map )
 		{
-			getCurrentImage()->lut = getOptionMap()->getPropertyAs<std::string> ( "lutZMap" );
+			getCurrentImage()->getImageProperties().lut = getOptionMap()->getPropertyAs<std::string> ( "lutZMap" );
 		}
 		else
 		{
-			getCurrentImage()->lut = getOptionMap()->getPropertyAs<std::string> ( "lutStructural" );
+			getCurrentImage()->getImageProperties().lut = getOptionMap()->getPropertyAs<std::string> ( "lutStructural" );
 		}
 
 		if ( getMode() == ViewerCoreBase::zmap && getCurrentAnatomicalRefernce().get() )
 		{
-			getCurrentAnatomicalRefernce()->lut = getOptionMap()->getPropertyAs<std::string> ( "lutStructural" );
+			getCurrentAnatomicalRefernce()->getImageProperties().lut = getOptionMap()->getPropertyAs<std::string> ( "lutStructural" );
 			getCurrentAnatomicalRefernce()->updateColorMap();
 		}
 
@@ -256,9 +256,9 @@ void QViewerCore::settingsChanged()
 	{
 		BOOST_FOREACH ( DataContainer::reference image, getDataContainer() )
 		{
-			if ( image.second->imageType == ImageHolder::structural_image )
+			if ( image.second->getImageProperties().imageType == ImageHolder::structural_image )
 			{
-				image.second->lut = getOptionMap()->getPropertyAs<std::string> ( "lutStructural" );
+				image.second->getImageProperties().lut = getOptionMap()->getPropertyAs<std::string> ( "lutStructural" );
 				image.second->updateColorMap();
 			}
 		}
@@ -268,9 +268,9 @@ void QViewerCore::settingsChanged()
 	{
 		BOOST_FOREACH ( DataContainer::reference image, getDataContainer() )
 		{
-			if ( image.second->imageType == ImageHolder::z_map )
+			if ( image.second->getImageProperties().imageType == ImageHolder::z_map )
 			{
-				image.second->lut = getOptionMap()->getPropertyAs<std::string> ( "lutZMap" );
+				image.second->getImageProperties().lut = getOptionMap()->getPropertyAs<std::string> ( "lutZMap" );
 				image.second->updateColorMap();
 			}
 		}
@@ -408,7 +408,7 @@ void QViewerCore::openPath ( const _internal::FileInformation &fileInfo )
 			boost::shared_ptr<ImageHolder> imageHolder = addImage ( image, fileInfo.getImageType() );
 			checkForCaCp ( imageHolder );
 
-			if ( ! ( getMode() == ViewerCoreBase::zmap && imageHolder->imageType == ImageHolder::structural_image ) )
+			if ( ! ( getMode() == ViewerCoreBase::zmap && imageHolder->getImageProperties().imageType == ImageHolder::structural_image ) )
 			{
 				if ( fileInfo.isNewEnsemble() )
 				{

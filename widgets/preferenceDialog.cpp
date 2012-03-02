@@ -141,11 +141,11 @@ void PreferencesDialog::loadSettings()
 	preferencesUi.comboInterpolation->setCurrentIndex( m_ViewerCore->getOptionMap()->getPropertyAs<uint16_t>( "interpolationType" ) );
 
 	if( m_ViewerCore->hasImage() ) {
-		if( m_ViewerCore->getCurrentImage()->imageType == ImageHolder::z_map ) {
-			preferencesUi.lutZmap->setCurrentIndex( preferencesUi.lutZmap->findText( m_ViewerCore->getCurrentImage()->lut.c_str() ) );
+		if( m_ViewerCore->getCurrentImage()->getImageProperties().imageType == ImageHolder::z_map ) {
+			preferencesUi.lutZmap->setCurrentIndex( preferencesUi.lutZmap->findText( m_ViewerCore->getCurrentImage()->getImageProperties().lut.c_str() ) );
 			preferencesUi.lutStructural->setCurrentIndex( preferencesUi.lutStructural->findText( m_ViewerCore->getOptionMap()->getPropertyAs<std::string>( "lutStructural" ).c_str() ) );
-		} else if ( m_ViewerCore->getCurrentImage()->imageType == ImageHolder::structural_image ) {
-			preferencesUi.lutStructural->setCurrentIndex( preferencesUi.lutStructural->findText( m_ViewerCore->getCurrentImage()->lut.c_str() ) );
+		} else if ( m_ViewerCore->getCurrentImage()->getImageProperties().imageType == ImageHolder::structural_image ) {
+			preferencesUi.lutStructural->setCurrentIndex( preferencesUi.lutStructural->findText( m_ViewerCore->getCurrentImage()->getImageProperties().lut.c_str() ) );
 			preferencesUi.lutZmap->setCurrentIndex( preferencesUi.lutZmap->findText( m_ViewerCore->getOptionMap()->getPropertyAs<std::string>( "lutZMap" ).c_str() ) );
 		}
 	}
@@ -205,10 +205,10 @@ void PreferencesDialog::saveSettings()
 	m_ViewerCore->getOptionMap()->setPropertyAs<std::string>( "defaultViewWidgetIdentifier", preferencesUi.defaultViewWidgetComboBox->currentText().toStdString() );
 
 	if( m_ViewerCore->hasImage() ) {
-		if( m_ViewerCore->getCurrentImage()->imageType == ImageHolder::z_map ) {
-			m_ViewerCore->getCurrentImage()->lut = preferencesUi.lutZmap->currentText().toStdString() ;
-		} else if ( m_ViewerCore->getCurrentImage()->imageType == ImageHolder::structural_image ) {
-			m_ViewerCore->getCurrentImage()->lut = preferencesUi.lutStructural->currentText().toStdString() ;
+		if( m_ViewerCore->getCurrentImage()->getImageProperties().imageType == ImageHolder::z_map ) {
+			m_ViewerCore->getCurrentImage()->getImageProperties().lut = preferencesUi.lutZmap->currentText().toStdString() ;
+		} else if ( m_ViewerCore->getCurrentImage()->getImageProperties().imageType == ImageHolder::structural_image ) {
+			m_ViewerCore->getCurrentImage()->getImageProperties().lut = preferencesUi.lutStructural->currentText().toStdString() ;
 		}
 
 		m_ViewerCore->getOptionMap()->setPropertyAs<std::string>( "lutZMap", preferencesUi.lutZmap->currentText().toStdString() );

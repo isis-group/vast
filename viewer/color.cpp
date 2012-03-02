@@ -198,18 +198,18 @@ Color::ColormapType Color::getFallbackColormap() const
 
 void Color::adaptColorMapToImage( ImageHolder *image, bool split )
 {
-	LOG_IF( image->colorMap.size() != 256, Runtime, error ) << "The colormap is of size "
-			<< image->colorMap.size() << " but has to be of size " << 256 << "!";
+	LOG_IF( image->getImageProperties().colorMap.size() != 256, Runtime, error ) << "The colormap is of size "
+			<< image->getImageProperties().colorMap.size() << " but has to be of size " << 256 << "!";
 	ColormapType retMap ;
 	retMap.resize( 256 );
-	ColormapType tmpMap = util::Singletons::get<Color, 10>().getColormapMap().at( image->lut );
-	const double extent = image->extent;
-	const double min = image->minMax.first->as<double>();
-	const double max = image->minMax.second->as<double>();
-	const double lowerThreshold = image->lowerThreshold;
-	const double upperThreshold = image->upperThreshold;
-	const double offset = image->offset;
-	const double scaling = image->scaling;
+	ColormapType tmpMap = util::Singletons::get<Color, 10>().getColormapMap().at( image->getImageProperties().lut );
+	const double extent = image->getImageProperties().extent;
+	const double min = image->getImageProperties().minMax.first->as<double>();
+	const double max = image->getImageProperties().minMax.second->as<double>();
+	const double lowerThreshold = image->getImageProperties().lowerThreshold;
+	const double upperThreshold = image->getImageProperties().upperThreshold;
+	const double offset = image->getImageProperties().offset;
+	const double scaling = image->getImageProperties().scaling;
 	const double norm = 256.0 / extent;
 	const unsigned short mid = norm * fabs( min );
 	unsigned short scaledVal;
@@ -230,7 +230,7 @@ void Color::adaptColorMapToImage( ImageHolder *image, bool split )
 	negAlphas.fill(0);
 	posAlphas.fill(0);
 	//only stuff necessary for colormaps
-	if( image->imageType == ImageHolder::z_map ) {
+	if( image->getImageProperties().imageType == ImageHolder::z_map ) {
 
 		if( split ) {
 			assert( negVec.size() + posVec.size() == 256 );
@@ -259,7 +259,7 @@ void Color::adaptColorMapToImage( ImageHolder *image, bool split )
 			}
 
 			retMap = negVec << posVec;
-			image->alphaMap = negAlphas << posAlphas;
+			image->getImageProperties().alphaMap = negAlphas << posAlphas;
 			
 		}
 	}
@@ -272,18 +272,18 @@ void Color::adaptColorMapToImage( ImageHolder *image, bool split )
 
 		for( unsigned short i = 0; i < 255; i++ ) {
 			zrLUT[i + 1] = retMap[i * ( 256.0 / 255.0 )];
-			tmpAM[i + 1] = image->alphaMap[i * ( 256.0 / 255.0 )];
+			tmpAM[i + 1] = image->getImageProperties().alphaMap[i * ( 256.0 / 255.0 )];
 		}
 		
 		//kill the zero value
 		zrLUT[0] = QColor( 0, 0, 0, 0 ).rgba();
 		tmpAM[0] = 0;
-		image->colorMap = zrLUT;
-		image->alphaMap = tmpAM;
+		image->getImageProperties().colorMap = zrLUT;
+		image->getImageProperties().alphaMap = tmpAM;
 	} else {
 		retMap[0] = QColor( 0, 0, 0, 0 ).rgba();
-		image->alphaMap[0] = 0;
-		image->colorMap = retMap;
+		image->getImageProperties().alphaMap[0] = 0;
+		image->getImageProperties().colorMap = retMap;
 	}
 
 }

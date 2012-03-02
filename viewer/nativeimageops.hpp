@@ -60,7 +60,7 @@ private:
 		const util::ivector4 size = image->getImageSize();
 		util::ivector4 start;
 		util::ivector4 end;
-		const size_t timestep = image->voxelCoords[3];
+		const size_t timestep = image->getImageProperties().voxelCoords[3];
 
 		if( radius ) {
 			for( size_t i = 0; i < 3; i++ ) {
@@ -100,7 +100,7 @@ private:
 		const util::ivector4 size = image->getImageSize();
 		util::ivector4 start;
 		util::ivector4 end;
-		const size_t timestep = image->voxelCoords[3];
+		const size_t timestep = image->getImageProperties().voxelCoords[3];
 
 		if( radius ) {
 			for( size_t i = 0; i < 3; i++ ) {

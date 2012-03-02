@@ -69,18 +69,18 @@ void VTKImageWidgetImplementation::paintEvent ( QPaintEvent* event )
 		component.second.opacityFunction->RemoveAllPoints();
 		component.second.colurFunction->RemoveAllPoints();
 		for( unsigned short ci = 0; ci < 256; ci++ ) {
-				component.second.colurFunction->AddRGBPoint(ci, QColor( component.first->colorMap[ci] ).redF(),
-																QColor( component.first->colorMap[ci] ).greenF(),
-																QColor( component.first->colorMap[ci] ).blueF() );
+				component.second.colurFunction->AddRGBPoint(ci, QColor( component.first->getImageProperties().colorMap[ci] ).redF(),
+																QColor( component.first->getImageProperties().colorMap[ci] ).greenF(),
+																QColor( component.first->getImageProperties().colorMap[ci] ).blueF() );
 		}
-		if( component.first->imageType == ImageHolder::z_map ) {
+		if( component.first->getImageProperties().imageType == ImageHolder::z_map ) {
 			for( unsigned short ci =0 ; ci < 256; ci++ ) {
-				component.second.opacityFunction->AddPoint( ci, component.first->alphaMap[ci] * component.first->opacity );
+				component.second.opacityFunction->AddPoint( ci, component.first->getImageProperties().alphaMap[ci] * component.first->getImageProperties().opacity );
 			}
 		} else {
 			component.second.opacityFunction->AddPoint(0,0);
-			component.second.opacityFunction->AddPoint(1, m_OpacityGradientFactor * component.first->opacity );
-			component.second.opacityFunction->AddPoint(256,component.first->opacity);
+			component.second.opacityFunction->AddPoint(1, m_OpacityGradientFactor * component.first->getImageProperties().opacity );
+			component.second.opacityFunction->AddPoint(256,component.first->getImageProperties().opacity);
 		}
 
 	}
@@ -127,11 +127,11 @@ void VTKImageWidgetImplementation::addImage ( const boost::shared_ptr< ImageHold
 	VTKImageComponents component = m_VTKImageComponentsMap[image];
 	m_ImageVector.push_back(image);
 	m_Renderer->AddVolume( component.volume );
-	component.setVTKImageData( VolumeHandler::getVTKImageData(image, image->voxelCoords[3]) );
+	component.setVTKImageData( VolumeHandler::getVTKImageData(image, image->getImageProperties().voxelCoords[3]) );
 	component.mapper->SetImageSampleDistance( 1.5 );
 	component.mapper->SetSampleDistance( 0.3 );
 	if( m_ImageVector.size() == 1 ) {
-		m_Renderer->GetActiveCamera()->SetPosition( image->indexOrigin[0] * 2, image->indexOrigin[1] * 2, image->indexOrigin[2] * 1.5 );
+		m_Renderer->GetActiveCamera()->SetPosition( image->getImageProperties().indexOrigin[0] * 2, image->getImageProperties().indexOrigin[1] * 2, image->getImageProperties().indexOrigin[2] * 1.5 );
 		m_Renderer->GetActiveCamera()->Roll(-45);
 	}
 	m_Renderer->ResetCamera();

@@ -53,7 +53,7 @@ isis::viewer::plugin::PlotterDialog::PlotterDialog ( QWidget* parent, isis::view
 	ui.comboAxis->addItem( "Z" );
 	ui.comboAxis->addItem( "time" );
 	if( m_ViewerCore->hasImage() ) {
-		refresh( m_ViewerCore->getCurrentImage()->physicalCoords );
+		refresh( m_ViewerCore->getCurrentImage()->getImageProperties().physicalCoords );
 	}
 
 	setMinimumHeight( 200 );
@@ -80,8 +80,8 @@ void isis::viewer::plugin::PlotterDialog::showEvent ( QShowEvent* )
 void isis::viewer::plugin::PlotterDialog::updateScene()
 {
 	if( m_ViewerCore->hasImage() ) {
-		m_ViewerCore->getCurrentImage()->physicalCoords = m_ViewerCore->getCurrentImage()->getISISImage()->getPhysicalCoordsFromIndex( m_ViewerCore->getCurrentImage()->voxelCoords) ;
-		refresh( m_ViewerCore->getCurrentImage()->physicalCoords );
+		m_ViewerCore->getCurrentImage()->getImageProperties().physicalCoords = m_ViewerCore->getCurrentImage()->getISISImage()->getPhysicalCoordsFromIndex( m_ViewerCore->getCurrentImage()->getImageProperties().voxelCoords) ;
+		refresh( m_ViewerCore->getCurrentImage()->getImageProperties().physicalCoords );
 	}
 }
 
@@ -108,7 +108,7 @@ void isis::viewer::plugin::PlotterDialog::refresh ( isis::util::fvector4 physica
 					plotMarker->attach(plot);
 					curve->setPen( QPen( Qt::red ) );
 				} else {
-					if( image.second->isVisible ) {
+					if( image.second->getImageProperties().isVisible ) {
 						curve->attach( plot );
 					}
 
@@ -172,7 +172,7 @@ void isis::viewer::plugin::PlotterDialog::fillProfile ( boost::shared_ptr< isis:
 			xValues.push_back( factor * i );
 		}
 	}
-	switch( image->majorTypeID ) {
+	switch( image->getImageProperties().majorTypeID ) {
 	case ValuePtr<bool>::staticID:
 		fillVector<bool>( intensityValues, _coords, image, axis );
 		break;

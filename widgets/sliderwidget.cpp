@@ -93,15 +93,15 @@ double SliderWidget::norm( const double &min, const double &max, const int &pos 
 void SliderWidget::opacityChanged( int sliderPos )
 {
 	if( !m_Interface.checkGlobal->isChecked() ) {
-		m_ViewerCore->getCurrentImage()->opacity = norm( 0.0, 1.0, sliderPos )  ;
+		m_ViewerCore->getCurrentImage()->getImageProperties().opacity = norm( 0.0, 1.0, sliderPos )  ;
 	} else {
 		BOOST_FOREACH( DataContainer::reference image, m_ViewerCore->getDataContainer() ) {
 			if( m_ViewerCore->getMode() == ViewerCoreBase::zmap ) {
-				if( image.second->imageType == ImageHolder::z_map ) {
-					image.second->opacity = norm( 0.0, 1.0, sliderPos )  ;
+				if( image.second->getImageProperties().imageType == ImageHolder::z_map ) {
+					image.second->getImageProperties().opacity = norm( 0.0, 1.0, sliderPos )  ;
 				}
 			} else {
-				image.second->opacity = norm( 0.0, 1.0, sliderPos )  ;
+				image.second->getImageProperties().opacity = norm( 0.0, 1.0, sliderPos )  ;
 			}
 		}
 	}
@@ -112,13 +112,13 @@ void SliderWidget::opacityChanged( int sliderPos )
 void SliderWidget::lowerThresholdChanged( int sliderPos )
 {
 	if ( !m_Interface.checkGlobal->isChecked() ) {
-		m_ViewerCore->getCurrentImage()->lowerThreshold = norm( m_ViewerCore->getCurrentImage()->minMax.first->as<double>() , 0.0, 1000 - sliderPos ) * -1 ;
+		m_ViewerCore->getCurrentImage()->getImageProperties().lowerThreshold = norm( m_ViewerCore->getCurrentImage()->getImageProperties().minMax.first->as<double>() , 0.0, 1000 - sliderPos ) * -1 ;
 		m_ViewerCore->getCurrentImage()->updateColorMap();
 	} else {
 		BOOST_FOREACH( DataContainer::reference image, m_ViewerCore->getDataContainer() ) {
-			if( image.second->imageType == ImageHolder::z_map ) {
+			if( image.second->getImageProperties().imageType == ImageHolder::z_map ) {
 				const double lT = norm( m_maxMin, 0.0, 1000 - sliderPos ) * -1;
-				image.second->lowerThreshold = lT > image.second->minMax.first->as<double>() ? lT : image.second->minMax.first->as<double>();
+				image.second->getImageProperties().lowerThreshold = lT > image.second->getImageProperties().minMax.first->as<double>() ? lT : image.second->getImageProperties().minMax.first->as<double>();
 				image.second->updateColorMap();
 			}
 		}
@@ -130,13 +130,13 @@ void SliderWidget::lowerThresholdChanged( int sliderPos )
 void SliderWidget::upperThresholdChanged( int sliderPos )
 {
 	if( !m_Interface.checkGlobal->isChecked() ) {
-		m_ViewerCore->getCurrentImage()->upperThreshold = norm( 0.0, m_ViewerCore->getCurrentImage()->minMax.second->as<double>(), 1000 - sliderPos ) ;
+		m_ViewerCore->getCurrentImage()->getImageProperties().upperThreshold = norm( 0.0, m_ViewerCore->getCurrentImage()->getImageProperties().minMax.second->as<double>(), 1000 - sliderPos ) ;
 		m_ViewerCore->getCurrentImage()->updateColorMap();
 	} else {
 		BOOST_FOREACH( DataContainer::reference image, m_ViewerCore->getDataContainer() ) {
-			if( image.second->imageType == ImageHolder::z_map ) {
+			if( image.second->getImageProperties().imageType == ImageHolder::z_map ) {
 				const double uT = norm( 0.0, m_maxMax, 1000 - sliderPos );
-				image.second->upperThreshold = uT < image.second->minMax.second->as<double>() ? uT : image.second->minMax.second->as<double>() - std::numeric_limits<double>::round_error();
+				image.second->getImageProperties().upperThreshold = uT < image.second->getImageProperties().minMax.second->as<double>() ? uT : image.second->getImageProperties().minMax.second->as<double>() - std::numeric_limits<double>::round_error();
 				image.second->updateColorMap();
 			}
 		}
@@ -151,15 +151,15 @@ void SliderWidget::synchronize()
 		m_Interface.zmapModeFrame->setVisible( true );
 		unsigned short zmapImages = 0;
 		BOOST_FOREACH( DataContainer::const_reference image, m_ViewerCore->getDataContainer() ) {
-			if( image.second->imageType == ImageHolder::z_map ) {
+			if( image.second->getImageProperties().imageType == ImageHolder::z_map ) {
 				zmapImages++;
 
-				if( image.second->minMax.first->as<double>() < m_maxMin ) {
-					m_maxMin = image.second->minMax.first->as<double>();
+				if( image.second->getImageProperties().minMax.first->as<double>() < m_maxMin ) {
+					m_maxMin = image.second->getImageProperties().minMax.first->as<double>();
 				}
 
-				if( image.second->minMax.second->as<double>() > m_maxMax ) {
-					m_maxMax = image.second->minMax.second->as<double>();
+				if( image.second->getImageProperties().minMax.second->as<double>() > m_maxMax ) {
+					m_maxMax = image.second->getImageProperties().minMax.second->as<double>();
 				}
 			}
 		}
@@ -170,19 +170,19 @@ void SliderWidget::synchronize()
 
 	if( m_ViewerCore->hasImage() ) {
 		QWidget::setVisible( true );
-		m_Interface.opacitySlider->setSliderPosition( m_ViewerCore->getCurrentImage()->opacity * 1000 );
+		m_Interface.opacitySlider->setSliderPosition( m_ViewerCore->getCurrentImage()->getImageProperties().opacity * 1000 );
 
-		if( m_ViewerCore->getCurrentImage()->imageType == ImageHolder::z_map ) {
-			setSliderVisible( LowerThreshold, m_ViewerCore->getCurrentImage()->minMax.first->as<double>() < 0 );
-			setSliderVisible( UpperThreshold, m_ViewerCore->getCurrentImage()->minMax.second->as<double>() > 0 );
-			const unsigned short lowerThreshold = 1000 - abs( ( 1000 / m_ViewerCore->getCurrentImage()->minMax.first->as<double>() )
-												  * m_ViewerCore->getCurrentImage()->lowerThreshold );
-			const unsigned short upperThreshold = 1000 - abs( ( 1000 / m_ViewerCore->getCurrentImage()->minMax.second->as<double>() )
-												  * m_ViewerCore->getCurrentImage()->upperThreshold );
+		if( m_ViewerCore->getCurrentImage()->getImageProperties().imageType == ImageHolder::z_map ) {
+			setSliderVisible( LowerThreshold, m_ViewerCore->getCurrentImage()->getImageProperties().minMax.first->as<double>() < 0 );
+			setSliderVisible( UpperThreshold, m_ViewerCore->getCurrentImage()->getImageProperties().minMax.second->as<double>() > 0 );
+			const unsigned short lowerThreshold = 1000 - abs( ( 1000 / m_ViewerCore->getCurrentImage()->getImageProperties().minMax.first->as<double>() )
+												  * m_ViewerCore->getCurrentImage()->getImageProperties().lowerThreshold );
+			const unsigned short upperThreshold = 1000 - abs( ( 1000 / m_ViewerCore->getCurrentImage()->getImageProperties().minMax.second->as<double>() )
+												  * m_ViewerCore->getCurrentImage()->getImageProperties().upperThreshold );
 			m_Interface.minSlider->setSliderPosition( lowerThreshold );
 			m_Interface.maxSlider->setSliderPosition( upperThreshold );
 			setSliderVisible( Opacity, true );
-		} else if ( m_ViewerCore->getCurrentImage()->imageType == ImageHolder::structural_image ) {
+		} else if ( m_ViewerCore->getCurrentImage()->getImageProperties().imageType == ImageHolder::structural_image ) {
 			setSliderVisible( LowerThreshold, false );
 			setSliderVisible( UpperThreshold, false );
 			setSliderVisible( Opacity, true );

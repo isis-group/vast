@@ -77,18 +77,18 @@ boost::shared_ptr<ImageHolder> ViewerCoreBase::addImage( const isis::data::Image
 	}
 	//setting the lutStructural
 	if( imageType == ImageHolder::structural_image ) {
-		retImage->lut = getOptionMap()->getPropertyAs<std::string>( "lutStructural" );
+		retImage->getImageProperties().lut = getOptionMap()->getPropertyAs<std::string>( "lutStructural" );
 
-		if( !util::Singletons::get<color::Color, 10>().hasColormap( retImage->lut ) ) {
-			retImage->lut = std::string( "standard_grey_values" );
-			getOptionMap()->setPropertyAs<std::string>( "lutStructural", retImage->lut );
+		if( !util::Singletons::get<color::Color, 10>().hasColormap( retImage->getImageProperties().lut ) ) {
+			retImage->getImageProperties().lut = std::string( "standard_grey_values" );
+			getOptionMap()->setPropertyAs<std::string>( "lutStructural", retImage->getImageProperties().lut );
 		}
 	} else {
-		retImage->lut = getOptionMap()->getPropertyAs<std::string>( "lutZMap" );
+		retImage->getImageProperties().lut = getOptionMap()->getPropertyAs<std::string>( "lutZMap" );
 
-		if( !util::Singletons::get<color::Color, 10>().hasColormap( retImage->lut ) ) {
-			retImage->lut = std::string( "standard_zmap" );
-			getOptionMap()->setPropertyAs<std::string>( "lutZMap", retImage->lut );
+		if( !util::Singletons::get<color::Color, 10>().hasColormap( retImage->getImageProperties().lut ) ) {
+			retImage->getImageProperties().lut = std::string( "standard_zmap" );
+			getOptionMap()->setPropertyAs<std::string>( "lutZMap", retImage->getImageProperties().lut );
 		}
 
 	}
@@ -101,11 +101,11 @@ boost::shared_ptr<ImageHolder> ViewerCoreBase::addImage( const isis::data::Image
 
 	m_ImageList.push_back( retImage );
 
-	if( getMode() == ViewerCoreBase::zmap && retImage->getImageSize()[3] > 1 && retImage->imageType != ImageHolder::z_map ) {
-		retImage->isVisible = false;
+	if( getMode() == ViewerCoreBase::zmap && retImage->getImageSize()[3] > 1 && retImage->getImageProperties().imageType != ImageHolder::z_map ) {
+		retImage->getImageProperties().isVisible = false;
 	}
 
-	if ( getMode() == ViewerCoreBase::zmap && retImage->imageType == ImageHolder::z_map ) {
+	if ( getMode() == ViewerCoreBase::zmap && retImage->getImageProperties().imageType == ImageHolder::z_map ) {
 		setCurrentImage( retImage );
 	} else if ( getMode() == ViewerCoreBase::standard ) {
 		setCurrentImage( retImage );

@@ -58,15 +58,15 @@ void isis::viewer::plugin::HistogramDialog::paintHistogram()
 		title << "Histogram of " << boost::filesystem::path( m_ViewerCore->getCurrentImage()->getFileNames().front() ).leaf();
 
 		if( m_ViewerCore->getCurrentImage()->getImageSize()[3] > 1 ) {
-			title << " (volume " << m_ViewerCore->getCurrentImage()->voxelCoords[3] << ")";
+			title << " (volume " << m_ViewerCore->getCurrentImage()->getImageProperties().voxelCoords[3] << ")";
 		}
 		
 		m_Plotter->setTitle( title.str().c_str() );
 		double xData[255];
 		BOOST_FOREACH( DataContainer::const_reference image, m_ViewerCore->getDataContainer() ) {
-			if( !image.second->isRGB ) {
-				const double scaling = image.second->scalingToInternalType.first->as<double>();
-				const double offset = image.second->scalingToInternalType.second->as<double>();
+			if( !image.second->getImageProperties().isRGB ) {
+				const double scaling = image.second->getImageProperties().scalingToInternalType.first->as<double>();
+				const double offset = image.second->getImageProperties().scalingToInternalType.second->as<double>();
 
 				for( unsigned short i = 0; i < 255; i++ ) {
 					xData[i] = ( double )( i - offset ) / scaling ;
@@ -79,7 +79,7 @@ void isis::viewer::plugin::HistogramDialog::paintHistogram()
 					curve->attach( m_Plotter );
 					curve->setPen( QPen( Qt::red ) );
 				} else {
-					if( image.second->isVisible ) {
+					if( image.second->getImageProperties().isVisible ) {
 						curve->attach( m_Plotter );
 					}
 
@@ -88,8 +88,8 @@ void isis::viewer::plugin::HistogramDialog::paintHistogram()
 					curve->setPen( pen );
 				}
 
-				const uint16_t timestep = image.second->getImageSize()[3] > 1 ? image.second->voxelCoords[3] : 0;
-				curve->setData( xData, image.second->histogramVectorWOZero[timestep], 255 );
+				const uint16_t timestep = image.second->getImageSize()[3] > 1 ? image.second->getImageProperties().voxelCoords[3] : 0;
+				curve->setData( xData, image.second->getImageProperties().histogramVectorWOZero[timestep], 255 );
 			}
 		}
 		m_Zoomer->setZoomBase(true);

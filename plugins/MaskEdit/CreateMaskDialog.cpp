@@ -120,9 +120,9 @@ void CreateMaskDialog::createMask()
 		}
 
 		m_MaskEditDialog->m_CurrentMask = maskImage;
-		m_MaskEditDialog->m_CurrentMask->extent = m_MaskEditDialog->m_CurrentMask->minMax.second->as<double>() -  m_MaskEditDialog->m_CurrentMask->minMax.first->as<double>();
-		m_MaskEditDialog->m_CurrentMask->opacity = 0.5;
-		m_MaskEditDialog->m_CurrentMask->lut = "maskeditLUT";
+		m_MaskEditDialog->m_CurrentMask->getImageProperties().extent = m_MaskEditDialog->m_CurrentMask->getImageProperties().minMax.second->as<double>() -  m_MaskEditDialog->m_CurrentMask->getImageProperties().minMax.first->as<double>();
+		m_MaskEditDialog->m_CurrentMask->getImageProperties().opacity = 0.5;
+		m_MaskEditDialog->m_CurrentMask->getImageProperties().lut = "maskeditLUT";
 		m_MaskEditDialog->m_CurrentMask->updateColorMap();
 		m_MaskEditDialog->m_CurrentMask->updateOrientation();
 		BOOST_FOREACH( UICore::ViewWidgetEnsembleListType::const_reference ensemble, m_MaskEditDialog->m_ViewerCore->getUICore()->getEnsembleList() ) {
