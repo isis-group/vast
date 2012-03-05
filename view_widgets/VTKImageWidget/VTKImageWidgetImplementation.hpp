@@ -43,12 +43,14 @@
 #include <vtkColorTransferFunction.h>
 #include <vtkImageAppendComponents.h>
 #include <vtkRenderWindowInteractor.h>
-#include <vtkFixedPointVolumeRayCastMapper.h>
-#include <vtkInteractorStyleTrackballCamera.h>
-#include <vtkSliderRepresentation2D.h>
 #include <vtkRenderWindow.h>
-#include <vtkPolyDataMapper.h>
 #include <vtkCursor3D.h>
+
+#include <vtkFixedPointVolumeRayCastMapper.h>
+#include <vtkPolyDataMapper.h>
+#include <vtkVolumeTextureMapper3D.h>
+#include <vtkVolumeProMapper.h>
+#include <vtkGPUVolumeRayCastMapper.h>
 
 namespace isis
 {
@@ -65,7 +67,7 @@ class VTKImageWidgetImplementation : public QVTKWidget, public WidgetInterface
 		VTKImageComponents()
 			: volume( vtkVolume::New() ),
 			  property( vtkVolumeProperty::New() ),
-			  mapper( vtkFixedPointVolumeRayCastMapper::New() ),
+			  mapper( vtkGPUVolumeRayCastMapper::New() ),
 			  colurFunction( vtkColorTransferFunction::New() ),
 			  opacityFunction( vtkPiecewiseFunction::New() ),
 			  imageData( vtkImageData::New() ) {
@@ -73,7 +75,7 @@ class VTKImageWidgetImplementation : public QVTKWidget, public WidgetInterface
 			volume->SetProperty( property );
 			property->SetColor( colurFunction );
 			property->SetScalarOpacity( opacityFunction );
-			mapper->SetInput( imageData );
+			mapper->AutoAdjustSampleDistancesOn();
 		}
 
 		void setVTKImageData( vtkImageData *image ) {
@@ -84,7 +86,7 @@ class VTKImageWidgetImplementation : public QVTKWidget, public WidgetInterface
 		
 		vtkVolume *volume;
 		vtkVolumeProperty *property;
-		vtkFixedPointVolumeRayCastMapper *mapper;
+		vtkGPUVolumeRayCastMapper *mapper;
 		vtkColorTransferFunction *colurFunction;
 		vtkPiecewiseFunction *opacityFunction;
 	private:

@@ -54,7 +54,7 @@ public:
 	friend class QViewerCore;
 
 	enum OptionPosition { bottom, top, left, right, central11 };
-	enum ViewWidgetArragment { Default, InRow, InColumn };
+	enum ViewWidgetArragment {  InRow, InColumn };
 
 	enum StatusTyp { Info, Warning, Error };
 	struct ViewWidget {

@@ -68,7 +68,7 @@ private:
 		util::ivector4 alignedSize32;
 		double offset;
 		double scaling;
-		double memSizeInternal;
+		size_t memSizeInternal;
 		double extent;
 		double lowerThreshold;
 		double upperThreshold;
@@ -94,7 +94,7 @@ private:
 
 public:
 	typedef std::list<boost::shared_ptr< ImageHolder > > ImageListType;
-	typedef data::_internal::ValuePtrBase::Reference ImagePointerType;
+	typedef data::ValuePtrBase::Reference ImagePointerType;
 
 
 

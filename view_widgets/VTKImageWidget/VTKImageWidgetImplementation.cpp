@@ -146,6 +146,11 @@ void VTKImageWidgetImplementation::setEnableCrosshair ( bool enable )
 void VTKImageWidgetImplementation::addImage ( const boost::shared_ptr< ImageHolder > image )
 {
 	VTKImageComponents component = m_VTKImageComponentsMap[image];
+	std::cout << (component.mapper->GetMaxMemoryInBytes() / (1024.0 * 1024.0)) << std::endl;
+	std::cout << image->getImageProperties().memSizeInternal << std::endl;
+// 	component.mapper->SetMaxMemoryInBytes( image->getImageProperties().memSizeInternal);
+// 	component.mapper->SetCroppingRegionPlanes(-100,100,-100,100,-100,100);
+// 	component.mapper->SetCropping(1);
 	m_ImageVector.push_back(image);
 	m_Renderer->AddVolume( component.volume );
 	component.setVTKImageData( VolumeHandler::getVTKImageData(image, image->getImageProperties().voxelCoords[3]) );
@@ -169,7 +174,11 @@ void VTKImageWidgetImplementation::lookAtPhysicalCoords ( const util::fvector4& 
 		boost::shared_ptr<ImageHolder> image = m_ViewerCore->getCurrentImage();
 		const util::ivector4 voxelCoords = image->getISISImage()->getIndexFromPhysicalCoords( physicalCoords );
 		boost::numeric::ublas::vector<float> mappedVoxels = boost::numeric::ublas::prod( image->getImageProperties().orientation, voxelCoords.getBoostVector() );
-		m_Cursor->SetFocalPoint( mappedVoxels[0], mappedVoxels[1], mappedVoxels[2] );
+		boost::numeric::ublas::vector<float> mappedVoxelSize = boost::numeric::ublas::prod( image->getImageProperties().orientation, image->getImageProperties().voxelSize.getBoostVector() );
+		
+		m_Cursor->SetFocalPoint( mappedVoxels[0] * fabs(mappedVoxelSize[0]),
+								 mappedVoxels[1] * fabs(mappedVoxelSize[1]),
+									mappedVoxels[2] * fabs(mappedVoxelSize[2]) );
 		m_RenderWindow->Render();
 	}
 }

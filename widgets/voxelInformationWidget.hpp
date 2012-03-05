@@ -110,7 +110,7 @@ private:
 	void displayIntensityColor( const util::ivector4 &coords ) const {
 		util::checkType<TYPE>();
 		const util::Value<TYPE> vIntensity ( m_ViewerCore->getCurrentImage()->getISISImage()->voxel<TYPE>( coords[0], coords[1], coords[2], coords[3] ) );
-		const std::string intensityStr = static_cast<const util::_internal::ValueBase &>( vIntensity ).as<std::string>();
+		const std::string intensityStr = static_cast<const util::ValueBase &>( vIntensity ).as<std::string>();
 		m_Interface.intensityValue->setText( intensityStr.c_str() );
 	}
 

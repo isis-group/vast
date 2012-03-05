@@ -70,7 +70,7 @@ public:
 
 	boost::shared_ptr<util::PropertyMap>  getOptionMap() { return m_OptionsMap; }
 
-	bool hasImage() const { return getDataContainer().size(); }
+	bool hasImage() const { return getDataContainer().size() && m_CurrentImage.get(); }
 
 	Mode getMode() const { return m_Mode; }
 
