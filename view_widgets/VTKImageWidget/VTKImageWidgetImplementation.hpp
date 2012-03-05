@@ -29,6 +29,7 @@
 #define VTK_IMAGE_WIDGET_IMPLEMENTATION_HPP
 
 #include "VolumeHandler.hpp"
+#include "ImageComponents.hpp"
 
 #include "widgetinterface.h"
 #include "qviewercore.hpp"
@@ -41,16 +42,12 @@
 #include <vtkVolumeProperty.h>
 #include <vtkPiecewiseFunction.h>
 #include <vtkColorTransferFunction.h>
-#include <vtkImageAppendComponents.h>
 #include <vtkRenderWindowInteractor.h>
 #include <vtkRenderWindow.h>
 #include <vtkCursor3D.h>
-
-#include <vtkFixedPointVolumeRayCastMapper.h>
 #include <vtkPolyDataMapper.h>
-#include <vtkVolumeTextureMapper3D.h>
-#include <vtkVolumeProMapper.h>
-#include <vtkGPUVolumeRayCastMapper.h>
+
+
 
 namespace isis
 {
@@ -63,35 +60,6 @@ class VTKImageWidgetImplementation : public QVTKWidget, public WidgetInterface
 {
 	Q_OBJECT
 
-	struct VTKImageComponents {
-		VTKImageComponents()
-			: volume( vtkVolume::New() ),
-			  property( vtkVolumeProperty::New() ),
-			  mapper( vtkGPUVolumeRayCastMapper::New() ),
-			  colurFunction( vtkColorTransferFunction::New() ),
-			  opacityFunction( vtkPiecewiseFunction::New() ),
-			  imageData( vtkImageData::New() ) {
-			volume->SetMapper( mapper );
-			volume->SetProperty( property );
-			property->SetColor( colurFunction );
-			property->SetScalarOpacity( opacityFunction );
-			mapper->AutoAdjustSampleDistancesOn();
-		}
-
-		void setVTKImageData( vtkImageData *image ) {
-			mapper->SetInput( image );
-			imageData = image;
-		}
-		vtkImageData* getVTKImageData() const { return imageData; }
-		
-		vtkVolume *volume;
-		vtkVolumeProperty *property;
-		vtkGPUVolumeRayCastMapper *mapper;
-		vtkColorTransferFunction *colurFunction;
-		vtkPiecewiseFunction *opacityFunction;
-	private:
-		vtkImageData *imageData;
-	};
 public:
 
 	typedef std::map< boost::shared_ptr<ImageHolder>, VTKImageComponents > ComponentsMapType;

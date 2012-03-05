@@ -71,9 +71,9 @@ void VTKImageWidgetImplementation::paintEvent ( QPaintEvent* event )
 	BOOST_FOREACH( ComponentsMapType::reference component, m_VTKImageComponentsMap ) {
 		const bool isVisible = component.first->getImageProperties().isVisible;
 		component.second.opacityFunction->RemoveAllPoints();
-		component.second.colurFunction->RemoveAllPoints();
+		component.second.colorFunction->RemoveAllPoints();
 		for( unsigned short ci = 0; ci < 256; ci++ ) {
-				component.second.colurFunction->AddRGBPoint(ci, QColor( component.first->getImageProperties().colorMap[ci] ).redF(),
+				component.second.colorFunction->AddRGBPoint(ci, QColor( component.first->getImageProperties().colorMap[ci] ).redF(),
 																QColor( component.first->getImageProperties().colorMap[ci] ).greenF(),
 																QColor( component.first->getImageProperties().colorMap[ci] ).blueF() );
 		}
@@ -146,10 +146,7 @@ void VTKImageWidgetImplementation::setEnableCrosshair ( bool enable )
 void VTKImageWidgetImplementation::addImage ( const boost::shared_ptr< ImageHolder > image )
 {
 	VTKImageComponents component = m_VTKImageComponentsMap[image];
-	std::cout << (component.mapper->GetMaxMemoryInBytes() / (1024.0 * 1024.0)) << std::endl;
-	std::cout << image->getImageProperties().memSizeInternal << std::endl;
-// 	component.mapper->SetMaxMemoryInBytes( image->getImageProperties().memSizeInternal);
-// 	component.mapper->SetCroppingRegionPlanes(-100,100,-100,100,-100,100);
+	component.mapper->SetCroppingRegionPlanes(-100,100,-100,100,-100,100);
 // 	component.mapper->SetCropping(1);
 	m_ImageVector.push_back(image);
 	m_Renderer->AddVolume( component.volume );
