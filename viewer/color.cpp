@@ -211,7 +211,7 @@ void Color::adaptColorMapToImage( ImageHolder *image, bool split )
 	const double offset = image->getImageProperties().offset;
 	const double scaling = image->getImageProperties().scaling;
 	const double norm = 256.0 / extent;
-	const unsigned short mid = norm * fabs( min );
+	const unsigned short mid = (norm * fabs( min ));
 	unsigned short scaledVal;
 	const float normMid = mid + (offset * norm );
 	for ( unsigned short i = 0; i < 256; i++ ) {
@@ -239,7 +239,6 @@ void Color::adaptColorMapToImage( ImageHolder *image, bool split )
 			if( min < 0 ) {
 				const double scaleMin = 1 - fabs( lowerThreshold / min );
 				const double normMin = 128.0 / mid;
-				
 				for ( unsigned short i = 0; i < mid; i++ ) {
 					negVec[i * scaleMin] = retMap[i * normMin];
 					negAlphas[i * scaleMin] = 1;
@@ -249,7 +248,7 @@ void Color::adaptColorMapToImage( ImageHolder *image, bool split )
 			if( max > 0 ) {
 				const double normMax = 128.0 / ( 256 - mid );
 				const double scaleMax = fabs( upperThreshold / max );
-				const double offset = ( 256 - mid ) * scaleMax;
+				const double offset = ( 255 - mid ) * scaleMax;
 				
 				for( unsigned short i = 0; i < ( 256 - mid ); i++ ) {
 					const unsigned short index = ( i * ( 1 - scaleMax ) + offset );

@@ -131,6 +131,8 @@ void PropertyToolDialog::updateProperties()
     }
     adjustSize();
     m_Interface.propertyTree->setColumnWidth(0, m_Interface.propertyTree->width() / 3);
+	m_Interface.propertyName->clear();
+	m_Interface.propertyValue->clear();
 	adjustSize();
 }
 
@@ -262,14 +264,12 @@ void PropertyToolDialog::editRequested()
 				case util::Value<util::ivector4>::staticID:
 					checkAndSet<util::ivector4>( propMap, propNameStr, text );
 					break;
-					
-				
-				
 			}
 			updateProperties();
 			m_ViewerCore->getCurrentImage()->updateOrientation();
 			m_ViewerCore->updateScene();
 			m_ViewerCore->getUICore()->refreshUI();
+			m_ViewerCore->physicalCoordsChanged( m_ViewerCore->getCurrentImage()->getImageProperties().physicalCoords );
 			std::stringstream ss;
 			ss << propName.toStdString() << " changed to " << text.toStdString();
 			m_ViewerCore->getCurrentImage()->addChangedAttribute(ss.str());
