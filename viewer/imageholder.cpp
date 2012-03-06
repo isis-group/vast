@@ -49,8 +49,30 @@ boost::shared_ptr< const void > ImageHolder::getRawAdress ( size_t timestep ) co
 	}
 }
 
+boost::numeric::ublas::matrix< double > ImageHolder::calculateImageOrientation( bool transposed ) const
+{
+	boost::numeric::ublas::matrix<double> retMatrix = boost::numeric::ublas::zero_matrix<double>( 4, 4 );
+	retMatrix( 3, 3 ) = 1;
+	const util::fvector4 &rowVec = m_Image->propertyValue( "rowVec" )->castTo<util::fvector4>();
+	const util::fvector4 &columnVec = m_Image->propertyValue( "columnVec" )->castTo<util::fvector4>();
+	const util::fvector4 &sliceVec = m_Image->propertyValue( "sliceVec" )->castTo<util::fvector4>();
 
-boost::numeric::ublas::matrix< double > ImageHolder::getNormalizedImageOrientation( bool transposed )
+	for ( uint16_t i = 0; i < 3; i++ ) {
+		if( !transposed ) {
+			retMatrix( i, 0 ) = rowVec[i];
+			retMatrix( i, 1 ) = columnVec[i];
+			retMatrix( i, 2 ) = sliceVec[i];
+		} else {
+			retMatrix( 0, i ) = rowVec[i];
+			retMatrix( 1, i ) = columnVec[i];
+			retMatrix( 2, i ) = sliceVec[i];
+		}
+	}
+
+	return retMatrix;
+}
+
+boost::numeric::ublas::matrix< double > ImageHolder::calculateLatchedImageOrientation( bool transposed )
 {
 	boost::numeric::ublas::matrix<double> retMatrix = boost::numeric::ublas::zero_matrix<double>( 4, 4 );
 	retMatrix( 3, 3 ) = 1;
@@ -187,28 +209,6 @@ void ImageHolder::collectImageInfo()
 	}
 }
 
-boost::numeric::ublas::matrix< double > ImageHolder::getImageOrientation( bool transposed ) const
-{
-	boost::numeric::ublas::matrix<double> retMatrix = boost::numeric::ublas::zero_matrix<double>( 4, 4 );
-	retMatrix( 3, 3 ) = 1;
-	const util::fvector4 &rowVec = m_Image->propertyValue( "rowVec" )->castTo<util::fvector4>();
-	const util::fvector4 &columnVec = m_Image->propertyValue( "columnVec" )->castTo<util::fvector4>();
-	const util::fvector4 &sliceVec = m_Image->propertyValue( "sliceVec" )->castTo<util::fvector4>();
-
-	for ( uint16_t i = 0; i < 3; i++ ) {
-		if( !transposed ) {
-			retMatrix( i, 0 ) = rowVec[i];
-			retMatrix( i, 1 ) = columnVec[i];
-			retMatrix( i, 2 ) = sliceVec[i];
-		} else {
-			retMatrix( 0, i ) = rowVec[i];
-			retMatrix( 1, i ) = columnVec[i];
-			retMatrix( 2, i ) = sliceVec[i];
-		}
-	}
-
-	return retMatrix;
-}
 
 boost::shared_ptr< data::Image > ImageHolder::getISISImage ( bool typed ) const
 {
@@ -376,8 +376,8 @@ void ImageHolder::updateHistogram()
 void ImageHolder::updateOrientation()
 {
 	m_Image->updateOrientationMatrices();
-	getImageProperties().latchedOrientation = getNormalizedImageOrientation();
-	getImageProperties().orientation = getImageOrientation();
+	getImageProperties().latchedOrientation = calculateLatchedImageOrientation();
+	getImageProperties().orientation = calculateImageOrientation();
 	getImageProperties().indexOrigin = getISISImage()->getPropertyAs<util::fvector4>("indexOrigin");
 	getImageProperties().rowVec = getISISImage()->getPropertyAs<util::fvector4>("rowVec");
 	getImageProperties().columnVec = getISISImage()->getPropertyAs<util::fvector4>("columnVec");

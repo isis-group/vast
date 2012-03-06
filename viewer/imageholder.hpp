@@ -111,8 +111,7 @@ public:
 	const util::PropertyMap &getPropMap() const { return m_PropMap; }
 	const util::FixedVector<size_t, 4> &getImageSize() const { return m_ImageSize; }
 	boost::shared_ptr< data::Image >getISISImage( bool typed = false ) const;
-	boost::numeric::ublas::matrix<double> getNormalizedImageOrientation( bool transposed = false );
-	boost::numeric::ublas::matrix<double> getImageOrientation( bool transposed = false ) const;
+
 	void addChangedAttribute( const std::string &attribute );
 	bool removeChangedAttribute( const std::string &attribute );
 
@@ -158,7 +157,8 @@ public:
 
 
 private:
-
+	boost::numeric::ublas::matrix<double> calculateLatchedImageOrientation( bool transposed = false );
+	boost::numeric::ublas::matrix<double> calculateImageOrientation( bool transposed = false ) const;
 	void logImageProps() const;
 	unsigned short getMajorTypeID() const;
 	void collectImageInfo();

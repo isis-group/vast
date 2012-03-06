@@ -476,7 +476,6 @@ void QViewerCore::loadSettings()
 	getUICore()->getMainWindow()->toggleLoadingIcon(true, QString("Loading user settings..." ) );
 	getSettings()->beginGroup ( "ViewerCore" );
 	getOptionMap()->setPropertyAs<std::string> ( "lutZMap", getSettings()->value ( "lutZMap", getOptionMap()->getPropertyAs<std::string> ( "lutZMap" ).c_str() ).toString().toStdString() );
-	getOptionMap()->setPropertyAs<std::string> ( "lutStructural", getSettings()->value ( "lutStructural", getOptionMap()->getPropertyAs<std::string> ( "lutStructural" ).c_str() ).toString().toStdString() );
 	getOptionMap()->setPropertyAs<bool> ( "propagateZooming", getSettings()->value ( "propagateZooming", false ).toBool() );
 	getOptionMap()->setPropertyAs<uint16_t> ( "interpolationType", getSettings()->value ( "interpolationType", getOptionMap()->getPropertyAs<uint16_t> ( "interpolationType" ) ).toUInt() );
 	getOptionMap()->setPropertyAs<bool> ( "showLabels", getSettings()->value ( "showLabels", false ).toBool() );
@@ -515,7 +514,6 @@ void QViewerCore::saveSettings()
 	getSettings()->beginGroup ( "ViewerCore" );
 	getSettings()->setValue ( "lutZMap", getOptionMap()->getPropertyAs<std::string> ( "lutZMap" ).c_str() );
 	getSettings()->setValue( "visualizeOnlyFirstVista", getOptionMap()->getPropertyAs<bool>("visualizeOnlyFirstVista") );
-	getSettings()->setValue ( "lutStructural", getOptionMap()->getPropertyAs<std::string> ( "lutStructural" ).c_str() );
 	getSettings()->setValue ( "interpolationType", getOptionMap()->getPropertyAs<uint16_t> ( "interpolationType" ) );
 	getSettings()->setValue ( "propagateZooming", getOptionMap()->getPropertyAs<bool> ( "propagateZooming" ) );
 	getSettings()->setValue ( "minMaxSearchRadius", getOptionMap()->getPropertyAs<uint16_t> ( "minMaxSearchRadius" ) );

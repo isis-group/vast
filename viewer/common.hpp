@@ -72,7 +72,7 @@ util::ivector4 get32BitAlignedSize( const util::ivector4 &origSize );
 typedef ViewerLog Runtime;
 typedef ViewerDev Dev;
 
-
+util::fvector4 mapCoordsToOrientation( const util::fvector4 &coords, const boost::numeric::ublas::matrix<float> &orientationMatrix, PlaneOrientation orientation, bool back = false, bool absolute = true );
 
 std::string getCrashLogFilePath();
 

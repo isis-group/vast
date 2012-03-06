@@ -264,7 +264,7 @@ void VoxelInformationWidget::synchronize()
 			vSpacing( i ) = voxelSpacing[i];
 		}
 
-		boost::numeric::ublas::vector<float> transformedVec = boost::numeric::ublas::prod( image->getNormalizedImageOrientation(), vSpacing );
+		boost::numeric::ublas::vector<float> transformedVec = boost::numeric::ublas::prod( image->getImageProperties().latchedOrientation, vSpacing );
 		m_Interface.xBox->setSingleStep( fabs( transformedVec( 0 ) ) );
 		m_Interface.yBox->setSingleStep( fabs( transformedVec( 1 ) ) );
 		m_Interface.zBox->setSingleStep( fabs( transformedVec( 2 ) ) );

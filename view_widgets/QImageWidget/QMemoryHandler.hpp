@@ -43,9 +43,9 @@ class QMemoryHandler
 public:
 	template< typename TYPE>
 	void fillSliceChunk( data::MemChunk<TYPE> &sliceChunk, const boost::shared_ptr< ImageHolder > image, const PlaneOrientation &orientation, const size_t &timestep = 0 ) const {
-		const util::ivector4 mappedSize = QOrientationHandler::mapCoordsToOrientation( image->getImageSize(), image, orientation );
-		const util::ivector4 mappedCoords = QOrientationHandler::mapCoordsToOrientation( image->getImageProperties().voxelCoords, image, orientation );
-		const util::ivector4 mapping = QOrientationHandler::mapCoordsToOrientation( util::ivector4( 0, 1, 2, 3 ), image, orientation, true );
+		const util::ivector4 mappedSize = mapCoordsToOrientation( image->getImageSize(), image->getImageProperties().latchedOrientation, orientation );
+		const util::ivector4 mappedCoords = mapCoordsToOrientation( image->getImageProperties().voxelCoords, image->getImageProperties().latchedOrientation, orientation );
+		const util::ivector4 mapping = mapCoordsToOrientation( util::ivector4( 0, 1, 2, 3 ), image->getImageProperties().latchedOrientation, orientation, true );
 		const data::Chunk &chunk = image->getChunkVector()[timestep];
 
 

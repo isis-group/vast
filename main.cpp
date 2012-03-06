@@ -198,7 +198,6 @@ int main( int argc, char *argv[] )
 
 	//particular distribution of images in widgets
 	if( zmapIsSet && zImgList.size() > 1 ) {
-		core->getUICore()->setViewWidgetArrangement( UICore::InRow );
 		BOOST_FOREACH( ImageListRef image, core->addImageList( zImgList, ImageHolder::z_map ) ) {
 			checkForCaCp( image );
 			core->getRecentFiles().insertSave( _internal::FileInformation( image->getFileNames().front(),
@@ -225,7 +224,6 @@ int main( int argc, char *argv[] )
 		core->getUICore()->getMainWindow()->startWidget->close();
 		//only anatomical images with split option was specified
 	} else if ( app.parameters["in"].isSet() && app.parameters["split"].isSet() ) {
-		core->getUICore()->setViewWidgetArrangement( UICore::InRow );
 		BOOST_FOREACH( ImageListRef image, core->addImageList( imgList, ImageHolder::structural_image ) ) {
 			checkForCaCp( image );
 			core->getRecentFiles().insertSave( _internal::FileInformation( image->getFileNames().front(),
@@ -238,7 +236,6 @@ int main( int argc, char *argv[] )
 		core->getUICore()->setOptionPosition( isis::viewer::UICore::bottom );
 		core->getUICore()->getMainWindow()->startWidget->close();
 	} else if ( app.parameters["in"].isSet() || zmapIsSet ) {
-		core->getUICore()->setViewWidgetArrangement( UICore::InRow );
 		WidgetEnsemble ensemble = core->getUICore()->createViewWidgetEnsemble( widget_name );
 		BOOST_FOREACH( ImageListRef image, core->addImageList( imgList, ImageHolder::structural_image ) ) {
 			checkForCaCp( image );

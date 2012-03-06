@@ -55,9 +55,6 @@ public:
 	friend class QViewerCore;
 
 	enum OptionPosition { bottom, top, left, right, central11 };
-	enum ViewWidgetArragment {  InRow, InColumn };
-
-	enum StatusTyp { Info, Warning, Error };
 
 	bool registerEnsembleComponent( WidgetEnsembleComponent widget );
 	const WidgetMap &getWidgets() const { return m_WidgetMap; }
@@ -75,9 +72,6 @@ public:
 	virtual ~UICore() {}
 
 	virtual void setOptionPosition( OptionPosition pos = bottom );
-
-	void setViewWidgetArrangement( ViewWidgetArragment arrangement ) { m_ViewWidgetArrangement = arrangement; }
-	ViewWidgetArragment getViewWidgetArrangement() const { return m_ViewWidgetArrangement; }
 
 	const WidgetEnsembleListType &getEnsembleList() const { return m_EnsembleList; }
 	WidgetEnsembleListType &getEnsembleList() { return m_EnsembleList; }
@@ -113,7 +107,6 @@ private:
 	ui::ImageStackWidget *m_ImageStackWidget;
 	ui::SliderWidget *m_SliderWidget;
 
-	ViewWidgetArragment m_ViewWidgetArrangement;
 
 	WidgetMap m_WidgetMap;
 

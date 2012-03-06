@@ -234,9 +234,9 @@ void QImageWidgetImplementation::recalculateTranslation()
 {
 	if( currentZoom != 1 ) {
 		const boost::shared_ptr<ImageHolder > image = getWidgetSpecCurrentImage();
-		const util::ivector4 mappedSize = QOrientationHandler::mapCoordsToOrientation( image->getImageSize(), image, m_PlaneOrientation );
-		const util::ivector4 mappedVoxelCoords = QOrientationHandler::mapCoordsToOrientation( image->getImageProperties().voxelCoords, image, m_PlaneOrientation );
-		const util::ivector4 signVec = QOrientationHandler::mapCoordsToOrientation( util::ivector4( 1, 1, 1, 1 ), image, m_PlaneOrientation, false, false );
+		const util::ivector4 mappedSize = mapCoordsToOrientation( image->getImageSize(), image->getImageProperties().latchedOrientation, m_PlaneOrientation );
+		const util::ivector4 mappedVoxelCoords = mapCoordsToOrientation( image->getImageProperties().voxelCoords, image->getImageProperties().latchedOrientation, m_PlaneOrientation );
+		const util::ivector4 signVec = mapCoordsToOrientation( util::ivector4( 1, 1, 1, 1 ), image->getImageProperties().latchedOrientation, m_PlaneOrientation, false, false );
 		const util::ivector4 center = mappedSize / 2;
 		const util::ivector4 diff = center - mappedVoxelCoords;
 		const float transXConst = ( ( center[0] + 2 ) - mappedSize[0] / ( 2 * currentZoom ) );
@@ -265,7 +265,7 @@ void QImageWidgetImplementation::paintImage( boost::shared_ptr< ImageHolder > im
 		break;
 	}
 
-	const util::ivector4 mappedSizeAligned = QOrientationHandler::mapCoordsToOrientation( image->getImageProperties().alignedSize32, image, m_PlaneOrientation );
+	const util::ivector4 mappedSizeAligned = mapCoordsToOrientation( image->getImageProperties().alignedSize32, image->getImageProperties().latchedOrientation, m_PlaneOrientation );
 
 	m_Painter->resetMatrix();
 
@@ -338,9 +338,10 @@ void QImageWidgetImplementation::mousePressEvent( QMouseEvent *e )
 				m_ViewerCore->setCurrentImage( image );
 			}
 		}
-		m_ViewerCore->getUICore()->refreshUI();
+	} else {
+		m_ViewerCore->setCurrentImage( m_ImageVector.front() );
 	}
-
+	m_ViewerCore->getUICore()->refreshUI();
 	setFocus();
 	emitMousePressEvent( e );
 }
@@ -379,7 +380,7 @@ void QImageWidgetImplementation::emitMousePressEvent( QMouseEvent *e )
 {
 	const boost::shared_ptr<ImageHolder> image = getWidgetSpecCurrentImage();
 	const ImageProperties &imgProps = m_ImageProperties.at( image );
-	const uint16_t slice = QOrientationHandler::mapCoordsToOrientation( image->getImageProperties().voxelCoords, image, m_PlaneOrientation )[2];
+	const uint16_t slice = mapCoordsToOrientation( image->getImageProperties().voxelCoords, image->getImageProperties().latchedOrientation, m_PlaneOrientation )[2];
 	const util::ivector4 &coords = QOrientationHandler::convertWindow2VoxelCoords( imgProps.viewPort, image, e->x(), e->y(), slice, m_PlaneOrientation );
 	physicalCoordsChanged( image->getISISImage()->getPhysicalCoordsFromIndex( coords ) );
 }
@@ -471,7 +472,6 @@ void QImageWidgetImplementation::mouseReleaseEvent( QMouseEvent *e )
 	if ( e->button() == Qt::LeftButton ) {
 		m_LeftMouseButtonPressed = false;
 	}
-
 	QWidget::mouseReleaseEvent( e );
 }
 

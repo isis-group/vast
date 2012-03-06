@@ -43,9 +43,9 @@ UICore::UICore( QViewerCore *core )
 	m_VoxelInformationWidget = new ui::VoxelInformationWidget( m_MainWindow, core );
 	m_SliderWidget = new ui::SliderWidget( m_MainWindow, core );
 	m_ImageStackWidget = new ui::ImageStackWidget( m_MainWindow, core );
-	m_ViewWidgetArrangement = InRow;
 	m_VoxelInformationWidget->setVisible( false );
 	m_ImageStackWidget->setVisible( false );
+	setOptionPosition( );
 	connect( m_MainWindow->getInterface().actionInformation_Areas, SIGNAL( triggered( bool ) ), SLOT( showInformationAreas( bool ) ) );
 }
 
@@ -197,31 +197,17 @@ void UICore::refreshUI( )
 		} else {
 			widget.second.getDockWidget()->setVisible( true );
 		}
-#warning implement this!!!!!!!!
+
 		//go through all the images and check if we need this widget ( 2d data? )
-// 		if( getEnsembleList().size() == 1 ) {
-// 			bool widgetNeeded = false;
-// 			BOOST_FOREACH( widget::WidgetInterface::ImageVectorType::const_reference image, iVector ) {
-// 				const util::ivector4 mappedSize = QOrientationHandler::mapCoordsToOrientation( image->getImageSize(), image, widget.second.widgetImplementation->getPlaneOrientation() );
-// 
-// 				if( mappedSize[0] > 1 && mappedSize[1] > 1 ) {
-// 					widgetNeeded = true;
-// 				}
-// 			}
-// 			widget.second.dockWidget->setVisible( widgetNeeded );
-// 
-// 			switch( widget.second.widgetImplementation->getPlaneOrientation() ) {
-// 			case axial:
-// 				getMainWindow()->getInterface().actionAxial_View->setChecked( widgetNeeded );
-// 				break;
-// 			case sagittal:
-// 				getMainWindow()->getInterface().actionSagittal_View->setChecked( widgetNeeded );
-// 				break;
-// 			case coronal:
-// 				getMainWindow()->getInterface().actionCoronal_View->setChecked( widgetNeeded );
-// 				break;
-// 			}
-// 		}
+		bool widgetNeeded = false;
+		BOOST_FOREACH( widget::WidgetInterface::ImageVectorType::const_reference image, iVector ) {
+			const util::ivector4 mappedSize = mapCoordsToOrientation( image->getImageSize(), image->getImageProperties().latchedOrientation, widget.second.getWidgetInterface()->getPlaneOrientation() );
+
+			if( mappedSize[0] > 1 && mappedSize[1] > 1 ) {
+				widgetNeeded = true;
+			}
+		}
+		widget.second.getDockWidget()->setVisible( widgetNeeded );
 
 		widget.second.getWidgetInterface()->setCrossHairWidth( 1 );
 
