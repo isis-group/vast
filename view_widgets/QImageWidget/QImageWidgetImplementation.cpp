@@ -577,20 +577,20 @@ void QImageWidgetImplementation::dragEnterEvent( QDragEnterEvent *e )
 void QImageWidgetImplementation::dropEvent( QDropEvent *e )
 {
 	const boost::shared_ptr<ImageHolder> image = m_ViewerCore->getDataContainer().at( e->mimeData()->text().toStdString() );
-	UICore::ViewWidgetEnsembleType myEnsemble = UICore::ViewWidgetEnsembleType();
-	BOOST_FOREACH( UICore::ViewWidgetEnsembleListType::const_reference ensemble, m_ViewerCore->getUICore()->getEnsembleList() ) {
+	WidgetEnsemble myEnsemble;
+	BOOST_FOREACH( WidgetEnsembleListType::reference ensemble, m_ViewerCore->getUICore()->getEnsembleList() ) {
 		for( unsigned short i = 0; i < 3; i++ ) {
-			if( ensemble[i].widgetImplementation == this ) {
+			if( ensemble[i].getWidgetInterface() == this ) {
 				myEnsemble = ensemble;
 			} else if( myEnsemble != ensemble ) {
-				ensemble[i].widgetImplementation->removeImage( image );
-				image->removeWidget( ensemble[i].widgetImplementation );
+				ensemble[i].getWidgetInterface()->removeImage( image );
+				image->removeWidget( ensemble[i].getWidgetInterface() );
 			}
 		}
 	}
 
 	for( unsigned short i = 0; i < 3; i++ ) {
-		myEnsemble[i].widgetImplementation->addImage( image );
+		myEnsemble[i].getWidgetInterface()->addImage( image );
 	}
 
 	m_ViewerCore->setCurrentImage( image );

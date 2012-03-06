@@ -108,13 +108,13 @@ void isis::viewer::plugin::CorrelationPlotterDialog::showEvent( QShowEvent * )
 		} else {
 			if ( !m_CurrentCorrelationMap ) {
 				createCorrelationMap() ;
-				BOOST_FOREACH( UICore::ViewWidgetEnsembleListType::const_reference ensemble, m_ViewerCore->getUICore()->getEnsembleList() ) {
+				BOOST_FOREACH( WidgetEnsembleListType::reference ensemble, m_ViewerCore->getUICore()->getEnsembleList() ) {
 					widget::WidgetInterface::ImageVectorType iVector;
 
 					for( unsigned short i = 0; i < 3; i++ ) {
-						iVector = ensemble[i].widgetImplementation->getImageVector();
+						iVector = ensemble[i].getWidgetInterface()->getImageVector();
 						if( std::find( iVector.begin(), iVector.end(), m_CurrentFunctionalImage ) != iVector.end() ) {
-							m_ViewerCore->attachImageToWidget( m_CurrentCorrelationMap, ensemble[i].widgetImplementation ) ;
+							m_ViewerCore->attachImageToWidget( m_CurrentCorrelationMap, ensemble[i].getWidgetInterface() ) ;
 						}
 					}
 				}

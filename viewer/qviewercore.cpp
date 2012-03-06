@@ -226,7 +226,7 @@ void QViewerCore::setShowCrosshair ( bool c )
 
 void QViewerCore::settingsChanged()
 {
-	BOOST_FOREACH ( UICore::WidgetMap::const_reference widget, getUICore()->getWidgets() )
+	BOOST_FOREACH ( WidgetMap::const_reference widget, getUICore()->getWidgets() )
 	{
 		widget.first->setInterpolationType ( static_cast<InterpolationType> ( getOptionMap()->getPropertyAs<uint16_t> ( "interpolationType" ) ) );
 	}
@@ -391,7 +391,7 @@ void QViewerCore::openPath ( const _internal::FileInformation &fileInfo )
 		getUICore()->getMainWindow()->toggleLoadingIcon( true, QString( "Opening image " ) + fileInfo.getFileName().c_str() + QString("...") );
 		QDir dir;
 		setCurrentPath ( dir.absoluteFilePath ( fileInfo.getFileName().c_str() ).toStdString() );
-		UICore::ViewWidgetEnsembleType ensemble;
+		WidgetEnsemble ensemble;
 
 		if ( getUICore()->getEnsembleList().size() )
 		{
@@ -418,12 +418,12 @@ void QViewerCore::openPath ( const _internal::FileInformation &fileInfo )
 					if ( fileInfo.getImageType() == ImageHolder::z_map && m_CurrentAnatomicalReference.get() )
 					{
 						for ( uint8_t i = 0; i < ensemble.size(); i++ ) {
-							attachImageToWidget ( m_CurrentAnatomicalReference, ensemble[i].widgetImplementation );
+							attachImageToWidget ( m_CurrentAnatomicalReference, ensemble[i].getWidgetInterface() );
 						}
 					}
 				}
 				for ( uint8_t i = 0; i < ensemble.size(); i++ ) {
-					attachImageToWidget ( imageHolder, ensemble[i].widgetImplementation );
+					attachImageToWidget ( imageHolder, ensemble[i].getWidgetInterface() );
 				}
 				setCurrentImage ( imageHolder );
 			}

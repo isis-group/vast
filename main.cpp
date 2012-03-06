@@ -40,6 +40,7 @@
 #include "pluginloader.hpp"
 #include "color.hpp"
 #include "uicore.hpp"
+#include "widgetensemble.hpp"
 
 #include "common.hpp"
 #include "internal/error.hpp"
@@ -205,7 +206,7 @@ int main( int argc, char *argv[] )
 											   widget_name,
 											   app.parameters["rf"].toString(),
 											   image->getImageProperties().imageType ) );
-			UICore::ViewWidgetEnsembleType ensemble = core->getUICore()->createViewWidgetEnsemble( widget_name, image );
+			WidgetEnsemble ensemble = core->getUICore()->createViewWidgetEnsemble( widget_name, image );
 
 			if( app.parameters["in"].isSet() ) {
 				BOOST_FOREACH( std::list<data::Image>::const_reference image, imgList ) {
@@ -213,9 +214,9 @@ int main( int argc, char *argv[] )
 					checkForCaCp( anatomicalImage );
 
 					if( anatomicalImage->getImageSize()[3] == 1 ) {
-						ensemble[0].widgetImplementation->addImage( anatomicalImage );
-						ensemble[1].widgetImplementation->addImage( anatomicalImage );
-						ensemble[2].widgetImplementation->addImage( anatomicalImage );
+						ensemble[0].getWidgetInterface()->addImage( anatomicalImage );
+						ensemble[1].getWidgetInterface()->addImage( anatomicalImage );
+						ensemble[2].getWidgetInterface()->addImage( anatomicalImage );
 					}
 				}
 			}
@@ -238,7 +239,7 @@ int main( int argc, char *argv[] )
 		core->getUICore()->getMainWindow()->startWidget->close();
 	} else if ( app.parameters["in"].isSet() || zmapIsSet ) {
 		core->getUICore()->setViewWidgetArrangement( UICore::InRow );
-		UICore::ViewWidgetEnsembleType ensemble = core->getUICore()->createViewWidgetEnsemble( widget_name );
+		WidgetEnsemble ensemble = core->getUICore()->createViewWidgetEnsemble( widget_name );
 		BOOST_FOREACH( ImageListRef image, core->addImageList( imgList, ImageHolder::structural_image ) ) {
 			checkForCaCp( image );
 			core->getRecentFiles().insertSave( _internal::FileInformation( image->getFileNames().front(),
@@ -246,9 +247,9 @@ int main( int argc, char *argv[] )
 											   widget_name,
 											   app.parameters["rf"].toString(),
 											   image->getImageProperties().imageType ) );
-			core->attachImageToWidget( image, ensemble[0]. widgetImplementation );
-			core->attachImageToWidget( image, ensemble[1]. widgetImplementation );
-			core->attachImageToWidget( image, ensemble[2]. widgetImplementation );
+			core->attachImageToWidget( image, ensemble[0]. getWidgetInterface() );
+			core->attachImageToWidget( image, ensemble[1]. getWidgetInterface() );
+			core->attachImageToWidget( image, ensemble[2]. getWidgetInterface() );
 		}
 		BOOST_FOREACH( ImageListRef image, core->addImageList( zImgList, ImageHolder::z_map ) ) {
 			checkForCaCp( image );
@@ -257,9 +258,9 @@ int main( int argc, char *argv[] )
 											   widget_name,
 											   app.parameters["rf"].toString(),
 											   image->getImageProperties().imageType ) );
-			core->attachImageToWidget( image, ensemble[0]. widgetImplementation );
-			core->attachImageToWidget( image, ensemble[1]. widgetImplementation );
-			core->attachImageToWidget( image, ensemble[2]. widgetImplementation );
+			core->attachImageToWidget( image, ensemble[0]. getWidgetInterface() );
+			core->attachImageToWidget( image, ensemble[1]. getWidgetInterface() );
+			core->attachImageToWidget( image, ensemble[2]. getWidgetInterface() );
 		}
 		core->getUICore()->setOptionPosition( isis::viewer::UICore::bottom );
 		core->getUICore()->getMainWindow()->startWidget->close();

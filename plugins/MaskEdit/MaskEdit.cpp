@@ -64,7 +64,7 @@ MaskEditDialog::MaskEditDialog( QWidget *parent, QViewerCore *core )
 void MaskEditDialog::cutClicked()
 {
 	for( unsigned short i = 0; i < 3; i++ ) {
-		m_CurrentWidgetEnsemble[i].widgetImplementation->setMouseCursorIcon( QIcon( ":/common/cutCrosshair.png" ) );
+		m_CurrentWidgetEnsemble[i].getWidgetInterface()->setMouseCursorIcon( QIcon( ":/common/cutCrosshair.png" ) );
 	}
 
 	m_ViewerCore->setShowCrosshair( false );
@@ -74,7 +74,7 @@ void MaskEditDialog::cutClicked()
 void MaskEditDialog::paintClicked()
 {
 	for( unsigned short i = 0; i < 3; i++ ) {
-		m_CurrentWidgetEnsemble[i].widgetImplementation->setMouseCursorIcon( QIcon( ":/common/paintCrosshair.png" ) );
+		m_CurrentWidgetEnsemble[i].getWidgetInterface()->setMouseCursorIcon( QIcon( ":/common/paintCrosshair.png" ) );
 	}
 
 	m_ViewerCore->setShowCrosshair( false );
@@ -164,17 +164,17 @@ void MaskEditDialog::editCurrentImage()
 		m_Interface.paint->setEnabled( true );
 		m_Interface.radius->setEnabled( true );
 		m_Interface.paint->setChecked( true );
-		BOOST_FOREACH( UICore::ViewWidgetEnsembleListType::const_reference ensemble, m_ViewerCore->getUICore()->getEnsembleList() ) {
+		BOOST_FOREACH( WidgetEnsembleListType::reference ensemble, m_ViewerCore->getUICore()->getEnsembleList() ) {
 			widget::WidgetInterface::ImageVectorType iVector;
 
 			for( unsigned short i = 0; i < 3; i++ ) {
-				iVector = ensemble[i].widgetImplementation->getImageVector();
+				iVector = ensemble[i].getWidgetInterface()->getImageVector();
 
 				if( std::find( iVector.begin(), iVector.end(), m_CurrentMask ) != iVector.end() ) {
 					m_CurrentWidgetEnsemble = ensemble;
-					m_ViewerCore->attachImageToWidget( m_CurrentMask, ensemble[i].widgetImplementation ) ;
-					ensemble[i].widgetImplementation->setMouseCursorIcon( QIcon( ":/common/paintCrosshair.png" ) );
-					ensemble[i].widgetImplementation->setEnableCrosshair( false );
+					m_ViewerCore->attachImageToWidget( m_CurrentMask, ensemble[i].getWidgetInterface() ) ;
+					ensemble[i].getWidgetInterface()->setMouseCursorIcon( QIcon( ":/common/paintCrosshair.png" ) );
+					ensemble[i].getWidgetInterface()->setEnableCrosshair( false );
 
 				}
 			}
@@ -193,10 +193,10 @@ void MaskEditDialog::createEmptyMask()
 void MaskEditDialog::closeEvent( QCloseEvent * )
 {
 	disconnect( m_ViewerCore, SIGNAL ( emitPhysicalCoordsChanged( util::fvector4 ) ), this, SLOT( physicalCoordChanged( util::fvector4 ) ) );
-	BOOST_FOREACH( UICore::ViewWidgetEnsembleListType::const_reference ensemble, m_ViewerCore->getUICore()->getEnsembleList() ) {
+	BOOST_FOREACH( WidgetEnsembleListType::reference ensemble, m_ViewerCore->getUICore()->getEnsembleList() ) {
 		for ( unsigned short i = 0; i < 3; i++ ) {
-			ensemble[i].widgetImplementation->setMouseCursorIcon( QIcon() );
-			ensemble[i].widgetImplementation->setEnableCrosshair( true );
+			ensemble[i].getWidgetInterface()->setMouseCursorIcon( QIcon() );
+			ensemble[i].getWidgetInterface()->setEnableCrosshair( true );
 		}
 	}
 

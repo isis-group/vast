@@ -57,12 +57,12 @@ void PreferencesDialog::screenshotXChanged( int val )
 {
 	if( preferencesUi.keepRatio->isChecked() ) {
 		if( m_ViewerCore->hasImage() ) {
-			UICore::ViewWidgetEnsembleListType ensembleList = m_ViewerCore->getUICore()->getEnsembleList();
+			WidgetEnsembleListType ensembleList = m_ViewerCore->getUICore()->getEnsembleList();
 			//preparation
-			ensembleList.front()[0].frame->setFrameStyle( 0 );
-			ensembleList.front()[0].frame->setAutoFillBackground( false );
-			const int widgetHeight = ensembleList.size() *  ensembleList.front()[0].placeHolder->height() + ( m_ViewerCore->getMode() == ViewerCoreBase::zmap ? 100 : 0 ) ;
-			const int widgetWidth = 3 * ensembleList.front()[0].placeHolder->width();
+			ensembleList.front()[0].getFrame()->setFrameStyle( 0 );
+			ensembleList.front()[0].getFrame()->setAutoFillBackground( false );
+			const int widgetHeight = ensembleList.size() *  ensembleList.front()[0].getPlaceHolder()->height() + ( m_ViewerCore->getMode() == ViewerCoreBase::zmap ? 100 : 0 ) ;
+			const int widgetWidth = 3 * ensembleList.front()[0].getPlaceHolder()->width();
 
 			const double ratio = ( double )widgetHeight / widgetWidth;
 			preferencesUi.sizeY->setValue( val * ratio );

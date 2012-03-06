@@ -29,6 +29,7 @@
 #define UICORE_HPP
 
 #include <list>
+#include "widgetensemble.hpp"
 #include "widgetinterface.h"
 #include "mainwindow.hpp"
 #include <map>
@@ -57,20 +58,8 @@ public:
 	enum ViewWidgetArragment {  InRow, InColumn };
 
 	enum StatusTyp { Info, Warning, Error };
-	struct ViewWidget {
-		QDockWidget *dockWidget;
-		QFrame *frame;
-		QWidget *placeHolder;
-		widget::WidgetInterface *widgetImplementation;
-		PlaneOrientation planeOrientation;
-		std::string widgetType;
-		bool operator==( const ViewWidget &other ) const { return widgetImplementation == other.widgetImplementation; }
-	};
-	typedef std::map<widget::WidgetInterface *, ViewWidget > WidgetMap;
-	typedef std::vector<ViewWidget> ViewWidgetEnsembleType;
-	typedef std::list< ViewWidgetEnsembleType > ViewWidgetEnsembleListType;
 
-	bool registerWidget( ViewWidget widget );
+	bool registerEnsembleComponent( WidgetEnsembleComponent widget );
 	const WidgetMap &getWidgets() const { return m_WidgetMap; }
 	WidgetMap &getWidgets() { return m_WidgetMap; }
 
@@ -78,16 +67,16 @@ public:
 	const MainWindow *getMainWindow() const  { return m_MainWindow; }
 	MainWindow *getMainWindow() { return m_MainWindow; }
 
-	virtual ViewWidgetEnsembleType createViewWidgetEnsemble( const std::string &widgetType, bool show = true  );
-	virtual ViewWidgetEnsembleType createViewWidgetEnsemble( const std::string &widgetType, boost::shared_ptr< ImageHolder > image, bool show = true );
+	virtual WidgetEnsemble createViewWidgetEnsemble( const std::string &widgetType, bool show = true  );
+	virtual WidgetEnsemble createViewWidgetEnsemble( const std::string &widgetType, boost::shared_ptr< ImageHolder > image, bool show = true );
 
 	virtual void removeViewWidgetEnsemble( widget::WidgetInterface *widgetImplementation );
-	virtual void removeViewWidgetEnsemble( ViewWidgetEnsembleType ensemble );
+	virtual void removeViewWidgetEnsemble( WidgetEnsemble ensemble );
 
-	virtual ViewWidgetEnsembleType detachViewWidgetEnsemble( widget::WidgetInterface *widgetImplementation );
-	virtual ViewWidgetEnsembleType detachViewWidgetEnsemble( ViewWidgetEnsembleType ensemble );
+	virtual WidgetEnsemble detachViewWidgetEnsemble( widget::WidgetInterface *widgetImplementation );
+	virtual WidgetEnsemble detachViewWidgetEnsemble( WidgetEnsemble ensemble );
 
-	virtual void attachViewWidgetEnsemble( ViewWidgetEnsembleType ensemble );
+	virtual void attachViewWidgetEnsemble( WidgetEnsemble ensemble );
 
 	virtual ~UICore() {}
 
@@ -96,8 +85,8 @@ public:
 	void setViewWidgetArrangement( ViewWidgetArragment arrangement ) { m_ViewWidgetArrangement = arrangement; }
 	ViewWidgetArragment getViewWidgetArrangement() const { return m_ViewWidgetArrangement; }
 
-	const ViewWidgetEnsembleListType &getEnsembleList() const { return m_EnsembleList; }
-	ViewWidgetEnsembleListType &getEnsembleList() { return m_EnsembleList; }
+	const WidgetEnsembleListType &getEnsembleList() const { return m_EnsembleList; }
+	WidgetEnsembleListType &getEnsembleList() { return m_EnsembleList; }
 
 	void setViewPlaneOrientation( PlaneOrientation orientation, bool visible );
 
@@ -116,13 +105,13 @@ protected:
 
 private:
 
-	ViewWidget createViewWidget( const std::string &widgetType, PlaneOrientation planeOrientation );
+	WidgetEnsembleComponent createEnsembleComponent( const std::string &widgetIdentifier, PlaneOrientation planeOrientation );
 
 	QDockWidget *createDockingEnsemble( QWidget *widget );
 
 	QViewerCore *m_ViewerCore;
 	MainWindow *m_MainWindow;
-	ViewWidgetEnsembleListType m_EnsembleList;
+	WidgetEnsembleListType m_EnsembleList;
 
 	ui::VoxelInformationWidget *m_VoxelInformationWidget;
 	ui::ImageStackWidget *m_ImageStackWidget;

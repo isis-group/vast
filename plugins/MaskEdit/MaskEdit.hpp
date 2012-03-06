@@ -30,6 +30,7 @@
 
 #include "ui_maskEdit.h"
 #include "qviewercore.hpp"
+#include "widgetensemble.hpp"
 #include <DataStorage/chunk.hpp>
 #include <boost/assign/list_of.hpp>
 
@@ -69,7 +70,7 @@ private:
 
 	CreateMaskDialog *m_CreateMaskDialog;
 
-	UICore::ViewWidgetEnsembleType m_CurrentWidgetEnsemble;
+	WidgetEnsemble m_CurrentWidgetEnsemble;
 
 	template<typename TYPE>
 	void manipulateVoxel( const util::fvector4 physCoord, const TYPE &value, boost::shared_ptr<ImageHolder> image ) {

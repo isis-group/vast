@@ -106,29 +106,29 @@ QDockWidget *UICore::createDockingEnsemble( QWidget *widget )
 
 }
 
-UICore::ViewWidgetEnsembleType UICore::createViewWidgetEnsemble( const std::string &widgetIdentifier, boost::shared_ptr< ImageHolder > image, bool show )
+WidgetEnsemble UICore::createViewWidgetEnsemble( const std::string &widgetIdentifier, boost::shared_ptr< ImageHolder > image, bool show )
 {
-	ViewWidgetEnsembleType ensemble = createViewWidgetEnsemble( widgetIdentifier, show );
-	BOOST_FOREACH( ViewWidgetEnsembleType::reference widget, ensemble ) {
-		widget.widgetImplementation->addImage( image );
+	WidgetEnsemble ensemble = createViewWidgetEnsemble( widgetIdentifier, show );
+	BOOST_FOREACH( WidgetEnsemble::reference widget, ensemble ) {
+		widget.getWidgetInterface()->addImage( image );
 	}
 	return ensemble;
 }
 
 
-UICore::ViewWidgetEnsembleType UICore::createViewWidgetEnsemble( const std::string &widgetIdentifier, bool show )
+WidgetEnsemble UICore::createViewWidgetEnsemble( const std::string &widgetIdentifier, bool show )
 {
-	ViewWidgetEnsembleType ensemble;
+	WidgetEnsemble ensemble;
 	const uint8_t numberWidgets = m_ViewerCore->getWidgetProperties(widgetIdentifier)->getPropertyAs<uint8_t>("numberOfEntitiesInEnsemble");
 	if( numberWidgets == 1 ) {
-		ensemble.push_back( createViewWidget( widgetIdentifier, not_specified) );
+		ensemble.push_back( createEnsembleComponent( widgetIdentifier, not_specified) );
 	} else if ( numberWidgets == 3 ) {
-		ensemble.push_back( createViewWidget( widgetIdentifier, axial ) );
-		ensemble.push_back( createViewWidget( widgetIdentifier, sagittal ) );
-		ensemble.push_back(createViewWidget( widgetIdentifier, coronal ) );
+		ensemble.push_back( createEnsembleComponent( widgetIdentifier, axial ) );
+		ensemble.push_back( createEnsembleComponent( widgetIdentifier, sagittal ) );
+		ensemble.push_back(createEnsembleComponent( widgetIdentifier, coronal ) );
 	} else {
 		for( uint8_t i = 0; i < numberWidgets; i++ ) {
-			ensemble.push_back( createViewWidget( widgetIdentifier, not_specified ) );
+			ensemble.push_back( createEnsembleComponent( widgetIdentifier, not_specified ) );
 		}
 	}
 	if( show ) {
@@ -140,58 +140,58 @@ UICore::ViewWidgetEnsembleType UICore::createViewWidgetEnsemble( const std::stri
 
 void UICore::removeViewWidgetEnsemble( widget::WidgetInterface *widgetImplementation )
 {
-	BOOST_FOREACH( ViewWidgetEnsembleListType::reference ref, m_EnsembleList ) {
-		if( ref[0].widgetImplementation == widgetImplementation
-			|| ref[1].widgetImplementation == widgetImplementation
-			|| ref[2].widgetImplementation == widgetImplementation ) {
+	BOOST_FOREACH( WidgetEnsembleListType::reference ref, m_EnsembleList ) {
+		if( ref[0].getWidgetInterface() == widgetImplementation
+			|| ref[1].getWidgetInterface() == widgetImplementation
+			|| ref[2].getWidgetInterface() == widgetImplementation ) {
 			removeViewWidgetEnsemble( ref );
 		}
 	}
 }
 
-void UICore::removeViewWidgetEnsemble( UICore::ViewWidgetEnsembleType ensemble )
+void UICore::removeViewWidgetEnsemble( WidgetEnsemble ensemble )
 {
 	for( unsigned short i = 0; i < 3; i++ ) {
-		m_MainWindow->getInterface().centralGridLayout->removeWidget( ensemble[i].dockWidget );
+		m_MainWindow->getInterface().centralGridLayout->removeWidget( ensemble[i].getDockWidget() );
 	}
 
 	m_EnsembleList.erase( std::find( m_EnsembleList.begin(), m_EnsembleList.end(), ensemble ) );
 }
 
-UICore::ViewWidgetEnsembleType UICore::detachViewWidgetEnsemble( widget::WidgetInterface *widgetImplementation )
+WidgetEnsemble UICore::detachViewWidgetEnsemble( widget::WidgetInterface *widgetImplementation )
 {
-	BOOST_FOREACH( ViewWidgetEnsembleListType::reference ref, m_EnsembleList ) {
-		if( ref[0].widgetImplementation == widgetImplementation
-			|| ref[1].widgetImplementation == widgetImplementation
-			|| ref[2].widgetImplementation == widgetImplementation ) {
+	BOOST_FOREACH( WidgetEnsembleListType::reference ref, m_EnsembleList ) {
+		if( ref[0].getWidgetInterface() == widgetImplementation
+			|| ref[1].getWidgetInterface() == widgetImplementation
+			|| ref[2].getWidgetInterface() == widgetImplementation ) {
 			return detachViewWidgetEnsemble( ref );
 		}
 	}
-	return ViewWidgetEnsembleType();
+	return WidgetEnsemble();
 }
 
-UICore::ViewWidgetEnsembleType  UICore::detachViewWidgetEnsemble( UICore::ViewWidgetEnsembleType ensemble )
+WidgetEnsemble UICore::detachViewWidgetEnsemble( WidgetEnsemble ensemble )
 {
 	for( unsigned short i = 0; i < ensemble.size(); i++ ) {
-		m_MainWindow->getInterface().centralGridLayout->removeWidget( ensemble[i].dockWidget );
+		m_MainWindow->getInterface().centralGridLayout->removeWidget( ensemble[i].getDockWidget() );
 	}
 
 	return ensemble;
 }
 
-void UICore::attachViewWidgetEnsemble( UICore::ViewWidgetEnsembleType ensemble )
+void UICore::attachViewWidgetEnsemble( WidgetEnsemble ensemble )
 {
 	switch ( m_ViewWidgetArrangement ) {
 		case InRow: {
 			for ( uint8_t i = 0; i < ensemble.size(); i++ ) {
-				m_MainWindow->getInterface().centralGridLayout->addWidget( ensemble[i].dockWidget, m_RowCount, i );
+				m_MainWindow->getInterface().centralGridLayout->addWidget( ensemble[i].getDockWidget(), m_RowCount, i );
 			}
 			break;
 		}
 		case InColumn: {
 			int currentColumn = m_MainWindow->getInterface().centralGridLayout->columnCount() ;
 			for ( uint8_t i = 0; i < ensemble.size(); i++ ) {
-				m_MainWindow->getInterface().centralGridLayout->addWidget( ensemble[i].dockWidget, i, currentColumn );
+				m_MainWindow->getInterface().centralGridLayout->addWidget( ensemble[i].getDockWidget(), i, currentColumn );
 			}
 		}
 	}
@@ -201,13 +201,13 @@ void UICore::attachViewWidgetEnsemble( UICore::ViewWidgetEnsembleType ensemble )
 void UICore::rearrangeViewWidgets()
 {
 	m_RowCount = 0;
-	BOOST_FOREACH( ViewWidgetEnsembleListType::const_reference ensemble, m_EnsembleList ) {
+	BOOST_FOREACH( WidgetEnsembleListType::const_reference ensemble, m_EnsembleList ) {
 		attachViewWidgetEnsemble( detachViewWidgetEnsemble( ensemble ) );
 	}
 	setOptionPosition( bottom );
 }
 
-UICore::ViewWidget UICore::createViewWidget( const std::string &widgetIdentifier, PlaneOrientation planeOrientation )
+WidgetEnsembleComponent UICore::createEnsembleComponent( const std::string &widgetIdentifier, PlaneOrientation planeOrientation )
 {
 	QFrame *frameWidget = new QFrame();
 	QWidget *placeHolder = new QWidget( frameWidget );
@@ -223,15 +223,9 @@ UICore::ViewWidget UICore::createViewWidget( const std::string &widgetIdentifier
 	widget::WidgetInterface * widgetImpl = m_ViewerCore->getWidget(widgetIdentifier);
 	widgetImpl->setup( m_ViewerCore, placeHolder, planeOrientation );
 
-	ViewWidget viewWidget;
-	viewWidget.placeHolder = placeHolder;
-	viewWidget.dockWidget = dockWidget;
-	viewWidget.frame = frameWidget;
-	viewWidget.widgetImplementation = widgetImpl;
-	viewWidget.planeOrientation = planeOrientation;
-	viewWidget.widgetType = widgetIdentifier;
-	registerWidget( viewWidget );
-	return viewWidget;
+	WidgetEnsembleComponent component( frameWidget, dockWidget, placeHolder, widgetImpl );
+	registerEnsembleComponent( component );
+	return component;
 
 }
 
@@ -246,12 +240,12 @@ void UICore::refreshUI( )
 	m_ImageStackWidget->synchronize();
 	m_VoxelInformationWidget->synchronize();
 	BOOST_FOREACH( WidgetMap::reference widget, getWidgets() ) {
-		widget::WidgetInterface::ImageVectorType iVector = widget.second.widgetImplementation->getImageVector();
+		widget::WidgetInterface::ImageVectorType iVector = widget.second.getWidgetInterface()->getImageVector();
 
 		if( !iVector.size() ) {
-			widget.second.dockWidget->setVisible( false );
+			widget.second.getDockWidget()->setVisible( false );
 		} else {
-			widget.second.dockWidget->setVisible( true );
+			widget.second.getDockWidget()->setVisible( true );
 		}
 #warning implement this!!!!!!!!
 		//go through all the images and check if we need this widget ( 2d data? )
@@ -279,34 +273,34 @@ void UICore::refreshUI( )
 // 			}
 // 		}
 
-		widget.second.widgetImplementation->setCrossHairWidth( 1 );
+		widget.second.getWidgetInterface()->setCrossHairWidth( 1 );
 
 		if ( m_ViewerCore->hasImage() ) {
 			if( std::find( iVector.begin(), iVector.end(), m_ViewerCore->getCurrentImage() ) != iVector.end() ) {
 				QPalette pal;
 				pal.setColor( QPalette::Background, QColor( 119, 136, 153 ) );
-				widget.second.frame->setFrameStyle( QFrame::WinPanel | QFrame::Raised );
-				widget.second.frame->setLineWidth( 1 );
-				widget.second.frame->setPalette( pal );
-				widget.second.frame->setAutoFillBackground( true );
+				widget.second.getFrame()->setFrameStyle( QFrame::WinPanel | QFrame::Raised );
+				widget.second.getFrame()->setLineWidth( 1 );
+				widget.second.getFrame()->setPalette( pal );
+				widget.second.getFrame()->setAutoFillBackground( true );
 
 				if( m_ViewerCore->getMode() == ViewerCoreBase::zmap ) {
-					widget.second.widgetImplementation->setCrossHairColor( Qt::white );
-					widget.second.widgetImplementation->updateScene();
+					widget.second.getWidgetInterface()->setCrossHairColor( Qt::white );
+					widget.second.getWidgetInterface()->updateScene();
 				}
 			} else {
-				widget.second.frame->setFrameStyle( 0 );
-				widget.second.frame->setAutoFillBackground( false );
+				widget.second.getFrame()->setFrameStyle( 0 );
+				widget.second.getFrame()->setAutoFillBackground( false );
 
 				if ( m_ViewerCore->getMode() == ViewerCoreBase::zmap ) {
-					widget.second.widgetImplementation->setCrossHairColor( QColor( 255, 102, 0 ) );
-					widget.second.widgetImplementation->updateScene();
+					widget.second.getWidgetInterface()->setCrossHairColor( QColor( 255, 102, 0 ) );
+					widget.second.getWidgetInterface()->updateScene();
 				}
 			}
 		}
 
 		if( m_ViewerCore->getMode() != ViewerCoreBase::zmap ) {
-			widget.second.widgetImplementation->setCrossHairColor( QColor( 255, 102, 0 ) );
+			widget.second.getWidgetInterface()->setCrossHairColor( QColor( 255, 102, 0 ) );
 		}
 	}
 	m_MainWindow->refreshUI();
@@ -317,14 +311,14 @@ void UICore::refreshUI( )
 }
 
 
-bool UICore::registerWidget( ViewWidget widget )
+bool UICore::registerEnsembleComponent( WidgetEnsembleComponent component )
 {
-	if( m_WidgetMap.find( widget.widgetImplementation ) != m_WidgetMap.end() ) {
-		LOG( Runtime, warning ) << "Widget with id" << widget.widgetImplementation->getWidgetName() << "!";
+	if( m_WidgetMap.find( component.getWidgetInterface() ) != m_WidgetMap.end() ) {
+		LOG( Runtime, warning ) << "Widget with id" << component.getWidgetInterface()->getWidgetName() << "!";
 		return false;
 	}
 
-	m_WidgetMap[widget.widgetImplementation] = widget;
+	m_WidgetMap.insert( std::make_pair< widget::WidgetInterface*, WidgetEnsembleComponent >( component.getWidgetInterface(), component ) );
 	return true;
 
 }
@@ -339,26 +333,26 @@ void UICore::showInformationAreas( bool show )
 QImage UICore::getScreenshot()
 {
 	if( m_ViewerCore->hasImage() ) {
-		ViewWidgetEnsembleListType ensembleList = getEnsembleList();
+		WidgetEnsembleListType ensembleList = getEnsembleList();
 		//preparation
-		BOOST_FOREACH( ViewWidgetEnsembleListType::reference ensemble, ensembleList ) {
+		BOOST_FOREACH( WidgetEnsembleListType::reference ensemble, ensembleList ) {
 			for( unsigned short i = 0; i < 3; i++ ) {
-				ensemble[i].frame->setFrameStyle( 0 );
-				ensemble[i].frame->setAutoFillBackground( false );
-				ensemble[i].widgetImplementation->setCrossHairWidth( 2 );
+				ensemble[i].getFrame()->setFrameStyle( 0 );
+				ensemble[i].getFrame()->setAutoFillBackground( false );
+				ensemble[i].getWidgetInterface()->setCrossHairWidth( 2 );
 			}
 		}
-		const int widgetHeight = ensembleList.front()[0].placeHolder->height();
-		const int widgetWidth = ensembleList.front()[0].placeHolder->width();
+		const int widgetHeight = ensembleList.front()[0].getPlaceHolder()->height();
+		const int widgetWidth = ensembleList.front()[0].getPlaceHolder()->width();
 		QPixmap screenshot( 3 * widgetWidth, ensembleList.size() * widgetHeight + ( m_ViewerCore->getMode() == ViewerCoreBase::zmap ? 100 : 0 ) ) ;
 		screenshot.fill( Qt::black );
 		QPainter painter( &screenshot );
 		unsigned short eIndex = 0;
-		BOOST_FOREACH( ViewWidgetEnsembleListType::reference ensemble, ensembleList ) {
+		BOOST_FOREACH( WidgetEnsembleListType::reference ensemble, ensembleList ) {
 			for ( unsigned short i = 0; i < 3; i++ ) {
-				QWidget *placeHolder = ensemble[i].placeHolder;
-				ensemble[i].widgetImplementation->setCrossHairColor( Qt::white );
-				ensemble[i].widgetImplementation->updateScene();
+				QWidget *placeHolder = ensemble[i].getPlaceHolder();
+				ensemble[i].getWidgetInterface()->setCrossHairColor( Qt::white );
+				ensemble[i].getWidgetInterface()->updateScene();
 				painter.drawPixmap( i * placeHolder->width(), eIndex * placeHolder->height(), QPixmap::grabWidget( placeHolder ) );
 			}
 
@@ -407,10 +401,10 @@ QImage UICore::getScreenshot()
 
 void UICore::setViewPlaneOrientation( PlaneOrientation orientation, bool visible )
 {
-	BOOST_FOREACH( ViewWidgetEnsembleListType::reference ensemble, getEnsembleList() ) {
+	BOOST_FOREACH( WidgetEnsembleListType::reference ensemble, getEnsembleList() ) {
 		for( unsigned short i = 0; i < 3; i++ ) {
-			if( ensemble[i].planeOrientation == orientation ) {
-				ensemble[i].dockWidget->setVisible( visible );
+			if( ensemble[i].getWidgetInterface()->getPlaneOrientation() == orientation ) {
+				ensemble[i].getDockWidget()->setVisible( visible );
 			}
 		}
 	}
