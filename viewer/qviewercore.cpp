@@ -428,7 +428,6 @@ void QViewerCore::openPath ( const _internal::FileInformation &fileInfo )
 				setCurrentImage ( imageHolder );
 			}
 		}
-		getUICore()->rearrangeViewWidgets();
 		getUICore()->refreshUI();
 		centerImages();
 		getUICore()->getMainWindow()->toggleLoadingIcon( false );

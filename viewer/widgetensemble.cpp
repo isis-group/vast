@@ -40,5 +40,24 @@ WidgetEnsembleComponent::WidgetEnsembleComponent ( QFrame* frame, QDockWidget* d
 
 }
 
+WidgetEnsemble::WidgetEnsemble()
+	: m_frame( new QFrame() ),
+	m_layout( new QGridLayout() ),
+	m_cols(0)
+{
+	m_frame->setLayout( m_layout );
+	m_layout->setContentsMargins(0,0,0,0);
+	m_frame->setContentsMargins(0,0,0,0);
+}
+
+
+
+void WidgetEnsemble::insertComponent ( WidgetEnsembleComponent component )
+{
+	push_back( component );
+	m_layout->addWidget( component.getDockWidget(), 0, m_cols++ );
+}
+
+
 
 }} // end namespace

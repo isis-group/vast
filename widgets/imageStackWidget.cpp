@@ -231,11 +231,11 @@ void ImageStackWidget::distributeImages()
 			widget->removeImage( image.second );
 		}
 	}
-	m_ViewerCore->getUICore()->getEnsembleList().clear();
+	m_ViewerCore->getUICore()->removeAllWidgetEnsembles();
 	m_ViewerCore->getUICore()->refreshUI();
 	BOOST_FOREACH( DataContainer::const_reference image, tmpContainer ) {
 		m_ViewerCore->getDataContainer().insert( image );
-		m_ViewerCore->getUICore()->createViewWidgetEnsemble( "", image.second );
+		m_ViewerCore->getUICore()->createViewWidgetEnsemble( m_ViewerCore->getOptionMap()->getPropertyAs<std::string>("defaultViewWidgetIdentifier"), image.second );
 	}
 	m_ViewerCore->getUICore()->refreshUI();
 	m_ViewerCore->settingsChanged();

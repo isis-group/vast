@@ -68,6 +68,19 @@ private:
 
 class WidgetEnsemble : public std::vector< WidgetEnsembleComponent >
 {
+public:	
+	WidgetEnsemble();
+	
+	QFrame *getFrame() { return m_frame; }
+	const QFrame *getFrame() const { return m_frame; }
+
+	void insertComponent( WidgetEnsembleComponent component );
+
+private:
+	QFrame *m_frame;
+	QGridLayout *m_layout;
+	unsigned short m_cols;
+	void push_back( const value_type &value ) { std::vector< WidgetEnsembleComponent >::push_back(value ); }
 };
 
 typedef std::list< WidgetEnsemble > WidgetEnsembleListType;

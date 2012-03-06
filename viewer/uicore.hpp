@@ -70,13 +70,7 @@ public:
 	virtual WidgetEnsemble createViewWidgetEnsemble( const std::string &widgetType, bool show = true  );
 	virtual WidgetEnsemble createViewWidgetEnsemble( const std::string &widgetType, boost::shared_ptr< ImageHolder > image, bool show = true );
 
-	virtual void removeViewWidgetEnsemble( widget::WidgetInterface *widgetImplementation );
-	virtual void removeViewWidgetEnsemble( WidgetEnsemble ensemble );
-
-	virtual WidgetEnsemble detachViewWidgetEnsemble( widget::WidgetInterface *widgetImplementation );
-	virtual WidgetEnsemble detachViewWidgetEnsemble( WidgetEnsemble ensemble );
-
-	virtual void attachViewWidgetEnsemble( WidgetEnsemble ensemble );
+	virtual void attachWidgetEnsemble( WidgetEnsemble ensemble );
 
 	virtual ~UICore() {}
 
@@ -90,9 +84,9 @@ public:
 
 	void setViewPlaneOrientation( PlaneOrientation orientation, bool visible );
 
-	void rearrangeViewWidgets();
-
 	QImage getScreenshot();
+
+	void removeAllWidgetEnsembles();
 
 public Q_SLOTS:
 	virtual void reloadPluginsToGUI();
@@ -104,6 +98,8 @@ protected:
 	UICore( QViewerCore *core );
 
 private:
+
+	virtual void removeWidgetEnsemble( WidgetEnsemble ensemble );
 
 	WidgetEnsembleComponent createEnsembleComponent( const std::string &widgetIdentifier, PlaneOrientation planeOrientation );
 
@@ -118,8 +114,6 @@ private:
 	ui::SliderWidget *m_SliderWidget;
 
 	ViewWidgetArragment m_ViewWidgetArrangement;
-
-	unsigned short m_RowCount;
 
 	WidgetMap m_WidgetMap;
 

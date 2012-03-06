@@ -44,7 +44,6 @@ UICore::UICore( QViewerCore *core )
 	m_SliderWidget = new ui::SliderWidget( m_MainWindow, core );
 	m_ImageStackWidget = new ui::ImageStackWidget( m_MainWindow, core );
 	m_ViewWidgetArrangement = InRow;
-	m_RowCount = m_MainWindow->getInterface().centralGridLayout->rowCount();
 	m_VoxelInformationWidget->setVisible( false );
 	m_ImageStackWidget->setVisible( false );
 	connect( m_MainWindow->getInterface().actionInformation_Areas, SIGNAL( triggered( bool ) ), SLOT( showInformationAreas( bool ) ) );
@@ -121,91 +120,42 @@ WidgetEnsemble UICore::createViewWidgetEnsemble( const std::string &widgetIdenti
 	WidgetEnsemble ensemble;
 	const uint8_t numberWidgets = m_ViewerCore->getWidgetProperties(widgetIdentifier)->getPropertyAs<uint8_t>("numberOfEntitiesInEnsemble");
 	if( numberWidgets == 1 ) {
-		ensemble.push_back( createEnsembleComponent( widgetIdentifier, not_specified) );
+		ensemble.insertComponent( createEnsembleComponent( widgetIdentifier, not_specified) );
 	} else if ( numberWidgets == 3 ) {
-		ensemble.push_back( createEnsembleComponent( widgetIdentifier, axial ) );
-		ensemble.push_back( createEnsembleComponent( widgetIdentifier, sagittal ) );
-		ensemble.push_back(createEnsembleComponent( widgetIdentifier, coronal ) );
+		ensemble.insertComponent( createEnsembleComponent( widgetIdentifier, axial ) );
+		ensemble.insertComponent( createEnsembleComponent( widgetIdentifier, sagittal ) );
+		ensemble.insertComponent(createEnsembleComponent( widgetIdentifier, coronal ) );
 	} else {
 		for( uint8_t i = 0; i < numberWidgets; i++ ) {
-			ensemble.push_back( createEnsembleComponent( widgetIdentifier, not_specified ) );
+			ensemble.insertComponent( createEnsembleComponent( widgetIdentifier, not_specified ) );
 		}
 	}
 	if( show ) {
-		attachViewWidgetEnsemble( ensemble );
+		attachWidgetEnsemble( ensemble );
 	}
 	m_EnsembleList.push_back( ensemble );
 	return ensemble;
 }
 
-void UICore::removeViewWidgetEnsemble( widget::WidgetInterface *widgetImplementation )
+void UICore::removeWidgetEnsemble( WidgetEnsemble ensemble )
 {
-	BOOST_FOREACH( WidgetEnsembleListType::reference ref, m_EnsembleList ) {
-		if( ref[0].getWidgetInterface() == widgetImplementation
-			|| ref[1].getWidgetInterface() == widgetImplementation
-			|| ref[2].getWidgetInterface() == widgetImplementation ) {
-			removeViewWidgetEnsemble( ref );
-		}
-	}
+	m_MainWindow->getInterface().centralGridLayout->removeWidget( ensemble.getFrame() );
 }
 
-void UICore::removeViewWidgetEnsemble( WidgetEnsemble ensemble )
-{
-	for( unsigned short i = 0; i < 3; i++ ) {
-		m_MainWindow->getInterface().centralGridLayout->removeWidget( ensemble[i].getDockWidget() );
-	}
 
-	m_EnsembleList.erase( std::find( m_EnsembleList.begin(), m_EnsembleList.end(), ensemble ) );
+void UICore::attachWidgetEnsemble( WidgetEnsemble ensemble )
+{
+	m_MainWindow->getInterface().centralGridLayout->addWidget( ensemble.getFrame() );
 }
 
-WidgetEnsemble UICore::detachViewWidgetEnsemble( widget::WidgetInterface *widgetImplementation )
+void UICore::removeAllWidgetEnsembles()
 {
-	BOOST_FOREACH( WidgetEnsembleListType::reference ref, m_EnsembleList ) {
-		if( ref[0].getWidgetInterface() == widgetImplementation
-			|| ref[1].getWidgetInterface() == widgetImplementation
-			|| ref[2].getWidgetInterface() == widgetImplementation ) {
-			return detachViewWidgetEnsemble( ref );
-		}
+	BOOST_FOREACH( WidgetEnsembleListType::reference ensemble, m_EnsembleList ) {
+		removeWidgetEnsemble( ensemble );
 	}
-	return WidgetEnsemble();
+	m_EnsembleList.clear();
 }
 
-WidgetEnsemble UICore::detachViewWidgetEnsemble( WidgetEnsemble ensemble )
-{
-	for( unsigned short i = 0; i < ensemble.size(); i++ ) {
-		m_MainWindow->getInterface().centralGridLayout->removeWidget( ensemble[i].getDockWidget() );
-	}
-
-	return ensemble;
-}
-
-void UICore::attachViewWidgetEnsemble( WidgetEnsemble ensemble )
-{
-	switch ( m_ViewWidgetArrangement ) {
-		case InRow: {
-			for ( uint8_t i = 0; i < ensemble.size(); i++ ) {
-				m_MainWindow->getInterface().centralGridLayout->addWidget( ensemble[i].getDockWidget(), m_RowCount, i );
-			}
-			break;
-		}
-		case InColumn: {
-			int currentColumn = m_MainWindow->getInterface().centralGridLayout->columnCount() ;
-			for ( uint8_t i = 0; i < ensemble.size(); i++ ) {
-				m_MainWindow->getInterface().centralGridLayout->addWidget( ensemble[i].getDockWidget(), i, currentColumn );
-			}
-		}
-	}
-	m_RowCount++;
-}
-
-void UICore::rearrangeViewWidgets()
-{
-	m_RowCount = 0;
-	BOOST_FOREACH( WidgetEnsembleListType::const_reference ensemble, m_EnsembleList ) {
-		attachViewWidgetEnsemble( detachViewWidgetEnsemble( ensemble ) );
-	}
-	setOptionPosition( bottom );
-}
 
 WidgetEnsembleComponent UICore::createEnsembleComponent( const std::string &widgetIdentifier, PlaneOrientation planeOrientation )
 {
