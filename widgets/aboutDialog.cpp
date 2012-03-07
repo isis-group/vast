@@ -75,6 +75,6 @@ void isis::viewer::ui::AboutDialog::onAuthorClicked ( QString author)
 
 void isis::viewer::ui::AboutDialog::sendEmailClicked()
 {
-    QDesktopServices::openUrl( QUrl( m_Interface.contactEdit->text() ) );
+    QDesktopServices::openUrl( QUrl( QString("mailto:")+m_Interface.contactEdit->text() ) );
 }
 
