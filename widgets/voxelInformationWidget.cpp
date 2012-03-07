@@ -233,8 +233,6 @@ void VoxelInformationWidget::synchronize()
 				m_LayoutLeft->addWidget( m_LowerThreshold );
 			} else {
 				m_UpperHalfColormapLabel->setVisible( true );
-// 				m_Interface.upperThresholdLabel->setVisible( true );
-// 				m_Interface.labelMax->setVisible( true );
 
 			}
 		}
