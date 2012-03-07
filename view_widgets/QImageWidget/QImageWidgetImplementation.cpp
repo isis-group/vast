@@ -339,7 +339,17 @@ void QImageWidgetImplementation::mousePressEvent( QMouseEvent *e )
 			}
 		}
 	} else {
-		m_ViewerCore->setCurrentImage( m_ImageVector.front() );
+		bool currentIsInside = false;
+		BOOST_FOREACH( ImageVectorType::const_reference image, m_ImageVector )
+		{
+			if ( image.get() == m_ViewerCore->getCurrentImage().get() ) {
+				currentIsInside = true;
+				continue;
+			}
+		}
+		if( !currentIsInside ) {
+			m_ViewerCore->setCurrentImage( m_ImageVector.front() );
+		}
 	}
 	m_ViewerCore->getUICore()->refreshUI();
 	setFocus();
