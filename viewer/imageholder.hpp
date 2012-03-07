@@ -56,7 +56,7 @@ class WidgetInterface;
 class ImageHolder
 {
 public:
-	enum ImageType { structural_image, z_map };
+	enum ImageType { structural_image, statistical_image };
 private:
 	struct ImageProperties {
 		util::ivector4 voxelCoords;

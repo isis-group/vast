@@ -182,12 +182,12 @@ void QImageWidgetImplementation::paintEvent( QPaintEvent */*event*/ )
 			BOOST_FOREACH( ImageVectorType::const_reference image, m_ImageVector ) {
 				if( image.get() != cImage.get()
 					&& image->getImageProperties().isVisible
-					&& image->getImageProperties().imageType == ImageHolder::z_map ) {
+					&& image->getImageProperties().imageType == ImageHolder::statistical_image ) {
 					paintImage( image );
 				}
 			}
 
-			if( cImage->getImageProperties().imageType == ImageHolder::z_map
+			if( cImage->getImageProperties().imageType == ImageHolder::statistical_image
 				&& cImage->getImageProperties().isVisible ) {
 				paintImage( cImage );
 			}
@@ -334,7 +334,7 @@ void QImageWidgetImplementation::mousePressEvent( QMouseEvent *e )
 
 	if( m_ViewerCore->getMode() == ViewerCoreBase::zmap ) {
 		BOOST_FOREACH( ImageVectorType::const_reference image, m_ImageVector ) {
-			if( image->getImageProperties().imageType == ImageHolder::z_map ) {
+			if( image->getImageProperties().imageType == ImageHolder::statistical_image ) {
 				m_ViewerCore->setCurrentImage( image );
 			}
 		}

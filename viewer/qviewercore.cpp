@@ -235,7 +235,7 @@ void QViewerCore::settingsChanged()
 
 	if ( hasImage() )
 	{
-		if ( getCurrentImage()->getImageProperties().imageType == ImageHolder::z_map )
+		if ( getCurrentImage()->getImageProperties().imageType == ImageHolder::statistical_image )
 		{
 			getCurrentImage()->getImageProperties().lut = getOptionMap()->getPropertyAs<std::string> ( "lutZMap" );
 		}
@@ -268,7 +268,7 @@ void QViewerCore::settingsChanged()
 	{
 		BOOST_FOREACH ( DataContainer::reference image, getDataContainer() )
 		{
-			if ( image.second->getImageProperties().imageType == ImageHolder::z_map )
+			if ( image.second->getImageProperties().imageType == ImageHolder::statistical_image )
 			{
 				image.second->getImageProperties().lut = getOptionMap()->getPropertyAs<std::string> ( "lutZMap" );
 				image.second->updateColorMap();
@@ -415,7 +415,7 @@ void QViewerCore::openPath ( const _internal::FileInformation &fileInfo )
 					ensemble = getUICore()->createViewWidgetEnsemble ( fileInfo.getWidgetIdentifier() );
 
 					//if we load a zmap we additionally add an anatomical image to the widget to make things easier for the user....
-					if ( fileInfo.getImageType() == ImageHolder::z_map && m_CurrentAnatomicalReference.get() )
+					if ( fileInfo.getImageType() == ImageHolder::statistical_image && m_CurrentAnatomicalReference.get() )
 					{
 						for ( uint8_t i = 0; i < ensemble.size(); i++ ) {
 							attachImageToWidget ( m_CurrentAnatomicalReference, ensemble[i].getWidgetInterface() );

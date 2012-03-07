@@ -258,7 +258,7 @@ bool ImageHolder::setImage( const data::Image &image, const ImageType &_imageTyp
 	LOG( Dev, verbose_info )  << "Fetched image of size " << m_ImageSize << " and type "
 								<< image.getMajorTypeName() << ".";
 	//copy the image into continuous memory space and assure consistent data type
-	m_ZeroIsReserved  = !getImageProperties().isRGB && getImageProperties().imageType == z_map;
+	m_ZeroIsReserved  = !getImageProperties().isRGB && getImageProperties().imageType == statistical_image;
 	synchronize(m_ZeroIsReserved);
 	
 	LOG_IF( m_ChunkVector.empty(), Dev, error ) << "Size of chunk vector is 0!";
@@ -275,7 +275,7 @@ bool ImageHolder::setImage( const data::Image &image, const ImageType &_imageTyp
 
 
 
-	if( getImageProperties().imageType == z_map ) {
+	if( getImageProperties().imageType == statistical_image ) {
 		getImageProperties().lowerThreshold = 0;
 		getImageProperties().upperThreshold = 0;
 		getImageProperties().lut = std::string( "standard_zmap" );

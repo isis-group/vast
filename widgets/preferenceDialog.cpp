@@ -141,7 +141,7 @@ void PreferencesDialog::loadSettings()
 	preferencesUi.comboInterpolation->setCurrentIndex( m_ViewerCore->getOptionMap()->getPropertyAs<uint16_t>( "interpolationType" ) );
 
 	if( m_ViewerCore->hasImage() ) {
-		if( m_ViewerCore->getCurrentImage()->getImageProperties().imageType == ImageHolder::z_map ) {
+		if( m_ViewerCore->getCurrentImage()->getImageProperties().imageType == ImageHolder::statistical_image ) {
 			preferencesUi.lutZmap->setCurrentIndex( preferencesUi.lutZmap->findText( m_ViewerCore->getCurrentImage()->getImageProperties().lut.c_str() ) );
 			preferencesUi.lutStructural->setCurrentIndex( preferencesUi.lutStructural->findText( m_ViewerCore->getOptionMap()->getPropertyAs<std::string>( "lutStructural" ).c_str() ) );
 		} else if ( m_ViewerCore->getCurrentImage()->getImageProperties().imageType == ImageHolder::structural_image ) {
@@ -205,7 +205,7 @@ void PreferencesDialog::saveSettings()
 	m_ViewerCore->getOptionMap()->setPropertyAs<std::string>( "defaultViewWidgetIdentifier", preferencesUi.defaultViewWidgetComboBox->currentText().toStdString() );
 
 	if( m_ViewerCore->hasImage() ) {
-		if( m_ViewerCore->getCurrentImage()->getImageProperties().imageType == ImageHolder::z_map ) {
+		if( m_ViewerCore->getCurrentImage()->getImageProperties().imageType == ImageHolder::statistical_image ) {
 			m_ViewerCore->getCurrentImage()->getImageProperties().lut = preferencesUi.lutZmap->currentText().toStdString() ;
 		} else if ( m_ViewerCore->getCurrentImage()->getImageProperties().imageType == ImageHolder::structural_image ) {
 			m_ViewerCore->getCurrentImage()->getImageProperties().lut = preferencesUi.lutStructural->currentText().toStdString() ;

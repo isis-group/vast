@@ -97,6 +97,12 @@ private:
 	QLabel *m_UpperHalfColormapLabel;
 	QWidget *m_sepWidget;
 	QLabel *m_LowerHalfColormapLabel;
+	QLabel *m_LabelMin;
+	QLabel *m_LabelMax;
+	QLabel *m_LowerThreshold;
+	QLabel *m_UpperThreshold;
+	QVBoxLayout *m_LayoutLeft;
+	QVBoxLayout *m_LayoutRight;
 
 
 	template<typename TYPE>

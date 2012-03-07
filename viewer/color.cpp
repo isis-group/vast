@@ -230,7 +230,7 @@ void Color::adaptColorMapToImage( ImageHolder *image, bool split )
 	negAlphas.fill(0);
 	posAlphas.fill(0);
 	//only stuff necessary for colormaps
-	if( image->getImageProperties().imageType == ImageHolder::z_map ) {
+	if( image->getImageProperties().imageType == ImageHolder::statistical_image ) {
 
 		if( split ) {
 			assert( negVec.size() + posVec.size() == 256 );

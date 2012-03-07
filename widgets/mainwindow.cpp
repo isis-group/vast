@@ -498,7 +498,7 @@ void MainWindow::updateRecentOpenList()
 	BOOST_FOREACH( _internal::FileInformationMap::const_reference path, m_ViewerCore->getRecentFiles() ) {
 		std::stringstream recentFileName;
 		recentFileName << path.first;
-        if( path.second.getImageType() == ImageHolder::z_map ) {
+        if( path.second.getImageType() == ImageHolder::statistical_image ) {
 			recentFileName << " (zmap)";
 		}
 		if( !path.second.getDialect().empty() ) {

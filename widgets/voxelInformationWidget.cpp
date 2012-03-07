@@ -42,9 +42,23 @@ VoxelInformationWidget::VoxelInformationWidget( QWidget *parent, QViewerCore *co
 	  isConnected( false ),
 	  m_UpperHalfColormapLabel(new QLabel(this)),
 	  m_sepWidget( new QWidget( this ) ),
-	  m_LowerHalfColormapLabel( new QLabel(this))
+	  m_LowerHalfColormapLabel( new QLabel(this)),
+	  m_LabelMin( new QLabel (this )),
+	  m_LabelMax( new QLabel( this ) ),
+	  m_LowerThreshold( new QLabel( this )),
+	  m_UpperThreshold( new QLabel( this ) )
 {
 	m_Interface.setupUi( this );
+	m_LayoutLeft = new QVBoxLayout( m_Interface.leftFrame );
+	m_LayoutRight = new QVBoxLayout( m_Interface.rightFrame );
+	m_LayoutLeft->setContentsMargins(2,0,0,0);
+	m_LayoutRight->setContentsMargins(2,0,0,0);
+	m_LayoutLeft->setAlignment( Qt::AlignVCenter );
+	m_LayoutRight->setAlignment( Qt::AlignVCenter );
+	m_LowerThreshold->setAlignment( Qt::AlignRight );
+	m_UpperThreshold->setAlignment( Qt::AlignRight );
+	m_LabelMax->setAlignment( Qt::AlignLeft );
+	
 	m_Interface.frame_4->setMaximumHeight( m_ViewerCore->getOptionMap()->getPropertyAs<uint16_t>( "maxOptionWidgetHeight" ) );
 	m_Interface.frame_4->setMinimumHeight( m_ViewerCore->getOptionMap()->getPropertyAs<uint16_t>( "minOptionWidgetHeight" ) );
 	m_Interface.rowBox->setMinimum( 0 );
@@ -61,6 +75,7 @@ VoxelInformationWidget::VoxelInformationWidget( QWidget *parent, QViewerCore *co
 	m_Interface.colormapButton->setLayout( layout );
 	m_Interface.colormapButton->setSizePolicy( QSizePolicy::Minimum, QSizePolicy::Minimum );
 	m_Interface.colormapButton->setMinimumHeight( 10 );
+	
 
 }
 
@@ -110,8 +125,8 @@ void VoxelInformationWidget::connectSignals()
 void VoxelInformationWidget::updateLowerUpperThreshold()
 {
 	if( m_ViewerCore->hasImage() ) {
-		m_Interface.lowerThresholdLabel->setText( QString::number( m_ViewerCore->getCurrentImage()->getImageProperties().lowerThreshold, 'g', 4 ) );
-		m_Interface.upperThresholdLabel->setText( QString::number( m_ViewerCore->getCurrentImage()->getImageProperties().upperThreshold, 'g', 4 ) );
+		m_LowerThreshold->setText( QString::number( m_ViewerCore->getCurrentImage()->getImageProperties().lowerThreshold, 'g', 4 ) );
+		m_UpperThreshold->setText( QString::number( m_ViewerCore->getCurrentImage()->getImageProperties().upperThreshold, 'g', 4 ) );
 	}
 }
 
@@ -169,59 +184,64 @@ void VoxelInformationWidget::synchronize()
 		if( image->getImageProperties().imageType == ImageHolder::structural_image ) {
 			m_Interface.frame_6->setMinimumHeight(15);
 			m_sepWidget->setVisible( false );
-			m_Interface.colormapGrid->addWidget( m_Interface.labelMin, 0, 0 );
-			m_Interface.colormapGrid->addWidget( m_Interface.colormapButton, 0, 1 );
-			m_Interface.colormapGrid->addWidget( m_Interface.labelMax, 0, 2 );
-			m_Interface.labelMin->setVisible( true );
-			m_Interface.labelMax->setVisible( true );
+			m_LowerThreshold->setVisible( false );
+			m_UpperThreshold->setVisible( false );
+			m_LayoutLeft->addWidget( m_LabelMin );
+			m_LayoutRight->addWidget( m_LabelMax );
+			m_LabelMax->setVisible( true );
+			m_LabelMin->setVisible( true );
+			m_LabelMin->setAlignment( Qt::AlignRight );
 			m_LowerHalfColormapLabel->setVisible( false );
-			m_Interface.lowerThresholdLabel->setVisible( false );
-			m_Interface.upperThresholdLabel->setVisible( false );
-			QSize size = m_Interface.colormapButton->size();
-			m_UpperHalfColormapLabel->setPixmap(
-				util::Singletons::get<color::Color, 10>().getIcon( image->getImageProperties().lut, size.width(), size.height() - 10 ).pixmap( size.width(), size.height() - 10 ) );
-		} else if ( image->getImageProperties().imageType == ImageHolder::z_map ) {
+		} else if ( image->getImageProperties().imageType == ImageHolder::statistical_image ) {
 			m_Interface.frame_6->setMinimumHeight(40);
 			m_sepWidget->setVisible(true);
-			m_Interface.colormapGrid->addWidget( m_Interface.upperThresholdLabel, 0, 0 );
-			m_Interface.colormapGrid->addWidget( m_Interface.labelMax, 0, 2 );
-			m_Interface.colormapGrid->addWidget( m_Interface.lowerThresholdLabel, 1, 0 );
-			m_Interface.colormapGrid->addWidget( m_Interface.labelMin, 1, 2 );
-			m_Interface.lowerThresholdLabel->setVisible( true );
-			m_Interface.upperThresholdLabel->setVisible( true );
-			m_Interface.lowerThresholdLabel->setText( QString::number( image->getImageProperties().lowerThreshold, 'g', 4 ) );
-			m_Interface.upperThresholdLabel->setText( QString::number( image->getImageProperties().upperThreshold, 'g', 4 ) );
-			QSize size = m_Interface.colormapButton->size();
-			m_UpperHalfColormapLabel->setPixmap(
-				util::Singletons::get<color::Color, 10>().getIcon( image->getImageProperties().lut, size.width(), size.height() - 15, color::Color::upper_half ).pixmap( size.width(), size.height() - 15 ) );
-			m_LowerHalfColormapLabel->setPixmap(
-				util::Singletons::get<color::Color, 10>().getIcon( image->getImageProperties().lut, size.width(), size.height() - 15, color::Color::lower_half, true ).pixmap( size.width(), size.height() - 15 ) );
-
+			m_LowerThreshold->setText( QString::number( image->getImageProperties().lowerThreshold, 'g', 4 ) );
+			m_UpperThreshold->setText( QString::number( image->getImageProperties().upperThreshold, 'g', 4 ) );
+			m_UpperThreshold->setVisible( true );
+			m_LabelMax->setVisible( true );
+			if( image->getImageProperties().minMax.first->as<double>() < 0 && image->getImageProperties().minMax.second->as<double>() > 0 ) {
+				m_sepWidget->setVisible( true );
+			} else {
+				m_sepWidget->setVisible( false );
+			}
+			
 			if( image->getImageProperties().minMax.first->as<double>() >= 0 ) {
 				m_LowerHalfColormapLabel->setVisible( false );
-				m_Interface.lowerThresholdLabel->setVisible( false );
-				m_Interface.labelMin->setVisible( false );
+				m_LowerThreshold->setVisible( false );
+				m_LabelMin->setVisible( false );
+				m_LayoutLeft->addWidget( m_UpperThreshold );
+				m_LayoutRight->addWidget( m_LabelMax );
 			} else {
 				m_LowerHalfColormapLabel->setVisible( true );
-				m_Interface.lowerThresholdLabel->setVisible( true );
-				m_Interface.labelMin->setVisible( true );
+				m_LowerThreshold->setVisible( true );
+				m_LabelMin->setVisible( true );
+				m_LayoutLeft->addWidget(m_UpperThreshold);
+				m_LayoutLeft->addWidget( m_LowerThreshold);
+				m_LayoutRight->addWidget( m_LabelMax );
+				m_LayoutRight->addWidget( m_LabelMin );
+				m_LabelMin->setAlignment( Qt::AlignLeft );
 			}
 
 			if( image->getImageProperties().minMax.second->as<double>() <= 0 ) {
 				m_UpperHalfColormapLabel->setVisible( false );
-				m_Interface.upperThresholdLabel->setVisible( false );
-				m_Interface.labelMax->setVisible( false );
+				m_UpperThreshold->setVisible( false );
+				m_LabelMax->setVisible( false );
+				m_LabelMin->setVisible(true);
+				m_LowerThreshold->setVisible( true );
+				m_LowerHalfColormapLabel->setVisible( true );
+				m_LayoutRight->addWidget( m_LabelMin );
+				m_LayoutLeft->addWidget( m_LowerThreshold );
 			} else {
 				m_UpperHalfColormapLabel->setVisible( true );
-				m_Interface.upperThresholdLabel->setVisible( true );
-				m_Interface.labelMax->setVisible( true );
+// 				m_Interface.upperThresholdLabel->setVisible( true );
+// 				m_Interface.labelMax->setVisible( true );
 
 			}
 		}
 
 		if( !image->getImageProperties().isRGB ) {
-			m_Interface.labelMin->setText( QString::number( image->getImageProperties().minMax.first->as<double>(), 'g', 4 ) );
-			m_Interface.labelMax->setText( QString::number( image->getImageProperties().minMax.second->as<double>(), 'g', 4 ) );
+			m_LabelMin->setText( QString::number( image->getImageProperties().minMax.first->as<double>(), 'g', 4 ) );
+			m_LabelMax->setText( QString::number( image->getImageProperties().minMax.second->as<double>(), 'g', 4 ) );
 		}
 
 		const util::ivector4 outerCorner = util::ivector4( image->getImageSize()[0] - 1, image->getImageSize()[1] - 1, image->getImageSize()[2] - 1 );
@@ -287,6 +307,19 @@ void VoxelInformationWidget::synchronize()
 		} else {
 			m_Interface.timeStepFrame->setVisible( false );
 		}
+		m_Interface.colormapFrame->adjustSize();
+		if( image->getImageProperties().imageType == ImageHolder::structural_image ) {
+			QSize size = m_Interface.colormapButton->size();
+			m_UpperHalfColormapLabel->setPixmap(
+				util::Singletons::get<color::Color, 10>().getIcon( image->getImageProperties().lut, size.width(), size.height() - 10 ).pixmap( size.width(), size.height() - 10 ) );
+		} else if ( image->getImageProperties().imageType == ImageHolder::statistical_image ) {
+			QSize size = m_Interface.colormapButton->size();
+			m_UpperHalfColormapLabel->setPixmap(
+				util::Singletons::get<color::Color, 10>().getIcon( image->getImageProperties().lut, size.width(), size.height() - 15, color::Color::upper_half ).pixmap( size.width(), size.height() - 15 ) );
+			m_LowerHalfColormapLabel->setPixmap(
+				util::Singletons::get<color::Color, 10>().getIcon( image->getImageProperties().lut, size.width(), size.height() - 15, color::Color::lower_half, true ).pixmap( size.width(), size.height() - 15 ) );
+		}
+	
 
 		reconnectSignals();
 	}

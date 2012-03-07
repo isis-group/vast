@@ -110,7 +110,7 @@ void ImageStackWidget::toggleStatsType()
 	m_Interface.actionStructural_image->setChecked( false );
 	m_Interface.actionImage_type_stats->setChecked( true );
 	boost::shared_ptr< ImageHolder> image = m_ViewerCore->getDataContainer().at( m_ImageStack->currentItem()->text().toStdString() );
-	image->getImageProperties().imageType = ImageHolder::z_map;
+	image->getImageProperties().imageType = ImageHolder::statistical_image;
 	image->getImageProperties().lut = m_ViewerCore->getOptionMap()->getPropertyAs<std::string>("LutZMap");
 	image->updateColorMap();
 	m_ViewerCore->setMode( ViewerCoreBase::zmap );
@@ -164,7 +164,7 @@ void ImageStackWidget::itemClicked ( QListWidgetItem* item)
 {
 	if( m_ViewerCore->hasImage() ) {
 		boost::shared_ptr< ImageHolder > image = m_ViewerCore->getDataContainer().at( item->text().toStdString() );
-		if( image->getImageProperties().imageType == ImageHolder::z_map ) {
+		if( image->getImageProperties().imageType == ImageHolder::statistical_image ) {
 			m_Interface.actionImage_type_stats->setChecked(true);
 			m_Interface.actionStructural_image->setChecked(false);
 		} else {

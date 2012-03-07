@@ -152,7 +152,7 @@ bool isis::viewer::plugin::CorrelationPlotterDialog::createCorrelationMap()
 			isis::data::Image corrMap ( ch );
 			corrMap.setPropertyAs<std::string>( "source", "correlation_map" );
 
-			m_CurrentCorrelationMap = m_ViewerCore->addImage( corrMap, ImageHolder::z_map );
+			m_CurrentCorrelationMap = m_ViewerCore->addImage( corrMap, ImageHolder::statistical_image );
 			m_CurrentCorrelationMap->getImageProperties().lut = std::string( "standard_zmap" );
 			m_CurrentCorrelationMap->getImageProperties().minMax.first = util::Value<MapImageType>( -1 );
 			m_CurrentCorrelationMap->getImageProperties().minMax.second = util::Value<MapImageType>( 1 );

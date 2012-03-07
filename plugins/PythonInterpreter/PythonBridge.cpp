@@ -41,7 +41,7 @@ void PythonBridge::exposeEnums()
 {
 	try {
 		( *main_namespace )["image_type"] = enum_<isis::viewer::ImageHolder::ImageType>( "image_type" )
-											.value( "ZMAP", isis::viewer::ImageHolder::z_map )
+											.value( "ZMAP", isis::viewer::ImageHolder::statistical_image )
 											.value( "ANATOMICAL", isis::viewer::ImageHolder::structural_image );
 	} catch ( error_already_set ) {
 		PyErr_Print();

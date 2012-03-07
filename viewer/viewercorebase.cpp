@@ -101,11 +101,11 @@ boost::shared_ptr<ImageHolder> ViewerCoreBase::addImage( const isis::data::Image
 
 	m_ImageList.push_back( retImage );
 
-	if( getMode() == ViewerCoreBase::zmap && retImage->getImageSize()[3] > 1 && retImage->getImageProperties().imageType != ImageHolder::z_map ) {
+	if( getMode() == ViewerCoreBase::zmap && retImage->getImageSize()[3] > 1 && retImage->getImageProperties().imageType != ImageHolder::statistical_image ) {
 		retImage->getImageProperties().isVisible = false;
 	}
 
-	if ( getMode() == ViewerCoreBase::zmap && retImage->getImageProperties().imageType == ImageHolder::z_map ) {
+	if ( getMode() == ViewerCoreBase::zmap && retImage->getImageProperties().imageType == ImageHolder::statistical_image ) {
 		setCurrentImage( retImage );
 	} else if ( getMode() == ViewerCoreBase::standard ) {
 		setCurrentImage( retImage );

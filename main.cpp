@@ -198,7 +198,7 @@ int main( int argc, char *argv[] )
 
 	//particular distribution of images in widgets
 	if( zmapIsSet && zImgList.size() > 1 ) {
-		BOOST_FOREACH( ImageListRef image, core->addImageList( zImgList, ImageHolder::z_map ) ) {
+		BOOST_FOREACH( ImageListRef image, core->addImageList( zImgList, ImageHolder::statistical_image ) ) {
 			checkForCaCp( image );
 			core->getRecentFiles().insertSave( _internal::FileInformation( image->getFileNames().front(),
 											   app.parameters["rdialect"].toString(),
@@ -248,7 +248,7 @@ int main( int argc, char *argv[] )
 			core->attachImageToWidget( image, ensemble[1]. getWidgetInterface() );
 			core->attachImageToWidget( image, ensemble[2]. getWidgetInterface() );
 		}
-		BOOST_FOREACH( ImageListRef image, core->addImageList( zImgList, ImageHolder::z_map ) ) {
+		BOOST_FOREACH( ImageListRef image, core->addImageList( zImgList, ImageHolder::statistical_image ) ) {
 			checkForCaCp( image );
 			core->getRecentFiles().insertSave( _internal::FileInformation( image->getFileNames().front(),
 											   app.parameters["rdialect"].toString(),

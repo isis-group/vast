@@ -97,7 +97,7 @@ void SliderWidget::opacityChanged( int sliderPos )
 	} else {
 		BOOST_FOREACH( DataContainer::reference image, m_ViewerCore->getDataContainer() ) {
 			if( m_ViewerCore->getMode() == ViewerCoreBase::zmap ) {
-				if( image.second->getImageProperties().imageType == ImageHolder::z_map ) {
+				if( image.second->getImageProperties().imageType == ImageHolder::statistical_image ) {
 					image.second->getImageProperties().opacity = norm( 0.0, 1.0, sliderPos )  ;
 				}
 			} else {
@@ -116,7 +116,7 @@ void SliderWidget::lowerThresholdChanged( int sliderPos )
 		m_ViewerCore->getCurrentImage()->updateColorMap();
 	} else {
 		BOOST_FOREACH( DataContainer::reference image, m_ViewerCore->getDataContainer() ) {
-			if( image.second->getImageProperties().imageType == ImageHolder::z_map ) {
+			if( image.second->getImageProperties().imageType == ImageHolder::statistical_image ) {
 				const double lT = norm( m_maxMin, 0.0, 1000 - sliderPos ) * -1;
 				image.second->getImageProperties().lowerThreshold = lT > image.second->getImageProperties().minMax.first->as<double>() ? lT : image.second->getImageProperties().minMax.first->as<double>();
 				image.second->updateColorMap();
@@ -134,7 +134,7 @@ void SliderWidget::upperThresholdChanged( int sliderPos )
 		m_ViewerCore->getCurrentImage()->updateColorMap();
 	} else {
 		BOOST_FOREACH( DataContainer::reference image, m_ViewerCore->getDataContainer() ) {
-			if( image.second->getImageProperties().imageType == ImageHolder::z_map ) {
+			if( image.second->getImageProperties().imageType == ImageHolder::statistical_image ) {
 				const double uT = norm( 0.0, m_maxMax, 1000 - sliderPos );
 				image.second->getImageProperties().upperThreshold = uT < image.second->getImageProperties().minMax.second->as<double>() ? uT : image.second->getImageProperties().minMax.second->as<double>() - std::numeric_limits<double>::round_error();
 				image.second->updateColorMap();
@@ -151,7 +151,7 @@ void SliderWidget::synchronize()
 		m_Interface.zmapModeFrame->setVisible( true );
 		unsigned short zmapImages = 0;
 		BOOST_FOREACH( DataContainer::const_reference image, m_ViewerCore->getDataContainer() ) {
-			if( image.second->getImageProperties().imageType == ImageHolder::z_map ) {
+			if( image.second->getImageProperties().imageType == ImageHolder::statistical_image ) {
 				zmapImages++;
 
 				if( image.second->getImageProperties().minMax.first->as<double>() < m_maxMin ) {
@@ -172,7 +172,7 @@ void SliderWidget::synchronize()
 		QWidget::setVisible( true );
 		m_Interface.opacitySlider->setSliderPosition( m_ViewerCore->getCurrentImage()->getImageProperties().opacity * 1000 );
 
-		if( m_ViewerCore->getCurrentImage()->getImageProperties().imageType == ImageHolder::z_map ) {
+		if( m_ViewerCore->getCurrentImage()->getImageProperties().imageType == ImageHolder::statistical_image ) {
 			setSliderVisible( LowerThreshold, m_ViewerCore->getCurrentImage()->getImageProperties().minMax.first->as<double>() < 0 );
 			setSliderVisible( UpperThreshold, m_ViewerCore->getCurrentImage()->getImageProperties().minMax.second->as<double>() > 0 );
 			const unsigned short lowerThreshold = 1000 - abs( ( 1000 / m_ViewerCore->getCurrentImage()->getImageProperties().minMax.first->as<double>() )
