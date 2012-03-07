@@ -124,7 +124,7 @@ WidgetEnsemble UICore::createViewWidgetEnsemble( const std::string &widgetIdenti
 	} else if ( numberWidgets == 3 ) {
 		ensemble.insertComponent( createEnsembleComponent( widgetIdentifier, axial ) );
 		ensemble.insertComponent( createEnsembleComponent( widgetIdentifier, sagittal ) );
-		ensemble.insertComponent(createEnsembleComponent( widgetIdentifier, coronal ) );
+		ensemble.insertComponent( createEnsembleComponent( widgetIdentifier, coronal ) );
 	} else {
 		for( uint8_t i = 0; i < numberWidgets; i++ ) {
 			ensemble.insertComponent( createEnsembleComponent( widgetIdentifier, not_specified ) );
@@ -146,6 +146,9 @@ void UICore::removeWidgetEnsemble( WidgetEnsemble ensemble )
 void UICore::attachWidgetEnsemble( WidgetEnsemble ensemble )
 {
 	m_MainWindow->getInterface().centralGridLayout->addWidget( ensemble.getFrame() );
+	if( ensemble.front().getWidgetInterface()->hasOptionWidget() ) {
+// 		m_MainWindow->getInterface().leftGridLayout->addWidget( ensemble.front().getWidgetInterface()->getOptionWidget(), 0, 0 );
+	}
 }
 
 void UICore::removeAllWidgetEnsembles()

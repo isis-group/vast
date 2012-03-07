@@ -60,7 +60,9 @@ public:
 	QImageWidgetImplementation();
 
 public Q_SLOTS:
-
+	virtual bool hasOptionWidget() const { return false; };
+	virtual QWidget* getOptionWidget() { return new QWidget(); }
+	
 	virtual unsigned short getNumberOfInstancesInEnsemble() const { return 3; }
 	virtual void setEnableCrosshair( bool enable ) { m_ShowCrosshair = enable; }
 

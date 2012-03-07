@@ -67,6 +67,8 @@ public:
 	virtual void setMouseCursorIcon( QIcon ) = 0;
 	virtual void setCrossHairColor( QColor ) {}
 	virtual void setCrossHairWidth( int ) {}
+	virtual QWidget *getOptionWidget() = 0;
+	virtual bool hasOptionWidget() const = 0; 
 
 	QWidget *getParent( ) const { return m_Parent; }
 	PlaneOrientation getPlaneOrientation() { return m_PlaneOrientation; }

@@ -30,6 +30,7 @@
 
 #include "VolumeHandler.hpp"
 #include "ImageComponents.hpp"
+#include "OptionWidget.hpp"
 
 #include "widgetinterface.h"
 #include "qviewercore.hpp"
@@ -80,6 +81,8 @@ public Q_SLOTS:
 	virtual void setInterpolationType( InterpolationType interpolation );
 	virtual void setMouseCursorIcon( QIcon );
 	virtual void lookAtPhysicalCoords( const util::fvector4 &physicalCoords );
+	virtual bool hasOptionWidget() const { return true; }
+	virtual QWidget *getOptionWidget() { return m_OptionWidget; }
 
 
 	void setOpacityGradientFactor( float factor ) { m_OpacityGradientFactor = factor; }
@@ -103,6 +106,7 @@ private:
 	ComponentsMapType m_VTKImageComponentsMap;
 
 	float m_OpacityGradientFactor;
+	OptionWidget *m_OptionWidget;
 
 
 };

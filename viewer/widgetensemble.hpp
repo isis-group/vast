@@ -74,6 +74,9 @@ public:
 	QFrame *getFrame() { return m_frame; }
 	const QFrame *getFrame() const { return m_frame; }
 
+	QGridLayout *getLayout() { return m_layout; }
+	const QGridLayout *getLayout() const { return m_layout; }
+
 	void insertComponent( WidgetEnsembleComponent component );
 
 private:

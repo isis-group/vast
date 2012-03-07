@@ -145,7 +145,7 @@ QIcon Color::getIcon( const std::string &colormapName, size_t w, size_t h, icon_
 		break;
 	case lower_half:
 		start = 0;
-		end = 128;
+		end = 127;
 		break;
 	case upper_half:
 		start = 128;

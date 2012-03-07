@@ -97,6 +97,7 @@ void VTKImageWidgetImplementation::wheelEvent ( QWheelEvent* e )
 
 void VTKImageWidgetImplementation::commonInit()
 {
+	m_OptionWidget = new OptionWidget( this, m_ViewerCore );
 	m_Layout->addWidget( this );
 	m_Layout->setMargin( 0 );
 	connect( m_ViewerCore, SIGNAL( emitUpdateScene( ) ), this, SLOT( updateScene( ) ) );
