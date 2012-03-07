@@ -339,6 +339,7 @@ void QImageWidgetImplementation::mousePressEvent( QMouseEvent *e )
 			}
 		}
 	} else {
+		//if one clicks on the image widget only change current image if it is not in this widget
 		bool currentIsInside = false;
 		BOOST_FOREACH( ImageVectorType::const_reference image, m_ImageVector )
 		{
