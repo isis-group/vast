@@ -29,7 +29,7 @@
 #include "fileinformation.hpp"
 
 
-isis::viewer::_internal::FileInformation::FileInformation ( const std::string& filename, const std::string& dialect, const std::string &widgetidentifier, const std::string& readformat, const isis::viewer::ImageHolder::ImageType& imagetype, bool newEnsemble )
+isis::viewer::_internal::FileInformation::FileInformation ( const std::string& filename, const std::string& dialect, const std::string &readformat, const std::string& widgetidentifier, const isis::viewer::ImageHolder::ImageType& imagetype, bool newEnsemble )
 	: m_filename( filename ),
 	m_dialect( dialect ),
 	m_readformat( readformat ),

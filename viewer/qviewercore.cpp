@@ -386,22 +386,30 @@ bool QViewerCore::attachImageToWidget ( boost::shared_ptr<ImageHolder> image, wi
 
 void QViewerCore::openPath ( const _internal::FileInformation &fileInfo )
 {
+	LOG( Dev, info ) << "Opening path " << fileInfo.getFileName() << " with rdialect: "
+					<< fileInfo.getDialect() << ", rf: " << fileInfo.getReadFormat()
+					<< ", widget: " << fileInfo.getWidgetIdentifier();
 	if ( !fileInfo.getFileName().empty() )
 	{
 		getUICore()->getMainWindow()->toggleLoadingIcon( true, QString( "Opening image " ) + fileInfo.getFileName().c_str() + QString("...") );
 		QDir dir;
 		setCurrentPath ( dir.absoluteFilePath ( fileInfo.getFileName().c_str() ).toStdString() );
 		WidgetEnsemble ensemble;
-
+		bool newEnsemble = fileInfo.isNewEnsemble();
 		if ( getUICore()->getEnsembleList().size() )
 		{
 			ensemble = getUICore()->getEnsembleList().front();
+		} else {
+			newEnsemble = true;
 		}
+			
 		boost::filesystem::path p ( fileInfo.getFileName() );
 
 		std::list<data::Image> tempImgList = isis::data::IOFactory::load ( fileInfo.getFileName() , fileInfo.getReadFormat(), fileInfo.getDialect() );
 		if( !tempImgList.empty() ) {
 			m_RecentFiles.insertSave( fileInfo );
+		} else {
+			LOG( Dev, error ) << "Tried to load " << fileInfo.getFileName() << ", but image list is empty.";
 		}
 		BOOST_FOREACH ( std::list<data::Image>::const_reference image, tempImgList )
 		{
@@ -410,7 +418,7 @@ void QViewerCore::openPath ( const _internal::FileInformation &fileInfo )
 
 			if ( ! ( getMode() == ViewerCoreBase::zmap && imageHolder->getImageProperties().imageType == ImageHolder::structural_image ) )
 			{
-				if ( fileInfo.isNewEnsemble() )
+				if ( newEnsemble )
 				{
 					ensemble = getUICore()->createViewWidgetEnsemble ( fileInfo.getWidgetIdentifier() );
 
