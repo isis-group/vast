@@ -250,9 +250,9 @@ void MainWindow::showKeyCommandDialog()
 void MainWindow::toggleZMapMode( bool zmap )
 {
 	if( zmap ) {
-		m_ViewerCore->setMode( ViewerCoreBase::zmap );
+		m_ViewerCore->setMode( ViewerCoreBase::statistical_mode );
 	} else {
-		m_ViewerCore->setMode( ViewerCoreBase::standard );
+		m_ViewerCore->setMode( ViewerCoreBase::default_mode );
 	}
 
 	m_ViewerCore->getUICore()->refreshUI();
@@ -530,7 +530,7 @@ void MainWindow::refreshUI()
 	m_Interface.actionPropagate_Zooming->setChecked( m_ViewerCore->getOptionMap()->getPropertyAs<bool>( "propagateZooming" ) );
 	m_RadiusSpin->setValue( m_ViewerCore->getOptionMap()->getPropertyAs<uint16_t>( "minMaxSearchRadius" ) );
 
-	if( m_ViewerCore->getMode() == ViewerCoreBase::zmap ) {
+	if( m_ViewerCore->getMode() == ViewerCoreBase::statistical_mode ) {
 		m_Interface.actionToggle_Zmap_Mode->setChecked( true );
 		m_Interface.actionFind_Global_Max->setVisible( true );
 		m_Interface.actionFind_Global_Min->setVisible( true );

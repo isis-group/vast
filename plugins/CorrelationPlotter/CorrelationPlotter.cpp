@@ -122,8 +122,8 @@ void isis::viewer::plugin::CorrelationPlotterDialog::showEvent( QShowEvent * )
 
 			connect( m_ViewerCore, SIGNAL( emitPhysicalCoordsChanged( util::fvector4 ) ), this, SLOT( physicalCoordsChanged( util::fvector4 ) ) );
 
-			if( m_ViewerCore->getMode() != ViewerCoreBase::zmap ) {
-				m_ViewerCore->setMode( ViewerCoreBase::zmap );
+			if( m_ViewerCore->getMode() != ViewerCoreBase::statistical_mode ) {
+				m_ViewerCore->setMode( ViewerCoreBase::statistical_mode );
 			}
 
 			m_ViewerCore->getUICore()->refreshUI();

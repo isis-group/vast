@@ -61,7 +61,7 @@ void PreferencesDialog::screenshotXChanged( int val )
 			//preparation
 			ensembleList.front()[0].getFrame()->setFrameStyle( 0 );
 			ensembleList.front()[0].getFrame()->setAutoFillBackground( false );
-			const int widgetHeight = ensembleList.size() *  ensembleList.front()[0].getPlaceHolder()->height() + ( m_ViewerCore->getMode() == ViewerCoreBase::zmap ? 100 : 0 ) ;
+			const int widgetHeight = ensembleList.size() *  ensembleList.front()[0].getPlaceHolder()->height() + ( m_ViewerCore->getMode() == ViewerCoreBase::statistical_mode ? 100 : 0 ) ;
 			const int widgetWidth = 3 * ensembleList.front()[0].getPlaceHolder()->width();
 
 			const double ratio = ( double )widgetHeight / widgetWidth;

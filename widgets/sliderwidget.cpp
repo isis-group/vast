@@ -96,7 +96,7 @@ void SliderWidget::opacityChanged( int sliderPos )
 		m_ViewerCore->getCurrentImage()->getImageProperties().opacity = norm( 0.0, 1.0, sliderPos )  ;
 	} else {
 		BOOST_FOREACH( DataContainer::reference image, m_ViewerCore->getDataContainer() ) {
-			if( m_ViewerCore->getMode() == ViewerCoreBase::zmap ) {
+			if( m_ViewerCore->getMode() == ViewerCoreBase::statistical_mode ) {
 				if( image.second->getImageProperties().imageType == ImageHolder::statistical_image ) {
 					image.second->getImageProperties().opacity = norm( 0.0, 1.0, sliderPos )  ;
 				}
@@ -147,7 +147,7 @@ void SliderWidget::upperThresholdChanged( int sliderPos )
 
 void SliderWidget::synchronize()
 {
-	if( m_ViewerCore->getMode() == ViewerCoreBase::zmap ) {
+	if( m_ViewerCore->getMode() == ViewerCoreBase::statistical_mode ) {
 		m_Interface.zmapModeFrame->setVisible( true );
 		unsigned short zmapImages = 0;
 		BOOST_FOREACH( DataContainer::const_reference image, m_ViewerCore->getDataContainer() ) {

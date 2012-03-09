@@ -41,7 +41,7 @@ namespace viewer
 ViewerCoreBase::ViewerCoreBase( )
 	: m_OptionsMap( boost::shared_ptr< util::PropertyMap >( new util::PropertyMap ) ),
 	  m_CurrentAnatomicalReference( boost::shared_ptr<ImageHolder>() ),
-	  m_Mode( standard )
+	  m_Mode( default_mode )
 {
 	
 	util::Singletons::get<color::Color, 10>().initStandardColormaps();
@@ -101,13 +101,13 @@ boost::shared_ptr<ImageHolder> ViewerCoreBase::addImage( const isis::data::Image
 
 	m_ImageList.push_back( retImage );
 
-	if( getMode() == ViewerCoreBase::zmap && retImage->getImageSize()[3] > 1 && retImage->getImageProperties().imageType != ImageHolder::statistical_image ) {
+	if( getMode() == ViewerCoreBase::statistical_mode && retImage->getImageSize()[3] > 1 && retImage->getImageProperties().imageType != ImageHolder::statistical_image ) {
 		retImage->getImageProperties().isVisible = false;
 	}
 
-	if ( getMode() == ViewerCoreBase::zmap && retImage->getImageProperties().imageType == ImageHolder::statistical_image ) {
+	if ( getMode() == ViewerCoreBase::statistical_mode && retImage->getImageProperties().imageType == ImageHolder::statistical_image ) {
 		setCurrentImage( retImage );
-	} else if ( getMode() == ViewerCoreBase::standard ) {
+	} else if ( getMode() == ViewerCoreBase::default_mode ) {
 		setCurrentImage( retImage );
 	}
 

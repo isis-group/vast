@@ -244,7 +244,7 @@ void QViewerCore::settingsChanged()
 			getCurrentImage()->getImageProperties().lut = getOptionMap()->getPropertyAs<std::string> ( "lutStructural" );
 		}
 
-		if ( getMode() == ViewerCoreBase::zmap && getCurrentAnatomicalRefernce().get() )
+		if ( getMode() == ViewerCoreBase::statistical_mode && getCurrentAnatomicalRefernce().get() )
 		{
 			getCurrentAnatomicalRefernce()->getImageProperties().lut = getOptionMap()->getPropertyAs<std::string> ( "lutStructural" );
 			getCurrentAnatomicalRefernce()->updateColorMap();
@@ -252,7 +252,7 @@ void QViewerCore::settingsChanged()
 
 		getCurrentImage()->updateColorMap();
 	}
-	if ( getMode() == ViewerCoreBase::zmap )
+	if ( getMode() == ViewerCoreBase::statistical_mode )
 	{
 		BOOST_FOREACH ( DataContainer::reference image, getDataContainer() )
 		{
@@ -264,7 +264,7 @@ void QViewerCore::settingsChanged()
 		}
 	}
 
-	if ( getMode() == ViewerCoreBase::zmap && getOptionMap()->getPropertyAs<bool> ( "zmapGlobal" ) )
+	if ( getMode() == ViewerCoreBase::statistical_mode && getOptionMap()->getPropertyAs<bool> ( "zmapGlobal" ) )
 	{
 		BOOST_FOREACH ( DataContainer::reference image, getDataContainer() )
 		{
@@ -386,59 +386,49 @@ bool QViewerCore::attachImageToWidget ( boost::shared_ptr<ImageHolder> image, wi
 
 void QViewerCore::openPath ( const _internal::FileInformation &fileInfo )
 {
-	LOG( Dev, info ) << "Opening path " << fileInfo.getFileName() << " with rdialect: "
-					<< fileInfo.getDialect() << ", rf: " << fileInfo.getReadFormat()
-					<< ", widget: " << fileInfo.getWidgetIdentifier();
 	if ( !fileInfo.getFileName().empty() )
 	{
+		std::string dialect = fileInfo.getDialect();
+		LOG( Dev, info ) << "Opening path " << fileInfo.getFileName() << " with rdialect: "
+						<< fileInfo.getDialect() << ", rf: " << fileInfo.getReadFormat()
+						<< ", widget: " << fileInfo.getWidgetIdentifier();
 		getUICore()->getMainWindow()->toggleLoadingIcon( true, QString( "Opening image " ) + fileInfo.getFileName().c_str() + QString("...") );
 		QDir dir;
 		setCurrentPath ( dir.absoluteFilePath ( fileInfo.getFileName().c_str() ).toStdString() );
-		WidgetEnsemble ensemble;
-		bool newEnsemble = fileInfo.isNewEnsemble();
-		if ( getUICore()->getEnsembleList().size() )
-		{
-			ensemble = getUICore()->getEnsembleList().front();
-		} else {
-			newEnsemble = true;
-		}
-			
-		boost::filesystem::path p ( fileInfo.getFileName() );
+		//add this file to the recent opened files
 
-		std::list<data::Image> tempImgList = isis::data::IOFactory::load ( fileInfo.getFileName() , fileInfo.getReadFormat(), fileInfo.getDialect() );
+		boost::filesystem::path p ( fileInfo.getFileName() );
+		//this is a vista thing. if we load a vista image and the option "visualizeOnlyFirstVista" is enabled we should do so
+		if( boost::filesystem::extension(p) == std::string("v") && getOptionMap()->getPropertyAs<bool>("visualizeOnlyFirstVista") && !dialect.size() )
+		{
+			dialect = std::string("onlyfirst");
+		}
+		//show loading information
+		std::stringstream loadingStream;
+		loadingStream << "Loading image " << fileInfo.getFileName() << "...";
+		getUICore()->getMainWindow()->toggleLoadingIcon(true, loadingStream.str().c_str() );
+		//load the file into an isis image
+		std::list<data::Image> tempImgList = isis::data::IOFactory::load ( fileInfo.getFileName() , fileInfo.getReadFormat(), dialect );
 		if( !tempImgList.empty() ) {
 			m_RecentFiles.insertSave( fileInfo );
+			LOG( Dev, error ) << "Loaded " << tempImgList.size() << " images from path " << fileInfo.getFileName();
 		} else {
 			LOG( Dev, error ) << "Tried to load " << fileInfo.getFileName() << ", but image list is empty.";
 		}
-		BOOST_FOREACH ( std::list<data::Image>::const_reference image, tempImgList )
-		{
-			boost::shared_ptr<ImageHolder> imageHolder = addImage ( image, fileInfo.getImageType() );
-			checkForCaCp ( imageHolder );
 
-			if ( ! ( getMode() == ViewerCoreBase::zmap && imageHolder->getImageProperties().imageType == ImageHolder::structural_image ) )
-			{
-				if ( newEnsemble )
-				{
-					ensemble = getUICore()->createViewWidgetEnsemble ( fileInfo.getWidgetIdentifier() );
-
-					//if we load a zmap we additionally add an anatomical image to the widget to make things easier for the user....
-					if ( fileInfo.getImageType() == ImageHolder::statistical_image && m_CurrentAnatomicalReference.get() )
-					{
-						for ( uint8_t i = 0; i < ensemble.size(); i++ ) {
-							attachImageToWidget ( m_CurrentAnatomicalReference, ensemble[i].getWidgetInterface() );
-						}
-					}
-				}
-				for ( uint8_t i = 0; i < ensemble.size(); i++ ) {
-					attachImageToWidget ( imageHolder, ensemble[i].getWidgetInterface() );
-				}
-				setCurrentImage ( imageHolder );
-			}
+		//ok we are in zmap mode
+		if( getMode() == ViewerCoreBase::statistical_mode ) {
+		} else if ( getMode() == ViewerCoreBase::default_mode ) {
 		}
-		getUICore()->refreshUI();
-		centerImages();
-		getUICore()->getMainWindow()->toggleLoadingIcon( false );
+		
+		
+		
+
+		
+
+
+	} else {
+		LOG( Dev, warning ) << "Tried to open path without any given filename!";
 	}
 	
 }
@@ -563,7 +553,7 @@ void QViewerCore::close ()
 void QViewerCore::setMode ( ViewerCoreBase::Mode mode )
 {
 	m_Mode = mode;
-	if( m_Mode == zmap ) {
+	if( m_Mode == statistical_mode ) {
 		getUICore()->getMainWindow()->setWindowTitle( QString(  m_OptionsMap->getPropertyAs<std::string>("signature").c_str() ) + QString("(zmap mode)" ) );
 	} else {
 		getUICore()->getMainWindow()->setWindowTitle( QString( m_OptionsMap->getPropertyAs<std::string>("signature").c_str() ) );

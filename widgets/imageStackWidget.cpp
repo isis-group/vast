@@ -113,7 +113,7 @@ void ImageStackWidget::toggleStatsType()
 	image->getImageProperties().imageType = ImageHolder::statistical_image;
 	image->getImageProperties().lut = m_ViewerCore->getOptionMap()->getPropertyAs<std::string>("LutZMap");
 	image->updateColorMap();
-	m_ViewerCore->setMode( ViewerCoreBase::zmap );
+	m_ViewerCore->setMode( ViewerCoreBase::statistical_mode );
 	m_ViewerCore->getUICore()->refreshUI();
 	m_ViewerCore->updateScene();
 }
@@ -126,7 +126,7 @@ void ImageStackWidget::toggleStructsType()
 	image->getImageProperties().imageType = ImageHolder::structural_image;
 	image->getImageProperties().lut = m_ViewerCore->getOptionMap()->getPropertyAs<std::string>("lutStructural");
 	image->updateColorMap();
-	m_ViewerCore->setMode( ViewerCoreBase::standard );
+	m_ViewerCore->setMode( ViewerCoreBase::default_mode );
 	m_ViewerCore->getUICore()->refreshUI();
 	m_ViewerCore->updateScene();
 }
@@ -139,7 +139,7 @@ void ImageStackWidget::synchronize()
 	m_Interface.frame->setMinimumHeight( m_ViewerCore->getOptionMap()->getPropertyAs<uint16_t>( "minOptionWidgetHeight" ) );
 	m_ImageStack->clear();
 	BOOST_FOREACH( DataContainer::const_reference imageRef, m_ViewerCore->getDataContainer() ) {
-		if( !( m_ViewerCore->getMode() == ViewerCoreBase::zmap && imageRef.second->getImageProperties().imageType == ImageHolder::structural_image ) ) {
+		if( !( m_ViewerCore->getMode() == ViewerCoreBase::statistical_mode && imageRef.second->getImageProperties().imageType == ImageHolder::structural_image ) ) {
 			QListWidgetItem *item = new QListWidgetItem;
 			QString sD = imageRef.second->getPropMap().getPropertyAs<std::string>( "sequenceDescription" ).c_str();
 			item->setText( QString( imageRef.second->getFileNames().front().c_str() ) );

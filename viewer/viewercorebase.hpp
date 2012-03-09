@@ -48,7 +48,7 @@ class ViewerCoreBase
 
 public:
 
-	enum Mode { standard, zmap };
+	enum Mode { default_mode, statistical_mode };
 
 	ViewerCoreBase( );
 

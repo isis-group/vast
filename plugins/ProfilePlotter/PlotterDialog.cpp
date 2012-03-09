@@ -103,7 +103,7 @@ void isis::viewer::plugin::PlotterDialog::refresh ( isis::util::fvector4 physica
 					fillSpectrum( image.second, voxCoords, curve, axis );
 				}
 				
-				if( image.second.get() == m_ViewerCore->getCurrentImage().get() || m_ViewerCore->getMode() == ViewerCoreBase::zmap ) {
+				if( image.second.get() == m_ViewerCore->getCurrentImage().get() || m_ViewerCore->getMode() == ViewerCoreBase::statistical_mode ) {
 					curve->attach( plot );
 					plotMarker->attach(plot);
 					curve->setPen( QPen( Qt::red ) );

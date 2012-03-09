@@ -163,7 +163,7 @@ void QImageWidgetImplementation::paintEvent( QPaintEvent */*event*/ )
 										  );
 		boost::shared_ptr<ImageHolder> cImage =  getWidgetSpecCurrentImage();
 
-		if( m_ViewerCore->getMode() == ViewerCoreBase::zmap ) {
+		if( m_ViewerCore->getMode() == ViewerCoreBase::statistical_mode ) {
 			//painting all anatomical images
 			BOOST_FOREACH( ImageVectorType::const_reference image, m_ImageVector ) {
 				if( image.get() != cImage.get()
@@ -332,7 +332,7 @@ void QImageWidgetImplementation::mousePressEvent( QMouseEvent *e )
 		m_StartCoordsPair.second = e->y();
 	}
 
-	if( m_ViewerCore->getMode() == ViewerCoreBase::zmap ) {
+	if( m_ViewerCore->getMode() == ViewerCoreBase::statistical_mode ) {
 		BOOST_FOREACH( ImageVectorType::const_reference image, m_ImageVector ) {
 			if( image->getImageProperties().imageType == ImageHolder::statistical_image ) {
 				m_ViewerCore->setCurrentImage( image );
