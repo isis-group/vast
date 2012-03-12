@@ -59,8 +59,8 @@ int main( int argc, char *argv[] )
 	util::_internal::Log<viewer::Runtime>::setHandler( logging_hanlder_runtime );
 
 	//make vast showing qmessage if an error log is thrown
-	logging_hanlder_dev->qmessageBelow(isis::warning);
-	
+	logging_hanlder_dev->qmessageBelow( isis::warning );
+
 	std::string appName = "vast";
 	std::string orgName = "cbs.mpg.de";
 
@@ -92,8 +92,8 @@ int main( int argc, char *argv[] )
 	boost::shared_ptr< util::ProgressFeedback > feedback = boost::shared_ptr<util::ProgressFeedback>( new util::ConsoleFeedback );
 	data::IOFactory::setProgressFeedback( feedback );
 	app.init( argc, argv, false );
-	
-//setting up vast graphics_system
+
+	//setting up vast graphics_system
 #if QT_VERSION >= 0x040500
 	const char *graphics_system = getenv( "VAST_GRAPHICS_SYSTEM" );
 	LOG( Dev, info ) << "QT_VERSION >= 0x040500";
@@ -105,6 +105,7 @@ int main( int argc, char *argv[] )
 		QApplication::setGraphicsSystem( "raster" );
 		LOG( Dev, info ) << "Using graphics_system=\"raster\"";
 	}
+
 #else
 	std::cout << "Warning! Your Qt version is below Qt4.5. Not able to set graghics system." << std::endl;
 	LOG( Dev, warning ) << "QT_VERSION < 0x040500";
@@ -147,28 +148,28 @@ int main( int argc, char *argv[] )
 		core->setMode( ViewerCoreBase::default_mode );
 	}
 
-	
+
 	BOOST_FOREACH( util::slist::const_reference file, fileList ) {
 		core->openPath( FileInformation( file,
-										app.parameters["rdialect"].as<std::string>().c_str(),
-										app.parameters["rf"].as<std::string>().c_str(),
-										widget_name,
-										ImageHolder::structural_image,
-										app.parameters["split"] ) );
+										 app.parameters["rdialect"].as<std::string>().c_str(),
+										 app.parameters["rf"].as<std::string>().c_str(),
+										 widget_name,
+										 ImageHolder::structural_image,
+										 app.parameters["split"] ) );
 	}
 
 	BOOST_FOREACH( util::slist::const_reference file, zmapFileList ) {
 		core->openPath( FileInformation( file,
-										app.parameters["rdialect"].as<std::string>().c_str(),
-										app.parameters["rf"].as<std::string>().c_str(),
-										widget_name,
-										ImageHolder::statistical_image,
-										app.parameters["split"] ) );
+										 app.parameters["rdialect"].as<std::string>().c_str(),
+										 app.parameters["rf"].as<std::string>().c_str(),
+										 widget_name,
+										 ImageHolder::statistical_image,
+										 app.parameters["split"] ) );
 	}
-	
+
 	core->getUICore()->getMainWindow()->toggleLoadingIcon( false );
 	core->getUICore()->showMainWindow();
 
-	core->settingsChanged();	
+	core->settingsChanged();
 	return app.getQApplication().exec();
 }

@@ -76,7 +76,8 @@ util::fvector4 mapCoordsToOrientation( const util::fvector4 &coords, const boost
 
 std::string getCrashLogFilePath();
 
-namespace logging {
+namespace logging
+{
 
 
 }

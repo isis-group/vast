@@ -36,10 +36,13 @@
 #include "widgetinterface.h"
 
 
-namespace isis {
-namespace viewer {
+namespace isis
+{
+namespace viewer
+{
 
-class WidgetEnsembleComponent {
+class WidgetEnsembleComponent
+{
 
 public:
 	WidgetEnsembleComponent( QFrame *frame, QDockWidget *dockWidget, QWidget *placeHolder, widget::WidgetInterface *widgetImplementation );
@@ -68,9 +71,9 @@ private:
 
 class WidgetEnsemble : public std::vector< WidgetEnsembleComponent >
 {
-public:	
+public:
 	WidgetEnsemble();
-	
+
 	QFrame *getFrame() { return m_frame; }
 	const QFrame *getFrame() const { return m_frame; }
 
@@ -83,14 +86,15 @@ private:
 	QFrame *m_frame;
 	QGridLayout *m_layout;
 	unsigned short m_cols;
-	void push_back( const value_type &value ) { std::vector< WidgetEnsembleComponent >::push_back(value ); }
+	void push_back( const value_type &value ) { std::vector< WidgetEnsembleComponent >::push_back( value ); }
 };
 
 typedef std::list< WidgetEnsemble > WidgetEnsembleListType;
-typedef std::map< widget::WidgetInterface*, WidgetEnsembleComponent > WidgetMap;
+typedef std::map< widget::WidgetInterface *, WidgetEnsembleComponent > WidgetMap;
 
 
-}} //end namespace
+}
+} //end namespace
 
 
 #endif //VAST_WIDGET_ENSEMBLE_HPP

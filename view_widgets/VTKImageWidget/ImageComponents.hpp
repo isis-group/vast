@@ -35,18 +35,22 @@
 #include <vtkColorTransferFunction.h>
 #include <vtkVolume.h>
 
-namespace isis {
-namespace viewer {
-namespace widget {
+namespace isis
+{
+namespace viewer
+{
+namespace widget
+{
 
 
-class VTKImageComponents {
+class VTKImageComponents
+{
 public:
 	VTKImageComponents();
 
 
 	void setVTKImageData( vtkImageData *image );
-	vtkImageData* getVTKImageData() const { return imageData; }
+	vtkImageData *getVTKImageData() const { return imageData; }
 
 	vtkVolume *volume;
 	vtkVolumeProperty *property;
@@ -57,6 +61,8 @@ private:
 	vtkImageData *imageData;
 };
 
-}}} //end namespace
+}
+}
+} //end namespace
 
 #endif //IMAGE_COMPONENTS_HPP

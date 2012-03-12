@@ -94,7 +94,7 @@ private:
 
 public:
 	typedef std::list<boost::shared_ptr< ImageHolder > > ImageListType;
-// 	typedef data::ValueArrayBase::Reference ImagePointerType;
+	//  typedef data::ValueArrayBase::Reference ImagePointerType;
 
 
 

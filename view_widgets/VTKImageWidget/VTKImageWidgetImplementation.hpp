@@ -102,7 +102,7 @@ private:
 	vtkActor *m_Actor;
 	vtkPolyDataMapper *m_CursorMapper;
 	vtkCursor3D *m_Cursor;
-	
+
 	ComponentsMapType m_VTKImageComponentsMap;
 
 	float m_OpacityGradientFactor;

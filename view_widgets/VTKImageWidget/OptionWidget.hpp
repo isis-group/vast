@@ -31,22 +31,27 @@
 #include "ui_option_widget.h"
 #include "qviewercore.hpp"
 
-namespace isis {
-namespace viewer {
-namespace widget {
+namespace isis
+{
+namespace viewer
+{
+namespace widget
+{
 
 class OptionWidget : public QWidget
 {
 	Q_OBJECT
 public:
-	OptionWidget( QWidget* parent, QViewerCore* core );
+	OptionWidget( QWidget *parent, QViewerCore *core );
 private:
 	Ui::vtkOptionWidget m_Interface;
 	QViewerCore *m_ViewerCore;
 };
 
 
-}}} // end namespace 
+}
+}
+} // end namespace
 
 
 #endif //VTK_OPTION_WIDGET_HPP
