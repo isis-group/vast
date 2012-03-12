@@ -73,13 +73,13 @@ void StartWidget::closeEvent( QCloseEvent * )
 void StartWidget::openFavPath()
 {
 	close();
-	m_ViewerCore->openPath( m_ViewerCore->getFavFiles().at( m_Interface.favList->currentItem()->text().toStdString()) );
+	m_ViewerCore->openFile( m_ViewerCore->getFavFiles().at( m_Interface.favList->currentItem()->text().toStdString()) );
 }
 
 void StartWidget::openRecentPath()
 {
 	close();
-	m_ViewerCore->openPath(	m_ViewerCore->getRecentFiles().at( m_Interface.recentList->currentItem()->text().toStdString() ) );
+	m_ViewerCore->openFile(	m_ViewerCore->getRecentFiles().at( m_Interface.recentList->currentItem()->text().toStdString() ) );
 }
 
 void StartWidget::showEvent( QShowEvent * )

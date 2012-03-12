@@ -149,24 +149,26 @@ int main( int argc, char *argv[] )
 	}  else {
 		core->setMode( ViewerCoreBase::default_mode );
 	}
-
+	std::list<FileInformation> fileInfoList;
+	
 	BOOST_FOREACH( util::slist::const_reference file, fileList ) {
-		core->pushToOpenFiles( FileInformation( file,
-										 app.parameters["rdialect"].as<std::string>().c_str(),
-										 app.parameters["rf"].as<std::string>().c_str(),
-										 widget_name,
-										 ImageHolder::structural_image,
-										 app.parameters["split"] ) );
+		fileInfoList.push_back( FileInformation( file,
+							 app.parameters["rdialect"].as<std::string>().c_str(),
+							 app.parameters["rf"].as<std::string>().c_str(),
+							 widget_name,
+							 ImageHolder::structural_image,
+							 app.parameters["split"] ) );
 	}
 	BOOST_FOREACH( util::slist::const_reference file, zmapFileList ) {
-		core->pushToOpenFiles( FileInformation( file,
-										 app.parameters["rdialect"].as<std::string>().c_str(),
-										 app.parameters["rf"].as<std::string>().c_str(),
-										 widget_name,
-										 ImageHolder::statistical_image,
-										 app.parameters["split"] ) );
+		fileInfoList.push_back( FileInformation( file,
+							 app.parameters["rdialect"].as<std::string>().c_str(),
+							 app.parameters["rf"].as<std::string>().c_str(),
+							 widget_name,
+							 ImageHolder::statistical_image,
+							 app.parameters["split"] ) );
 	}
 
+	core->openFileList( fileInfoList );
 	core->getUICore()->getMainWindow()->toggleLoadingIcon( false );
 	core->getUICore()->showMainWindow();
 

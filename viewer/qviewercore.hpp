@@ -88,9 +88,6 @@ public:
 	isis::viewer::FileInformationMap &getRecentFiles() { return m_RecentFiles; }
 	isis::viewer::FileInformationMap &getFavFiles() { return m_FavFiles; }
 
-	void pushToOpenFiles( const FileInformation &fileInfo ) { m_OpenFileList.push_back( fileInfo ); }
-	void initiateLoadingFiles();
-
 public Q_SLOTS:
 	virtual void settingsChanged();
 	virtual void close( );
@@ -104,7 +101,8 @@ public Q_SLOTS:
 	virtual void receiveMessage( qt4::QMessage  );
 	virtual void receiveMessage( std::string  );
 	virtual void receiveMessageDev( qt4::QMessage );
-	virtual ImageHolder::List openPath( const FileInformation &fileInfo, bool show = true );
+	virtual ImageHolder::List openFile( const FileInformation &fileInfo, bool show = true );
+	virtual void openFileList( const std::list< FileInformation > fileInfoList );
 	virtual void centerImages( bool ca = false );
 	virtual void closeImage( boost::shared_ptr<ImageHolder> image, bool refreshUI = true );
 	virtual void saveSettings();

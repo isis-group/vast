@@ -519,7 +519,7 @@ void MainWindow::updateRecentOpenList()
 
 void MainWindow::openRecentPath ( QString path )
 {
-	m_ViewerCore->openPath( m_ViewerCore->getRecentFiles().at(path.toStdString() ) );
+	m_ViewerCore->openFile( m_ViewerCore->getRecentFiles().at(path.toStdString() ) );
 }
 
 void MainWindow::refreshUI()

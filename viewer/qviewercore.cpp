@@ -360,7 +360,7 @@ bool QViewerCore::callPlugin ( QString name )
 
 
 
-ImageHolder::List QViewerCore::openPath ( const FileInformation &fileInfo, bool show )
+ImageHolder::List QViewerCore::openFile ( const FileInformation &fileInfo, bool show )
 {
 	if ( !fileInfo.getFileName().empty() )
 	{
@@ -413,13 +413,12 @@ ImageHolder::List QViewerCore::openPath ( const FileInformation &fileInfo, bool 
 
 	
 }
-
-void QViewerCore::initiateLoadingFiles()
+void QViewerCore::openFileList(const std::list< FileInformation > fileInfoList)
 {
 	ImageHolder::List structuralImageList;
 	ImageHolder::List statisticalImageList;
-	BOOST_FOREACH( std::list<FileInformation>::const_reference file, m_OpenFileList ) {
-		BOOST_FOREACH( ImageHolder::List::const_reference image, openPath( file ) )
+	BOOST_FOREACH( std::list<FileInformation>::const_reference file, fileInfoList ) {
+		BOOST_FOREACH( ImageHolder::List::const_reference image, openFile( file ) )
 		{
 			if( file.getImageType() == ImageHolder::statistical_image ) {
 				statisticalImageList.push_back( image );
@@ -429,7 +428,6 @@ void QViewerCore::initiateLoadingFiles()
 		}
 	}
 }
-
 
 void QViewerCore::closeImage ( ImageHolder::Pointer image, bool refreshUI )
 {

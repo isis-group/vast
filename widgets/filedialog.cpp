@@ -313,12 +313,12 @@ void isis::viewer::ui::FileDialog::openPath()
 	QApplication::processEvents();
 	BOOST_FOREACH( QStringList::const_reference path, m_PathList )
 	{
-		m_ViewerCore->openPath( FileInformation( path.toStdString(),
-															m_Dialect,
-															m_Suffix == "auto" ? "" : m_Suffix,
-															m_Interface.widgetTypeComboBox->currentText().toStdString(),
-															m_ImageType,
-															m_Interface.newWidgetCheck->isChecked() ) ) ;
+		m_ViewerCore->openFile( FileInformation( path.toStdString(),
+							m_Dialect,
+							m_Suffix == "auto" ? "" : m_Suffix,
+							m_Interface.widgetTypeComboBox->currentText().toStdString(),
+							m_ImageType,
+							m_Interface.newWidgetCheck->isChecked() ) ) ;
 	}
 }
 

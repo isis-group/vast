@@ -26,7 +26,7 @@
  *      Author: tuerke
  ******************************************************************/
 #include "HistogramDialog.hpp"
-#include <DataStorage/typeptr.hpp>
+#include <DataStorage/valuearray.hpp>
 
 
 
