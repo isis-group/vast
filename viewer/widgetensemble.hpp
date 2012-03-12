@@ -62,11 +62,17 @@ public:
 	widget::WidgetInterface *getWidgetInterface() { return m_widgetImplementation; }
 	const widget::WidgetInterface *getWidgetInterface() const { return m_widgetImplementation; }
 
+	bool hasCurrentImage() const { return m_hasCurrentImage; }
+
+	void setHasCurrentImage( bool hasCurrentImage ) { m_hasCurrentImage = hasCurrentImage; }
+
+
 private:
 	QFrame *m_frame;
 	QDockWidget *m_dockWidget;
 	QWidget *m_placeHolder;
 	widget::WidgetInterface *m_widgetImplementation;
+	bool m_hasCurrentImage;
 };
 
 class WidgetEnsemble : public std::vector< WidgetEnsembleComponent >

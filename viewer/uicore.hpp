@@ -65,9 +65,14 @@ public:
 	MainWindow *getMainWindow() { return m_MainWindow; }
 
 	virtual WidgetEnsemble createViewWidgetEnsemble( const std::string &widgetType, bool show = true  );
-	virtual WidgetEnsemble createViewWidgetEnsemble( const std::string &widgetType, boost::shared_ptr< ImageHolder > image, bool show = true );
+	virtual WidgetEnsemble createViewWidgetEnsemble( const std::string &widgetType, ImageHolder::Pointer image, bool show = true );
+	virtual WidgetEnsemble createViewWidgetEnsemble( const std::string &widgetType, ImageHolder::List imageList, bool show = true );
 
 	virtual void attachWidgetEnsemble( WidgetEnsemble ensemble );
+
+	virtual bool attachImageToWidget( ImageHolder::Pointer image, widget::WidgetInterface *widget );
+	virtual void attachImageToEnsemble(	ImageHolder::Pointer image, WidgetEnsemble ensemble );
+	virtual void attachImageListToEnsemble( ImageHolder::List imageList, WidgetEnsemble ensemble );
 
 	virtual ~UICore() {}
 
@@ -75,6 +80,8 @@ public:
 
 	const WidgetEnsembleListType &getEnsembleList() const { return m_EnsembleList; }
 	WidgetEnsembleListType &getEnsembleList() { return m_EnsembleList; }
+
+	WidgetEnsemble getCurrentEnsemble() const;
 
 	void setViewPlaneOrientation( PlaneOrientation orientation, bool visible );
 
@@ -84,7 +91,7 @@ public:
 
 public Q_SLOTS:
 	virtual void reloadPluginsToGUI();
-	virtual void refreshUI();
+	virtual void refreshUI( bool complete = true );
 	void showInformationAreas( bool );
 
 

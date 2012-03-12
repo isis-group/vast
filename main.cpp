@@ -141,25 +141,25 @@ int main( int argc, char *argv[] )
 		zmapFileList = app.parameters["stats"];
 	}
 
-
+// 	util::PropertyMap openProperties;
+// 	openProperties.setPropertyAs<bool>("eachStatisticalImageInNewEnsemble", app.parameters["split"] );
 	if( zmapIsSet ) {
 		core->setMode( ViewerCoreBase::statistical_mode );
+		
 	}  else {
 		core->setMode( ViewerCoreBase::default_mode );
 	}
 
-
 	BOOST_FOREACH( util::slist::const_reference file, fileList ) {
-		core->openPath( FileInformation( file,
+		core->pushToOpenFiles( FileInformation( file,
 										 app.parameters["rdialect"].as<std::string>().c_str(),
 										 app.parameters["rf"].as<std::string>().c_str(),
 										 widget_name,
 										 ImageHolder::structural_image,
 										 app.parameters["split"] ) );
 	}
-
 	BOOST_FOREACH( util::slist::const_reference file, zmapFileList ) {
-		core->openPath( FileInformation( file,
+		core->pushToOpenFiles( FileInformation( file,
 										 app.parameters["rdialect"].as<std::string>().c_str(),
 										 app.parameters["rf"].as<std::string>().c_str(),
 										 widget_name,

@@ -175,9 +175,9 @@ void QViewerCore::timestepChanged ( int timestep )
 	}
 }
 
-ImageHolder::ImageListType QViewerCore::addImageList ( const std::list< data::Image > imageList, const ImageHolder::ImageType &imageType )
+ImageHolder::List QViewerCore::addImageList ( const std::list< data::Image > imageList, const ImageHolder::ImageType &imageType )
 {
-	std::list<boost::shared_ptr<ImageHolder> > retList = isis::viewer::ViewerCoreBase::addImageList ( imageList, imageType );
+	ImageHolder::List retList = isis::viewer::ViewerCoreBase::addImageList ( imageList, imageType );
 	return retList;
 
 }
@@ -358,27 +358,9 @@ bool QViewerCore::callPlugin ( QString name )
 	return false;
 }
 
-bool QViewerCore::attachImageToWidget ( boost::shared_ptr<ImageHolder> image, widget::WidgetInterface *widget )
-{
-	if ( getUICore()->getWidgets().find ( widget ) == getUICore()->getWidgets().end() )
-	{
-		LOG ( Runtime, error ) << "There is no such widget "
-							   << widget << ", so will not add image " << image->getFileNames().front() << " to it.";
-		return false;
-	}
 
-	if ( std::find ( m_ImageList.begin(), m_ImageList.end(), image ) == m_ImageList.end() )
-	{
-		LOG ( Runtime, error ) << "There is no such image "
-							   << image->getFileNames().front() << ", so will not add it to widget " << widget << ".";
-		return false;
-	}
 
-	widget->addImage ( image );
-	return true;
-}
-
-void QViewerCore::openPath ( const FileInformation &fileInfo )
+ImageHolder::List QViewerCore::openPath ( const FileInformation &fileInfo, bool show )
 {
 	if ( !fileInfo.getFileName().empty() )
 	{
@@ -397,10 +379,6 @@ void QViewerCore::openPath ( const FileInformation &fileInfo )
 		{
 			dialect = util::istring("onlyfirst");
 		}
-		//show loading information
-		std::stringstream loadingStream;
-		loadingStream << "Loading image " << fileInfo.getFileName() << "...";
-		getUICore()->getMainWindow()->toggleLoadingIcon(true, loadingStream.str().c_str() );
 		//load the file into an isis image
 		std::list<data::Image> tempImgList = isis::data::IOFactory::load ( fileInfo.getFileName() , fileInfo.getReadFormat(), dialect );
 		if( !tempImgList.empty() ) {
@@ -411,28 +389,49 @@ void QViewerCore::openPath ( const FileInformation &fileInfo )
 		}
 
 		//creating the viewer image objects
-		ImageHolder::ImageListType imgList = addImageList( tempImgList, fileInfo.getImageType() );
-
-		//ok we are in statistical_mode mode
-		if( getMode() == ViewerCoreBase::statistical_mode ) {
-			//and we are getting a statistical_image
-			
-		} else if ( getMode() == ViewerCoreBase::default_mode ) {
+		ImageHolder::List imgList = addImageList( tempImgList, fileInfo.getImageType() );
+		if( show ) {
+			BOOST_FOREACH( ImageHolder::List::const_reference image, imgList ) {
+				if( fileInfo.isNewEnsemble() ) {
+					getUICore()->createViewWidgetEnsemble( fileInfo.getWidgetIdentifier(), image, true );
+				} else {
+					if( !getUICore()->getEnsembleList().size() ) {
+						getUICore()->createViewWidgetEnsemble( fileInfo.getWidgetIdentifier(), image, true );
+					} else {
+						getUICore()->attachImageToEnsemble( image, getUICore()->getCurrentEnsemble() );
+					}
+				}
+			getUICore()->refreshUI(false);
+			}
 		}
-		
-		
-		
-
-		
-
-
+		getUICore()->getMainWindow()->toggleLoadingIcon(false);
+		return imgList;
 	} else {
 		LOG( Dev, warning ) << "Tried to open path without any given filename!";
+		return ImageHolder::List();
 	}
+
 	
 }
 
-void QViewerCore::closeImage ( boost::shared_ptr<ImageHolder> image, bool refreshUI )
+void QViewerCore::initiateLoadingFiles()
+{
+	ImageHolder::List structuralImageList;
+	ImageHolder::List statisticalImageList;
+	BOOST_FOREACH( std::list<FileInformation>::const_reference file, m_OpenFileList ) {
+		BOOST_FOREACH( ImageHolder::List::const_reference image, openPath( file ) )
+		{
+			if( file.getImageType() == ImageHolder::statistical_image ) {
+				statisticalImageList.push_back( image );
+			} else {
+				structuralImageList.push_back( image );
+			}
+		}
+	}
+}
+
+
+void QViewerCore::closeImage ( ImageHolder::Pointer image, bool refreshUI )
 {
 	BOOST_FOREACH ( std::list< widget::WidgetInterface *>::const_reference widget, image->getWidgetList() )
 	{
@@ -441,7 +440,7 @@ void QViewerCore::closeImage ( boost::shared_ptr<ImageHolder> image, bool refres
 
 	if ( getCurrentImage().get() == image.get() )
 	{
-		std::list<boost::shared_ptr< ImageHolder > > tmpList;
+		ImageHolder::List tmpList;
 		BOOST_FOREACH ( DataContainer::const_reference image, getDataContainer() )
 		{
 			tmpList.push_back ( image.second );
@@ -454,7 +453,7 @@ void QViewerCore::closeImage ( boost::shared_ptr<ImageHolder> image, bool refres
 		}
 		else
 		{
-			setCurrentImage ( boost::shared_ptr<ImageHolder>() );
+			setCurrentImage ( ImageHolder::Pointer() );
 		}
 	}
 

@@ -172,7 +172,7 @@ void MaskEditDialog::editCurrentImage()
 
 				if( std::find( iVector.begin(), iVector.end(), m_CurrentMask ) != iVector.end() ) {
 					m_CurrentWidgetEnsemble = ensemble;
-					m_ViewerCore->attachImageToWidget( m_CurrentMask, ensemble[i].getWidgetInterface() ) ;
+					m_ViewerCore->getUICore()->attachImageToWidget( m_CurrentMask, ensemble[i].getWidgetInterface() ) ;
 					ensemble[i].getWidgetInterface()->setMouseCursorIcon( QIcon( ":/common/paintCrosshair.png" ) );
 					ensemble[i].getWidgetInterface()->setEnableCrosshair( false );
 

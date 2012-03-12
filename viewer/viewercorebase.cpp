@@ -48,9 +48,9 @@ ViewerCoreBase::ViewerCoreBase( )
 	setCommonViewerOptions();
 }
 
-ImageHolder::ImageListType ViewerCoreBase::addImageList( const std::list< data::Image > imageList, const ImageHolder::ImageType &imageType )
+ImageHolder::List ViewerCoreBase::addImageList( const std::list< data::Image > imageList, const ImageHolder::ImageType &imageType )
 {
-	ImageHolder::ImageListType retList;
+	ImageHolder::List retList;
 
 	if( !imageList.empty() ) {
 		BOOST_FOREACH( std::list< data::Image >::const_reference imageRef, imageList ) {
@@ -63,9 +63,9 @@ ImageHolder::ImageListType ViewerCoreBase::addImageList( const std::list< data::
 	return retList;
 }
 
-boost::shared_ptr<ImageHolder> ViewerCoreBase::addImage( const isis::data::Image &image, const isis::viewer::ImageHolder::ImageType &imageType )
+ImageHolder::Pointer ViewerCoreBase::addImage( const isis::data::Image &image, const isis::viewer::ImageHolder::ImageType &imageType )
 {
-	boost::shared_ptr<ImageHolder> retImage = m_DataContainer.addImage( image, imageType );
+	ImageHolder::Pointer retImage = m_DataContainer.addImage( image, imageType );
 	if( retImage->hasAmbiguousOrientation() ) {
 		QMessageBox msgBox;
 		msgBox.setIcon(QMessageBox::Warning);
@@ -99,8 +99,6 @@ boost::shared_ptr<ImageHolder> ViewerCoreBase::addImage( const isis::data::Image
 		m_CurrentAnatomicalReference = retImage;
 	}
 
-	m_ImageList.push_back( retImage );
-
 	if( getMode() == ViewerCoreBase::statistical_mode && retImage->getImageSize()[3] > 1 && retImage->getImageProperties().imageType != ImageHolder::statistical_image ) {
 		retImage->getImageProperties().isVisible = false;
 	}
@@ -114,13 +112,13 @@ boost::shared_ptr<ImageHolder> ViewerCoreBase::addImage( const isis::data::Image
 	return retImage;
 }
 
-boost::shared_ptr< ImageHolder > ViewerCoreBase::getCurrentImage()
+ImageHolder::Pointer ViewerCoreBase::getCurrentImage()
 {
 	if( m_CurrentImage.get() ) {
 		return m_CurrentImage;
 	} else {
 		LOG( Runtime, error ) << "Trying to fetch the current image. But there is no current image at all. Should be checked before.";
-		return boost::shared_ptr< ImageHolder >();
+		return ImageHolder::Pointer();
 	}
 
 }

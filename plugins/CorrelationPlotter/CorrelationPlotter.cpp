@@ -114,7 +114,7 @@ void isis::viewer::plugin::CorrelationPlotterDialog::showEvent( QShowEvent * )
 					for( unsigned short i = 0; i < 3; i++ ) {
 						iVector = ensemble[i].getWidgetInterface()->getImageVector();
 						if( std::find( iVector.begin(), iVector.end(), m_CurrentFunctionalImage ) != iVector.end() ) {
-							m_ViewerCore->attachImageToWidget( m_CurrentCorrelationMap, ensemble[i].getWidgetInterface() ) ;
+							m_ViewerCore->getUICore()->attachImageToWidget( m_CurrentCorrelationMap, ensemble[i].getWidgetInterface() ) ;
 						}
 					}
 				}

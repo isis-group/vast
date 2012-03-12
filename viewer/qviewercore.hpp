@@ -57,7 +57,7 @@ public:
 
 	QViewerCore( const std::string &appName = std::string(), const std::string &orgName = std::string(), QWidget *parent = 0 );
 
-	virtual ImageHolder::ImageListType addImageList( const std::list< data::Image > imageList, const ImageHolder::ImageType &imageType );
+	virtual ImageHolder::List addImageList( const std::list< data::Image > imageList, const ImageHolder::ImageType &imageType );
 
 	widget::WidgetInterface *getWidget( const std::string &identifier ) throw( std::runtime_error & );
 	const util::PropertyMap *getWidgetProperties( const std::string &identifier ) ;
@@ -68,8 +68,6 @@ public:
 	void addPlugin( boost::shared_ptr< plugin::PluginInterface > plugin );
 	void addPlugins( plugin::PluginLoader::PluginListType plugins );
 	plugin::PluginLoader::PluginListType getPlugins() const { return m_PluginList; }
-
-	virtual bool attachImageToWidget( boost::shared_ptr<ImageHolder> image, widget::WidgetInterface *widget );
 
 	void setParentWidget( QWidget *parent ) { m_Parent = parent; }
 
@@ -90,6 +88,8 @@ public:
 	isis::viewer::FileInformationMap &getRecentFiles() { return m_RecentFiles; }
 	isis::viewer::FileInformationMap &getFavFiles() { return m_FavFiles; }
 
+	void pushToOpenFiles( const FileInformation &fileInfo ) { m_OpenFileList.push_back( fileInfo ); }
+	void initiateLoadingFiles();
 
 public Q_SLOTS:
 	virtual void settingsChanged();
@@ -104,7 +104,7 @@ public Q_SLOTS:
 	virtual void receiveMessage( qt4::QMessage  );
 	virtual void receiveMessage( std::string  );
 	virtual void receiveMessageDev( qt4::QMessage );
-	virtual void openPath( const FileInformation & );
+	virtual ImageHolder::List openPath( const FileInformation &fileInfo, bool show = true );
 	virtual void centerImages( bool ca = false );
 	virtual void closeImage( boost::shared_ptr<ImageHolder> image, bool refreshUI = true );
 	virtual void saveSettings();
@@ -137,6 +137,8 @@ private:
 
 	FileInformationMap m_RecentFiles;
 	FileInformationMap m_FavFiles;
+
+	std::list<FileInformation> m_OpenFileList;
 
 
 };

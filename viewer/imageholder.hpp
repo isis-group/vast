@@ -93,11 +93,9 @@ private:
 	};
 
 public:
-	typedef std::list<boost::shared_ptr< ImageHolder > > ImageListType;
-	//  typedef data::ValueArrayBase::Reference ImagePointerType;
-
-
-
+	typedef boost::shared_ptr< ImageHolder > Pointer;
+	typedef std::list< Pointer > List;
+	
 	ImageHolder();
 
 	bool setImage( const data::Image &image, const ImageType &imageType, const std::string &filename = "" );
