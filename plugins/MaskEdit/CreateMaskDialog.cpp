@@ -81,37 +81,37 @@ void CreateMaskDialog::createMask()
 		boost::shared_ptr<ImageHolder> maskImage;
 
 		switch ( isis::util::getTransposedTypeMap( false, true ).at( dataType ) ) {
-		case isis::data::ValuePtr<bool>::staticID:
+		case isis::data::ValueArray<bool>::staticID:
 			maskImage = _createEmptyMask<bool>( refImage );
 			break;
-		case isis::data::ValuePtr<int8_t>::staticID:
+		case isis::data::ValueArray<int8_t>::staticID:
 			maskImage = _createEmptyMask<int8_t>( refImage );
 			break;
-		case isis::data::ValuePtr<uint8_t>::staticID:
+		case isis::data::ValueArray<uint8_t>::staticID:
 			maskImage = _createEmptyMask<uint8_t>( refImage );
 			break;
-		case isis::data::ValuePtr<int16_t>::staticID:
+		case isis::data::ValueArray<int16_t>::staticID:
 			maskImage = _createEmptyMask<int16_t>( refImage );
 			break;
-		case isis::data::ValuePtr<uint16_t>::staticID:
+		case isis::data::ValueArray<uint16_t>::staticID:
 			maskImage = _createEmptyMask<uint16_t>( refImage );
 			break;
-		case isis::data::ValuePtr<int32_t>::staticID:
+		case isis::data::ValueArray<int32_t>::staticID:
 			maskImage = _createEmptyMask<int32_t>( refImage );
 			break;
-		case isis::data::ValuePtr<uint32_t>::staticID:
+		case isis::data::ValueArray<uint32_t>::staticID:
 			maskImage = _createEmptyMask<uint32_t>( refImage );
 			break;
-		case isis::data::ValuePtr<int64_t>::staticID:
+		case isis::data::ValueArray<int64_t>::staticID:
 			maskImage = _createEmptyMask<int64_t>( refImage );
 			break;
-		case isis::data::ValuePtr<uint64_t>::staticID:
+		case isis::data::ValueArray<uint64_t>::staticID:
 			maskImage = _createEmptyMask<uint64_t>( refImage );
 			break;
-		case isis::data::ValuePtr<float>::staticID:
+		case isis::data::ValueArray<float>::staticID:
 			maskImage = _createEmptyMask<float>( refImage );
 			break;
-		case isis::data::ValuePtr<double>::staticID:
+		case isis::data::ValueArray<double>::staticID:
 			maskImage = _createEmptyMask<double>( refImage );
 			break;
 		default:

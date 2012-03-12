@@ -29,7 +29,7 @@
 #include "fileinformation.hpp"
 
 
-isis::viewer::_internal::FileInformation::FileInformation ( const std::string& filename, const std::string& dialect, const std::string &readformat, const std::string& widgetidentifier, const isis::viewer::ImageHolder::ImageType& imagetype, bool newEnsemble )
+isis::viewer::FileInformation::FileInformation ( const std::string& filename, const util::istring& dialect, const util::istring &readformat, const std::string& widgetidentifier, const isis::viewer::ImageHolder::ImageType& imagetype, bool newEnsemble )
 	: m_filename( filename ),
 	m_dialect( dialect ),
 	m_readformat( readformat ),
@@ -38,7 +38,7 @@ isis::viewer::_internal::FileInformation::FileInformation ( const std::string& f
 	m_newensemble( newEnsemble )
 {}
 
-void isis::viewer::_internal::FileInformationMap::writeFileInformationMap ( QSettings* settings, const std::string& section )
+void isis::viewer::FileInformationMap::writeFileInformationMap ( QSettings* settings, const std::string& section )
 {
 	QStringList fileNames;
 	QStringList dialects;
@@ -62,7 +62,7 @@ void isis::viewer::_internal::FileInformationMap::writeFileInformationMap ( QSet
 	settings->sync();
 }
 
-void isis::viewer::_internal::FileInformationMap::readFileInfortmationMap ( QSettings* settings, const std::string& section )
+void isis::viewer::FileInformationMap::readFileInfortmationMap ( QSettings* settings, const std::string& section )
 {
 	settings->beginGroup( section.c_str() );
 	QStringList fileNames = settings->value( "fileNames" ).toStringList();
@@ -77,7 +77,7 @@ void isis::viewer::_internal::FileInformationMap::readFileInfortmationMap ( QSet
 	QStringList::iterator widgetIdentifierIter = widgetidentifierList.begin();
 	QList<QVariant>::iterator imageTypesIter = imageTypes.begin();
 	while( fileNameIter != fileNames.end() ) {
-		insertSave(  _internal::FileInformation( (*fileNameIter).toStdString(), (*dialectsIter).toStdString(), (*widgetIdentifierIter).toStdString(), (*readFormatsIter).toStdString(), static_cast<ImageHolder::ImageType>( (*imageTypesIter).toUInt() ), true ) );
+		insertSave(  isis::viewer::FileInformation( (*fileNameIter).toStdString(), (*dialectsIter).toStdString().c_str(), (*readFormatsIter).toStdString().c_str(), (*widgetIdentifierIter).toStdString(), static_cast<ImageHolder::ImageType>( (*imageTypesIter).toUInt() ), true ) );
 		fileNameIter++;
 		readFormatsIter++;
 		widgetIdentifierIter++;
@@ -87,15 +87,15 @@ void isis::viewer::_internal::FileInformationMap::readFileInfortmationMap ( QSet
 	settings->endGroup();
 }
 
-isis::viewer::_internal::FileInformationMap::FileInformationMap()
+isis::viewer::FileInformationMap::FileInformationMap()
 	:m_limit(10)
 {
 
 }
 
-void isis::viewer::_internal::FileInformationMap::insertSave ( const isis::viewer::_internal::FileInformation& fileInfo )
+void isis::viewer::FileInformationMap::insertSave ( const isis::viewer::FileInformation& fileInfo )
 {
-	insert( std::make_pair<std::string, FileInformation>( fileInfo.getFileName(), fileInfo) );
+	insert( std::make_pair<std::string, isis::viewer::FileInformation>( fileInfo.getFileName(), fileInfo) );
 	m_lookup.push_back( fileInfo.getFileName() );
 	if( size() > m_limit ) {
 		const std::string front = m_lookup.front();

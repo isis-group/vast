@@ -69,7 +69,7 @@ public Q_SLOTS:
 	void fileDialectChanged( QString );
 	void openingMethodChanged();
 
-	static bool checkIfPathIsValid( QString path, unsigned short &validFiles, const std::string &suffix, FileMode mode = OPEN_FILE, bool acceptNoSuffix = false );
+	static bool checkIfPathIsValid( QString path, unsigned short &validFiles, const util::istring &suffix, FileMode mode = OPEN_FILE, bool acceptNoSuffix = false );
 
 private:
 	FileMode m_Mode;
@@ -77,8 +77,8 @@ private:
 	Ui::fileDialog m_Interface;
 	QViewerCore *m_ViewerCore;
 	QStringList m_PathList;
-	std::string m_Suffix;
-	std::string m_Dialect;
+	util::istring m_Suffix;
+	util::istring m_Dialect;
 	ImageHolder::ImageType m_ImageType;
 	QCompleter *m_Completer;
 

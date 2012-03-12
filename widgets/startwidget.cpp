@@ -29,7 +29,7 @@
 #include "uicore.hpp"
 #include "qviewercore.hpp"
 #include "filedialog.hpp"
-#include "internal/fileinformation.hpp"
+#include "fileinformation.hpp"
 
 namespace isis
 {
@@ -113,12 +113,12 @@ void StartWidget::showEvent( QShowEvent * )
 
 }
 
-bool StartWidget::fillList ( const _internal::FileInformationMap& fileInfoList, QListWidget* list )
+bool StartWidget::fillList ( const FileInformationMap& fileInfoList, QListWidget* list )
 {
 	if( !fileInfoList.empty() ) {
 		list->clear();
 		list->setVisible(true);
-		BOOST_FOREACH( _internal::FileInformationMap::const_reference fileInfo, fileInfoList ) {
+		BOOST_FOREACH( FileInformationMap::const_reference fileInfo, fileInfoList ) {
 			unsigned short validFiles;
 			QListWidgetItem *item = new QListWidgetItem( fileInfo.first.c_str() );
 

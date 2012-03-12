@@ -31,7 +31,7 @@
 #include "DataStorage/io_factory.hpp"
 #include "uicore.hpp"
 #include <qviewercore.hpp>
-#include "internal/fileinformation.hpp"
+#include "fileinformation.hpp"
 #include "scalingWidget.hpp"
 
 
@@ -495,7 +495,7 @@ void MainWindow::updateRecentOpenList()
 	{
 		m_Interface.actionOpen_recent->menu()->removeAction( action );
 	}
-	BOOST_FOREACH( _internal::FileInformationMap::const_reference path, m_ViewerCore->getRecentFiles() ) {
+	BOOST_FOREACH( FileInformationMap::const_reference path, m_ViewerCore->getRecentFiles() ) {
 		std::stringstream recentFileName;
 		recentFileName << path.first;
         if( path.second.getImageType() == ImageHolder::statistical_image ) {

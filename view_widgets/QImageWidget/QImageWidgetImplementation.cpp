@@ -288,14 +288,14 @@ void QImageWidgetImplementation::paintImage( boost::shared_ptr< ImageHolder > im
 	if ( !image->getImageProperties().isRGB ) {
 		isis::data::MemChunk<InternalImageType> sliceChunk( mappedSizeAligned[0], mappedSizeAligned[1] );
 		util::Singletons::get<isis::viewer::widget::QMemoryHandler,10>().fillSliceChunk<InternalImageType>( sliceChunk, image, m_PlaneOrientation, image->getImageProperties().voxelCoords[3] );
-		QImage qImage( ( InternalImageType * ) sliceChunk.asValuePtr<InternalImageType>().getRawAddress().get(),
+		QImage qImage( ( InternalImageType * ) sliceChunk.asValueArray<InternalImageType>().getRawAddress().get(),
 					   mappedSizeAligned[0], mappedSizeAligned[1], QImage::Format_Indexed8 );
 		qImage.setColorTable( image->getImageProperties().colorMap );
 		m_Painter->drawImage( 0, 0, qImage );
 	} else {
 		isis::data::MemChunk<InternalImageColorType> sliceChunk( mappedSizeAligned[0], mappedSizeAligned[1] );
 		util::Singletons::get<isis::viewer::widget::QMemoryHandler,10>().fillSliceChunk<InternalImageColorType>( sliceChunk, image, m_PlaneOrientation, image->getImageProperties().voxelCoords[3] );
-		QImage qImage( ( InternalImageType * ) sliceChunk.asValuePtr<InternalImageColorType>().getRawAddress().get(),
+		QImage qImage( ( InternalImageType * ) sliceChunk.asValueArray<InternalImageColorType>().getRawAddress().get(),
 					   mappedSizeAligned[0], mappedSizeAligned[1], QImage::Format_RGB888 );
 		m_Painter->drawImage( 0, 0, qImage );
 

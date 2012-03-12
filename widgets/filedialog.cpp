@@ -30,7 +30,7 @@
 #include "imageholder.hpp"
 #include "qviewercore.hpp"
 #include "widgetloader.hpp"
-#include "internal/fileinformation.hpp"
+#include "fileinformation.hpp"
 
 
 isis::viewer::ui::FileDialog::FileDialog( QWidget *parent, QViewerCore *core )
@@ -79,7 +79,7 @@ void isis::viewer::ui::FileDialog::openingMethodChanged()
 
 void isis::viewer::ui::FileDialog::fileDialectChanged ( QString dialect)
 {
-	m_Dialect = dialect.toStdString();
+	m_Dialect = dialect.toStdString().c_str();
 }
 
 
@@ -98,18 +98,18 @@ void isis::viewer::ui::FileDialog::rfChanged( int rfIndex )
 {
 	m_Interface.dialectComboBox->clear();
 	m_Interface.dialectComboBox->addItem("");
-	m_Suffix = m_Interface.rfComboBox->itemText( rfIndex ).toStdString();
-	m_Suffix = m_Suffix == std::string( "auto" ) ? std::string( "" ) : m_Suffix;
-	typedef std::map<std::string, std::list<std::string> > DialectsMapType;
+	m_Suffix = m_Interface.rfComboBox->itemText( rfIndex ).toStdString().c_str();
+	m_Suffix = m_Suffix == util::istring( "auto" ) ? util::istring( "" ) : m_Suffix;
+	typedef std::map<util::istring, std::list<util::istring> > DialectsMapType;
 	if( m_Suffix.empty() ) {
         BOOST_FOREACH( DialectsMapType::const_reference dialects, getDialectsAsMap( isis::image_io::FileFormat::read_only )  ) {
-			BOOST_FOREACH( std::list<std::string>::const_reference dialect, dialects.second ) {
+			BOOST_FOREACH( std::list<util::istring>::const_reference dialect, dialects.second ) {
 				m_Interface.dialectComboBox->addItem( dialect.c_str() );
 			}
 		}
 	} else {
-		std::list<std::string > dialects = getDialectsAsMap( isis::image_io::FileFormat::read_only ).at( m_Suffix );
-		BOOST_FOREACH( std::list<std::string>::const_reference dialect, dialects ) {
+		std::list<util::istring > dialects = getDialectsAsMap( isis::image_io::FileFormat::read_only ).at( m_Suffix );
+		BOOST_FOREACH( std::list<util::istring>::const_reference dialect, dialects ) {
 			m_Interface.dialectComboBox->addItem( dialect.c_str() );
 		}
 	}
@@ -167,7 +167,7 @@ void isis::viewer::ui::FileDialog::setup()
 	m_Interface.advancedOptionsCheck->setChecked( m_ViewerCore->getOptionMap()->getPropertyAs<bool>( "showAdvancedFileDialogOptions" ) );
 	m_Interface.favoriteList->clear();
 
-	BOOST_FOREACH( _internal::FileInformationMap::const_reference fileInfo, m_ViewerCore->getFavFiles() ) {
+	BOOST_FOREACH( FileInformationMap::const_reference fileInfo, m_ViewerCore->getFavFiles() ) {
 		unsigned short validFiles;
 		QListWidgetItem *item = new QListWidgetItem( fileInfo.first.c_str() );
 
@@ -223,8 +223,8 @@ void isis::viewer::ui::FileDialog::parsePath()
 		util::istring extension = boost::filesystem::extension( boost::filesystem::path( m_Interface.fileDirEdit->currentText().toStdString() ) ).c_str();
 		extension.erase( 0, 1 );
 		if( !extension.empty() ) {
-			std::list<std::string > dialects = getDialectsAsMap( isis::image_io::FileFormat::read_only ).at( extension.c_str() );
-			BOOST_FOREACH( std::list<std::string>::const_reference dialect, dialects ) {
+			std::list<util::istring > dialects = getDialectsAsMap( isis::image_io::FileFormat::read_only ).at( extension.c_str() );
+			BOOST_FOREACH( std::list<util::istring>::const_reference dialect, dialects ) {
 				m_Interface.dialectComboBox->addItem( dialect.c_str() );
 			}
 		}
@@ -241,7 +241,7 @@ void isis::viewer::ui::FileDialog::parsePath()
 
 }
 
-bool isis::viewer::ui::FileDialog::checkIfPathIsValid( QString path, unsigned short &validFiles, const std::string &suffix, FileMode mode, bool /*acceptNoSuffix*/ )
+bool isis::viewer::ui::FileDialog::checkIfPathIsValid( QString path, unsigned short &validFiles, const util::istring &suffix, FileMode mode, bool /*acceptNoSuffix*/ )
 {
 	boost::filesystem::path p( path.toStdString() );
 	std::list<util::istring> fileFormatList = getFileFormatsAsList( isis::image_io::FileFormat::read_only );
@@ -313,10 +313,10 @@ void isis::viewer::ui::FileDialog::openPath()
 	QApplication::processEvents();
 	BOOST_FOREACH( QStringList::const_reference path, m_PathList )
 	{
-		m_ViewerCore->openPath( _internal::FileInformation( path.toStdString(),
+		m_ViewerCore->openPath( FileInformation( path.toStdString(),
 															m_Dialect,
-															m_Interface.widgetTypeComboBox->currentText().toStdString(),
 															m_Suffix == "auto" ? "" : m_Suffix,
+															m_Interface.widgetTypeComboBox->currentText().toStdString(),
 															m_ImageType,
 															m_Interface.newWidgetCheck->isChecked() ) ) ;
 	}
@@ -358,17 +358,18 @@ void isis::viewer::ui::FileDialog::addToFavList()
 {
 	QString pathToAdd = m_Interface.fileDirEdit->currentText();
 	bool has = false;
-	BOOST_FOREACH( _internal::FileInformationMap::const_reference fileInfo, m_ViewerCore->getFavFiles() ) {
+	BOOST_FOREACH( FileInformationMap::const_reference fileInfo, m_ViewerCore->getFavFiles() ) {
 		if( fileInfo.first.c_str() == pathToAdd ) {
 			has = true;
 		}
 	}
 	if( !has ) {
 		m_Interface.favoriteList->addItem( pathToAdd );
-		m_ViewerCore->getFavFiles().insertSave( _internal::FileInformation( pathToAdd.toStdString(),
-																			m_Dialect,
-																			m_Interface.widgetTypeComboBox->currentText().toStdString(),
-																			m_Suffix == "auto" ? "" : m_Suffix, m_ImageType, m_Interface.newWidgetCheck->isChecked() ) );
+		m_ViewerCore->getFavFiles().insertSave( FileInformation( pathToAdd.toStdString(),
+																m_Dialect,
+																m_Suffix == "auto" ? "" : m_Suffix,
+																m_Interface.widgetTypeComboBox->currentText().toStdString(),
+																m_ImageType, m_Interface.newWidgetCheck->isChecked() ) );
 	}
 }
 

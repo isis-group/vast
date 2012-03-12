@@ -223,7 +223,7 @@ void UICore::refreshUI( )
 				widget.second.getFrame()->setPalette( pal );
 				widget.second.getFrame()->setAutoFillBackground( true );
 
-				if( m_ViewerCore->getMode() == ViewerCoreBase::zmap ) {
+				if( m_ViewerCore->getMode() == ViewerCoreBase::statistical_mode ) {
 					widget.second.getWidgetInterface()->setCrossHairColor( Qt::white );
 					widget.second.getWidgetInterface()->updateScene();
 				}
@@ -231,14 +231,14 @@ void UICore::refreshUI( )
 				widget.second.getFrame()->setFrameStyle( 0 );
 				widget.second.getFrame()->setAutoFillBackground( false );
 
-				if ( m_ViewerCore->getMode() == ViewerCoreBase::zmap ) {
+				if ( m_ViewerCore->getMode() == ViewerCoreBase::statistical_mode ) {
 					widget.second.getWidgetInterface()->setCrossHairColor( QColor( 255, 102, 0 ) );
 					widget.second.getWidgetInterface()->updateScene();
 				}
 			}
 		}
 
-		if( m_ViewerCore->getMode() != ViewerCoreBase::zmap ) {
+		if( m_ViewerCore->getMode() != ViewerCoreBase::statistical_mode ) {
 			widget.second.getWidgetInterface()->setCrossHairColor( QColor( 255, 102, 0 ) );
 		}
 	}
@@ -283,7 +283,7 @@ QImage UICore::getScreenshot()
 		}
 		const int widgetHeight = ensembleList.front()[0].getPlaceHolder()->height();
 		const int widgetWidth = ensembleList.front()[0].getPlaceHolder()->width();
-		QPixmap screenshot( 3 * widgetWidth, ensembleList.size() * widgetHeight + ( m_ViewerCore->getMode() == ViewerCoreBase::zmap ? 100 : 0 ) ) ;
+		QPixmap screenshot( 3 * widgetWidth, ensembleList.size() * widgetHeight + ( m_ViewerCore->getMode() == ViewerCoreBase::statistical_mode ? 100 : 0 ) ) ;
 		screenshot.fill( Qt::black );
 		QPainter painter( &screenshot );
 		unsigned short eIndex = 0;
@@ -306,7 +306,7 @@ QImage UICore::getScreenshot()
 		painter.setPen( QPen( Qt::white ) );
 		const int offset = -7;
 
-		if( m_ViewerCore->getMode() == ViewerCoreBase::zmap ) {
+		if( m_ViewerCore->getMode() == ViewerCoreBase::statistical_mode ) {
 			if( m_ViewerCore->getCurrentImage()->getImageProperties().minMax.first->as<double>() < 0 ) {
 				const double lT = roundNumber<double>( m_ViewerCore->getCurrentImage()->getImageProperties().lowerThreshold, 4 );
 				const double min = roundNumber<double>( m_ViewerCore->getCurrentImage()->getImageProperties().minMax.first->as<double>(), 4 );

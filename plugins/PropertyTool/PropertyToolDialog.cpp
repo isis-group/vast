@@ -221,7 +221,7 @@ void PropertyToolDialog::editRequested()
 		if( ok && !text.isEmpty() ) {
 			const util::PropertyMap::PropPath propNameStr = propName.toStdString().c_str();
 			util::PropertyMap &propMap = static_cast<util::PropertyMap&>( *m_ViewerCore->getCurrentImage()->getISISImage() );
-			switch( propMap.propertyValue( propNameStr )->getTypeID() ) {
+			switch( propMap.propertyValue( propNameStr ).getTypeID() ) {
 				case util::Value<std::string>::staticID:
 					checkAndSet<std::string>( propMap, propNameStr, text );
 					break;

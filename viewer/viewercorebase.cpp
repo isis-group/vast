@@ -125,15 +125,6 @@ boost::shared_ptr< ImageHolder > ViewerCoreBase::getCurrentImage()
 
 }
 
-void ViewerCoreBase::setImageList( std::list< data::Image > imgList, const ImageHolder::ImageType &imageType )
-{
-	if( !imgList.empty() ) {
-		m_DataContainer.clear();
-	}
-
-	ViewerCoreBase::addImageList( imgList, imageType );
-}
-
 
 std::string ViewerCoreBase::getVersion() const
 {

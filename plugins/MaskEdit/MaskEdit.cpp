@@ -112,37 +112,37 @@ void MaskEditDialog::physicalCoordChanged( util::fvector4 physCoord )
 	if( m_ViewerCore->hasImage() ) {
 		if( m_CurrentMask ) {
 			switch( m_CurrentMask->getImageProperties().majorTypeID ) {
-			case isis::data::ValuePtr<bool>::staticID:
+			case isis::data::ValueArray<bool>::staticID:
 				manipulateVoxel<bool>( physCoord, std::numeric_limits<bool>::max(), m_CurrentMask );
 				break;
-			case isis::data::ValuePtr<int8_t>::staticID:
+			case isis::data::ValueArray<int8_t>::staticID:
 				manipulateVoxel<int8_t>( physCoord, std::numeric_limits<int8_t>::max(), m_CurrentMask );
 				break;
-			case isis::data::ValuePtr<uint8_t>::staticID:
+			case isis::data::ValueArray<uint8_t>::staticID:
 				manipulateVoxel<uint8_t>( physCoord, std::numeric_limits<uint8_t>::max(), m_CurrentMask );
 				break;
-			case isis::data::ValuePtr<int16_t>::staticID:
+			case isis::data::ValueArray<int16_t>::staticID:
 				manipulateVoxel<int16_t>( physCoord, std::numeric_limits<int16_t>::max(), m_CurrentMask );
 				break;
-			case isis::data::ValuePtr<uint16_t>::staticID:
+			case isis::data::ValueArray<uint16_t>::staticID:
 				manipulateVoxel<uint16_t>( physCoord, std::numeric_limits<uint16_t>::max(), m_CurrentMask );
 				break;
-			case isis::data::ValuePtr<int32_t>::staticID:
+			case isis::data::ValueArray<int32_t>::staticID:
 				manipulateVoxel<int32_t>( physCoord, std::numeric_limits<int32_t>::max(), m_CurrentMask );
 				break;
-			case isis::data::ValuePtr<uint32_t>::staticID:
+			case isis::data::ValueArray<uint32_t>::staticID:
 				manipulateVoxel<uint32_t>( physCoord, std::numeric_limits<uint32_t>::max(), m_CurrentMask );
 				break;
-			case isis::data::ValuePtr<int64_t>::staticID:
+			case isis::data::ValueArray<int64_t>::staticID:
 				manipulateVoxel<int64_t>( physCoord, std::numeric_limits<int64_t>::max(), m_CurrentMask );
 				break;
-			case isis::data::ValuePtr<uint64_t>::staticID:
+			case isis::data::ValueArray<uint64_t>::staticID:
 				manipulateVoxel<uint64_t>( physCoord, std::numeric_limits<uint64_t>::max(), m_CurrentMask );
 				break;
-			case isis::data::ValuePtr<double>::staticID:
+			case isis::data::ValueArray<double>::staticID:
 				manipulateVoxel<double>( physCoord, std::numeric_limits<double>::max(), m_CurrentMask );
 				break;
-			case isis::data::ValuePtr<float>::staticID:
+			case isis::data::ValueArray<float>::staticID:
 				manipulateVoxel<float>( physCoord, std::numeric_limits<float>::max(), m_CurrentMask );
 				break;
 			default:

@@ -94,7 +94,7 @@ private:
 
 public:
 	typedef std::list<boost::shared_ptr< ImageHolder > > ImageListType;
-	typedef data::ValuePtrBase::Reference ImagePointerType;
+// 	typedef data::ValueArrayBase::Reference ImagePointerType;
 
 
 
@@ -187,14 +187,14 @@ private:
 
 	template<typename TYPE>
 	void copyImageToVector( const data::Image &image, bool reserveZero ) {
-		data::ValuePtr<TYPE> imagePtr( ( TYPE * ) calloc( image.getVolume(), sizeof( TYPE ) ), image.getVolume() );
+		data::ValueArray<TYPE> imagePtr( ( TYPE * ) calloc( image.getVolume(), sizeof( TYPE ) ), image.getVolume() );
 		getImageProperties().memSizeInternal = image.getVolume() * sizeof( TYPE );
 		LOG( Dev, info ) << "Needed memory: " << getImageProperties().memSizeInternal / ( 1024.0 * 1024.0 ) << " mb.";
 
 		if( reserveZero ) {
 			LOG( Dev, info ) << "0 is reserved";
 			// calculate new scaling
-			data::scaling_pair scalingPair = image.getScalingTo( data::ValuePtr<TYPE>::staticID, data::upscale );
+			data::scaling_pair scalingPair = image.getScalingTo( data::ValueArray<TYPE>::staticID, data::upscale );
 			double scaling = scalingPair.first->as<double>();
 			double offset = scalingPair.second->as<double>();
 			scaling /= static_cast<double>( getInternalExtent() + 1 ) / getInternalExtent();
@@ -203,7 +203,7 @@ private:
 			getImageProperties().scalingToInternalType = newScaling;
 		} else {
 			LOG( Dev, info ) << "0 is not reserved";
-			getImageProperties().scalingToInternalType = image.getScalingTo( data::ValuePtr<TYPE>::staticID, data::upscale );
+			getImageProperties().scalingToInternalType = image.getScalingTo( data::ValueArray<TYPE>::staticID, data::upscale );
 		}
 
 		LOG( Dev, info ) << "scalingToInternalType: " << getImageProperties().scalingToInternalType.first->as<double>() << " : " << getImageProperties().scalingToInternalType.second->as<double>();
@@ -214,9 +214,9 @@ private:
 
 		//splice the image in its volumes -> we get a vector of t volumes
 		if( m_ImageSize[3] > 1 ) { //splicing is only necessary if we got more than 1 timestep
-			std::vector< data::ValuePtrReference > refVec = imagePtr.splice( m_ImageSize[0] * m_ImageSize[1] * m_ImageSize[2] );
+			std::vector< data::ValueArrayReference > refVec = imagePtr.splice( m_ImageSize[0] * m_ImageSize[1] * m_ImageSize[2] );
 
-			for ( std::vector< data::ValuePtrReference >::const_iterator iter = refVec.begin(); iter != refVec.end(); iter++ ) {
+			for ( std::vector< data::ValueArrayReference >::const_iterator iter = refVec.begin(); iter != refVec.end(); iter++ ) {
 				m_ChunkVector.push_back( data::Chunk( *iter, m_ImageSize[0], m_ImageSize[1], m_ImageSize[2] ) );
 			}
 		} else {

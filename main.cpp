@@ -43,7 +43,7 @@
 #include "widgetensemble.hpp"
 
 #include "common.hpp"
-#include "internal/error.hpp"
+#include "error.hpp"
 #include <mainwindow.hpp>
 
 int main( int argc, char *argv[] )
@@ -126,7 +126,7 @@ int main( int argc, char *argv[] )
 	core->addPlugins( plugin::PluginLoader::get().getPlugins() );
 	core->getUICore()->reloadPluginsToGUI();
 
-	std::string widget_name = app.parameters["widget"].toString();
+	std::string widget_name = app.parameters["widget"];
 
 	if( widget_name.empty() ) {
 		widget_name = core->getOptionMap()->getPropertyAs<std::string>( "defaultViewWidgetIdentifier" );
@@ -149,21 +149,21 @@ int main( int argc, char *argv[] )
 
 	
 	BOOST_FOREACH( util::slist::const_reference file, fileList ) {
-		core->openPath( _internal::FileInformation( file,
-													app.parameters["rdialect"].toString(),
-													app.parameters["rf"].toString(),
-													widget_name,
-													ImageHolder::structural_image,
-													app.parameters["split"] ) );
+		core->openPath( FileInformation( file,
+										app.parameters["rdialect"].as<std::string>().c_str(),
+										app.parameters["rf"].as<std::string>().c_str(),
+										widget_name,
+										ImageHolder::structural_image,
+										app.parameters["split"] ) );
 	}
 
 	BOOST_FOREACH( util::slist::const_reference file, zmapFileList ) {
-		core->openPath( _internal::FileInformation( file,
-													app.parameters["rdialect"].toString(),
-													app.parameters["rf"].toString(),
-													widget_name,
-													ImageHolder::statistical_image,
-													app.parameters["split"] ) );
+		core->openPath( FileInformation( file,
+										app.parameters["rdialect"].as<std::string>().c_str(),
+										app.parameters["rf"].as<std::string>().c_str(),
+										widget_name,
+										ImageHolder::statistical_image,
+										app.parameters["split"] ) );
 	}
 	
 	core->getUICore()->getMainWindow()->toggleLoadingIcon( false );

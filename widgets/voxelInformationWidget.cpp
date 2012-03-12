@@ -335,43 +335,43 @@ void VoxelInformationWidget::synchronizePos( util::ivector4 voxelCoords )
 	m_Interface.intensityValue->setToolTip( typeName.substr( 0, typeName.length() - 1 ).c_str() );
 
 	switch( image->getISISImage()->getChunk( voxelCoords[0], voxelCoords[1], voxelCoords[2], voxelCoords[3], false ).getTypeID() ) {
-	case isis::data::ValuePtr<bool>::staticID:
+	case isis::data::ValueArray<bool>::staticID:
 		displayIntensity<bool>( voxelCoords );
 		break;
-	case isis::data::ValuePtr<int8_t>::staticID:
+	case isis::data::ValueArray<int8_t>::staticID:
 		displayIntensity<int8_t>( voxelCoords );
 		break;
-	case isis::data::ValuePtr<uint8_t>::staticID:
+	case isis::data::ValueArray<uint8_t>::staticID:
 		displayIntensity<uint8_t>( voxelCoords );
 		break;
-	case isis::data::ValuePtr<int16_t>::staticID:
+	case isis::data::ValueArray<int16_t>::staticID:
 		displayIntensity<int16_t>( voxelCoords );
 		break;
-	case isis::data::ValuePtr<uint16_t>::staticID:
+	case isis::data::ValueArray<uint16_t>::staticID:
 		displayIntensity<uint16_t>( voxelCoords );
 		break;
-	case isis::data::ValuePtr<int32_t>::staticID:
+	case isis::data::ValueArray<int32_t>::staticID:
 		displayIntensity<int32_t>( voxelCoords );
 		break;
-	case isis::data::ValuePtr<uint32_t>::staticID:
+	case isis::data::ValueArray<uint32_t>::staticID:
 		displayIntensity<uint32_t>( voxelCoords );
 		break;
-	case isis::data::ValuePtr<int64_t>::staticID:
+	case isis::data::ValueArray<int64_t>::staticID:
 		displayIntensity<int64_t>( voxelCoords );
 		break;
-	case isis::data::ValuePtr<uint64_t>::staticID:
+	case isis::data::ValueArray<uint64_t>::staticID:
 		displayIntensity<uint64_t>( voxelCoords );
 		break;
-	case isis::data::ValuePtr<float>::staticID:
+	case isis::data::ValueArray<float>::staticID:
 		displayIntensity<float>( voxelCoords );
 		break;
-	case isis::data::ValuePtr<double>::staticID:
+	case isis::data::ValueArray<double>::staticID:
 		displayIntensity<double>( voxelCoords );
 		break;
-	case isis::data::ValuePtr<util::color24>::staticID:
+	case isis::data::ValueArray<util::color24>::staticID:
 		displayIntensityColor<util::color24>( voxelCoords );
 		break;
-	case isis::data::ValuePtr<util::color48>::staticID:
+	case isis::data::ValueArray<util::color48>::staticID:
 		displayIntensityColor<util::color48> ( voxelCoords );
 		break;
 	}

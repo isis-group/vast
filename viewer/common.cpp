@@ -89,11 +89,11 @@ std::list<util::istring> getFileFormatsAsList( image_io::FileFormat::io_modes mo
 	return retList;
 }
 
-std::map< std::string, std::list< std::string > > getDialectsAsMap ( image_io::FileFormat::io_modes mode )
+std::map< util::istring, std::list< util::istring > > getDialectsAsMap ( image_io::FileFormat::io_modes mode )
 {
-	std::map<std::string, std::list< std::string > > retMap;
+	std::map<util::istring, std::list< util::istring > > retMap;
 	BOOST_FOREACH( isis::data::IOFactory::FileFormatList::const_reference format, isis::data::IOFactory::getFormats() ) {
-		std::list<std::string> dialectList = util::stringToList<std::string>(format->dialects(""));
+		std::list<util::istring> dialectList = util::stringToList<util::istring>(format->dialects("").c_str());
         BOOST_FOREACH( std::list< util::istring>::const_reference suffix, format->getSuffixes( mode ) ) {
 			retMap[suffix.c_str()]  = dialectList;
 		}

@@ -175,19 +175,13 @@ void QViewerCore::timestepChanged ( int timestep )
 	}
 }
 
-std::list<boost::shared_ptr<ImageHolder> > QViewerCore::addImageList ( const std::list< data::Image > imageList, const ImageHolder::ImageType &imageType )
+ImageHolder::ImageListType QViewerCore::addImageList ( const std::list< data::Image > imageList, const ImageHolder::ImageType &imageType )
 {
 	std::list<boost::shared_ptr<ImageHolder> > retList = isis::viewer::ViewerCoreBase::addImageList ( imageList, imageType );
 	return retList;
 
 }
 
-void QViewerCore::setImageList ( const std::list< data::Image > imageList, const ImageHolder::ImageType &imageType )
-{
-	isis::viewer::ViewerCoreBase::setImageList ( imageList, imageType );
-
-
-}
 void QViewerCore::centerImages ( bool ca )
 {
 	if ( hasImage() )
@@ -384,11 +378,11 @@ bool QViewerCore::attachImageToWidget ( boost::shared_ptr<ImageHolder> image, wi
 	return true;
 }
 
-void QViewerCore::openPath ( const _internal::FileInformation &fileInfo )
+void QViewerCore::openPath ( const FileInformation &fileInfo )
 {
 	if ( !fileInfo.getFileName().empty() )
 	{
-		std::string dialect = fileInfo.getDialect();
+		util::istring dialect = fileInfo.getDialect();
 		LOG( Dev, info ) << "Opening path " << fileInfo.getFileName() << " with rdialect: "
 						<< fileInfo.getDialect() << ", rf: " << fileInfo.getReadFormat()
 						<< ", widget: " << fileInfo.getWidgetIdentifier();
@@ -401,7 +395,7 @@ void QViewerCore::openPath ( const _internal::FileInformation &fileInfo )
 		//this is a vista thing. if we load a vista image and the option "visualizeOnlyFirstVista" is enabled we should do so
 		if( boost::filesystem::extension(p) == std::string("v") && getOptionMap()->getPropertyAs<bool>("visualizeOnlyFirstVista") && !dialect.size() )
 		{
-			dialect = std::string("onlyfirst");
+			dialect = util::istring("onlyfirst");
 		}
 		//show loading information
 		std::stringstream loadingStream;
@@ -411,13 +405,18 @@ void QViewerCore::openPath ( const _internal::FileInformation &fileInfo )
 		std::list<data::Image> tempImgList = isis::data::IOFactory::load ( fileInfo.getFileName() , fileInfo.getReadFormat(), dialect );
 		if( !tempImgList.empty() ) {
 			m_RecentFiles.insertSave( fileInfo );
-			LOG( Dev, error ) << "Loaded " << tempImgList.size() << " images from path " << fileInfo.getFileName();
+			LOG( Dev, info ) << "Loaded " << tempImgList.size() << " images from path " << fileInfo.getFileName();
 		} else {
 			LOG( Dev, error ) << "Tried to load " << fileInfo.getFileName() << ", but image list is empty.";
 		}
 
-		//ok we are in zmap mode
+		//creating the viewer image objects
+		ImageHolder::ImageListType imgList = addImageList( tempImgList, fileInfo.getImageType() );
+
+		//ok we are in statistical_mode mode
 		if( getMode() == ViewerCoreBase::statistical_mode ) {
+			//and we are getting a statistical_image
+			
 		} else if ( getMode() == ViewerCoreBase::default_mode ) {
 		}
 		

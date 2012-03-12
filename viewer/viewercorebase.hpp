@@ -55,7 +55,6 @@ public:
 	std::string getVersion() const;
 
 	virtual ImageHolder::ImageListType addImageList( const std::list< data::Image > imageList, const ImageHolder::ImageType &imageType );
-	virtual void setImageList( const std::list< data::Image > imageList, const ImageHolder::ImageType &imageType );
 	virtual boost::shared_ptr<ImageHolder> addImage( const data::Image &image, const ImageHolder::ImageType &imageType );
 
 	void setCurrentImage( const boost::shared_ptr<ImageHolder> image ) { m_CurrentImage = image; }
