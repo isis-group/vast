@@ -418,7 +418,8 @@ void QViewerCore::openFileList(const std::list< FileInformation > fileInfoList)
 	ImageHolder::List structuralImageList;
 	ImageHolder::List statisticalImageList;
 	BOOST_FOREACH( std::list<FileInformation>::const_reference file, fileInfoList ) {
-		BOOST_FOREACH( ImageHolder::List::const_reference image, openFile( file ) )
+		ImageHolder::List imageList = openFile( file, false );
+		BOOST_FOREACH( ImageHolder::List::const_reference image, imageList )
 		{
 			if( file.getImageType() == ImageHolder::statistical_image ) {
 				statisticalImageList.push_back( image );
@@ -426,6 +427,16 @@ void QViewerCore::openFileList(const std::list< FileInformation > fileInfoList)
 				structuralImageList.push_back( image );
 			}
 		}
+	}
+	WidgetEnsembleListType widgetList;
+	if ( structuralImageList.size() && statisticalImageList.size() ) {
+		widgetList = getUICore()->createViewWidgetEnsembleList( fileInfoList.front().getWidgetIdentifier(), statisticalImageList, true);
+		BOOST_FOREACH( WidgetEnsembleListType::const_reference ensemble, widgetList ) {
+			getUICore()->attachImageToEnsemble( structuralImageList.front(), ensemble );
+		}
+		
+	} else if ( structuralImageList.size() ) {
+		
 	}
 }
 

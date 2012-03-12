@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * Author: Erik Türke, tuerke@cbs.mpg.de
+ * Author: Erik Tuerke, tuerke@cbs.mpg.de
  *
  * uicore.cpp
  *
@@ -134,7 +134,7 @@ QDockWidget *UICore::createDockingEnsemble( QWidget *widget )
 
 }
 
-WidgetEnsemble UICore::createViewWidgetEnsemble( const std::string &widgetIdentifier, boost::shared_ptr< ImageHolder > image, bool show )
+WidgetEnsemble UICore::createViewWidgetEnsemble( const std::string &widgetIdentifier, ImageHolder::Pointer image, bool show )
 {
 	WidgetEnsemble ensemble = createViewWidgetEnsemble( widgetIdentifier, show );
 	BOOST_FOREACH( WidgetEnsemble::reference widget, ensemble ) {
@@ -179,6 +179,17 @@ WidgetEnsemble UICore::createViewWidgetEnsemble ( const std::string& widgetType,
 		attachImageListToEnsemble( imageList, ensemble );
 	}
 	return ensemble;
+}
+
+WidgetEnsembleListType UICore::createViewWidgetEnsembleList(const std::string& widgetType, ImageHolder::List imageList, bool show)
+{
+	WidgetEnsembleListType retWidgetEnsembleList;
+	BOOST_FOREACH( ImageHolder::List::const_reference image, imageList ) {
+		WidgetEnsemble ensemble = createViewWidgetEnsemble( widgetType, show );
+		attachImageToEnsemble( image, ensemble );
+		retWidgetEnsembleList.push_back( ensemble );
+	}
+	return retWidgetEnsembleList;
 }
 
 
