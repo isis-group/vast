@@ -153,6 +153,11 @@ void QViewerCore::physicalCoordsChanged ( util::fvector4 physicalCoords )
 	emitPhysicalCoordsChanged ( physicalCoords );
 }
 
+void QViewerCore::onWidgetClicked ( util::fvector4 physicalCoords, Qt::MouseButton mouseButton )
+{
+	emitOnWidgetClicked(physicalCoords, mouseButton);
+}
+
 
 void QViewerCore::timestepChanged ( int timestep )
 {

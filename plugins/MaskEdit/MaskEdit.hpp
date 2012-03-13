@@ -54,7 +54,7 @@ public:
 	MaskEditDialog( QWidget *parent, QViewerCore *core );
 
 public Q_SLOTS:
-	void physicalCoordChanged( util::fvector4 physCoord );
+	void physicalCoordChanged( util::fvector4 physCoord, Qt::MouseButton );
 	void radiusChange( int );
 	void paintClicked();
 	void cutClicked();
@@ -102,7 +102,7 @@ private:
 						if ( !cut ) {
 							image->setTypedVoxel<TYPE>(finalVoxel[0], finalVoxel[1], finalVoxel[2], 0, image->getImageProperties().minMax.second->as<TYPE>());
 						} else {
-							image->setTypedVoxel<TYPE>(finalVoxel[0],finalVoxel[1],finalVoxel[2],0, image->getImageProperties().minMax.first->as<TYPE>() );
+							image->setTypedVoxel<TYPE>(finalVoxel[0],finalVoxel[1], finalVoxel[2],0, image->getImageProperties().minMax.first->as<TYPE>() );
 						}
 					}
 				}

@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * Author: Erik Türke, tuerke@cbs.mpg.de
+ * Author: Erik Tuerke, tuerke@cbs.mpg.de
  *
  * QImageWidgetImplementation.cpp
  *
@@ -379,7 +379,10 @@ void QImageWidgetImplementation::emitMousePressEvent( QMouseEvent *e )
 	const ImageProperties &imgProps = m_ImageProperties.at( image );
 	const uint16_t slice = mapCoordsToOrientation( image->getImageProperties().voxelCoords, image->getImageProperties().latchedOrientation, m_PlaneOrientation )[2];
 	const util::ivector4 &coords = QOrientationHandler::convertWindow2VoxelCoords( imgProps.viewPort, image, e->x(), e->y(), slice, m_PlaneOrientation );
-	physicalCoordsChanged( image->getISISImage()->getPhysicalCoordsFromIndex( coords ) );
+	const util::fvector4 physicalCoords =  image->getISISImage()->getPhysicalCoordsFromIndex( coords ) ;
+	physicalCoordsChanged( physicalCoords );
+	if( m_LeftMouseButtonPressed )	m_ViewerCore->onWidgetClicked(physicalCoords, Qt::LeftButton );
+	if( m_RightMouseButtonPressed ) m_ViewerCore->onWidgetClicked( physicalCoords, Qt::RightButton );
 }
 
 void QImageWidgetImplementation::showLabels() const

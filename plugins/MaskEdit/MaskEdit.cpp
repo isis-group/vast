@@ -91,7 +91,7 @@ void MaskEditDialog::radiusChange( int r )
 
 void MaskEditDialog::showEvent( QShowEvent * )
 {
-	connect( m_ViewerCore, SIGNAL ( emitPhysicalCoordsChanged( util::fvector4 ) ), this, SLOT( physicalCoordChanged( util::fvector4 ) ) );
+	connect( m_ViewerCore, SIGNAL ( emitOnWidgetClicked(util::fvector4,Qt::MouseButton)), this, SLOT( physicalCoordChanged( util::fvector4, Qt::MouseButton ) ) );
 
 	if( !m_CurrentMask ) {
 		m_Interface.cut->setEnabled( false );
@@ -107,9 +107,9 @@ void MaskEditDialog::showEvent( QShowEvent * )
 }
 
 
-void MaskEditDialog::physicalCoordChanged( util::fvector4 physCoord )
+void MaskEditDialog::physicalCoordChanged( util::fvector4 physCoord, Qt::MouseButton mouseButton )
 {
-	if( m_ViewerCore->hasImage() ) {
+	if( mouseButton == Qt::LeftButton && m_ViewerCore->hasImage() ) {
 		if( m_CurrentMask ) {
 			switch( m_CurrentMask->getImageProperties().majorTypeID ) {
 			case isis::data::ValueArray<bool>::staticID:
