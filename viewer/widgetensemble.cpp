@@ -35,7 +35,8 @@ WidgetEnsembleComponent::WidgetEnsembleComponent ( QFrame* frame, QDockWidget* d
 	: m_frame( frame ),
 	m_dockWidget( dockWidget ),
 	m_placeHolder( placeHolder ),
-	m_widgetImplementation( widgetImplementation )
+	m_widgetImplementation( widgetImplementation ),
+	m_hasCurrentImage( false )
 {
 
 }

@@ -112,37 +112,37 @@ void MaskEditDialog::physicalCoordChanged( util::fvector4 physCoord )
 	if( m_ViewerCore->hasImage() ) {
 		if( m_CurrentMask ) {
 			switch( m_CurrentMask->getImageProperties().majorTypeID ) {
-			case isis::data::ValuePtr<bool>::staticID:
+			case isis::data::ValueArray<bool>::staticID:
 				manipulateVoxel<bool>( physCoord, std::numeric_limits<bool>::max(), m_CurrentMask );
 				break;
-			case isis::data::ValuePtr<int8_t>::staticID:
+			case isis::data::ValueArray<int8_t>::staticID:
 				manipulateVoxel<int8_t>( physCoord, std::numeric_limits<int8_t>::max(), m_CurrentMask );
 				break;
-			case isis::data::ValuePtr<uint8_t>::staticID:
+			case isis::data::ValueArray<uint8_t>::staticID:
 				manipulateVoxel<uint8_t>( physCoord, std::numeric_limits<uint8_t>::max(), m_CurrentMask );
 				break;
-			case isis::data::ValuePtr<int16_t>::staticID:
+			case isis::data::ValueArray<int16_t>::staticID:
 				manipulateVoxel<int16_t>( physCoord, std::numeric_limits<int16_t>::max(), m_CurrentMask );
 				break;
-			case isis::data::ValuePtr<uint16_t>::staticID:
+			case isis::data::ValueArray<uint16_t>::staticID:
 				manipulateVoxel<uint16_t>( physCoord, std::numeric_limits<uint16_t>::max(), m_CurrentMask );
 				break;
-			case isis::data::ValuePtr<int32_t>::staticID:
+			case isis::data::ValueArray<int32_t>::staticID:
 				manipulateVoxel<int32_t>( physCoord, std::numeric_limits<int32_t>::max(), m_CurrentMask );
 				break;
-			case isis::data::ValuePtr<uint32_t>::staticID:
+			case isis::data::ValueArray<uint32_t>::staticID:
 				manipulateVoxel<uint32_t>( physCoord, std::numeric_limits<uint32_t>::max(), m_CurrentMask );
 				break;
-			case isis::data::ValuePtr<int64_t>::staticID:
+			case isis::data::ValueArray<int64_t>::staticID:
 				manipulateVoxel<int64_t>( physCoord, std::numeric_limits<int64_t>::max(), m_CurrentMask );
 				break;
-			case isis::data::ValuePtr<uint64_t>::staticID:
+			case isis::data::ValueArray<uint64_t>::staticID:
 				manipulateVoxel<uint64_t>( physCoord, std::numeric_limits<uint64_t>::max(), m_CurrentMask );
 				break;
-			case isis::data::ValuePtr<double>::staticID:
+			case isis::data::ValueArray<double>::staticID:
 				manipulateVoxel<double>( physCoord, std::numeric_limits<double>::max(), m_CurrentMask );
 				break;
-			case isis::data::ValuePtr<float>::staticID:
+			case isis::data::ValueArray<float>::staticID:
 				manipulateVoxel<float>( physCoord, std::numeric_limits<float>::max(), m_CurrentMask );
 				break;
 			default:
@@ -164,7 +164,7 @@ void MaskEditDialog::editCurrentImage()
 		m_Interface.paint->setEnabled( true );
 		m_Interface.radius->setEnabled( true );
 		m_Interface.paint->setChecked( true );
-		BOOST_FOREACH( WidgetEnsembleListType::reference ensemble, m_ViewerCore->getUICore()->getEnsembleList() ) {
+		BOOST_FOREACH( WidgetEnsemble::List::reference ensemble, m_ViewerCore->getUICore()->getEnsembleList() ) {
 			widget::WidgetInterface::ImageVectorType iVector;
 
 			for( unsigned short i = 0; i < 3; i++ ) {
@@ -172,7 +172,7 @@ void MaskEditDialog::editCurrentImage()
 
 				if( std::find( iVector.begin(), iVector.end(), m_CurrentMask ) != iVector.end() ) {
 					m_CurrentWidgetEnsemble = ensemble;
-					m_ViewerCore->attachImageToWidget( m_CurrentMask, ensemble[i].getWidgetInterface() ) ;
+					m_ViewerCore->getUICore()->attachImageToWidget( m_CurrentMask, ensemble[i].getWidgetInterface() ) ;
 					ensemble[i].getWidgetInterface()->setMouseCursorIcon( QIcon( ":/common/paintCrosshair.png" ) );
 					ensemble[i].getWidgetInterface()->setEnableCrosshair( false );
 
@@ -193,7 +193,7 @@ void MaskEditDialog::createEmptyMask()
 void MaskEditDialog::closeEvent( QCloseEvent * )
 {
 	disconnect( m_ViewerCore, SIGNAL ( emitPhysicalCoordsChanged( util::fvector4 ) ), this, SLOT( physicalCoordChanged( util::fvector4 ) ) );
-	BOOST_FOREACH( WidgetEnsembleListType::reference ensemble, m_ViewerCore->getUICore()->getEnsembleList() ) {
+	BOOST_FOREACH( WidgetEnsemble::List::reference ensemble, m_ViewerCore->getUICore()->getEnsembleList() ) {
 		for ( unsigned short i = 0; i < 3; i++ ) {
 			ensemble[i].getWidgetInterface()->setMouseCursorIcon( QIcon() );
 			ensemble[i].getWidgetInterface()->setEnableCrosshair( true );

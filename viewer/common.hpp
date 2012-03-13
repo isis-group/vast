@@ -64,7 +64,7 @@ void checkForCaCp( boost::shared_ptr<ImageHolder> image );
 std::string getFileFormatsAsString( image_io::FileFormat::io_modes mode, const std::string preSeparator, const std::string postSeparator = std::string( " " ) );
 
 std::list<util::istring> getFileFormatsAsList( image_io::FileFormat::io_modes mode );
-std::map<std::string, std::list< std::string > > getDialectsAsMap( image_io::FileFormat::io_modes mode );
+std::map<util::istring, std::list< util::istring > > getDialectsAsMap( image_io::FileFormat::io_modes mode );
 std::list<std::string> getSupportedTypeList() ;
 
 util::ivector4 get32BitAlignedSize( const util::ivector4 &origSize );
@@ -72,9 +72,15 @@ util::ivector4 get32BitAlignedSize( const util::ivector4 &origSize );
 typedef ViewerLog Runtime;
 typedef ViewerDev Dev;
 
-
+util::fvector4 mapCoordsToOrientation( const util::fvector4 &coords, const boost::numeric::ublas::matrix<float> &orientationMatrix, PlaneOrientation orientation, bool back = false, bool absolute = true );
 
 std::string getCrashLogFilePath();
+
+namespace logging
+{
+
+
+}
 
 }
 }

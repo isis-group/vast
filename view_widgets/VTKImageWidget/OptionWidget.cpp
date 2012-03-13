@@ -18,39 +18,26 @@
  *
  * Author: Erik Tuerke, tuerke@cbs.mpg.de
  *
- * ImageComponents.cpp
+ * OptionWidget.cpp
  *
  * Description:
  *
- *  Created on: Mar 05, 2012
+ *  Created on: Mar 07, 2012
  ******************************************************************/
 
-#include "ImageComponents.hpp"
+#include "OptionWidget.hpp"
 
 namespace isis {
 namespace viewer {
 namespace widget {
 
-VTKImageComponents::VTKImageComponents()
-: volume( vtkVolume::New() ),
-	property( vtkVolumeProperty::New() ),
-	mapper( vtkFixedPointVolumeRayCastMapper::New() ),
-	colorFunction( vtkColorTransferFunction::New() ),
-	opacityFunction( vtkPiecewiseFunction::New() ),
-	imageData( vtkImageData::New() )
+OptionWidget::OptionWidget ( QWidget* parent, QViewerCore *core )
+	: QWidget ( parent ),
+	m_ViewerCore( core )
 {
-	volume->SetMapper( mapper );
-	volume->SetProperty( property );
-	property->SetColor( colorFunction );
-	property->SetScalarOpacity( opacityFunction );
+	m_Interface.setupUi(this);
 }
 
-
-void VTKImageComponents::setVTKImageData ( vtkImageData* image )
-{
-	mapper->SetInput( image );
-	imageData = image;
-}
 	
 
 

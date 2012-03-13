@@ -145,7 +145,7 @@ QIcon Color::getIcon( const std::string &colormapName, size_t w, size_t h, icon_
 		break;
 	case lower_half:
 		start = 0;
-		end = 128;
+		end = 127;
 		break;
 	case upper_half:
 		start = 128;
@@ -230,7 +230,7 @@ void Color::adaptColorMapToImage( ImageHolder *image, bool split )
 	negAlphas.fill(0);
 	posAlphas.fill(0);
 	//only stuff necessary for colormaps
-	if( image->getImageProperties().imageType == ImageHolder::z_map ) {
+	if( image->getImageProperties().imageType == ImageHolder::statistical_image ) {
 
 		if( split ) {
 			assert( negVec.size() + posVec.size() == 256 );

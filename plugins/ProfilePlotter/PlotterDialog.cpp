@@ -103,7 +103,7 @@ void isis::viewer::plugin::PlotterDialog::refresh ( isis::util::fvector4 physica
 					fillSpectrum( image.second, voxCoords, curve, axis );
 				}
 				
-				if( image.second.get() == m_ViewerCore->getCurrentImage().get() || m_ViewerCore->getMode() == ViewerCoreBase::zmap ) {
+				if( image.second.get() == m_ViewerCore->getCurrentImage().get() || m_ViewerCore->getMode() == ViewerCoreBase::statistical_mode ) {
 					curve->attach( plot );
 					plotMarker->attach(plot);
 					curve->setPen( QPen( Qt::red ) );
@@ -173,37 +173,37 @@ void isis::viewer::plugin::PlotterDialog::fillProfile ( boost::shared_ptr< isis:
 		}
 	}
 	switch( image->getImageProperties().majorTypeID ) {
-	case ValuePtr<bool>::staticID:
+	case ValueArray<bool>::staticID:
 		fillVector<bool>( intensityValues, _coords, image, axis );
 		break;
-	case ValuePtr<int8_t>::staticID:
+	case ValueArray<int8_t>::staticID:
 		fillVector<int8_t>( intensityValues, _coords, image, axis );
 		break;
-	case ValuePtr<uint8_t>::staticID:
+	case ValueArray<uint8_t>::staticID:
 		fillVector<uint8_t>( intensityValues, _coords, image, axis );
 		break;
-	case ValuePtr<int16_t>::staticID:
+	case ValueArray<int16_t>::staticID:
 		fillVector<int16_t>( intensityValues, _coords, image, axis );
 		break;
-	case ValuePtr<uint16_t>::staticID:
+	case ValueArray<uint16_t>::staticID:
 		fillVector<uint16_t>( intensityValues, _coords, image, axis );
 		break;
-	case ValuePtr<int32_t>::staticID:
+	case ValueArray<int32_t>::staticID:
 		fillVector<int32_t>( intensityValues, _coords, image, axis );
 		break;
-	case ValuePtr<uint32_t>::staticID:
+	case ValueArray<uint32_t>::staticID:
 		fillVector<uint32_t>( intensityValues, _coords, image, axis );
 		break;
-	case ValuePtr<int64_t>::staticID:
+	case ValueArray<int64_t>::staticID:
 		fillVector<int64_t>( intensityValues, _coords, image, axis);
 		break;
-	case ValuePtr<uint64_t>::staticID:
+	case ValueArray<uint64_t>::staticID:
 		fillVector<uint64_t>( intensityValues, _coords, image, axis );
 		break;
-	case ValuePtr<float>::staticID:
+	case ValueArray<float>::staticID:
 		fillVector<float>( intensityValues, _coords, image, axis );
 		break;
-	case ValuePtr<double>::staticID:
+	case ValueArray<double>::staticID:
 		fillVector<double>( intensityValues, _coords, image, axis );
 		break;
 	}

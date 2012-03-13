@@ -36,12 +36,18 @@
 #include "widgetinterface.h"
 
 
-namespace isis {
-namespace viewer {
+namespace isis
+{
+namespace viewer
+{
 
-class WidgetEnsembleComponent {
+class WidgetEnsembleComponent
+{
 
 public:
+	///map to associate a WidgetEnsembleComponent with a WidgetInterface raw pointer
+	typedef std::map< widget::WidgetInterface *, WidgetEnsembleComponent > Map;
+
 	WidgetEnsembleComponent( QFrame *frame, QDockWidget *dockWidget, QWidget *placeHolder, widget::WidgetInterface *widgetImplementation );
 
 	// == operator to hold them in a std::map
@@ -59,20 +65,32 @@ public:
 	widget::WidgetInterface *getWidgetInterface() { return m_widgetImplementation; }
 	const widget::WidgetInterface *getWidgetInterface() const { return m_widgetImplementation; }
 
+	bool hasCurrentImage() const { return m_hasCurrentImage; }
+
+	void setHasCurrentImage( bool hasCurrentImage ) { m_hasCurrentImage = hasCurrentImage; }
+
+
 private:
 	QFrame *m_frame;
 	QDockWidget *m_dockWidget;
 	QWidget *m_placeHolder;
 	widget::WidgetInterface *m_widgetImplementation;
+	bool m_hasCurrentImage;
 };
 
 class WidgetEnsemble : public std::vector< WidgetEnsembleComponent >
 {
-public:	
+public:
+	typedef std::list< WidgetEnsemble > List;
+
+
 	WidgetEnsemble();
-	
+
 	QFrame *getFrame() { return m_frame; }
 	const QFrame *getFrame() const { return m_frame; }
+
+	QGridLayout *getLayout() { return m_layout; }
+	const QGridLayout *getLayout() const { return m_layout; }
 
 	void insertComponent( WidgetEnsembleComponent component );
 
@@ -80,14 +98,13 @@ private:
 	QFrame *m_frame;
 	QGridLayout *m_layout;
 	unsigned short m_cols;
-	void push_back( const value_type &value ) { std::vector< WidgetEnsembleComponent >::push_back(value ); }
+	void push_back( const value_type &value ) { std::vector< WidgetEnsembleComponent >::push_back( value ); }
 };
 
-typedef std::list< WidgetEnsemble > WidgetEnsembleListType;
-typedef std::map< widget::WidgetInterface*, WidgetEnsembleComponent > WidgetMap;
 
 
-}} //end namespace
+}
+} //end namespace
 
 
 #endif //VAST_WIDGET_ENSEMBLE_HPP

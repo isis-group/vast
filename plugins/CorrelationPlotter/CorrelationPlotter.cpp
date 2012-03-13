@@ -108,13 +108,13 @@ void isis::viewer::plugin::CorrelationPlotterDialog::showEvent( QShowEvent * )
 		} else {
 			if ( !m_CurrentCorrelationMap ) {
 				createCorrelationMap() ;
-				BOOST_FOREACH( WidgetEnsembleListType::reference ensemble, m_ViewerCore->getUICore()->getEnsembleList() ) {
+				BOOST_FOREACH( WidgetEnsemble::List::reference ensemble, m_ViewerCore->getUICore()->getEnsembleList() ) {
 					widget::WidgetInterface::ImageVectorType iVector;
 
 					for( unsigned short i = 0; i < 3; i++ ) {
 						iVector = ensemble[i].getWidgetInterface()->getImageVector();
 						if( std::find( iVector.begin(), iVector.end(), m_CurrentFunctionalImage ) != iVector.end() ) {
-							m_ViewerCore->attachImageToWidget( m_CurrentCorrelationMap, ensemble[i].getWidgetInterface() ) ;
+							m_ViewerCore->getUICore()->attachImageToWidget( m_CurrentCorrelationMap, ensemble[i].getWidgetInterface() ) ;
 						}
 					}
 				}
@@ -122,8 +122,8 @@ void isis::viewer::plugin::CorrelationPlotterDialog::showEvent( QShowEvent * )
 
 			connect( m_ViewerCore, SIGNAL( emitPhysicalCoordsChanged( util::fvector4 ) ), this, SLOT( physicalCoordsChanged( util::fvector4 ) ) );
 
-			if( m_ViewerCore->getMode() != ViewerCoreBase::zmap ) {
-				m_ViewerCore->setMode( ViewerCoreBase::zmap );
+			if( m_ViewerCore->getMode() != ViewerCoreBase::statistical_mode ) {
+				m_ViewerCore->setMode( ViewerCoreBase::statistical_mode );
 			}
 
 			m_ViewerCore->getUICore()->refreshUI();
@@ -152,7 +152,7 @@ bool isis::viewer::plugin::CorrelationPlotterDialog::createCorrelationMap()
 			isis::data::Image corrMap ( ch );
 			corrMap.setPropertyAs<std::string>( "source", "correlation_map" );
 
-			m_CurrentCorrelationMap = m_ViewerCore->addImage( corrMap, ImageHolder::z_map );
+			m_CurrentCorrelationMap = m_ViewerCore->addImage( corrMap, ImageHolder::statistical_image );
 			m_CurrentCorrelationMap->getImageProperties().lut = std::string( "standard_zmap" );
 			m_CurrentCorrelationMap->getImageProperties().minMax.first = util::Value<MapImageType>( -1 );
 			m_CurrentCorrelationMap->getImageProperties().minMax.second = util::Value<MapImageType>( 1 );
@@ -161,7 +161,7 @@ bool isis::viewer::plugin::CorrelationPlotterDialog::createCorrelationMap()
 			m_CurrentCorrelationMap->getImageProperties().scalingToInternalType.first = util::Value<MapImageType>(128);
 			m_CurrentCorrelationMap->getImageProperties().scalingToInternalType.second = util::Value<MapImageType>(127);
 			m_CurrentCorrelationMap->getImageProperties().extent = m_CurrentCorrelationMap->getImageProperties().minMax.second->as<double>() -  m_CurrentCorrelationMap->getImageProperties().minMax.first->as<double>();
-			isis::data::ValuePtr<InternalFunctionalImageType> imagePtr( ( InternalFunctionalImageType * )
+			isis::data::ValueArray<InternalFunctionalImageType> imagePtr( ( InternalFunctionalImageType * )
 					calloc( m_CurrentFunctionalImage->getISISImage()->getVolume(), sizeof( InternalFunctionalImageType ) ), m_CurrentFunctionalImage->getISISImage()->getVolume() );
 			m_CurrentFunctionalImage->getISISImage()->copyToMem<InternalFunctionalImageType>( &imagePtr[0], m_CurrentFunctionalImage->getISISImage()->getVolume() );
 			m_InternalChunk.reset( new isis::data::Chunk( imagePtr, size[0], size[1], size[2], size[3] ) );

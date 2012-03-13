@@ -18,40 +18,40 @@
  *
  * Author: Erik Tuerke, tuerke@cbs.mpg.de
  *
- * ImageComponents.cpp
+ * OptionWidget.hpp
  *
  * Description:
  *
- *  Created on: Mar 05, 2012
+ *  Created on: Mar 07, 2012
  ******************************************************************/
 
-#include "ImageComponents.hpp"
+#ifndef VTK_OPTION_WIDGET_HPP
+#define VTK_OPTION_WIDGET_HPP
 
-namespace isis {
-namespace viewer {
-namespace widget {
+#include "ui_option_widget.h"
+#include "qviewercore.hpp"
 
-VTKImageComponents::VTKImageComponents()
-: volume( vtkVolume::New() ),
-	property( vtkVolumeProperty::New() ),
-	mapper( vtkFixedPointVolumeRayCastMapper::New() ),
-	colorFunction( vtkColorTransferFunction::New() ),
-	opacityFunction( vtkPiecewiseFunction::New() ),
-	imageData( vtkImageData::New() )
+namespace isis
 {
-	volume->SetMapper( mapper );
-	volume->SetProperty( property );
-	property->SetColor( colorFunction );
-	property->SetScalarOpacity( opacityFunction );
-}
-
-
-void VTKImageComponents::setVTKImageData ( vtkImageData* image )
+namespace viewer
 {
-	mapper->SetInput( image );
-	imageData = image;
+namespace widget
+{
+
+class OptionWidget : public QWidget
+{
+	Q_OBJECT
+public:
+	OptionWidget( QWidget *parent, QViewerCore *core );
+private:
+	Ui::vtkOptionWidget m_Interface;
+	QViewerCore *m_ViewerCore;
+};
+
+
 }
-	
+}
+} // end namespace
 
 
-}}} // end namespace
+#endif //VTK_OPTION_WIDGET_HPP

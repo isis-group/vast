@@ -77,7 +77,7 @@ void VTKImageWidgetImplementation::paintEvent ( QPaintEvent* event )
 																QColor( component.first->getImageProperties().colorMap[ci] ).greenF(),
 																QColor( component.first->getImageProperties().colorMap[ci] ).blueF() );
 		}
-		if( component.first->getImageProperties().imageType == ImageHolder::z_map ) {
+		if( component.first->getImageProperties().imageType == ImageHolder::statistical_image ) {
 			for( unsigned short ci =0 ; ci < 256; ci++ ) {
 				component.second.opacityFunction->AddPoint( ci, component.first->getImageProperties().alphaMap[ci] * component.first->getImageProperties().opacity * isVisible );
 			}
@@ -97,6 +97,7 @@ void VTKImageWidgetImplementation::wheelEvent ( QWheelEvent* e )
 
 void VTKImageWidgetImplementation::commonInit()
 {
+	m_OptionWidget = new OptionWidget( this, m_ViewerCore );
 	m_Layout->addWidget( this );
 	m_Layout->setMargin( 0 );
 	connect( m_ViewerCore, SIGNAL( emitUpdateScene( ) ), this, SLOT( updateScene( ) ) );

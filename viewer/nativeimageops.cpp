@@ -32,37 +32,37 @@ boost::shared_ptr< isis::viewer::QProgressFeedback > isis::viewer::operation::Na
 isis::util::ivector4 isis::viewer::operation::NativeImageOps::getGlobalMin( const boost::shared_ptr< isis::viewer::ImageHolder > image, const util::ivector4 &startPos, const unsigned short &radius )
 {
 	switch ( image->getISISImage()->getMajorTypeID() ) {
-	case data::ValuePtr<bool>::staticID:
+	case data::ValueArray<bool>::staticID:
 		return internGetMax<bool>( image, startPos, radius );
 		break;
-	case data::ValuePtr<int8_t>::staticID:
+	case data::ValueArray<int8_t>::staticID:
 		return internGetMin<int8_t>( image, startPos, radius );
 		break;
-	case data::ValuePtr<uint8_t>::staticID:
+	case data::ValueArray<uint8_t>::staticID:
 		return internGetMin<uint8_t>( image, startPos, radius );
 		break;
-	case data::ValuePtr<int16_t>::staticID:
+	case data::ValueArray<int16_t>::staticID:
 		return internGetMin<int16_t>( image, startPos, radius );
 		break;
-	case data::ValuePtr<uint16_t>::staticID:
+	case data::ValueArray<uint16_t>::staticID:
 		return internGetMin<uint16_t>( image, startPos, radius );
 		break;
-	case data::ValuePtr<int32_t>::staticID:
+	case data::ValueArray<int32_t>::staticID:
 		return internGetMin<int32_t>( image, startPos, radius );
 		break;
-	case data::ValuePtr<uint32_t>::staticID:
+	case data::ValueArray<uint32_t>::staticID:
 		return internGetMin<uint32_t>( image, startPos, radius );
 		break;
-	case data::ValuePtr<int64_t>::staticID:
+	case data::ValueArray<int64_t>::staticID:
 		return internGetMin<int64_t>( image, startPos, radius );
 		break;
-	case data::ValuePtr<uint64_t>::staticID:
+	case data::ValueArray<uint64_t>::staticID:
 		return internGetMin<uint64_t>( image, startPos, radius );
 		break;
-	case data::ValuePtr<float>::staticID:
+	case data::ValueArray<float>::staticID:
 		return internGetMin<float>( image, startPos, radius );
 		break;
-	case data::ValuePtr<double>::staticID:
+	case data::ValueArray<double>::staticID:
 		return internGetMin<double>( image, startPos, radius );
 		break;
 	default:
@@ -75,37 +75,37 @@ isis::util::ivector4 isis::viewer::operation::NativeImageOps::getGlobalMin( cons
 isis::util::ivector4 isis::viewer::operation::NativeImageOps::getGlobalMax( const boost::shared_ptr< isis::viewer::ImageHolder > image, const util::ivector4 &startPos, const unsigned short &radius )
 {
 	switch ( image->getISISImage()->getMajorTypeID() ) {
-	case data::ValuePtr<bool>::staticID:
+	case data::ValueArray<bool>::staticID:
 		return internGetMax<bool>( image, startPos, radius );
 		break;
-	case data::ValuePtr<int8_t>::staticID:
+	case data::ValueArray<int8_t>::staticID:
 		return internGetMax<int8_t>( image, startPos, radius );
 		break;
-	case data::ValuePtr<uint8_t>::staticID:
+	case data::ValueArray<uint8_t>::staticID:
 		return internGetMax<uint8_t>( image, startPos, radius );
 		break;
-	case data::ValuePtr<int16_t>::staticID:
+	case data::ValueArray<int16_t>::staticID:
 		return internGetMax<int16_t>( image, startPos, radius );
 		break;
-	case data::ValuePtr<uint16_t>::staticID:
+	case data::ValueArray<uint16_t>::staticID:
 		return internGetMax<uint16_t>( image, startPos, radius );
 		break;
-	case data::ValuePtr<int32_t>::staticID:
+	case data::ValueArray<int32_t>::staticID:
 		return internGetMax<int32_t>( image, startPos, radius );
 		break;
-	case data::ValuePtr<uint32_t>::staticID:
+	case data::ValueArray<uint32_t>::staticID:
 		return internGetMax<uint32_t>( image, startPos, radius );
 		break;
-	case data::ValuePtr<int64_t>::staticID:
+	case data::ValueArray<int64_t>::staticID:
 		return internGetMax<int64_t>( image, startPos, radius );
 		break;
-	case data::ValuePtr<uint64_t>::staticID:
+	case data::ValueArray<uint64_t>::staticID:
 		return internGetMax<uint64_t>( image, startPos, radius );
 		break;
-	case data::ValuePtr<float>::staticID:
+	case data::ValueArray<float>::staticID:
 		return internGetMax<float>( image, startPos, radius );
 		break;
-	case data::ValuePtr<double>::staticID:
+	case data::ValueArray<double>::staticID:
 		return internGetMax<double>( image, startPos, radius );
 		break;
 	default:

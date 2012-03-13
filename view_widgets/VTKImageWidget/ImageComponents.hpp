@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * Author: Erik Tuerke, tuerke@cbs.mpg.de, Samuel Eckermann, Hans-Christian Heinz
+ * Author: Erik Tuerke, tuerke@cbs.mpg.de
  *
  * ImageComponents.hpp
  *
@@ -35,18 +35,22 @@
 #include <vtkColorTransferFunction.h>
 #include <vtkVolume.h>
 
-namespace isis {
-namespace viewer {
-namespace widget {
+namespace isis
+{
+namespace viewer
+{
+namespace widget
+{
 
 
-class VTKImageComponents {
+class VTKImageComponents
+{
 public:
 	VTKImageComponents();
 
 
 	void setVTKImageData( vtkImageData *image );
-	vtkImageData* getVTKImageData() const { return imageData; }
+	vtkImageData *getVTKImageData() const { return imageData; }
 
 	vtkVolume *volume;
 	vtkVolumeProperty *property;
@@ -57,6 +61,8 @@ private:
 	vtkImageData *imageData;
 };
 
-}}} //end namespace
+}
+}
+} //end namespace
 
 #endif //IMAGE_COMPONENTS_HPP

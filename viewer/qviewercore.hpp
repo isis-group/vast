@@ -31,7 +31,7 @@
 
 #include "viewercorebase.hpp"
 #include "widgetinterface.h"
-#include "internal/fileinformation.hpp"
+#include "fileinformation.hpp"
 #include "qprogressfeedback.hpp"
 
 #include <QtGui>
@@ -57,8 +57,7 @@ public:
 
 	QViewerCore( const std::string &appName = std::string(), const std::string &orgName = std::string(), QWidget *parent = 0 );
 
-	virtual std::list<boost::shared_ptr<ImageHolder> > addImageList( const std::list< data::Image > imageList, const ImageHolder::ImageType &imageType );
-	virtual void setImageList( const std::list< data::Image > imageList, const ImageHolder::ImageType &imageType );
+	virtual ImageHolder::List addImageList( const std::list< data::Image > imageList, const ImageHolder::ImageType &imageType );
 
 	widget::WidgetInterface *getWidget( const std::string &identifier ) throw( std::runtime_error & );
 	const util::PropertyMap *getWidgetProperties( const std::string &identifier ) ;
@@ -69,8 +68,6 @@ public:
 	void addPlugin( boost::shared_ptr< plugin::PluginInterface > plugin );
 	void addPlugins( plugin::PluginLoader::PluginListType plugins );
 	plugin::PluginLoader::PluginListType getPlugins() const { return m_PluginList; }
-
-	virtual bool attachImageToWidget( boost::shared_ptr<ImageHolder> image, widget::WidgetInterface *widget );
 
 	void setParentWidget( QWidget *parent ) { m_Parent = parent; }
 
@@ -88,9 +85,8 @@ public:
 	std::list< qt4::QMessage> getMessageLog() const { return m_MessageLog; }
 	std::list< qt4::QMessage> getMessageLogDev() const { return m_DevMessageLog; }
 
-	isis::viewer::_internal::FileInformationMap &getRecentFiles() { return m_RecentFiles; }
-	isis::viewer::_internal::FileInformationMap &getFavFiles() { return m_FavFiles; }
-
+	isis::viewer::FileInformationMap &getRecentFiles() { return m_RecentFiles; }
+	isis::viewer::FileInformationMap &getFavFiles() { return m_FavFiles; }
 
 public Q_SLOTS:
 	virtual void settingsChanged();
@@ -105,7 +101,8 @@ public Q_SLOTS:
 	virtual void receiveMessage( qt4::QMessage  );
 	virtual void receiveMessage( std::string  );
 	virtual void receiveMessageDev( qt4::QMessage );
-	virtual void openPath( const _internal::FileInformation & );
+	virtual ImageHolder::List openFile( const FileInformation &fileInfo, bool show = true );
+	virtual void openFileList( const std::list< FileInformation > fileInfoList );
 	virtual void centerImages( bool ca = false );
 	virtual void closeImage( boost::shared_ptr<ImageHolder> image, bool refreshUI = true );
 	virtual void saveSettings();
@@ -136,8 +133,10 @@ private:
 	boost::shared_ptr< QProgressFeedback > m_ProgressFeedback;
 	UICore *m_UI;
 
-	_internal::FileInformationMap m_RecentFiles;
-	_internal::FileInformationMap m_FavFiles;
+	FileInformationMap m_RecentFiles;
+	FileInformationMap m_FavFiles;
+
+	std::list<FileInformation> m_OpenFileList;
 
 
 };

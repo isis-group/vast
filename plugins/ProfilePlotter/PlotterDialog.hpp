@@ -38,7 +38,7 @@
 #include "ui_plotting.h"
 #include <iostream>
 #include "qviewercore.hpp"
-#include "DataStorage/typeptr.hpp"
+#include "DataStorage/valuearray.hpp"
 
 namespace isis
 {

@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * Author: Erik Türke, tuerke@cbs.mpg.de
+ * Author: Erik Tuerke, tuerke@cbs.mpg.de
  *
  * imageholder.cpp
  *
@@ -43,20 +43,42 @@ ImageHolder::ImageHolder()
 boost::shared_ptr< const void > ImageHolder::getRawAdress ( size_t timestep ) const
 {
 	if( getImageProperties().isRGB ) {
-		return m_ChunkVector.operator[](timestep).getValuePtr<InternalImageColorType>().getRawAddress();
+		return m_ChunkVector.operator[](timestep).getValueArray<InternalImageColorType>().getRawAddress();
 	} else {
-		return m_ChunkVector.operator[](timestep).getValuePtr<InternalImageType>().getRawAddress();
+		return m_ChunkVector.operator[](timestep).getValueArray<InternalImageType>().getRawAddress();
 	}
 }
 
-
-boost::numeric::ublas::matrix< double > ImageHolder::getNormalizedImageOrientation( bool transposed )
+boost::numeric::ublas::matrix< double > ImageHolder::calculateImageOrientation( bool transposed ) const
 {
 	boost::numeric::ublas::matrix<double> retMatrix = boost::numeric::ublas::zero_matrix<double>( 4, 4 );
 	retMatrix( 3, 3 ) = 1;
-	const util::fvector4 &rowVec = m_Image->propertyValue( "rowVec" )->castTo<util::fvector4>();
-	const util::fvector4 &columnVec = m_Image->propertyValue( "columnVec" )->castTo<util::fvector4>();
-	const util::fvector4 &sliceVec = m_Image->propertyValue( "sliceVec" )->castTo<util::fvector4>();
+	const util::fvector4 &rowVec = m_Image->getPropertyAs<util::fvector4>("rowVec");
+	const util::fvector4 &columnVec = m_Image->getPropertyAs<util::fvector4>("columnVec");
+	const util::fvector4 &sliceVec =m_Image->getPropertyAs<util::fvector4>("sliceVec");
+
+	for ( uint16_t i = 0; i < 3; i++ ) {
+		if( !transposed ) {
+			retMatrix( i, 0 ) = rowVec[i];
+			retMatrix( i, 1 ) = columnVec[i];
+			retMatrix( i, 2 ) = sliceVec[i];
+		} else {
+			retMatrix( 0, i ) = rowVec[i];
+			retMatrix( 1, i ) = columnVec[i];
+			retMatrix( 2, i ) = sliceVec[i];
+		}
+	}
+
+	return retMatrix;
+}
+
+boost::numeric::ublas::matrix< double > ImageHolder::calculateLatchedImageOrientation( bool transposed )
+{
+	boost::numeric::ublas::matrix<double> retMatrix = boost::numeric::ublas::zero_matrix<double>( 4, 4 );
+	retMatrix( 3, 3 ) = 1;
+	const util::fvector4 &rowVec = m_Image->getPropertyAs<util::fvector4>("rowVec");
+	const util::fvector4 &columnVec = m_Image->getPropertyAs<util::fvector4>("columnVec");
+	const util::fvector4 &sliceVec =m_Image->getPropertyAs<util::fvector4>("sliceVec");
 
 	size_t rB = rowVec.getBiggestVecElemAbs();
 	size_t cB = columnVec.getBiggestVecElemAbs();
@@ -140,75 +162,53 @@ void ImageHolder::collectImageInfo()
 {
 		getImageProperties().minMax = getISISImage()->getMinMax();
 		getImageProperties().majorTypeID = getMajorTypeID();
-		getImageProperties().isRGB = (data::ValuePtr<util::color24>::staticID == getImageProperties().majorTypeID || data::ValuePtr<util::color48>::staticID == getImageProperties().majorTypeID);
+		getImageProperties().isRGB = (data::ValueArray<util::color24>::staticID == getImageProperties().majorTypeID || data::ValueArray<util::color48>::staticID == getImageProperties().majorTypeID);
 		getImageProperties().majorTypeName = isis::util::getTypeMap(false, true).at( getImageProperties().majorTypeID );
 		getImageProperties().majorTypeName = getImageProperties().majorTypeName.substr( 0, getImageProperties().majorTypeName.length() - 1 ).c_str();
 
 		switch( getImageProperties().majorTypeID ) {
-		case data::ValuePtr<bool>::staticID:
+		case data::ValueArray<bool>::staticID:
 			m_TypedImage.reset( new data::Image( data::TypedImage<bool>( *m_Image ) ) );
 			break;
-		case data::ValuePtr<uint8_t>::staticID:
+		case data::ValueArray<uint8_t>::staticID:
 			m_TypedImage.reset( new data::Image( data::TypedImage<uint8_t>( *m_Image ) ) );
 			break;
-		case data::ValuePtr<int8_t>::staticID:
+		case data::ValueArray<int8_t>::staticID:
 			m_TypedImage.reset( new data::Image( data::TypedImage<int8_t>( *m_Image ) ) );
 			break;
-		case data::ValuePtr<uint16_t>::staticID:
+		case data::ValueArray<uint16_t>::staticID:
 			m_TypedImage.reset( new data::Image( data::TypedImage<uint16_t>( *m_Image ) ) );
 			break;
-		case data::ValuePtr<int16_t>::staticID:
+		case data::ValueArray<int16_t>::staticID:
 			m_TypedImage.reset( new data::Image( data::TypedImage<int16_t>( *m_Image ) ) );
 			break;
-		case data::ValuePtr<uint32_t>::staticID:
+		case data::ValueArray<uint32_t>::staticID:
 			m_TypedImage.reset( new data::Image( data::TypedImage<uint32_t>( *m_Image ) ) );
 			break;
-		case data::ValuePtr<int32_t>::staticID:
+		case data::ValueArray<int32_t>::staticID:
 			m_TypedImage.reset( new data::Image( data::TypedImage<int32_t>( *m_Image ) ) );
 			break;
-		case data::ValuePtr<uint64_t>::staticID:
+		case data::ValueArray<uint64_t>::staticID:
 			m_TypedImage.reset( new data::Image( data::TypedImage<uint64_t>( *m_Image ) ) );
 			break;
-		case data::ValuePtr<int64_t>::staticID:
+		case data::ValueArray<int64_t>::staticID:
 			m_TypedImage.reset( new data::Image( data::TypedImage<int64_t>( *m_Image ) ) );
 			break;
-		case data::ValuePtr<float>::staticID:
+		case data::ValueArray<float>::staticID:
 			m_TypedImage.reset( new data::Image( data::TypedImage<float>( *m_Image ) ) );
 			break;
-		case data::ValuePtr<double>::staticID:
+		case data::ValueArray<double>::staticID:
 			m_TypedImage.reset( new data::Image( data::TypedImage<double>( *m_Image ) ) );
 			break;
-		case data::ValuePtr<util::color24>::staticID:
+		case data::ValueArray<util::color24>::staticID:
 			m_TypedImage.reset( new data::Image( data::TypedImage<util::color24>( *m_Image ) ) );
 			break;
-		case data::ValuePtr<util::color48>::staticID:
+		case data::ValueArray<util::color48>::staticID:
 			m_TypedImage.reset( new data::Image( data::TypedImage<util::color48>( *m_Image ) ) );
 			break;
 	}
 }
 
-boost::numeric::ublas::matrix< double > ImageHolder::getImageOrientation( bool transposed ) const
-{
-	boost::numeric::ublas::matrix<double> retMatrix = boost::numeric::ublas::zero_matrix<double>( 4, 4 );
-	retMatrix( 3, 3 ) = 1;
-	const util::fvector4 &rowVec = m_Image->propertyValue( "rowVec" )->castTo<util::fvector4>();
-	const util::fvector4 &columnVec = m_Image->propertyValue( "columnVec" )->castTo<util::fvector4>();
-	const util::fvector4 &sliceVec = m_Image->propertyValue( "sliceVec" )->castTo<util::fvector4>();
-
-	for ( uint16_t i = 0; i < 3; i++ ) {
-		if( !transposed ) {
-			retMatrix( i, 0 ) = rowVec[i];
-			retMatrix( i, 1 ) = columnVec[i];
-			retMatrix( i, 2 ) = sliceVec[i];
-		} else {
-			retMatrix( 0, i ) = rowVec[i];
-			retMatrix( 1, i ) = columnVec[i];
-			retMatrix( 2, i ) = sliceVec[i];
-		}
-	}
-
-	return retMatrix;
-}
 
 boost::shared_ptr< data::Image > ImageHolder::getISISImage ( bool typed ) const
 {
@@ -258,7 +258,7 @@ bool ImageHolder::setImage( const data::Image &image, const ImageType &_imageTyp
 	LOG( Dev, verbose_info )  << "Fetched image of size " << m_ImageSize << " and type "
 								<< image.getMajorTypeName() << ".";
 	//copy the image into continuous memory space and assure consistent data type
-	m_ZeroIsReserved  = !getImageProperties().isRGB && getImageProperties().imageType == z_map;
+	m_ZeroIsReserved  = !getImageProperties().isRGB && getImageProperties().imageType == statistical_image;
 	synchronize(m_ZeroIsReserved);
 	
 	LOG_IF( m_ChunkVector.empty(), Dev, error ) << "Size of chunk vector is 0!";
@@ -275,7 +275,7 @@ bool ImageHolder::setImage( const data::Image &image, const ImageType &_imageTyp
 
 
 
-	if( getImageProperties().imageType == z_map ) {
+	if( getImageProperties().imageType == statistical_image ) {
 		getImageProperties().lowerThreshold = 0;
 		getImageProperties().upperThreshold = 0;
 		getImageProperties().lut = std::string( "standard_zmap" );
@@ -376,8 +376,8 @@ void ImageHolder::updateHistogram()
 void ImageHolder::updateOrientation()
 {
 	m_Image->updateOrientationMatrices();
-	getImageProperties().latchedOrientation = getNormalizedImageOrientation();
-	getImageProperties().orientation = getImageOrientation();
+	getImageProperties().latchedOrientation = calculateLatchedImageOrientation();
+	getImageProperties().orientation = calculateImageOrientation();
 	getImageProperties().indexOrigin = getISISImage()->getPropertyAs<util::fvector4>("indexOrigin");
 	getImageProperties().rowVec = getISISImage()->getPropertyAs<util::fvector4>("rowVec");
 	getImageProperties().columnVec = getISISImage()->getPropertyAs<util::fvector4>("columnVec");
@@ -436,37 +436,37 @@ void ImageHolder::setVoxel ( const size_t& first, const size_t& second, const si
 		= getImageProperties().scalingToInternalType.second->as<double>() + value * getImageProperties().scalingToInternalType.first->as<double>();
 	if( sync ) {
 		switch( chunk.getTypeID() ) {
-			case data::ValuePtr<bool>::staticID:
+			case data::ValueArray<bool>::staticID:
 				chunk.voxel<bool>(first, second, third, fourth) = static_cast<bool>( value );
 				break;
-			case data::ValuePtr<uint8_t>::staticID:
+			case data::ValueArray<uint8_t>::staticID:
 				chunk.voxel<uint8_t>(first, second, third, fourth) = static_cast<uint8_t>( value );
 				break;
-			case data::ValuePtr<int8_t>::staticID:
+			case data::ValueArray<int8_t>::staticID:
 				chunk.voxel<int8_t>(first, second, third, fourth) = static_cast<int8_t>( value );
 				break;
-			case data::ValuePtr<uint16_t>::staticID:
+			case data::ValueArray<uint16_t>::staticID:
 				chunk.voxel<uint16_t>(first, second, third, fourth) = static_cast<uint16_t>( value );
 				break;
-			case data::ValuePtr<int16_t>::staticID:
+			case data::ValueArray<int16_t>::staticID:
 				chunk.voxel<int16_t>(first, second, third, fourth) = static_cast<int16_t>( value );
 				break;
-			case data::ValuePtr<uint32_t>::staticID:
+			case data::ValueArray<uint32_t>::staticID:
 				chunk.voxel<uint32_t>(first, second, third, fourth) = static_cast<uint32_t>( value );
 				break;
-			case data::ValuePtr<int32_t>::staticID:
+			case data::ValueArray<int32_t>::staticID:
 				chunk.voxel<int32_t>(first, second, third, fourth) = static_cast<int32_t>( value );
 				break;
-			case data::ValuePtr<uint64_t>::staticID:
+			case data::ValueArray<uint64_t>::staticID:
 				chunk.voxel<uint64_t>(first, second, third, fourth) = static_cast<uint64_t>( value );
 				break;
-			case data::ValuePtr<int64_t>::staticID:
+			case data::ValueArray<int64_t>::staticID:
 				chunk.voxel<int64_t>(first, second, third, fourth) = static_cast<int64_t>( value );
 				break;
-			case data::ValuePtr<float>::staticID:
+			case data::ValueArray<float>::staticID:
 				chunk.voxel<float>(first, second, third, fourth) = static_cast<float>( value );
 				break;
-			case data::ValuePtr<double>::staticID:
+			case data::ValueArray<double>::staticID:
 				chunk.voxel<double>(first, second, third, fourth) = static_cast<double>( value );
 				break;
 			default:
@@ -487,37 +487,37 @@ void ImageHolder::synchronize ( bool isReserved )
 
 	if( m_ZeroIsReserved ) {
 		switch ( getImageProperties().majorTypeID ) {
-		case data::ValuePtr<bool>::staticID:
+		case data::ValueArray<bool>::staticID:
 			_setTrueZero<bool>( *getISISImage() );
 			break;
-		case data::ValuePtr<int8_t>::staticID:
+		case data::ValueArray<int8_t>::staticID:
 			_setTrueZero<int8_t>( *getISISImage() );
 			break;
-		case data::ValuePtr<uint8_t>::staticID:
+		case data::ValueArray<uint8_t>::staticID:
 			_setTrueZero<uint8_t>( *getISISImage() );
 			break;
-		case data::ValuePtr<int16_t>::staticID:
+		case data::ValueArray<int16_t>::staticID:
 			_setTrueZero<int16_t>( *getISISImage() );
 			break;
-		case data::ValuePtr<uint16_t>::staticID:
+		case data::ValueArray<uint16_t>::staticID:
 			_setTrueZero<uint16_t>( *getISISImage() );
 			break;
-		case data::ValuePtr<int32_t>::staticID:
+		case data::ValueArray<int32_t>::staticID:
 			_setTrueZero<int32_t>( *getISISImage() );
 			break;
-		case data::ValuePtr<uint32_t>::staticID:
+		case data::ValueArray<uint32_t>::staticID:
 			_setTrueZero<uint32_t>( *getISISImage() );
 			break;
-		case data::ValuePtr<int64_t>::staticID:
+		case data::ValueArray<int64_t>::staticID:
 			_setTrueZero<int64_t>( *getISISImage() );
 			break;
-		case data::ValuePtr<uint64_t>::staticID:
+		case data::ValueArray<uint64_t>::staticID:
 			_setTrueZero<uint64_t>( *getISISImage() );
 			break;
-		case data::ValuePtr<float>::staticID:
+		case data::ValueArray<float>::staticID:
 			_setTrueZero<float>( *getISISImage() );
 			break;
-		case data::ValuePtr<double>::staticID:
+		case data::ValueArray<double>::staticID:
 			_setTrueZero<double>( *getISISImage() );
 			break;
 		}

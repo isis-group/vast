@@ -110,10 +110,10 @@ void ImageStackWidget::toggleStatsType()
 	m_Interface.actionStructural_image->setChecked( false );
 	m_Interface.actionImage_type_stats->setChecked( true );
 	boost::shared_ptr< ImageHolder> image = m_ViewerCore->getDataContainer().at( m_ImageStack->currentItem()->text().toStdString() );
-	image->getImageProperties().imageType = ImageHolder::z_map;
+	image->getImageProperties().imageType = ImageHolder::statistical_image;
 	image->getImageProperties().lut = m_ViewerCore->getOptionMap()->getPropertyAs<std::string>("LutZMap");
 	image->updateColorMap();
-	m_ViewerCore->setMode( ViewerCoreBase::zmap );
+	m_ViewerCore->setMode( ViewerCoreBase::statistical_mode );
 	m_ViewerCore->getUICore()->refreshUI();
 	m_ViewerCore->updateScene();
 }
@@ -126,7 +126,7 @@ void ImageStackWidget::toggleStructsType()
 	image->getImageProperties().imageType = ImageHolder::structural_image;
 	image->getImageProperties().lut = m_ViewerCore->getOptionMap()->getPropertyAs<std::string>("lutStructural");
 	image->updateColorMap();
-	m_ViewerCore->setMode( ViewerCoreBase::standard );
+	m_ViewerCore->setMode( ViewerCoreBase::default_mode );
 	m_ViewerCore->getUICore()->refreshUI();
 	m_ViewerCore->updateScene();
 }
@@ -139,7 +139,7 @@ void ImageStackWidget::synchronize()
 	m_Interface.frame->setMinimumHeight( m_ViewerCore->getOptionMap()->getPropertyAs<uint16_t>( "minOptionWidgetHeight" ) );
 	m_ImageStack->clear();
 	BOOST_FOREACH( DataContainer::const_reference imageRef, m_ViewerCore->getDataContainer() ) {
-		if( !( m_ViewerCore->getMode() == ViewerCoreBase::zmap && imageRef.second->getImageProperties().imageType == ImageHolder::structural_image ) ) {
+		if( !( m_ViewerCore->getMode() == ViewerCoreBase::statistical_mode && imageRef.second->getImageProperties().imageType == ImageHolder::structural_image ) ) {
 			QListWidgetItem *item = new QListWidgetItem;
 			QString sD = imageRef.second->getPropMap().getPropertyAs<std::string>( "sequenceDescription" ).c_str();
 			item->setText( QString( imageRef.second->getFileNames().front().c_str() ) );
@@ -164,7 +164,7 @@ void ImageStackWidget::itemClicked ( QListWidgetItem* item)
 {
 	if( m_ViewerCore->hasImage() ) {
 		boost::shared_ptr< ImageHolder > image = m_ViewerCore->getDataContainer().at( item->text().toStdString() );
-		if( image->getImageProperties().imageType == ImageHolder::z_map ) {
+		if( image->getImageProperties().imageType == ImageHolder::statistical_image ) {
 			m_Interface.actionImage_type_stats->setChecked(true);
 			m_Interface.actionStructural_image->setChecked(false);
 		} else {
