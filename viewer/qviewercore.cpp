@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * Author: Erik Türke, tuerke@cbs.mpg.de
+ * Author: Erik Tuerke, tuerke@cbs.mpg.de
  *
  * qviewercore.cpp
  *
@@ -434,10 +434,30 @@ void QViewerCore::openFileList(const std::list< FileInformation > fileInfoList)
 	if( getMode() == statistical_mode ) {
 		if (statisticalImageList.size() ) {
 			widgetList = getUICore()->createViewWidgetEnsembleList( fileInfoList.front().getWidgetIdentifier(), statisticalImageList, true);
-			
+			if ( structuralImageList.size() ) {
+				ImageHolder::List::iterator iIter = structuralImageList.begin();
+				unsigned short structuralIndex = 0;
+				for( WidgetEnsemble::List::const_iterator wIter = widgetList.begin(); wIter != widgetList.end(); wIter++, structuralIndex )
+				{
+					getUICore()->attachImageToEnsemble( *iIter, *wIter );
+					if( ++structuralIndex < structuralImageList.size() ) {
+						iIter++;
+					}
+				}
+			}
 		} else if ( structuralImageList.size() ) {
-
+			BOOST_FOREACH( ImageHolder::List::const_reference image, structuralImageList ) {
+				getUICore()->createViewWidgetEnsemble( fileInfoList.front().getWidgetIdentifier(), image, true );
+			}
 		}
+	} else {
+		if ( widgetList.size() && !fileInfoList.front().isNewEnsemble() ) {
+			BOOST_FOREACH( ImageHolder::List::const_reference image, structuralImageList ) {
+				getUICore()->attachImageToEnsemble( image, getUICore()->getCurrentEnsemble() );
+			}
+		} else {
+			getUICore()->createViewWidgetEnsembleList( fileInfoList.front().getWidgetIdentifier(), structuralImageList, true );
+		} 
 	}
 }
 

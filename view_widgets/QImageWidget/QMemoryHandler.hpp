@@ -51,7 +51,6 @@ public:
 
 		for ( int32_t y = 0; y < mappedSize[1]; y++ ) {
 #pragma omp parallel for
-
 			for ( int32_t x = 0; x < mappedSize[0]; x++ ) {
 				const util::ivector4 coords( x, y, mappedCoords[2] );
 				static_cast<data::Chunk &>( sliceChunk ).voxel<TYPE>( coords[0], coords[1] ) = chunk.voxel<TYPE>( coords[mapping[0]], coords[mapping[1]], coords[mapping[2]] );

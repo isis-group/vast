@@ -228,12 +228,12 @@ private:
 		// first make shure the images datatype is consistent
 		data::TypedImage<TYPE> tImage ( image );
 
-		//      now set all voxels to the m_ReservedValue that are 0 in the origin image
+		//now set all voxels to the m_ReservedValue that are 0 in the origin image
+
 		for( size_t t = 0; t < getImageSize()[3]; t++ ) {
 			for( size_t z = 0; z < getImageSize()[2]; z++ ) {
 				for( size_t y = 0; y < getImageSize()[1]; y++ ) {
 #pragma omp parallel for
-
 					for( size_t x = 0; x < getImageSize()[0]; x++ ) {
 						if( static_cast<data::Image &>( tImage ).voxel<TYPE>( x, y, z, t ) == static_cast<TYPE>( 0 ) ) {
 							m_ChunkVector[t].voxel<InternalImageType>( x, y, z ) = m_ReservedValue;

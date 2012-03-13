@@ -338,21 +338,7 @@ void QImageWidgetImplementation::mousePressEvent( QMouseEvent *e )
 				m_ViewerCore->setCurrentImage( image );
 			}
 		}
-	} else {
-		//if one clicks on the image widget only change current image if it is not in this widget
-		bool currentIsInside = false;
-		BOOST_FOREACH( ImageVectorType::const_reference image, m_ImageVector )
-		{
-			if ( image.get() == m_ViewerCore->getCurrentImage().get() ) {
-				currentIsInside = true;
-				continue;
-			}
-		}
-		if( !currentIsInside ) {
-			m_ViewerCore->setCurrentImage( m_ImageVector.front() );
-		}
 	}
-	m_ViewerCore->getUICore()->refreshUI();
 	setFocus();
 	emitMousePressEvent( e );
 }

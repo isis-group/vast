@@ -91,7 +91,7 @@ void UICore::showMainWindow()
 }
 
 
-void UICore::attachImageToEnsemble ( boost::shared_ptr< ImageHolder > image, WidgetEnsemble ensemble )
+void UICore::attachImageToEnsemble ( ImageHolder::Pointer image, WidgetEnsemble ensemble )
 {
 	BOOST_FOREACH( WidgetEnsemble::reference ensembleComponent, ensemble ) {
 		attachImageToWidget( image, ensembleComponent.getWidgetInterface() );
@@ -307,7 +307,6 @@ void UICore::refreshUI( bool complete )
 		m_ImageStackWidget->setVisible( m_ViewerCore->hasImage() );
 		m_SliderWidget->setVisible( m_ViewerCore->hasImage() );
 	}
-
 }
 
 WidgetEnsemble UICore::getCurrentEnsemble() const
