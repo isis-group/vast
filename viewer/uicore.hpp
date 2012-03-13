@@ -68,11 +68,11 @@ public:
 	virtual WidgetEnsemble createViewWidgetEnsemble( const std::string &widgetType, ImageHolder::Pointer image, bool show = true );
 	virtual WidgetEnsemble createViewWidgetEnsemble( const std::string &widgetType, ImageHolder::List imageList, bool show = true );
 	virtual WidgetEnsemble::List createViewWidgetEnsembleList( const std::string &widgetType, ImageHolder::List imageList, bool show = true );
-	
+
 	virtual void attachWidgetEnsemble( WidgetEnsemble ensemble );
 
 	virtual bool attachImageToWidget( ImageHolder::Pointer image, widget::WidgetInterface *widget );
-	virtual void attachImageToEnsemble(	ImageHolder::Pointer image, WidgetEnsemble ensemble );
+	virtual void attachImageToEnsemble( ImageHolder::Pointer image, WidgetEnsemble ensemble );
 	virtual void attachImageListToEnsemble( ImageHolder::List imageList, WidgetEnsemble ensemble );
 
 	virtual ~UICore() {}

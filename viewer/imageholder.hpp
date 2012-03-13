@@ -95,7 +95,7 @@ private:
 public:
 	typedef boost::shared_ptr< ImageHolder > Pointer;
 	typedef std::list< Pointer > List;
-	
+
 	ImageHolder();
 
 	bool setImage( const data::Image &image, const ImageType &imageType, const std::string &filename = "" );
@@ -234,6 +234,7 @@ private:
 			for( size_t z = 0; z < getImageSize()[2]; z++ ) {
 				for( size_t y = 0; y < getImageSize()[1]; y++ ) {
 #pragma omp parallel for
+
 					for( size_t x = 0; x < getImageSize()[0]; x++ ) {
 						if( static_cast<data::Image &>( tImage ).voxel<TYPE>( x, y, z, t ) == static_cast<TYPE>( 0 ) ) {
 							m_ChunkVector[t].voxel<InternalImageType>( x, y, z ) = m_ReservedValue;

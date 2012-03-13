@@ -141,31 +141,32 @@ int main( int argc, char *argv[] )
 		zmapFileList = app.parameters["stats"];
 	}
 
-// 	util::PropertyMap openProperties;
-// 	openProperties.setPropertyAs<bool>("eachStatisticalImageInNewEnsemble", app.parameters["split"] );
+	//  util::PropertyMap openProperties;
+	//  openProperties.setPropertyAs<bool>("eachStatisticalImageInNewEnsemble", app.parameters["split"] );
 	if( zmapIsSet ) {
 		core->setMode( ViewerCoreBase::statistical_mode );
-		
+
 	}  else {
 		core->setMode( ViewerCoreBase::default_mode );
 	}
+
 	std::list<FileInformation> fileInfoList;
-	
+
 	BOOST_FOREACH( util::slist::const_reference file, fileList ) {
 		fileInfoList.push_back( FileInformation( file,
-							 app.parameters["rdialect"].as<std::string>().c_str(),
-							 app.parameters["rf"].as<std::string>().c_str(),
-							 widget_name,
-							 ImageHolder::structural_image,
-							 app.parameters["split"] ) );
+								app.parameters["rdialect"].as<std::string>().c_str(),
+								app.parameters["rf"].as<std::string>().c_str(),
+								widget_name,
+								ImageHolder::structural_image,
+								app.parameters["split"] ) );
 	}
 	BOOST_FOREACH( util::slist::const_reference file, zmapFileList ) {
 		fileInfoList.push_back( FileInformation( file,
-							 app.parameters["rdialect"].as<std::string>().c_str(),
-							 app.parameters["rf"].as<std::string>().c_str(),
-							 widget_name,
-							 ImageHolder::statistical_image,
-							 app.parameters["split"] ) );
+								app.parameters["rdialect"].as<std::string>().c_str(),
+								app.parameters["rf"].as<std::string>().c_str(),
+								widget_name,
+								ImageHolder::statistical_image,
+								app.parameters["split"] ) );
 	}
 
 	core->openFileList( fileInfoList );
