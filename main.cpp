@@ -141,8 +141,6 @@ int main( int argc, char *argv[] )
 		zmapFileList = app.parameters["stats"];
 	}
 
-	//  util::PropertyMap openProperties;
-	//  openProperties.setPropertyAs<bool>("eachStatisticalImageInNewEnsemble", app.parameters["split"] );
 	if( zmapIsSet ) {
 		core->setMode( ViewerCoreBase::statistical_mode );
 
