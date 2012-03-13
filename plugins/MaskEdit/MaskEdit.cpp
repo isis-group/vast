@@ -113,37 +113,37 @@ void MaskEditDialog::physicalCoordChanged( util::fvector4 physCoord )
 		if( m_CurrentMask ) {
 			switch( m_CurrentMask->getImageProperties().majorTypeID ) {
 			case isis::data::ValueArray<bool>::staticID:
-				manipulateVoxel<bool>( physCoord, std::numeric_limits<bool>::max(), m_CurrentMask );
+				manipulateVoxel<bool>( physCoord, m_CurrentMask );
 				break;
 			case isis::data::ValueArray<int8_t>::staticID:
-				manipulateVoxel<int8_t>( physCoord, std::numeric_limits<int8_t>::max(), m_CurrentMask );
+				manipulateVoxel<int8_t>( physCoord, m_CurrentMask );
 				break;
 			case isis::data::ValueArray<uint8_t>::staticID:
-				manipulateVoxel<uint8_t>( physCoord, std::numeric_limits<uint8_t>::max(), m_CurrentMask );
+				manipulateVoxel<uint8_t>( physCoord, m_CurrentMask );
 				break;
 			case isis::data::ValueArray<int16_t>::staticID:
-				manipulateVoxel<int16_t>( physCoord, std::numeric_limits<int16_t>::max(), m_CurrentMask );
+				manipulateVoxel<int16_t>( physCoord, m_CurrentMask );
 				break;
 			case isis::data::ValueArray<uint16_t>::staticID:
-				manipulateVoxel<uint16_t>( physCoord, std::numeric_limits<uint16_t>::max(), m_CurrentMask );
+				manipulateVoxel<uint16_t>( physCoord, m_CurrentMask );
 				break;
 			case isis::data::ValueArray<int32_t>::staticID:
-				manipulateVoxel<int32_t>( physCoord, std::numeric_limits<int32_t>::max(), m_CurrentMask );
+				manipulateVoxel<int32_t>( physCoord, m_CurrentMask );
 				break;
 			case isis::data::ValueArray<uint32_t>::staticID:
-				manipulateVoxel<uint32_t>( physCoord, std::numeric_limits<uint32_t>::max(), m_CurrentMask );
+				manipulateVoxel<uint32_t>( physCoord, m_CurrentMask );
 				break;
 			case isis::data::ValueArray<int64_t>::staticID:
-				manipulateVoxel<int64_t>( physCoord, std::numeric_limits<int64_t>::max(), m_CurrentMask );
+				manipulateVoxel<int64_t>( physCoord, m_CurrentMask );
 				break;
 			case isis::data::ValueArray<uint64_t>::staticID:
-				manipulateVoxel<uint64_t>( physCoord, std::numeric_limits<uint64_t>::max(), m_CurrentMask );
+				manipulateVoxel<uint64_t>( physCoord, m_CurrentMask );
 				break;
 			case isis::data::ValueArray<double>::staticID:
-				manipulateVoxel<double>( physCoord, std::numeric_limits<double>::max(), m_CurrentMask );
+				manipulateVoxel<double>( physCoord, m_CurrentMask );
 				break;
 			case isis::data::ValueArray<float>::staticID:
-				manipulateVoxel<float>( physCoord, std::numeric_limits<float>::max(), m_CurrentMask );
+				manipulateVoxel<float>( physCoord, m_CurrentMask );
 				break;
 			default:
 				LOG( Runtime, error ) << "Unknown type ID " << m_CurrentMask->getImageProperties().majorTypeID << " when trying to paint mask";
@@ -167,14 +167,14 @@ void MaskEditDialog::editCurrentImage()
 		BOOST_FOREACH( WidgetEnsemble::List::reference ensemble, m_ViewerCore->getUICore()->getEnsembleList() ) {
 			widget::WidgetInterface::ImageVectorType iVector;
 
-			for( unsigned short i = 0; i < 3; i++ ) {
-				iVector = ensemble[i].getWidgetInterface()->getImageVector();
+			BOOST_FOREACH( WidgetEnsemble::reference ensembleComponent, ensemble ) {
+				iVector =ensembleComponent.getWidgetInterface()->getImageVector();
 
 				if( std::find( iVector.begin(), iVector.end(), m_CurrentMask ) != iVector.end() ) {
 					m_CurrentWidgetEnsemble = ensemble;
-					m_ViewerCore->getUICore()->attachImageToWidget( m_CurrentMask, ensemble[i].getWidgetInterface() ) ;
-					ensemble[i].getWidgetInterface()->setMouseCursorIcon( QIcon( ":/common/paintCrosshair.png" ) );
-					ensemble[i].getWidgetInterface()->setEnableCrosshair( false );
+					m_ViewerCore->getUICore()->attachImageToWidget( m_CurrentMask, ensembleComponent.getWidgetInterface() ) ;
+					ensembleComponent.getWidgetInterface()->setMouseCursorIcon( QIcon( ":/common/paintCrosshair.png" ) );
+					ensembleComponent.getWidgetInterface()->setEnableCrosshair( false );
 
 				}
 			}
