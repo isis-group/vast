@@ -125,7 +125,7 @@ void CreateMaskDialog::createMask()
 		m_MaskEditDialog->m_CurrentMask->getImageProperties().lut = "maskeditLUT";
 		m_MaskEditDialog->m_CurrentMask->updateColorMap();
 		m_MaskEditDialog->m_CurrentMask->updateOrientation();
-		BOOST_FOREACH( WidgetEnsembleListType::reference ensemble, m_MaskEditDialog->m_ViewerCore->getUICore()->getEnsembleList() ) {
+		BOOST_FOREACH( WidgetEnsemble::List::reference ensemble, m_MaskEditDialog->m_ViewerCore->getUICore()->getEnsembleList() ) {
 			widget::WidgetInterface::ImageVectorType iVector;
 
 			for( unsigned short i = 0; i < 3; i++ ) {

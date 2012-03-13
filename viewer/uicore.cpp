@@ -181,9 +181,9 @@ WidgetEnsemble UICore::createViewWidgetEnsemble ( const std::string& widgetType,
 	return ensemble;
 }
 
-WidgetEnsembleListType UICore::createViewWidgetEnsembleList(const std::string& widgetType, ImageHolder::List imageList, bool show)
+WidgetEnsemble::List UICore::createViewWidgetEnsembleList(const std::string& widgetType, ImageHolder::List imageList, bool show)
 {
-	WidgetEnsembleListType retWidgetEnsembleList;
+	WidgetEnsemble::List retWidgetEnsembleList;
 	BOOST_FOREACH( ImageHolder::List::const_reference image, imageList ) {
 		WidgetEnsemble ensemble = createViewWidgetEnsemble( widgetType, show );
 		attachImageToEnsemble( image, ensemble );
@@ -209,7 +209,7 @@ void UICore::attachWidgetEnsemble( WidgetEnsemble ensemble )
 
 void UICore::removeAllWidgetEnsembles()
 {
-	BOOST_FOREACH( WidgetEnsembleListType::reference ensemble, m_EnsembleList ) {
+	BOOST_FOREACH( WidgetEnsemble::List::reference ensemble, m_EnsembleList ) {
 		removeWidgetEnsemble( ensemble );
 	}
 	m_EnsembleList.clear();
@@ -250,7 +250,7 @@ void UICore::refreshUI( bool complete )
 		m_ImageStackWidget->synchronize();
 		m_VoxelInformationWidget->synchronize();
 	}
-	BOOST_FOREACH( WidgetEnsembleListType::reference ensemble, getEnsembleList() ) {
+	BOOST_FOREACH( WidgetEnsemble::List::reference ensemble, getEnsembleList() ) {
 		widget::WidgetInterface::ImageVectorType iVector = ensemble.front().getWidgetInterface()->getImageVector();
 
 		if( !iVector.size() ) {
@@ -313,7 +313,7 @@ void UICore::refreshUI( bool complete )
 WidgetEnsemble UICore::getCurrentEnsemble() const
 {
 	if( getEnsembleList().size() ) {
-		BOOST_FOREACH( WidgetEnsembleListType::const_reference ensemble, getEnsembleList() ) {
+		BOOST_FOREACH( WidgetEnsemble::List::const_reference ensemble, getEnsembleList() ) {
 			if( ensemble.front().hasCurrentImage() ) {
 				return ensemble;
 			}
@@ -346,13 +346,13 @@ void UICore::showInformationAreas( bool show )
 QImage UICore::getScreenshot()
 {
 	if( m_ViewerCore->hasImage() ) {
-		WidgetEnsembleListType ensembleList = getEnsembleList();
+		WidgetEnsemble::List ensembleList = getEnsembleList();
 		//preparation
-		BOOST_FOREACH( WidgetEnsembleListType::reference ensemble, ensembleList ) {
-			for( unsigned short i = 0; i < 3; i++ ) {
-				ensemble[i].getFrame()->setFrameStyle( 0 );
-				ensemble[i].getFrame()->setAutoFillBackground( false );
-				ensemble[i].getWidgetInterface()->setCrossHairWidth( 2 );
+		BOOST_FOREACH( WidgetEnsemble::List::reference ensemble, ensembleList ) {
+			BOOST_FOREACH( WidgetEnsemble::reference ensembleComponent, ensemble ) {
+				ensembleComponent.getFrame()->setFrameStyle( 0 );
+				ensembleComponent.getFrame()->setAutoFillBackground( false );
+				ensembleComponent.getWidgetInterface()->setCrossHairWidth( 2 );
 			}
 		}
 		const int widgetHeight = ensembleList.front()[0].getPlaceHolder()->height();
@@ -361,12 +361,13 @@ QImage UICore::getScreenshot()
 		screenshot.fill( Qt::black );
 		QPainter painter( &screenshot );
 		unsigned short eIndex = 0;
-		BOOST_FOREACH( WidgetEnsembleListType::reference ensemble, ensembleList ) {
-			for ( unsigned short i = 0; i < 3; i++ ) {
-				QWidget *placeHolder = ensemble[i].getPlaceHolder();
-				ensemble[i].getWidgetInterface()->setCrossHairColor( Qt::white );
-				ensemble[i].getWidgetInterface()->updateScene();
-				painter.drawPixmap( i * placeHolder->width(), eIndex * placeHolder->height(), QPixmap::grabWidget( placeHolder ) );
+		BOOST_FOREACH( WidgetEnsemble::List::reference ensemble, ensembleList ) {
+			unsigned short index = 0;
+			BOOST_FOREACH( WidgetEnsemble::reference ensembleComponent, ensemble ) {
+				QWidget *placeHolder = ensembleComponent.getPlaceHolder();
+				ensembleComponent.getWidgetInterface()->setCrossHairColor( Qt::white );
+				ensembleComponent.getWidgetInterface()->updateScene();
+				painter.drawPixmap( index++ * placeHolder->width(), eIndex * placeHolder->height(), QPixmap::grabWidget( placeHolder ) );
 			}
 
 			eIndex++;
@@ -414,10 +415,10 @@ QImage UICore::getScreenshot()
 
 void UICore::setViewPlaneOrientation( PlaneOrientation orientation, bool visible )
 {
-	BOOST_FOREACH( WidgetEnsembleListType::reference ensemble, getEnsembleList() ) {
-		for( unsigned short i = 0; i < 3; i++ ) {
-			if( ensemble[i].getWidgetInterface()->getPlaneOrientation() == orientation ) {
-				ensemble[i].getDockWidget()->setVisible( visible );
+	BOOST_FOREACH( WidgetEnsemble::List::reference ensemble, getEnsembleList() ) {
+		BOOST_FOREACH( WidgetEnsemble::reference ensembleComponent, ensemble ) {
+			if( ensembleComponent.getWidgetInterface()->getPlaneOrientation() == orientation ) {
+				ensembleComponent.getDockWidget()->setVisible( visible );
 			}
 		}
 	}

@@ -220,7 +220,7 @@ void QViewerCore::setShowCrosshair ( bool c )
 
 void QViewerCore::settingsChanged()
 {
-	BOOST_FOREACH ( WidgetMap::const_reference widget, getUICore()->getWidgets() )
+	BOOST_FOREACH ( WidgetEnsembleComponent::Map::const_reference widget, getUICore()->getWidgets() )
 	{
 		widget.first->setInterpolationType ( static_cast<InterpolationType> ( getOptionMap()->getPropertyAs<uint16_t> ( "interpolationType" ) ) );
 	}
@@ -428,15 +428,16 @@ void QViewerCore::openFileList(const std::list< FileInformation > fileInfoList)
 			}
 		}
 	}
-	WidgetEnsembleListType widgetList;
-	if ( structuralImageList.size() && statisticalImageList.size() ) {
-		widgetList = getUICore()->createViewWidgetEnsembleList( fileInfoList.front().getWidgetIdentifier(), statisticalImageList, true);
-		BOOST_FOREACH( WidgetEnsembleListType::const_reference ensemble, widgetList ) {
-			getUICore()->attachImageToEnsemble( structuralImageList.front(), ensemble );
+	WidgetEnsemble::List widgetList = getUICore()->getEnsembleList();
+	// in statistical_mode we ignore the newEnsemble parameter and open as many ensembles as we have statistical images
+	// we also ignore the amount of structural images, taking only the first and using it to underlay it
+	if( getMode() == statistical_mode ) {
+		if (statisticalImageList.size() ) {
+			widgetList = getUICore()->createViewWidgetEnsembleList( fileInfoList.front().getWidgetIdentifier(), statisticalImageList, true);
+			
+		} else if ( structuralImageList.size() ) {
+
 		}
-		
-	} else if ( structuralImageList.size() ) {
-		
 	}
 }
 

@@ -164,7 +164,7 @@ void MaskEditDialog::editCurrentImage()
 		m_Interface.paint->setEnabled( true );
 		m_Interface.radius->setEnabled( true );
 		m_Interface.paint->setChecked( true );
-		BOOST_FOREACH( WidgetEnsembleListType::reference ensemble, m_ViewerCore->getUICore()->getEnsembleList() ) {
+		BOOST_FOREACH( WidgetEnsemble::List::reference ensemble, m_ViewerCore->getUICore()->getEnsembleList() ) {
 			widget::WidgetInterface::ImageVectorType iVector;
 
 			for( unsigned short i = 0; i < 3; i++ ) {
@@ -193,7 +193,7 @@ void MaskEditDialog::createEmptyMask()
 void MaskEditDialog::closeEvent( QCloseEvent * )
 {
 	disconnect( m_ViewerCore, SIGNAL ( emitPhysicalCoordsChanged( util::fvector4 ) ), this, SLOT( physicalCoordChanged( util::fvector4 ) ) );
-	BOOST_FOREACH( WidgetEnsembleListType::reference ensemble, m_ViewerCore->getUICore()->getEnsembleList() ) {
+	BOOST_FOREACH( WidgetEnsemble::List::reference ensemble, m_ViewerCore->getUICore()->getEnsembleList() ) {
 		for ( unsigned short i = 0; i < 3; i++ ) {
 			ensemble[i].getWidgetInterface()->setMouseCursorIcon( QIcon() );
 			ensemble[i].getWidgetInterface()->setEnableCrosshair( true );

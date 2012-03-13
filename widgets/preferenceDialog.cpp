@@ -57,7 +57,7 @@ void PreferencesDialog::screenshotXChanged( int val )
 {
 	if( preferencesUi.keepRatio->isChecked() ) {
 		if( m_ViewerCore->hasImage() ) {
-			WidgetEnsembleListType ensembleList = m_ViewerCore->getUICore()->getEnsembleList();
+			WidgetEnsemble::List ensembleList = m_ViewerCore->getUICore()->getEnsembleList();
 			//preparation
 			ensembleList.front()[0].getFrame()->setFrameStyle( 0 );
 			ensembleList.front()[0].getFrame()->setAutoFillBackground( false );

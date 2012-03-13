@@ -57,8 +57,8 @@ public:
 	enum OptionPosition { bottom, top, left, right, central11 };
 
 	bool registerEnsembleComponent( WidgetEnsembleComponent widget );
-	const WidgetMap &getWidgets() const { return m_WidgetMap; }
-	WidgetMap &getWidgets() { return m_WidgetMap; }
+	const WidgetEnsembleComponent::Map &getWidgets() const { return m_WidgetMap; }
+	WidgetEnsembleComponent::Map &getWidgets() { return m_WidgetMap; }
 
 	void showMainWindow();
 	const MainWindow *getMainWindow() const  { return m_MainWindow; }
@@ -67,7 +67,7 @@ public:
 	virtual WidgetEnsemble createViewWidgetEnsemble( const std::string &widgetType, bool show = true  );
 	virtual WidgetEnsemble createViewWidgetEnsemble( const std::string &widgetType, ImageHolder::Pointer image, bool show = true );
 	virtual WidgetEnsemble createViewWidgetEnsemble( const std::string &widgetType, ImageHolder::List imageList, bool show = true );
-	virtual WidgetEnsembleListType createViewWidgetEnsembleList( const std::string &widgetType, ImageHolder::List imageList, bool show = true );
+	virtual WidgetEnsemble::List createViewWidgetEnsembleList( const std::string &widgetType, ImageHolder::List imageList, bool show = true );
 	
 	virtual void attachWidgetEnsemble( WidgetEnsemble ensemble );
 
@@ -79,8 +79,8 @@ public:
 
 	virtual void setOptionPosition( OptionPosition pos = bottom );
 
-	const WidgetEnsembleListType &getEnsembleList() const { return m_EnsembleList; }
-	WidgetEnsembleListType &getEnsembleList() { return m_EnsembleList; }
+	const WidgetEnsemble::List &getEnsembleList() const { return m_EnsembleList; }
+	WidgetEnsemble::List &getEnsembleList() { return m_EnsembleList; }
 
 	WidgetEnsemble getCurrentEnsemble() const;
 
@@ -109,14 +109,14 @@ private:
 
 	QViewerCore *m_ViewerCore;
 	MainWindow *m_MainWindow;
-	WidgetEnsembleListType m_EnsembleList;
+	WidgetEnsemble::List m_EnsembleList;
 
 	ui::VoxelInformationWidget *m_VoxelInformationWidget;
 	ui::ImageStackWidget *m_ImageStackWidget;
 	ui::SliderWidget *m_SliderWidget;
 
 
-	WidgetMap m_WidgetMap;
+	WidgetEnsembleComponent::Map m_WidgetMap;
 
 
 };

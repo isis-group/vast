@@ -589,7 +589,7 @@ void QImageWidgetImplementation::dropEvent( QDropEvent *e )
 {
 	const boost::shared_ptr<ImageHolder> image = m_ViewerCore->getDataContainer().at( e->mimeData()->text().toStdString() );
 	WidgetEnsemble myEnsemble;
-	BOOST_FOREACH( WidgetEnsembleListType::reference ensemble, m_ViewerCore->getUICore()->getEnsembleList() ) {
+	BOOST_FOREACH( WidgetEnsemble::List::reference ensemble, m_ViewerCore->getUICore()->getEnsembleList() ) {
 		for( unsigned short i = 0; i < 3; i++ ) {
 			if( ensemble[i].getWidgetInterface() == this ) {
 				myEnsemble = ensemble;

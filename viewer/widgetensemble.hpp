@@ -45,6 +45,9 @@ class WidgetEnsembleComponent
 {
 
 public:
+	///map to associate a WidgetEnsembleComponent with a WidgetInterface raw pointer
+	typedef std::map< widget::WidgetInterface*, WidgetEnsembleComponent > Map;
+	
 	WidgetEnsembleComponent( QFrame *frame, QDockWidget *dockWidget, QWidget *placeHolder, widget::WidgetInterface *widgetImplementation );
 
 	// == operator to hold them in a std::map
@@ -78,6 +81,9 @@ private:
 class WidgetEnsemble : public std::vector< WidgetEnsembleComponent >
 {
 public:
+	typedef std::list< WidgetEnsemble > List;
+	
+	
 	WidgetEnsemble();
 
 	QFrame *getFrame() { return m_frame; }
@@ -95,8 +101,6 @@ private:
 	void push_back( const value_type &value ) { std::vector< WidgetEnsembleComponent >::push_back( value ); }
 };
 
-typedef std::list< WidgetEnsemble > WidgetEnsembleListType;
-typedef std::map< widget::WidgetInterface *, WidgetEnsembleComponent > WidgetMap;
 
 
 }
