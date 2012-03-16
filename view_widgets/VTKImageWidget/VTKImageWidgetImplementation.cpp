@@ -97,7 +97,7 @@ void VTKImageWidgetImplementation::wheelEvent ( QWheelEvent* e )
 
 void VTKImageWidgetImplementation::commonInit()
 {
-	m_OptionWidget = new OptionWidget( this, m_ViewerCore );
+// 	m_OptionWidget = new OptionWidget( this, m_ViewerCore );
 	m_Layout->addWidget( this );
 	m_Layout->setMargin( 0 );
 	connect( m_ViewerCore, SIGNAL( emitUpdateScene( ) ), this, SLOT( updateScene( ) ) );
@@ -111,7 +111,7 @@ void VTKImageWidgetImplementation::commonInit()
 	m_Renderer->SetBackground( 0.1, 0.2, 0.4 );
 	m_OpacityGradientFactor = 0;
 
-	if( m_ViewerCore->getOptionMap()->getPropertyAs<bool>("showCrosshair") ){
+	if( m_ViewerCore->getSettings()->getPropertyAs<bool>("showCrosshair") ){
 		m_Cursor->AllOn();
 		m_Cursor->OutlineOff();
 	} else {
@@ -149,10 +149,10 @@ void VTKImageWidgetImplementation::addImage ( const boost::shared_ptr< ImageHold
 	VTKImageComponents component = m_VTKImageComponentsMap[image];
 	component.mapper->SetCroppingRegionPlanes(-100,100,-100,100,-100,100);
 // 	component.mapper->SetCropping(1);
-	m_ImageVector.push_back(image);
+	m_ImageList.push_back(image);
 	m_Renderer->AddVolume( component.volume );
 	component.setVTKImageData( VolumeHandler::getVTKImageData(image, image->getImageProperties().voxelCoords[3]) );
-	if( m_ImageVector.size() == 1 ) {
+	if( m_ImageList.size() == 1 ) {
 		m_Renderer->GetActiveCamera()->SetPosition( image->getImageProperties().indexOrigin[0] * 2, image->getImageProperties().indexOrigin[1] * 2, image->getImageProperties().indexOrigin[2] );
 		m_Renderer->GetActiveCamera()->Roll(-65);
 	}

@@ -32,7 +32,7 @@
 #include "qviewercore.hpp"
 #include "widgetensemble.hpp"
 #include <DataStorage/chunk.hpp>
-#include <CoreUtils/type_base.hpp>
+#include <CoreUtils/value_base.hpp>
 #include <boost/assign/list_of.hpp>
 
 
