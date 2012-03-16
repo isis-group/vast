@@ -18,36 +18,35 @@
  *
  * Author: Erik Tuerke, tuerke@cbs.mpg.de
  *
- * QMemoryHandler.hpp
+ * memoryhandler.hpp
  *
  * Description:
  *
- *  Created on: Aug 12, 2011
+ *  Created on: Mar 16, 2012
  *      Author: tuerke
  ******************************************************************/
-#ifndef QMEMORYHANDLER_HPP
-#define QMEMORYHANDLER_HPP
+#ifndef VAST_MEMORY_HANDLER_HPP
+#define VAST_MEMORY_HANDLER_HPP
 
-#include "qviewercore.hpp"
-#include "QOrientationHandler.hpp"
+#include <CoreUtils/vector.hpp>
+#include <DataStorage/chunk.hpp>
+#include <common.hpp>
 
-namespace isis
-{
-namespace viewer
-{
-namespace widget
-{
+namespace isis {
+namespace viewer {
 
-class QMemoryHandler
+class MemoryHandler
 {
 public:
+	static util::ivector4 get32BitAlignedSize( const util::ivector4 &origSize );
+
 	template< typename TYPE>
-	void fillSliceChunk( data::MemChunk<TYPE> &sliceChunk, const boost::shared_ptr< ImageHolder > image, const PlaneOrientation &orientation, const size_t &timestep = 0 ) const {
+	static void fillSliceChunk( data::MemChunk<TYPE> &sliceChunk, const boost::shared_ptr< ImageHolder > image, const PlaneOrientation &orientation, const size_t &timestep = 0 )
+	{
 		const util::ivector4 mappedSize = mapCoordsToOrientation( image->getImageSize(), image->getImageProperties().latchedOrientation, orientation );
 		const util::ivector4 mappedCoords = mapCoordsToOrientation( image->getImageProperties().voxelCoords, image->getImageProperties().latchedOrientation, orientation );
 		const util::ivector4 mapping = mapCoordsToOrientation( util::ivector4( 0, 1, 2, 3 ), image->getImageProperties().latchedOrientation, orientation, true );
 		const data::Chunk &chunk = image->getChunkVector()[timestep];
-
 
 		for ( int32_t y = 0; y < mappedSize[1]; y++ ) {
 #pragma omp parallel for
@@ -57,14 +56,12 @@ public:
 			}
 		}
 	}
-
-private:
 };
 
 
-}
-}
-} // end namespace
+	
+}} //end namespace
 
 
-#endif
+
+#endif //VAST_MEMORY_HANDLER_HPP

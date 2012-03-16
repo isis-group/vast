@@ -67,7 +67,6 @@ std::list<util::istring> getFileFormatsAsList( image_io::FileFormat::io_modes mo
 std::map<util::istring, std::list< util::istring > > getDialectsAsMap( image_io::FileFormat::io_modes mode );
 std::list<std::string> getSupportedTypeList() ;
 
-util::ivector4 get32BitAlignedSize( const util::ivector4 &origSize );
 
 typedef ViewerLog Runtime;
 typedef ViewerDev Dev;

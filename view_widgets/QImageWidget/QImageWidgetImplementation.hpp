@@ -34,7 +34,6 @@
 #include <QtGui>
 #include "widgetinterface.h"
 #include "qviewercore.hpp"
-#include "QMemoryHandler.hpp"
 #include "QOrientationHandler.hpp"
 #include "color.hpp"
 

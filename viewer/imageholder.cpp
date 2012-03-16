@@ -27,6 +27,7 @@
  ******************************************************************/
 #include "imageholder.hpp"
 #include "common.hpp"
+#include "memoryhandler.hpp"
 #include <numeric>
 
 namespace isis
@@ -309,7 +310,7 @@ bool ImageHolder::setImage( const data::Image &image, const ImageType &_imageTyp
 		m_PropMap.setPropertyAs<double>( "scalingMaxValue", getImageProperties().minMax.second->as<double>() );
 	}
 	getImageProperties().alphaMap.resize(256 );
-	getImageProperties().alignedSize32 = get32BitAlignedSize( m_ImageSize );
+	getImageProperties().alignedSize32 = MemoryHandler::get32BitAlignedSize( m_ImageSize );
 	m_PropMap.setPropertyAs<bool>( "init", true );
 	m_PropMap.setPropertyAs<util::slist>( "changedAttributes", util::slist() );
 	updateOrientation();
