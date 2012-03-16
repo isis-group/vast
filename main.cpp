@@ -63,6 +63,23 @@ int main( int argc, char *argv[] )
 
 	std::string appName = "vast";
 	std::string orgName = "cbs.mpg.de";
+	//setting up vast graphics_system
+#if QT_VERSION >= 0x040500
+	const char *graphics_system = getenv( "VAST_GRAPHICS_SYSTEM" );
+	LOG( Dev, info ) << "QT_VERSION >= 0x040500";
+
+	if( graphics_system && ( !strcmp( graphics_system, "raster" ) || !strcmp( graphics_system, "opengl" ) || !strcmp( graphics_system, "native" ) ) ) {
+		QApplication::setGraphicsSystem( graphics_system );
+		LOG( Dev, info ) << "Using graphics_system=\"" << std::string( graphics_system ) << "\"";
+	} else {
+		QApplication::setGraphicsSystem( "raster" );
+		LOG( Dev, info ) << "Using graphics_system=\"raster\"";
+	}
+
+#else
+	std::cout << "Warning! Your Qt version is below Qt4.5. Not able to set graghics system." << std::endl;
+	LOG( Dev, warning ) << "QT_VERSION < 0x040500";
+#endif
 
 	qt4::IOQtApplication app( appName.c_str(), false, false );
 	app.parameters["in"] = util::slist();
@@ -93,23 +110,6 @@ int main( int argc, char *argv[] )
 	data::IOFactory::setProgressFeedback( feedback );
 	app.init( argc, argv, false );
 
-	//setting up vast graphics_system
-#if QT_VERSION >= 0x040500
-	const char *graphics_system = getenv( "VAST_GRAPHICS_SYSTEM" );
-	LOG( Dev, info ) << "QT_VERSION >= 0x040500";
-
-	if( graphics_system && ( !strcmp( graphics_system, "raster" ) || !strcmp( graphics_system, "opengl" ) || !strcmp( graphics_system, "native" ) ) ) {
-		QApplication::setGraphicsSystem( graphics_system );
-		LOG( Dev, info ) << "Using graphics_system=\"" << std::string( graphics_system ) << "\"";
-	} else {
-		QApplication::setGraphicsSystem( "raster" );
-		LOG( Dev, info ) << "Using graphics_system=\"raster\"";
-	}
-
-#else
-	std::cout << "Warning! Your Qt version is below Qt4.5. Not able to set graghics system." << std::endl;
-	LOG( Dev, warning ) << "QT_VERSION < 0x040500";
-#endif
 
 
 	util::_internal::Log<isis::data::Runtime>::setHandler( logging_hanlder_runtime );
