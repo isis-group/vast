@@ -109,12 +109,12 @@ void isis::viewer::plugin::CorrelationPlotterDialog::showEvent( QShowEvent * )
 			if ( !m_CurrentCorrelationMap ) {
 				createCorrelationMap() ;
 				BOOST_FOREACH( WidgetEnsemble::List::reference ensemble, m_ViewerCore->getUICore()->getEnsembleList() ) {
-					widget::WidgetInterface::ImageVectorType iVector;
+					ImageHolder::List iList;
 
-					for( unsigned short i = 0; i < 3; i++ ) {
-						iVector = ensemble[i].getWidgetInterface()->getImageVector();
-						if( std::find( iVector.begin(), iVector.end(), m_CurrentFunctionalImage ) != iVector.end() ) {
-							m_ViewerCore->getUICore()->attachImageToWidget( m_CurrentCorrelationMap, ensemble[i].getWidgetInterface() ) ;
+					BOOST_FOREACH( WidgetEnsemble::reference ensembleComponent, ensemble ) {
+						iList = ensembleComponent.getWidgetInterface()->getImageList();
+						if( std::find( iList.begin(), iList.end(), m_CurrentFunctionalImage ) != iList.end() ) {
+							m_ViewerCore->getUICore()->attachImageToWidget( m_CurrentCorrelationMap, ensembleComponent.getWidgetInterface() ) ;
 						}
 					}
 				}

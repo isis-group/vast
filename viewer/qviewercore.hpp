@@ -51,9 +51,6 @@ public:
 
 	virtual ImageHolder::List addImageList( const std::list< data::Image > imageList, const ImageHolder::ImageType &imageType );
 
-	widget::WidgetInterface *getWidget( const std::string &identifier ) throw( std::runtime_error & );
-	const util::PropertyMap *getWidgetProperties( const std::string &identifier ) ;
-
 	void addPlugin( boost::shared_ptr< plugin::PluginInterface > plugin );
 	void addPlugins( plugin::PluginLoader::PluginListType plugins );
 	plugin::PluginLoader::PluginListType getPlugins() const { return m_PluginList; }

@@ -126,19 +126,19 @@ void CreateMaskDialog::createMask()
 		m_MaskEditDialog->m_CurrentMask->updateColorMap();
 		m_MaskEditDialog->m_CurrentMask->updateOrientation();
 		BOOST_FOREACH( WidgetEnsemble::List::reference ensemble, m_MaskEditDialog->m_ViewerCore->getUICore()->getEnsembleList() ) {
-			widget::WidgetInterface::ImageVectorType iVector;
+			ImageHolder::List iList;
+			BOOST_FOREACH( WidgetEnsemble::reference ensembleComponent, ensemble ) {
+				iList = ensembleComponent.getWidgetInterface()->getImageList();
 
-			for( unsigned short i = 0; i < 3; i++ ) {
-				iVector = ensemble[i].getWidgetInterface()->getImageVector();
-
-				if( std::find( iVector.begin(), iVector.end(), refImage ) != iVector.end() ) {
+				if( std::find( iList.begin(), iList.end(), refImage ) != iList.end() ) {
 					m_MaskEditDialog->m_CurrentWidgetEnsemble = ensemble;
-					m_MaskEditDialog->m_ViewerCore->getUICore()->attachImageToWidget( m_MaskEditDialog->m_CurrentMask, ensemble[i].getWidgetInterface() ) ;
-					ensemble[i].getWidgetInterface()->setMouseCursorIcon( QIcon( ":/common/paintCrosshair.png" ) );
+					m_MaskEditDialog->m_ViewerCore->getUICore()->attachImageToWidget( m_MaskEditDialog->m_CurrentMask, ensembleComponent.getWidgetInterface() ) ;
+					ensembleComponent.getWidgetInterface()->setMouseCursorIcon( QIcon( ":/common/paintCrosshair.png" ) );
 
 				}
 			}
 		}
+
 		m_MaskEditDialog->m_ViewerCore->setCurrentImage( m_MaskEditDialog->m_CurrentMask );
 		m_MaskEditDialog->m_ViewerCore->setShowCrosshair( false );
 		m_MaskEditDialog->m_ViewerCore->updateScene();

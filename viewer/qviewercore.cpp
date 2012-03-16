@@ -290,39 +290,6 @@ void QViewerCore::zoomChanged ( float zoomFactor )
 	}
 }
 
-widget::WidgetInterface* QViewerCore::getWidget ( const std::string& identifier ) throw( std::runtime_error & )
-{
-	widget::WidgetLoader::WidgetMapType widgetMap = util::Singletons::get<widget::WidgetLoader, 10>().getWidgetMap();
-	if( widgetMap.empty() ) {
-		throw( std::runtime_error( "Could not find any widget!" ) );
-	}
-	if( widgetMap.find(identifier) != widgetMap.end() ) {
-		LOG(Dev, info ) << "Loading widget of identifier \"" << identifier << "\".";
-		return widgetMap.at(identifier)();
-	} else {
-		LOG( Dev, error ) << "Can not find any widget with identifier \"" << identifier
-			<< "\"! Returning fallback widget.";
-		return getWidget( getSettings()->getPropertyAs<std::string>("fallbackWidgetIdentifier") );
-	}
-}
-const util::PropertyMap* QViewerCore::getWidgetProperties ( const std::string& identifier ) 
-{
-	widget::WidgetLoader::WidgetPropertyMapType widgetPropertyMap = util::Singletons::get<widget::WidgetLoader, 10>().getWidgetPropertyMap();
-	if( widgetPropertyMap.empty() ) {
-		throw( std::runtime_error( "Could not find any widget!" ) );
-	}
-	if( widgetPropertyMap.find(identifier) != widgetPropertyMap.end() ) {
-		LOG(Dev, info ) << "Loading widget properties of identifier \"" << identifier << "\".";
-		return widgetPropertyMap.at(identifier);
-	} else {
-		LOG( Dev, error ) << "Can not find any widget properties with identifier \"" << identifier
-			<< "\"! Returning properties of fallback widget i can find.";
-		return getWidgetProperties( getSettings()->getPropertyAs<std::string>("fallbackWidgetIdentifier") );
-	}
-}
-
-
-
 void QViewerCore::addPlugin ( boost::shared_ptr< plugin::PluginInterface > plugin )
 {
 	if ( !m_Parent && plugin->isGUI() )
@@ -439,7 +406,7 @@ void QViewerCore::openFileList(const std::list< FileInformation > fileInfoList)
 			if ( structuralImageList.size() ) {
 				ImageHolder::List::iterator iIter = structuralImageList.begin();
 				unsigned short structuralIndex = 0;
-				for( WidgetEnsemble::List::const_iterator wIter = widgetList.begin(); wIter != widgetList.end(); wIter++, structuralIndex )
+				for( WidgetEnsemble::List::const_iterator wIter = widgetList.begin(); wIter != widgetList.end(); wIter++)
 				{
 					getUICore()->attachImageToEnsemble( *iIter, *wIter );
 					if( ++structuralIndex < structuralImageList.size() ) {
@@ -465,11 +432,9 @@ void QViewerCore::openFileList(const std::list< FileInformation > fileInfoList)
 
 void QViewerCore::closeImage ( ImageHolder::Pointer image, bool refreshUI )
 {
-	BOOST_FOREACH ( std::list< widget::WidgetInterface *>::const_reference widget, image->getWidgetList() )
-	{
-		widget->removeImage ( image );
+	BOOST_FOREACH( WidgetEnsembleComponent::Map::reference ensemble, getUICore()->getWidgets() ) {
+		ensemble.first->removeImage(image);
 	}
-
 	if ( getCurrentImage().get() == image.get() )
 	{
 		ImageHolder::List tmpList;

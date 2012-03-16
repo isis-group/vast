@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * Author: Erik TÃ¼rke, tuerke@cbs.mpg.de
+ * Author: Erik Türke, tuerke@cbs.mpg.de
  *
  * widgetinterface.hpp
  *
@@ -43,60 +43,16 @@ namespace viewer
 class QViewerCore;
 
 namespace widget {
-	
+
 class WidgetInterface
 {
 public:
-	enum MouseButton{ none, left_mouse_button, middle_mouse_button, right_mouse_button, left_and_righ_mouse_button };
-private:
-	struct WidgetProperties {
-
-		WidgetProperties() {
-			mouseButtonStatus = none;
-			currentZoom = 1.0;
-			maxZoom = 30.0;
-			minZoom = 0.1;
-			zoomingFactor = 1.5;
-			crosshairEnabled = true;
-			crosshairColor = QColor( 255, 102, 0 );
-			crosshairWidth = 1;
-			labelsEnabled = true;
-			mouseCursor = Qt::ArrowCursor;
-		}
-		//zoom stuff
-		float currentZoom;
-		float maxZoom;
-		float minZoom;
-		float zoomingFactor;
-
-		//crosshair stuff
-		bool crosshairEnabled;
-		int crosshairWidth;
-		QCursor mouseCursor;
-		QColor crosshairColor;
-
-		PlaneOrientation planeOrientation;
-		InterpolationType interpolationType;
-
-		bool labelsEnabled;
-
-		MouseButton mouseButtonStatus;
-
-	};	
-public:
-	///returns a boost shared_ptr pointing to the widgets properties
-	boost::shared_ptr<WidgetProperties> getWidgetProperties() { return m_WidgetProperties; }
-	///returns a const boost shared_ptr pointing to the widgets properties
-	const boost::shared_ptr<WidgetProperties> getWidgetProperties() const { return m_WidgetProperties; }
-	
 	virtual void setup( QViewerCore *core, QWidget *parent, PlaneOrientation orientation ){
 		m_ViewerCore = core;
 		m_Parent = parent;
 		m_PlaneOrientation = orientation;
 		m_IsSetup = true;
 	};
-	
-	typedef std::vector<boost::shared_ptr<ImageHolder> > ImageVectorType;
 
 	virtual unsigned short getNumberOfInstancesInEnsemble() const = 0;
 	virtual void setEnableCrosshair( bool enable ) = 0;
@@ -110,25 +66,22 @@ public:
 	virtual void setCrossHairColor( QColor ) {}
 	virtual void setCrossHairWidth( int ) {}
 	virtual QWidget *getOptionWidget() = 0;
-	virtual bool hasOptionWidget() const = 0; 
+	virtual bool hasOptionWidget() const = 0;
 
 	QWidget *getParent( ) const { return m_Parent; }
+	PlaneOrientation getPlaneOrientation() { return m_PlaneOrientation; }
 
 	virtual void lookAtPhysicalCoords( const util::fvector4 &physicalCoords ) = 0;
 
-	ImageVectorType getImageVector() const { return m_ImageVector; }
+	ImageHolder::List getImageList() const { return m_ImageList; }
 	std::string widget_file;
-
-	
 protected:
-	boost::shared_ptr<WidgetProperties> m_WidgetProperties;
-	
 	WidgetInterface() : m_IsSetup(false) {}
 
 	QViewerCore *m_ViewerCore;
 	PlaneOrientation m_PlaneOrientation;
 	QWidget *m_Parent;
-	ImageVectorType m_ImageVector;
+	ImageHolder::List m_ImageList;
 
 private:
 	bool m_IsSetup;

@@ -63,8 +63,8 @@ MaskEditDialog::MaskEditDialog( QWidget *parent, QViewerCore *core )
 
 void MaskEditDialog::cutClicked()
 {
-	for( unsigned short i = 0; i < 3; i++ ) {
-		m_CurrentWidgetEnsemble[i].getWidgetInterface()->setMouseCursorIcon( QIcon( ":/common/cutCrosshair.png" ) );
+	BOOST_FOREACH( WidgetEnsemble::reference ensembleComponent, m_CurrentWidgetEnsemble ) {
+		ensembleComponent.getWidgetInterface()->setMouseCursorIcon( QIcon( ":/common/cutCrosshair.png" ) );
 	}
 
 	m_ViewerCore->setShowCrosshair( false );
@@ -73,8 +73,8 @@ void MaskEditDialog::cutClicked()
 
 void MaskEditDialog::paintClicked()
 {
-	for( unsigned short i = 0; i < 3; i++ ) {
-		m_CurrentWidgetEnsemble[i].getWidgetInterface()->setMouseCursorIcon( QIcon( ":/common/paintCrosshair.png" ) );
+	BOOST_FOREACH( WidgetEnsemble::reference ensembleComponent, m_CurrentWidgetEnsemble ) {
+		ensembleComponent.getWidgetInterface()->setMouseCursorIcon( QIcon( ":/common/paintCrosshair.png" ) );
 	}
 
 	m_ViewerCore->setShowCrosshair( false );
@@ -165,12 +165,12 @@ void MaskEditDialog::editCurrentImage()
 		m_Interface.radius->setEnabled( true );
 		m_Interface.paint->setChecked( true );
 		BOOST_FOREACH( WidgetEnsemble::List::reference ensemble, m_ViewerCore->getUICore()->getEnsembleList() ) {
-			widget::WidgetInterface::ImageVectorType iVector;
+			ImageHolder::List iList;
 
 			BOOST_FOREACH( WidgetEnsemble::reference ensembleComponent, ensemble ) {
-				iVector =ensembleComponent.getWidgetInterface()->getImageVector();
+				iList = ensembleComponent.getWidgetInterface()->getImageList();
 
-				if( std::find( iVector.begin(), iVector.end(), m_CurrentMask ) != iVector.end() ) {
+				if( std::find( iList.begin(), iList.end(), m_CurrentMask ) != iList.end() ) {
 					m_CurrentWidgetEnsemble = ensemble;
 					m_ViewerCore->getUICore()->attachImageToWidget( m_CurrentMask, ensembleComponent.getWidgetInterface() ) ;
 					ensembleComponent.getWidgetInterface()->setMouseCursorIcon( QIcon( ":/common/paintCrosshair.png" ) );
@@ -194,9 +194,9 @@ void MaskEditDialog::closeEvent( QCloseEvent * )
 {
 	disconnect( m_ViewerCore, SIGNAL ( emitPhysicalCoordsChanged( util::fvector4 ) ), this, SLOT( physicalCoordChanged( util::fvector4 ) ) );
 	BOOST_FOREACH( WidgetEnsemble::List::reference ensemble, m_ViewerCore->getUICore()->getEnsembleList() ) {
-		for ( unsigned short i = 0; i < 3; i++ ) {
-			ensemble[i].getWidgetInterface()->setMouseCursorIcon( QIcon() );
-			ensemble[i].getWidgetInterface()->setEnableCrosshair( true );
+		BOOST_FOREACH( WidgetEnsemble::reference ensembleComponent, ensemble ) {
+			ensembleComponent.getWidgetInterface()->setMouseCursorIcon( QIcon() );
+			ensembleComponent.getWidgetInterface()->setEnableCrosshair( true );
 		}
 	}
 

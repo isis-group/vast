@@ -251,9 +251,9 @@ void UICore::refreshUI( bool complete )
 		m_VoxelInformationWidget->synchronize();
 	}
 	BOOST_FOREACH( WidgetEnsemble::List::reference ensemble, getEnsembleList() ) {
-		widget::WidgetInterface::ImageVectorType iVector = ensemble.front().getWidgetInterface()->getImageVector();
+		ImageHolder::List iList = ensemble.front().getWidgetInterface()->getImageList();
 
-		if( !iVector.size() ) {
+		if( !iList.size() ) {
 			ensemble.front().getDockWidget()->setVisible( false );
 		} else {
 			ensemble.front().getDockWidget()->setVisible( true );
@@ -261,7 +261,7 @@ void UICore::refreshUI( bool complete )
 
 		//go through all the images and check if we need this widget ( 2d data? )
 		bool widgetNeeded = false;
-		BOOST_FOREACH( widget::WidgetInterface::ImageVectorType::const_reference image, iVector ) {
+		BOOST_FOREACH( ImageHolder::List::const_reference image, iList ) {
 			const util::ivector4 mappedSize = mapCoordsToOrientation( image->getImageSize(), image->getImageProperties().latchedOrientation, ensemble.front().getWidgetInterface()->getPlaneOrientation() );
 
 			if( mappedSize[0] > 1 && mappedSize[1] > 1 ) {
@@ -273,7 +273,7 @@ void UICore::refreshUI( bool complete )
 				ensembleComponent.getWidgetInterface()->setCrossHairWidth( 1 );
 				ensembleComponent.getDockWidget()->setVisible( widgetNeeded );
 
-				ensembleComponent.setHasCurrentImage( std::find( iVector.begin(), iVector.end(), m_ViewerCore->getCurrentImage() ) != iVector.end() );
+				ensembleComponent.setHasCurrentImage( std::find( iList.begin(), iList.end(), m_ViewerCore->getCurrentImage() ) != iList.end() );
 				if( ensembleComponent.hasCurrentImage() ) {
 					QPalette pal;
 					pal.setColor( QPalette::Background, QColor( 119, 136, 153 ) );

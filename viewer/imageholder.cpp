@@ -403,15 +403,6 @@ void ImageHolder::updateColorMap()
 	}
 }
 
-void ImageHolder::removeWidget( widget::WidgetInterface *widget )
-{
-	std::list<widget::WidgetInterface *>::iterator iter = std::find( m_WidgetList.begin(), m_WidgetList.end(), widget );
-
-	if( iter != m_WidgetList.end() ) {
-		m_WidgetList.erase( iter );
-	}
-}
-
 
 double ImageHolder::getInternalExtent() const
 {

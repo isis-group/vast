@@ -31,6 +31,8 @@
 #include <boost/assign.hpp>
 #include <numeric>
 
+#include <QDir>
+
 namespace isis
 {
 namespace viewer

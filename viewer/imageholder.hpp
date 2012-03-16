@@ -28,14 +28,13 @@
 #ifndef IMAGEHOLDER_HPP
 #define IMAGEHOLDER_HPP
 
-// #include "common.hpp"
+#include "common.hpp"
 #include "color.hpp"
 #include <boost/foreach.hpp>
 #include <boost/numeric/ublas/matrix.hpp>
 #include <vector>
 #include <CoreUtils/propmap.hpp>
 #include <DataStorage/image.hpp>
-#include "widgetinterface.h"
 
 
 namespace isis
@@ -132,10 +131,6 @@ public:
 
 	bool hasAmbiguousOrientation() const { return m_AmbiguousOrientation; }
 
-	void addWidget( widget::WidgetInterface *widget ) { m_WidgetList.push_back( widget ); }
-	void removeWidget( widget::WidgetInterface *widget );
-	std::list< widget::WidgetInterface * > getWidgetList() { return m_WidgetList; }
-
 	void updateOrientation();
 	void updateHistogram();
 
@@ -176,8 +171,6 @@ private:
 	std::pair<double, double> m_OptimalScalingPair;
 
 	std::vector< data::Chunk > m_ChunkVector;
-
-	std::list<widget::WidgetInterface *> m_WidgetList;
 
 	boost::shared_ptr<color::Color> m_ColorHandler;
 

@@ -227,8 +227,8 @@ void ImageStackWidget::distributeImages()
 
 		tmpContainer.insert( image );
 		m_ViewerCore->getDataContainer().erase( image.first );
-		BOOST_FOREACH( std::list< widget::WidgetInterface *>::const_reference widget, image.second->getWidgetList() ) {
-			widget->removeImage( image.second );
+		BOOST_FOREACH( WidgetEnsembleComponent::Map::reference ensemble, m_ViewerCore->getUICore()->getWidgets() ) {
+			ensemble.first->removeImage(image.second);
 		}
 	}
 	m_ViewerCore->getUICore()->removeAllWidgetEnsembles();
