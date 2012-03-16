@@ -27,24 +27,24 @@
  ******************************************************************/
 #include <iostream>
 #include <signal.h>
+
 #include <Adapter/qtapplication.hpp>
 #include <Adapter/qdefaultmessageprint.hpp>
-#include "qviewercore.hpp"
-#include <iostream>
-
-
 #include <DataStorage/io_factory.hpp>
+#include <CoreUtils/log.hpp>
 #include "CoreUtils/singletons.hpp"
 #include <DataStorage/image.hpp>
-#include <CoreUtils/log.hpp>
+
 #include "pluginloader.hpp"
+#include "qviewercore.hpp"
 #include "color.hpp"
 #include "uicore.hpp"
 #include "widgetensemble.hpp"
-
+#include "fileinformation.hpp"
 #include "common.hpp"
 #include "error.hpp"
-#include <mainwindow.hpp>
+#include "mainwindow.hpp"
+
 
 int main( int argc, char *argv[] )
 {
@@ -130,7 +130,7 @@ int main( int argc, char *argv[] )
 	std::string widget_name = app.parameters["widget"];
 
 	if( widget_name.empty() ) {
-		widget_name = core->getOptionMap()->getPropertyAs<std::string>( "defaultViewWidgetIdentifier" );
+		widget_name = core->getSettings()->getPropertyAs<std::string>( "defaultViewWidgetIdentifier" );
 	}
 
 	util::slist fileList = app.parameters["in"];

@@ -57,7 +57,7 @@ MainWindow::MainWindow( QViewerCore *core ) :
 	m_StatusMovie( new QMovie( this ) )
 {
 	m_Interface.setupUi( this );
-	setWindowIcon( QIcon( m_ViewerCore->getOptionMap()->getPropertyAs<std::string>("vastSymbol").c_str() ) );
+	setWindowIcon( QIcon( m_ViewerCore->getSettings()->getPropertyAs<std::string>("vastSymbol").c_str() ) );
 	m_ActionReset_Scaling = new QAction( this );
 	m_ActionAuto_Scaling = new QAction( this );
 	m_ActionReset_Scaling->setShortcut( QKeySequence( tr( "R, S" ) ) );
@@ -184,7 +184,7 @@ void MainWindow::createScreenshot()
 
 		if( fileName.size() ) {
 			toggleLoadingIcon(true, QString("Creating and saving screenshot to ") + fileName );
-			m_ViewerCore->getUICore()->getScreenshot().save( fileName, 0, m_ViewerCore->getOptionMap()->getPropertyAs<uint16_t>( "screenshotQuality" ) );
+			m_ViewerCore->getUICore()->getScreenshot().save( fileName, 0, m_ViewerCore->getSettings()->getPropertyAs<uint16_t>( "screenshotQuality" ) );
 			m_ViewerCore->setCurrentPath( fileName.toStdString() );
 		}
 		toggleLoadingIcon(false);
@@ -212,26 +212,26 @@ void MainWindow::toggleSagittalView( bool visible )
 
 void MainWindow::loadSettings()
 {
-	m_ViewerCore->getSettings()->beginGroup( "MainWindow" );
-	move( m_ViewerCore->getSettings()->value( "pos", QPoint( 0, 0 ) ).toPoint() );
+	m_ViewerCore->getSettings()->getQSettings()->beginGroup( "MainWindow" );
+	move( m_ViewerCore->getSettings()->getQSettings()->value( "pos", QPoint( 0, 0 ) ).toPoint() );
 
-	if( m_ViewerCore->getSettings()->value( "maximized", false ).toBool() ) {
+	if( m_ViewerCore->getSettings()->getQSettings()->value( "maximized", false ).toBool() ) {
 		showMaximized();
 	}
 
-	resize( m_ViewerCore->getSettings()->value( "size", QSize( 900, 900 ) ).toSize() );
-	m_ViewerCore->getSettings()->endGroup();
+	resize( m_ViewerCore->getSettings()->getQSettings()->value( "size", QSize( 900, 900 ) ).toSize() );
+	m_ViewerCore->getSettings()->getQSettings()->endGroup();
 }
 
 void MainWindow::saveSettings()
 {
 	toggleLoadingIcon( true );
-	m_ViewerCore->getSettings()->beginGroup( "MainWindow" );
-	m_ViewerCore->getSettings()->setValue( "size", size() );
-	m_ViewerCore->getSettings()->setValue( "maximized", isMaximized() );
-	m_ViewerCore->getSettings()->setValue( "pos", pos() );
-	m_ViewerCore->getSettings()->endGroup();
-	m_ViewerCore->getSettings()->sync();
+	m_ViewerCore->getSettings()->getQSettings()->beginGroup( "MainWindow" );
+	m_ViewerCore->getSettings()->getQSettings()->setValue( "size", size() );
+	m_ViewerCore->getSettings()->getQSettings()->setValue( "maximized", isMaximized() );
+	m_ViewerCore->getSettings()->getQSettings()->setValue( "pos", pos() );
+	m_ViewerCore->getSettings()->getQSettings()->endGroup();
+	m_ViewerCore->getSettings()->getQSettings()->sync();
 	toggleLoadingIcon( false );
 }
 
@@ -274,7 +274,7 @@ void MainWindow::resetScaling()
 
 void MainWindow::propagateZooming( bool propagate )
 {
-	m_ViewerCore->getOptionMap()->setPropertyAs<bool>( "propagateZooming", propagate );
+	m_ViewerCore->getSettings()->setPropertyAs<bool>( "propagateZooming", propagate );
 	m_ViewerCore->updateScene();
 }
 
@@ -321,7 +321,7 @@ void MainWindow::showScalingOption()
 
 void MainWindow::spinRadiusChanged( int radius )
 {
-	m_ViewerCore->getOptionMap()->setPropertyAs<uint16_t>( "minMaxSearchRadius", radius );
+	m_ViewerCore->getSettings()->setPropertyAs<uint16_t>( "minMaxSearchRadius", radius );
 }
 
 void MainWindow::openImage()
@@ -489,13 +489,13 @@ void MainWindow::reloadPluginsToGUI()
 void MainWindow::updateRecentOpenList()
 {
 	QSignalMapper *signalMapper = new QSignalMapper( this );
-	m_Interface.actionOpen_recent->setEnabled(!m_ViewerCore->getRecentFiles().empty() );
+	m_Interface.actionOpen_recent->setEnabled(!m_ViewerCore->getSettings()->getRecentFiles().empty() );
 	//first we have to remove all actions
 	BOOST_FOREACH( QList<QAction*>::const_reference action, m_Interface.actionOpen_recent->menu()->actions() )
 	{
 		m_Interface.actionOpen_recent->menu()->removeAction( action );
 	}
-	BOOST_FOREACH( FileInformationMap::const_reference path, m_ViewerCore->getRecentFiles() ) {
+	BOOST_FOREACH( FileInformationMap::const_reference path, m_ViewerCore->getSettings()->getRecentFiles() ) {
 		std::stringstream recentFileName;
 		recentFileName << path.first;
         if( path.second.getImageType() == ImageHolder::statistical_image ) {
@@ -519,16 +519,16 @@ void MainWindow::updateRecentOpenList()
 
 void MainWindow::openRecentPath ( QString path )
 {
-	m_ViewerCore->openFile( m_ViewerCore->getRecentFiles().at(path.toStdString() ) );
+	m_ViewerCore->openFile( m_ViewerCore->getSettings()->getRecentFiles().at(path.toStdString() ) );
 }
 
 void MainWindow::refreshUI()
 {
-	m_Interface.actionShow_Labels->setChecked( m_ViewerCore->getOptionMap()->getPropertyAs<bool>( "showLabels" ) );
-	m_Interface.actionShow_Crosshair->setChecked( m_ViewerCore->getOptionMap()->getPropertyAs<bool>( "showCrosshair" ) );
+	m_Interface.actionShow_Labels->setChecked( m_ViewerCore->getSettings()->getPropertyAs<bool>( "showLabels" ) );
+	m_Interface.actionShow_Crosshair->setChecked( m_ViewerCore->getSettings()->getPropertyAs<bool>( "showCrosshair" ) );
 	m_ViewerCore->setShowLabels( m_Interface.actionShow_Labels->isChecked() );
-	m_Interface.actionPropagate_Zooming->setChecked( m_ViewerCore->getOptionMap()->getPropertyAs<bool>( "propagateZooming" ) );
-	m_RadiusSpin->setValue( m_ViewerCore->getOptionMap()->getPropertyAs<uint16_t>( "minMaxSearchRadius" ) );
+	m_Interface.actionPropagate_Zooming->setChecked( m_ViewerCore->getSettings()->getPropertyAs<bool>( "propagateZooming" ) );
+	m_RadiusSpin->setValue( m_ViewerCore->getSettings()->getPropertyAs<uint16_t>( "minMaxSearchRadius" ) );
 
 	if( m_ViewerCore->getMode() == ViewerCoreBase::statistical_mode ) {
 		m_Interface.actionToggle_Zmap_Mode->setChecked( true );
@@ -555,6 +555,11 @@ void MainWindow::refreshUI()
 	m_Interface.actionShow_scaling_option->setEnabled( m_ViewerCore->hasImage() );
 	m_Interface.actionShow_Labels->setEnabled( m_ViewerCore->hasImage() );
 	updateRecentOpenList();
+	if( m_ViewerCore->getMode() == ViewerCoreBase::statistical_mode ) {
+		setWindowTitle( QString(  m_ViewerCore->getSettings()->getPropertyAs<std::string>("signature").c_str() ) + QString("(statistical mode)" ) );
+	} else  if ( m_ViewerCore->getMode() == ViewerCoreBase::default_mode ) {
+		setWindowTitle( QString(  m_ViewerCore->getSettings()->getPropertyAs<std::string>("signature").c_str() ) );
+	}
 }
 
 
@@ -562,7 +567,7 @@ void MainWindow::closeEvent( QCloseEvent * )
 {
 	m_ViewerCore->close();
 	saveSettings();
-	m_ViewerCore->saveSettings();
+	m_ViewerCore->getSettings()->save();
 }
 
 

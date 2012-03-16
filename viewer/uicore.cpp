@@ -221,13 +221,13 @@ WidgetEnsembleComponent UICore::createEnsembleComponent( const std::string &widg
 	QFrame *frameWidget = new QFrame();
 	QWidget *placeHolder = new QWidget( frameWidget );
 	QDockWidget *dockWidget = createDockingEnsemble( frameWidget );
-	dockWidget->setMinimumHeight( m_ViewerCore->getOptionMap()->getPropertyAs<uint16_t>( "maxWidgetHeight" ) );
-	dockWidget->setMinimumWidth( m_ViewerCore->getOptionMap()->getPropertyAs<uint16_t>( "maxWidgetWidth" ) );
+	dockWidget->setMinimumHeight( m_ViewerCore->getSettings()->getPropertyAs<uint16_t>( "maxWidgetHeight" ) );
+	dockWidget->setMinimumWidth( m_ViewerCore->getSettings()->getPropertyAs<uint16_t>( "maxWidgetWidth" ) );
 	dockWidget->setWidget( frameWidget );
 	frameWidget->setParent( dockWidget );
 	frameWidget->setLayout( new QGridLayout() );
 	frameWidget->layout()->addWidget( placeHolder );
-	frameWidget->layout()->setMargin( m_ViewerCore->getOptionMap()->getPropertyAs<uint16_t>( "viewerWidgetMargin" ) );
+	frameWidget->layout()->setMargin( m_ViewerCore->getSettings()->getPropertyAs<uint16_t>( "viewerWidgetMargin" ) );
 
 	widget::WidgetInterface * widgetImpl = m_ViewerCore->getWidget(widgetIdentifier);
 	widgetImpl->setup( m_ViewerCore, placeHolder, planeOrientation );
@@ -398,14 +398,14 @@ QImage UICore::getScreenshot()
 
 		painter.end();
 		refreshUI();
-		QImage screenshotImage ( m_ViewerCore->getOptionMap()->getPropertyAs<bool>( "screenshotManualScaling" ) ? screenshot.scaled( m_ViewerCore->getOptionMap()->getPropertyAs<uint16_t>( "screenshotWidth" ),
-								 m_ViewerCore->getOptionMap()->getPropertyAs<uint16_t>( "screenshotHeight" ),
-								 m_ViewerCore->getOptionMap()->getPropertyAs<bool>( "screenshotKeepAspectRatio" ) ? Qt::KeepAspectRatioByExpanding : Qt::IgnoreAspectRatio,
+		QImage screenshotImage ( m_ViewerCore->getSettings()->getPropertyAs<bool>( "screenshotManualScaling" ) ? screenshot.scaled( m_ViewerCore->getSettings()->getPropertyAs<uint16_t>( "screenshotWidth" ),
+								 m_ViewerCore->getSettings()->getPropertyAs<uint16_t>( "screenshotHeight" ),
+								 m_ViewerCore->getSettings()->getPropertyAs<bool>( "screenshotKeepAspectRatio" ) ? Qt::KeepAspectRatioByExpanding : Qt::IgnoreAspectRatio,
 								 Qt::SmoothTransformation
 																																   ).toImage() : screenshot.toImage() );
 		const double dpiMeter = 39.3700787;
-		screenshotImage.setDotsPerMeterX( m_ViewerCore->getOptionMap()->getPropertyAs<uint16_t>( "screenshotDPIX" ) * dpiMeter );
-		screenshotImage.setDotsPerMeterY( m_ViewerCore->getOptionMap()->getPropertyAs<uint16_t>( "screenshotDPIY" ) * dpiMeter );
+		screenshotImage.setDotsPerMeterX( m_ViewerCore->getSettings()->getPropertyAs<uint16_t>( "screenshotDPIX" ) * dpiMeter );
+		screenshotImage.setDotsPerMeterY( m_ViewerCore->getSettings()->getPropertyAs<uint16_t>( "screenshotDPIY" ) * dpiMeter );
 		return screenshotImage;
 	}
 

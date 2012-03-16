@@ -59,8 +59,8 @@ VoxelInformationWidget::VoxelInformationWidget( QWidget *parent, QViewerCore *co
 	m_UpperThreshold->setAlignment( Qt::AlignRight );
 	m_LabelMax->setAlignment( Qt::AlignLeft );
 	
-	m_Interface.frame_4->setMaximumHeight( m_ViewerCore->getOptionMap()->getPropertyAs<uint16_t>( "maxOptionWidgetHeight" ) );
-	m_Interface.frame_4->setMinimumHeight( m_ViewerCore->getOptionMap()->getPropertyAs<uint16_t>( "minOptionWidgetHeight" ) );
+	m_Interface.frame_4->setMaximumHeight( m_ViewerCore->getSettings()->getPropertyAs<uint16_t>( "maxOptionWidgetHeight" ) );
+	m_Interface.frame_4->setMinimumHeight( m_ViewerCore->getSettings()->getPropertyAs<uint16_t>( "minOptionWidgetHeight" ) );
 	m_Interface.rowBox->setMinimum( 0 );
 	m_Interface.columnBox->setMinimum( 0 );
 	m_Interface.sliceBox->setMinimum( 0 );

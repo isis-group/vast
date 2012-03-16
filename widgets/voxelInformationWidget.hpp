@@ -55,7 +55,7 @@ class VoxelInformationWidget : public QWidget
 		TimePlayThread( QViewerCore *core, Ui::voxelInformationWidget *interface ) : m_core( core ), m_start( 0 ), m_end( 0 ), m_interface( interface ) {} ;
 		void setStartStop( int start, int stop ) { m_start = start; m_end = stop; }
 		void run() {
-			uint16_t deleyTime = m_core->getOptionMap()->getPropertyAs<uint16_t>( "timeseriesPlayDelayTime" );
+			uint16_t deleyTime = m_core->getSettings()->getPropertyAs<uint16_t>( "timeseriesPlayDelayTime" );
 			uint16_t t = m_start;
 
 			while( true ) {

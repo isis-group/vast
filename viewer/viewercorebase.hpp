@@ -29,10 +29,12 @@
 #define VIEWERCOREBASE_HPP
 
 #include "datacontainer.hpp"
-#include <map>
 #include "pluginloader.hpp"
 #include "widgetloader.hpp"
+#include "widgetinterface.h"
+#include "settings.hpp"
 
+#include <map>
 
 #ifdef _OPENMP
 #include <omp.h>
@@ -52,11 +54,14 @@ public:
 
 	ViewerCoreBase( );
 
-	std::string getVersion() const;
+	static std::string getVersion();
 
 	virtual ImageHolder::List addImageList( const std::list< data::Image > imageList, const ImageHolder::ImageType &imageType );
 	virtual boost::shared_ptr<ImageHolder> addImage( const data::Image &image, const ImageHolder::ImageType &imageType );
 
+	const boost::shared_ptr<Settings> getSettings() const { return m_Settings; }
+	boost::shared_ptr<Settings> getSettings() { return m_Settings; }
+	
 	void setCurrentImage( const boost::shared_ptr<ImageHolder> image ) { m_CurrentImage = image; }
 
 	boost::shared_ptr<ImageHolder> getCurrentImage();
@@ -66,22 +71,19 @@ public:
 	const DataContainer &getDataContainer() const { return m_DataContainer; }
 	DataContainer &getDataContainer() { return m_DataContainer; }
 
-	boost::shared_ptr<util::PropertyMap>  getOptionMap() { return m_OptionsMap; }
-
 	bool hasImage() const { return getDataContainer().size() && m_CurrentImage.get(); }
 
-	Mode getMode() const { return m_Mode; }
+	virtual void setMode( const Mode &mode ) { m_Mode = mode; }
+	virtual Mode getMode() const { return m_Mode; }
 
 
 private:
 	//this is the container which actually holds all the images
 	DataContainer m_DataContainer;
 	ImageHolder::Pointer  m_CurrentImage;
-	void setCommonViewerOptions();
 
 protected:
-	boost::shared_ptr<util::PropertyMap> m_OptionsMap;
-	//additional imagelist for finding purpose
+	boost::shared_ptr<Settings> m_Settings;
 
 	ImageHolder::Pointer m_CurrentAnatomicalReference;
 	Mode m_Mode;

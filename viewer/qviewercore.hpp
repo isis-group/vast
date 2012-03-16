@@ -25,30 +25,22 @@
  *  Created on: Aug 12, 2011
  *      Author: tuerke
  ******************************************************************/
-#ifndef QVIEWERCORE_HPP
-#define QVIEWERCORE_HPP
+#ifndef VAST_QVIEWERCORE_HPP
+#define VAST_QVIEWERCORE_HPP
 
 
 #include "viewercorebase.hpp"
-#include "widgetinterface.h"
-#include "fileinformation.hpp"
 #include "qprogressfeedback.hpp"
 
-#include <QtGui>
 #include <Adapter/qtapplication.hpp>
 
+#include <QtGui>
 
 namespace isis
 {
 namespace viewer
 {
 class UICore;
-
-namespace _internal
-{
-class FileInformation;
-class FileInformationMap;
-}
 
 class QViewerCore : public QObject, public ViewerCoreBase
 {
@@ -61,9 +53,6 @@ public:
 
 	widget::WidgetInterface *getWidget( const std::string &identifier ) throw( std::runtime_error & );
 	const util::PropertyMap *getWidgetProperties( const std::string &identifier ) ;
-
-	const QSettings *getSettings() const { return m_Settings; }
-	QSettings *getSettings() { return m_Settings; }
 
 	void addPlugin( boost::shared_ptr< plugin::PluginInterface > plugin );
 	void addPlugins( plugin::PluginLoader::PluginListType plugins );
@@ -85,9 +74,6 @@ public:
 	std::list< qt4::QMessage> getMessageLog() const { return m_MessageLog; }
 	std::list< qt4::QMessage> getMessageLogDev() const { return m_DevMessageLog; }
 
-	isis::viewer::FileInformationMap &getRecentFiles() { return m_RecentFiles; }
-	isis::viewer::FileInformationMap &getFavFiles() { return m_FavFiles; }
-
 public Q_SLOTS:
 	virtual void settingsChanged();
 	virtual void close( );
@@ -106,9 +92,6 @@ public Q_SLOTS:
 	virtual void openFileList( const std::list< FileInformation > fileInfoList );
 	virtual void centerImages( bool ca = false );
 	virtual void closeImage( boost::shared_ptr<ImageHolder> image, bool refreshUI = true );
-	virtual void saveSettings();
-	virtual void loadSettings();
-	virtual void setMode( Mode mode );
 
 Q_SIGNALS:
 	void emitZoomChanged( float zoom );
@@ -125,7 +108,6 @@ private:
 
 	void checkForErrors();
 
-	QSettings *m_Settings;
 	std::list< qt4::QMessage > m_MessageLog;
 	std::list< qt4::QMessage > m_DevMessageLog;
 
@@ -134,9 +116,6 @@ private:
 	std::string m_CurrentPath;
 	boost::shared_ptr< QProgressFeedback > m_ProgressFeedback;
 	UICore *m_UI;
-
-	FileInformationMap m_RecentFiles;
-	FileInformationMap m_FavFiles;
 
 	std::list<FileInformation> m_OpenFileList;
 

@@ -65,7 +65,7 @@ SliderWidget::SliderWidget( QWidget *parent, isis::viewer::QViewerCore *core )
 
 void SliderWidget::toggleGlobal( bool global )
 {
-	m_ViewerCore->getOptionMap()->setPropertyAs<bool>( "zmapGlobal", global );
+	m_ViewerCore->getSettings()->setPropertyAs<bool>( "zmapGlobal", global );
 }
 
 void SliderWidget::setSliderVisible( SliderWidget::SliderType slider , bool visible )
@@ -191,7 +191,7 @@ void SliderWidget::synchronize()
 		QWidget::setVisible( false );
 	}
 
-	m_Interface.checkGlobal->setChecked( m_ViewerCore->getOptionMap()->getPropertyAs<bool>( "zmapGlobal" ) );
+	m_Interface.checkGlobal->setChecked( m_ViewerCore->getSettings()->getPropertyAs<bool>( "zmapGlobal" ) );
 }
 
 

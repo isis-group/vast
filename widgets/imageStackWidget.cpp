@@ -44,8 +44,8 @@ ImageStack::ImageStack( QWidget *parent, ImageStackWidget *widget )
 	setHorizontalScrollBarPolicy( Qt::ScrollBarAsNeeded );
 	setVerticalScrollMode( ScrollPerItem );
 	setVerticalScrollBarPolicy( Qt::ScrollBarAsNeeded );
-	setMaximumHeight( m_Widget->m_ViewerCore->getOptionMap()->getPropertyAs<uint16_t>( "maxOptionWidgetHeight" ) - 4 );
-	setMinimumHeight( m_Widget->m_ViewerCore->getOptionMap()->getPropertyAs<uint16_t>( "minOptionWidgetHeight" ) - 4 );
+	setMaximumHeight( m_Widget->m_ViewerCore->getSettings()->getPropertyAs<uint16_t>( "maxOptionWidgetHeight" ) - 4 );
+	setMinimumHeight( m_Widget->m_ViewerCore->getSettings()->getPropertyAs<uint16_t>( "minOptionWidgetHeight" ) - 4 );
 }
 
 void ImageStack::contextMenuEvent( QContextMenuEvent *event )
@@ -111,7 +111,7 @@ void ImageStackWidget::toggleStatsType()
 	m_Interface.actionImage_type_stats->setChecked( true );
 	boost::shared_ptr< ImageHolder> image = m_ViewerCore->getDataContainer().at( m_ImageStack->currentItem()->text().toStdString() );
 	image->getImageProperties().imageType = ImageHolder::statistical_image;
-	image->getImageProperties().lut = m_ViewerCore->getOptionMap()->getPropertyAs<std::string>("LutZMap");
+	image->getImageProperties().lut = m_ViewerCore->getSettings()->getPropertyAs<std::string>("LutZMap");
 	image->updateColorMap();
 	m_ViewerCore->setMode( ViewerCoreBase::statistical_mode );
 	m_ViewerCore->getUICore()->refreshUI();
@@ -124,7 +124,7 @@ void ImageStackWidget::toggleStructsType()
 	m_Interface.actionImage_type_stats->setChecked( false );
 	boost::shared_ptr< ImageHolder> image = m_ViewerCore->getDataContainer().at( m_ImageStack->currentItem()->text().toStdString() );
 	image->getImageProperties().imageType = ImageHolder::structural_image;
-	image->getImageProperties().lut = m_ViewerCore->getOptionMap()->getPropertyAs<std::string>("lutStructural");
+	image->getImageProperties().lut = m_ViewerCore->getSettings()->getPropertyAs<std::string>("lutStructural");
 	image->updateColorMap();
 	m_ViewerCore->setMode( ViewerCoreBase::default_mode );
 	m_ViewerCore->getUICore()->refreshUI();
@@ -135,8 +135,8 @@ void ImageStackWidget::toggleStructsType()
 
 void ImageStackWidget::synchronize()
 {
-	m_Interface.frame->setMaximumHeight( m_ViewerCore->getOptionMap()->getPropertyAs<uint16_t>( "maxOptionWidgetHeight" ) );
-	m_Interface.frame->setMinimumHeight( m_ViewerCore->getOptionMap()->getPropertyAs<uint16_t>( "minOptionWidgetHeight" ) );
+	m_Interface.frame->setMaximumHeight( m_ViewerCore->getSettings()->getPropertyAs<uint16_t>( "maxOptionWidgetHeight" ) );
+	m_Interface.frame->setMinimumHeight( m_ViewerCore->getSettings()->getPropertyAs<uint16_t>( "minOptionWidgetHeight" ) );
 	m_ImageStack->clear();
 	BOOST_FOREACH( DataContainer::const_reference imageRef, m_ViewerCore->getDataContainer() ) {
 		if( !( m_ViewerCore->getMode() == ViewerCoreBase::statistical_mode && imageRef.second->getImageProperties().imageType == ImageHolder::structural_image ) ) {
@@ -235,7 +235,7 @@ void ImageStackWidget::distributeImages()
 	m_ViewerCore->getUICore()->refreshUI();
 	BOOST_FOREACH( DataContainer::const_reference image, tmpContainer ) {
 		m_ViewerCore->getDataContainer().insert( image );
-		m_ViewerCore->getUICore()->createViewWidgetEnsemble( m_ViewerCore->getOptionMap()->getPropertyAs<std::string>("defaultViewWidgetIdentifier"), image.second );
+		m_ViewerCore->getUICore()->createViewWidgetEnsemble( m_ViewerCore->getSettings()->getPropertyAs<std::string>("defaultViewWidgetIdentifier"), image.second );
 	}
 	m_ViewerCore->getUICore()->refreshUI();
 	m_ViewerCore->settingsChanged();

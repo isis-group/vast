@@ -486,7 +486,7 @@ void QImageWidgetImplementation::wheelEvent( QWheelEvent *e )
 
 	}
 
-	if( m_ViewerCore->getOptionMap()->getPropertyAs<bool>( "propagateZooming" ) ) {
+	if( m_ViewerCore->getSettings()->getPropertyAs<bool>( "propagateZooming" ) ) {
 		zoomChanged( oldZoom );
 	} else {
 		setZoom( oldZoom );
@@ -511,7 +511,7 @@ void QImageWidgetImplementation::keyPressEvent( QKeyEvent *e )
 		m_ViewerCore->centerImages();
 	}
 
-	if( m_ViewerCore->getOptionMap()->getPropertyAs<bool>( "propagateZooming" ) ) {
+	if( m_ViewerCore->getSettings()->getPropertyAs<bool>( "propagateZooming" ) ) {
 		zoomChanged( oldZoom );
 	} else {
 		setZoom( oldZoom );

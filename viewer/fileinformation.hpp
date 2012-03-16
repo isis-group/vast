@@ -30,6 +30,7 @@
 #define VAST_FILEINFORMATION_HPP
 
 #include <string>
+#include <QSettings>
 
 #include "imageholder.hpp"
 
@@ -38,9 +39,6 @@ namespace isis
 {
 namespace viewer
 {
-
-class QViewerCore;
-
 
 class FileInformation
 {
@@ -88,5 +86,4 @@ private:
 
 }
 }
-#include "qviewercore.hpp"
 #endif

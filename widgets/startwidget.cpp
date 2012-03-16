@@ -53,7 +53,7 @@ StartWidget::StartWidget( QWidget *parent, QViewerCore *core )
 
 void StartWidget::showMeChecked( bool checked )
 {
-	m_ViewerCore->getOptionMap()->setPropertyAs<bool>( "showStartWidget", checked );
+	m_ViewerCore->getSettings()->setPropertyAs<bool>( "showStartWidget", checked );
 }
 
 void StartWidget::keyPressEvent( QKeyEvent *e )
@@ -73,19 +73,19 @@ void StartWidget::closeEvent( QCloseEvent * )
 void StartWidget::openFavPath()
 {
 	close();
-	m_ViewerCore->openFile( m_ViewerCore->getFavFiles().at( m_Interface.favList->currentItem()->text().toStdString()) );
+	m_ViewerCore->openFile( m_ViewerCore->getSettings()->getFavoriteFiles().at( m_Interface.favList->currentItem()->text().toStdString()) );
 }
 
 void StartWidget::openRecentPath()
 {
 	close();
-	m_ViewerCore->openFile(	m_ViewerCore->getRecentFiles().at( m_Interface.recentList->currentItem()->text().toStdString() ) );
+	m_ViewerCore->openFile(	m_ViewerCore->getSettings()->getFavoriteFiles().at( m_Interface.recentList->currentItem()->text().toStdString() ) );
 }
 
 void StartWidget::showEvent( QShowEvent * )
 {
-	uint16_t width = m_ViewerCore->getOptionMap()->getPropertyAs<uint16_t>( "startWidgetWidth" );
-	uint16_t height = m_ViewerCore->getOptionMap()->getPropertyAs<uint16_t>( "startWidgetHeight" );
+	uint16_t width = m_ViewerCore->getSettings()->getPropertyAs<uint16_t>( "startWidgetWidth" );
+	uint16_t height = m_ViewerCore->getSettings()->getPropertyAs<uint16_t>( "startWidgetHeight" );
 	const QRect screen = QApplication::desktop()->screenGeometry();
 
 	setMaximumHeight( height  );
@@ -93,7 +93,7 @@ void StartWidget::showEvent( QShowEvent * )
 	setMinimumHeight( height );
 	setMinimumWidth( width );
 	const float scale = 0.9;
-	QPixmap pixMap( m_ViewerCore->getOptionMap()->getPropertyAs<std::string>("vastSymbol").c_str() );
+	QPixmap pixMap( m_ViewerCore->getSettings()->getPropertyAs<std::string>("vastSymbol").c_str() );
 	float ratio = pixMap.height() / ( float )pixMap.width() * scale;
 	m_Interface.imageLabel->setMinimumHeight( width * ratio );
 	m_Interface.imageLabel->setMaximumHeight( width * ratio );
@@ -105,12 +105,10 @@ void StartWidget::showEvent( QShowEvent * )
 	m_ViewerCore->getUICore()->getMainWindow()->setEnabled( false );
 	setEnabled( true );
 		m_Interface.buttonFrame->setVisible( true );
-	m_Interface.showMeCheck->setChecked( m_ViewerCore->getOptionMap()->getPropertyAs<bool>( "showStartWidget" ) );
+	m_Interface.showMeCheck->setChecked( m_ViewerCore->getSettings()->getPropertyAs<bool>( "showStartWidget" ) );
 	
-    m_Interface.favoritesLabel->setVisible( fillList( m_ViewerCore->getFavFiles(), m_Interface.favList ) );
-	m_Interface.recentLabel->setVisible( fillList( m_ViewerCore->getRecentFiles(), m_Interface.recentList ) );
-// 	adjustSize();
-
+    m_Interface.favoritesLabel->setVisible( fillList( m_ViewerCore->getSettings()->getFavoriteFiles(), m_Interface.favList ) );
+	m_Interface.recentLabel->setVisible( fillList( m_ViewerCore->getSettings()->getRecentFiles(), m_Interface.recentList ) );
 }
 
 bool StartWidget::fillList ( const FileInformationMap& fileInfoList, QListWidget* list )

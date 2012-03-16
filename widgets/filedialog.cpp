@@ -161,13 +161,13 @@ void isis::viewer::ui::FileDialog::setup()
 		m_Interface.widgetInsertFrame->setVisible( true );
 	}
 
-	m_Interface.favoritesFrame->setVisible( m_ViewerCore->getOptionMap()->getPropertyAs<bool>( "showFavoriteFileList" ) );
-	m_Interface.favoritesCheck->setChecked( m_ViewerCore->getOptionMap()->getPropertyAs<bool>( "showFavoriteFileList" ) );
-	m_Interface.advancedOptionsFrame->setVisible( m_ViewerCore->getOptionMap()->getPropertyAs<bool>( "showAdvancedFileDialogOptions" ) );
-	m_Interface.advancedOptionsCheck->setChecked( m_ViewerCore->getOptionMap()->getPropertyAs<bool>( "showAdvancedFileDialogOptions" ) );
+	m_Interface.favoritesFrame->setVisible( m_ViewerCore->getSettings()->getPropertyAs<bool>( "showFavoriteFileList" ) );
+	m_Interface.favoritesCheck->setChecked( m_ViewerCore->getSettings()->getPropertyAs<bool>( "showFavoriteFileList" ) );
+	m_Interface.advancedOptionsFrame->setVisible( m_ViewerCore->getSettings()->getPropertyAs<bool>( "showAdvancedFileDialogOptions" ) );
+	m_Interface.advancedOptionsCheck->setChecked( m_ViewerCore->getSettings()->getPropertyAs<bool>( "showAdvancedFileDialogOptions" ) );
 	m_Interface.favoriteList->clear();
 
-	BOOST_FOREACH( FileInformationMap::const_reference fileInfo, m_ViewerCore->getFavFiles() ) {
+	BOOST_FOREACH( FileInformationMap::const_reference fileInfo, m_ViewerCore->getSettings()->getFavoriteFiles() ) {
 		unsigned short validFiles;
 		QListWidgetItem *item = new QListWidgetItem( fileInfo.first.c_str() );
 
@@ -187,7 +187,7 @@ void isis::viewer::ui::FileDialog::setup()
 		m_Interface.widgetTypeComboBox->addItem( w.first.c_str() );
 	}
 	m_Interface.widgetTypeframe->setVisible( widgetMap.size() > 1 );
-	m_Interface.widgetTypeComboBox->setCurrentIndex( m_Interface.widgetTypeComboBox->findText( m_ViewerCore->getOptionMap()->getPropertyAs<std::string>("defaultViewWidgetIdentifier").c_str() ) );
+	m_Interface.widgetTypeComboBox->setCurrentIndex( m_Interface.widgetTypeComboBox->findText( m_ViewerCore->getSettings()->getPropertyAs<std::string>("defaultViewWidgetIdentifier").c_str() ) );
 	adjustSize();
 }
 
@@ -324,14 +324,14 @@ void isis::viewer::ui::FileDialog::openPath()
 
 void isis::viewer::ui::FileDialog::advancedChecked( bool advanced )
 {
-	m_ViewerCore->getOptionMap()->setPropertyAs<bool>( "showAdvancedFileDialogOptions", advanced );
+	m_ViewerCore->getSettings()->setPropertyAs<bool>( "showAdvancedFileDialogOptions", advanced );
 	m_Interface.advancedOptionsFrame->setVisible( advanced );
 	adjustSize();
 }
 
 void isis::viewer::ui::FileDialog::favoritesChecked( bool favorites )
 {
-	m_ViewerCore->getOptionMap()->setPropertyAs<bool>( "showFavoriteFileList", favorites );
+	m_ViewerCore->getSettings()->setPropertyAs<bool>( "showFavoriteFileList", favorites );
 	m_Interface.favoritesFrame->setVisible( favorites );
 	adjustSize();
 }
@@ -358,14 +358,14 @@ void isis::viewer::ui::FileDialog::addToFavList()
 {
 	QString pathToAdd = m_Interface.fileDirEdit->currentText();
 	bool has = false;
-	BOOST_FOREACH( FileInformationMap::const_reference fileInfo, m_ViewerCore->getFavFiles() ) {
+	BOOST_FOREACH( FileInformationMap::const_reference fileInfo, m_ViewerCore->getSettings()->getFavoriteFiles() ) {
 		if( fileInfo.first.c_str() == pathToAdd ) {
 			has = true;
 		}
 	}
 	if( !has ) {
 		m_Interface.favoriteList->addItem( pathToAdd );
-		m_ViewerCore->getFavFiles().insertSave( FileInformation( pathToAdd.toStdString(),
+		m_ViewerCore->getSettings()->getFavoriteFiles().insertSave( FileInformation( pathToAdd.toStdString(),
 																m_Dialect,
 																m_Suffix == "auto" ? "" : m_Suffix,
 																m_Interface.widgetTypeComboBox->currentText().toStdString(),
@@ -378,7 +378,7 @@ void isis::viewer::ui::FileDialog::removeFromFavList()
 	QListWidgetItem *itemToRemove = m_Interface.favoriteList->currentItem();
 
 	if( itemToRemove ) {
-		m_ViewerCore->getFavFiles().erase( m_ViewerCore->getFavFiles().find( itemToRemove->text().toStdString() ) );
+		m_ViewerCore->getSettings()->getFavoriteFiles().erase( m_ViewerCore->getSettings()->getFavoriteFiles().find( itemToRemove->text().toStdString() ) );
 		m_Interface.fileDirEdit->clearEditText();
 		setup();
 	}

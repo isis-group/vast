@@ -28,8 +28,6 @@
 #include "viewercorebase.hpp"
 #include "common.hpp"
 
-#include <signal.h>
-
 #define STR(s) _xstr_(s)
 #define _xstr_(s) std::string(#s)
 
@@ -39,13 +37,12 @@ namespace viewer
 {
 
 ViewerCoreBase::ViewerCoreBase( )
-	: m_OptionsMap( boost::shared_ptr< util::PropertyMap >( new util::PropertyMap ) ),
+	: m_Settings( boost::shared_ptr< Settings >( new Settings ) ),
 	  m_CurrentAnatomicalReference( boost::shared_ptr<ImageHolder>() ),
 	  m_Mode( default_mode )
 {
 	
 	util::Singletons::get<color::Color, 10>().initStandardColormaps();
-	setCommonViewerOptions();
 }
 
 ImageHolder::List ViewerCoreBase::addImageList( const std::list< data::Image > imageList, const ImageHolder::ImageType &imageType )
@@ -77,18 +74,18 @@ ImageHolder::Pointer ViewerCoreBase::addImage( const isis::data::Image &image, c
 	}
 	//setting the lutStructural
 	if( imageType == ImageHolder::structural_image ) {
-		retImage->getImageProperties().lut = getOptionMap()->getPropertyAs<std::string>( "lutStructural" );
+		retImage->getImageProperties().lut = getSettings()->getPropertyAs<std::string>( "lutStructural" );
 
 		if( !util::Singletons::get<color::Color, 10>().hasColormap( retImage->getImageProperties().lut ) ) {
 			retImage->getImageProperties().lut = std::string( "standard_grey_values" );
-			getOptionMap()->setPropertyAs<std::string>( "lutStructural", retImage->getImageProperties().lut );
+			getSettings()->setPropertyAs<std::string>( "lutStructural", retImage->getImageProperties().lut );
 		}
 	} else {
-		retImage->getImageProperties().lut = getOptionMap()->getPropertyAs<std::string>( "lutZMap" );
+		retImage->getImageProperties().lut = getSettings()->getPropertyAs<std::string>( "lutZMap" );
 
 		if( !util::Singletons::get<color::Color, 10>().hasColormap( retImage->getImageProperties().lut ) ) {
 			retImage->getImageProperties().lut = std::string( "standard_zmap" );
-			getOptionMap()->setPropertyAs<std::string>( "lutZMap", retImage->getImageProperties().lut );
+			getSettings()->setPropertyAs<std::string>( "lutZMap", retImage->getImageProperties().lut );
 		}
 
 	}
@@ -124,74 +121,13 @@ ImageHolder::Pointer ViewerCoreBase::getCurrentImage()
 }
 
 
-std::string ViewerCoreBase::getVersion() const
+std::string ViewerCoreBase::getVersion() 
 {
 #ifdef VAST_RCS_REVISION
         return STR( _VAST_VERSION_MAJOR ) + "." + STR( _VAST_VERSION_MINOR ) + "." + STR( _VAST_VERSION_PATCH ) + " [" + STR( VAST_RCS_REVISION ) + "]";
 #else
         return STR( _VAST_VERSION_MAJOR ) + "." + STR( _VAST_VERSION_MINOR ) + "." + STR( _VAST_VERSION_PATCH );
 #endif
-}
-
-
-
-void ViewerCoreBase::setCommonViewerOptions()
-{
-	m_OptionsMap->setPropertyAs<bool>( "zmapGlobal", false );
-	m_OptionsMap->setPropertyAs<bool>("visualizeOnlyFirstVista", false );
-	m_OptionsMap->setPropertyAs<bool>( "propagateZooming", false );
-	m_OptionsMap->setPropertyAs<uint16_t>( "interpolationType" , 0 );
-	m_OptionsMap->setPropertyAs<bool>( "showLables", false );
-	m_OptionsMap->setPropertyAs<bool>( "showCrosshair", true );
-	m_OptionsMap->setPropertyAs<uint16_t>( "minMaxSearchRadius", 20 );
-	m_OptionsMap->setPropertyAs<bool>( "showAdvancedFileDialogOptions", false );
-	m_OptionsMap->setPropertyAs<bool>( "showFavoriteFileList", false );
-	m_OptionsMap->setPropertyAs<uint16_t>( "maxWidgetHeight", 200 );
-	m_OptionsMap->setPropertyAs<uint16_t>( "maxWidgetWidth", 200 );
-	m_OptionsMap->setPropertyAs<uint16_t>( "maxOptionWidgetHeight", 90 );
-	m_OptionsMap->setPropertyAs<uint16_t>( "minOptionWidgetHeight", 90 );
-	m_OptionsMap->setPropertyAs<bool>( "showStartWidget", true );
-	m_OptionsMap->setPropertyAs<bool>( "showCrashMessage", true );
-	m_OptionsMap->setPropertyAs<uint16_t>( "startWidgetHeight", 600 );
-	m_OptionsMap->setPropertyAs<uint16_t>( "startWidgetWidth", 400 );
-	m_OptionsMap->setPropertyAs<uint16_t>( "viewerWidgetMargin", 5 );
-	m_OptionsMap->setPropertyAs<std::string>("fallbackWidgetIdentifier", "qt4_plane_widget" );
-	m_OptionsMap->setPropertyAs<std::string>("defaultViewWidgetIdentifier", m_OptionsMap->getPropertyAs<std::string>("fallbackWidgetIdentifier") );
-	//omp
-	m_OptionsMap->setPropertyAs<uint16_t>( "numberOfThreads", 0 );
-	m_OptionsMap->setPropertyAs<bool>( "ompAvailable", false );
-	m_OptionsMap->setPropertyAs<bool>( "enableMultithreading", false );
-	m_OptionsMap->setPropertyAs<uint16_t>( "initialMaxNumberThreads", 4 );
-	m_OptionsMap->setPropertyAs<bool>( "useAllAvailableThreads", false );
-	m_OptionsMap->setPropertyAs<uint16_t>( "maxNumberOfThreads", 1 );
-	//screenshot
-	m_OptionsMap->setPropertyAs<uint16_t>( "screenshotQuality", 70 );
-	m_OptionsMap->setPropertyAs<uint16_t>( "screenshotWidth", 700 );
-	m_OptionsMap->setPropertyAs<uint16_t>( "screenshotHeight", 700 );
-	m_OptionsMap->setPropertyAs<uint16_t>( "screenshotDPIX", 300 );
-	m_OptionsMap->setPropertyAs<uint16_t>( "screenshotDPIY", 300 );
-	m_OptionsMap->setPropertyAs<bool>( "screenshotManualScaling", false );
-	m_OptionsMap->setPropertyAs<bool>( "screenshotKeepAspectRatio", true );
-	//lut
-	m_OptionsMap->setPropertyAs<std::string>( "lutStructural", "standard_grey_values" );
-	m_OptionsMap->setPropertyAs<std::string>( "lutZMap", "standard_zmap" );
-	//misc
-	m_OptionsMap->setPropertyAs<uint16_t>( "timeseriesPlayDelayTime", 50 );
-	m_OptionsMap->setPropertyAs<bool>( "histogramOmitZero", true );
-	m_OptionsMap->setPropertyAs<uint16_t>("maxRecentOpenListSize", 10 );
-	//logging
-	m_OptionsMap->setPropertyAs<uint16_t>( "logDelayTime", 6000 );
-	m_OptionsMap->setPropertyAs<bool>( "showErrorMessages", true );
-	m_OptionsMap->setPropertyAs<bool>( "showNoticeMessages", true );
-	m_OptionsMap->setPropertyAs<bool>( "showWarningMessages", false );
-	m_OptionsMap->setPropertyAs<bool>( "showInfoMessages", false );
-	m_OptionsMap->setPropertyAs<bool>( "showVerboseInfoMessages", false );
-	m_OptionsMap->setPropertyAs<std::string>("vastSymbol", std::string(":/common/minerva-MPG.png") );
-
-	std::stringstream signature;
-	signature << "vast v" << getVersion() ;
-	m_OptionsMap->setPropertyAs<std::string>( "signature", signature.str() );
-        m_OptionsMap->setPropertyAs<std::string>( "copyright", "2012 Max Planck Institute for Human and Brain Science Leipzig");
 }
 
 
