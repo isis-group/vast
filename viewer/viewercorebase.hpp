@@ -84,6 +84,7 @@ private:
 	//this is the container which actually holds all the images
 	DataContainer m_DataContainer;
 	ImageHolder::Pointer  m_CurrentImage;
+	void initOMP();
 
 protected:
 	boost::shared_ptr<Settings> m_Settings;
