@@ -317,6 +317,7 @@ WidgetEnsemble UICore::getCurrentEnsemble() const
 				return ensemble;
 			}
 		}
+		return getEnsembleList().front();
 	} else {
 		LOG( Dev, error ) << "Viewer has no ensemble yet. So can not pick the current one!";
 	}
