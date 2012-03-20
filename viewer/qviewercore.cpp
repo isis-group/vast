@@ -379,9 +379,7 @@ void QViewerCore::openFileList(const std::list< FileInformation > fileInfoList)
 		}
 	}
 	WidgetEnsemble::List widgetList = getUICore()->getEnsembleList();
-	if ( widgetList.empty() ) {
-		widgetList.push_back( getUICore()->createViewWidgetEnsemble(fileInfoList.front().getWidgetIdentifier()));
-	}
+
 	// in statistical_mode we ignore the newEnsemble parameter and open as many ensembles as we have statistical images
 	// we also ignore the amount of structural images, taking only the first and using it to underlay it
 	if( getMode() == statistical_mode ) {
@@ -404,7 +402,11 @@ void QViewerCore::openFileList(const std::list< FileInformation > fileInfoList)
 			}
 		}
 	} else {
-		if ( widgetList.size() && !fileInfoList.front().isNewEnsemble() ) {
+
+		if ( !fileInfoList.front().isNewEnsemble() ) {
+			if ( widgetList.empty() ) {
+				widgetList.push_back( getUICore()->createViewWidgetEnsemble(fileInfoList.front().getWidgetIdentifier()));
+			}
 			BOOST_FOREACH( ImageHolder::List::const_reference image, structuralImageList ) {
 				getUICore()->attachImageToEnsemble( image, getUICore()->getCurrentEnsemble() );
 			}
