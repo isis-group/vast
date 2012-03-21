@@ -22,36 +22,13 @@
  *
  * Description:
  *
- *  Created on: Mar 06, 2011
+ *  Created on: Mar 06, 2012
  *      Author: tuerke
  ******************************************************************/
-
 #include "widgetensemble.hpp"
 
 namespace isis {
 namespace viewer {
-	
-WidgetEnsembleComponent::WidgetEnsembleComponent ( QFrame* frame, QDockWidget* dockWidget, QWidget* placeHolder, widget::WidgetInterface* widgetImplementation )
-	: m_frame( frame ),
-	m_dockWidget( dockWidget ),
-	m_placeHolder( placeHolder ),
-	m_widgetImplementation( widgetImplementation ),
-	m_hasCurrentImage( false ),
-	m_needed(true)
-{}
-
-bool WidgetEnsembleComponent::checkIfNeeded()
-{
-	bool needed = false;
-	BOOST_FOREACH( ImageHolder::List::const_reference image, getWidgetInterface()->getImageList() ) {
-		const util::ivector4 mappedSize = mapCoordsToOrientation( image->getImageSize(), image->getImageProperties().latchedOrientation, getWidgetInterface()->getPlaneOrientation() );
-		if( mappedSize[0] > 1 && mappedSize[1] > 1 ) {
-			needed = true;
-		}
-	}
-	m_needed = needed;
-	return needed;
-}
 
 WidgetEnsemble::WidgetEnsemble()
 	: m_frame( new QFrame() ),
@@ -92,11 +69,38 @@ void WidgetEnsemble::removeImage ( const ImageHolder::Pointer image )
 
 }
 
-
 void WidgetEnsemble::insertComponent ( WidgetEnsembleComponent component )
 {
 	push_back( component );
 	m_layout->addWidget( component.getDockWidget(), 0, m_cols++ );
+}
+
+bool WidgetEnsemble::hasImage ( const ImageHolder::Pointer image )
+{
+	return find( m_imageList.begin(), m_imageList.end(), image ) != m_imageList.end();
+}
+
+
+void WidgetEnsemble::setIsCurrent ( bool current )
+{
+	m_isCurrent = current;
+	if( current ) {
+		QPalette pal;
+		pal.setColor( QPalette::Background, QColor( 119, 136, 153 ) );
+		BOOST_FOREACH( std::vector<WidgetEnsembleComponent>::reference ensembleComponent, *this ) {
+			ensembleComponent.getFrame()->setFrameStyle( QFrame::WinPanel | QFrame::Raised );
+			ensembleComponent.getFrame()->setLineWidth( 1 );
+			ensembleComponent.getFrame()->setPalette( pal );
+			ensembleComponent.getFrame()->setAutoFillBackground( true );
+			ensembleComponent.getWidgetInterface()->setCrossHairColor( Qt::white );
+		}
+	} else {
+		BOOST_FOREACH( std::vector<WidgetEnsembleComponent>::reference ensembleComponent, *this ) {
+			ensembleComponent.getFrame()->setFrameStyle( 0 );
+			ensembleComponent.getFrame()->setAutoFillBackground( false );
+			ensembleComponent.getWidgetInterface()->setCrossHairColor( QColor( 255, 102, 0 ) );
+		}
+	}
 }
 
 

@@ -22,65 +22,19 @@
  *
  * Description:
  *
- *  Created on: Mar 06, 2011
+ *  Created on: Mar 06, 2012
  *      Author: tuerke
  ******************************************************************/
 
 #ifndef VAST_WIDGET_ENSEMBLE_HPP
 #define VAST_WIDGET_ENSEMBLE_HPP
 
-#include <QFrame>
-#include <QDockWidget>
 #include <map>
 #include <list>
-#include "widgetinterface.h"
+#include "widgetensemblecomponent.hpp"
 
-
-namespace isis
-{
-namespace viewer
-{
-
-class WidgetEnsembleComponent
-{
-
-public:
-	///map to associate a WidgetEnsembleComponent with a WidgetInterface raw pointer
-	typedef std::map< widget::WidgetInterface *, WidgetEnsembleComponent > Map;
-
-	WidgetEnsembleComponent( QFrame *frame, QDockWidget *dockWidget, QWidget *placeHolder, widget::WidgetInterface *widgetImplementation );
-
-	// == operator to hold them in a std::map
-	bool operator==( const WidgetEnsembleComponent &other ) const { return m_widgetImplementation == other.m_widgetImplementation; }
-
-	QFrame *getFrame() { return m_frame; }
-	const QFrame *getFrame() const { return m_frame; }
-
-	QDockWidget *getDockWidget() { return m_dockWidget; }
-	const QDockWidget *getDockWidget() const { return m_dockWidget; }
-
-	QWidget *getPlaceHolder() { return m_placeHolder; }
-	const QWidget *getPlaceHolder() const { return m_placeHolder; }
-
-	widget::WidgetInterface *getWidgetInterface() { return m_widgetImplementation; }
-	const widget::WidgetInterface *getWidgetInterface() const { return m_widgetImplementation; }
-
-	bool hasCurrentImage() const { return m_hasCurrentImage; }
-
-	void setHasCurrentImage( bool hasCurrentImage ) { m_hasCurrentImage = hasCurrentImage; }
-
-	bool isNeeded() const { return m_needed; }
-
-	bool checkIfNeeded();
-
-private:
-	QFrame *m_frame;
-	QDockWidget *m_dockWidget;
-	QWidget *m_placeHolder;
-	widget::WidgetInterface *m_widgetImplementation;
-	bool m_hasCurrentImage;
-	bool m_needed;
-};
+namespace isis {
+namespace viewer {
 
 class WidgetEnsemble : public std::vector< WidgetEnsembleComponent >
 {
@@ -100,12 +54,20 @@ public:
 	void addImage( const ImageHolder::Pointer image );
 	void removeImage( const ImageHolder::Pointer image );
 
+	bool hasImage( const ImageHolder::Pointer image );
+
+	ImageHolder::List getImageList() const { return m_imageList; }
+
+	void setIsCurrent( bool current );
+	bool isCurrent() const { return m_isCurrent; }
+
 private:
 	QFrame *m_frame;
 	QGridLayout *m_layout;
 	unsigned short m_cols;
 	void push_back( const value_type &value ) { std::vector< WidgetEnsembleComponent >::push_back( value ); }
 	ImageHolder::List m_imageList;
+	bool m_isCurrent;
 };
 
 

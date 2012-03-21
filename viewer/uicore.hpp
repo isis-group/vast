@@ -71,7 +71,6 @@ public:
 
 	virtual void attachWidgetEnsemble( WidgetEnsemble ensemble );
 
-	virtual bool attachImageToWidget( ImageHolder::Pointer image, widget::WidgetInterface *widget );
 	virtual void attachImageToEnsemble( ImageHolder::Pointer image, WidgetEnsemble ensemble );
 	virtual void attachImageListToEnsemble( ImageHolder::List imageList, WidgetEnsemble ensemble );
 
@@ -92,7 +91,7 @@ public:
 
 public Q_SLOTS:
 	virtual void reloadPluginsToGUI();
-	virtual void refreshUI( bool complete = true );
+	virtual void refreshUI( );
 	void showInformationAreas( bool );
 
 

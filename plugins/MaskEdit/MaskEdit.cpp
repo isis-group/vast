@@ -165,17 +165,11 @@ void MaskEditDialog::editCurrentImage()
 		m_Interface.radius->setEnabled( true );
 		m_Interface.paint->setChecked( true );
 		BOOST_FOREACH( WidgetEnsemble::List::reference ensemble, m_ViewerCore->getUICore()->getEnsembleList() ) {
-			ImageHolder::List iList;
-
-			BOOST_FOREACH( WidgetEnsemble::reference ensembleComponent, ensemble ) {
-				iList = ensembleComponent.getWidgetInterface()->getImageList();
-
-				if( std::find( iList.begin(), iList.end(), m_CurrentMask ) != iList.end() ) {
-					m_CurrentWidgetEnsemble = ensemble;
-					m_ViewerCore->getUICore()->attachImageToWidget( m_CurrentMask, ensembleComponent.getWidgetInterface() ) ;
+			if( ensemble.isCurrent() ) {
+				m_CurrentWidgetEnsemble = ensemble;
+				BOOST_FOREACH( WidgetEnsemble::reference ensembleComponent, ensemble ) {
 					ensembleComponent.getWidgetInterface()->setMouseCursorIcon( QIcon( ":/common/paintCrosshair.png" ) );
-					ensembleComponent.getWidgetInterface()->setEnableCrosshair( false );
-
+					ensembleComponent.getWidgetInterface()->setEnableCrosshair( false );					
 				}
 			}
 		}

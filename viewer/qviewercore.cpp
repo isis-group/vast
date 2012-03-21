@@ -351,7 +351,7 @@ ImageHolder::List QViewerCore::openFile ( const FileInformation &fileInfo, bool 
 						getUICore()->attachImageToEnsemble( image, getUICore()->getCurrentEnsemble() );
 					}
 				}
-			getUICore()->refreshUI(false);
+			getUICore()->refreshUI();
 			}
 		}
 		getUICore()->getMainWindow()->toggleLoadingIcon(false);

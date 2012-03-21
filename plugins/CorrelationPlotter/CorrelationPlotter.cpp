@@ -109,13 +109,8 @@ void isis::viewer::plugin::CorrelationPlotterDialog::showEvent( QShowEvent * )
 			if ( !m_CurrentCorrelationMap ) {
 				createCorrelationMap() ;
 				BOOST_FOREACH( WidgetEnsemble::List::reference ensemble, m_ViewerCore->getUICore()->getEnsembleList() ) {
-					ImageHolder::List iList;
-
-					BOOST_FOREACH( WidgetEnsemble::reference ensembleComponent, ensemble ) {
-						iList = ensembleComponent.getWidgetInterface()->getImageList();
-						if( std::find( iList.begin(), iList.end(), m_CurrentFunctionalImage ) != iList.end() ) {
-							m_ViewerCore->getUICore()->attachImageToWidget( m_CurrentCorrelationMap, ensembleComponent.getWidgetInterface() ) ;
-						}
+					if( ensemble.hasImage( m_CurrentFunctionalImage ) ) {
+						ensemble.addImage( m_CurrentCorrelationMap );
 					}
 				}
 			}
@@ -129,7 +124,6 @@ void isis::viewer::plugin::CorrelationPlotterDialog::showEvent( QShowEvent * )
 			m_ViewerCore->getUICore()->refreshUI();
 
 		}
-
 		physicalCoordsChanged( m_CurrentFunctionalImage->getImageProperties().physicalCoords );
 	}
 

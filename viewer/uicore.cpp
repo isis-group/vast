@@ -93,30 +93,14 @@ void UICore::showMainWindow()
 
 void UICore::attachImageToEnsemble ( ImageHolder::Pointer image, WidgetEnsemble ensemble )
 {
-	BOOST_FOREACH( WidgetEnsemble::reference ensembleComponent, ensemble ) {
-		attachImageToWidget( image, ensembleComponent.getWidgetInterface() );
-	}
+	ensemble.addImage( image );
 }
 
 void UICore::attachImageListToEnsemble ( ImageHolder::List imageList, WidgetEnsemble ensemble )
 {	
 	BOOST_FOREACH( ImageHolder::List::const_reference image, imageList ) {
-		BOOST_FOREACH( WidgetEnsemble::reference ensembleComponent, ensemble ) {
-			attachImageToWidget( image, ensembleComponent.getWidgetInterface() );
-		}
+		ensemble.addImage( image );
 	}	
-}
-
-bool UICore::attachImageToWidget ( ImageHolder::Pointer image, widget::WidgetInterface* widget )
-{
-	if ( getWidgets().find ( widget ) == getWidgets().end() )
-	{
-		LOG ( Runtime, error ) << "There is no such widget "
-							   << widget << ", so will not add image " << image->getFileNames().front() << " to it.";
-		return false;
-	}
-	widget->addImage ( image );
-	return true;
 }
 
 
@@ -202,9 +186,6 @@ void UICore::removeWidgetEnsemble( WidgetEnsemble ensemble )
 void UICore::attachWidgetEnsemble( WidgetEnsemble ensemble )
 {
 	m_MainWindow->getInterface().centralGridLayout->addWidget( ensemble.getFrame() );
-	if( ensemble.front().getWidgetInterface()->hasOptionWidget() ) {
-// 		m_MainWindow->getInterface().leftGridLayout->addWidget( ensemble.front().getWidgetInterface()->getOptionWidget(), 0, 0 );
-	}
 }
 
 void UICore::removeAllWidgetEnsembles()
@@ -243,82 +224,32 @@ void UICore::reloadPluginsToGUI()
 	m_MainWindow->reloadPluginsToGUI();
 }
 
-void UICore::refreshUI( bool complete )
+void UICore::refreshUI()
 {
-	//refresh peripheral 
-	
-	if( complete ) {
-		m_SliderWidget->synchronize();
-		m_ImageStackWidget->synchronize();
-		m_VoxelInformationWidget->synchronize();
-	}
+	//refresh peripherals
+	m_SliderWidget->synchronize();
+	m_ImageStackWidget->synchronize();
+	m_VoxelInformationWidget->synchronize();
+	m_MainWindow->refreshUI();
+	m_VoxelInformationWidget->setVisible( m_ViewerCore->hasImage() );
+	m_ImageStackWidget->setVisible( m_ViewerCore->hasImage() );
+	m_SliderWidget->setVisible( m_ViewerCore->hasImage() );
 	BOOST_FOREACH( WidgetEnsemble::List::reference ensemble, getEnsembleList() ) {
-		ImageHolder::List iList = ensemble.front().getWidgetInterface()->getImageList();
-
-		if( !iList.size() ) {
-			ensemble.front().getDockWidget()->setVisible( false );
-		} else {
-			ensemble.front().getDockWidget()->setVisible( true );
-		}
-
-		//go through all the images and check if we need this widget ( 2d data? )
-		bool widgetNeeded = false;
-		BOOST_FOREACH( ImageHolder::List::const_reference image, iList ) {
-			const util::ivector4 mappedSize = mapCoordsToOrientation( image->getImageSize(), image->getImageProperties().latchedOrientation, ensemble.front().getWidgetInterface()->getPlaneOrientation() );
-
-			if( mappedSize[0] > 1 && mappedSize[1] > 1 ) {
-				widgetNeeded = true;
-			}
-		}
-		if ( m_ViewerCore->hasImage() ) {
-			BOOST_FOREACH( WidgetEnsemble::reference ensembleComponent, ensemble ) {
-				ensembleComponent.getWidgetInterface()->setCrossHairWidth( 1 );
-				ensembleComponent.getDockWidget()->setVisible( widgetNeeded );
-
-				ensembleComponent.setHasCurrentImage( std::find( iList.begin(), iList.end(), m_ViewerCore->getCurrentImage() ) != iList.end() );
-				if( ensembleComponent.hasCurrentImage() ) {
-					QPalette pal;
-					pal.setColor( QPalette::Background, QColor( 119, 136, 153 ) );
-					ensembleComponent.getFrame()->setFrameStyle( QFrame::WinPanel | QFrame::Raised );
-					ensembleComponent.getFrame()->setLineWidth( 1 );
-					ensembleComponent.getFrame()->setPalette( pal );
-					ensembleComponent.getFrame()->setAutoFillBackground( true );
-
-					if( m_ViewerCore->getMode() == ViewerCoreBase::statistical_mode ) {
-						ensembleComponent.getWidgetInterface()->setCrossHairColor( Qt::white );
-						ensembleComponent.getWidgetInterface()->updateScene();
-					}
-				} else {
-					ensembleComponent.getFrame()->setFrameStyle( 0 );
-					ensembleComponent.getFrame()->setAutoFillBackground( false );
-
-					if ( m_ViewerCore->getMode() == ViewerCoreBase::statistical_mode ) {
-						ensembleComponent.getWidgetInterface()->setCrossHairColor( QColor( 255, 102, 0 ) );
-						ensembleComponent.getWidgetInterface()->updateScene();
-					}
-				}
-				if( m_ViewerCore->getMode() != ViewerCoreBase::statistical_mode ) {
-					ensembleComponent.getWidgetInterface()->setCrossHairColor( QColor( 255, 102, 0 ) );
-				}
-			}
-		}
+		//if the ensemble contains the current image, set it to current ensemble
+		ensemble.setIsCurrent(find( ensemble.getImageList().begin(), ensemble.getImageList().end(), m_ViewerCore->getCurrentImage() ) != ensemble.getImageList().end());
 	}
-	if( complete ) {
-		m_MainWindow->refreshUI();
-		m_VoxelInformationWidget->setVisible( m_ViewerCore->hasImage() );
-		m_ImageStackWidget->setVisible( m_ViewerCore->hasImage() );
-		m_SliderWidget->setVisible( m_ViewerCore->hasImage() );
-	}
+
 }
 
 WidgetEnsemble UICore::getCurrentEnsemble() const
 {
 	if( getEnsembleList().size() ) {
 		BOOST_FOREACH( WidgetEnsemble::List::const_reference ensemble, getEnsembleList() ) {
-			if( ensemble.front().hasCurrentImage() ) {
+			if( ensemble.isCurrent() ) {
 				return ensemble;
 			}
 		}
+		LOG( Dev, warning ) << "There is no ensemble that things it is the current one!";
 		return getEnsembleList().front();
 	} else {
 		LOG( Dev, error ) << "Viewer has no ensemble yet. So can not pick the current one!";
@@ -332,7 +263,6 @@ bool UICore::registerEnsembleComponent( WidgetEnsembleComponent component )
 		LOG( Runtime, warning ) << "Widget with id" << component.getWidgetInterface()->getWidgetName() << "!";
 		return false;
 	}
-
 	m_WidgetMap.insert( std::make_pair< widget::WidgetInterface*, WidgetEnsembleComponent >( component.getWidgetInterface(), component ) );
 	return true;
 
