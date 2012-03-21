@@ -69,6 +69,9 @@ public:
 
 	void setHasCurrentImage( bool hasCurrentImage ) { m_hasCurrentImage = hasCurrentImage; }
 
+	bool isNeeded() const { return m_needed; }
+
+	bool checkIfNeeded();
 
 private:
 	QFrame *m_frame;
@@ -76,13 +79,13 @@ private:
 	QWidget *m_placeHolder;
 	widget::WidgetInterface *m_widgetImplementation;
 	bool m_hasCurrentImage;
+	bool m_needed;
 };
 
 class WidgetEnsemble : public std::vector< WidgetEnsembleComponent >
 {
 public:
 	typedef std::list< WidgetEnsemble > List;
-
 
 	WidgetEnsemble();
 
@@ -94,11 +97,15 @@ public:
 
 	void insertComponent( WidgetEnsembleComponent component );
 
+	void addImage( const ImageHolder::Pointer image );
+	void removeImage( const ImageHolder::Pointer image );
+
 private:
 	QFrame *m_frame;
 	QGridLayout *m_layout;
 	unsigned short m_cols;
 	void push_back( const value_type &value ) { std::vector< WidgetEnsembleComponent >::push_back( value ); }
+	ImageHolder::List m_imageList;
 };
 
 

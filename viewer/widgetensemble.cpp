@@ -36,9 +36,21 @@ WidgetEnsembleComponent::WidgetEnsembleComponent ( QFrame* frame, QDockWidget* d
 	m_dockWidget( dockWidget ),
 	m_placeHolder( placeHolder ),
 	m_widgetImplementation( widgetImplementation ),
-	m_hasCurrentImage( false )
-{
+	m_hasCurrentImage( false ),
+	m_needed(true)
+{}
 
+bool WidgetEnsembleComponent::checkIfNeeded()
+{
+	bool needed = false;
+	BOOST_FOREACH( ImageHolder::List::const_reference image, getWidgetInterface()->getImageList() ) {
+		const util::ivector4 mappedSize = mapCoordsToOrientation( image->getImageSize(), image->getImageProperties().latchedOrientation, getWidgetInterface()->getPlaneOrientation() );
+		if( mappedSize[0] > 1 && mappedSize[1] > 1 ) {
+			needed = true;
+		}
+	}
+	m_needed = needed;
+	return needed;
 }
 
 WidgetEnsemble::WidgetEnsemble()
@@ -51,6 +63,34 @@ WidgetEnsemble::WidgetEnsemble()
 	m_frame->setContentsMargins(0,0,0,0);
 }
 
+void WidgetEnsemble::addImage ( const ImageHolder::Pointer image )
+{
+	if( find( m_imageList.begin(), m_imageList.end(), image ) == m_imageList.end()  ) {
+		m_imageList.push_back( image );
+		BOOST_FOREACH( std::vector<WidgetEnsembleComponent>::reference ensembleComponent, *this ) {
+			ensembleComponent.getWidgetInterface()->addImage( image );
+			ensembleComponent.checkIfNeeded();
+		}
+	} else {
+		LOG( Dev, warning ) << "Trying to add image " << image->getFileNames().front() << ". But this image already exists in ensemble";
+	}
+
+}
+
+void WidgetEnsemble::removeImage ( const ImageHolder::Pointer image )
+{
+	ImageHolder::List::iterator iter = find( m_imageList.begin(), m_imageList.end(), image );
+	if( iter != m_imageList.end() ) {
+		m_imageList.erase( iter );
+		BOOST_FOREACH( std::vector<WidgetEnsembleComponent>::reference ensembleComponent, *this ) {
+			ensembleComponent.getWidgetInterface()->removeImage( image );
+			ensembleComponent.checkIfNeeded();
+		}
+	} else {
+		LOG( Dev, warning )  << "Trying to remove image " << image->getFileNames().front() << " from ensemble. But this ensemble has no such image.";
+	}
+
+}
 
 
 void WidgetEnsemble::insertComponent ( WidgetEnsembleComponent component )

@@ -245,6 +245,8 @@ void UICore::reloadPluginsToGUI()
 
 void UICore::refreshUI( bool complete )
 {
+	//refresh peripheral 
+	
 	if( complete ) {
 		m_SliderWidget->synchronize();
 		m_ImageStackWidget->synchronize();
