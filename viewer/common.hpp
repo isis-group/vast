@@ -53,6 +53,8 @@ typedef isis::util::color24 InternalImageColorType;
 enum PlaneOrientation { axial, sagittal, coronal, not_specified };
 enum InterpolationType { nn = 0, lin };
 
+const unsigned short dim_time = 3;
+
 template<typename TYPE>
 TYPE roundNumber( TYPE number, unsigned  short placesOfDec )
 {
@@ -75,11 +77,7 @@ util::fvector4 mapCoordsToOrientation( const util::fvector4 &coords, const boost
 
 std::string getCrashLogFilePath();
 
-namespace logging
-{
 
-
-}
 
 }
 }
