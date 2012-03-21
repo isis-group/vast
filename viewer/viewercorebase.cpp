@@ -41,8 +41,32 @@ ViewerCoreBase::ViewerCoreBase( )
 	  m_CurrentAnatomicalReference( boost::shared_ptr<ImageHolder>() ),
 	  m_Mode( default_mode )
 {
-	
+	initOMP();
 	util::Singletons::get<color::Color, 10>().initStandardColormaps();
+}
+ 
+void ViewerCoreBase::initOMP()
+{
+#ifdef _OPENMP
+	const uint16_t nMaxThreads = omp_get_num_procs();
+	getSettings()->setPropertyAs<uint16_t>("maxNumberOfThreads", nMaxThreads);
+	if( getSettings()->getPropertyAs<uint16_t> ( "numberOfThreads" ) == 0 ) {
+		if( nMaxThreads <= getSettings()->getPropertyAs<uint16_t>("initialMaxNumberThreads" ) ) {
+			getSettings()->setPropertyAs<uint16_t> ( "numberOfThreads", nMaxThreads );
+			getSettings()->setPropertyAs<bool> ( "useAllAvailableThreads", true );
+		} else {
+			getSettings()->setPropertyAs<uint16_t> ( "numberOfThreads", getSettings()->getPropertyAs<uint16_t>("initialMaxNumberThreads" ) );
+		}
+		getSettings()->setPropertyAs<bool> ( "enableMultithreading", true );
+	}
+	if( getSettings()->getPropertyAs<bool>( "useAllAvailableThreads" ) ) {
+		getSettings()->setPropertyAs<uint16_t> ( "numberOfThreads", nMaxThreads );
+	}
+	omp_set_num_threads ( getSettings()->getPropertyAs<uint16_t> ( "numberOfThreads" ) );
+	getSettings()->setPropertyAs<bool> ( "ompAvailable", true );
+#else
+	getSettings()->setPropertyAs<bool> ( "ompAvailable", false );
+#endif
 }
 
 ImageHolder::List ViewerCoreBase::addImageList( const std::list< data::Image > imageList, const ImageHolder::ImageType &imageType )

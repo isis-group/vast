@@ -55,26 +55,7 @@ QViewerCore::QViewerCore ( const std::string &appName, const std::string &orgNam
 	operation::NativeImageOps::setProgressFeedBack ( m_ProgressFeedback );
 	m_Settings->load();
 	getUICore()->refreshUI();
-#ifdef _OPENMP
-	const uint16_t nMaxThreads = omp_get_num_procs();
-	getSettings()->setPropertyAs<uint16_t>("maxNumberOfThreads", nMaxThreads);
-	if( getSettings()->getPropertyAs<uint16_t> ( "numberOfThreads" ) == 0 ) {
-		if( nMaxThreads <= getSettings()->getPropertyAs<uint16_t>("initialMaxNumberThreads" ) ) {
-			getSettings()->setPropertyAs<uint16_t> ( "numberOfThreads", nMaxThreads );
-			getSettings()->setPropertyAs<bool> ( "useAllAvailableThreads", true );
-		} else {
-			getSettings()->setPropertyAs<uint16_t> ( "numberOfThreads", getSettings()->getPropertyAs<uint16_t>("initialMaxNumberThreads" ) );
-		}
-		getSettings()->setPropertyAs<bool> ( "enableMultithreading", true );
-	}
-	if( getSettings()->getPropertyAs<bool>( "useAllAvailableThreads" ) ) {
-		getSettings()->setPropertyAs<uint16_t> ( "numberOfThreads", nMaxThreads );
-	}
-	omp_set_num_threads ( getSettings()->getPropertyAs<uint16_t> ( "numberOfThreads" ) );
-	getSettings()->setPropertyAs<bool> ( "ompAvailable", true );
-#else
-	getSettings()->setPropertyAs<bool> ( "ompAvailable", false );
-#endif
+
 	checkForErrors();
 }
 
@@ -398,6 +379,7 @@ void QViewerCore::openFileList(const std::list< FileInformation > fileInfoList)
 		}
 	}
 	WidgetEnsemble::List widgetList = getUICore()->getEnsembleList();
+
 	// in statistical_mode we ignore the newEnsemble parameter and open as many ensembles as we have statistical images
 	// we also ignore the amount of structural images, taking only the first and using it to underlay it
 	if( getMode() == statistical_mode ) {
@@ -420,7 +402,11 @@ void QViewerCore::openFileList(const std::list< FileInformation > fileInfoList)
 			}
 		}
 	} else {
-		if ( widgetList.size() && !fileInfoList.front().isNewEnsemble() ) {
+
+		if ( !fileInfoList.front().isNewEnsemble() ) {
+			if ( widgetList.empty() ) {
+				widgetList.push_back( getUICore()->createViewWidgetEnsemble(fileInfoList.front().getWidgetIdentifier()));
+			}
 			BOOST_FOREACH( ImageHolder::List::const_reference image, structuralImageList ) {
 				getUICore()->attachImageToEnsemble( image, getUICore()->getCurrentEnsemble() );
 			}

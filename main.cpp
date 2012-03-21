@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * Author: Erik Türke, tuerke@cbs.mpg.de
+ * Author: Erik Tuerke, tuerke@cbs.mpg.de
  *
  * main.cpp
  *
@@ -156,7 +156,7 @@ int main( int argc, char *argv[] )
 								app.parameters["rf"].as<std::string>().c_str(),
 								widget_name,
 								ImageHolder::structural_image,
-								app.parameters["split"] ) );
+								app.parameters["split"].as<bool>() ) );
 	}
 	BOOST_FOREACH( util::slist::const_reference file, zmapFileList ) {
 		fileInfoList.push_back( FileInformation( file,
@@ -164,7 +164,7 @@ int main( int argc, char *argv[] )
 								app.parameters["rf"].as<std::string>().c_str(),
 								widget_name,
 								ImageHolder::statistical_image,
-								app.parameters["split"] ) );
+								app.parameters["split"].as<bool>() ) );
 	}
 
 	core->openFileList( fileInfoList );

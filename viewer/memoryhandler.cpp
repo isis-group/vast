@@ -35,8 +35,8 @@ util::ivector4 MemoryHandler::get32BitAlignedSize ( const util::ivector4& origSi
 {
 	util::ivector4 retSize;
 
-	for ( size_t i = 0; i < 4; i++ ) {
-		int m = origSize[i] % 4;
+	for ( util::ivector4::value_type i = 0; i < 4; i++ ) {
+		const int m = origSize[i] % 4;
 
 		if( m > 0 ) {
 			retSize[i] = origSize[i] + 4 - m;

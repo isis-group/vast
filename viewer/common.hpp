@@ -46,6 +46,7 @@ struct ViewerDev {static const char *name() { return "ViewerDev";}; enum {use = 
 
 namespace viewer
 {
+
 class ImageHolder;
 typedef uint8_t InternalImageType;
 typedef isis::util::color24 InternalImageColorType;
@@ -76,8 +77,6 @@ typedef ViewerDev Dev;
 util::fvector4 mapCoordsToOrientation( const util::fvector4 &coords, const boost::numeric::ublas::matrix<float> &orientationMatrix, PlaneOrientation orientation, bool back = false, bool absolute = true );
 
 std::string getCrashLogFilePath();
-
-
 
 }
 }
