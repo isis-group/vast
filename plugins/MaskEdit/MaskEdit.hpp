@@ -71,7 +71,7 @@ private:
 
 	CreateMaskDialog *m_CreateMaskDialog;
 
-	WidgetEnsemble m_CurrentWidgetEnsemble;
+	WidgetEnsemble::Pointer m_CurrentWidgetEnsemble;
 
 	template<typename TYPE>
 	void manipulateVoxel( const util::fvector4 physCoord, boost::shared_ptr<ImageHolder> image ) {

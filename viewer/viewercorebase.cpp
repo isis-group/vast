@@ -138,7 +138,7 @@ ImageHolder::Pointer ViewerCoreBase::getCurrentImage()
 	if( m_CurrentImage.get() ) {
 		return m_CurrentImage;
 	} else {
-		LOG( Runtime, error ) << "Trying to fetch the current image. But there is no current image at all. Should be checked before.";
+		LOG( Dev, error ) << "Trying to fetch the current image. But there is no current image at all. Should be checked before.";
 		return ImageHolder::Pointer();
 	}
 

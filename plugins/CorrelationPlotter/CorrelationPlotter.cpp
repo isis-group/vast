@@ -107,10 +107,10 @@ void isis::viewer::plugin::CorrelationPlotterDialog::showEvent( QShowEvent * )
 			return;
 		} else {
 			if ( !m_CurrentCorrelationMap ) {
-				createCorrelationMap() ;
+				createCorrelationMap();
 				BOOST_FOREACH( WidgetEnsemble::List::reference ensemble, m_ViewerCore->getUICore()->getEnsembleList() ) {
-					if( ensemble.hasImage( m_CurrentFunctionalImage ) ) {
-						ensemble.addImage( m_CurrentCorrelationMap );
+					if( ensemble->hasImage( m_CurrentFunctionalImage ) ) {
+						ensemble->addImage( m_CurrentCorrelationMap );
 					}
 				}
 			}
@@ -122,7 +122,6 @@ void isis::viewer::plugin::CorrelationPlotterDialog::showEvent( QShowEvent * )
 			}
 
 			m_ViewerCore->getUICore()->refreshUI();
-
 		}
 		physicalCoordsChanged( m_CurrentFunctionalImage->getImageProperties().physicalCoords );
 	}

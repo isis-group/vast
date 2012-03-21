@@ -339,7 +339,8 @@ void QImageWidgetImplementation::mousePressEvent( QMouseEvent *e )
 		}
 	}
 	setFocus();
-	emitMousePressEvent( e );
+	if( m_LeftMouseButtonPressed )	m_ViewerCore->onWidgetClicked( this, mouseCoords2PhysCoords( e->x(), e->y() ), Qt::LeftButton );
+	if( m_RightMouseButtonPressed ) m_ViewerCore->onWidgetClicked( this, mouseCoords2PhysCoords( e->x(), e->y() ), Qt::RightButton );
 }
 
 void QImageWidgetImplementation::mouseMoveEvent( QMouseEvent *e )
@@ -365,24 +366,24 @@ void QImageWidgetImplementation::mouseMoveEvent( QMouseEvent *e )
 
 		m_ShowScalingOffset = true;
 		m_ViewerCore->updateScene();
-	} else if( m_RightMouseButtonPressed || m_LeftMouseButtonPressed ) {
-		emitMousePressEvent( e );
+	} else {
+		if( m_LeftMouseButtonPressed )	m_ViewerCore->onWidgetMoved( this, mouseCoords2PhysCoords( e->x(), e->y() ), Qt::LeftButton );
+		if( m_RightMouseButtonPressed ) m_ViewerCore->onWidgetMoved( this, mouseCoords2PhysCoords( e->x(), e->y() ), Qt::RightButton );
 	}
 
 	QWidget::mouseMoveEvent( e );
 }
 
-void QImageWidgetImplementation::emitMousePressEvent( QMouseEvent *e )
+
+util::fvector4 QImageWidgetImplementation::mouseCoords2PhysCoords ( const int& x, const int& y )
 {
 	const boost::shared_ptr<ImageHolder> image = getWidgetSpecCurrentImage();
 	const ImageProperties &imgProps = m_ImageProperties.at( image );
 	const uint16_t slice = mapCoordsToOrientation( image->getImageProperties().voxelCoords, image->getImageProperties().latchedOrientation, m_PlaneOrientation )[2];
-	const util::ivector4 &coords = QOrientationHandler::convertWindow2VoxelCoords( imgProps.viewPort, image, e->x(), e->y(), slice, m_PlaneOrientation );
-	const util::fvector4 physicalCoords =  image->getISISImage()->getPhysicalCoordsFromIndex( coords ) ;
-	physicalCoordsChanged( physicalCoords );
-	if( m_LeftMouseButtonPressed )	m_ViewerCore->onWidgetClicked(physicalCoords, Qt::LeftButton );
-	if( m_RightMouseButtonPressed ) m_ViewerCore->onWidgetClicked( physicalCoords, Qt::RightButton );
+	const util::ivector4 &coords = QOrientationHandler::convertWindow2VoxelCoords( imgProps.viewPort, image, x, y, slice, m_PlaneOrientation );
+	return image->getISISImage()->getPhysicalCoordsFromIndex( coords ) ;
 }
+
 
 void QImageWidgetImplementation::showLabels() const
 {
@@ -576,19 +577,19 @@ void QImageWidgetImplementation::dragEnterEvent( QDragEnterEvent *e )
 void QImageWidgetImplementation::dropEvent( QDropEvent *e )
 {
 	const boost::shared_ptr<ImageHolder> image = m_ViewerCore->getDataContainer().at( e->mimeData()->text().toStdString() );
-	WidgetEnsemble myEnsemble;
+	WidgetEnsemble::Pointer myEnsemble;
 	BOOST_FOREACH( WidgetEnsemble::List::reference ensemble, m_ViewerCore->getUICore()->getEnsembleList() ) {
-		BOOST_FOREACH( WidgetEnsemble::reference ensembleComponent, ensemble ) {
-			if( ensembleComponent.getWidgetInterface() == this ) {
+		BOOST_FOREACH( WidgetEnsemble::reference ensembleComponent, *ensemble ) {
+			if( ensembleComponent->getWidgetInterface() == this ) {
 				myEnsemble = ensemble;
 			} else if( myEnsemble != ensemble ) {
-				ensembleComponent.getWidgetInterface()->removeImage( image );
+				ensembleComponent->getWidgetInterface()->removeImage( image );
 			}
 		}
 	}
 
-	BOOST_FOREACH( WidgetEnsemble::reference ensembleComponent, myEnsemble ) {
-		ensembleComponent.getWidgetInterface()->addImage( image );
+	BOOST_FOREACH( WidgetEnsemble::reference ensembleComponent, *myEnsemble ) {
+		ensembleComponent->getWidgetInterface()->addImage( image );
 	}
 
 	m_ViewerCore->setCurrentImage( image );

@@ -56,7 +56,7 @@ public:
 
 	enum OptionPosition { bottom, top, left, right, central11 };
 
-	bool registerEnsembleComponent( WidgetEnsembleComponent widget );
+	bool registerEnsembleComponent( WidgetEnsembleComponent::Pointer widget );
 	const WidgetEnsembleComponent::Map &getWidgets() const { return m_WidgetMap; }
 	WidgetEnsembleComponent::Map &getWidgets() { return m_WidgetMap; }
 
@@ -64,15 +64,12 @@ public:
 	const MainWindow *getMainWindow() const  { return m_MainWindow; }
 	MainWindow *getMainWindow() { return m_MainWindow; }
 
-	virtual WidgetEnsemble createViewWidgetEnsemble( const std::string &widgetType, bool show = true  );
-	virtual WidgetEnsemble createViewWidgetEnsemble( const std::string &widgetType, ImageHolder::Pointer image, bool show = true );
-	virtual WidgetEnsemble createViewWidgetEnsemble( const std::string &widgetType, ImageHolder::List imageList, bool show = true );
+	virtual WidgetEnsemble::Pointer createViewWidgetEnsemble( const std::string &widgetType, bool show = true  );
+	virtual WidgetEnsemble::Pointer createViewWidgetEnsemble( const std::string &widgetType, ImageHolder::Pointer image, bool show = true );
+	virtual WidgetEnsemble::Pointer createViewWidgetEnsemble( const std::string &widgetType, ImageHolder::List imageList, bool show = true );
 	virtual WidgetEnsemble::List createViewWidgetEnsembleList( const std::string &widgetType, ImageHolder::List imageList, bool show = true );
 
-	virtual void attachWidgetEnsemble( WidgetEnsemble ensemble );
-
-	virtual void attachImageToEnsemble( ImageHolder::Pointer image, WidgetEnsemble ensemble );
-	virtual void attachImageListToEnsemble( ImageHolder::List imageList, WidgetEnsemble ensemble );
+	virtual void attachWidgetEnsemble( WidgetEnsemble::Pointer ensemble );
 
 	virtual ~UICore() {}
 
@@ -81,7 +78,7 @@ public:
 	const WidgetEnsemble::List &getEnsembleList() const { return m_EnsembleList; }
 	WidgetEnsemble::List &getEnsembleList() { return m_EnsembleList; }
 
-	WidgetEnsemble getCurrentEnsemble() const;
+	WidgetEnsemble::Pointer getCurrentEnsemble() const;
 
 	void setViewPlaneOrientation( PlaneOrientation orientation, bool visible );
 
@@ -100,9 +97,9 @@ protected:
 
 private:
 
-	virtual void removeWidgetEnsemble( WidgetEnsemble ensemble );
+	virtual void removeWidgetEnsemble( WidgetEnsemble::Pointer ensemble );
 
-	WidgetEnsembleComponent createEnsembleComponent( const std::string &widgetIdentifier, PlaneOrientation planeOrientation );
+	WidgetEnsembleComponent::Pointer createEnsembleComponent( const std::string &widgetIdentifier, PlaneOrientation planeOrientation );
 
 	QDockWidget *createDockingEnsemble( QWidget *widget );
 

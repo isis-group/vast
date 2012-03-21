@@ -106,7 +106,6 @@ private:
 
 	ImagePropertiesMapType m_ImageProperties;
 
-	void emitMousePressEvent( QMouseEvent *e );
 	void recalculateTranslation();
 	void showLabels() const ;
 
@@ -128,6 +127,8 @@ private:
 	float translationY;
 	float currentZoom;
 	int m_CrosshairWidth;
+
+	util::fvector4 mouseCoords2PhysCoords(const int &x, const int &y );
 
 	std::pair<int, int> m_StartCoordsPair;
 

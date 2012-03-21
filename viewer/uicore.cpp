@@ -26,6 +26,7 @@
  *      Author: tuerke
  ******************************************************************/
 #include "uicore.hpp"
+#include "qviewercore.hpp"
 #include <DataStorage/io_interface.h>
 
 #include <QSignalMapper>
@@ -90,20 +91,6 @@ void UICore::showMainWindow()
 
 }
 
-
-void UICore::attachImageToEnsemble ( ImageHolder::Pointer image, WidgetEnsemble ensemble )
-{
-	ensemble.addImage( image );
-}
-
-void UICore::attachImageListToEnsemble ( ImageHolder::List imageList, WidgetEnsemble ensemble )
-{	
-	BOOST_FOREACH( ImageHolder::List::const_reference image, imageList ) {
-		ensemble.addImage( image );
-	}	
-}
-
-
 QDockWidget *UICore::createDockingEnsemble( QWidget *widget )
 {
 	QDockWidget *dockWidget = new QDockWidget( m_MainWindow );
@@ -118,19 +105,17 @@ QDockWidget *UICore::createDockingEnsemble( QWidget *widget )
 
 }
 
-WidgetEnsemble UICore::createViewWidgetEnsemble( const std::string &widgetIdentifier, ImageHolder::Pointer image, bool show )
+WidgetEnsemble::Pointer UICore::createViewWidgetEnsemble( const std::string &widgetIdentifier, ImageHolder::Pointer image, bool show )
 {
-	WidgetEnsemble ensemble = createViewWidgetEnsemble( widgetIdentifier, show );
-	BOOST_FOREACH( WidgetEnsemble::reference widget, ensemble ) {
-		widget.getWidgetInterface()->addImage( image );
-	}
+	WidgetEnsemble::Pointer ensemble = createViewWidgetEnsemble( widgetIdentifier, show );
+	ensemble->addImage( image );
 	return ensemble;
 }
 
 
-WidgetEnsemble UICore::createViewWidgetEnsemble( const std::string &widgetIdentifier, bool show )
+WidgetEnsemble::Pointer UICore::createViewWidgetEnsemble( const std::string &widgetIdentifier, bool show )
 {
-	WidgetEnsemble ensemble;
+	WidgetEnsemble::Pointer ensemble( new WidgetEnsemble );
 	uint8_t numberWidgets;
 	if( m_ViewerCore->getWidgetProperties(widgetIdentifier)->hasProperty("numberOfEntitiesInEnsemble") ) {
 		numberWidgets = m_ViewerCore->getWidgetProperties(widgetIdentifier)->getPropertyAs<uint8_t>("numberOfEntitiesInEnsemble");
@@ -139,14 +124,14 @@ WidgetEnsemble UICore::createViewWidgetEnsemble( const std::string &widgetIdenti
 		numberWidgets = 1;
 	}
 	if( numberWidgets == 1 ) {
-		ensemble.insertComponent( createEnsembleComponent( widgetIdentifier, not_specified) );
+		ensemble->insertComponent( createEnsembleComponent( widgetIdentifier, not_specified) );
 	} else if ( numberWidgets == 3 ) {
-		ensemble.insertComponent( createEnsembleComponent( widgetIdentifier, axial ) );
-		ensemble.insertComponent( createEnsembleComponent( widgetIdentifier, sagittal ) );
-		ensemble.insertComponent( createEnsembleComponent( widgetIdentifier, coronal ) );
+		ensemble->insertComponent( createEnsembleComponent( widgetIdentifier, axial ) );
+		ensemble->insertComponent( createEnsembleComponent( widgetIdentifier, sagittal ) );
+		ensemble->insertComponent( createEnsembleComponent( widgetIdentifier, coronal ) );
 	} else {
 		for( uint8_t i = 0; i < numberWidgets; i++ ) {
-			ensemble.insertComponent( createEnsembleComponent( widgetIdentifier, not_specified ) );
+			ensemble->insertComponent( createEnsembleComponent( widgetIdentifier, not_specified ) );
 		}
 	}
 	if( show ) {
@@ -156,11 +141,13 @@ WidgetEnsemble UICore::createViewWidgetEnsemble( const std::string &widgetIdenti
 	return ensemble;
 }
 
-WidgetEnsemble UICore::createViewWidgetEnsemble ( const std::string& widgetType, ImageHolder::List imageList, bool show )
+WidgetEnsemble::Pointer UICore::createViewWidgetEnsemble ( const std::string& widgetType, ImageHolder::List imageList, bool show )
 {
-	WidgetEnsemble ensemble = createViewWidgetEnsemble( widgetType, show );
+	WidgetEnsemble::Pointer ensemble = createViewWidgetEnsemble( widgetType, show );
 	if( show ) {
-		attachImageListToEnsemble( imageList, ensemble );
+		BOOST_FOREACH( ImageHolder::List::const_reference image, imageList ) {
+			ensemble->addImage( image );
+		}
 	}
 	return ensemble;
 }
@@ -169,23 +156,23 @@ WidgetEnsemble::List UICore::createViewWidgetEnsembleList(const std::string& wid
 {
 	WidgetEnsemble::List retWidgetEnsembleList;
 	BOOST_FOREACH( ImageHolder::List::const_reference image, imageList ) {
-		WidgetEnsemble ensemble = createViewWidgetEnsemble( widgetType, show );
-		attachImageToEnsemble( image, ensemble );
+		WidgetEnsemble::Pointer ensemble = createViewWidgetEnsemble( widgetType, show );
+		ensemble->addImage( image );
 		retWidgetEnsembleList.push_back( ensemble );
 	}
 	return retWidgetEnsembleList;
 }
 
 
-void UICore::removeWidgetEnsemble( WidgetEnsemble ensemble )
+void UICore::removeWidgetEnsemble( WidgetEnsemble::Pointer ensemble )
 {
-	m_MainWindow->getInterface().centralGridLayout->removeWidget( ensemble.getFrame() );
+	m_MainWindow->getInterface().centralGridLayout->removeWidget( ensemble->getFrame() );
 }
 
 
-void UICore::attachWidgetEnsemble( WidgetEnsemble ensemble )
+void UICore::attachWidgetEnsemble( WidgetEnsemble::Pointer ensemble )
 {
-	m_MainWindow->getInterface().centralGridLayout->addWidget( ensemble.getFrame() );
+	m_MainWindow->getInterface().centralGridLayout->addWidget( ensemble->getFrame() );
 }
 
 void UICore::removeAllWidgetEnsembles()
@@ -197,7 +184,7 @@ void UICore::removeAllWidgetEnsembles()
 }
 
 
-WidgetEnsembleComponent UICore::createEnsembleComponent( const std::string &widgetIdentifier, PlaneOrientation planeOrientation )
+WidgetEnsembleComponent::Pointer UICore::createEnsembleComponent( const std::string &widgetIdentifier, PlaneOrientation planeOrientation )
 {
 	QFrame *frameWidget = new QFrame();
 	QWidget *placeHolder = new QWidget( frameWidget );
@@ -213,7 +200,7 @@ WidgetEnsembleComponent UICore::createEnsembleComponent( const std::string &widg
 	widget::WidgetInterface * widgetImpl = m_ViewerCore->getWidget(widgetIdentifier);
 	widgetImpl->setup( m_ViewerCore, placeHolder, planeOrientation );
 
-	WidgetEnsembleComponent component( frameWidget, dockWidget, placeHolder, widgetImpl );
+	WidgetEnsembleComponent::Pointer component( new WidgetEnsembleComponent( frameWidget, dockWidget, placeHolder, widgetImpl ) );
 	registerEnsembleComponent( component );
 	return component;
 
@@ -227,25 +214,28 @@ void UICore::reloadPluginsToGUI()
 void UICore::refreshUI()
 {
 	//refresh peripherals
+	const bool hasImages = m_ViewerCore->hasImage();
 	m_SliderWidget->synchronize();
 	m_ImageStackWidget->synchronize();
 	m_VoxelInformationWidget->synchronize();
 	m_MainWindow->refreshUI();
-	m_VoxelInformationWidget->setVisible( m_ViewerCore->hasImage() );
-	m_ImageStackWidget->setVisible( m_ViewerCore->hasImage() );
-	m_SliderWidget->setVisible( m_ViewerCore->hasImage() );
-	BOOST_FOREACH( WidgetEnsemble::List::reference ensemble, getEnsembleList() ) {
-		//if the ensemble contains the current image, set it to current ensemble
-		ensemble.setIsCurrent(find( ensemble.getImageList().begin(), ensemble.getImageList().end(), m_ViewerCore->getCurrentImage() ) != ensemble.getImageList().end());
+	m_VoxelInformationWidget->setVisible( hasImages );
+	m_ImageStackWidget->setVisible( hasImages );
+	m_SliderWidget->setVisible( hasImages );
+	if( hasImages ) {
+		BOOST_FOREACH( WidgetEnsemble::List::reference ensemble, getEnsembleList() ) {
+			//if the ensemble contains the current image, set it to current ensemble
+			ImageHolder::List imageList = ensemble->getImageList();
+			ensemble->setIsCurrent(std::find( imageList.begin(), imageList.end(), m_ViewerCore->getCurrentImage() ) != imageList.end());
+		}
 	}
-
 }
 
-WidgetEnsemble UICore::getCurrentEnsemble() const
+WidgetEnsemble::Pointer UICore::getCurrentEnsemble() const
 {
 	if( getEnsembleList().size() ) {
 		BOOST_FOREACH( WidgetEnsemble::List::const_reference ensemble, getEnsembleList() ) {
-			if( ensemble.isCurrent() ) {
+			if( ensemble->isCurrent() ) {
 				return ensemble;
 			}
 		}
@@ -257,13 +247,13 @@ WidgetEnsemble UICore::getCurrentEnsemble() const
 }
 
 
-bool UICore::registerEnsembleComponent( WidgetEnsembleComponent component )
+bool UICore::registerEnsembleComponent( WidgetEnsembleComponent::Pointer component )
 {
-	if( m_WidgetMap.find( component.getWidgetInterface() ) != m_WidgetMap.end() ) {
-		LOG( Runtime, warning ) << "Widget with id" << component.getWidgetInterface()->getWidgetName() << "!";
+	if( m_WidgetMap.find( component->getWidgetInterface() ) != m_WidgetMap.end() ) {
+		LOG( Runtime, warning ) << "Widget with id" << component->getWidgetInterface()->getWidgetName() << "!";
 		return false;
 	}
-	m_WidgetMap.insert( std::make_pair< widget::WidgetInterface*, WidgetEnsembleComponent >( component.getWidgetInterface(), component ) );
+	m_WidgetMap.insert( std::make_pair< widget::WidgetInterface*, WidgetEnsembleComponent::Pointer >( component->getWidgetInterface(), component ) );
 	return true;
 
 }
@@ -282,27 +272,27 @@ QImage UICore::getScreenshot()
 		//preparation
 		size_t biggestWidth = 0;
 		BOOST_FOREACH( WidgetEnsemble::List::reference ensemble, ensembleList ) {
-			if( ensemble.size() > biggestWidth ) {
-				biggestWidth = ensemble.size();
+			if( ensemble->size() > biggestWidth ) {
+				biggestWidth = ensemble->size();
 			}
-			BOOST_FOREACH( WidgetEnsemble::reference ensembleComponent, ensemble ) {
-				ensembleComponent.getFrame()->setFrameStyle( 0 );
-				ensembleComponent.getFrame()->setAutoFillBackground( false );
-				ensembleComponent.getWidgetInterface()->setCrossHairWidth( 2 );
+			BOOST_FOREACH( WidgetEnsemble::reference ensembleComponent, *ensemble ) {
+				ensembleComponent->getFrame()->setFrameStyle( 0 );
+				ensembleComponent->getFrame()->setAutoFillBackground( false );
+				ensembleComponent->getWidgetInterface()->setCrossHairWidth( 2 );
 			}
 		}
-		const int widgetHeight = ensembleList.front()[0].getPlaceHolder()->height();
-		const int widgetWidth = ensembleList.front()[0].getPlaceHolder()->width();
+		const int widgetHeight = ensembleList.front()->front()->getPlaceHolder()->height();
+		const int widgetWidth = ensembleList.front()->front()->getPlaceHolder()->width();
 		QPixmap screenshot( biggestWidth * widgetWidth, ensembleList.size() * widgetHeight + ( m_ViewerCore->getMode() == ViewerCoreBase::statistical_mode ? 100 : 0 ) ) ;
 		screenshot.fill( Qt::black );
 		QPainter painter( &screenshot );
 		unsigned short eIndex = 0;
 		BOOST_FOREACH( WidgetEnsemble::List::reference ensemble, ensembleList ) {
 			unsigned short index = 0;
-			BOOST_FOREACH( WidgetEnsemble::reference ensembleComponent, ensemble ) {
-				QWidget *placeHolder = ensembleComponent.getPlaceHolder();
-				ensembleComponent.getWidgetInterface()->setCrossHairColor( Qt::white );
-				ensembleComponent.getWidgetInterface()->updateScene();
+			BOOST_FOREACH( WidgetEnsemble::reference ensembleComponent, *ensemble ) {
+				QWidget *placeHolder = ensembleComponent->getPlaceHolder();
+				ensembleComponent->getWidgetInterface()->setCrossHairColor( Qt::white );
+				ensembleComponent->getWidgetInterface()->updateScene();
 				painter.drawPixmap( index++ * placeHolder->width(), eIndex * placeHolder->height(), QPixmap::grabWidget( placeHolder ) );
 			}
 
@@ -352,9 +342,9 @@ QImage UICore::getScreenshot()
 void UICore::setViewPlaneOrientation( PlaneOrientation orientation, bool visible )
 {
 	BOOST_FOREACH( WidgetEnsemble::List::reference ensemble, getEnsembleList() ) {
-		BOOST_FOREACH( WidgetEnsemble::reference ensembleComponent, ensemble ) {
-			if( ensembleComponent.getWidgetInterface()->getPlaneOrientation() == orientation ) {
-				ensembleComponent.getDockWidget()->setVisible( visible );
+		BOOST_FOREACH( WidgetEnsemble::reference ensembleComponent, *ensemble ) {
+			if( ensembleComponent->getWidgetInterface()->getPlaneOrientation() == orientation ) {
+				ensembleComponent->getDockWidget()->setVisible( visible );
 			}
 		}
 	}

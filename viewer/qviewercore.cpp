@@ -131,9 +131,18 @@ void QViewerCore::physicalCoordsChanged ( util::fvector4 physicalCoords )
 	emitPhysicalCoordsChanged ( physicalCoords );
 }
 
-void QViewerCore::onWidgetClicked ( util::fvector4 physicalCoords, Qt::MouseButton mouseButton )
+void QViewerCore::onWidgetClicked ( widget::WidgetInterface* origin, util::fvector4 physicalCoords, Qt::MouseButton mouseButton )
 {
+	setCurrentImage( origin->getImageList().front() );
+	getUICore()->refreshUI();
 	emitOnWidgetClicked(physicalCoords, mouseButton);
+	emitPhysicalCoordsChanged(physicalCoords);
+}
+
+void QViewerCore::onWidgetMoved ( widget::WidgetInterface* origin, util::fvector4 physicalCoords, Qt::MouseButton mouseButton )
+{
+	emitOnWidgetMoved( physicalCoords, mouseButton );
+	emitPhysicalCoordsChanged(physicalCoords);
 }
 
 
@@ -348,7 +357,7 @@ ImageHolder::List QViewerCore::openFile ( const FileInformation &fileInfo, bool 
 					if( !getUICore()->getEnsembleList().size() ) {
 						getUICore()->createViewWidgetEnsemble( fileInfo.getWidgetIdentifier(), image, true );
 					} else {
-						getUICore()->attachImageToEnsemble( image, getUICore()->getCurrentEnsemble() );
+						getUICore()->getCurrentEnsemble()->addImage( image );
 					}
 				}
 			getUICore()->refreshUI();
@@ -390,7 +399,7 @@ void QViewerCore::openFileList(const std::list< FileInformation > fileInfoList)
 				unsigned short structuralIndex = 0;
 				for( WidgetEnsemble::List::const_iterator wIter = widgetList.begin(); wIter != widgetList.end(); wIter++)
 				{
-					getUICore()->attachImageToEnsemble( *iIter, *wIter );
+					( *wIter )->addImage( *iIter );
 					if( ++structuralIndex < structuralImageList.size() ) {
 						iIter++;
 					}
@@ -408,7 +417,7 @@ void QViewerCore::openFileList(const std::list< FileInformation > fileInfoList)
 				widgetList.push_back( getUICore()->createViewWidgetEnsemble(fileInfoList.front().getWidgetIdentifier()));
 			}
 			BOOST_FOREACH( ImageHolder::List::const_reference image, structuralImageList ) {
-				getUICore()->attachImageToEnsemble( image, getUICore()->getCurrentEnsemble() );
+				getUICore()->getCurrentEnsemble()->addImage( image );
 			}
 		} else {
 			getUICore()->createViewWidgetEnsembleList( fileInfoList.front().getWidgetIdentifier(), structuralImageList, true );

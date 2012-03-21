@@ -44,9 +44,9 @@ void WidgetEnsemble::addImage ( const ImageHolder::Pointer image )
 {
 	if( find( m_imageList.begin(), m_imageList.end(), image ) == m_imageList.end()  ) {
 		m_imageList.push_back( image );
-		BOOST_FOREACH( std::vector<WidgetEnsembleComponent>::reference ensembleComponent, *this ) {
-			ensembleComponent.getWidgetInterface()->addImage( image );
-			ensembleComponent.checkIfNeeded();
+		BOOST_FOREACH( std::vector<WidgetEnsembleComponent::Pointer>::reference ensembleComponent, *this ) {
+			ensembleComponent->getWidgetInterface()->addImage( image );
+			ensembleComponent->checkIfNeeded();
 		}
 	} else {
 		LOG( Dev, warning ) << "Trying to add image " << image->getFileNames().front() << ". But this image already exists in ensemble";
@@ -59,9 +59,9 @@ void WidgetEnsemble::removeImage ( const ImageHolder::Pointer image )
 	ImageHolder::List::iterator iter = find( m_imageList.begin(), m_imageList.end(), image );
 	if( iter != m_imageList.end() ) {
 		m_imageList.erase( iter );
-		BOOST_FOREACH( std::vector<WidgetEnsembleComponent>::reference ensembleComponent, *this ) {
-			ensembleComponent.getWidgetInterface()->removeImage( image );
-			ensembleComponent.checkIfNeeded();
+		BOOST_FOREACH( std::vector<WidgetEnsembleComponent::Pointer>::reference ensembleComponent, *this ) {
+			ensembleComponent->getWidgetInterface()->removeImage( image );
+			ensembleComponent->checkIfNeeded();
 		}
 	} else {
 		LOG( Dev, warning )  << "Trying to remove image " << image->getFileNames().front() << " from ensemble. But this ensemble has no such image.";
@@ -69,13 +69,13 @@ void WidgetEnsemble::removeImage ( const ImageHolder::Pointer image )
 
 }
 
-void WidgetEnsemble::insertComponent ( WidgetEnsembleComponent component )
+void WidgetEnsemble::insertComponent ( WidgetEnsembleComponent::Pointer component )
 {
 	push_back( component );
-	m_layout->addWidget( component.getDockWidget(), 0, m_cols++ );
+	m_layout->addWidget( component->getDockWidget(), 0, m_cols++ );
 }
 
-bool WidgetEnsemble::hasImage ( const ImageHolder::Pointer image )
+bool WidgetEnsemble::hasImage ( const ImageHolder::Pointer image ) const 
 {
 	return find( m_imageList.begin(), m_imageList.end(), image ) != m_imageList.end();
 }
@@ -87,18 +87,18 @@ void WidgetEnsemble::setIsCurrent ( bool current )
 	if( current ) {
 		QPalette pal;
 		pal.setColor( QPalette::Background, QColor( 119, 136, 153 ) );
-		BOOST_FOREACH( std::vector<WidgetEnsembleComponent>::reference ensembleComponent, *this ) {
-			ensembleComponent.getFrame()->setFrameStyle( QFrame::WinPanel | QFrame::Raised );
-			ensembleComponent.getFrame()->setLineWidth( 1 );
-			ensembleComponent.getFrame()->setPalette( pal );
-			ensembleComponent.getFrame()->setAutoFillBackground( true );
-			ensembleComponent.getWidgetInterface()->setCrossHairColor( Qt::white );
+		BOOST_FOREACH( std::vector<WidgetEnsembleComponent::Pointer>::reference ensembleComponent, *this ) {
+			ensembleComponent->getFrame()->setFrameStyle( QFrame::WinPanel | QFrame::Raised );
+			ensembleComponent->getFrame()->setLineWidth( 1 );
+			ensembleComponent->getFrame()->setPalette( pal );
+			ensembleComponent->getFrame()->setAutoFillBackground( true );
+			ensembleComponent->getWidgetInterface()->setCrossHairColor( Qt::white );
 		}
 	} else {
-		BOOST_FOREACH( std::vector<WidgetEnsembleComponent>::reference ensembleComponent, *this ) {
-			ensembleComponent.getFrame()->setFrameStyle( 0 );
-			ensembleComponent.getFrame()->setAutoFillBackground( false );
-			ensembleComponent.getWidgetInterface()->setCrossHairColor( QColor( 255, 102, 0 ) );
+		BOOST_FOREACH( std::vector<WidgetEnsembleComponent::Pointer>::reference ensembleComponent, *this ) {
+			ensembleComponent->getFrame()->setFrameStyle( 0 );
+			ensembleComponent->getFrame()->setAutoFillBackground( false );
+			ensembleComponent->getWidgetInterface()->setCrossHairColor( QColor( 255, 102, 0 ) );
 		}
 	}
 }

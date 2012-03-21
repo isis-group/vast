@@ -76,7 +76,8 @@ public Q_SLOTS:
 	virtual void close( );
 	virtual void zoomChanged( float zoomFactor );
 	virtual void physicalCoordsChanged( util::fvector4 );
-	virtual void onWidgetClicked( util::fvector4, Qt::MouseButton );
+	virtual void onWidgetClicked( widget::WidgetInterface*, util::fvector4, Qt::MouseButton );
+	virtual void onWidgetMoved( widget::WidgetInterface*, util::fvector4, Qt::MouseButton );
 	virtual void timestepChanged( int );
 	virtual void setShowLabels( bool );
 	virtual void setShowCrosshair( bool );
@@ -94,6 +95,7 @@ Q_SIGNALS:
 	void emitZoomChanged( float zoom );
 	void emitVoxelCoordChanged( util::ivector4 );
 	void emitOnWidgetClicked( util::fvector4, Qt::MouseButton );
+	void emitOnWidgetMoved( util::fvector4, Qt::MouseButton );
 	void emitPhysicalCoordsChanged( util::fvector4 );
 	void emitTimeStepChange( unsigned int );
 	void emitImagesChanged( DataContainer );

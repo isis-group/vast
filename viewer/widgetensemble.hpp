@@ -36,10 +36,11 @@
 namespace isis {
 namespace viewer {
 
-class WidgetEnsemble : public std::vector< WidgetEnsembleComponent >
+class WidgetEnsemble : public std::vector< WidgetEnsembleComponent::Pointer >
 {
 public:
-	typedef std::list< WidgetEnsemble > List;
+	typedef boost::shared_ptr< WidgetEnsemble > Pointer;
+	typedef std::list< Pointer > List;
 
 	WidgetEnsemble();
 
@@ -49,12 +50,12 @@ public:
 	QGridLayout *getLayout() { return m_layout; }
 	const QGridLayout *getLayout() const { return m_layout; }
 
-	void insertComponent( WidgetEnsembleComponent component );
+	void insertComponent( WidgetEnsembleComponent::Pointer component );
 
 	void addImage( const ImageHolder::Pointer image );
 	void removeImage( const ImageHolder::Pointer image );
 
-	bool hasImage( const ImageHolder::Pointer image );
+	bool hasImage( const ImageHolder::Pointer image ) const;
 
 	ImageHolder::List getImageList() const { return m_imageList; }
 
@@ -65,7 +66,7 @@ private:
 	QFrame *m_frame;
 	QGridLayout *m_layout;
 	unsigned short m_cols;
-	void push_back( const value_type &value ) { std::vector< WidgetEnsembleComponent >::push_back( value ); }
+	void push_back( const value_type &value ) { std::vector< WidgetEnsembleComponent::Pointer >::push_back( value ); }
 	ImageHolder::List m_imageList;
 	bool m_isCurrent;
 };

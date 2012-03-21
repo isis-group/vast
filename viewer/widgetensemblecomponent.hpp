@@ -43,7 +43,8 @@ class WidgetEnsembleComponent
 
 public:
 	///map to associate a WidgetEnsembleComponent with a WidgetInterface raw pointer
-	typedef std::map< widget::WidgetInterface *, WidgetEnsembleComponent > Map;
+	typedef boost::shared_ptr< WidgetEnsembleComponent > Pointer;
+	typedef std::map< widget::WidgetInterface *, Pointer > Map;
 
 	WidgetEnsembleComponent( QFrame *frame, QDockWidget *dockWidget, QWidget *placeHolder, widget::WidgetInterface *widgetImplementation );
 

@@ -57,16 +57,16 @@ public:
 	static std::string getVersion();
 
 	virtual ImageHolder::List addImageList( const std::list< data::Image > imageList, const ImageHolder::ImageType &imageType );
-	virtual boost::shared_ptr<ImageHolder> addImage( const data::Image &image, const ImageHolder::ImageType &imageType );
+	virtual ImageHolder::Pointer addImage( const data::Image &image, const ImageHolder::ImageType &imageType );
 
 	const boost::shared_ptr<Settings> getSettings() const { return m_Settings; }
 	boost::shared_ptr<Settings> getSettings() { return m_Settings; }
 	
-	void setCurrentImage( const boost::shared_ptr<ImageHolder> image ) { m_CurrentImage = image; }
+	void setCurrentImage( const ImageHolder::Pointer image ) { m_CurrentImage = image; }
 
-	boost::shared_ptr<ImageHolder> getCurrentImage();
+	ImageHolder::Pointer getCurrentImage();
 
-	boost::shared_ptr<ImageHolder> getCurrentAnatomicalRefernce() const { return m_CurrentAnatomicalReference; }
+	ImageHolder::Pointer getCurrentAnatomicalRefernce() const { return m_CurrentAnatomicalReference; }
 
 	const DataContainer &getDataContainer() const { return m_DataContainer; }
 	DataContainer &getDataContainer() { return m_DataContainer; }
