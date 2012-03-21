@@ -62,6 +62,8 @@ public:
 	void setIsCurrent( bool current );
 	bool isCurrent() const { return m_isCurrent; }
 
+	void setVisible( bool visible );
+
 private:
 	QFrame *m_frame;
 	QGridLayout *m_layout;

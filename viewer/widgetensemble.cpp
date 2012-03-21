@@ -103,6 +103,12 @@ void WidgetEnsemble::setIsCurrent ( bool current )
 	}
 }
 
+void WidgetEnsemble::setVisible ( bool visible )
+{
+	BOOST_FOREACH( std::vector<WidgetEnsembleComponent::Pointer>::reference ensembleComponent, *this ) {
+		ensembleComponent->getDockWidget()->setVisible(visible);
+	}
+}
 
 
 }} // end namespace

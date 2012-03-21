@@ -156,11 +156,11 @@ void QViewerCore::timestepChanged ( int timestep )
 			timestep = getCurrentImage()->getImageSize() [3] - 1;
 		}
 
-		BOOST_FOREACH ( DataContainer::reference image, getDataContainer() )
+		BOOST_FOREACH ( ImageHolder::List::const_reference image, getImageList() )
 		{
-			if ( static_cast<size_t> ( timestep ) < image.second->getImageSize() [3] )
+			if ( static_cast<size_t> ( timestep ) < image->getImageSize() [3] )
 			{
-				image.second->getImageProperties().voxelCoords[3] = timestep;
+				image->getImageProperties().voxelCoords[3] = timestep;
 			}
 		}
 		updateScene();
@@ -240,24 +240,24 @@ void QViewerCore::settingsChanged()
 	}
 	if ( getMode() == ViewerCoreBase::statistical_mode )
 	{
-		BOOST_FOREACH ( DataContainer::reference image, getDataContainer() )
+		BOOST_FOREACH ( ImageHolder::List::const_reference image, getImageList() )
 		{
-			if ( image.second->getImageProperties().imageType == ImageHolder::structural_image )
+			if ( image->getImageProperties().imageType == ImageHolder::structural_image )
 			{
-				image.second->getImageProperties().lut = getSettings()->getPropertyAs<std::string> ( "lutStructural" );
-				image.second->updateColorMap();
+				image->getImageProperties().lut = getSettings()->getPropertyAs<std::string> ( "lutStructural" );
+				image->updateColorMap();
 			}
 		}
 	}
 
 	if ( getMode() == ViewerCoreBase::statistical_mode && getSettings()->getPropertyAs<bool> ( "zmapGlobal" ) )
 	{
-		BOOST_FOREACH ( DataContainer::reference image, getDataContainer() )
+		BOOST_FOREACH ( ImageHolder::List::const_reference image, getImageList() )
 		{
-			if ( image.second->getImageProperties().imageType == ImageHolder::statistical_image )
+			if ( image->getImageProperties().imageType == ImageHolder::statistical_image )
 			{
-				image.second->getImageProperties().lut = getSettings()->getPropertyAs<std::string> ( "lutZMap" );
-				image.second->updateColorMap();
+				image->getImageProperties().lut = getSettings()->getPropertyAs<std::string> ( "lutZMap" );
+				image->updateColorMap();
 			}
 		}
 
@@ -433,9 +433,9 @@ void QViewerCore::closeImage ( ImageHolder::Pointer image, bool refreshUI )
 	if ( getCurrentImage().get() == image.get() )
 	{
 		ImageHolder::List tmpList;
-		BOOST_FOREACH ( DataContainer::const_reference image, getDataContainer() )
+		BOOST_FOREACH ( ImageHolder::List::const_reference image, getImageList() )
 		{
-			tmpList.push_back ( image.second );
+			tmpList.push_back ( image );
 		}
 		tmpList.erase ( std::find ( tmpList.begin(), tmpList.end(), image ) );
 

@@ -348,12 +348,12 @@ void QImageWidgetImplementation::mouseMoveEvent( QMouseEvent *e )
 
 	if( m_RightMouseButtonPressed && m_LeftMouseButtonPressed ) {
 		if( QApplication::keyboardModifiers() == Qt::ShiftModifier ) {
-			BOOST_FOREACH( DataContainer::reference image, m_ViewerCore->getDataContainer() ) {
-				const double offset =  ( m_StartCoordsPair.second - e->y() ) / ( float )height() * image.second->getImageProperties().extent;
+			BOOST_FOREACH( ImageHolder::List::const_reference image, m_ViewerCore->getImageList() ) {
+				const double offset =  ( m_StartCoordsPair.second - e->y() ) / ( float )height() * image->getImageProperties().extent;
 				const double scaling = 1.0 - ( m_StartCoordsPair.first - e->x() ) / ( float )width() * 5;
-				image.second->getImageProperties().offset = offset;
-				image.second->getImageProperties().scaling = scaling < 0.0 ? 0.0 : scaling;
-				image.second->updateColorMap();
+				image->getImageProperties().offset = offset;
+				image->getImageProperties().scaling = scaling < 0.0 ? 0.0 : scaling;
+				image->updateColorMap();
 			}
 		} else {
 			boost::shared_ptr<ImageHolder> image = getWidgetSpecCurrentImage();
@@ -454,11 +454,11 @@ void QImageWidgetImplementation::paintCrosshair() const
 
 void QImageWidgetImplementation::lookAtPhysicalCoords( const isis::util::fvector4 &physicalCoords )
 {
-	BOOST_FOREACH( DataContainer::reference image, m_ViewerCore->getDataContainer() ) {
-		image.second->getImageProperties().physicalCoords = physicalCoords;
-		const size_t timestep = image.second->getImageProperties().voxelCoords[3];
-		image.second->getImageProperties().voxelCoords = image.second->getISISImage()->getIndexFromPhysicalCoords( physicalCoords, true );
-		image.second->getImageProperties().voxelCoords[3] = timestep;
+	BOOST_FOREACH( ImageHolder::List::const_reference image, m_ViewerCore->getImageList() ) {
+		image->getImageProperties().physicalCoords = physicalCoords;
+		const size_t timestep = image->getImageProperties().voxelCoords[3];
+		image->getImageProperties().voxelCoords = image->getISISImage()->getIndexFromPhysicalCoords( physicalCoords, true );
+		image->getImageProperties().voxelCoords[3] = timestep;
 	}
 	update();
 }
@@ -576,20 +576,20 @@ void QImageWidgetImplementation::dragEnterEvent( QDragEnterEvent *e )
 
 void QImageWidgetImplementation::dropEvent( QDropEvent *e )
 {
-	const boost::shared_ptr<ImageHolder> image = m_ViewerCore->getDataContainer().at( e->mimeData()->text().toStdString() );
+	const ImageHolder::Pointer image = m_ViewerCore->getDataContainer().at( e->mimeData()->text().toStdString() );
 	WidgetEnsemble::Pointer myEnsemble;
 	BOOST_FOREACH( WidgetEnsemble::List::reference ensemble, m_ViewerCore->getUICore()->getEnsembleList() ) {
 		BOOST_FOREACH( WidgetEnsemble::reference ensembleComponent, *ensemble ) {
 			if( ensembleComponent->getWidgetInterface() == this ) {
 				myEnsemble = ensemble;
-			} else if( myEnsemble != ensemble ) {
-				ensembleComponent->getWidgetInterface()->removeImage( image );
 			}
 		}
 	}
-
-	BOOST_FOREACH( WidgetEnsemble::reference ensembleComponent, *myEnsemble ) {
-		ensembleComponent->getWidgetInterface()->addImage( image );
+	myEnsemble->addImage( image  );
+	BOOST_FOREACH( WidgetEnsemble::List::reference ensemble, m_ViewerCore->getUICore()->getEnsembleList() ) {
+		if( ensemble != myEnsemble ) {
+			ensemble->removeImage( image );
+		}
 	}
 
 	m_ViewerCore->setCurrentImage( image );

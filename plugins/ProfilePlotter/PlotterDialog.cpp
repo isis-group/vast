@@ -90,25 +90,25 @@ void isis::viewer::plugin::PlotterDialog::refresh ( isis::util::fvector4 physica
 	if( !ui.checkLock->isChecked() && isVisible()) {
 		m_CurrentPhysicalCoords = physicalCoords;
 		plot->clear();
-		BOOST_FOREACH( DataContainer::const_reference image, m_ViewerCore->getDataContainer() ) {
-			const unsigned short axis = image.second->getISISImage()->mapScannerAxisToImageDimension(static_cast<isis::data::scannerAxis>( ui.comboAxis->currentIndex() ) );
-			if( image.second->getImageSize()[axis] > 1 ) {
+		BOOST_FOREACH( ImageHolder::List::const_reference image, m_ViewerCore->getImageList() ) {
+			const unsigned short axis = image->getISISImage()->mapScannerAxisToImageDimension(static_cast<isis::data::scannerAxis>( ui.comboAxis->currentIndex() ) );
+			if( image->getImageSize()[axis] > 1 ) {
 				QwtPlotCurve *curve = new QwtPlotCurve();
 				curve->detach();
 				
-				const util::ivector4 voxCoords = image.second->getISISImage()->getIndexFromPhysicalCoords( physicalCoords, true );
+				const util::ivector4 voxCoords = image->getISISImage()->getIndexFromPhysicalCoords( physicalCoords, true );
 				if( ui.timeCourseRadio->isChecked() ) {
-					fillProfile( image.second, voxCoords, curve, axis );
+					fillProfile( image, voxCoords, curve, axis );
 				} else {
-					fillSpectrum( image.second, voxCoords, curve, axis );
+					fillSpectrum( image, voxCoords, curve, axis );
 				}
 				
-				if( image.second.get() == m_ViewerCore->getCurrentImage().get() || m_ViewerCore->getMode() == ViewerCoreBase::statistical_mode ) {
+				if( image.get() == m_ViewerCore->getCurrentImage().get() || m_ViewerCore->getMode() == ViewerCoreBase::statistical_mode ) {
 					curve->attach( plot );
 					plotMarker->attach(plot);
 					curve->setPen( QPen( Qt::red ) );
 				} else {
-					if( image.second->getImageProperties().isVisible ) {
+					if( image->getImageProperties().isVisible ) {
 						curve->attach( plot );
 					}
 

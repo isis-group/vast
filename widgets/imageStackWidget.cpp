@@ -44,8 +44,6 @@ ImageStack::ImageStack( QWidget *parent, ImageStackWidget *widget )
 	setHorizontalScrollBarPolicy( Qt::ScrollBarAsNeeded );
 	setVerticalScrollMode( ScrollPerItem );
 	setVerticalScrollBarPolicy( Qt::ScrollBarAsNeeded );
-	setMaximumHeight( m_Widget->m_ViewerCore->getSettings()->getPropertyAs<uint16_t>( "maxOptionWidgetHeight" ) - 4 );
-	setMinimumHeight( m_Widget->m_ViewerCore->getSettings()->getPropertyAs<uint16_t>( "minOptionWidgetHeight" ) - 4 );
 }
 
 void ImageStack::contextMenuEvent( QContextMenuEvent *event )
@@ -91,8 +89,9 @@ ImageStackWidget::ImageStackWidget( QWidget *parent, QViewerCore *core )
 	m_Interface.actionDistribute_images->setIconVisibleInMenu( true );
 	m_Interface.actionClose_all_images->setIconVisibleInMenu( true );
 	m_ImageStack = new ImageStack( this, this );
-	m_Interface.layout->addWidget( m_ImageStack );
-
+	m_Interface.stackLayout->addWidget( m_ImageStack );
+// 	m_ImageStack->setSizePolicy( QSizePolicy::Preferred, QSizePolicy::Preferred );
+	
 	m_ImageStack->setEditTriggers( QAbstractItemView::NoEditTriggers );
 	connect( m_ImageStack, SIGNAL( itemActivated( QListWidgetItem * ) ), this, SLOT( itemSelected( QListWidgetItem * ) ) );
 	connect( m_ImageStack, SIGNAL( itemChanged( QListWidgetItem * ) ), this, SLOT( itemChanged( QListWidgetItem * ) ) );
@@ -102,6 +101,9 @@ ImageStackWidget::ImageStackWidget( QWidget *parent, QViewerCore *core )
 	connect( m_Interface.actionClose_all_images, SIGNAL( triggered() ), this, SLOT( closeAllImages() ) );
 	connect( m_Interface.actionImage_type_stats, SIGNAL( triggered(bool)), this, SLOT(toggleStatsType()));
 	connect( m_Interface.actionStructural_image, SIGNAL( triggered(bool)), this, SLOT( toggleStructsType()));
+	connect( m_Interface.checkViewAllImages, SIGNAL( clicked(bool)), this, SLOT( synchronize()) );
+	connect( m_Interface.moveDown, SIGNAL( clicked(bool)), this, SLOT( moveDown()) );
+	connect( m_Interface.moveUp, SIGNAL( clicked(bool)), this, SLOT( moveUp()) );
 
 }
 
@@ -138,24 +140,32 @@ void ImageStackWidget::synchronize()
 	m_Interface.frame->setMaximumHeight( m_ViewerCore->getSettings()->getPropertyAs<uint16_t>( "maxOptionWidgetHeight" ) );
 	m_Interface.frame->setMinimumHeight( m_ViewerCore->getSettings()->getPropertyAs<uint16_t>( "minOptionWidgetHeight" ) );
 	m_ImageStack->clear();
-	BOOST_FOREACH( DataContainer::const_reference imageRef, m_ViewerCore->getDataContainer() ) {
-		if( !( m_ViewerCore->getMode() == ViewerCoreBase::statistical_mode && imageRef.second->getImageProperties().imageType == ImageHolder::structural_image ) ) {
-			QListWidgetItem *item = new QListWidgetItem;
-			QString sD = imageRef.second->getPropMap().getPropertyAs<std::string>( "sequenceDescription" ).c_str();
-			item->setText( QString( imageRef.second->getFileNames().front().c_str() ) );
-			item->setFlags( Qt::ItemIsEnabled | Qt::ItemIsUserCheckable | Qt::ItemIsSelectable );
+	ImageHolder::List imageList;
+	if( m_ViewerCore->hasImage() ) {
+		if( m_Interface.checkViewAllImages->isChecked() ) {
+			imageList = m_ViewerCore->getImageList() ;
+		} else {
+			imageList = m_ViewerCore->getUICore()->getCurrentEnsemble()->getImageList();
+		}
+		BOOST_FOREACH( ImageHolder::List::const_reference image, imageList ) {
+			if( !( m_ViewerCore->getMode() == ViewerCoreBase::statistical_mode && image->getImageProperties().imageType == ImageHolder::structural_image ) ) {
+				QListWidgetItem *item = new QListWidgetItem;
+				QString sD = image->getPropMap().getPropertyAs<std::string>( "sequenceDescription" ).c_str();
+				item->setText( QString( image->getFileNames().front().c_str() ) );
+				item->setFlags( Qt::ItemIsEnabled | Qt::ItemIsUserCheckable | Qt::ItemIsSelectable );
 
-			if( imageRef.second->getImageProperties().isVisible ) {
-				item->setCheckState( Qt::Checked );
-			} else {
-				item->setCheckState( Qt::Unchecked );
+				if( image->getImageProperties().isVisible ) {
+					item->setCheckState( Qt::Checked );
+				} else {
+					item->setCheckState( Qt::Unchecked );
+				}
+
+				if( m_ViewerCore->getCurrentImage().get() == image.get() ) {
+					item->setIcon( QIcon( ":/common/currentImage.gif" ) );
+				}
+
+				m_ImageStack->addItem( item );
 			}
-
-			if( m_ViewerCore->getCurrentImage().get() == imageRef.second.get() ) {
-				item->setIcon( QIcon( ":/common/currentImage.gif" ) );
-			}
-
-			m_ImageStack->addItem( item );
 		}
 	}
 
@@ -163,7 +173,7 @@ void ImageStackWidget::synchronize()
 void ImageStackWidget::itemClicked ( QListWidgetItem* item)
 {
 	if( m_ViewerCore->hasImage() ) {
-		boost::shared_ptr< ImageHolder > image = m_ViewerCore->getDataContainer().at( item->text().toStdString() );
+		ImageHolder::Pointer image = m_ViewerCore->getDataContainer().at( item->text().toStdString() );
 		if( image->getImageProperties().imageType == ImageHolder::statistical_image ) {
 			m_Interface.actionImage_type_stats->setChecked(true);
 			m_Interface.actionStructural_image->setChecked(false);
@@ -239,6 +249,17 @@ void ImageStackWidget::distributeImages()
 	m_ViewerCore->getUICore()->refreshUI();
 	m_ViewerCore->settingsChanged();
 	m_ViewerCore->updateScene();
+}
+
+void ImageStackWidget::moveDown()
+{
+	ImageHolder::Pointer image = m_ViewerCore->getDataContainer().at( m_ImageStack->currentItem()->text().toStdString() );
+	
+}
+
+void ImageStackWidget::moveUp()
+{
+
 }
 
 

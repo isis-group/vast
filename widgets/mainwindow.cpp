@@ -262,10 +262,10 @@ void MainWindow::toggleZMapMode( bool zmap )
 
 void MainWindow::resetScaling()
 {
-	BOOST_FOREACH( DataContainer::reference image, m_ViewerCore->getDataContainer() ) {
-		image.second->getImageProperties().scaling = 1.0;
-		image.second->getImageProperties().offset = 0.0;
-		image.second->updateColorMap();
+	BOOST_FOREACH( ImageHolder::List::const_reference image, m_ViewerCore->getImageList() ) {
+		image->getImageProperties().scaling = 1.0;
+		image->getImageProperties().offset = 0.0;
+		image->updateColorMap();
 	}
 	m_ViewerCore->updateScene();
 	scalingWidget->synchronize();
@@ -288,21 +288,21 @@ void MainWindow::showLoggingDialog()
 
 void MainWindow::ignoreOrientation( bool ignore )
 {
-	BOOST_FOREACH( DataContainer::reference image, m_ViewerCore->getDataContainer() ) {
+	BOOST_FOREACH( ImageHolder::List::const_reference image, m_ViewerCore->getImageList() ) {
 		if( ignore ) {
-			setOrientationToIdentity( *image.second->getISISImage() );
-			checkForCaCp( image.second );
-			image.second->updateOrientation();
+			setOrientationToIdentity( *image->getISISImage() );
+			checkForCaCp( image );
+			image->updateOrientation();
 		} else {
-			image.second->getISISImage()->setPropertyAs<util::fvector4>( "rowVec", image.second->getPropMap().getPropertyAs<util::fvector4>( "originalRowVec" ) );
-			image.second->getISISImage()->setPropertyAs<util::fvector4>( "columnVec", image.second->getPropMap().getPropertyAs<util::fvector4>( "originalColumnVec" ) );
-			image.second->getISISImage()->setPropertyAs<util::fvector4>( "sliceVec", image.second->getPropMap().getPropertyAs<util::fvector4>( "originalSliceVec" ) );
-			image.second->getISISImage()->setPropertyAs<util::fvector4>( "indexOrigin", image.second->getPropMap().getPropertyAs<util::fvector4>( "originalIndexOrigin" ) );
-			image.second->updateOrientation();
-			checkForCaCp( image.second );
+			image->getISISImage()->setPropertyAs<util::fvector4>( "rowVec", image->getPropMap().getPropertyAs<util::fvector4>( "originalRowVec" ) );
+			image->getISISImage()->setPropertyAs<util::fvector4>( "columnVec", image->getPropMap().getPropertyAs<util::fvector4>( "originalColumnVec" ) );
+			image->getISISImage()->setPropertyAs<util::fvector4>( "sliceVec", image->getPropMap().getPropertyAs<util::fvector4>( "originalSliceVec" ) );
+			image->getISISImage()->setPropertyAs<util::fvector4>( "indexOrigin", image->getPropMap().getPropertyAs<util::fvector4>( "originalIndexOrigin" ) );
+			image->updateOrientation();
+			checkForCaCp( image );
 		}
 
-		image.second->getImageProperties().physicalCoords = image.second->getISISImage()->getPhysicalCoordsFromIndex( image.second->getImageProperties().voxelCoords );
+		image->getImageProperties().physicalCoords = image->getISISImage()->getPhysicalCoordsFromIndex( image->getImageProperties().voxelCoords );
 	}
 
 	m_ViewerCore->getUICore()->refreshUI();
@@ -372,11 +372,11 @@ void MainWindow::saveAllImages()
 	if( m_ViewerCore->hasImage() ) {
 		std::list<util::slist> changedAttributesList;
 		util::slist fileNames;
-		BOOST_FOREACH( DataContainer::const_reference image, m_ViewerCore->getDataContainer() ) {
-			fileNames.push_back( image.second->getFileNames().front() );
+		BOOST_FOREACH( ImageHolder::List::const_reference image, m_ViewerCore->getImageList() ) {
+			fileNames.push_back( image->getFileNames().front() );
 
-			if( image.second->getPropMap().getPropertyAs<util::slist>( "changedAttributes" ).size() ) {
-				changedAttributesList.push_back( image.second->getPropMap().getPropertyAs<util::slist>( "changedAttributes" ) );
+			if( image->getPropMap().getPropertyAs<util::slist>( "changedAttributes" ).size() ) {
+				changedAttributesList.push_back( image->getPropMap().getPropertyAs<util::slist>( "changedAttributes" ) );
 			}
 		}
 
@@ -392,10 +392,10 @@ void MainWindow::saveAllImages()
 			msgBox.setInformativeText( "Do you want to proceed?" );
 			std::stringstream detailedText;
 			detailedText << "Changed attributes: " << std::endl;
-			BOOST_FOREACH( DataContainer::const_reference image, m_ViewerCore->getDataContainer() ) {
-				if( image.second->getPropMap().getPropertyAs<util::slist>( "changedAttributes" ).size() ) {
-					detailedText << image.second->getFileNames().front() << " : " << std::endl;
-					BOOST_FOREACH( util::slist::const_reference changedAttribute, image.second->getPropMap().getPropertyAs<util::slist>( "changedAttributes" ) ) {
+			BOOST_FOREACH( ImageHolder::List::const_reference image, m_ViewerCore->getImageList() ) {
+				if( image->getPropMap().getPropertyAs<util::slist>( "changedAttributes" ).size() ) {
+					detailedText << image->getFileNames().front() << " : " << std::endl;
+					BOOST_FOREACH( util::slist::const_reference changedAttribute, image->getPropMap().getPropertyAs<util::slist>( "changedAttributes" ) ) {
 						detailedText << changedAttribute << std::endl;
 					}
 				}
@@ -409,9 +409,9 @@ void MainWindow::saveAllImages()
 				return;
 				break;
 			case QMessageBox::Yes:
-				BOOST_FOREACH( DataContainer::const_reference image, m_ViewerCore->getDataContainer() ) {
-					toggleLoadingIcon( true, QString( "Saving image to ") + image.second->getFileNames().front().c_str() );
-					isis::data::IOFactory::write( *image.second->getISISImage(), image.second->getFileNames().front(), "", "" );
+				BOOST_FOREACH( ImageHolder::List::const_reference image, m_ViewerCore->getImageList() ) {
+					toggleLoadingIcon( true, QString( "Saving image to ") + image->getFileNames().front().c_str() );
+					isis::data::IOFactory::write( *image->getISISImage(), image->getFileNames().front(), "", "" );
 				}
                 toggleLoadingIcon(false);
 				break;

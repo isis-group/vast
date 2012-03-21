@@ -34,7 +34,7 @@ public:
 
 	Ui::imageStackWidget &getInterface() { return m_Interface; }
 
-	void synchronize();
+	
 
 	friend class ImageStack;
 
@@ -47,6 +47,9 @@ public Q_SLOTS:
 	void closeAllImages();
 	void toggleStatsType();
 	void toggleStructsType();
+	void synchronize();
+	void moveUp();
+	void moveDown();
 
 private:
 	QViewerCore *m_ViewerCore;

@@ -87,6 +87,7 @@ ImageHolder::List ViewerCoreBase::addImageList( const std::list< data::Image > i
 ImageHolder::Pointer ViewerCoreBase::addImage( const isis::data::Image &image, const isis::viewer::ImageHolder::ImageType &imageType )
 {
 	ImageHolder::Pointer retImage = m_DataContainer.addImage( image, imageType );
+	m_ImageList.push_back( retImage );
 	if( retImage->hasAmbiguousOrientation() ) {
 		QMessageBox msgBox;
 		msgBox.setIcon(QMessageBox::Warning);

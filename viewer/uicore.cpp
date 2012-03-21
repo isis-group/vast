@@ -215,6 +215,17 @@ void UICore::refreshUI()
 {
 	//refresh peripherals
 	const bool hasImages = m_ViewerCore->hasImage();
+
+	if( hasImages ) {
+		BOOST_FOREACH( WidgetEnsemble::List::reference ensemble, getEnsembleList() ) {
+			//if the ensemble contains the current image, set it to current ensemble
+			ImageHolder::List imageList = ensemble->getImageList();
+			ensemble->setIsCurrent(std::find( imageList.begin(), imageList.end(), m_ViewerCore->getCurrentImage() ) != imageList.end());
+			if ( imageList.empty() ) {
+				ensemble->getFrame()->close();
+			}
+		}
+	}
 	m_SliderWidget->synchronize();
 	m_ImageStackWidget->synchronize();
 	m_VoxelInformationWidget->synchronize();
@@ -222,13 +233,6 @@ void UICore::refreshUI()
 	m_VoxelInformationWidget->setVisible( hasImages );
 	m_ImageStackWidget->setVisible( hasImages );
 	m_SliderWidget->setVisible( hasImages );
-	if( hasImages ) {
-		BOOST_FOREACH( WidgetEnsemble::List::reference ensemble, getEnsembleList() ) {
-			//if the ensemble contains the current image, set it to current ensemble
-			ImageHolder::List imageList = ensemble->getImageList();
-			ensemble->setIsCurrent(std::find( imageList.begin(), imageList.end(), m_ViewerCore->getCurrentImage() ) != imageList.end());
-		}
-	}
 }
 
 WidgetEnsemble::Pointer UICore::getCurrentEnsemble() const

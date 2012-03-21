@@ -79,10 +79,14 @@ public:
 	virtual void setMode( const Mode &mode ) { m_Mode = mode; }
 	virtual Mode getMode() const { return m_Mode; }
 
+	ImageHolder::List &getImageList() { return m_ImageList; }
+	const ImageHolder::List &getImageList() const { return m_ImageList; }
+
 
 private:
 	//this is the container which actually holds all the images
 	DataContainer m_DataContainer;
+	std::list< ImageHolder::Pointer > m_ImageList;
 	ImageHolder::Pointer  m_CurrentImage;
 	void initOMP();
 
