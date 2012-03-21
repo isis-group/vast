@@ -348,7 +348,11 @@ QImage UICore::getScreenshot()
 	if( m_ViewerCore->hasImage() ) {
 		WidgetEnsemble::List ensembleList = getEnsembleList();
 		//preparation
+		size_t biggestWidth = 0;
 		BOOST_FOREACH( WidgetEnsemble::List::reference ensemble, ensembleList ) {
+			if( ensemble.size() > biggestWidth ) {
+				biggestWidth = ensemble.size();
+			}
 			BOOST_FOREACH( WidgetEnsemble::reference ensembleComponent, ensemble ) {
 				ensembleComponent.getFrame()->setFrameStyle( 0 );
 				ensembleComponent.getFrame()->setAutoFillBackground( false );
@@ -357,7 +361,7 @@ QImage UICore::getScreenshot()
 		}
 		const int widgetHeight = ensembleList.front()[0].getPlaceHolder()->height();
 		const int widgetWidth = ensembleList.front()[0].getPlaceHolder()->width();
-		QPixmap screenshot( 3 * widgetWidth, ensembleList.size() * widgetHeight + ( m_ViewerCore->getMode() == ViewerCoreBase::statistical_mode ? 100 : 0 ) ) ;
+		QPixmap screenshot( biggestWidth * widgetWidth, ensembleList.size() * widgetHeight + ( m_ViewerCore->getMode() == ViewerCoreBase::statistical_mode ? 100 : 0 ) ) ;
 		screenshot.fill( Qt::black );
 		QPainter painter( &screenshot );
 		unsigned short eIndex = 0;
