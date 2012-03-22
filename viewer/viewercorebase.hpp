@@ -28,13 +28,13 @@
 #ifndef VIEWERCOREBASE_HPP
 #define VIEWERCOREBASE_HPP
 
-#include "datacontainer.hpp"
 #include "pluginloader.hpp"
 #include "widgetloader.hpp"
 #include "widgetinterface.h"
 #include "settings.hpp"
 
 #include <map>
+#include <boost/uuid/uuid.hpp>
 
 #ifdef _OPENMP
 #include <omp.h>
@@ -68,10 +68,7 @@ public:
 
 	ImageHolder::Pointer getCurrentAnatomicalRefernce() const { return m_CurrentAnatomicalReference; }
 
-	const DataContainer &getDataContainer() const { return m_DataContainer; }
-	DataContainer &getDataContainer() { return m_DataContainer; }
-
-	bool hasImage() const { return getDataContainer().size() && m_CurrentImage.get(); }
+	bool hasImage() const { return m_ImageList.size() && m_CurrentImage.get(); }
 
 	widget::WidgetInterface *getWidget( const std::string &identifier ) throw( std::runtime_error & );
 	const util::PropertyMap *getWidgetProperties( const std::string &identifier ) ;
@@ -82,11 +79,13 @@ public:
 	ImageHolder::List &getImageList() { return m_ImageList; }
 	const ImageHolder::List &getImageList() const { return m_ImageList; }
 
+	ImageHolder::Map &getImageMap() { return m_ImageMap; }
+	const ImageHolder::Map &getImageMap() const { return m_ImageMap; }
 
 private:
 	//this is the container which actually holds all the images
-	DataContainer m_DataContainer;
-	std::list< ImageHolder::Pointer > m_ImageList;
+	ImageHolder::List m_ImageList;
+	ImageHolder::Map m_ImageMap;
 	ImageHolder::Pointer  m_CurrentImage;
 	void initOMP();
 

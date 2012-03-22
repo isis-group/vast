@@ -109,28 +109,28 @@ ImageStackWidget::ImageStackWidget( QWidget *parent, QViewerCore *core )
 
 void ImageStackWidget::toggleStatsType()
 {
-	m_Interface.actionStructural_image->setChecked( false );
-	m_Interface.actionImage_type_stats->setChecked( true );
-	boost::shared_ptr< ImageHolder> image = m_ViewerCore->getDataContainer().at( m_ImageStack->currentItem()->text().toStdString() );
-	image->getImageProperties().imageType = ImageHolder::statistical_image;
-	image->getImageProperties().lut = m_ViewerCore->getSettings()->getPropertyAs<std::string>("LutZMap");
-	image->updateColorMap();
-	m_ViewerCore->setMode( ViewerCoreBase::statistical_mode );
-	m_ViewerCore->getUICore()->refreshUI();
-	m_ViewerCore->updateScene();
+// 	m_Interface.actionStructural_image->setChecked( false );
+// 	m_Interface.actionImage_type_stats->setChecked( true );
+// 	boost::shared_ptr< ImageHolder> image = m_ViewerCore->getDataContainer().at( m_ImageStack->currentItem()->text().toStdString() );
+// 	image->getImageProperties().imageType = ImageHolder::statistical_image;
+// 	image->getImageProperties().lut = m_ViewerCore->getSettings()->getPropertyAs<std::string>("LutZMap");
+// 	image->updateColorMap();
+// 	m_ViewerCore->setMode( ViewerCoreBase::statistical_mode );
+// 	m_ViewerCore->getUICore()->refreshUI();
+// 	m_ViewerCore->updateScene();
 }
 
 void ImageStackWidget::toggleStructsType()
 {
-	m_Interface.actionStructural_image->setChecked( true );
-	m_Interface.actionImage_type_stats->setChecked( false );
-	boost::shared_ptr< ImageHolder> image = m_ViewerCore->getDataContainer().at( m_ImageStack->currentItem()->text().toStdString() );
-	image->getImageProperties().imageType = ImageHolder::structural_image;
-	image->getImageProperties().lut = m_ViewerCore->getSettings()->getPropertyAs<std::string>("lutStructural");
-	image->updateColorMap();
-	m_ViewerCore->setMode( ViewerCoreBase::default_mode );
-	m_ViewerCore->getUICore()->refreshUI();
-	m_ViewerCore->updateScene();
+// 	m_Interface.actionStructural_image->setChecked( true );
+// 	m_Interface.actionImage_type_stats->setChecked( false );
+// 	boost::shared_ptr< ImageHolder> image = m_ViewerCore->getDataContainer().at( m_ImageStack->currentItem()->text().toStdString() );
+// 	image->getImageProperties().imageType = ImageHolder::structural_image;
+// 	image->getImageProperties().lut = m_ViewerCore->getSettings()->getPropertyAs<std::string>("lutStructural");
+// 	image->updateColorMap();
+// 	m_ViewerCore->setMode( ViewerCoreBase::default_mode );
+// 	m_ViewerCore->getUICore()->refreshUI();
+// 	m_ViewerCore->updateScene();
 }
 
 
@@ -139,6 +139,7 @@ void ImageStackWidget::synchronize()
 {
 	m_Interface.frame->setMaximumHeight( m_ViewerCore->getSettings()->getPropertyAs<uint16_t>( "maxOptionWidgetHeight" ) );
 	m_Interface.frame->setMinimumHeight( m_ViewerCore->getSettings()->getPropertyAs<uint16_t>( "minOptionWidgetHeight" ) );
+
 	m_ImageStack->clear();
 	ImageHolder::List imageList;
 	if( m_ViewerCore->hasImage() ) {
@@ -151,8 +152,9 @@ void ImageStackWidget::synchronize()
 			if( !( m_ViewerCore->getMode() == ViewerCoreBase::statistical_mode && image->getImageProperties().imageType == ImageHolder::structural_image ) ) {
 				QListWidgetItem *item = new QListWidgetItem;
 				QString sD = image->getPropMap().getPropertyAs<std::string>( "sequenceDescription" ).c_str();
-				item->setText( QString( image->getFileNames().front().c_str() ) );
+				item->setText( QString( image->getImageProperties().fileName.c_str() ) );
 				item->setFlags( Qt::ItemIsEnabled | Qt::ItemIsUserCheckable | Qt::ItemIsSelectable );
+				item->setData(Qt::UserRole, QVariant( image->getImageProperties().id.c_str() ) );
 
 				if( image->getImageProperties().isVisible ) {
 					item->setCheckState( Qt::Checked );
@@ -168,12 +170,30 @@ void ImageStackWidget::synchronize()
 			}
 		}
 	}
-
+	const int numItems = m_ImageStack->findItems( QString( "*" ), Qt::MatchWrap | Qt::MatchWildcard ).size() ;
+	if ( numItems > 1 && m_ImageStack->currentItem() ) {
+		m_Interface.moveUp->setEnabled(m_ImageStack->currentIndex().row() > 0);
+		m_Interface.moveDown->setEnabled( m_ImageStack->currentIndex().row() <= numItems - 1);
+	} else {
+		m_Interface.moveDown->setEnabled(false);
+		m_Interface.moveUp->setEnabled(false );
+	}
+	m_Interface.checkViewAllImages->setEnabled( m_ViewerCore->getUICore()->getEnsembleList().size() > 1 );
 }
+
 void ImageStackWidget::itemClicked ( QListWidgetItem* item)
 {
 	if( m_ViewerCore->hasImage() ) {
-		ImageHolder::Pointer image = m_ViewerCore->getDataContainer().at( item->text().toStdString() );
+		const int numItems = m_ImageStack->findItems( QString( "*" ), Qt::MatchWrap | Qt::MatchWildcard ).size() ;
+		if ( numItems > 1 && m_ImageStack->currentItem() ) {
+			m_Interface.moveUp->setEnabled(m_ImageStack->currentIndex().row() > 0);
+			m_Interface.moveDown->setEnabled( m_ImageStack->currentIndex().row() < numItems - 1);
+		}else {
+			m_Interface.moveDown->setEnabled(false);
+			m_Interface.moveUp->setEnabled(false );
+		}
+		ImageHolder::Pointer image = m_ViewerCore->getImageMap().at( item->data(Qt::UserRole).toString().toStdString() );
+		std::cout << image->getImageProperties().fileName << std::endl;
 		if( image->getImageProperties().imageType == ImageHolder::statistical_image ) {
 			m_Interface.actionImage_type_stats->setChecked(true);
 			m_Interface.actionStructural_image->setChecked(false);
@@ -182,13 +202,14 @@ void ImageStackWidget::itemClicked ( QListWidgetItem* item)
 			m_Interface.actionStructural_image->setChecked(true);
 		}
 	}
+	
 }
 
 
 void ImageStackWidget::itemChanged( QListWidgetItem *item )
 {
 	if( m_ViewerCore->hasImage() ) {
-		boost::shared_ptr< ImageHolder > image = m_ViewerCore->getDataContainer().at( item->text().toStdString() );
+		ImageHolder::Pointer image = m_ViewerCore->getImageMap().at( item->data(Qt::UserRole).toString().toStdString() );
 		if( item->checkState() == Qt::Checked ) {
 			image->getImageProperties().isVisible = true ;
 		} else {
@@ -202,7 +223,7 @@ void ImageStackWidget::itemChanged( QListWidgetItem *item )
 
 void ImageStackWidget::itemSelected( QListWidgetItem *item )
 {
-	m_ViewerCore->setCurrentImage( m_ViewerCore->getDataContainer().at( item->text().toStdString() ) );
+	m_ViewerCore->setCurrentImage( m_ViewerCore->getImageMap().at( item->data(Qt::UserRole).toString().toStdString() ) );
 	synchronize();
 	m_ViewerCore->getUICore()->refreshUI();
 	m_ViewerCore->updateScene();
@@ -212,9 +233,9 @@ void ImageStackWidget::closeAllImages()
 {
 	QList<QListWidgetItem *> items = m_ImageStack->findItems( QString( "*" ), Qt::MatchWrap | Qt::MatchWildcard );
 	BOOST_FOREACH( QList<QListWidgetItem *>::const_reference item, items ) {
-		DataContainer::iterator iter = m_ViewerCore->getDataContainer().find( item->text().toStdString() );
+		ImageHolder::Map::iterator iter = m_ViewerCore->getImageMap().find( item->data(Qt::UserRole).toString().toStdString() );
 
-		if( iter != m_ViewerCore->getDataContainer().end() ) {
+		if( iter != m_ViewerCore->getImageMap().end() ) {
 			m_ViewerCore->closeImage( iter->second, false );
 		}
 	}
@@ -225,35 +246,34 @@ void ImageStackWidget::closeAllImages()
 void ImageStackWidget::closeImage()
 {
 	if(  m_ImageStack->currentItem() ) {
-		m_ViewerCore->closeImage( m_ViewerCore->getDataContainer().at( m_ImageStack->currentItem()->text().toStdString() ) );
+		m_ViewerCore->closeImage( m_ViewerCore->getImageMap().at( m_ImageStack->currentItem()->data(Qt::UserRole).toString().toStdString() ) );
 	}
 }
 
 void ImageStackWidget::distributeImages()
 {
-	DataContainer tmpContainer;
-	BOOST_FOREACH( DataContainer::reference image, m_ViewerCore->getDataContainer() ) {
-
-		tmpContainer.insert( image );
-		m_ViewerCore->getDataContainer().erase( image.first );
-		BOOST_FOREACH( WidgetEnsembleComponent::Map::reference ensemble, m_ViewerCore->getUICore()->getWidgets() ) {
-			ensemble.first->removeImage(image.second);
-		}
-	}
-	m_ViewerCore->getUICore()->removeAllWidgetEnsembles();
-	m_ViewerCore->getUICore()->refreshUI();
-	BOOST_FOREACH( DataContainer::const_reference image, tmpContainer ) {
-		m_ViewerCore->getDataContainer().insert( image );
-		m_ViewerCore->getUICore()->createViewWidgetEnsemble( m_ViewerCore->getSettings()->getPropertyAs<std::string>("defaultViewWidgetIdentifier"), image.second );
-	}
-	m_ViewerCore->getUICore()->refreshUI();
-	m_ViewerCore->settingsChanged();
-	m_ViewerCore->updateScene();
+// 	ImageHolder::List tmpImageList;
+// 	BOOST_FOREACH( ImageHolder::List::reference image, m_ViewerCore->getImageList() ) {
+// 		tmpImageList.push_back( image);
+// 		m_ViewerCore->getDataContainer().erase( image.first );
+// 		BOOST_FOREACH( WidgetEnsembleComponent::Map::reference ensemble, m_ViewerCore->getUICore()->getWidgets() ) {
+// 			ensemble.first->removeImage(image.second);
+// 		}
+// 	}
+// 	m_ViewerCore->getUICore()->removeAllWidgetEnsembles();
+// 	m_ViewerCore->getUICore()->refreshUI();
+// 	BOOST_FOREACH( DataContainer::const_reference image, tmpContainer ) {
+// 		m_ViewerCore->getDataContainer().insert( image );
+// 		m_ViewerCore->getUICore()->createViewWidgetEnsemble( m_ViewerCore->getSettings()->getPropertyAs<std::string>("defaultViewWidgetIdentifier"), image.second );
+// 	}
+// 	m_ViewerCore->getUICore()->refreshUI();
+// 	m_ViewerCore->settingsChanged();
+// 	m_ViewerCore->updateScene();
 }
 
 void ImageStackWidget::moveDown()
 {
-	ImageHolder::Pointer image = m_ViewerCore->getDataContainer().at( m_ImageStack->currentItem()->text().toStdString() );
+	ImageHolder::Pointer image = m_ViewerCore->getImageMap().at( m_ImageStack->currentItem()->data(Qt::UserRole).toString().toStdString() );
 	
 }
 

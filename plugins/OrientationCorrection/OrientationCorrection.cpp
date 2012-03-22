@@ -65,7 +65,7 @@ void OrientatioCorrectionDialog::alignOnCenter( bool align )
 {
 	if ( m_ViewerCore->hasImage() ) {
 		if( align ) {
-			m_ImageNameAlignedTo = m_ViewerCore->getCurrentImage()->getFileNames().front();
+			m_ImageNameAlignedTo = m_ViewerCore->getCurrentImage()->getImageProperties().fileName;
 			const util::fvector4 &rowVec = m_ViewerCore->getCurrentImage()->getISISImage()->getPropertyAs<util::fvector4>( "rowVec" );
 			const util::fvector4 &columnVec = m_ViewerCore->getCurrentImage()->getISISImage()->getPropertyAs<util::fvector4>( "columnVec" );
 			const util::fvector4 &sliceVec = m_ViewerCore->getCurrentImage()->getISISImage()->getPropertyAs<util::fvector4>( "sliceVec" );
@@ -186,7 +186,7 @@ bool OrientatioCorrectionDialog::applyTransform( const boost::numeric::ublas::ma
 			m_ViewerCore->getCurrentImage()->getPropMap().setPropertyAs<util::fvector4>( "originalSliceVec", m_ViewerCore->getCurrentImage()->getISISImage()->getPropertyAs<util::fvector4>( "sliceVec" ) );
 			m_ViewerCore->getCurrentImage()->addChangedAttribute( desc );
 		} else {
-			LOG( Runtime, error ) << "Could not apply transform " << trans << " to the image " << m_ViewerCore->getCurrentImage()->getFileNames().front() << " !";
+			LOG( Runtime, error ) << "Could not apply transform " << trans << " to the image " << m_ViewerCore->getCurrentImage()->getImageProperties().fileName << " !";
 		}
 
 		m_ViewerCore->getCurrentImage()->updateOrientation();

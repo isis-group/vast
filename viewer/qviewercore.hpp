@@ -98,7 +98,6 @@ Q_SIGNALS:
 	void emitOnWidgetMoved( util::fvector4, Qt::MouseButton );
 	void emitPhysicalCoordsChanged( util::fvector4 );
 	void emitTimeStepChange( unsigned int );
-	void emitImagesChanged( DataContainer );
 	void emitShowLabels( bool );
 	void emitUpdateScene( );
 	void emitSetEnableCrosshair( bool enable );

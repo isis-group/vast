@@ -139,7 +139,7 @@ void QViewerCore::onWidgetClicked ( widget::WidgetInterface* origin, util::fvect
 	emitPhysicalCoordsChanged(physicalCoords);
 }
 
-void QViewerCore::onWidgetMoved ( widget::WidgetInterface* origin, util::fvector4 physicalCoords, Qt::MouseButton mouseButton )
+void QViewerCore::onWidgetMoved ( widget::WidgetInterface* /*origin*/, util::fvector4 physicalCoords, Qt::MouseButton mouseButton )
 {
 	emitOnWidgetMoved( physicalCoords, mouseButton );
 	emitPhysicalCoordsChanged(physicalCoords);
@@ -449,7 +449,7 @@ void QViewerCore::closeImage ( ImageHolder::Pointer image, bool refreshUI )
 		}
 	}
 
-	getDataContainer().erase ( image->getFileNames().front() );
+	getImageMap().erase ( image->getImageProperties().id );
 
 	if ( refreshUI )
 	{

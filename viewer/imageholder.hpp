@@ -32,6 +32,7 @@
 #include "color.hpp"
 #include <boost/foreach.hpp>
 #include <boost/numeric/ublas/matrix.hpp>
+#include <boost/uuid/uuid.hpp>
 #include <vector>
 #include <CoreUtils/propmap.hpp>
 #include <DataStorage/image.hpp>
@@ -58,6 +59,8 @@ public:
 	enum ImageType { structural_image, statistical_image };
 private:
 	struct ImageProperties {
+		std::string fileName;
+		std::string id;
 		util::ivector4 voxelCoords;
 		util::fvector4 physicalCoords;
 		util::fvector4 voxelSize;
@@ -94,13 +97,11 @@ private:
 public:
 	typedef boost::shared_ptr< ImageHolder > Pointer;
 	typedef std::list< Pointer > List;
+	typedef std::map<std::string, Pointer > Map;
 
 	ImageHolder();
 
-	bool setImage( const data::Image &image, const ImageType &imageType, const std::string &filename = "" );
-
-	size_t getID() const { return m_ID; }
-	void setID( size_t id ) { m_ID = id; }
+	bool setImage( const data::Image &image, const ImageType &imageType, const std::string &filename );
 
 	const std::vector< data::Chunk > &getChunkVector() const { return m_ChunkVector; }
 	std::vector< data::Chunk > &getChunkVector() { return m_ChunkVector; }
@@ -118,9 +119,7 @@ public:
 	boost::shared_ptr<const void>
 	getRawAdress( size_t timestep = 0 ) const;
 
-	util::slist getFileNames() const { return m_Filenames; }
-
-	bool operator<( const ImageHolder &ref ) const { return m_ID < ref.getID(); }
+// 	bool operator<( const ImageHolder &ref ) const { return m_ID < ref.getID(); }
 
 	void checkVoxelCoords( util::ivector4 &voxelCoords );
 
@@ -166,8 +165,6 @@ private:
 
 	boost::shared_ptr<data::Image> m_Image;
 	boost::shared_ptr<data::Image> m_TypedImage;
-	util::slist m_Filenames;
-	size_t m_ID;
 	std::pair<double, double> m_OptimalScalingPair;
 
 	std::vector< data::Chunk > m_ChunkVector;
@@ -217,7 +214,7 @@ private:
 
 	template<typename TYPE>
 	void _setTrueZero( const data::Image &image ) {
-		LOG( Dev, info ) << "Setting true zero for " << getFileNames().front();
+		LOG( Dev, info ) << "Setting true zero for " << getImageProperties().fileName;
 		// first make shure the images datatype is consistent
 		data::TypedImage<TYPE> tImage ( image );
 

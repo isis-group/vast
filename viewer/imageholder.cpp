@@ -232,23 +232,7 @@ bool ImageHolder::setImage( const data::Image &image, const ImageType &_imageTyp
 	}
 
 	m_Image.reset( new data::Image( image ) );
-
-	//if no filename was specified we have to search for the filename by ourselfes
-	if( filename.empty() ) {
-		LOG( Dev, warning ) << "filename.empty() is true";
-		// go through all the chunks and search for filenames. We use a set here to avoid redundantly filenames
-		std::set<std::string> filenameSet;
-		BOOST_FOREACH( std::vector< data::Chunk >::const_reference chRef, image.copyChunksToVector() ) {
-			filenameSet.insert( chRef.getPropertyAs<std::string>( "source" ) );
-		}
-		//now we pack our filenameSet into our slist of filenames
-		BOOST_FOREACH( std::set<std::string>::const_reference setRef, filenameSet ) {
-			m_Filenames.push_back( setRef );
-		}
-		LOG( Dev, info ) << "Created filename: " << m_Filenames.front();
-	} else {
-		m_Filenames.push_back( filename );
-	}
+	getImageProperties().fileName = filename;
 
 	// get some image information
 	//add some more properties
@@ -416,7 +400,7 @@ double ImageHolder::getInternalExtent() const
 
 void ImageHolder::logImageProps() const
 {
-	LOG( Dev, info ) << "The following image properties are for: " << getFileNames().front();
+	LOG( Dev, info ) << "The following image properties are for: " << getImageProperties().fileName;
 	LOG( Dev, info ) << "majorTypeID: " << getImageProperties().majorTypeID;
 	
 }

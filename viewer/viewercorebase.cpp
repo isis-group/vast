@@ -28,6 +28,8 @@
 #include "viewercorebase.hpp"
 #include "common.hpp"
 
+#include <boost/uuid/uuid_generators.hpp>
+
 #define STR(s) _xstr_(s)
 #define _xstr_(s) std::string(#s)
 
@@ -86,13 +88,28 @@ ImageHolder::List ViewerCoreBase::addImageList( const std::list< data::Image > i
 
 ImageHolder::Pointer ViewerCoreBase::addImage( const isis::data::Image &image, const isis::viewer::ImageHolder::ImageType &imageType )
 {
-	ImageHolder::Pointer retImage = m_DataContainer.addImage( image, imageType );
+	std::string fileName;
+	if( image.hasProperty( "source" ) ) {
+		fileName = image.getPropertyAs<std::string>( "source" );
+	} else {
+		boost::filesystem::path path = image.getChunk( 0 ).getPropertyAs<std::string>( "source" );
+		fileName = path.branch_path().string();
+	}
+	ImageHolder::Pointer  retImage = ImageHolder::Pointer( new ImageHolder ) ;
+	retImage->setImage( image, imageType, fileName );
 	m_ImageList.push_back( retImage );
+
+	
+	const boost::uuids::uuid id = boost::uuids::random_generator()();
+	std::string id_str( id.begin(), id.end() );
+	m_ImageMap[id_str] = retImage;
+	retImage->getImageProperties().id = id_str;
+
 	if( retImage->hasAmbiguousOrientation() ) {
 		QMessageBox msgBox;
 		msgBox.setIcon(QMessageBox::Warning);
 		std::stringstream message;
-		message << "The image " << retImage->getFileNames().front()
+		message << "The image " << retImage->getImageProperties().fileName
 			<< " has an ambiguous orientation (rotated through 45 degrees).\n\n Alignment might look wrong.";
 		msgBox.setText( message.str().c_str() );
 		msgBox.exec();

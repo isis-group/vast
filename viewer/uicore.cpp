@@ -213,7 +213,7 @@ void UICore::reloadPluginsToGUI()
 
 void UICore::refreshUI()
 {
-	//refresh peripherals
+
 	const bool hasImages = m_ViewerCore->hasImage();
 
 	if( hasImages ) {
@@ -226,6 +226,7 @@ void UICore::refreshUI()
 			}
 		}
 	}
+	//refresh peripherals
 	m_SliderWidget->synchronize();
 	m_ImageStackWidget->synchronize();
 	m_VoxelInformationWidget->synchronize();

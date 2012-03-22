@@ -136,7 +136,7 @@ void isis::viewer::plugin::PlotterDialog::fillProfile ( boost::shared_ptr< isis:
 	std::stringstream coordsAsString;
 	float factor = 1;
 	if( axis == 3 ) {
-		title << "Timecourse for " << m_ViewerCore->getCurrentImage()->getFileNames().front();
+		title << "Timecourse for " << m_ViewerCore->getCurrentImage()->getImageProperties().fileName;
 		coordsAsString << "<" <<  voxCoords[0] << "|" << voxCoords[1] << "|" << voxCoords[2] << ">";
 		plot->setTitle( coordsAsString.str().c_str() );
 		setWindowTitle( title.str().c_str() );
@@ -149,7 +149,7 @@ void isis::viewer::plugin::PlotterDialog::fillProfile ( boost::shared_ptr< isis:
 			plot->setAxisTitle( 2, tr( "Repetition (missing TR)" ) );
 		}
 	} else {
-		title << "Profile for " <<  m_ViewerCore->getCurrentImage()->getFileNames().front();
+		title << "Profile for " <<  m_ViewerCore->getCurrentImage()->getImageProperties().fileName;
 		std::stringstream plotTitle;
 		std::stringstream axisTitle;
 		plotTitle << "Profile for axis " << ui.comboAxis->currentText().toStdString();

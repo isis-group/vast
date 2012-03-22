@@ -341,7 +341,7 @@ void MainWindow::saveImage()
 			QMessageBox msgBox;
 			msgBox.setIcon( QMessageBox::Information );
 			std::stringstream text;
-			text << "This will overwrite" << m_ViewerCore->getCurrentImage()->getFileNames().front() << " !";
+			text << "This will overwrite" << m_ViewerCore->getCurrentImage()->getImageProperties().fileName << " !";
 			msgBox.setText( text.str().c_str() );
 			msgBox.setInformativeText( "Do you want to proceed?" );
 			std::stringstream detailedText;
@@ -358,8 +358,8 @@ void MainWindow::saveImage()
 				return;
 				break;
 			case QMessageBox::Yes:
-				toggleLoadingIcon( true, QString( "Saving image to ") + m_ViewerCore->getCurrentImage()->getFileNames().front().c_str() );
-				isis::data::IOFactory::write( *m_ViewerCore->getCurrentImage()->getISISImage(), m_ViewerCore->getCurrentImage()->getFileNames().front(), "", "" );
+				toggleLoadingIcon( true, QString( "Saving image to ") + m_ViewerCore->getCurrentImage()->getImageProperties().fileName.c_str() );
+				isis::data::IOFactory::write( *m_ViewerCore->getCurrentImage()->getISISImage(), m_ViewerCore->getCurrentImage()->getImageProperties().fileName, "", "" );
 				toggleLoadingIcon( false );
 				break;
 			}
@@ -373,7 +373,7 @@ void MainWindow::saveAllImages()
 		std::list<util::slist> changedAttributesList;
 		util::slist fileNames;
 		BOOST_FOREACH( ImageHolder::List::const_reference image, m_ViewerCore->getImageList() ) {
-			fileNames.push_back( image->getFileNames().front() );
+			fileNames.push_back( image->getImageProperties().fileName );
 
 			if( image->getPropMap().getPropertyAs<util::slist>( "changedAttributes" ).size() ) {
 				changedAttributesList.push_back( image->getPropMap().getPropertyAs<util::slist>( "changedAttributes" ) );
@@ -394,7 +394,7 @@ void MainWindow::saveAllImages()
 			detailedText << "Changed attributes: " << std::endl;
 			BOOST_FOREACH( ImageHolder::List::const_reference image, m_ViewerCore->getImageList() ) {
 				if( image->getPropMap().getPropertyAs<util::slist>( "changedAttributes" ).size() ) {
-					detailedText << image->getFileNames().front() << " : " << std::endl;
+					detailedText << image->getImageProperties().fileName << " : " << std::endl;
 					BOOST_FOREACH( util::slist::const_reference changedAttribute, image->getPropMap().getPropertyAs<util::slist>( "changedAttributes" ) ) {
 						detailedText << changedAttribute << std::endl;
 					}
@@ -410,8 +410,8 @@ void MainWindow::saveAllImages()
 				break;
 			case QMessageBox::Yes:
 				BOOST_FOREACH( ImageHolder::List::const_reference image, m_ViewerCore->getImageList() ) {
-					toggleLoadingIcon( true, QString( "Saving image to ") + image->getFileNames().front().c_str() );
-					isis::data::IOFactory::write( *image->getISISImage(), image->getFileNames().front(), "", "" );
+					toggleLoadingIcon( true, QString( "Saving image to ") + image->getImageProperties().fileName.c_str() );
+					isis::data::IOFactory::write( *image->getISISImage(), image->getImageProperties().fileName, "", "" );
 				}
                 toggleLoadingIcon(false);
 				break;
@@ -576,7 +576,7 @@ void MainWindow::findGlobalMin()
 	if( m_ViewerCore->hasImage() ) {
 		const int radius = m_RadiusSpin->value();
 		if( m_ViewerCore->getCurrentImage()->getISISImage()->getVolume() >= 1e6 && radius == 0 ) {
-			toggleLoadingIcon(true, QString( "Searching for global min of ") + m_ViewerCore->getCurrentImage()->getFileNames().front().c_str() );
+			toggleLoadingIcon(true, QString( "Searching for global min of ") + m_ViewerCore->getCurrentImage()->getImageProperties().fileName.c_str() );
 		}
 		const util::ivector4 minVoxel = operation::NativeImageOps::getGlobalMin( m_ViewerCore->getCurrentImage(),
 										m_ViewerCore->getCurrentImage()->getImageProperties().voxelCoords,
@@ -591,7 +591,7 @@ void MainWindow::findGlobalMax()
 	if( m_ViewerCore->hasImage() ) {
 		const int radius = m_RadiusSpin->value();
 		if( m_ViewerCore->getCurrentImage()->getISISImage()->getVolume() >= 1e6 && radius == 0  ) {
-			toggleLoadingIcon(true, QString( "Searching for global max of ") + m_ViewerCore->getCurrentImage()->getFileNames().front().c_str() );
+			toggleLoadingIcon(true, QString( "Searching for global max of ") + m_ViewerCore->getCurrentImage()->getImageProperties().fileName.c_str() );
 		}
 		const util::ivector4 maxVoxel = operation::NativeImageOps::getGlobalMax( m_ViewerCore->getCurrentImage(),
 										m_ViewerCore->getCurrentImage()->getImageProperties().voxelCoords,

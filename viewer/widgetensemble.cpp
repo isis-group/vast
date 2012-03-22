@@ -49,7 +49,7 @@ void WidgetEnsemble::addImage ( const ImageHolder::Pointer image )
 			ensembleComponent->checkIfNeeded();
 		}
 	} else {
-		LOG( Dev, warning ) << "Trying to add image " << image->getFileNames().front() << ". But this image already exists in ensemble";
+		LOG( Dev, warning ) << "Trying to add image " << image->getImageProperties().fileName << ". But this image already exists in ensemble";
 	}
 
 }
@@ -64,7 +64,7 @@ void WidgetEnsemble::removeImage ( const ImageHolder::Pointer image )
 			ensembleComponent->checkIfNeeded();
 		}
 	} else {
-		LOG( Dev, warning )  << "Trying to remove image " << image->getFileNames().front() << " from ensemble. But this ensemble has no such image.";
+		LOG( Dev, warning )  << "Trying to remove image " << image->getImageProperties().fileName << " from ensemble. But this ensemble has no such image.";
 	}
 
 }
