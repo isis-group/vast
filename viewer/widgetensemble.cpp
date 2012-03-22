@@ -92,13 +92,13 @@ void WidgetEnsemble::setIsCurrent ( bool current )
 			ensembleComponent->getFrame()->setLineWidth( 1 );
 			ensembleComponent->getFrame()->setPalette( pal );
 			ensembleComponent->getFrame()->setAutoFillBackground( true );
-			ensembleComponent->getWidgetInterface()->setCrossHairColor( Qt::white );
+			ensembleComponent->getWidgetInterface()->setCrossHairColor( QColor( 34, 139, 34 ) );
 		}
 	} else {
 		BOOST_FOREACH( std::vector<WidgetEnsembleComponent::Pointer>::reference ensembleComponent, *this ) {
 			ensembleComponent->getFrame()->setFrameStyle( 0 );
 			ensembleComponent->getFrame()->setAutoFillBackground( false );
-			ensembleComponent->getWidgetInterface()->setCrossHairColor( QColor( 255, 102, 0 ) );
+			ensembleComponent->getWidgetInterface()->setCrossHairColor( Qt::white );
 		}
 	}
 }

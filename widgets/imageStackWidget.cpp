@@ -164,6 +164,7 @@ void ImageStackWidget::synchronize()
 
 				if( m_ViewerCore->getCurrentImage().get() == image.get() ) {
 					item->setIcon( QIcon( ":/common/currentImage.gif" ) );
+					item->setTextColor( QColor( 34, 139, 34 ) );
 				}
 
 				m_ImageStack->addItem( item );
@@ -193,7 +194,6 @@ void ImageStackWidget::itemClicked ( QListWidgetItem* item)
 			m_Interface.moveUp->setEnabled(false );
 		}
 		ImageHolder::Pointer image = m_ViewerCore->getImageMap().at( item->data(Qt::UserRole).toString().toStdString() );
-		std::cout << image->getImageProperties().fileName << std::endl;
 		if( image->getImageProperties().imageType == ImageHolder::statistical_image ) {
 			m_Interface.actionImage_type_stats->setChecked(true);
 			m_Interface.actionStructural_image->setChecked(false);
