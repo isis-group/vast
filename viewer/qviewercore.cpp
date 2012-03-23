@@ -133,7 +133,7 @@ void QViewerCore::physicalCoordsChanged ( util::fvector4 physicalCoords )
 
 void QViewerCore::onWidgetClicked ( widget::WidgetInterface* origin, util::fvector4 physicalCoords, Qt::MouseButton mouseButton )
 {
-	setCurrentImage( origin->getImageList().front() );
+	setCurrentImage( origin->getWidgetEnsemble()->getImageList().front() );
 	getUICore()->refreshUI();
 	emitOnWidgetClicked(physicalCoords, mouseButton);
 	emitPhysicalCoordsChanged(physicalCoords);

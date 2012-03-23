@@ -111,29 +111,21 @@ void QImageWidgetImplementation::addImage( const boost::shared_ptr< ImageHolder 
 	ImageProperties imgProperties;
 	imgProperties.viewPort = QOrientationHandler::ViewPortType();
 	m_ImageProperties.insert( std::make_pair< boost::shared_ptr<ImageHolder> , ImageProperties >( image, imgProperties ) );
-	m_ImageList.push_back( image );
 	setFocus();
 }
 
 bool QImageWidgetImplementation::removeImage( const boost::shared_ptr< ImageHolder > image )
 {
-	m_ImageProperties.erase( image );
-	ImageHolder::List::iterator iter = std::find( m_ImageList.begin(), m_ImageList.end(), image );
-
-	if( iter != m_ImageList.end() ) {
-		m_ImageList.erase( iter );
-	}
-
-	return iter != m_ImageList.end();
+	return m_ImageProperties.erase( image ) > 0;
 }
 
 boost::shared_ptr< ImageHolder > QImageWidgetImplementation::getWidgetSpecCurrentImage() const
 {
-	if( std::find( m_ImageList.begin(), m_ImageList.end(), m_ViewerCore->getCurrentImage() ) != m_ImageList.end() ) {
+	if( std::find( getWidgetEnsemble()->getImageList().begin(), getWidgetEnsemble()->getImageList().end(), m_ViewerCore->getCurrentImage() ) != getWidgetEnsemble()->getImageList().end() ) {
 		return m_ViewerCore->getCurrentImage();
 	}
 
-	return m_ImageList.front();
+	return getWidgetEnsemble()->getImageList().front();
 
 }
 
@@ -150,7 +142,7 @@ void QImageWidgetImplementation::setZoom( float zoom )
 
 void QImageWidgetImplementation::paintEvent( QPaintEvent */*event*/ )
 {
-	if( m_ImageList.size() ) {
+	if( getWidgetEnsemble()->getImageList().size() ) {
 		m_Painter->begin( this );
 		m_ImageProperties.at( getWidgetSpecCurrentImage() ).viewPort
 		= QOrientationHandler::getViewPort( currentZoom,
@@ -164,7 +156,7 @@ void QImageWidgetImplementation::paintEvent( QPaintEvent */*event*/ )
 
 		if( m_ViewerCore->getMode() == ViewerCoreBase::statistical_mode ) {
 			//painting all anatomical images
-			BOOST_FOREACH( ImageHolder::List::const_reference image, m_ImageList ) {
+			BOOST_FOREACH( ImageHolder::List::const_reference image, getWidgetEnsemble()->getImageList() ) {
 				if( image.get() != cImage.get()
 					&& image->getImageProperties().isVisible
 					&& image->getImageProperties().imageType == ImageHolder::structural_image ) {
@@ -178,7 +170,7 @@ void QImageWidgetImplementation::paintEvent( QPaintEvent */*event*/ )
 			}
 
 			//painting the zmaps
-			BOOST_FOREACH( ImageHolder::List::const_reference image, m_ImageList ) {
+			BOOST_FOREACH( ImageHolder::List::const_reference image, getWidgetEnsemble()->getImageList() ) {
 				if( image.get() != cImage.get()
 					&& image->getImageProperties().isVisible
 					&& image->getImageProperties().imageType == ImageHolder::statistical_image ) {
@@ -191,7 +183,7 @@ void QImageWidgetImplementation::paintEvent( QPaintEvent */*event*/ )
 				paintImage( cImage );
 			}
 		} else {
-			BOOST_FOREACH( ImageHolder::List::const_reference image, m_ImageList ) {
+			BOOST_FOREACH( ImageHolder::List::const_reference image, getWidgetEnsemble()->getImageList() ) {
 				if( image.get() != cImage.get()
 					&& image->getImageProperties().isVisible ) {
 					paintImage( image );
@@ -332,7 +324,7 @@ void QImageWidgetImplementation::mousePressEvent( QMouseEvent *e )
 	}
 
 	if( m_ViewerCore->getMode() == ViewerCoreBase::statistical_mode ) {
-		BOOST_FOREACH( ImageHolder::List::const_reference image, m_ImageList ) {
+		BOOST_FOREACH( ImageHolder::List::const_reference image, getWidgetEnsemble()->getImageList() ) {
 			if( image->getImageProperties().imageType == ImageHolder::statistical_image ) {
 				m_ViewerCore->setCurrentImage( image );
 			}
@@ -561,7 +553,7 @@ void QImageWidgetImplementation::dragEnterEvent( QDragEnterEvent *e )
 {
 	if( e->mimeData()->hasFormat( "text/plain" ) ) {
 		bool hasImage = false;
-		BOOST_FOREACH( ImageHolder::List::const_reference image, m_ImageList ) {
+		BOOST_FOREACH( ImageHolder::List::const_reference image, getWidgetEnsemble()->getImageList() ) {
 			if( image->getImageProperties().id == e->mimeData()->text().toStdString() ) {
 				hasImage = true;
 			}

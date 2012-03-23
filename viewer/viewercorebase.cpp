@@ -177,7 +177,6 @@ widget::WidgetInterface* ViewerCoreBase::getWidget ( const std::string& identifi
 	widget::WidgetLoader::WidgetMapType widgetMap = util::Singletons::get<widget::WidgetLoader, 10>().getWidgetMap();
 	if( widgetMap.empty() ) {
 		LOG( Dev, error ) << "Could not find any widget!" ;
-		throw( std::runtime_error( "Could not find any widget!" ) );
 	}
 	if( widgetMap.find(identifier) != widgetMap.end() ) {
 		LOG(Dev, info ) << "Loading widget of identifier \"" << identifier << "\".";
@@ -198,7 +197,6 @@ const util::PropertyMap* ViewerCoreBase::getWidgetProperties ( const std::string
 	widget::WidgetLoader::WidgetPropertyMapType widgetPropertyMap = util::Singletons::get<widget::WidgetLoader, 10>().getWidgetPropertyMap();
 	if( widgetPropertyMap.empty() ) {
 		LOG( Dev, error ) << "Could not find any widget!" ;
-		throw( std::runtime_error( "Could not find any widget!" ) );
 	}
 	if( widgetPropertyMap.find(identifier) != widgetPropertyMap.end() ) {
 		LOG(Dev, info ) << "Loading widget properties of identifier \"" << identifier << "\".";

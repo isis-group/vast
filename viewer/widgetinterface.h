@@ -59,8 +59,8 @@ public:
 	virtual void setEnableCrosshair( bool enable ) = 0;
 	virtual void updateScene() = 0;
 	virtual void setZoom( float zoom ) = 0;
-	virtual void addImage( const boost::shared_ptr<ImageHolder> image ) = 0;
-	virtual bool removeImage( const boost::shared_ptr< ImageHolder > image ) = 0;
+	virtual void addImage( const boost::shared_ptr<ImageHolder> image ) {};
+	virtual bool removeImage( const boost::shared_ptr< ImageHolder > image ) {};
 	virtual std::string getWidgetName() const = 0;
 	virtual void setInterpolationType( InterpolationType interpolation ) = 0;
 	virtual void setMouseCursorIcon( QIcon ) = 0;
@@ -74,9 +74,9 @@ public:
 
 	virtual void lookAtPhysicalCoords( const util::fvector4 &physicalCoords ) = 0;
 
-	ImageHolder::List getImageList() const { return m_ImageList; }
-	
 	void setWidgetEnsemble( boost::shared_ptr<WidgetEnsemble> ensemble ) { m_WidgetEnsemble = ensemble; }
+	const boost::shared_ptr<WidgetEnsemble> getWidgetEnsemble() const { return m_WidgetEnsemble; }
+	boost::shared_ptr<WidgetEnsemble> getWidgetEnsemble() { return m_WidgetEnsemble; }
 
 	std::string widget_file;
 protected:
@@ -85,7 +85,6 @@ protected:
 	QViewerCore *m_ViewerCore;
 	PlaneOrientation m_PlaneOrientation;
 	QWidget *m_Parent;
-	ImageHolder::List m_ImageList;
 	boost::shared_ptr<WidgetEnsemble> m_WidgetEnsemble;
 
 private:
