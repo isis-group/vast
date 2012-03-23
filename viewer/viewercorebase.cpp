@@ -140,12 +140,6 @@ ImageHolder::Pointer ViewerCoreBase::addImage( const isis::data::Image &image, c
 	if( getMode() == ViewerCoreBase::statistical_mode && retImage->getImageSize()[3] > 1 && retImage->getImageProperties().imageType != ImageHolder::statistical_image ) {
 		retImage->getImageProperties().isVisible = false;
 	}
-
-	if ( getMode() == ViewerCoreBase::statistical_mode && retImage->getImageProperties().imageType == ImageHolder::statistical_image ) {
-		setCurrentImage( retImage );
-	} else if ( getMode() == ViewerCoreBase::default_mode ) {
-		setCurrentImage( retImage );
-	}
 	//emit the signal
 	emitAddImage( retImage );
 	return retImage;

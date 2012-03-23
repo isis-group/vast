@@ -63,7 +63,7 @@ public:
 	const boost::shared_ptr<Settings> getSettings() const { return m_Settings; }
 	boost::shared_ptr<Settings> getSettings() { return m_Settings; }
 	
-	void setCurrentImage( const ImageHolder::Pointer image ) { m_CurrentImage = image; }
+	void setCurrentImage( const ImageHolder::Pointer image ) { m_CurrentImage = image; emitCurrentImageChanged( image ); }
 
 	ImageHolder::Pointer getCurrentImage();
 
@@ -85,6 +85,7 @@ public:
 
 	//signals
 	boost::signals2::signal<void (ImageHolder::Pointer)> emitAddImage;
+	boost::signals2::signal<void (ImageHolder::Pointer)> emitCurrentImageChanged;
 
 private:
 	//this is the container which actually holds all the images

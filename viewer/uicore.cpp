@@ -48,6 +48,8 @@ UICore::UICore( QViewerCore *core )
 	m_ImageStackWidget->setVisible( false );
 	setOptionPosition( );
 	connect( m_MainWindow->getInterface().actionInformation_Areas, SIGNAL( triggered( bool ) ), SLOT( showInformationAreas( bool ) ) );
+
+	m_ViewerCore->emitCurrentImageChanged.connect( boost::bind( &UICore::refreshUI, this ) );
 }
 
 void UICore::setOptionPosition( UICore::OptionPosition pos )

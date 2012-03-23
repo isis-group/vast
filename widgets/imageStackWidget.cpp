@@ -212,7 +212,6 @@ void ImageStackWidget::itemClicked ( QListWidgetItem* item)
 			m_Interface.actionStructural_image->setChecked(true);
 		}
 	}
-	
 }
 
 
@@ -234,9 +233,6 @@ void ImageStackWidget::itemChanged( QListWidgetItem *item )
 void ImageStackWidget::itemSelected( QListWidgetItem *item )
 {
 	m_ViewerCore->setCurrentImage( m_ViewerCore->getImageMap().at( item->data(Qt::UserRole).toString().toStdString() ) );
-	synchronize();
-	m_ViewerCore->getUICore()->refreshUI();
-	m_ViewerCore->updateScene();
 }
 
 void ImageStackWidget::closeAllImages()

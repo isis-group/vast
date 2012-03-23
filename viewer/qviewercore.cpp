@@ -360,7 +360,7 @@ ImageHolder::List QViewerCore::openFile ( const FileInformation &fileInfo, bool 
 						getUICore()->getCurrentEnsemble()->addImage( image );
 					}
 				}
-			getUICore()->refreshUI();
+			setCurrentImage( imgList.front() );
 			}
 		}
 		getUICore()->getMainWindow()->toggleLoadingIcon(false);
@@ -405,13 +405,14 @@ void QViewerCore::openFileList(const std::list< FileInformation > fileInfoList)
 					}
 				}
 			}
+			setCurrentImage(statisticalImageList.front());
 		} else if ( structuralImageList.size() ) {
 			BOOST_FOREACH( ImageHolder::List::const_reference image, structuralImageList ) {
 				getUICore()->createViewWidgetEnsemble( fileInfoList.front().getWidgetIdentifier(), image, true );
 			}
+			setCurrentImage( structuralImageList.front() );
 		}
 	} else {
-
 		if ( !fileInfoList.front().isNewEnsemble() ) {
 			if ( widgetList.empty() ) {
 				widgetList.push_back( getUICore()->createViewWidgetEnsemble(fileInfoList.front().getWidgetIdentifier()));
@@ -421,7 +422,8 @@ void QViewerCore::openFileList(const std::list< FileInformation > fileInfoList)
 			}
 		} else {
 			getUICore()->createViewWidgetEnsembleList( fileInfoList.front().getWidgetIdentifier(), structuralImageList, true );
-		} 
+		}
+		setCurrentImage( structuralImageList.front() );
 	}
 }
 

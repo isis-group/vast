@@ -56,7 +56,7 @@ void WidgetEnsemble::addImage ( const ImageHolder::Pointer image )
 
 void WidgetEnsemble::removeImage ( const ImageHolder::Pointer image )
 {
-	ImageHolder::List::iterator iter = find( m_imageList.begin(), m_imageList.end(), image );
+	const ImageHolder::List::iterator iter = find( m_imageList.begin(), m_imageList.end(), image );
 	if( iter != m_imageList.end() ) {
 		m_imageList.erase( iter );
 		emitRemoveImage( image );
