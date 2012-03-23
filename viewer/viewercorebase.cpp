@@ -129,7 +129,6 @@ ImageHolder::Pointer ViewerCoreBase::addImage( const isis::data::Image &image, c
 			retImage->getImageProperties().lut = std::string( "standard_zmap" );
 			getSettings()->setPropertyAs<std::string>( "lutZMap", retImage->getImageProperties().lut );
 		}
-
 	}
 
 	retImage->updateColorMap();
@@ -147,7 +146,8 @@ ImageHolder::Pointer ViewerCoreBase::addImage( const isis::data::Image &image, c
 	} else if ( getMode() == ViewerCoreBase::default_mode ) {
 		setCurrentImage( retImage );
 	}
-
+	//emit the signal
+	emitAddImage( retImage );
 	return retImage;
 }
 

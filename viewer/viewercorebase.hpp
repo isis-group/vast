@@ -35,6 +35,7 @@
 
 #include <map>
 #include <boost/uuid/uuid.hpp>
+#include <boost/signals2.hpp>
 
 #ifdef _OPENMP
 #include <omp.h>
@@ -81,6 +82,9 @@ public:
 
 	ImageHolder::Map &getImageMap() { return m_ImageMap; }
 	const ImageHolder::Map &getImageMap() const { return m_ImageMap; }
+
+	//signals
+	boost::signals2::signal<void (ImageHolder::Pointer)> emitAddImage;
 
 private:
 	//this is the container which actually holds all the images

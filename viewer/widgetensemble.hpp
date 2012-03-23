@@ -31,6 +31,7 @@
 
 #include <map>
 #include <list>
+#include <boost/signals2.hpp>
 #include "widgetensemblecomponent.hpp"
 
 namespace isis {
@@ -64,6 +65,11 @@ public:
 	bool isCurrent() const { return m_isCurrent; }
 
 	void update( const ImageHolder::Pointer currentImage );
+
+	//signals
+	boost::signals2::signal<void ( ImageHolder::Pointer ) > emitAddImage;
+	boost::signals2::signal<void ( ImageHolder::Pointer ) > emitRemoveImage;
+	boost::signals2::signal<void () > emitCheckIfNeeded;
 
 private:
 	QFrame *m_frame;

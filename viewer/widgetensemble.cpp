@@ -43,12 +43,11 @@ WidgetEnsemble::WidgetEnsemble()
 
 void WidgetEnsemble::addImage ( const ImageHolder::Pointer image )
 {
+	//if image is not in list
 	if( std::find( m_imageList.begin(), m_imageList.end(), image ) == m_imageList.end()  ) {
 		m_imageList.push_back( image );
-		BOOST_FOREACH( std::vector<WidgetEnsembleComponent::Pointer>::reference ensembleComponent, *this ) {
-			ensembleComponent->getWidgetInterface()->addImage( image );
-			ensembleComponent->checkIfNeeded();
-		}
+		emitAddImage(image);
+		emitCheckIfNeeded();
 	} else {
 		LOG( Dev, warning ) << "Trying to add image " << image->getImageProperties().fileName << ". But this image already exists in ensemble";
 	}
@@ -60,10 +59,8 @@ void WidgetEnsemble::removeImage ( const ImageHolder::Pointer image )
 	ImageHolder::List::iterator iter = find( m_imageList.begin(), m_imageList.end(), image );
 	if( iter != m_imageList.end() ) {
 		m_imageList.erase( iter );
-		BOOST_FOREACH( std::vector<WidgetEnsembleComponent::Pointer>::reference ensembleComponent, *this ) {
-			ensembleComponent->getWidgetInterface()->removeImage( image );
-			ensembleComponent->checkIfNeeded();
-		}
+		emitRemoveImage( image );
+		emitCheckIfNeeded();
 	} else {
 		LOG( Dev, warning )  << "Trying to remove image " << image->getImageProperties().fileName << " from ensemble. But this ensemble has no such image.";
 	}
@@ -73,6 +70,9 @@ void WidgetEnsemble::removeImage ( const ImageHolder::Pointer image )
 void WidgetEnsemble::insertComponent ( WidgetEnsembleComponent::Pointer component )
 {
 	push_back( component );
+	emitAddImage.connect( boost::bind( &widget::WidgetInterface::addImage, component->getWidgetInterface(), _1 ) );
+	emitRemoveImage.connect( boost::bind( &widget::WidgetInterface::removeImage, component->getWidgetInterface(), _1 ) );
+	emitCheckIfNeeded.connect( boost::bind( &WidgetEnsembleComponent::checkIfNeeded, component.get() ) );
 	component->getWidgetInterface()->setWidgetEnsemble( WidgetEnsemble::Pointer( this ) );
 	m_layout->addWidget( component->getDockWidget(), 0, m_cols++ );
 }
