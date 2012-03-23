@@ -427,36 +427,34 @@ void QViewerCore::openFileList(const std::list< FileInformation > fileInfoList)
 
 void QViewerCore::closeImage ( ImageHolder::Pointer image, bool refreshUI )
 {
-	BOOST_FOREACH( WidgetEnsembleComponent::Map::reference ensemble, getUICore()->getWidgets() ) {
-		ensemble.first->removeImage(image);
+	const size_t oldNumberImages = getImageList().size();
+	std::cout << oldNumberImages << std::endl;
+	LOG( Dev, info ) << "Closing image " << image->getImageProperties().fileName;
+	BOOST_FOREACH( WidgetEnsemble::List::reference ensemble, getUICore()->getEnsembleList() ) {
+		ensemble->removeImage( image );
 	}
-	if ( getCurrentImage().get() == image.get() )
-	{
-		ImageHolder::List tmpList;
-		BOOST_FOREACH ( ImageHolder::List::const_reference image, getImageList() )
-		{
-			tmpList.push_back ( image );
-		}
-		tmpList.erase ( std::find ( tmpList.begin(), tmpList.end(), image ) );
-
-		if ( tmpList.size() )
-		{
-			setCurrentImage ( tmpList.front() );
-		}
-		else
-		{
-			setCurrentImage ( ImageHolder::Pointer() );
+	//if this image is the current one, we have to set one of the residual images to the current ones
+	if( getCurrentImage().get() == image.get() ) {
+		LOG( Dev, info ) << "This was the current image so setting one of the residual images to current image";
+		ImageHolder::List tmpList = getImageList();
+		tmpList.erase( std::find (tmpList.begin(), tmpList.end(), image) );
+		if( tmpList.size() ) {
+			setCurrentImage( tmpList.front() );
+		} else {
+			setCurrentImage( ImageHolder::Pointer() );
 		}
 	}
-
-	getImageMap().erase ( image->getImageProperties().id );
-
-	if ( refreshUI )
-	{
+	getImageList().erase( std::find (getImageList().begin(), getImageList().end(), image) );
+	getImageMap().erase( image->getImageProperties().id );
+	if( refreshUI ) {
 		getUICore()->refreshUI();
 	}
-
 	updateScene();
+	if( ( getImageList().size() == getImageMap().size() ) && ( getImageList().size() == ( oldNumberImages - 1 ) ) ) {
+		LOG( Dev, info ) << "Successfully removed image.";
+	} else {
+		LOG( Dev, error ) << "Error during removing of image " << image->getImageProperties().fileName;
+	}
 }
 
 

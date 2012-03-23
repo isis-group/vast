@@ -26,6 +26,7 @@
  *      Author: tuerke
  ******************************************************************/
 #include "widgetensemble.hpp"
+#include "widgetensemblecomponent.hpp"
 
 namespace isis {
 namespace viewer {
@@ -42,7 +43,7 @@ WidgetEnsemble::WidgetEnsemble()
 
 void WidgetEnsemble::addImage ( const ImageHolder::Pointer image )
 {
-	if( find( m_imageList.begin(), m_imageList.end(), image ) == m_imageList.end()  ) {
+	if( std::find( m_imageList.begin(), m_imageList.end(), image ) == m_imageList.end()  ) {
 		m_imageList.push_back( image );
 		BOOST_FOREACH( std::vector<WidgetEnsembleComponent::Pointer>::reference ensembleComponent, *this ) {
 			ensembleComponent->getWidgetInterface()->addImage( image );
@@ -72,6 +73,7 @@ void WidgetEnsemble::removeImage ( const ImageHolder::Pointer image )
 void WidgetEnsemble::insertComponent ( WidgetEnsembleComponent::Pointer component )
 {
 	push_back( component );
+	component->getWidgetInterface()->setWidgetEnsemble( WidgetEnsemble::Pointer( this ) );
 	m_layout->addWidget( component->getDockWidget(), 0, m_cols++ );
 }
 
@@ -103,12 +105,27 @@ void WidgetEnsemble::setIsCurrent ( bool current )
 	}
 }
 
-void WidgetEnsemble::setVisible ( bool visible )
+void WidgetEnsemble::update( const ImageHolder::Pointer currentImage )
 {
-	BOOST_FOREACH( std::vector<WidgetEnsembleComponent::Pointer>::reference ensembleComponent, *this ) {
-		ensembleComponent->getDockWidget()->setVisible(visible);
+	//if this ensemble contains no image close it
+	if( getImageList().empty() ) {
+		getFrame()->close();
+		return;
+	}
+	//if no image is visible make this ensemble invisible either
+	bool visible = false;
+	BOOST_FOREACH( ImageHolder::List::const_reference image, getImageList() ) {
+		if( image->getImageProperties().isVisible ) {
+			visible = true;
+		}
+	}
+	getFrame()->setVisible(visible);
+	//if this ensemble contains the current image make this the current ensemble either
+	if( visible ) {
+		setIsCurrent( std::find( getImageList().begin(), getImageList().end(), currentImage ) != getImageList().end() );
 	}
 }
+
 
 
 }} // end namespace

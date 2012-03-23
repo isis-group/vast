@@ -30,20 +30,25 @@
 
 #include <QFrame>
 #include <QDockWidget>
+#include <boost/shared_ptr.hpp>
+#include <map>
 
-#include "widgetinterface.h"
 
 namespace isis
 {
 namespace viewer
 {
+namespace widget
+{
+class WidgetInterface;
+}
 
 class WidgetEnsembleComponent
 {
 
 public:
-	///map to associate a WidgetEnsembleComponent with a WidgetInterface raw pointer
 	typedef boost::shared_ptr< WidgetEnsembleComponent > Pointer;
+	///map to associate a WidgetEnsembleComponent with a WidgetInterface raw pointer
 	typedef std::map< widget::WidgetInterface *, Pointer > Map;
 
 	WidgetEnsembleComponent( QFrame *frame, QDockWidget *dockWidget, QWidget *placeHolder, widget::WidgetInterface *widgetImplementation );
@@ -77,4 +82,5 @@ private:
 
 }} // end namespace
 
+#include "widgetinterface.h"
 #endif //VAST_WIDGETENSEMBLECOMPONENT_HPP

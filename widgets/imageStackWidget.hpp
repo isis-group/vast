@@ -50,6 +50,7 @@ public Q_SLOTS:
 	void synchronize();
 	void moveUp();
 	void moveDown();
+	void viewAllImagesClicked();
 
 private:
 	QViewerCore *m_ViewerCore;

@@ -218,12 +218,7 @@ void UICore::refreshUI()
 
 	if( hasImages ) {
 		BOOST_FOREACH( WidgetEnsemble::List::reference ensemble, getEnsembleList() ) {
-			//if the ensemble contains the current image, set it to current ensemble
-			ImageHolder::List imageList = ensemble->getImageList();
-			ensemble->setIsCurrent(std::find( imageList.begin(), imageList.end(), m_ViewerCore->getCurrentImage() ) != imageList.end());
-			if ( imageList.empty() ) {
-				ensemble->getFrame()->close();
-			}
+			ensemble->update( m_ViewerCore->getCurrentImage() );
 		}
 	}
 	//refresh peripherals

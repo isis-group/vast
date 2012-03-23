@@ -57,12 +57,13 @@ public:
 
 	bool hasImage( const ImageHolder::Pointer image ) const;
 
-	ImageHolder::List getImageList() const { return m_imageList; }
+	const ImageHolder::List &getImageList() const { return m_imageList; }
+	ImageHolder::List &getImageList() { return m_imageList; }
 
 	void setIsCurrent( bool current );
 	bool isCurrent() const { return m_isCurrent; }
 
-	void setVisible( bool visible );
+	void update( const ImageHolder::Pointer currentImage );
 
 private:
 	QFrame *m_frame;

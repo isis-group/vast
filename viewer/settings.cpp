@@ -40,11 +40,13 @@ Settings::Settings()
 
 void Settings::save()
 {
+	LOG( Dev, info ) << "Saving settings to " << m_QSettings->fileName().toStdString();
 	m_QSettings->beginGroup ( "ViewerCore" );
 	m_QSettings->setValue ( "lutZMap", getPropertyAs<std::string> ( "lutZMap" ).c_str() );
 	m_QSettings->setValue( "visualizeOnlyFirstVista", getPropertyAs<bool>("visualizeOnlyFirstVista") );
 	m_QSettings->setValue ( "interpolationType", getPropertyAs<uint16_t> ( "interpolationType" ) );
 	m_QSettings->setValue ( "propagateZooming", getPropertyAs<bool> ( "propagateZooming" ) );
+	m_QSettings->setValue ( "viewAllImagesInStack", getPropertyAs<bool> ( "viewAllImagesInStack" ) );
 	m_QSettings->setValue ( "propagateTimestepChange", getPropertyAs<bool> ( "propagateTimestepChange" ) );
 	m_QSettings->setValue ( "minMaxSearchRadius", getPropertyAs<uint16_t> ( "minMaxSearchRadius" ) );
 	m_QSettings->setValue ( "showLabels", getPropertyAs<bool> ( "showLabels" ) );
@@ -71,13 +73,16 @@ void Settings::save()
 	m_RecentFiles.writeFileInformationMap(m_QSettings, "RecentImages" );
 	m_FavFiles.writeFileInformationMap(m_QSettings, "FavoriteImages" );
 	m_QSettings->sync();
+	LOG( Dev, info ) << "Finished saving settings";
 }
 
 void Settings::load()
 {
+	LOG( Dev, info ) << "Loading settings from " << m_QSettings->fileName().toStdString();
 	m_QSettings->beginGroup ( "ViewerCore" );
 	setPropertyAs<std::string> ( "lutZMap", m_QSettings->value ( "lutZMap", getPropertyAs<std::string> ( "lutZMap" ).c_str() ).toString().toStdString() );
 	setPropertyAs<bool> ( "propagateZooming", m_QSettings->value ( "propagateZooming", false ).toBool() );
+	setPropertyAs<bool> ( "viewAllImagesInStack", m_QSettings->value ( "viewAllImagesInStack", false ).toBool() );
 	setPropertyAs<bool> ( "propagateTimestepChange", m_QSettings->value ( "propagateTimestepChange", false ).toBool() );
 	setPropertyAs<uint16_t> ( "interpolationType", m_QSettings->value ( "interpolationType", getPropertyAs<uint16_t> ( "interpolationType" ) ).toUInt() );
 	setPropertyAs<bool> ( "showLabels", m_QSettings->value ( "showLabels", false ).toBool() );
@@ -111,6 +116,7 @@ void Settings::load()
 void Settings::initializeWithDefaultSettings()
 {
 	setPropertyAs<bool>( "zmapGlobal", false );
+	setPropertyAs<bool>( "viewAllImagesInStack", false );
 	setPropertyAs<bool>("visualizeOnlyFirstVista", false );
 	setPropertyAs<bool>( "propagateZooming", false );
 	setPropertyAs<bool>( "propagateTimestepChange", false );

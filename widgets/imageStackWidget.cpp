@@ -101,7 +101,7 @@ ImageStackWidget::ImageStackWidget( QWidget *parent, QViewerCore *core )
 	connect( m_Interface.actionClose_all_images, SIGNAL( triggered() ), this, SLOT( closeAllImages() ) );
 	connect( m_Interface.actionImage_type_stats, SIGNAL( triggered(bool)), this, SLOT(toggleStatsType()));
 	connect( m_Interface.actionStructural_image, SIGNAL( triggered(bool)), this, SLOT( toggleStructsType()));
-	connect( m_Interface.checkViewAllImages, SIGNAL( clicked(bool)), this, SLOT( synchronize()) );
+	connect( m_Interface.checkViewAllImages, SIGNAL( clicked(bool)), this, SLOT( viewAllImagesClicked() ) );
 	connect( m_Interface.moveDown, SIGNAL( clicked(bool)), this, SLOT( moveDown()) );
 	connect( m_Interface.moveUp, SIGNAL( clicked(bool)), this, SLOT( moveUp()) );
 
@@ -133,13 +133,23 @@ void ImageStackWidget::toggleStructsType()
 // 	m_ViewerCore->updateScene();
 }
 
+void ImageStackWidget::viewAllImagesClicked()
+{
+	m_ViewerCore->getSettings()->setPropertyAs<bool>("viewAllImagesInStack", m_Interface.checkViewAllImages->isChecked() );
+	synchronize();
+}
+
 
 
 void ImageStackWidget::synchronize()
 {
 	m_Interface.frame->setMaximumHeight( m_ViewerCore->getSettings()->getPropertyAs<uint16_t>( "maxOptionWidgetHeight" ) );
 	m_Interface.frame->setMinimumHeight( m_ViewerCore->getSettings()->getPropertyAs<uint16_t>( "minOptionWidgetHeight" ) );
-
+	
+	disconnect( m_Interface.checkViewAllImages, SIGNAL( clicked(bool)), this, SLOT( viewAllImagesClicked() ) );
+	m_Interface.checkViewAllImages->setChecked( m_ViewerCore->getSettings()->getPropertyAs<bool>("viewAllImagesInStack") );
+	connect( m_Interface.checkViewAllImages, SIGNAL( clicked(bool)), this, SLOT( viewAllImagesClicked() ) );
+	
 	m_ImageStack->clear();
 	ImageHolder::List imageList;
 	if( m_ViewerCore->hasImage() ) {

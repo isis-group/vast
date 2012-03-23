@@ -214,6 +214,7 @@ void Color::adaptColorMapToImage( ImageHolder *image, bool split )
 	const unsigned short mid = (norm * fabs( min ));
 	unsigned short scaledVal;
 	const float normMid = mid + (offset * norm );
+#warning implement this correctly
 	for ( unsigned short i = 0; i < 256; i++ ) {
 		if( i > normMid ) {
 			scaledVal = normMid + ( i - normMid ) * scaling > 255 ? 255 : normMid + ( i - normMid ) * scaling;

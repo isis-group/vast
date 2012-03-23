@@ -149,10 +149,10 @@ void VTKImageWidgetImplementation::addImage ( const boost::shared_ptr< ImageHold
 	VTKImageComponents component = m_VTKImageComponentsMap[image];
 	component.mapper->SetCroppingRegionPlanes(-100,100,-100,100,-100,100);
 // 	component.mapper->SetCropping(1);
-	m_ImageList.push_back(image);
+	m_ImageList.push_back( image );
 	m_Renderer->AddVolume( component.volume );
 	component.setVTKImageData( VolumeHandler::getVTKImageData(image, image->getImageProperties().voxelCoords[3]) );
-	if( m_ImageList.size() == 1 ) {
+	if( getImageList().size() == 1 ) {
 		m_Renderer->GetActiveCamera()->SetPosition( image->getImageProperties().indexOrigin[0] * 2, image->getImageProperties().indexOrigin[1] * 2, image->getImageProperties().indexOrigin[2] );
 		m_Renderer->GetActiveCamera()->Roll(-65);
 	}

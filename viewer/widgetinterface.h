@@ -41,6 +41,7 @@ namespace viewer
 {
 
 class QViewerCore;
+class WidgetEnsemble;
 
 namespace widget {
 
@@ -74,6 +75,9 @@ public:
 	virtual void lookAtPhysicalCoords( const util::fvector4 &physicalCoords ) = 0;
 
 	ImageHolder::List getImageList() const { return m_ImageList; }
+	
+	void setWidgetEnsemble( boost::shared_ptr<WidgetEnsemble> ensemble ) { m_WidgetEnsemble = ensemble; }
+
 	std::string widget_file;
 protected:
 	WidgetInterface() : m_IsSetup(false) {}
@@ -82,6 +86,7 @@ protected:
 	PlaneOrientation m_PlaneOrientation;
 	QWidget *m_Parent;
 	ImageHolder::List m_ImageList;
+	boost::shared_ptr<WidgetEnsemble> m_WidgetEnsemble;
 
 private:
 	bool m_IsSetup;
@@ -94,6 +99,8 @@ private:
 #else
 typedef struct WidgetInterface WidgetInterface;
 #endif
+
+#include "widgetensemble.hpp"
 
 #ifdef __cplusplus
 extern "C" {
