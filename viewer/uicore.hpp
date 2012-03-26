@@ -66,8 +66,8 @@ public:
 
 	virtual WidgetEnsemble::Pointer createViewWidgetEnsemble( const std::string &widgetType, bool show = true  );
 	virtual WidgetEnsemble::Pointer createViewWidgetEnsemble( const std::string &widgetType, ImageHolder::Pointer image, bool show = true );
-	virtual WidgetEnsemble::Pointer createViewWidgetEnsemble( const std::string &widgetType, ImageHolder::List imageList, bool show = true );
-	virtual WidgetEnsemble::List createViewWidgetEnsembleList( const std::string &widgetType, ImageHolder::List imageList, bool show = true );
+	virtual WidgetEnsemble::Pointer createViewWidgetEnsemble( const std::string &widgetType, ImageHolder::Vector imageList, bool show = true );
+	virtual WidgetEnsemble::Vector createViewWidgetEnsembleList( const std::string &widgetType, ImageHolder::Vector imageList, bool show = true );
 
 	virtual void attachWidgetEnsemble( WidgetEnsemble::Pointer ensemble );
 
@@ -75,10 +75,12 @@ public:
 
 	virtual void setOptionPosition( OptionPosition pos = bottom );
 
-	const WidgetEnsemble::List &getEnsembleList() const { return m_EnsembleList; }
-	WidgetEnsemble::List &getEnsembleList() { return m_EnsembleList; }
+	const WidgetEnsemble::Vector &getEnsembleList() const { return m_EnsembleList; }
+	WidgetEnsemble::Vector &getEnsembleList() { return m_EnsembleList; }
 
 	WidgetEnsemble::Pointer getCurrentEnsemble() const;
+
+	WidgetEnsemble::Pointer getEnsembleFromImage( const ImageHolder::Pointer ) const;
 
 	void setViewPlaneOrientation( PlaneOrientation orientation, bool visible );
 
@@ -87,11 +89,12 @@ public:
 	///Closes all widget ensembles
 	void closeAllWidgetEnsembles();
 	///Closes the widget ensemble and returns its images
-	ImageHolder::List closeWidgetEnsemble( WidgetEnsemble::Pointer ensemble );
+	ImageHolder::Vector closeWidgetEnsemble( WidgetEnsemble::Pointer ensemble );
 
 public Q_SLOTS:
 	virtual void reloadPluginsToGUI();
 	virtual void refreshUI( const bool &mainwindow = true );
+	virtual void refreshEnsembles();
 	void showInformationAreas( bool );
 
 
@@ -108,7 +111,7 @@ private:
 
 	QViewerCore *m_ViewerCore;
 	MainWindow *m_MainWindow;
-	WidgetEnsemble::List m_EnsembleList;
+	WidgetEnsemble::Vector m_EnsembleList;
 
 	ui::VoxelInformationWidget *m_VoxelInformationWidget;
 	ui::ImageStackWidget *m_ImageStackWidget;

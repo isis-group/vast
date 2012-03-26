@@ -75,9 +75,9 @@ void ViewerCoreBase::initOMP()
 #endif
 }
 
-ImageHolder::List ViewerCoreBase::addImageList( const std::list< data::Image > imageList, const ImageHolder::ImageType &imageType )
+ImageHolder::Vector ViewerCoreBase::addImageList( const std::list< data::Image > imageList, const ImageHolder::ImageType &imageType )
 {
-	ImageHolder::List retList;
+	ImageHolder::Vector retList;
 
 	if( !imageList.empty() ) {
 		BOOST_FOREACH( std::list< data::Image >::const_reference imageRef, imageList ) {

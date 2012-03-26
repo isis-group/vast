@@ -57,7 +57,7 @@ public:
 
 	static std::string getVersion();
 
-	virtual ImageHolder::List addImageList( const std::list< data::Image > imageList, const ImageHolder::ImageType &imageType );
+	virtual ImageHolder::Vector addImageList( const std::list< data::Image > imageList, const ImageHolder::ImageType &imageType );
 	virtual ImageHolder::Pointer addImage( const data::Image &image, const ImageHolder::ImageType &imageType );
 
 	const boost::shared_ptr<Settings> getSettings() const { return m_Settings; }
@@ -77,8 +77,8 @@ public:
 	virtual void setMode( const Mode &mode ) { m_Mode = mode; }
 	virtual Mode getMode() const { return m_Mode; }
 
-	ImageHolder::List &getImageList() { return m_ImageList; }
-	const ImageHolder::List &getImageList() const { return m_ImageList; }
+	ImageHolder::Vector &getImageList() { return m_ImageList; }
+	const ImageHolder::Vector &getImageList() const { return m_ImageList; }
 
 	ImageHolder::Map &getImageMap() { return m_ImageMap; }
 	const ImageHolder::Map &getImageMap() const { return m_ImageMap; }
@@ -89,7 +89,7 @@ public:
 
 private:
 	//this is the container which holds all the images
-	ImageHolder::List m_ImageList;
+	ImageHolder::Vector m_ImageList;
 	//this map associates all the images with an uuid
 	ImageHolder::Map m_ImageMap;
 	ImageHolder::Pointer  m_CurrentImage;

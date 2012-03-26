@@ -83,7 +83,7 @@ void isis::viewer::plugin::CorrelationPlotterDialog::showEvent( QShowEvent * )
 
 		if( !m_CurrentFunctionalImage ) {
 			if( m_ViewerCore->getCurrentImage()->getImageSize()[3] == 1 ) {
-				BOOST_FOREACH( ImageHolder::List::const_reference image, m_ViewerCore->getImageList() ) {
+				BOOST_FOREACH( ImageHolder::Vector::const_reference image, m_ViewerCore->getImageList() ) {
 					if( image->getImageSize()[dim_time] > 1 ) {
 						hasFunctionalImage = true;
 						m_CurrentFunctionalImage = image;
@@ -108,7 +108,7 @@ void isis::viewer::plugin::CorrelationPlotterDialog::showEvent( QShowEvent * )
 		} else {
 			if ( !m_CurrentCorrelationMap ) {
 				createCorrelationMap();
-				BOOST_FOREACH( WidgetEnsemble::List::reference ensemble, m_ViewerCore->getUICore()->getEnsembleList() ) {
+				BOOST_FOREACH( WidgetEnsemble::Vector::reference ensemble, m_ViewerCore->getUICore()->getEnsembleList() ) {
 					if( ensemble->hasImage( m_CurrentFunctionalImage ) ) {
 						ensemble->addImage( m_CurrentCorrelationMap );
 					}

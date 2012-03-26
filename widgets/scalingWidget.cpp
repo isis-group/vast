@@ -171,7 +171,7 @@ std::pair< double, double > ScalingWidget::getScalingOffsetFromMinMax( const std
 void ScalingWidget::applyScalingOffset( const double &scaling, const double &offset, bool global )
 {
 	if( global ) {
-		BOOST_FOREACH( ImageHolder::List::const_reference image, m_ViewerCore->getImageList() ) {
+		BOOST_FOREACH( ImageHolder::Vector::const_reference image, m_ViewerCore->getImageList() ) {
 			image->getImageProperties().scaling = scaling;
 			image->getImageProperties().offset = offset;
 			image->updateColorMap();

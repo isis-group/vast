@@ -156,7 +156,7 @@ void QImageWidgetImplementation::paintEvent( QPaintEvent */*event*/ )
 
 		if( m_ViewerCore->getMode() == ViewerCoreBase::statistical_mode ) {
 			//painting all anatomical images
-			BOOST_FOREACH( ImageHolder::List::const_reference image, getWidgetEnsemble()->getImageList() ) {
+			BOOST_FOREACH( ImageHolder::Vector::const_reference image, getWidgetEnsemble()->getImageList() ) {
 				if( image.get() != cImage.get()
 					&& image->getImageProperties().isVisible
 					&& image->getImageProperties().imageType == ImageHolder::structural_image ) {
@@ -170,7 +170,7 @@ void QImageWidgetImplementation::paintEvent( QPaintEvent */*event*/ )
 			}
 
 			//painting the zmaps
-			BOOST_FOREACH( ImageHolder::List::const_reference image, getWidgetEnsemble()->getImageList() ) {
+			BOOST_FOREACH( ImageHolder::Vector::const_reference image, getWidgetEnsemble()->getImageList() ) {
 				if( image.get() != cImage.get()
 					&& image->getImageProperties().isVisible
 					&& image->getImageProperties().imageType == ImageHolder::statistical_image ) {
@@ -183,7 +183,7 @@ void QImageWidgetImplementation::paintEvent( QPaintEvent */*event*/ )
 				paintImage( cImage );
 			}
 		} else {
-			BOOST_FOREACH( ImageHolder::List::const_reference image, getWidgetEnsemble()->getImageList() ) {
+			BOOST_FOREACH( ImageHolder::Vector::const_reference image, getWidgetEnsemble()->getImageList() ) {
 				if( image.get() != cImage.get()
 					&& image->getImageProperties().isVisible ) {
 					paintImage( image );
@@ -324,7 +324,7 @@ void QImageWidgetImplementation::mousePressEvent( QMouseEvent *e )
 	}
 
 	if( m_ViewerCore->getMode() == ViewerCoreBase::statistical_mode ) {
-		BOOST_FOREACH( ImageHolder::List::const_reference image, getWidgetEnsemble()->getImageList() ) {
+		BOOST_FOREACH( ImageHolder::Vector::const_reference image, getWidgetEnsemble()->getImageList() ) {
 			if( image->getImageProperties().imageType == ImageHolder::statistical_image ) {
 				m_ViewerCore->setCurrentImage( image );
 			}
@@ -343,7 +343,7 @@ void QImageWidgetImplementation::mouseMoveEvent( QMouseEvent *e )
 
 	if( m_RightMouseButtonPressed && m_LeftMouseButtonPressed ) {
 		if( QApplication::keyboardModifiers() == Qt::ShiftModifier ) {
-			BOOST_FOREACH( ImageHolder::List::const_reference image, m_ViewerCore->getImageList() ) {
+			BOOST_FOREACH( ImageHolder::Vector::const_reference image, m_ViewerCore->getImageList() ) {
 				const double offset =  ( m_StartCoordsPair.second - e->y() ) / ( float )height() * image->getImageProperties().extent;
 				const double scaling = 1.0 - ( m_StartCoordsPair.first - e->x() ) / ( float )width() * 5;
 				image->getImageProperties().offset = offset;
@@ -450,7 +450,7 @@ void QImageWidgetImplementation::paintCrosshair() const
 
 void QImageWidgetImplementation::lookAtPhysicalCoords( const isis::util::fvector4 &physicalCoords )
 {
-	BOOST_FOREACH( ImageHolder::List::const_reference image, m_ViewerCore->getImageList() ) {
+	BOOST_FOREACH( ImageHolder::Vector::const_reference image, m_ViewerCore->getImageList() ) {
 		image->getImageProperties().physicalCoords = physicalCoords;
 		const size_t timestep = image->getImageProperties().voxelCoords[3];
 		image->getImageProperties().voxelCoords = image->getISISImage()->getIndexFromPhysicalCoords( physicalCoords, true );
@@ -558,7 +558,7 @@ void QImageWidgetImplementation::dragEnterEvent( QDragEnterEvent *e )
 {
 	if( e->mimeData()->hasFormat( "text/plain" ) ) {
 		bool hasImage = false;
-		BOOST_FOREACH( ImageHolder::List::const_reference image, getWidgetEnsemble()->getImageList() ) {
+		BOOST_FOREACH( ImageHolder::Vector::const_reference image, getWidgetEnsemble()->getImageList() ) {
 			if( image->getImageProperties().id == e->mimeData()->text().toStdString() ) {
 				hasImage = true;
 			}
@@ -573,9 +573,12 @@ void QImageWidgetImplementation::dragEnterEvent( QDragEnterEvent *e )
 
 void QImageWidgetImplementation::dropEvent( QDropEvent *e )
 {
+	if( m_ViewerCore->getImageMap().find( e->mimeData()->text().toStdString() ) == m_ViewerCore->getImageMap().end()) {
+		LOG( Dev, error ) << "Can not find image with id " << e->mimeData()->text().toStdString() << "!";
+	}
 	const ImageHolder::Pointer image = m_ViewerCore->getImageMap().at( e->mimeData()->text().toStdString() );
 	WidgetEnsemble::Pointer myEnsemble;
-	BOOST_FOREACH( WidgetEnsemble::List::reference ensemble, m_ViewerCore->getUICore()->getEnsembleList() ) {
+	BOOST_FOREACH( WidgetEnsemble::Vector::reference ensemble, m_ViewerCore->getUICore()->getEnsembleList() ) {
 		BOOST_FOREACH( WidgetEnsemble::reference ensembleComponent, *ensemble ) {
 			if( ensembleComponent->getWidgetInterface() == this ) {
 				myEnsemble = ensemble;
@@ -583,7 +586,7 @@ void QImageWidgetImplementation::dropEvent( QDropEvent *e )
 		}
 	}
 	myEnsemble->addImage( image  );
-	BOOST_FOREACH( WidgetEnsemble::List::reference ensemble, m_ViewerCore->getUICore()->getEnsembleList() ) {
+	BOOST_FOREACH( WidgetEnsemble::Vector::reference ensemble, m_ViewerCore->getUICore()->getEnsembleList() ) {
 		if( ensemble != myEnsemble ) {
 			ensemble->removeImage( image );
 		}

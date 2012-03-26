@@ -125,8 +125,8 @@ void CreateMaskDialog::createMask()
 		m_MaskEditDialog->m_CurrentMask->getImageProperties().lut = "maskeditLUT";
 		m_MaskEditDialog->m_CurrentMask->updateColorMap();
 		m_MaskEditDialog->m_CurrentMask->updateOrientation();
-		BOOST_FOREACH( WidgetEnsemble::List::reference ensemble, m_MaskEditDialog->m_ViewerCore->getUICore()->getEnsembleList() ) {
-			ImageHolder::List iList = ensemble->getImageList();
+		BOOST_FOREACH( WidgetEnsemble::Vector::reference ensemble, m_MaskEditDialog->m_ViewerCore->getUICore()->getEnsembleList() ) {
+			ImageHolder::Vector iList = ensemble->getImageList();
 
 			if( std::find( iList.begin(), iList.end(), refImage ) != iList.end() ) {
 				m_MaskEditDialog->m_CurrentWidgetEnsemble = ensemble;

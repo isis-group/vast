@@ -45,7 +45,7 @@ class WidgetEnsemble : public std::vector< WidgetEnsembleComponent::Pointer >
 {
 public:
 	typedef boost::shared_ptr< WidgetEnsemble > Pointer;
-	typedef std::list< Pointer > List;
+	typedef std::vector< Pointer > Vector;
 
 	WidgetEnsemble();
 
@@ -62,8 +62,8 @@ public:
 
 	bool hasImage( const ImageHolder::Pointer image ) const;
 
-	const ImageHolder::List &getImageList() const { return m_imageList; }
-	ImageHolder::List &getImageList() { return m_imageList; }
+	const ImageHolder::Vector &getImageList() const { return m_imageList; }
+	ImageHolder::Vector &getImageList() { return m_imageList; }
 
 	void setIsCurrent( bool current );
 	bool isCurrent() const { return m_isCurrent; }
@@ -80,7 +80,7 @@ private:
 	QGridLayout *m_layout;
 	unsigned short m_cols;
 	void push_back( const value_type &value ) { std::vector< WidgetEnsembleComponent::Pointer >::push_back( value ); }
-	ImageHolder::List m_imageList;
+	ImageHolder::Vector m_imageList;
 	bool m_isCurrent;
 };
 

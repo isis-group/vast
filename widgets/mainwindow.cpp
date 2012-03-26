@@ -266,7 +266,7 @@ void MainWindow::toggleZMapMode( bool zmap )
 
 void MainWindow::resetScaling()
 {
-	BOOST_FOREACH( ImageHolder::List::const_reference image, m_ViewerCore->getImageList() ) {
+	BOOST_FOREACH( ImageHolder::Vector::const_reference image, m_ViewerCore->getImageList() ) {
 		image->getImageProperties().scaling = 1.0;
 		image->getImageProperties().offset = 0.0;
 		image->updateColorMap();
@@ -292,7 +292,7 @@ void MainWindow::showLoggingDialog()
 
 void MainWindow::ignoreOrientation( bool ignore )
 {
-	BOOST_FOREACH( ImageHolder::List::const_reference image, m_ViewerCore->getImageList() ) {
+	BOOST_FOREACH( ImageHolder::Vector::const_reference image, m_ViewerCore->getImageList() ) {
 		if( ignore ) {
 			setOrientationToIdentity( *image->getISISImage() );
 			checkForCaCp( image );
@@ -376,7 +376,7 @@ void MainWindow::saveAllImages()
 	if( m_ViewerCore->hasImage() ) {
 		std::list<util::slist> changedAttributesList;
 		util::slist fileNames;
-		BOOST_FOREACH( ImageHolder::List::const_reference image, m_ViewerCore->getImageList() ) {
+		BOOST_FOREACH( ImageHolder::Vector::const_reference image, m_ViewerCore->getImageList() ) {
 			fileNames.push_back( image->getImageProperties().fileName );
 
 			if( image->getPropMap().getPropertyAs<util::slist>( "changedAttributes" ).size() ) {
@@ -396,7 +396,7 @@ void MainWindow::saveAllImages()
 			msgBox.setInformativeText( "Do you want to proceed?" );
 			std::stringstream detailedText;
 			detailedText << "Changed attributes: " << std::endl;
-			BOOST_FOREACH( ImageHolder::List::const_reference image, m_ViewerCore->getImageList() ) {
+			BOOST_FOREACH( ImageHolder::Vector::const_reference image, m_ViewerCore->getImageList() ) {
 				if( image->getPropMap().getPropertyAs<util::slist>( "changedAttributes" ).size() ) {
 					detailedText << image->getImageProperties().fileName << " : " << std::endl;
 					BOOST_FOREACH( util::slist::const_reference changedAttribute, image->getPropMap().getPropertyAs<util::slist>( "changedAttributes" ) ) {
@@ -413,7 +413,7 @@ void MainWindow::saveAllImages()
 				return;
 				break;
 			case QMessageBox::Yes:
-				BOOST_FOREACH( ImageHolder::List::const_reference image, m_ViewerCore->getImageList() ) {
+				BOOST_FOREACH( ImageHolder::Vector::const_reference image, m_ViewerCore->getImageList() ) {
 					toggleLoadingIcon( true, QString( "Saving image to " ) + image->getImageProperties().fileName.c_str() );
 					isis::data::IOFactory::write( *image->getISISImage(), image->getImageProperties().fileName, "", "" );
 				}

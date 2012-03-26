@@ -95,7 +95,7 @@ void SliderWidget::opacityChanged( int sliderPos )
 	if( !m_Interface.checkGlobal->isChecked() ) {
 		m_ViewerCore->getCurrentImage()->getImageProperties().opacity = norm( 0.0, 1.0, sliderPos )  ;
 	} else {
-		BOOST_FOREACH( ImageHolder::List::const_reference image, m_ViewerCore->getImageList() ) {
+		BOOST_FOREACH( ImageHolder::Vector::const_reference image, m_ViewerCore->getImageList() ) {
 			if( m_ViewerCore->getMode() == ViewerCoreBase::statistical_mode ) {
 				if( image->getImageProperties().imageType == ImageHolder::statistical_image ) {
 					image->getImageProperties().opacity = norm( 0.0, 1.0, sliderPos )  ;
@@ -115,7 +115,7 @@ void SliderWidget::lowerThresholdChanged( int sliderPos )
 		m_ViewerCore->getCurrentImage()->getImageProperties().lowerThreshold = norm( m_ViewerCore->getCurrentImage()->getImageProperties().minMax.first->as<double>() , 0.0, 1000 - sliderPos ) * -1 ;
 		m_ViewerCore->getCurrentImage()->updateColorMap();
 	} else {
-		BOOST_FOREACH( ImageHolder::List::const_reference image, m_ViewerCore->getImageList() ) {
+		BOOST_FOREACH( ImageHolder::Vector::const_reference image, m_ViewerCore->getImageList() ) {
 			if( image->getImageProperties().imageType == ImageHolder::statistical_image ) {
 				const double lT = norm( m_maxMin, 0.0, 1000 - sliderPos ) * -1;
 				image->getImageProperties().lowerThreshold = lT > image->getImageProperties().minMax.first->as<double>() ? lT : image->getImageProperties().minMax.first->as<double>();
@@ -133,7 +133,7 @@ void SliderWidget::upperThresholdChanged( int sliderPos )
 		m_ViewerCore->getCurrentImage()->getImageProperties().upperThreshold = norm( 0.0, m_ViewerCore->getCurrentImage()->getImageProperties().minMax.second->as<double>(), 1000 - sliderPos ) ;
 		m_ViewerCore->getCurrentImage()->updateColorMap();
 	} else {
-		BOOST_FOREACH( ImageHolder::List::const_reference image, m_ViewerCore->getImageList() ) {
+		BOOST_FOREACH( ImageHolder::Vector::const_reference image, m_ViewerCore->getImageList() ) {
 			if( image->getImageProperties().imageType == ImageHolder::statistical_image ) {
 				const double uT = norm( 0.0, m_maxMax, 1000 - sliderPos );
 				image->getImageProperties().upperThreshold = uT < image->getImageProperties().minMax.second->as<double>() ? uT : image->getImageProperties().minMax.second->as<double>() - std::numeric_limits<double>::round_error();
@@ -152,7 +152,7 @@ void SliderWidget::synchronize()
 	if( m_ViewerCore->getMode() == ViewerCoreBase::statistical_mode ) {
 		m_Interface.zmapModeFrame->setVisible( true );
 		unsigned short zmapImages = 0;
-		BOOST_FOREACH( ImageHolder::List::const_reference image, m_ViewerCore->getImageList() ) {
+		BOOST_FOREACH( ImageHolder::Vector::const_reference image, m_ViewerCore->getImageList() ) {
 			if( image->getImageProperties().imageType == ImageHolder::statistical_image ) {
 				zmapImages++;
 

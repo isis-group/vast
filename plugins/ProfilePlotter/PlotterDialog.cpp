@@ -95,7 +95,7 @@ void isis::viewer::plugin::PlotterDialog::refresh ( isis::util::fvector4 physica
 	if( !ui.checkLock->isChecked() && isVisible() ) {
 		m_CurrentPhysicalCoords = physicalCoords;
 		plot->clear();
-		BOOST_FOREACH( ImageHolder::List::const_reference image, m_ViewerCore->getImageList() ) {
+		BOOST_FOREACH( ImageHolder::Vector::const_reference image, m_ViewerCore->getImageList() ) {
 			const unsigned short axis = image->getISISImage()->mapScannerAxisToImageDimension( static_cast<isis::data::scannerAxis>( ui.comboAxis->currentIndex() ) );
 
 			if( image->getImageSize()[axis] > 1 ) {

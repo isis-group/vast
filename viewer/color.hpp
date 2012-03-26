@@ -45,6 +45,8 @@ class ImageHolder;
 namespace color
 {
 
+const QColor currentEnsemble = QColor(255,238,203);
+const QColor currentImage = QColor( 34, 139, 34 );
 
 class Color
 {

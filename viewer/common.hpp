@@ -56,6 +56,7 @@ enum InterpolationType { nn = 0, lin };
 
 const unsigned short dim_time = 3;
 
+
 template<typename TYPE>
 TYPE roundNumber( TYPE number, unsigned  short placesOfDec )
 {

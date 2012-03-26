@@ -49,7 +49,7 @@ public:
 
 	QViewerCore( const std::string &appName = std::string(), const std::string &orgName = std::string(), QWidget *parent = 0 );
 
-	virtual ImageHolder::List addImageList( const std::list< data::Image > imageList, const ImageHolder::ImageType &imageType );
+	virtual ImageHolder::Vector addImageList( const std::list< data::Image > imageList, const ImageHolder::ImageType &imageType );
 
 	void addPlugin( boost::shared_ptr< plugin::PluginInterface > plugin );
 	void addPlugins( plugin::PluginLoader::PluginListType plugins );
@@ -86,7 +86,7 @@ public Q_SLOTS:
 	virtual void receiveMessage( qt4::QMessage  );
 	virtual void receiveMessage( std::string  );
 	virtual void receiveMessageDev( qt4::QMessage );
-	virtual ImageHolder::List openFile( const FileInformation &fileInfo, bool show = true );
+	virtual ImageHolder::Vector openFile( const FileInformation &fileInfo, bool show = true );
 	virtual void openFileList( const std::list< FileInformation > fileInfoList );
 	virtual void centerImages( bool ca = false );
 	virtual void closeImage( boost::shared_ptr<ImageHolder> image, bool refreshUI = true );

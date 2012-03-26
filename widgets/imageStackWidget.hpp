@@ -45,8 +45,6 @@ public Q_SLOTS:
 	void closeImage();
 	void distributeImages();
 	void closeAllImages();
-	void toggleStatsType();
-	void toggleStructsType();
 	void synchronize();
 	void moveUp();
 	void moveDown();
@@ -56,7 +54,10 @@ private:
 	QViewerCore *m_ViewerCore;
 	Ui::imageStackWidget m_Interface;
 	ImageStack *m_ImageStack;
-	void _closeImage( QString );
+
+	bool checkEnsembleCanUp( const WidgetEnsemble::Pointer );
+	bool checkEnsembleCanDown( const WidgetEnsemble::Pointer );
+	const WidgetEnsemble::Pointer getEnsembleFromItem( const QListWidgetItem * );
 
 };
 

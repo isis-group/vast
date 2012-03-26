@@ -156,7 +156,7 @@ void QViewerCore::timestepChanged ( int timestep )
 			timestep = getCurrentImage()->getImageSize() [3] - 1;
 		}
 
-		BOOST_FOREACH ( ImageHolder::List::const_reference image, getImageList() ) {
+		BOOST_FOREACH ( ImageHolder::Vector::const_reference image, getImageList() ) {
 			if ( static_cast<size_t> ( timestep ) < image->getImageSize() [3] ) {
 				image->getImageProperties().voxelCoords[3] = timestep;
 			}
@@ -165,9 +165,9 @@ void QViewerCore::timestepChanged ( int timestep )
 	}
 }
 
-ImageHolder::List QViewerCore::addImageList ( const std::list< data::Image > imageList, const ImageHolder::ImageType &imageType )
+ImageHolder::Vector QViewerCore::addImageList ( const std::list< data::Image > imageList, const ImageHolder::ImageType &imageType )
 {
-	ImageHolder::List retList = isis::viewer::ViewerCoreBase::addImageList ( imageList, imageType );
+	ImageHolder::Vector retList = isis::viewer::ViewerCoreBase::addImageList ( imageList, imageType );
 	return retList;
 
 }
@@ -228,7 +228,7 @@ void QViewerCore::settingsChanged()
 	}
 
 	if ( getMode() == ViewerCoreBase::statistical_mode ) {
-		BOOST_FOREACH ( ImageHolder::List::const_reference image, getImageList() ) {
+		BOOST_FOREACH ( ImageHolder::Vector::const_reference image, getImageList() ) {
 			if ( image->getImageProperties().imageType == ImageHolder::structural_image ) {
 				image->getImageProperties().lut = getSettings()->getPropertyAs<std::string> ( "lutStructural" );
 				image->updateColorMap();
@@ -237,7 +237,7 @@ void QViewerCore::settingsChanged()
 	}
 
 	if ( getMode() == ViewerCoreBase::statistical_mode && getSettings()->getPropertyAs<bool> ( "zmapGlobal" ) ) {
-		BOOST_FOREACH ( ImageHolder::List::const_reference image, getImageList() ) {
+		BOOST_FOREACH ( ImageHolder::Vector::const_reference image, getImageList() ) {
 			if ( image->getImageProperties().imageType == ImageHolder::statistical_image ) {
 				image->getImageProperties().lut = getSettings()->getPropertyAs<std::string> ( "lutZMap" );
 				image->updateColorMap();
@@ -295,7 +295,7 @@ bool QViewerCore::callPlugin ( QString name )
 
 
 
-ImageHolder::List QViewerCore::openFile ( const FileInformation &fileInfo, bool show )
+ImageHolder::Vector QViewerCore::openFile ( const FileInformation &fileInfo, bool show )
 {
 	if ( !fileInfo.getFileName().empty() ) {
 		util::istring dialect = fileInfo.getDialect();
@@ -325,10 +325,10 @@ ImageHolder::List QViewerCore::openFile ( const FileInformation &fileInfo, bool 
 		}
 
 		//creating the viewer image objects
-		ImageHolder::List imgList = addImageList( tempImgList, fileInfo.getImageType() );
+		ImageHolder::Vector imgList = addImageList( tempImgList, fileInfo.getImageType() );
 
 		if( show ) {
-			BOOST_FOREACH( ImageHolder::List::const_reference image, imgList ) {
+			BOOST_FOREACH( ImageHolder::Vector::const_reference image, imgList ) {
 				if( fileInfo.isNewEnsemble() ) {
 					getUICore()->createViewWidgetEnsemble( fileInfo.getWidgetIdentifier(), image, true );
 				} else {
@@ -347,18 +347,18 @@ ImageHolder::List QViewerCore::openFile ( const FileInformation &fileInfo, bool 
 		return imgList;
 	} else {
 		LOG( Dev, warning ) << "Tried to open path without any given filename!";
-		return ImageHolder::List();
+		return ImageHolder::Vector();
 	}
 
 
 }
 void QViewerCore::openFileList( const std::list< FileInformation > fileInfoList )
 {
-	ImageHolder::List structuralImageList;
-	ImageHolder::List statisticalImageList;
+	ImageHolder::Vector structuralImageList;
+	ImageHolder::Vector statisticalImageList;
 	BOOST_FOREACH( std::list<FileInformation>::const_reference file, fileInfoList ) {
-		ImageHolder::List imageList = openFile( file, false );
-		BOOST_FOREACH( ImageHolder::List::const_reference image, imageList ) {
+		ImageHolder::Vector imageList = openFile( file, false );
+		BOOST_FOREACH( ImageHolder::Vector::const_reference image, imageList ) {
 			if( file.getImageType() == ImageHolder::statistical_image ) {
 				statisticalImageList.push_back( image );
 			} else {
@@ -366,7 +366,7 @@ void QViewerCore::openFileList( const std::list< FileInformation > fileInfoList 
 			}
 		}
 	}
-	WidgetEnsemble::List widgetList = getUICore()->getEnsembleList();
+	WidgetEnsemble::Vector widgetList = getUICore()->getEnsembleList();
 
 	// in statistical_mode we ignore the newEnsemble parameter and open as many ensembles as we have statistical images
 	// we also ignore the amount of structural images, taking only the first and using it to underlay it
@@ -375,10 +375,10 @@ void QViewerCore::openFileList( const std::list< FileInformation > fileInfoList 
 			widgetList = getUICore()->createViewWidgetEnsembleList( fileInfoList.front().getWidgetIdentifier(), statisticalImageList, true );
 
 			if ( structuralImageList.size() ) {
-				ImageHolder::List::iterator iIter = structuralImageList.begin();
+				ImageHolder::Vector::iterator iIter = structuralImageList.begin();
 				unsigned short structuralIndex = 0;
 
-				for( WidgetEnsemble::List::const_iterator wIter = widgetList.begin(); wIter != widgetList.end(); wIter++ ) {
+				for( WidgetEnsemble::Vector::const_iterator wIter = widgetList.begin(); wIter != widgetList.end(); wIter++ ) {
 					( *wIter )->addImage( *iIter );
 
 					if( ++structuralIndex < structuralImageList.size() ) {
@@ -389,7 +389,7 @@ void QViewerCore::openFileList( const std::list< FileInformation > fileInfoList 
 
 			setCurrentImage( statisticalImageList.front() );
 		} else if ( structuralImageList.size() ) {
-			BOOST_FOREACH( ImageHolder::List::const_reference image, structuralImageList ) {
+			BOOST_FOREACH( ImageHolder::Vector::const_reference image, structuralImageList ) {
 				getUICore()->createViewWidgetEnsemble( fileInfoList.front().getWidgetIdentifier(), image, true );
 			}
 			setCurrentImage( structuralImageList.front() );
@@ -400,7 +400,7 @@ void QViewerCore::openFileList( const std::list< FileInformation > fileInfoList 
 				widgetList.push_back( getUICore()->createViewWidgetEnsemble( fileInfoList.front().getWidgetIdentifier() ) );
 			}
 
-			BOOST_FOREACH( ImageHolder::List::const_reference image, structuralImageList ) {
+			BOOST_FOREACH( ImageHolder::Vector::const_reference image, structuralImageList ) {
 				getUICore()->getCurrentEnsemble()->addImage( image );
 			}
 		} else {
@@ -415,14 +415,14 @@ void QViewerCore::closeImage ( ImageHolder::Pointer image, bool refreshUI )
 {
 	const size_t oldNumberImages = getImageList().size();
 	LOG( Dev, info ) << "Closing image " << image->getImageProperties().fileName;
-	BOOST_FOREACH( WidgetEnsemble::List::reference ensemble, getUICore()->getEnsembleList() ) {
+	BOOST_FOREACH( WidgetEnsemble::Vector::reference ensemble, getUICore()->getEnsembleList() ) {
 		ensemble->removeImage( image );
 	}
 
 	//if this image is the current one, we have to set one of the residual images to the current one
 	if( getCurrentImage().get() == image.get() ) {
 		LOG( Dev, info ) << "This was the current image so setting one of the residual images to current image";
-		ImageHolder::List tmpList = getImageList();
+		ImageHolder::Vector tmpList = getImageList();
 		tmpList.erase( std::find ( tmpList.begin(), tmpList.end(), image ) );
 
 		if( tmpList.size() ) {

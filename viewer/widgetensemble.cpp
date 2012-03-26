@@ -28,6 +28,7 @@
 #include "widgetensemble.hpp"
 #include "widgetensemblecomponent.hpp"
 #include "imageholder.hpp"
+#include "color.hpp"
 
 namespace isis
 {
@@ -59,7 +60,7 @@ void WidgetEnsemble::addImage ( const ImageHolder::Pointer image )
 
 void WidgetEnsemble::removeImage ( const ImageHolder::Pointer image )
 {
-	const ImageHolder::List::iterator iter = std::find( m_imageList.begin(), m_imageList.end(), image );
+	const ImageHolder::Vector::iterator iter = std::find( m_imageList.begin(), m_imageList.end(), image );
 
 	if( iter != m_imageList.end() ) {
 		m_imageList.erase( iter );
@@ -93,13 +94,13 @@ void WidgetEnsemble::setIsCurrent ( bool current )
 
 	if( current ) {
 		QPalette pal;
-		pal.setColor( QPalette::Background, QColor( 119, 136, 153 ) );
+		pal.setColor( QPalette::Background, color::currentEnsemble );
 		BOOST_FOREACH( std::vector<WidgetEnsembleComponent::Pointer>::reference ensembleComponent, *this ) {
 			ensembleComponent->getFrame()->setFrameStyle( QFrame::WinPanel | QFrame::Raised );
 			ensembleComponent->getFrame()->setLineWidth( 1 );
 			ensembleComponent->getFrame()->setPalette( pal );
 			ensembleComponent->getFrame()->setAutoFillBackground( true );
-			ensembleComponent->getWidgetInterface()->setCrossHairColor( QColor( 34, 139, 34 ) );
+			ensembleComponent->getWidgetInterface()->setCrossHairColor( color::currentImage );
 		}
 	} else {
 		BOOST_FOREACH( std::vector<WidgetEnsembleComponent::Pointer>::reference ensembleComponent, *this ) {
@@ -114,10 +115,10 @@ void WidgetEnsemble::update( const ViewerCoreBase *core )
 {
 	if( core->hasImage() ) {
 		ImageHolder::Pointer currentImage = core->getCurrentImage();
-		const ImageHolder::List::const_iterator currentImageIterator = std::find( m_imageList.begin(), m_imageList.end(), currentImage );
+		const ImageHolder::Vector::const_iterator currentImageIterator = std::find( m_imageList.begin(), m_imageList.end(), currentImage );
 		//if no image is visible make this ensemble invisible either
 		bool visible = false;
-		BOOST_FOREACH( ImageHolder::List::const_reference image, m_imageList ) {
+		BOOST_FOREACH( ImageHolder::Vector::const_reference image, m_imageList ) {
 			if( image->getImageProperties().isVisible ) {
 				visible = true;
 			}
@@ -130,13 +131,13 @@ void WidgetEnsemble::update( const ViewerCoreBase *core )
 		}
 
 		//resort the ensembles image list -> current image has to be the top image
-		ImageHolder::List tmpList;
+		ImageHolder::Vector tmpList;
 
 		if( currentImageIterator != m_imageList.end() ) {
 			tmpList.push_back( currentImage );
 		}
 
-		for( ImageHolder::List::const_iterator iter = m_imageList.begin(); iter != m_imageList.end(); iter++ ) {
+		for( ImageHolder::Vector::const_iterator iter = m_imageList.begin(); iter != m_imageList.end(); iter++ ) {
 			if( iter != currentImageIterator ) {
 				tmpList.push_back( *iter );
 			}

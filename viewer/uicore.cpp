@@ -147,12 +147,12 @@ WidgetEnsemble::Pointer UICore::createViewWidgetEnsemble( const std::string &wid
 	return ensemble;
 }
 
-WidgetEnsemble::Pointer UICore::createViewWidgetEnsemble ( const std::string &widgetType, ImageHolder::List imageList, bool show )
+WidgetEnsemble::Pointer UICore::createViewWidgetEnsemble ( const std::string &widgetType, ImageHolder::Vector imageList, bool show )
 {
 	WidgetEnsemble::Pointer ensemble = createViewWidgetEnsemble( widgetType, show );
 
 	if( show ) {
-		BOOST_FOREACH( ImageHolder::List::const_reference image, imageList ) {
+		BOOST_FOREACH( ImageHolder::Vector::const_reference image, imageList ) {
 			ensemble->addImage( image );
 		}
 	}
@@ -160,10 +160,10 @@ WidgetEnsemble::Pointer UICore::createViewWidgetEnsemble ( const std::string &wi
 	return ensemble;
 }
 
-WidgetEnsemble::List UICore::createViewWidgetEnsembleList( const std::string &widgetType, ImageHolder::List imageList, bool show )
+WidgetEnsemble::Vector UICore::createViewWidgetEnsembleList( const std::string &widgetType, ImageHolder::Vector imageList, bool show )
 {
-	WidgetEnsemble::List retWidgetEnsembleList;
-	BOOST_FOREACH( ImageHolder::List::const_reference image, imageList ) {
+	WidgetEnsemble::Vector retWidgetEnsembleList;
+	BOOST_FOREACH( ImageHolder::Vector::const_reference image, imageList ) {
 		WidgetEnsemble::Pointer ensemble = createViewWidgetEnsemble( widgetType, show );
 		ensemble->addImage( image );
 		retWidgetEnsembleList.push_back( ensemble );
@@ -172,29 +172,29 @@ WidgetEnsemble::List UICore::createViewWidgetEnsembleList( const std::string &wi
 }
 
 
-ImageHolder::List UICore::closeWidgetEnsemble( WidgetEnsemble::Pointer ensemble )
+ImageHolder::Vector UICore::closeWidgetEnsemble( WidgetEnsemble::Pointer ensemble )
 {
-	const WidgetEnsemble::List::iterator iter = std::find( m_EnsembleList.begin(), m_EnsembleList.end(), ensemble );
+	const WidgetEnsemble::Vector::iterator iter = std::find( m_EnsembleList.begin(), m_EnsembleList.end(), ensemble );
 
 	if( iter != m_EnsembleList.end() ) {
-		ImageHolder::List retList = ensemble->getImageList();
+		ImageHolder::Vector retList = ensemble->getImageList();
 		ensemble->getImageList().clear();
 		ensemble->getFrame()->close();
 		m_EnsembleList.erase( iter );
 		return retList;
 	} else {
 		LOG( Dev, error ) << "Tried to remove an widget ensemble that is not in the ensemble list!";
-		return ImageHolder::List();
+		return ImageHolder::Vector();
 	}
 
-	return ImageHolder::List();
+	return ImageHolder::Vector();
 }
 
 
 void UICore::closeAllWidgetEnsembles()
 {
-	WidgetEnsemble::List cp = m_EnsembleList; //make a copy of the list to iterate on
-	BOOST_FOREACH( WidgetEnsemble::List::reference ensemble, cp ) {
+	WidgetEnsemble::Vector cp = m_EnsembleList; //make a copy of the list to iterate on
+	BOOST_FOREACH( WidgetEnsemble::Vector::reference ensemble, cp ) {
 		closeWidgetEnsemble( ensemble );
 	}
 	LOG_IF( !m_EnsembleList.empty(), Dev, error ) << "Removed all widget ensembles, but ensemble list still contains "
@@ -235,8 +235,8 @@ void UICore::reloadPluginsToGUI()
 
 void UICore::refreshUI( const bool &mainwindow )
 {
-	WidgetEnsemble::List cp = getEnsembleList();
-	BOOST_FOREACH( WidgetEnsemble::List::reference ensemble, cp ) {
+	WidgetEnsemble::Vector cp = getEnsembleList();
+	BOOST_FOREACH( WidgetEnsemble::Vector::reference ensemble, cp ) {
 		if( ensemble->getImageList().empty() ) {
 			closeWidgetEnsemble( ensemble );
 		} else {
@@ -256,7 +256,7 @@ void UICore::refreshUI( const bool &mainwindow )
 WidgetEnsemble::Pointer UICore::getCurrentEnsemble() const
 {
 	if( getEnsembleList().size() ) {
-		BOOST_FOREACH( WidgetEnsemble::List::const_reference ensemble, getEnsembleList() ) {
+		BOOST_FOREACH( WidgetEnsemble::Vector::const_reference ensemble, getEnsembleList() ) {
 			if( ensemble->isCurrent() ) {
 				return ensemble;
 			}
@@ -293,10 +293,10 @@ void UICore::showInformationAreas( bool show )
 QImage UICore::getScreenshot()
 {
 	if( m_ViewerCore->hasImage() ) {
-		WidgetEnsemble::List ensembleList = getEnsembleList();
+		WidgetEnsemble::Vector ensembleList = getEnsembleList();
 		//preparation
 		size_t biggestWidth = 0;
-		BOOST_FOREACH( WidgetEnsemble::List::reference ensemble, ensembleList ) {
+		BOOST_FOREACH( WidgetEnsemble::Vector::reference ensemble, ensembleList ) {
 			if( ensemble->size() > biggestWidth ) {
 				biggestWidth = ensemble->size();
 			}
@@ -313,7 +313,7 @@ QImage UICore::getScreenshot()
 		screenshot.fill( Qt::black );
 		QPainter painter( &screenshot );
 		unsigned short eIndex = 0;
-		BOOST_FOREACH( WidgetEnsemble::List::reference ensemble, ensembleList ) {
+		BOOST_FOREACH( WidgetEnsemble::Vector::reference ensemble, ensembleList ) {
 			unsigned short index = 0;
 			BOOST_FOREACH( WidgetEnsemble::reference ensembleComponent, *ensemble ) {
 				QWidget *placeHolder = ensembleComponent->getPlaceHolder();
@@ -367,7 +367,7 @@ QImage UICore::getScreenshot()
 
 void UICore::setViewPlaneOrientation( PlaneOrientation orientation, bool visible )
 {
-	BOOST_FOREACH( WidgetEnsemble::List::reference ensemble, getEnsembleList() ) {
+	BOOST_FOREACH( WidgetEnsemble::Vector::reference ensemble, getEnsembleList() ) {
 		BOOST_FOREACH( WidgetEnsemble::reference ensembleComponent, *ensemble ) {
 			if( ensembleComponent->getWidgetInterface()->getPlaneOrientation() == orientation ) {
 				ensembleComponent->getDockWidget()->setVisible( visible );
@@ -376,6 +376,28 @@ void UICore::setViewPlaneOrientation( PlaneOrientation orientation, bool visible
 	}
 }
 
+WidgetEnsemble::Pointer UICore::getEnsembleFromImage ( const ImageHolder::Pointer image ) const
+{
+	WidgetEnsemble::Pointer retEnsemble;
+	bool found = false;
+	BOOST_FOREACH( WidgetEnsemble::Vector::const_reference ensemble, m_EnsembleList ) {
+		if( std::find( ensemble->getImageList().begin(), ensemble->getImageList().end(), image ) != ensemble->getImageList().end() ) {
+			retEnsemble = ensemble;
+			found = true;
+		}
+	}
+	LOG_IF( !found, Dev, error ) << "Trying to find the ensemble that contains the image \"" << image->getImageProperties().fileName
+					<< "\", but there seems to be no such ensemble!";
+	return retEnsemble;
+}
+
+void UICore::refreshEnsembles()
+{
+	unsigned short row = 0;
+	BOOST_FOREACH( WidgetEnsemble::Vector::const_reference ensemble, m_EnsembleList ) {
+		getMainWindow()->getInterface().centralGridLayout->addWidget( ensemble->getFrame(), row++, 0 );
+	}
+}
 
 
 }
