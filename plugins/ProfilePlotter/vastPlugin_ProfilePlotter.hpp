@@ -45,7 +45,7 @@ class ProfilePlotter : public PluginInterface
 {
 public:
 	virtual QKeySequence getShortcut() { return QKeySequence( "T, P" ) ;}
-	virtual std::string getName() { return std::string( "ProfilePlotter" ) ; }
+	virtual std::string getName() { return std::string( "Profile Plotter" ) ; }
 	virtual std::string getDescription() { return std::string( "Plots profiles along X,Y,Z and time" ); }
 	virtual std::string getTooltip() { return std::string( "" ); }
 	virtual QIcon *getToolbarIcon() { return new QIcon( ":/common/graph.gif" ); }

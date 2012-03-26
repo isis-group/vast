@@ -42,14 +42,13 @@ namespace isis
 {
 namespace viewer
 {
-
-
+namespace widget
+{
 class QOrientationHandler
 {
 
 public:
 	typedef  util::FixedVector<float, 6 > ViewPortType;
-	static util::fvector4 mapCoordsToOrientation( const util::fvector4 &coords, const boost::shared_ptr<ImageHolder> image, PlaneOrientation orientation, bool back = false, bool absolute = true );
 
 	static ViewPortType getViewPort( const float &zoom, const boost::shared_ptr< ImageHolder > image, const size_t &w, const size_t &h, PlaneOrientation orientation, unsigned short border = 0 );
 	static QTransform getTransform( const ViewPortType &viewPort, const boost::shared_ptr< ImageHolder > image, PlaneOrientation orientation );
@@ -59,7 +58,7 @@ public:
 };
 
 
-
+}
 }
 }// end namespace
 

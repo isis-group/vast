@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>554</width>
-    <height>501</height>
+    <width>544</width>
+    <height>457</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -135,6 +135,31 @@
          <string>...</string>
         </property>
        </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QFrame" name="widgetTypeframe">
+     <property name="frameShape">
+      <enum>QFrame::StyledPanel</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Raised</enum>
+     </property>
+     <layout class="QHBoxLayout" name="horizontalLayout_8">
+      <property name="margin">
+       <number>2</number>
+      </property>
+      <item>
+       <widget class="QLabel" name="label">
+        <property name="text">
+         <string>Widget Type:</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QComboBox" name="widgetTypeComboBox"/>
       </item>
      </layout>
     </widget>
@@ -343,27 +368,24 @@
         <property name="frameShadow">
          <enum>QFrame::Raised</enum>
         </property>
-        <layout class="QHBoxLayout" name="horizontalLayout_8">
-         <property name="spacing">
-          <number>2</number>
-         </property>
+        <layout class="QGridLayout" name="gridLayout">
          <property name="margin">
           <number>2</number>
          </property>
-         <item>
+         <item row="0" column="2">
+          <widget class="QRadioButton" name="insertInWidgetCheck">
+           <property name="text">
+            <string>Insert in existing widget</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="0">
           <widget class="QRadioButton" name="newWidgetCheck">
            <property name="text">
             <string>Open in new widget</string>
            </property>
            <property name="checked">
             <bool>true</bool>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QRadioButton" name="insertInWidgetCheck">
-           <property name="text">
-            <string>Insert in existing widget</string>
            </property>
           </widget>
          </item>

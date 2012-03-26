@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * Author: Erik Türke, tuerke@cbs.mpg.de
+ * Author: Erik Tuerke, tuerke@cbs.mpg.de
  *
  * QImageWidgetImplementation.cpp
  *
@@ -29,29 +29,46 @@
 
 #include "QOrientationHandler.hpp"
 #include "uicore.hpp"
+#include "memoryhandler.hpp"
 
 namespace isis
 {
 namespace viewer
 {
+namespace widget
+{
+
+QImageWidgetImplementation::QImageWidgetImplementation()
+	: QWidget(),
+	  m_Painter( new QPainter() ),
+	  m_ShowLabels( false )
+{
+}
 
 
 QImageWidgetImplementation::QImageWidgetImplementation( QViewerCore *core, QWidget *parent, PlaneOrientation orientation )
 	: QWidget( parent ),
-	  WidgetInterface( core, parent, orientation ),
 	  m_Layout( new QVBoxLayout( parent ) ),
-	  m_MemoryHandler( core ),
 	  m_Painter( new QPainter() ),
 	  m_ShowLabels( false )
 {
-	m_Layout->addWidget( this );
-	m_Layout->setMargin( 0 );
+	setup( core, parent, orientation );
+	commonInit();
+}
+
+void QImageWidgetImplementation::setup ( QViewerCore *core, QWidget *parent, PlaneOrientation orientation )
+{
+	WidgetInterface::setup( core, parent, orientation );
+	setParent( parent );
+	m_Layout = new QVBoxLayout( parent );
 	commonInit();
 }
 
 
 void QImageWidgetImplementation::commonInit()
 {
+	m_Layout->addWidget( this );
+	m_Layout->setMargin( 0 );
 	connect( this, SIGNAL( zoomChanged( float ) ), m_ViewerCore, SLOT( zoomChanged( float ) ) );
 	connect( this, SIGNAL( physicalCoordsChanged( util::fvector4 ) ), m_ViewerCore, SLOT( physicalCoordsChanged( util::fvector4 ) ) );
 	connect( m_ViewerCore, SIGNAL( emitUpdateScene( ) ), this, SLOT( updateScene( ) ) );
@@ -94,31 +111,21 @@ void QImageWidgetImplementation::addImage( const boost::shared_ptr< ImageHolder 
 	ImageProperties imgProperties;
 	imgProperties.viewPort = QOrientationHandler::ViewPortType();
 	m_ImageProperties.insert( std::make_pair< boost::shared_ptr<ImageHolder> , ImageProperties >( image, imgProperties ) );
-	m_ImageVector.push_back( image );
-	image->addWidget( this );
 	setFocus();
 }
 
 bool QImageWidgetImplementation::removeImage( const boost::shared_ptr< ImageHolder > image )
 {
-	image->removeWidget( this );
-	m_ImageProperties.erase( image );
-	ImageVectorType::iterator iter = std::find( m_ImageVector.begin(), m_ImageVector.end(), image );
-
-	if( iter != m_ImageVector.end() ) {
-		m_ImageVector.erase( iter );
-	}
-
-	return iter != m_ImageVector.end();
+	return m_ImageProperties.erase( image ) > 0;
 }
 
 boost::shared_ptr< ImageHolder > QImageWidgetImplementation::getWidgetSpecCurrentImage() const
 {
-	if( std::find( m_ImageVector.begin(), m_ImageVector.end(), m_ViewerCore->getCurrentImage() ) != m_ImageVector.end() ) {
+	if( std::find( getWidgetEnsemble()->getImageList().begin(), getWidgetEnsemble()->getImageList().end(), m_ViewerCore->getCurrentImage() ) != getWidgetEnsemble()->getImageList().end() ) {
 		return m_ViewerCore->getCurrentImage();
 	}
 
-	return m_ImageVector.front();
+	return getWidgetEnsemble()->getImageList().front();
 
 }
 
@@ -135,7 +142,7 @@ void QImageWidgetImplementation::setZoom( float zoom )
 
 void QImageWidgetImplementation::paintEvent( QPaintEvent */*event*/ )
 {
-	if( m_ImageVector.size() ) {
+	if( getWidgetEnsemble()->getImageList().size() ) {
 		m_Painter->begin( this );
 		m_ImageProperties.at( getWidgetSpecCurrentImage() ).viewPort
 		= QOrientationHandler::getViewPort( currentZoom,
@@ -147,43 +154,43 @@ void QImageWidgetImplementation::paintEvent( QPaintEvent */*event*/ )
 										  );
 		boost::shared_ptr<ImageHolder> cImage =  getWidgetSpecCurrentImage();
 
-		if( m_ViewerCore->getMode() == ViewerCoreBase::zmap ) {
+		if( m_ViewerCore->getMode() == ViewerCoreBase::statistical_mode ) {
 			//painting all anatomical images
-			BOOST_FOREACH( ImageVectorType::const_reference image, m_ImageVector ) {
+			BOOST_FOREACH( ImageHolder::Vector::const_reference image, getWidgetEnsemble()->getImageList() ) {
 				if( image.get() != cImage.get()
-					&& image->isVisible
-					&& image->imageType == ImageHolder::structural_image ) {
+					&& image->getImageProperties().isVisible
+					&& image->getImageProperties().imageType == ImageHolder::structural_image ) {
 					paintImage( image );
 				}
 			}
 
-			if( cImage->imageType == ImageHolder::structural_image
-				&& cImage->isVisible ) {
+			if( cImage->getImageProperties().imageType == ImageHolder::structural_image
+				&& cImage->getImageProperties().isVisible ) {
 				paintImage( cImage );
 			}
 
 			//painting the zmaps
-			BOOST_FOREACH( ImageVectorType::const_reference image, m_ImageVector ) {
+			BOOST_FOREACH( ImageHolder::Vector::const_reference image, getWidgetEnsemble()->getImageList() ) {
 				if( image.get() != cImage.get()
-					&& image->isVisible
-					&& image->imageType == ImageHolder::z_map ) {
+					&& image->getImageProperties().isVisible
+					&& image->getImageProperties().imageType == ImageHolder::statistical_image ) {
 					paintImage( image );
 				}
 			}
 
-			if( cImage->imageType == ImageHolder::z_map
-				&& cImage->isVisible ) {
+			if( cImage->getImageProperties().imageType == ImageHolder::statistical_image
+				&& cImage->getImageProperties().isVisible ) {
 				paintImage( cImage );
 			}
 		} else {
-			BOOST_FOREACH( ImageVectorType::const_reference image, m_ImageVector ) {
+			BOOST_FOREACH( ImageHolder::Vector::const_reference image, getWidgetEnsemble()->getImageList() ) {
 				if( image.get() != cImage.get()
-					&& image->isVisible ) {
+					&& image->getImageProperties().isVisible ) {
 					paintImage( image );
 				}
 			}
 
-			if( cImage->isVisible ) {
+			if( cImage->getImageProperties().isVisible ) {
 				paintImage( cImage );
 			}
 		}
@@ -203,8 +210,8 @@ void QImageWidgetImplementation::paintEvent( QPaintEvent */*event*/ )
 			m_Painter->setPen( Qt::red );
 			std::stringstream scalingOffset;
 			const boost::shared_ptr<ImageHolder> image = getWidgetSpecCurrentImage();
-			scalingOffset << "Scaling: " << image->scaling
-						  << " Offset: " << image->offset;
+			scalingOffset << "Scaling: " << image->getImageProperties().scaling
+						  << " Offset: " << image->getImageProperties().offset;
 			m_Painter->drawText( 10, 30, scalingOffset.str().c_str() );
 		}
 
@@ -218,9 +225,9 @@ void QImageWidgetImplementation::recalculateTranslation()
 {
 	if( currentZoom != 1 ) {
 		const boost::shared_ptr<ImageHolder > image = getWidgetSpecCurrentImage();
-		const util::ivector4 mappedSize = QOrientationHandler::mapCoordsToOrientation( image->getImageSize(), image, m_PlaneOrientation );
-		const util::ivector4 mappedVoxelCoords = QOrientationHandler::mapCoordsToOrientation( image->voxelCoords, image, m_PlaneOrientation );
-		const util::ivector4 signVec = QOrientationHandler::mapCoordsToOrientation( util::ivector4( 1, 1, 1, 1 ), image, m_PlaneOrientation, false, false );
+		const util::ivector4 mappedSize = mapCoordsToOrientation( image->getImageSize(), image->getImageProperties().latchedOrientation, m_PlaneOrientation );
+		const util::ivector4 mappedVoxelCoords = mapCoordsToOrientation( image->getImageProperties().voxelCoords, image->getImageProperties().latchedOrientation, m_PlaneOrientation );
+		const util::ivector4 signVec = mapCoordsToOrientation( util::ivector4( 1, 1, 1, 1 ), image->getImageProperties().latchedOrientation, m_PlaneOrientation, false, false );
 		const util::ivector4 center = mappedSize / 2;
 		const util::ivector4 diff = center - mappedVoxelCoords;
 		const float transXConst = ( ( center[0] + 2 ) - mappedSize[0] / ( 2 * currentZoom ) );
@@ -249,7 +256,7 @@ void QImageWidgetImplementation::paintImage( boost::shared_ptr< ImageHolder > im
 		break;
 	}
 
-	const util::ivector4 mappedSizeAligned = QOrientationHandler::mapCoordsToOrientation( image->alignedSize32, image, m_PlaneOrientation );
+	const util::ivector4 mappedSizeAligned = mapCoordsToOrientation( image->getImageProperties().alignedSize32, image->getImageProperties().latchedOrientation, m_PlaneOrientation );
 
 	m_Painter->resetMatrix();
 
@@ -267,19 +274,19 @@ void QImageWidgetImplementation::paintImage( boost::shared_ptr< ImageHolder > im
 
 	m_Painter->setTransform( QOrientationHandler::getTransform( imgProps.viewPort, image, m_PlaneOrientation ) );
 
-	m_Painter->setOpacity( image->opacity );
+	m_Painter->setOpacity( image->getImageProperties().opacity );
 
-	if ( !image->isRGB ) {
+	if ( !image->getImageProperties().isRGB ) {
 		isis::data::MemChunk<InternalImageType> sliceChunk( mappedSizeAligned[0], mappedSizeAligned[1] );
-		m_MemoryHandler.fillSliceChunk<InternalImageType>( sliceChunk, image, m_PlaneOrientation, image->voxelCoords[3] );
-		QImage qImage( ( InternalImageType * ) sliceChunk.asValuePtr<InternalImageType>().getRawAddress().get(),
+		MemoryHandler::fillSliceChunk<InternalImageType>( sliceChunk, image, m_PlaneOrientation );
+		QImage qImage( ( InternalImageType * ) sliceChunk.asValueArray<InternalImageType>().getRawAddress().get(),
 					   mappedSizeAligned[0], mappedSizeAligned[1], QImage::Format_Indexed8 );
-		qImage.setColorTable( image->colorMap );
+		qImage.setColorTable( image->getImageProperties().colorMap );
 		m_Painter->drawImage( 0, 0, qImage );
 	} else {
 		isis::data::MemChunk<InternalImageColorType> sliceChunk( mappedSizeAligned[0], mappedSizeAligned[1] );
-		m_MemoryHandler.fillSliceChunk<InternalImageColorType>( sliceChunk, image, m_PlaneOrientation, image->voxelCoords[3] );
-		QImage qImage( ( InternalImageType * ) sliceChunk.asValuePtr<InternalImageColorType>().getRawAddress().get(),
+		MemoryHandler::fillSliceChunk<InternalImageColorType>( sliceChunk, image, m_PlaneOrientation );
+		QImage qImage( ( InternalImageType * ) sliceChunk.asValueArray<InternalImageColorType>().getRawAddress().get(),
 					   mappedSizeAligned[0], mappedSizeAligned[1], QImage::Format_RGB888 );
 		m_Painter->drawImage( 0, 0, qImage );
 
@@ -298,7 +305,7 @@ void QImageWidgetImplementation::mousePressEvent( QMouseEvent *e )
 	if( e->button() == Qt::LeftButton && geometry().contains( e->pos() ) && QApplication::keyboardModifiers() == Qt::ControlModifier ) {
 		QDrag *drag = new QDrag( this );
 		QMimeData *mimeData = new QMimeData;
-		mimeData->setText( getWidgetSpecCurrentImage()->getFileNames().front().c_str() );
+		mimeData->setText( getWidgetSpecCurrentImage()->getImageProperties().fileName.c_str() );
 		drag->setMimeData( mimeData );
 		drag->setPixmap( QIcon( ":/common/vast.jpg" ).pixmap( 15 ) );
 		drag->exec();
@@ -316,17 +323,19 @@ void QImageWidgetImplementation::mousePressEvent( QMouseEvent *e )
 		m_StartCoordsPair.second = e->y();
 	}
 
-	if( m_ViewerCore->getMode() == ViewerCoreBase::zmap ) {
-		BOOST_FOREACH( ImageVectorType::const_reference image, m_ImageVector ) {
-			if( image->imageType == ImageHolder::z_map ) {
+	if( m_ViewerCore->getMode() == ViewerCoreBase::statistical_mode ) {
+		BOOST_FOREACH( ImageHolder::Vector::const_reference image, getWidgetEnsemble()->getImageList() ) {
+			if( image->getImageProperties().imageType == ImageHolder::statistical_image ) {
 				m_ViewerCore->setCurrentImage( image );
 			}
 		}
-		m_ViewerCore->getUICore()->refreshUI();
 	}
 
 	setFocus();
-	emitMousePressEvent( e );
+
+	if( m_LeftMouseButtonPressed )  m_ViewerCore->onWidgetClicked( this, mouseCoords2PhysCoords( e->x(), e->y() ), Qt::LeftButton );
+
+	if( m_RightMouseButtonPressed ) m_ViewerCore->onWidgetClicked( this, mouseCoords2PhysCoords( e->x(), e->y() ), Qt::RightButton );
 }
 
 void QImageWidgetImplementation::mouseMoveEvent( QMouseEvent *e )
@@ -334,39 +343,43 @@ void QImageWidgetImplementation::mouseMoveEvent( QMouseEvent *e )
 
 	if( m_RightMouseButtonPressed && m_LeftMouseButtonPressed ) {
 		if( QApplication::keyboardModifiers() == Qt::ShiftModifier ) {
-			BOOST_FOREACH( DataContainer::reference image, m_ViewerCore->getDataContainer() ) {
-				const double offset =  ( m_StartCoordsPair.second - e->y() ) / ( float )height() * image.second->extent;
+			BOOST_FOREACH( ImageHolder::Vector::const_reference image, m_ViewerCore->getImageList() ) {
+				const double offset =  ( m_StartCoordsPair.second - e->y() ) / ( float )height() * image->getImageProperties().extent;
 				const double scaling = 1.0 - ( m_StartCoordsPair.first - e->x() ) / ( float )width() * 5;
-				image.second->offset = offset;
-				image.second->scaling = scaling < 0.0 ? 0.0 : scaling;
-				image.second->updateColorMap();
+				image->getImageProperties().offset = offset;
+				image->getImageProperties().scaling = scaling < 0.0 ? 0.0 : scaling;
+				image->updateColorMap();
 			}
 		} else {
 			boost::shared_ptr<ImageHolder> image = getWidgetSpecCurrentImage();
-			const double offset =  ( m_StartCoordsPair.second - e->y() ) / ( float )height() * image->extent;
+			const double offset =  ( m_StartCoordsPair.second - e->y() ) / ( float )height() * image->getImageProperties().extent;
 			const double scaling = 1.0 - ( m_StartCoordsPair.first - e->x() ) / ( float )width() * 5;
-			image->offset = offset;
-			image->scaling = scaling < 0.0 ? 0.0 : scaling;
+			image->getImageProperties().offset = offset;
+			image->getImageProperties().scaling = scaling < 0.0 ? 0.0 : scaling;
 			image->updateColorMap();
 		}
 
 		m_ShowScalingOffset = true;
 		m_ViewerCore->updateScene();
-	} else if( m_RightMouseButtonPressed || m_LeftMouseButtonPressed ) {
-		emitMousePressEvent( e );
+	} else {
+		if( m_LeftMouseButtonPressed )  m_ViewerCore->onWidgetMoved( this, mouseCoords2PhysCoords( e->x(), e->y() ), Qt::LeftButton );
+
+		if( m_RightMouseButtonPressed ) m_ViewerCore->onWidgetMoved( this, mouseCoords2PhysCoords( e->x(), e->y() ), Qt::RightButton );
 	}
 
 	QWidget::mouseMoveEvent( e );
 }
 
-void QImageWidgetImplementation::emitMousePressEvent( QMouseEvent *e )
+
+util::fvector4 QImageWidgetImplementation::mouseCoords2PhysCoords ( const int &x, const int &y )
 {
 	const boost::shared_ptr<ImageHolder> image = getWidgetSpecCurrentImage();
 	const ImageProperties &imgProps = m_ImageProperties.at( image );
-	const uint16_t slice = QOrientationHandler::mapCoordsToOrientation( image->voxelCoords, image, m_PlaneOrientation )[2];
-	const util::ivector4 &coords = QOrientationHandler::convertWindow2VoxelCoords( imgProps.viewPort, image, e->x(), e->y(), slice, m_PlaneOrientation );
-	physicalCoordsChanged( image->getISISImage()->getPhysicalCoordsFromIndex( coords ) );
+	const uint16_t slice = mapCoordsToOrientation( image->getImageProperties().voxelCoords, image->getImageProperties().latchedOrientation, m_PlaneOrientation )[2];
+	const util::ivector4 &coords = QOrientationHandler::convertWindow2VoxelCoords( imgProps.viewPort, image, x, y, slice, m_PlaneOrientation );
+	return image->getISISImage()->getPhysicalCoordsFromIndex( coords ) ;
 }
+
 
 void QImageWidgetImplementation::showLabels() const
 {
@@ -437,9 +450,11 @@ void QImageWidgetImplementation::paintCrosshair() const
 
 void QImageWidgetImplementation::lookAtPhysicalCoords( const isis::util::fvector4 &physicalCoords )
 {
-	BOOST_FOREACH( DataContainer::reference image, m_ViewerCore->getDataContainer() ) {
-		image.second->physicalCoords = physicalCoords;
-		image.second->voxelCoords = image.second->getISISImage()->getIndexFromPhysicalCoords( physicalCoords, true );
+	BOOST_FOREACH( ImageHolder::Vector::const_reference image, m_ViewerCore->getImageList() ) {
+		image->getImageProperties().physicalCoords = physicalCoords;
+		const size_t timestep = image->getImageProperties().voxelCoords[3];
+		image->getImageProperties().voxelCoords = image->getISISImage()->getIndexFromPhysicalCoords( physicalCoords, true );
+		image->getImageProperties().voxelCoords[3] = timestep;
 	}
 	update();
 }
@@ -468,7 +483,7 @@ void QImageWidgetImplementation::wheelEvent( QWheelEvent *e )
 
 	}
 
-	if( m_ViewerCore->getOptionMap()->getPropertyAs<bool>( "propagateZooming" ) ) {
+	if( m_ViewerCore->getSettings()->getPropertyAs<bool>( "propagateZooming" ) ) {
 		zoomChanged( oldZoom );
 	} else {
 		setZoom( oldZoom );
@@ -479,17 +494,6 @@ void QImageWidgetImplementation::wheelEvent( QWheelEvent *e )
 void QImageWidgetImplementation::updateScene()
 {
 	update();
-}
-
-std::string QImageWidgetImplementation::getWidgetName() const
-{
-	return windowTitle().toStdString();
-}
-
-void QImageWidgetImplementation::setWidgetName( const std::string &wName )
-{
-	setWindowTitle( QString( wName.c_str() ) );
-	m_WidgetProperties.setPropertyAs<std::string>( "widgetName", wName );
 }
 
 void QImageWidgetImplementation::keyPressEvent( QKeyEvent *e )
@@ -504,7 +508,7 @@ void QImageWidgetImplementation::keyPressEvent( QKeyEvent *e )
 		m_ViewerCore->centerImages();
 	}
 
-	if( m_ViewerCore->getOptionMap()->getPropertyAs<bool>( "propagateZooming" ) ) {
+	if( m_ViewerCore->getSettings()->getPropertyAs<bool>( "propagateZooming" ) ) {
 		zoomChanged( oldZoom );
 	} else {
 		setZoom( oldZoom );
@@ -512,39 +516,39 @@ void QImageWidgetImplementation::keyPressEvent( QKeyEvent *e )
 
 	if( m_ViewerCore->hasImage() ) {
 		if( e->key() == Qt::Key_Up ) {
-			m_ViewerCore->getCurrentImage()->voxelCoords[1]++;
-			m_ViewerCore->getCurrentImage()->checkVoxelCoords( m_ViewerCore->getCurrentImage()->voxelCoords );
-			m_ViewerCore->physicalCoordsChanged( m_ViewerCore->getCurrentImage()->getISISImage()->getPhysicalCoordsFromIndex( m_ViewerCore->getCurrentImage()->voxelCoords ) );
+			m_ViewerCore->getCurrentImage()->getImageProperties().voxelCoords[1]++;
+			m_ViewerCore->getCurrentImage()->checkVoxelCoords( m_ViewerCore->getCurrentImage()->getImageProperties().voxelCoords );
+			m_ViewerCore->physicalCoordsChanged( m_ViewerCore->getCurrentImage()->getISISImage()->getPhysicalCoordsFromIndex( m_ViewerCore->getCurrentImage()->getImageProperties().voxelCoords ) );
 		}
 
 		if( e->key() == Qt::Key_Down ) {
-			m_ViewerCore->getCurrentImage()->voxelCoords[1]--;
-			m_ViewerCore->getCurrentImage()->checkVoxelCoords( m_ViewerCore->getCurrentImage()->voxelCoords );
-			m_ViewerCore->physicalCoordsChanged( m_ViewerCore->getCurrentImage()->getISISImage()->getPhysicalCoordsFromIndex( m_ViewerCore->getCurrentImage()->voxelCoords ) );
+			m_ViewerCore->getCurrentImage()->getImageProperties().voxelCoords[1]--;
+			m_ViewerCore->getCurrentImage()->checkVoxelCoords( m_ViewerCore->getCurrentImage()->getImageProperties().voxelCoords );
+			m_ViewerCore->physicalCoordsChanged( m_ViewerCore->getCurrentImage()->getISISImage()->getPhysicalCoordsFromIndex( m_ViewerCore->getCurrentImage()->getImageProperties().voxelCoords ) );
 		}
 
 		if( e->key() == Qt::Key_Left ) {
-			m_ViewerCore->getCurrentImage()->voxelCoords[0]--;
-			m_ViewerCore->getCurrentImage()->checkVoxelCoords( m_ViewerCore->getCurrentImage()->voxelCoords );
-			m_ViewerCore->physicalCoordsChanged( m_ViewerCore->getCurrentImage()->getISISImage()->getPhysicalCoordsFromIndex( m_ViewerCore->getCurrentImage()->voxelCoords ) );
+			m_ViewerCore->getCurrentImage()->getImageProperties().voxelCoords[0]--;
+			m_ViewerCore->getCurrentImage()->checkVoxelCoords( m_ViewerCore->getCurrentImage()->getImageProperties().voxelCoords );
+			m_ViewerCore->physicalCoordsChanged( m_ViewerCore->getCurrentImage()->getISISImage()->getPhysicalCoordsFromIndex( m_ViewerCore->getCurrentImage()->getImageProperties().voxelCoords ) );
 		}
 
 		if( e->key() == Qt::Key_Right ) {
-			m_ViewerCore->getCurrentImage()->voxelCoords[0]++;
-			m_ViewerCore->getCurrentImage()->checkVoxelCoords( m_ViewerCore->getCurrentImage()->voxelCoords );
-			m_ViewerCore->physicalCoordsChanged( m_ViewerCore->getCurrentImage()->getISISImage()->getPhysicalCoordsFromIndex( m_ViewerCore->getCurrentImage()->voxelCoords ) );
+			m_ViewerCore->getCurrentImage()->getImageProperties().voxelCoords[0]++;
+			m_ViewerCore->getCurrentImage()->checkVoxelCoords( m_ViewerCore->getCurrentImage()->getImageProperties().voxelCoords );
+			m_ViewerCore->physicalCoordsChanged( m_ViewerCore->getCurrentImage()->getISISImage()->getPhysicalCoordsFromIndex( m_ViewerCore->getCurrentImage()->getImageProperties().voxelCoords ) );
 		}
 
 		if( e->key() == Qt::Key_PageUp ) {
-			m_ViewerCore->getCurrentImage()->voxelCoords[2]++;
-			m_ViewerCore->getCurrentImage()->checkVoxelCoords( m_ViewerCore->getCurrentImage()->voxelCoords );
-			m_ViewerCore->physicalCoordsChanged( m_ViewerCore->getCurrentImage()->getISISImage()->getPhysicalCoordsFromIndex( m_ViewerCore->getCurrentImage()->voxelCoords ) );
+			m_ViewerCore->getCurrentImage()->getImageProperties().voxelCoords[2]++;
+			m_ViewerCore->getCurrentImage()->checkVoxelCoords( m_ViewerCore->getCurrentImage()->getImageProperties().voxelCoords );
+			m_ViewerCore->physicalCoordsChanged( m_ViewerCore->getCurrentImage()->getISISImage()->getPhysicalCoordsFromIndex( m_ViewerCore->getCurrentImage()->getImageProperties().voxelCoords ) );
 		}
 
 		if( e->key() == Qt::Key_PageDown ) {
-			m_ViewerCore->getCurrentImage()->voxelCoords[2]--;
-			m_ViewerCore->getCurrentImage()->checkVoxelCoords( m_ViewerCore->getCurrentImage()->voxelCoords );
-			m_ViewerCore->physicalCoordsChanged( m_ViewerCore->getCurrentImage()->getISISImage()->getPhysicalCoordsFromIndex( m_ViewerCore->getCurrentImage()->voxelCoords ) );
+			m_ViewerCore->getCurrentImage()->getImageProperties().voxelCoords[2]--;
+			m_ViewerCore->getCurrentImage()->checkVoxelCoords( m_ViewerCore->getCurrentImage()->getImageProperties().voxelCoords );
+			m_ViewerCore->physicalCoordsChanged( m_ViewerCore->getCurrentImage()->getISISImage()->getPhysicalCoordsFromIndex( m_ViewerCore->getCurrentImage()->getImageProperties().voxelCoords ) );
 		}
 	}
 }
@@ -554,8 +558,8 @@ void QImageWidgetImplementation::dragEnterEvent( QDragEnterEvent *e )
 {
 	if( e->mimeData()->hasFormat( "text/plain" ) ) {
 		bool hasImage = false;
-		BOOST_FOREACH( ImageVectorType::const_reference image, m_ImageVector ) {
-			if( image->getFileNames().front() == e->mimeData()->text().toStdString() ) {
+		BOOST_FOREACH( ImageHolder::Vector::const_reference image, getWidgetEnsemble()->getImageList() ) {
+			if( image->getImageProperties().fileName == e->mimeData()->text().toStdString() ) {
 				hasImage = true;
 			}
 		}
@@ -569,21 +573,20 @@ void QImageWidgetImplementation::dragEnterEvent( QDragEnterEvent *e )
 
 void QImageWidgetImplementation::dropEvent( QDropEvent *e )
 {
-	const boost::shared_ptr<ImageHolder> image = m_ViewerCore->getDataContainer().at( e->mimeData()->text().toStdString() );
-	UICore::ViewWidgetEnsembleType myEnsemble = UICore::ViewWidgetEnsembleType();
-	BOOST_FOREACH( UICore::ViewWidgetEnsembleListType::const_reference ensemble, m_ViewerCore->getUICore()->getEnsembleList() ) {
-		for( unsigned short i = 0; i < 3; i++ ) {
-			if( ensemble[i].widgetImplementation == this ) {
+	const ImageHolder::Pointer image = m_ViewerCore->getImageMap().at( e->mimeData()->text().toStdString() );
+	WidgetEnsemble::Pointer myEnsemble;
+	BOOST_FOREACH( WidgetEnsemble::Vector::reference ensemble, m_ViewerCore->getUICore()->getEnsembleList() ) {
+		BOOST_FOREACH( WidgetEnsemble::reference ensembleComponent, *ensemble ) {
+			if( ensembleComponent->getWidgetInterface() == this ) {
 				myEnsemble = ensemble;
-			} else if( myEnsemble != ensemble ) {
-				ensemble[i].widgetImplementation->removeImage( image );
-				image->removeWidget( ensemble[i].widgetImplementation );
 			}
 		}
 	}
-
-	for( unsigned short i = 0; i < 3; i++ ) {
-		myEnsemble[i].widgetImplementation->addImage( image );
+	myEnsemble->addImage( image  );
+	BOOST_FOREACH( WidgetEnsemble::Vector::reference ensemble, m_ViewerCore->getUICore()->getEnsembleList() ) {
+		if( ensemble != myEnsemble ) {
+			ensemble->removeImage( image );
+		}
 	}
 
 	m_ViewerCore->setCurrentImage( image );
@@ -591,6 +594,19 @@ void QImageWidgetImplementation::dropEvent( QDropEvent *e )
 	m_ViewerCore->getUICore()->refreshUI();
 }
 
-
+}
 }
 } //end namespace
+
+isis::viewer::widget::WidgetInterface *loadWidget()
+{
+	return new isis::viewer::widget::QImageWidgetImplementation();
+}
+
+const isis::util::PropertyMap *getProperties()
+{
+	isis::util::PropertyMap *properties = new isis::util::PropertyMap();
+	properties->setPropertyAs<std::string>( "widgetIdent", "qt4_plane_widget" );
+	properties->setPropertyAs<uint8_t>( "numberOfEntitiesInEnsemble", 3 );
+	return properties;
+}

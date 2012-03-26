@@ -31,6 +31,8 @@
 #include <boost/assign.hpp>
 #include <numeric>
 
+#include <QDir>
+
 namespace isis
 {
 namespace viewer
@@ -61,7 +63,7 @@ void checkForCaCp( boost::shared_ptr<ImageHolder> image )
 					newIndexOrigin[3] );
 		image->getISISImage()->setPropertyAs<util::fvector4>( "indexOrigin", transformedOrigin );
 		image->getISISImage()->updateOrientationMatrices();
-		image->physicalCoords = image->getISISImage()->getPhysicalCoordsFromIndex( image->voxelCoords );
+		image->getImageProperties().physicalCoords = image->getISISImage()->getPhysicalCoordsFromIndex( image->getImageProperties().voxelCoords );
 	}
 }
 
@@ -89,12 +91,12 @@ std::list<util::istring> getFileFormatsAsList( image_io::FileFormat::io_modes mo
 	return retList;
 }
 
-std::map< std::string, std::list< std::string > > getDialectsAsMap ( image_io::FileFormat::io_modes mode )
+std::map< util::istring, std::list< util::istring > > getDialectsAsMap ( image_io::FileFormat::io_modes mode )
 {
-	std::map<std::string, std::list< std::string > > retMap;
+	std::map<util::istring, std::list< util::istring > > retMap;
 	BOOST_FOREACH( isis::data::IOFactory::FileFormatList::const_reference format, isis::data::IOFactory::getFormats() ) {
-		std::list<std::string> dialectList = util::stringToList<std::string>(format->dialects(""));
-        BOOST_FOREACH( std::list< util::istring>::const_reference suffix, format->getSuffixes( mode ) ) {
+		std::list<util::istring> dialectList = util::stringToList<util::istring>( format->dialects( "" ).c_str() );
+		BOOST_FOREACH( std::list< util::istring>::const_reference suffix, format->getSuffixes( mode ) ) {
 			retMap[suffix.c_str()]  = dialectList;
 		}
 	}
@@ -102,22 +104,6 @@ std::map< std::string, std::list< std::string > > getDialectsAsMap ( image_io::F
 }
 
 
-util::ivector4 get32BitAlignedSize( const util::ivector4 &origSize )
-{
-	util::ivector4 retSize;
-
-	for ( size_t i = 0; i < 4; i++ ) {
-		int m = origSize[i] % 4;
-
-		if( m > 0 ) {
-			retSize[i] = origSize[i] + 4 - m;
-		} else {
-			retSize[i] = origSize[i];
-		}
-	}
-
-	return retSize;
-}
 
 std::list< std::string > getSupportedTypeList()
 {
@@ -130,6 +116,74 @@ std::string getCrashLogFilePath()
 	std::stringstream logFilePath;
 	logFilePath << homePath << "/vastCrashLog.log";
 	return logFilePath.str();
+}
+
+util::fvector4 mapCoordsToOrientation( const util::fvector4 &coords, const boost::numeric::ublas::matrix<float> &orientationMatrix, PlaneOrientation orientation, bool back, bool absolute )
+{
+	using namespace boost::numeric::ublas;
+	matrix<float> transformMatrix = identity_matrix<float>( 4, 4 );
+	matrix<float> finMatrix = identity_matrix<float>( 4, 4 );
+	vector<float> vec = vector<float>( 4 );
+	vector<float> finVec = vector<float>( 4 );
+
+	for( size_t i = 0; i < 4 ; i++ ) {
+		vec( i ) = coords[i];
+	}
+
+	switch ( orientation ) {
+	case axial:
+		/*setup axial matrix
+		*-1  0  0
+		* 0 -1  0
+		* 0  0  1
+		*/
+		transformMatrix( 0, 0 ) = -1;
+		transformMatrix( 1, 1 ) = 1;
+		break;
+	case sagittal:
+		/*setup sagittal matrix
+		* 0  1  0
+		* 0  0  1
+		* 1  0  0
+		*/
+		transformMatrix( 0, 0 ) = 0;
+		transformMatrix( 2, 0 ) = 1;
+		transformMatrix( 0, 1 ) = 1;
+		transformMatrix( 2, 2 ) = 0;
+		transformMatrix( 1, 2 ) = -1;
+		transformMatrix( 1, 1 ) = 0;
+		break;
+	case coronal:
+		/*setup coronal matrix
+		* -1  0  0
+		*  0  0  1
+		*  0  1  0
+		*/
+
+		transformMatrix( 0, 0 ) = -1;
+		transformMatrix( 1, 1 ) = 0;
+		transformMatrix( 2, 2 ) = 0;
+		transformMatrix( 2, 1 ) = 1;
+		transformMatrix( 1, 2 ) = -1;
+		break;
+	case not_specified:
+		LOG( Runtime, warning ) << "Can not transform to PlaneOrientation \"not_specified\"!";
+		break;
+	}
+
+
+	if( back ) {
+		finVec = prod( trans( prod(  transformMatrix, orientationMatrix ) ), vec );
+	} else {
+		finVec = prod( prod( transformMatrix, orientationMatrix ) , vec );
+	}
+
+	if( absolute ) {
+		return util::fvector4( fabs( finVec( 0 ) ), fabs( finVec( 1 ) ), fabs( finVec( 2 ) ) , fabs( finVec( 3 ) ) );
+	} else {
+		return util::fvector4( finVec( 0 ), finVec( 1 ), finVec( 2 ), finVec( 3 ) );
+	}
+
 }
 
 

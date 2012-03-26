@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * Author: Erik Türke, tuerke@cbs.mpg.de
+ * Author: Erik Tuerke, tuerke@cbs.mpg.de
  *
  * qviewercore.cpp
  *
@@ -30,7 +30,7 @@
 #include <DataStorage/fileptr.hpp>
 #include "nativeimageops.hpp"
 #include "uicore.hpp"
-#include <mainwindow.hpp>
+#include "mainwindow.hpp"
 
 #include <fstream>
 
@@ -41,14 +41,11 @@ namespace viewer
 
 QViewerCore::QViewerCore ( const std::string &appName, const std::string &orgName, QWidget *parent )
 	: ViewerCoreBase( ),
-	  m_Settings ( new QSettings ( appName.c_str(), orgName.c_str() ) ),
 	  m_Parent ( parent ),
 	  m_CurrentPath ( QDir::currentPath().toStdString() ),
 	  m_ProgressFeedback ( boost::shared_ptr<QProgressFeedback> ( new QProgressFeedback() ) ),
 	  m_UI ( new isis::viewer::UICore ( this ) )
 {
-	m_FavFiles.setLimit(1000);
-	m_RecentFiles.setLimit( getOptionMap()->getPropertyAs<uint16_t>("maxRecentOpenListSize") );
 	QCoreApplication::setApplicationName ( QString ( appName.c_str() ) );
 	QCoreApplication::setOrganizationName ( QString ( orgName.c_str() ) );
 	QApplication::setStartDragTime ( 1000 );
@@ -56,42 +53,24 @@ QViewerCore::QViewerCore ( const std::string &appName, const std::string &orgNam
 	setParentWidget ( m_UI->getMainWindow() );
 	data::IOFactory::setProgressFeedback ( m_ProgressFeedback );
 	operation::NativeImageOps::setProgressFeedBack ( m_ProgressFeedback );
-	loadSettings();
+	m_Settings->load();
 	getUICore()->refreshUI();
-#ifdef _OPENMP
-	const uint16_t nMaxThreads = omp_get_num_procs();
-	getOptionMap()->setPropertyAs<uint16_t>("maxNumberOfThreads", nMaxThreads);
-	if( getOptionMap()->getPropertyAs<uint16_t> ( "numberOfThreads" ) == 0 ) {
-		if( nMaxThreads <= getOptionMap()->getPropertyAs<uint16_t>("initialMaxNumberThreads" ) ) {
-			getOptionMap()->setPropertyAs<uint16_t> ( "numberOfThreads", nMaxThreads );
-			getOptionMap()->setPropertyAs<bool> ( "useAllAvailableThreads", true );
-		} else {
-			getOptionMap()->setPropertyAs<uint16_t> ( "numberOfThreads", getOptionMap()->getPropertyAs<uint16_t>("initialMaxNumberThreads" ) );
-		}
-		getOptionMap()->setPropertyAs<bool> ( "enableMultithreading", true );
-	}
-	if( getOptionMap()->getPropertyAs<bool>( "useAllAvailableThreads" ) ) {
-		getOptionMap()->setPropertyAs<uint16_t> ( "numberOfThreads", nMaxThreads );
-	}
-	omp_set_num_threads ( getOptionMap()->getPropertyAs<uint16_t> ( "numberOfThreads" ) );
-	getOptionMap()->setPropertyAs<bool> ( "ompAvailable", true );
-#else
-	getOptionMap()->setPropertyAs<bool> ( "ompAvailable", false );
-#endif
+
 	checkForErrors();
 }
 
 void QViewerCore::checkForErrors()
 {
-	getSettings()->beginGroup("ErrorHandling");
-	const bool vastExitedSuccessfully = getSettings()->value( "vastExitedSuccessfully", true ).toBool();
-	if( !vastExitedSuccessfully && getOptionMap()->getPropertyAs<bool>("showCrashMessage") ) {
+	getSettings()->getQSettings()->beginGroup( "ErrorHandling" );
+	const bool vastExitedSuccessfully = getSettings()->getQSettings()->value( "vastExitedSuccessfully", true ).toBool();
+
+	if( !vastExitedSuccessfully && getSettings()->getPropertyAs<bool>( "showCrashMessage" ) ) {
 		QMessageBox msgBox;
-		msgBox.setWindowFlags(Qt::WindowSystemMenuHint);
-		
-		QSpacerItem* horizontalSpacer = new QSpacerItem(700, 0, QSizePolicy::Minimum, QSizePolicy::Expanding);
-		QGridLayout* layout = (QGridLayout*)msgBox.layout();
-		layout->addItem(horizontalSpacer, layout->rowCount(), 0, 1, layout->columnCount());
+		msgBox.setWindowFlags( Qt::WindowSystemMenuHint );
+
+		QSpacerItem *horizontalSpacer = new QSpacerItem( 700, 0, QSizePolicy::Minimum, QSizePolicy::Expanding );
+		QGridLayout *layout = ( QGridLayout * )msgBox.layout();
+		layout->addItem( horizontalSpacer, layout->rowCount(), 0, 1, layout->columnCount() );
 		msgBox.setIcon( QMessageBox::Information );
 		std::stringstream text;
 		text << "vast crashed last time!";
@@ -100,23 +79,24 @@ void QViewerCore::checkForErrors()
 		std::stringstream detailedText;
 		detailedText << "Developer information: " << std::endl;
 		data::FilePtr logFile( getCrashLogFilePath().c_str() );
+
 		if( !logFile.good() ) {
 			QMessageBox errorMessage;
 			errorMessage.setIcon( QMessageBox::Critical );
 			errorMessage.setText( "Could not open the crash log file!" );
 			errorMessage.exec();
 		} else {
-			msgBox.setDetailedText( reinterpret_cast<const char*>( &logFile.at<uint8_t>(0)[0] ) ); //do not do this at home!!
+			msgBox.setDetailedText( reinterpret_cast<const char *>( &logFile.at<uint8_t>( 0 )[0] ) ); //do not do this at home!!
 			msgBox.setStandardButtons( QMessageBox::Ok );
 			msgBox.exec();
 		}
-		
+
 	} else {
-		getSettings()->setValue("vastExitedSuccessfully", false );
-		getSettings()->sync();
+		getSettings()->getQSettings()->setValue( "vastExitedSuccessfully", false );
+		getSettings()->getQSettings()->sync();
 	}
-	
-	getSettings()->endGroup();
+
+	getSettings()->getQSettings()->endGroup();
 }
 
 
@@ -127,7 +107,7 @@ void QViewerCore::addMessageHandler ( qt4::QDefaultMessagePrint *handler )
 
 void QViewerCore::addMessageHandlerDev ( qt4::QDefaultMessagePrint *handler )
 {
-	connect ( handler, SIGNAL ( commitMessage ( qt4::QMessage ) ) , this, SLOT ( receiveMessageDev(qt4::QMessage)) );
+	connect ( handler, SIGNAL ( commitMessage ( qt4::QMessage ) ) , this, SLOT ( receiveMessageDev( qt4::QMessage ) ) );
 }
 
 void QViewerCore::receiveMessage ( qt4::QMessage message )
@@ -153,55 +133,55 @@ void QViewerCore::physicalCoordsChanged ( util::fvector4 physicalCoords )
 	emitPhysicalCoordsChanged ( physicalCoords );
 }
 
+void QViewerCore::onWidgetClicked ( widget::WidgetInterface *origin, util::fvector4 physicalCoords, Qt::MouseButton mouseButton )
+{
+	setCurrentImage( origin->getWidgetEnsemble()->getImageList().front() );
+	getUICore()->refreshUI( false ); //no update of mainwindow is needed here
+	emitOnWidgetClicked( physicalCoords, mouseButton );
+	emitPhysicalCoordsChanged( physicalCoords );
+}
+
+void QViewerCore::onWidgetMoved ( widget::WidgetInterface* /*origin*/, util::fvector4 physicalCoords, Qt::MouseButton mouseButton )
+{
+	emitOnWidgetMoved( physicalCoords, mouseButton );
+	emitPhysicalCoordsChanged( physicalCoords );
+}
+
 
 void QViewerCore::timestepChanged ( int timestep )
 {
-	if ( hasImage() )
-	{
+	if ( hasImage() ) {
 
-		if ( !getCurrentImage()->getImageSize() [3] > timestep )
-		{
+		if ( !getCurrentImage()->getImageSize() [3] > timestep ) {
 			timestep = getCurrentImage()->getImageSize() [3] - 1;
 		}
 
-		BOOST_FOREACH ( DataContainer::reference image, getDataContainer() )
-		{
-			if ( static_cast<size_t> ( timestep ) < image.second->getImageSize() [3] )
-			{
-				image.second->voxelCoords[3] = timestep;
+		BOOST_FOREACH ( ImageHolder::Vector::const_reference image, getImageList() ) {
+			if ( static_cast<size_t> ( timestep ) < image->getImageSize() [3] ) {
+				image->getImageProperties().voxelCoords[3] = timestep;
 			}
 		}
 		updateScene();
 	}
 }
 
-std::list<boost::shared_ptr<ImageHolder> > QViewerCore::addImageList ( const std::list< data::Image > imageList, const ImageHolder::ImageType &imageType )
+ImageHolder::Vector QViewerCore::addImageList ( const std::list< data::Image > imageList, const ImageHolder::ImageType &imageType )
 {
-	std::list<boost::shared_ptr<ImageHolder> > retList = isis::viewer::ViewerCoreBase::addImageList ( imageList, imageType );
+	ImageHolder::Vector retList = isis::viewer::ViewerCoreBase::addImageList ( imageList, imageType );
 	return retList;
 
 }
 
-void QViewerCore::setImageList ( const std::list< data::Image > imageList, const ImageHolder::ImageType &imageType )
-{
-	isis::viewer::ViewerCoreBase::setImageList ( imageList, imageType );
-
-
-}
 void QViewerCore::centerImages ( bool ca )
 {
-	if ( hasImage() )
-	{
-		if ( !ca )
-		{
+	if ( hasImage() ) {
+		if ( !ca ) {
 			const util::ivector4 size = getCurrentImage()->getImageSize();
 			const util::ivector4 center ( size[0] / 2, size[1] / 2, size[2] / 2,
-										  getCurrentImage()->voxelCoords[3] );
-			getCurrentImage()->voxelCoords = center;
-		}
-		else
-		{
-			getCurrentImage()->physicalCoords = util::fvector4();
+										  getCurrentImage()->getImageProperties().voxelCoords[3] );
+			getCurrentImage()->getImageProperties().voxelCoords = center;
+		} else {
+			getCurrentImage()->getImageProperties().physicalCoords = util::fvector4();
 		}
 
 		updateScene();
@@ -211,14 +191,14 @@ void QViewerCore::centerImages ( bool ca )
 
 void QViewerCore::setShowLabels ( bool l )
 {
-	getOptionMap()->setPropertyAs<bool> ( "showLabels", l );
+	getSettings()->setPropertyAs<bool> ( "showLabels", l );
 	emitShowLabels ( l );
 	updateScene();
 }
 
 void QViewerCore::setShowCrosshair ( bool c )
 {
-	getOptionMap()->setPropertyAs<bool> ( "showCrosshair", c );
+	getSettings()->setPropertyAs<bool> ( "showCrosshair", c );
 	emitSetEnableCrosshair ( c );
 	updateScene();
 }
@@ -226,52 +206,41 @@ void QViewerCore::setShowCrosshair ( bool c )
 
 void QViewerCore::settingsChanged()
 {
-	BOOST_FOREACH ( UICore::WidgetMap::const_reference widget, getUICore()->getWidgets() )
-	{
-		widget.first->setInterpolationType ( static_cast<InterpolationType> ( getOptionMap()->getPropertyAs<uint16_t> ( "interpolationType" ) ) );
+	BOOST_FOREACH ( WidgetEnsembleComponent::Map::const_reference widget, getUICore()->getWidgets() ) {
+		widget.first->setInterpolationType ( static_cast<InterpolationType> ( getSettings()->getPropertyAs<uint16_t> ( "interpolationType" ) ) );
 	}
-	emitShowLabels ( getOptionMap()->getPropertyAs<bool> ( "showLabels" ) );
-	m_UI->getMainWindow()->getInterface().actionPropagate_Zooming->setChecked ( getOptionMap()->getPropertyAs<bool> ( "propagateZooming" ) );
+	emitShowLabels ( getSettings()->getPropertyAs<bool> ( "showLabels" ) );
+	m_UI->getMainWindow()->getInterface().actionPropagate_Zooming->setChecked ( getSettings()->getPropertyAs<bool> ( "propagateZooming" ) );
 
-	if ( hasImage() )
-	{
-		if ( getCurrentImage()->imageType == ImageHolder::z_map )
-		{
-			getCurrentImage()->lut = getOptionMap()->getPropertyAs<std::string> ( "lutZMap" );
-		}
-		else
-		{
-			getCurrentImage()->lut = getOptionMap()->getPropertyAs<std::string> ( "lutStructural" );
+	if ( hasImage() ) {
+		if ( getCurrentImage()->getImageProperties().imageType == ImageHolder::statistical_image ) {
+			getCurrentImage()->getImageProperties().lut = getSettings()->getPropertyAs<std::string> ( "lutZMap" );
+		} else {
+			getCurrentImage()->getImageProperties().lut = getSettings()->getPropertyAs<std::string> ( "lutStructural" );
 		}
 
-		if ( getMode() == ViewerCoreBase::zmap && getCurrentAnatomicalRefernce().get() )
-		{
-			getCurrentAnatomicalRefernce()->lut = getOptionMap()->getPropertyAs<std::string> ( "lutStructural" );
+		if ( getMode() == ViewerCoreBase::statistical_mode && getCurrentAnatomicalRefernce().get() ) {
+			getCurrentAnatomicalRefernce()->getImageProperties().lut = getSettings()->getPropertyAs<std::string> ( "lutStructural" );
 			getCurrentAnatomicalRefernce()->updateColorMap();
 		}
 
 		getCurrentImage()->updateColorMap();
 	}
-	if ( getMode() == ViewerCoreBase::zmap )
-	{
-		BOOST_FOREACH ( DataContainer::reference image, getDataContainer() )
-		{
-			if ( image.second->imageType == ImageHolder::structural_image )
-			{
-				image.second->lut = getOptionMap()->getPropertyAs<std::string> ( "lutStructural" );
-				image.second->updateColorMap();
+
+	if ( getMode() == ViewerCoreBase::statistical_mode ) {
+		BOOST_FOREACH ( ImageHolder::Vector::const_reference image, getImageList() ) {
+			if ( image->getImageProperties().imageType == ImageHolder::structural_image ) {
+				image->getImageProperties().lut = getSettings()->getPropertyAs<std::string> ( "lutStructural" );
+				image->updateColorMap();
 			}
 		}
 	}
 
-	if ( getMode() == ViewerCoreBase::zmap && getOptionMap()->getPropertyAs<bool> ( "zmapGlobal" ) )
-	{
-		BOOST_FOREACH ( DataContainer::reference image, getDataContainer() )
-		{
-			if ( image.second->imageType == ImageHolder::z_map )
-			{
-				image.second->lut = getOptionMap()->getPropertyAs<std::string> ( "lutZMap" );
-				image.second->updateColorMap();
+	if ( getMode() == ViewerCoreBase::statistical_mode && getSettings()->getPropertyAs<bool> ( "zmapGlobal" ) ) {
+		BOOST_FOREACH ( ImageHolder::Vector::const_reference image, getImageList() ) {
+			if ( image->getImageProperties().imageType == ImageHolder::statistical_image ) {
+				image->getImageProperties().lut = getSettings()->getPropertyAs<std::string> ( "lutZMap" );
+				image->updateColorMap();
 			}
 		}
 
@@ -288,22 +257,17 @@ void QViewerCore::updateScene()
 
 void QViewerCore::zoomChanged ( float zoomFactor )
 {
-	if ( m_OptionsMap->getPropertyAs<bool> ( "propagateZooming" ) )
-	{
+	if ( getSettings()->getPropertyAs<bool> ( "propagateZooming" ) ) {
 		emitZoomChanged ( zoomFactor );
 	}
 }
 
-
 void QViewerCore::addPlugin ( boost::shared_ptr< plugin::PluginInterface > plugin )
 {
-	if ( !m_Parent && plugin->isGUI() )
-	{
+	if ( !m_Parent && plugin->isGUI() ) {
 		LOG ( Runtime, error )
 				<< "Core does not own a parent. Before calling addPlugin/addPlugins you have to use setParentWidget!";
-	}
-	else
-	{
+	} else {
 		plugin->setViewerCore ( this );
 		plugin->setParentWidget ( m_Parent );
 		m_PluginList.push_back ( plugin );
@@ -312,8 +276,7 @@ void QViewerCore::addPlugin ( boost::shared_ptr< plugin::PluginInterface > plugi
 
 void QViewerCore::addPlugins ( isis::viewer::plugin::PluginLoader::PluginListType plugins )
 {
-	BOOST_FOREACH ( PluginListType::const_reference plugin, plugins )
-	{
+	BOOST_FOREACH ( plugin::PluginLoader::PluginListType::const_reference plugin, plugins ) {
 		addPlugin ( plugin );
 	}
 }
@@ -321,10 +284,8 @@ void QViewerCore::addPlugins ( isis::viewer::plugin::PluginLoader::PluginListTyp
 
 bool QViewerCore::callPlugin ( QString name )
 {
-	BOOST_FOREACH ( PluginListType::const_reference plugin, m_PluginList )
-	{
-		if ( plugin->getName() == name.toStdString() )
-		{
+	BOOST_FOREACH ( plugin::PluginLoader::PluginListType::const_reference plugin, m_PluginList ) {
+		if ( plugin->getName() == name.toStdString() ) {
 			return plugin->call();
 		}
 	}
@@ -332,204 +293,169 @@ bool QViewerCore::callPlugin ( QString name )
 	return false;
 }
 
-bool QViewerCore::attachImageToWidget ( boost::shared_ptr<ImageHolder> image, WidgetInterface *widget )
+
+
+ImageHolder::Vector QViewerCore::openFile ( const FileInformation &fileInfo, bool show )
 {
-	if ( getUICore()->getWidgets().find ( widget ) == getUICore()->getWidgets().end() )
-	{
-		LOG ( Runtime, error ) << "There is no such widget "
-							   << widget << ", so will not add image " << image->getFileNames().front() << " to it.";
-		return false;
-	}
-
-	if ( std::find ( m_ImageList.begin(), m_ImageList.end(), image ) == m_ImageList.end() )
-	{
-		LOG ( Runtime, error ) << "There is no such image "
-							   << image->getFileNames().front() << ", so will not add it to widget " << widget << ".";
-		return false;
-	}
-
-	widget->addImage ( image );
-	return true;
-}
-
-void QViewerCore::openPath ( const _internal::FileInformation &fileInfo )
-{
-	if ( !fileInfo.getFileName().empty() )
-	{
-		getUICore()->getMainWindow()->toggleLoadingIcon( true, QString( "Opening image " ) + fileInfo.getFileName().c_str() + QString("...") );
+	if ( !fileInfo.getFileName().empty() ) {
+		util::istring dialect = fileInfo.getDialect();
+		LOG( Dev, info ) << "Opening path " << fileInfo.getFileName() << " with rdialect: "
+						 << fileInfo.getDialect() << ", rf: " << fileInfo.getReadFormat()
+						 << ", widget: " << fileInfo.getWidgetIdentifier();
+		getUICore()->getMainWindow()->toggleLoadingIcon( true, QString( "Opening image " ) + fileInfo.getFileName().c_str() + QString( "..." ) );
 		QDir dir;
 		setCurrentPath ( dir.absoluteFilePath ( fileInfo.getFileName().c_str() ).toStdString() );
-		UICore::ViewWidgetEnsembleType ensemble;
+		//add this file to the recent opened files
 
-		if ( getUICore()->getEnsembleList().size() )
-		{
-			ensemble = getUICore()->getEnsembleList().front();
-		}
 		boost::filesystem::path p ( fileInfo.getFileName() );
 
-		std::list<data::Image> tempImgList = isis::data::IOFactory::load ( fileInfo.getFileName() , fileInfo.getReadFormat(), fileInfo.getDialect() );
-		if( !tempImgList.empty() ) {
-			m_RecentFiles.insert( std::make_pair<std::string, _internal::FileInformation>(fileInfo.getFileName(), fileInfo ) );
+		//this is a vista thing. if we load a vista image and the option "visualizeOnlyFirstVista" is enabled we should do so
+		if( boost::filesystem::extension( p ) == std::string( "v" ) && getSettings()->getPropertyAs<bool>( "visualizeOnlyFirstVista" ) && !dialect.size() ) {
+			dialect = util::istring( "onlyfirst" );
 		}
-		BOOST_FOREACH ( std::list<data::Image>::const_reference image, tempImgList )
-		{
-			boost::shared_ptr<ImageHolder> imageHolder = addImage ( image, fileInfo.getImageType() );
-			checkForCaCp ( imageHolder );
 
-			if ( ! ( getMode() == ViewerCoreBase::zmap && imageHolder->imageType == ImageHolder::structural_image ) )
-			{
-				if ( fileInfo.isNewEnsemble() )
-				{
-					ensemble = getUICore()->createViewWidgetEnsemble ( "" );
+		//load the file into an isis image
+		std::list<data::Image> tempImgList = isis::data::IOFactory::load ( fileInfo.getFileName() , fileInfo.getReadFormat(), dialect );
 
-					//if we load a zmap we additionally add an anatomical image to the widget to make things easier for the user....
-					if ( fileInfo.getImageType() == ImageHolder::z_map && m_CurrentAnatomicalReference.get() )
-					{
-						attachImageToWidget ( m_CurrentAnatomicalReference, ensemble[0].widgetImplementation );
-						attachImageToWidget ( m_CurrentAnatomicalReference, ensemble[1].widgetImplementation );
-						attachImageToWidget ( m_CurrentAnatomicalReference, ensemble[2].widgetImplementation );
+		if( !tempImgList.empty() ) {
+			m_Settings->getRecentFiles().insertSave( fileInfo );
+			LOG( Dev, info ) << "Loaded " << tempImgList.size() << " images from path " << fileInfo.getFileName();
+		} else {
+			LOG( Dev, error ) << "Tried to load " << fileInfo.getFileName() << ", but image list is empty.";
+		}
+
+		//creating the viewer image objects
+		ImageHolder::Vector imgList = addImageList( tempImgList, fileInfo.getImageType() );
+
+		if( show ) {
+			BOOST_FOREACH( ImageHolder::Vector::const_reference image, imgList ) {
+				if( fileInfo.isNewEnsemble() ) {
+					getUICore()->createViewWidgetEnsemble( fileInfo.getWidgetIdentifier(), image, true );
+				} else {
+					if( !getUICore()->getEnsembleList().size() ) {
+						getUICore()->createViewWidgetEnsemble( fileInfo.getWidgetIdentifier(), image, true );
+					} else {
+						getUICore()->getCurrentEnsemble()->addImage( image );
 					}
 				}
 
-				attachImageToWidget ( imageHolder, ensemble[0].widgetImplementation );
-				attachImageToWidget ( imageHolder, ensemble[1].widgetImplementation );
-				attachImageToWidget ( imageHolder, ensemble[2].widgetImplementation );
-				setCurrentImage ( imageHolder );
+				setCurrentImage( imgList.front() );
 			}
 		}
-		getUICore()->rearrangeViewWidgets();
-		getUICore()->refreshUI();
-		centerImages();
+
 		getUICore()->getMainWindow()->toggleLoadingIcon( false );
+		return imgList;
+	} else {
+		LOG( Dev, warning ) << "Tried to open path without any given filename!";
+		return ImageHolder::Vector();
 	}
-	
+
+
+}
+void QViewerCore::openFileList( const std::list< FileInformation > fileInfoList )
+{
+	ImageHolder::Vector structuralImageList;
+	ImageHolder::Vector statisticalImageList;
+	BOOST_FOREACH( std::list<FileInformation>::const_reference file, fileInfoList ) {
+		ImageHolder::Vector imageList = openFile( file, false );
+		BOOST_FOREACH( ImageHolder::Vector::const_reference image, imageList ) {
+			if( file.getImageType() == ImageHolder::statistical_image ) {
+				statisticalImageList.push_back( image );
+			} else {
+				structuralImageList.push_back( image );
+			}
+		}
+	}
+	WidgetEnsemble::Vector widgetList = getUICore()->getEnsembleList();
+
+	// in statistical_mode we ignore the newEnsemble parameter and open as many ensembles as we have statistical images
+	// we also ignore the amount of structural images, taking only the first and using it to underlay it
+	if( getMode() == statistical_mode ) {
+		if ( statisticalImageList.size() ) {
+			widgetList = getUICore()->createViewWidgetEnsembleList( fileInfoList.front().getWidgetIdentifier(), statisticalImageList, true );
+
+			if ( structuralImageList.size() ) {
+				ImageHolder::Vector::iterator iIter = structuralImageList.begin();
+				unsigned short structuralIndex = 0;
+
+				for( WidgetEnsemble::Vector::const_iterator wIter = widgetList.begin(); wIter != widgetList.end(); wIter++ ) {
+					( *wIter )->addImage( *iIter );
+
+					if( ++structuralIndex < structuralImageList.size() ) {
+						iIter++;
+					}
+				}
+			}
+
+			setCurrentImage( statisticalImageList.front() );
+		} else if ( structuralImageList.size() ) {
+			BOOST_FOREACH( ImageHolder::Vector::const_reference image, structuralImageList ) {
+				getUICore()->createViewWidgetEnsemble( fileInfoList.front().getWidgetIdentifier(), image, true );
+			}
+			setCurrentImage( structuralImageList.front() );
+		}
+	} else {
+		if ( !fileInfoList.front().isNewEnsemble() ) {
+			if ( widgetList.empty() ) {
+				widgetList.push_back( getUICore()->createViewWidgetEnsemble( fileInfoList.front().getWidgetIdentifier() ) );
+			}
+
+			BOOST_FOREACH( ImageHolder::Vector::const_reference image, structuralImageList ) {
+				getUICore()->getCurrentEnsemble()->addImage( image );
+			}
+		} else {
+			getUICore()->createViewWidgetEnsembleList( fileInfoList.front().getWidgetIdentifier(), structuralImageList, true );
+		}
+
+		setCurrentImage( structuralImageList.front() );
+	}
 }
 
-void QViewerCore::closeImage ( boost::shared_ptr<ImageHolder> image, bool refreshUI )
+void QViewerCore::closeImage ( ImageHolder::Pointer image, bool refreshUI )
 {
-	BOOST_FOREACH ( std::list< WidgetInterface *>::const_reference widget, image->getWidgetList() )
-	{
-		widget->removeImage ( image );
+	const size_t oldNumberImages = getImageList().size();
+	LOG( Dev, info ) << "Closing image " << image->getImageProperties().fileName;
+	BOOST_FOREACH( WidgetEnsemble::Vector::reference ensemble, getUICore()->getEnsembleList() ) {
+		ensemble->removeImage( image );
 	}
 
-	if ( getCurrentImage().get() == image.get() )
-	{
-		std::list<boost::shared_ptr< ImageHolder > > tmpList;
-		BOOST_FOREACH ( DataContainer::const_reference image, getDataContainer() )
-		{
-			tmpList.push_back ( image.second );
-		}
-		tmpList.erase ( std::find ( tmpList.begin(), tmpList.end(), image ) );
+	//if this image is the current one, we have to set one of the residual images to the current one
+	if( getCurrentImage().get() == image.get() ) {
+		LOG( Dev, info ) << "This was the current image so setting one of the residual images to current image";
+		ImageHolder::Vector tmpList = getImageList();
+		tmpList.erase( std::find ( tmpList.begin(), tmpList.end(), image ) );
 
-		if ( tmpList.size() )
-		{
-			setCurrentImage ( tmpList.front() );
-		}
-		else
-		{
-			setCurrentImage ( boost::shared_ptr<ImageHolder>() );
+		if( tmpList.size() ) {
+			setCurrentImage( tmpList.front() );
+		} else {
+			setCurrentImage( ImageHolder::Pointer() );
 		}
 	}
 
-	getDataContainer().erase ( image->getFileNames().front() );
+	getImageList().erase( std::find ( getImageList().begin(), getImageList().end(), image ) );
+	getImageMap().erase( image->getImageProperties().fileName );
 
-	if ( refreshUI )
-	{
-		getUICore()->refreshUI();
+	if( refreshUI ) {
+		getUICore()->refreshUI( false );
 	}
 
 	updateScene();
+
+	if( ( getImageList().size() == getImageMap().size() ) && ( getImageList().size() == ( oldNumberImages - 1 ) ) ) {
+		LOG( Dev, info ) << "Successfully removed image.";
+	} else {
+		LOG( Dev, error ) << "Error during removing of image " << image->getImageProperties().fileName;
+	}
 }
 
-void QViewerCore::loadSettings()
-{
-	getUICore()->getMainWindow()->toggleLoadingIcon(true, QString("Loading user settings..." ) );
-	getSettings()->beginGroup ( "ViewerCore" );
-	getOptionMap()->setPropertyAs<std::string> ( "lutZMap", getSettings()->value ( "lutZMap", getOptionMap()->getPropertyAs<std::string> ( "lutZMap" ).c_str() ).toString().toStdString() );
-	getOptionMap()->setPropertyAs<std::string> ( "lutStructural", getSettings()->value ( "lutStructural", getOptionMap()->getPropertyAs<std::string> ( "lutStructural" ).c_str() ).toString().toStdString() );
-	getOptionMap()->setPropertyAs<bool> ( "propagateZooming", getSettings()->value ( "propagateZooming", false ).toBool() );
-	getOptionMap()->setPropertyAs<uint16_t> ( "interpolationType", getSettings()->value ( "interpolationType", getOptionMap()->getPropertyAs<uint16_t> ( "interpolationType" ) ).toUInt() );
-	getOptionMap()->setPropertyAs<bool> ( "showLabels", getSettings()->value ( "showLabels", false ).toBool() );
-	getOptionMap()->setPropertyAs<bool> ( "showCrosshair", getSettings()->value ( "showCrosshair", true ).toBool() );
-	getOptionMap()->setPropertyAs<uint16_t> ( "minMaxSearchRadius",
-			getSettings()->value ( "minMaxSearchRadius", getOptionMap()->getPropertyAs<uint16_t> ( "minMaxSearchRadius" ) ).toUInt() );
-	getOptionMap()->setPropertyAs<bool> ( "showAdvancedFileDialogOptions", getSettings()->value ( "showAdvancedFileDialogOptions", false ).toBool() );
-	getOptionMap()->setPropertyAs<bool> ( "showFavoriteFileList", getSettings()->value ( "showFavoriteFileList", false ).toBool() );
-	getOptionMap()->setPropertyAs<bool> ( "showStartWidget", getSettings()->value ( "showStartWidget", true ).toBool() );
-	getOptionMap()->setPropertyAs<bool> ( "showCrashMessage", getSettings()->value ( "showCrashMessage", true ).toBool() );
-	getOptionMap()->setPropertyAs<uint16_t> ( "numberOfThreads", getSettings()->value ( "numberOfThreads" ).toUInt() );
-	getOptionMap()->setPropertyAs<bool> ( "enableMultithreading", getSettings()->value ( "enableMultithreading" ).toBool() );
-	getOptionMap()->setPropertyAs<bool> ( "useAllAvailablethreads", getSettings()->value ( "useAllAvailableThreads" ).toBool() );
-	getOptionMap()->setPropertyAs<bool> ( "histogramOmitZero", getSettings()->value ( "histogramOmitZero" ).toBool() );
-	getOptionMap()->setPropertyAs<bool>( "visualizeOnlyFirstVista", getSettings()->value( "visualizeOnlyFirstVista", getOptionMap()->getPropertyAs<bool>("visualizeOnlyFirstVista") ).toBool() );
-	//screenshot stuff
-	getOptionMap()->setPropertyAs<uint16_t> ( "screenshotWidth", getSettings()->value ( "screenshotWidth", getOptionMap()->getPropertyAs<uint16_t> ( "screenshotWidth" ) ).toUInt() );
-	getOptionMap()->setPropertyAs<uint16_t> ( "screenshotHeight", getSettings()->value ( "screenshotHeight", getOptionMap()->getPropertyAs<uint16_t> ( "screenshotHeight" ) ).toUInt() );
-	getOptionMap()->setPropertyAs<bool> ( "screenshotKeepAspectRatio", getSettings()->value ( "screenshotKeepAspectRatio", getOptionMap()->getPropertyAs<bool> ( "screenshotKeepAspectRatio" ) ).toBool() );
-	getOptionMap()->setPropertyAs<uint16_t> ( "screenshotQuality", getSettings()->value ( "screenshotQuality", getOptionMap()->getPropertyAs<uint16_t> ( "screenshotQuality" ) ).toUInt() );
-	getOptionMap()->setPropertyAs<uint16_t> ( "screenshotDPIX", getSettings()->value ( "screenshotDPIX", getOptionMap()->getPropertyAs<uint16_t> ( "screenshotDPIX" ) ).toUInt() );
-	getOptionMap()->setPropertyAs<uint16_t> ( "screenshotDPIY", getSettings()->value ( "screenshotDPIY", getOptionMap()->getPropertyAs<uint16_t> ( "screenshotDPIY" ) ).toUInt() );
-	getOptionMap()->setPropertyAs<bool> ( "screenshotManualScaling", getSettings()->value ( "screenshotManualScaling", getOptionMap()->getPropertyAs<bool> ( "screenshotManualScaling" ) ).toBool() );
-	getSettings()->endGroup();
-	m_RecentFiles.readFileInfortmationMap(getSettings(), "RecentImages");
-	m_FavFiles.readFileInfortmationMap(getSettings(), "FavoriteImages");
-	getUICore()->getMainWindow()->toggleLoadingIcon(false);
-}
-
-
-void QViewerCore::saveSettings()
-{
-	//saving the preferences to the profile file
-	
-	getSettings()->beginGroup ( "ViewerCore" );
-	getSettings()->setValue ( "lutZMap", getOptionMap()->getPropertyAs<std::string> ( "lutZMap" ).c_str() );
-	getSettings()->setValue( "visualizeOnlyFirstVista", getOptionMap()->getPropertyAs<bool>("visualizeOnlyFirstVista") );
-	getSettings()->setValue ( "lutStructural", getOptionMap()->getPropertyAs<std::string> ( "lutStructural" ).c_str() );
-	getSettings()->setValue ( "interpolationType", getOptionMap()->getPropertyAs<uint16_t> ( "interpolationType" ) );
-	getSettings()->setValue ( "propagateZooming", getOptionMap()->getPropertyAs<bool> ( "propagateZooming" ) );
-	getSettings()->setValue ( "minMaxSearchRadius", getOptionMap()->getPropertyAs<uint16_t> ( "minMaxSearchRadius" ) );
-	getSettings()->setValue ( "showLabels", getOptionMap()->getPropertyAs<bool> ( "showLabels" ) );
-	getSettings()->setValue ( "showCrosshair", getOptionMap()->getPropertyAs<bool> ( "showCrosshair" ) );
-	getSettings()->setValue ( "showAdvancedFileDialogOptions", getOptionMap()->getPropertyAs<bool> ( "showAdvancedFileDialogOptions" ) );
-	getSettings()->setValue ( "showFavoriteFileList", getOptionMap()->getPropertyAs<bool> ( "showFavoriteFileList" ) );
-	getSettings()->setValue ( "showStartWidget", getOptionMap()->getPropertyAs<bool> ( "showStartWidget" ) );
-	getSettings()->setValue ( "showCrashMessage", getOptionMap()->getPropertyAs<bool> ( "showCrashMessage" ) );	
-	getSettings()->setValue ( "numberOfThreads", getOptionMap()->getPropertyAs<uint16_t> ( "numberOfThreads" ) );
-	getSettings()->setValue ( "enableMultithreading", getOptionMap()->getPropertyAs<bool> ( "enableMultithreading" ) );
-	getSettings()->setValue ( "useAllAvailablethreads", getOptionMap()->getPropertyAs<bool> ( "useAllAvailableThreads" ) );
-	getSettings()->setValue ( "histogramOmitZero", getOptionMap()->getPropertyAs<bool> ( "histogramOmitZero" ) );
-	//screenshot stuff
-	getSettings()->setValue ( "screenshotWidth", getOptionMap()->getPropertyAs<uint16_t> ( "screenshotWidth" ) );
-	getSettings()->setValue ( "screenshotHeight", getOptionMap()->getPropertyAs<uint16_t> ( "screenshotHeight" ) );
-	getSettings()->setValue ( "screenshotKeepAspectRatio", getOptionMap()->getPropertyAs<bool> ( "screenshotKeepAspectRatio" ) );
-	getSettings()->setValue ( "screenshotQuality", getOptionMap()->getPropertyAs<uint16_t> ( "screenshotQuality" ) );
-	getSettings()->setValue ( "screenshotDPIX", getOptionMap()->getPropertyAs<uint16_t> ( "screenshotDPIX" ) );
-	getSettings()->setValue ( "screenshotDPIY", getOptionMap()->getPropertyAs<uint16_t> ( "screenshotDPIY" ) );
-	getSettings()->setValue ( "screenshotManualScaling", getOptionMap()->getPropertyAs<bool> ( "screenshotManualScaling" ) );
-
-	getSettings()->endGroup();
-	m_RecentFiles.writeFileInformationMap(getSettings(), "RecentImages" );
-	m_FavFiles.writeFileInformationMap(getSettings(), "FavoriteImages" );
-	getSettings()->sync();
-}
 
 void QViewerCore::close ()
 {
-	getSettings()->beginGroup("ErrorHandling");
-	getSettings()->setValue( "vastExitedSuccessfully", true );
-	getSettings()->sync();
-	getSettings()->endGroup();
-	
-}
+	getSettings()->getQSettings()->beginGroup( "ErrorHandling" );
+	getSettings()->getQSettings()->setValue( "vastExitedSuccessfully", true );
+	getSettings()->getQSettings()->sync();
+	getSettings()->getQSettings()->endGroup();
 
-void QViewerCore::setMode ( ViewerCoreBase::Mode mode )
-{
-	m_Mode = mode;
-	if( m_Mode == zmap ) {
-		getUICore()->getMainWindow()->setWindowTitle( QString(  m_OptionsMap->getPropertyAs<std::string>("signature").c_str() ) + QString("(zmap mode)" ) );
-	} else {
-		getUICore()->getMainWindow()->setWindowTitle( QString( m_OptionsMap->getPropertyAs<std::string>("signature").c_str() ) );
-	}
 }
 
 

@@ -38,32 +38,34 @@ namespace plugin
 class PropertyTool : public PluginInterface
 {
 public:
-    PropertyTool() : isInitialized( false ) {}
-    virtual std::string getName() { return std::string( "PropertyTool" ) ; }
-    virtual std::string getDescription() { return std::string( "" ); }
-    virtual std::string getTooltip() { return std::string( "Allows you to show and modify the meta data of the image." ); }
-    virtual QKeySequence getShortcut() { return QKeySequence( "P, T" ) ;}
-    virtual QIcon *getToolbarIcon() { return new QIcon( ":/common/properties.png" ); }
-    virtual bool isGUI() { return true; }
-    virtual bool call() {
-        if( !isInitialized ) {
-            m_PropertyToolDialog = new PropertyToolDialog( parentWidget, viewerCore );
-            isInitialized = true;
-        }
-        if( viewerCore->hasImage() ) {
-            m_PropertyToolDialog->show();
-        } else {
-            QMessageBox msg(parentWidget);
-            msg.setText("No image has been loaded or selected!");
-            msg.exec();
-        }
-        return true;
-    };
+	PropertyTool() : isInitialized( false ) {}
+	virtual std::string getName() { return std::string( "Property Tool" ) ; }
+	virtual std::string getDescription() { return std::string( "" ); }
+	virtual std::string getTooltip() { return std::string( "Allows you to show and modify the meta data of the image." ); }
+	virtual QKeySequence getShortcut() { return QKeySequence( "P, T" ) ;}
+	virtual QIcon *getToolbarIcon() { return new QIcon( ":/common/properties.png" ); }
+	virtual bool isGUI() { return true; }
+	virtual bool call() {
+		if( !isInitialized ) {
+			m_PropertyToolDialog = new PropertyToolDialog( parentWidget, viewerCore );
+			isInitialized = true;
+		}
 
-    virtual ~PropertyTool() {};
+		if( viewerCore->hasImage() ) {
+			m_PropertyToolDialog->show();
+		} else {
+			QMessageBox msg( parentWidget );
+			msg.setText( "No image has been loaded or selected!" );
+			msg.exec();
+		}
+
+		return true;
+	};
+
+	virtual ~PropertyTool() {};
 private:
-    PropertyToolDialog *m_PropertyToolDialog;
-    bool isInitialized;
+	PropertyToolDialog *m_PropertyToolDialog;
+	bool isInitialized;
 };
 
 }
@@ -72,5 +74,5 @@ private:
 
 isis::viewer::plugin::PluginInterface *loadPlugin()
 {
-    return new isis::viewer::plugin::PropertyTool();
+	return new isis::viewer::plugin::PropertyTool();
 }

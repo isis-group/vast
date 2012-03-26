@@ -40,13 +40,15 @@ namespace plugin
 bool ProfilePlotter::call()
 {
 	m_PlotterDialog = new PlotterDialog( parentWidget, viewerCore );
-    if( viewerCore->hasImage() ) {
-        m_PlotterDialog->show();
-    } else {
-        QMessageBox msg(parentWidget);
-        msg.setText("No image has been loaded or selected!");
-        msg.exec();
-    }
+
+	if( viewerCore->hasImage() ) {
+		m_PlotterDialog->show();
+	} else {
+		QMessageBox msg( parentWidget );
+		msg.setText( "No image has been loaded or selected!" );
+		msg.exec();
+	}
+
 	return true;
 }
 

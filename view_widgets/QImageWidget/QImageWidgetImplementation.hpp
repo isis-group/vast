@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * Author: Erik TÃ¼rke, tuerke@cbs.mpg.de
+ * Author: Erik Türke, tuerke@cbs.mpg.de
  *
  * QImageWidgetImplementation.hpp
  *
@@ -32,36 +32,40 @@
 #include <QWidget>
 #include <QPainter>
 #include <QtGui>
-#include "widgetinterface.hpp"
+#include "widgetinterface.h"
 #include "qviewercore.hpp"
-#include "QMemoryHandler.hpp"
 #include "QOrientationHandler.hpp"
 #include "color.hpp"
 
 namespace isis
 {
-
 namespace viewer
 {
-
+namespace widget
+{
 
 class QImageWidgetImplementation : public QWidget, public WidgetInterface
 {
 	Q_OBJECT
 	struct ImageProperties {
 		/**scaling, offset, size**/
-		isis::viewer::QOrientationHandler::ViewPortType viewPort;
+		QOrientationHandler::ViewPortType viewPort;
 	};
 	typedef std::map<boost::shared_ptr<ImageHolder>, ImageProperties> ImagePropertiesMapType;
 
 public:
 
 	QImageWidgetImplementation( QViewerCore *core, QWidget *parent = 0, PlaneOrientation orientation = axial );
+	QImageWidgetImplementation();
 
 public Q_SLOTS:
+	virtual bool hasOptionWidget() const { return false; };
+	virtual QWidget *getOptionWidget() { return new QWidget(); }
 
+	virtual unsigned short getNumberOfInstancesInEnsemble() const { return 3; }
 	virtual void setEnableCrosshair( bool enable ) { m_ShowCrosshair = enable; }
 
+	virtual void setup( QViewerCore *, QWidget *, PlaneOrientation );
 	virtual void setZoom( float zoom );
 	virtual void addImage( const boost::shared_ptr<ImageHolder> image );
 	virtual bool removeImage( const boost::shared_ptr<ImageHolder> image );
@@ -76,8 +80,7 @@ public Q_SLOTS:
 	virtual void setCrossHairColor( QColor color ) { m_CrosshairColor = color; }
 	virtual void setCrossHairWidth( int width ) { m_CrosshairWidth = width; }
 
-	virtual std::string getWidgetName() const;
-	virtual void setWidgetName( const std::string &wName );
+	virtual std::string getWidgetName() const { return std::string( "qt4_image_widget" ); }
 	virtual void keyPressEvent( QKeyEvent *e );
 
 	virtual void dragEnterEvent( QDragEnterEvent * );
@@ -103,13 +106,10 @@ private:
 
 	ImagePropertiesMapType m_ImageProperties;
 
-	void emitMousePressEvent( QMouseEvent *e );
 	void recalculateTranslation();
 	void showLabels() const ;
 
 	boost::shared_ptr<ImageHolder> getWidgetSpecCurrentImage() const;
-
-	QMemoryHandler m_MemoryHandler;
 
 	void commonInit();
 	util::PropertyMap m_WidgetProperties;
@@ -128,12 +128,13 @@ private:
 	float currentZoom;
 	int m_CrosshairWidth;
 
+	util::fvector4 mouseCoords2PhysCoords( const int &x, const int &y );
+
 	std::pair<int, int> m_StartCoordsPair;
 
 };
 
-
+}
 }
 } // end namespace
 #endif
-

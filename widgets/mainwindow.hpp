@@ -46,7 +46,7 @@ namespace isis
 {
 namespace viewer
 {
-namespace widget
+namespace ui
 {
 class PreferencesDialog;
 class ScalingWidget;
@@ -71,14 +71,14 @@ public:
 
 	void reloadPluginsToGUI( );
 
-	widget::PreferencesDialog *preferencesDialog;
-	widget::LoggingDialog *loggingDialog;
-	widget::FileDialog *fileDialog;
-	widget::StartWidget *startWidget;
-	widget::ScalingWidget *scalingWidget;
-	widget::KeyCommandsDialog *keyCommandsdialog;
-	widget::HelpDialog *helpDialog;
-	widget::AboutDialog *aboutDialog;
+	ui::PreferencesDialog *preferencesDialog;
+	ui::LoggingDialog *loggingDialog;
+	ui::FileDialog *fileDialog;
+	ui::StartWidget *startWidget;
+	ui::ScalingWidget *scalingWidget;
+	ui::KeyCommandsDialog *keyCommandsdialog;
+	ui::HelpDialog *helpDialog;
+	ui::AboutDialog *aboutDialog;
 
 
 public Q_SLOTS:
@@ -106,12 +106,12 @@ public Q_SLOTS:
 	void toggleAxialView( bool );
 	void toggleCoronalView( bool );
 	void updateRecentOpenList();
-    void openRecentPath( QString );
+	void openRecentPath( QString );
 	void toggleLoadingIcon( bool start, const QString &text = QString() );
 
 private:
 
-	
+
 	Ui::vastMainWindow m_Interface;
 	QViewerCore *m_ViewerCore;
 
@@ -124,8 +124,8 @@ private:
 	QAction *m_ActionReset_Scaling;
 	QAction *m_ActionAuto_Scaling;
 
-	QLabel * m_StatusMovieLabel;
-	QMovie * m_StatusMovie;
+	QLabel *m_StatusMovieLabel;
+	QMovie *m_StatusMovie;
 
 
 };

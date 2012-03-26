@@ -36,7 +36,7 @@ namespace isis
 {
 namespace viewer
 {
-namespace widget
+namespace ui
 {
 
 
@@ -59,7 +59,7 @@ private:
 	Ui::startDialog m_Interface;
 	QViewerCore *m_ViewerCore;
 
-	bool fillList( const _internal::FileInformationMap &fileInfoList, QListWidget *list );
+	bool fillList( const FileInformationMap &fileInfoList, QListWidget *list );
 };
 
 

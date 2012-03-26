@@ -56,14 +56,15 @@ public:
 			histogramDialog = new HistogramDialog( parentWidget, viewerCore );
 			isInitialized = true;
 		}
-        if( viewerCore->hasImage() ) {
-            histogramDialog->show();
-        }else {
-            QMessageBox msg(parentWidget);
-            msg.setText("No image has been loaded or selected!");
-            msg.exec();
-        }
-        
+
+		if( viewerCore->hasImage() ) {
+			histogramDialog->show();
+		} else {
+			QMessageBox msg( parentWidget );
+			msg.setText( "No image has been loaded or selected!" );
+			msg.exec();
+		}
+
 		return true;
 	};
 

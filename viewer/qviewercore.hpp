@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * Author: Erik Türke, tuerke@cbs.mpg.de
+ * Author: Erik Tuerke, tuerke@cbs.mpg.de
  *
  * qviewercore.hpp
  *
@@ -25,29 +25,22 @@
  *  Created on: Aug 12, 2011
  *      Author: tuerke
  ******************************************************************/
-#ifndef QVIEWERCORE_HPP
-#define QVIEWERCORE_HPP
+#ifndef VAST_QVIEWERCORE_HPP
+#define VAST_QVIEWERCORE_HPP
 
 
 #include "viewercorebase.hpp"
-#include "widgetinterface.hpp"
-#include "internal/fileinformation.hpp"
 #include "qprogressfeedback.hpp"
 
-#include <QtGui>
 #include <Adapter/qtapplication.hpp>
 
+#include <QtGui>
 
 namespace isis
 {
 namespace viewer
 {
 class UICore;
-
-namespace _internal {
-class FileInformation;
-class FileInformationMap;
-}
 
 class QViewerCore : public QObject, public ViewerCoreBase
 {
@@ -56,19 +49,11 @@ public:
 
 	QViewerCore( const std::string &appName = std::string(), const std::string &orgName = std::string(), QWidget *parent = 0 );
 
-	virtual std::list<boost::shared_ptr<ImageHolder> > addImageList( const std::list< data::Image > imageList, const ImageHolder::ImageType &imageType );
-	virtual void setImageList( const std::list< data::Image > imageList, const ImageHolder::ImageType &imageType );
-
-
-	const QSettings *getSettings() const { return m_Settings; }
-	QSettings *getSettings() { return m_Settings; }
-
+	virtual ImageHolder::Vector addImageList( const std::list< data::Image > imageList, const ImageHolder::ImageType &imageType );
 
 	void addPlugin( boost::shared_ptr< plugin::PluginInterface > plugin );
 	void addPlugins( plugin::PluginLoader::PluginListType plugins );
-	PluginListType getPlugins() const { return m_PluginList; }
-
-	virtual bool attachImageToWidget( boost::shared_ptr<ImageHolder> image, WidgetInterface *widget );
+	plugin::PluginLoader::PluginListType getPlugins() const { return m_PluginList; }
 
 	void setParentWidget( QWidget *parent ) { m_Parent = parent; }
 
@@ -86,15 +71,13 @@ public:
 	std::list< qt4::QMessage> getMessageLog() const { return m_MessageLog; }
 	std::list< qt4::QMessage> getMessageLogDev() const { return m_DevMessageLog; }
 
-	isis::viewer::_internal::FileInformationMap &getRecentFiles() { return m_RecentFiles; }
-	isis::viewer::_internal::FileInformationMap &getFavFiles() { return m_FavFiles; }
-
-
 public Q_SLOTS:
 	virtual void settingsChanged();
 	virtual void close( );
 	virtual void zoomChanged( float zoomFactor );
 	virtual void physicalCoordsChanged( util::fvector4 );
+	virtual void onWidgetClicked( widget::WidgetInterface *, util::fvector4, Qt::MouseButton );
+	virtual void onWidgetMoved( widget::WidgetInterface *, util::fvector4, Qt::MouseButton );
 	virtual void timestepChanged( int );
 	virtual void setShowLabels( bool );
 	virtual void setShowCrosshair( bool );
@@ -103,19 +86,18 @@ public Q_SLOTS:
 	virtual void receiveMessage( qt4::QMessage  );
 	virtual void receiveMessage( std::string  );
 	virtual void receiveMessageDev( qt4::QMessage );
-	virtual void openPath( const _internal::FileInformation& );
+	virtual ImageHolder::Vector openFile( const FileInformation &fileInfo, bool show = true );
+	virtual void openFileList( const std::list< FileInformation > fileInfoList );
 	virtual void centerImages( bool ca = false );
 	virtual void closeImage( boost::shared_ptr<ImageHolder> image, bool refreshUI = true );
-	virtual void saveSettings();
-	virtual void loadSettings();
-	virtual void setMode( Mode mode );
 
 Q_SIGNALS:
 	void emitZoomChanged( float zoom );
 	void emitVoxelCoordChanged( util::ivector4 );
+	void emitOnWidgetClicked( util::fvector4, Qt::MouseButton );
+	void emitOnWidgetMoved( util::fvector4, Qt::MouseButton );
 	void emitPhysicalCoordsChanged( util::fvector4 );
 	void emitTimeStepChange( unsigned int );
-	void emitImagesChanged( DataContainer );
 	void emitShowLabels( bool );
 	void emitUpdateScene( );
 	void emitSetEnableCrosshair( bool enable );
@@ -123,20 +105,18 @@ Q_SIGNALS:
 private:
 
 	void checkForErrors();
-	
-	QSettings *m_Settings;
+
 	std::list< qt4::QMessage > m_MessageLog;
 	std::list< qt4::QMessage > m_DevMessageLog;
-	
+
 	QWidget *m_Parent;
-	PluginListType m_PluginList;
+	plugin::PluginLoader::PluginListType m_PluginList;
 	std::string m_CurrentPath;
 	boost::shared_ptr< QProgressFeedback > m_ProgressFeedback;
 	UICore *m_UI;
-	
-    _internal::FileInformationMap m_RecentFiles;
-	_internal::FileInformationMap m_FavFiles;
-	
+
+	std::list<FileInformation> m_OpenFileList;
+
 
 };
 

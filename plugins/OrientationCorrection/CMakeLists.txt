@@ -17,6 +17,6 @@ qt4_wrap_cpp(plugin_moc_files OrientationCorrection.hpp)
 QT4_WRAP_UI(orientationcorrection_ui_h forms/orientationcorrection.ui)
 
 add_library(vastPlugin_OrientationCorrection SHARED vastPlugin_OrientationCorrection.cpp OrientationCorrection.cpp ${orientationcorrection_ui_h} ${plugin_moc_files})
-target_link_libraries(vastPlugin_OrientationCorrection isis_core  ${ISIS_LIB_DEPENDS}  ${QT_LIBRARIES} )
+target_link_libraries(vastPlugin_OrientationCorrection ${ISIS_LIB}  ${ISIS_LIB_DEPENDS}  ${QT_LIBRARIES} )
 
 install(TARGETS vastPlugin_OrientationCorrection DESTINATION ${VAST_PLUGIN_INFIX} COMPONENT "vast plugins" )

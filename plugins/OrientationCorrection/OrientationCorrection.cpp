@@ -65,33 +65,33 @@ void OrientatioCorrectionDialog::alignOnCenter( bool align )
 {
 	if ( m_ViewerCore->hasImage() ) {
 		if( align ) {
-			m_ImageNameAlignedTo = m_ViewerCore->getCurrentImage()->getFileNames().front();
+			m_ImageNameAlignedTo = m_ViewerCore->getCurrentImage()->getImageProperties().fileName;
 			const util::fvector4 &rowVec = m_ViewerCore->getCurrentImage()->getISISImage()->getPropertyAs<util::fvector4>( "rowVec" );
 			const util::fvector4 &columnVec = m_ViewerCore->getCurrentImage()->getISISImage()->getPropertyAs<util::fvector4>( "columnVec" );
 			const util::fvector4 &sliceVec = m_ViewerCore->getCurrentImage()->getISISImage()->getPropertyAs<util::fvector4>( "sliceVec" );
-			BOOST_FOREACH( DataContainer::reference image, m_ViewerCore->getDataContainer() ) {
-				const util::ivector4 size = image.second->getImageSize();
+			BOOST_FOREACH( ImageHolder::Vector::const_reference image, m_ViewerCore->getImageList() ) {
+				const util::ivector4 size = image->getImageSize();
 
-				const util::fvector4 &voxelSize = image.second->getISISImage()->getPropertyAs<util::fvector4>( "voxelSize" );
+				const util::fvector4 &voxelSize = image->getISISImage()->getPropertyAs<util::fvector4>( "voxelSize" );
 				const util::fvector4 center = util::fvector4( ( -size[0] * voxelSize[0] ) / 2.0,
 											  ( -size[1] * voxelSize[1] ) / 2.0,
 											  ( -size[2] * voxelSize[2] ) / 2.0 );
-				image.second->getISISImage()->setPropertyAs<util::fvector4>( "rowVec", rowVec );
-				image.second->getISISImage()->setPropertyAs<util::fvector4>( "columnVec", columnVec );
-				image.second->getISISImage()->setPropertyAs<util::fvector4>( "sliceVec", sliceVec );
-				image.second->getISISImage()->setPropertyAs<util::fvector4>( "indexOrigin", center );
-				image.second->getISISImage()->updateOrientationMatrices();
+				image->getISISImage()->setPropertyAs<util::fvector4>( "rowVec", rowVec );
+				image->getISISImage()->setPropertyAs<util::fvector4>( "columnVec", columnVec );
+				image->getISISImage()->setPropertyAs<util::fvector4>( "sliceVec", sliceVec );
+				image->getISISImage()->setPropertyAs<util::fvector4>( "indexOrigin", center );
+				image->getISISImage()->updateOrientationMatrices();
 
-				image.second->addChangedAttribute( "Centered and aligned to " + m_ImageNameAlignedTo );
+				image->addChangedAttribute( "Centered and aligned to " + m_ImageNameAlignedTo );
 			}
 		} else {
-			BOOST_FOREACH( DataContainer::reference image, m_ViewerCore->getDataContainer() ) {
-				image.second->getISISImage()->setPropertyAs<util::fvector4>( "indexOrigin", image.second->getPropMap().getPropertyAs<util::fvector4>( "originalIndexOrigin" ) );
-				image.second->getISISImage()->setPropertyAs<util::fvector4>( "rowVec", image.second->getPropMap().getPropertyAs<util::fvector4>( "originalRowVec" ) );
-				image.second->getISISImage()->setPropertyAs<util::fvector4>( "columnVec", image.second->getPropMap().getPropertyAs<util::fvector4>( "originalColumnVec" ) );
-				image.second->getISISImage()->setPropertyAs<util::fvector4>( "sliceVec", image.second->getPropMap().getPropertyAs<util::fvector4>( "originalSliceVec" ) );
-				image.second->getISISImage()->updateOrientationMatrices();
-				image.second->removeChangedAttribute( "Centered and aligned to " + m_ImageNameAlignedTo );
+			BOOST_FOREACH( ImageHolder::Vector::const_reference image, m_ViewerCore->getImageList() ) {
+				image->getISISImage()->setPropertyAs<util::fvector4>( "indexOrigin", image->getPropMap().getPropertyAs<util::fvector4>( "originalIndexOrigin" ) );
+				image->getISISImage()->setPropertyAs<util::fvector4>( "rowVec", image->getPropMap().getPropertyAs<util::fvector4>( "originalRowVec" ) );
+				image->getISISImage()->setPropertyAs<util::fvector4>( "columnVec", image->getPropMap().getPropertyAs<util::fvector4>( "originalColumnVec" ) );
+				image->getISISImage()->setPropertyAs<util::fvector4>( "sliceVec", image->getPropMap().getPropertyAs<util::fvector4>( "originalSliceVec" ) );
+				image->getISISImage()->updateOrientationMatrices();
+				image->removeChangedAttribute( "Centered and aligned to " + m_ImageNameAlignedTo );
 			}
 		}
 
@@ -107,6 +107,7 @@ void OrientatioCorrectionDialog::flipPressed()
 	if( m_ViewerCore->hasImage() ) {
 		boost::numeric::ublas::matrix<float> transform = boost::numeric::ublas::identity_matrix<float>( 3, 3 );
 		std::string desc;
+
 		if( ui.checkFlipZ->isChecked() ) {
 			transform( 2, 2 ) = -1;
 			desc = "Flip Z";
@@ -121,6 +122,7 @@ void OrientatioCorrectionDialog::flipPressed()
 			transform( 0, 0 ) = -1;
 			desc = "Flip X";
 		}
+
 		applyTransform( transform, false, desc );
 	}
 }
@@ -186,7 +188,7 @@ bool OrientatioCorrectionDialog::applyTransform( const boost::numeric::ublas::ma
 			m_ViewerCore->getCurrentImage()->getPropMap().setPropertyAs<util::fvector4>( "originalSliceVec", m_ViewerCore->getCurrentImage()->getISISImage()->getPropertyAs<util::fvector4>( "sliceVec" ) );
 			m_ViewerCore->getCurrentImage()->addChangedAttribute( desc );
 		} else {
-			LOG( Runtime, error ) << "Could not apply transform " << trans << " to the image " << m_ViewerCore->getCurrentImage()->getFileNames().front() << " !";
+			LOG( Runtime, error ) << "Could not apply transform " << trans << " to the image " << m_ViewerCore->getCurrentImage()->getImageProperties().fileName << " !";
 		}
 
 		m_ViewerCore->getCurrentImage()->updateOrientation();

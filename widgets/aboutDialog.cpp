@@ -29,52 +29,52 @@
 #include "aboutDialog.hpp"
 
 
-isis::viewer::widget::AboutDialog::AboutDialog ( QWidget* parent, isis::viewer::QViewerCore* core ) 
+isis::viewer::ui::AboutDialog::AboutDialog ( QWidget *parent, isis::viewer::QViewerCore *core )
 	: QDialog ( parent ),
-	m_ViewerCore( core ) 
+	  m_ViewerCore( core )
 
 {
-	m_Interface.setupUi(this);
+	m_Interface.setupUi( this );
 
-    connect( m_Interface.authorsList, SIGNAL( currentTextChanged(QString)), this, SLOT( onAuthorClicked(QString)) );
-    connect( m_Interface.sendMailButton, SIGNAL( pressed()), this, SLOT( sendEmailClicked()) );
-    m_Interface.sendMailButton->setIcon( QIcon( ":/common/icon_email.gif") );
+	connect( m_Interface.authorsList, SIGNAL( currentTextChanged( QString ) ), this, SLOT( onAuthorClicked( QString ) ) );
+	connect( m_Interface.sendMailButton, SIGNAL( pressed() ), this, SLOT( sendEmailClicked() ) );
+	m_Interface.sendMailButton->setIcon( QIcon( ":/common/icon_email.gif" ) );
 
-    m_Interface.sendMailButton->setEnabled( false );
-    
-	QPixmap pixMap( m_ViewerCore->getOptionMap()->getPropertyAs<std::string>("vastSymbol").c_str() );
+	m_Interface.sendMailButton->setEnabled( false );
+
+	QPixmap pixMap( m_ViewerCore->getSettings()->getPropertyAs<std::string>( "vastSymbol" ).c_str() );
 	const float ratio = pixMap.height() / ( float )pixMap.width();
-	m_Interface.vastSymbolLabel->setPixmap( QPixmap( 
-		m_ViewerCore->getOptionMap()->getPropertyAs<std::string>("vastSymbol").c_str() ).scaled(200 / ratio , m_Interface.vastSymbolLabel->height(), Qt::KeepAspectRatio ) );
-    QPalette pal;
-    pal.setColor( QPalette::Text, Qt::blue );
-    m_Interface.contactEdit->setPalette( pal );
+	m_Interface.vastSymbolLabel->setPixmap( QPixmap(
+			m_ViewerCore->getSettings()->getPropertyAs<std::string>( "vastSymbol" ).c_str() ).scaled( 200 / ratio , m_Interface.vastSymbolLabel->height(), Qt::KeepAspectRatio ) );
+	QPalette pal;
+	pal.setColor( QPalette::Text, Qt::blue );
+	m_Interface.contactEdit->setPalette( pal );
 
-    m_authorMap["Erik Tuerke"] = std::string("tuerke@cbs.mpg.de");
-    m_authorMap["Enrico Reimer"] = std::string( "reimer@cbs.mpg.de");
+	m_authorMap["Erik Tuerke"] = std::string( "tuerke@cbs.mpg.de" );
+	m_authorMap["Enrico Reimer"] = std::string( "reimer@cbs.mpg.de" );
 
 }
 
-void isis::viewer::widget::AboutDialog::showEvent(QShowEvent* )
+void isis::viewer::ui::AboutDialog::showEvent( QShowEvent * )
 {
-    m_Interface.labelCopyright->setText( m_ViewerCore->getOptionMap()->getPropertyAs<std::string>("copyright").c_str() );
-    m_Interface.labelVersion->setText( m_ViewerCore->getVersion().c_str() );
+	m_Interface.labelCopyright->setText( m_ViewerCore->getSettings()->getPropertyAs<std::string>( "copyright" ).c_str() );
+	m_Interface.labelVersion->setText( m_ViewerCore->getVersion().c_str() );
 	m_Interface.authorsList->clear();
-    BOOST_FOREACH( AboutDialog::AuthorMapType::const_reference author, m_authorMap ) {
-        m_Interface.authorsList->addItem( author.first.c_str() );
-    }
-    m_Interface.labelISISVersion->setText( util::Application::getCoreVersion().c_str() );
-	m_Interface.authorsList->setCurrentIndex(0);
+	BOOST_FOREACH( AboutDialog::AuthorMapType::const_reference author, m_authorMap ) {
+		m_Interface.authorsList->addItem( author.first.c_str() );
+	}
+	m_Interface.labelISISVersion->setText( util::Application::getCoreVersion().c_str() );
+	m_Interface.authorsList->setCurrentRow( 0 );
 }
 
-void isis::viewer::widget::AboutDialog::onAuthorClicked ( QString author)
+void isis::viewer::ui::AboutDialog::onAuthorClicked ( QString author )
 {
-    m_Interface.contactEdit->setText( m_authorMap.at( author.toStdString() ).c_str() );
-    m_Interface.sendMailButton->setEnabled(true);
+	m_Interface.contactEdit->setText( m_authorMap.at( author.toStdString() ).c_str() );
+	m_Interface.sendMailButton->setEnabled( true );
 }
 
-void isis::viewer::widget::AboutDialog::sendEmailClicked()
+void isis::viewer::ui::AboutDialog::sendEmailClicked()
 {
-    QDesktopServices::openUrl( QUrl( m_Interface.contactEdit->text() ) );
+	QDesktopServices::openUrl( QUrl( QString( "mailto:" ) + m_Interface.contactEdit->text() ) );
 }
 

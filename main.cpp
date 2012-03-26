@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * Author: Erik Türke, tuerke@cbs.mpg.de
+ * Author: Erik Tuerke, tuerke@cbs.mpg.de
  *
  * main.cpp
  *
@@ -27,55 +27,58 @@
  ******************************************************************/
 #include <iostream>
 #include <signal.h>
+
 #include <Adapter/qtapplication.hpp>
 #include <Adapter/qdefaultmessageprint.hpp>
-#include "qviewercore.hpp"
-#include <iostream>
-
-
 #include <DataStorage/io_factory.hpp>
+#include <CoreUtils/log.hpp>
 #include "CoreUtils/singletons.hpp"
 #include <DataStorage/image.hpp>
-#include <CoreUtils/log.hpp>
+
 #include "pluginloader.hpp"
+#include "qviewercore.hpp"
 #include "color.hpp"
 #include "uicore.hpp"
-
+#include "widgetensemble.hpp"
+#include "fileinformation.hpp"
 #include "common.hpp"
-#include "internal/error.hpp"
-#include <mainwindow.hpp>
+#include "error.hpp"
+#include "mainwindow.hpp"
+
 
 int main( int argc, char *argv[] )
 {
 
 	using namespace isis;
 	using namespace viewer;
-    signal( SIGSEGV, error::sigsegv);
-	
+	signal( SIGSEGV, error::sigsegv );
+
 	boost::shared_ptr<qt4::QDefaultMessagePrint> logging_hanlder_runtime ( new qt4::QDefaultMessagePrint( verbose_info ) );
 	boost::shared_ptr<qt4::QDefaultMessagePrint> logging_hanlder_dev ( new qt4::QDefaultMessagePrint( verbose_info ) );
 	util::_internal::Log<viewer::Dev>::setHandler( logging_hanlder_dev );
 	util::_internal::Log<viewer::Runtime>::setHandler( logging_hanlder_runtime );
 
+	//make vast showing qmessage if an error log is thrown
+	logging_hanlder_dev->qmessageBelow( isis::warning );
+
 	std::string appName = "vast";
 	std::string orgName = "cbs.mpg.de";
-
+	//setting up vast graphics_system
 #if QT_VERSION >= 0x040500
-	
 	const char *graphics_system = getenv( "VAST_GRAPHICS_SYSTEM" );
-    LOG(Dev, info) << "QT_VERSION >= 0x040500";
-	
+	LOG( Dev, info ) << "QT_VERSION >= 0x040500";
+
 	if( graphics_system && ( !strcmp( graphics_system, "raster" ) || !strcmp( graphics_system, "opengl" ) || !strcmp( graphics_system, "native" ) ) ) {
 		QApplication::setGraphicsSystem( graphics_system );
-		LOG(Dev, info) << "Using graphics_system=\"" << std::string( graphics_system ) << "\"";
+		LOG( Dev, info ) << "Using graphics_system=\"" << std::string( graphics_system ) << "\"";
 	} else {
 		QApplication::setGraphicsSystem( "raster" );
-		LOG(Dev, info) << "Using graphics_system=\"raster\"";
+		LOG( Dev, info ) << "Using graphics_system=\"raster\"";
 	}
 
 #else
 	std::cout << "Warning! Your Qt version is below Qt4.5. Not able to set graghics system." << std::endl;
-	LOG(Dev, warning) << "QT_VERSION < 0x040500";
+	LOG( Dev, warning ) << "QT_VERSION < 0x040500";
 #endif
 
 	qt4::IOQtApplication app( appName.c_str(), false, false );
@@ -84,7 +87,11 @@ int main( int argc, char *argv[] )
 	app.parameters["in"].setDescription( "The input image file list." );
 	app.parameters["zmap"] = util::slist();
 	app.parameters["zmap"].needed() = false;
-	app.parameters["zmap"].setDescription( "The input image file list is interpreted as zmaps. " );
+	app.parameters["zmap"].setDescription( "The input image file list is interpreted as statistical maps. " );
+	//alias to zmap
+	app.parameters["stats"] = util::slist();
+	app.parameters["stats"].needed() = false;
+	app.parameters["stats"].setDescription( "The input image file list is interpreted as statistical maps. " );
 	app.parameters["rf"] = std::string();
 	app.parameters["rf"].needed() = false;
 	app.parameters["rf"].setDescription( "Override automatic detection of file suffix for reading with given value" );
@@ -96,9 +103,14 @@ int main( int argc, char *argv[] )
 	app.parameters["split"] = false;
 	app.parameters["split"].needed() = false;
 	app.parameters["split"].setDescription( "Show each image in a separate view" );
+	app.parameters["widget"] = std::string();
+	app.parameters["widget"].needed() = false;
+	app.parameters["widget"].setDescription( "Use specific widget" );
 	boost::shared_ptr< util::ProgressFeedback > feedback = boost::shared_ptr<util::ProgressFeedback>( new util::ConsoleFeedback );
 	data::IOFactory::setProgressFeedback( feedback );
 	app.init( argc, argv, false );
+
+
 
 	util::_internal::Log<isis::data::Runtime>::setHandler( logging_hanlder_runtime );
 	util::_internal::Log<isis::util::Runtime>::setHandler( logging_hanlder_runtime );
@@ -108,142 +120,57 @@ int main( int argc, char *argv[] )
 	util::_internal::Log<isis::image_io::Debug>::setHandler( logging_hanlder_runtime );
 
 	QViewerCore *core = new QViewerCore( appName, orgName );
+
 	core->addMessageHandler( logging_hanlder_runtime.get() );
 	core->addMessageHandlerDev( logging_hanlder_dev.get() );
 	//scan for plugins and hand them to the core
 	core->addPlugins( plugin::PluginLoader::get().getPlugins() );
 	core->getUICore()->reloadPluginsToGUI();
 
+	std::string widget_name = app.parameters["widget"];
+
+	if( widget_name.empty() ) {
+		widget_name = core->getSettings()->getPropertyAs<std::string>( "defaultViewWidgetIdentifier" );
+	}
+
 	util::slist fileList = app.parameters["in"];
-	const util::slist zmapFileList = app.parameters["zmap"];
-	std::list< data::Image > imgList;
-	std::list< data::Image > zImgList;
-        
-	if( fileList.size() || zmapFileList.size() ) {
-		//load the anatomical images
-		BOOST_FOREACH ( util::slist::const_reference fileName, fileList ) {
-			std::string dialect = app.parameters["rdialect"].toString();
-			std::stringstream fileLoad;
-			fileLoad << "Loading \"" << boost::filesystem::path( fileName ).leaf() << "\" ...";
-			core->getUICore()->getMainWindow()->toggleLoadingIcon( true, fileLoad.str().c_str() );
+	const bool zmapIsSet = app.parameters["zmap"].isSet() || app.parameters["stats"].isSet();
+	util::slist zmapFileList = app.parameters["zmap"];
 
-           if( boost::filesystem::extension( boost::filesystem::path( fileName ) ) == std::string( ".v" ) && core->getOptionMap()->getPropertyAs<bool>("visualizeOnlyFirstVista") ) {
-				if( !dialect.size() ) {
-					dialect = std::string( "onlyfirst" );
-				}
-			}
-			
-			std::list< data::Image > tmpList = data::IOFactory::load( fileName, app.parameters["rf"].toString(), dialect );
-			BOOST_FOREACH( std::list< data::Image >::reference imageRef, tmpList ) {
-				imgList.push_back( imageRef );
+	if( !zmapFileList.size() ) {
+		zmapFileList = app.parameters["stats"];
+	}
 
-			}
-		}
-		//load the zmap images
-		BOOST_FOREACH ( util::slist::const_reference fileName, zmapFileList ) {
-			std::string dialect = app.parameters["rdialect"].toString();
-			std::stringstream fileLoad;
-			fileLoad << "Loading \"" << boost::filesystem::path( fileName ).leaf() << "\" ...";
-			core->getUICore()->getMainWindow()->toggleLoadingIcon(true, fileLoad.str().c_str() );
+	if( zmapIsSet ) {
+		core->setMode( ViewerCoreBase::statistical_mode );
 
-           if( boost::filesystem::extension( boost::filesystem::path( fileName ) ) == std::string( ".v" ) && core->getOptionMap()->getPropertyAs<bool>("visualizeOnlyFirstVista") ) {
-				if( !dialect.size() ) {
-					dialect = std::string( "onlyfirst" );
-				}
-			}
-			
-			std::list< data::Image > tmpList = data::IOFactory::load( fileName, app.parameters["rf"].toString(), dialect );
-			BOOST_FOREACH( std::list< data::Image >::reference imageRef, tmpList ) {
-				zImgList.push_back( imageRef );
-
-			}
-		}
-	} else if( core->getOptionMap()->getPropertyAs<bool>( "showStartWidget" ) ) {
-		core->getUICore()->getMainWindow()->startWidget->show();
-	} 
-
-	//*****************************************************************************************
-	//distribution of images
-	//*****************************************************************************************
-
-	typedef std::list< boost::shared_ptr<ImageHolder > >::const_reference ImageListRef;
-
-	if( app.parameters["zmap"].isSet() ) {
-		core->setMode( ViewerCoreBase::zmap );
 	}  else {
-		core->setMode( ViewerCoreBase::standard );
+		core->setMode( ViewerCoreBase::default_mode );
 	}
 
-	//particular distribution of images in widgets
-	if( app.parameters["zmap"].isSet() && zImgList.size() > 1 ) {
-		core->getUICore()->setViewWidgetArrangement( UICore::InRow );
-		BOOST_FOREACH( ImageListRef image, core->addImageList( zImgList, ImageHolder::z_map ) ) {
-			checkForCaCp( image );
-			core->getRecentFiles().insertSave( _internal::FileInformation( image->getFileNames().front(),
-																			app.parameters["rdialect"].toString(),
-																			app.parameters["rf"].toString(),
-																			image->imageType) );
-			UICore::ViewWidgetEnsembleType ensemble = core->getUICore()->createViewWidgetEnsemble( "", image );
+	std::list<FileInformation> fileInfoList;
 
-			if( app.parameters["in"].isSet() ) {
-				BOOST_FOREACH( std::list<data::Image>::const_reference image, imgList ) {
-					boost::shared_ptr<ImageHolder> anatomicalImage = core->addImage( image, ImageHolder::structural_image );
-					checkForCaCp( anatomicalImage );
-
-					if( anatomicalImage->getImageSize()[3] == 1 ) {
-						ensemble[0].widgetImplementation->addImage( anatomicalImage );
-						ensemble[1].widgetImplementation->addImage( anatomicalImage );
-						ensemble[2].widgetImplementation->addImage( anatomicalImage );
-					}
-				}
-			}
-		}
-		core->getUICore()->setOptionPosition( isis::viewer::UICore::bottom );
-		core->getUICore()->getMainWindow()->startWidget->close();
-		//only anatomical images with split option was specified
-	} else if ( app.parameters["in"].isSet() && app.parameters["split"].isSet() ) {
-		core->getUICore()->setViewWidgetArrangement( UICore::InRow );
-		BOOST_FOREACH( ImageListRef image, core->addImageList( imgList, ImageHolder::structural_image ) ) {
-			checkForCaCp( image );
-			core->getRecentFiles().insertSave( _internal::FileInformation( image->getFileNames().front(),
-																			app.parameters["rdialect"].toString(),
-																			app.parameters["rf"].toString(),
-																			image->imageType) );
-			core->getUICore()->createViewWidgetEnsemble( "", image );
-		}
-		core->getUICore()->setOptionPosition( isis::viewer::UICore::bottom );
-		core->getUICore()->getMainWindow()->startWidget->close();
-	} else if ( app.parameters["in"].isSet() || app.parameters["zmap"].isSet() ) {
-		core->getUICore()->setViewWidgetArrangement( UICore::InRow );
-		UICore::ViewWidgetEnsembleType ensemble = core->getUICore()->createViewWidgetEnsemble( "" );
-		BOOST_FOREACH( ImageListRef image, core->addImageList( imgList, ImageHolder::structural_image ) ) {
-			checkForCaCp( image );
-			core->getRecentFiles().insertSave( _internal::FileInformation( image->getFileNames().front(),
-																			app.parameters["rdialect"].toString(),
-																			app.parameters["rf"].toString(),
-																			image->imageType) );
-			core->attachImageToWidget( image, ensemble[0]. widgetImplementation );
-			core->attachImageToWidget( image, ensemble[1]. widgetImplementation );
-			core->attachImageToWidget( image, ensemble[2]. widgetImplementation );
-		}
-		BOOST_FOREACH( ImageListRef image, core->addImageList( zImgList, ImageHolder::z_map ) ) {
-			checkForCaCp( image );
-			core->getRecentFiles().insertSave( _internal::FileInformation( image->getFileNames().front(),
-																			app.parameters["rdialect"].toString(),
-																			app.parameters["rf"].toString(),
-																			image->imageType) );
-			core->attachImageToWidget( image, ensemble[0]. widgetImplementation );
-			core->attachImageToWidget( image, ensemble[1]. widgetImplementation );
-			core->attachImageToWidget( image, ensemble[2]. widgetImplementation );
-		}
-		core->getUICore()->setOptionPosition( isis::viewer::UICore::bottom );
-		core->getUICore()->getMainWindow()->startWidget->close();
-
+	BOOST_FOREACH( util::slist::const_reference file, fileList ) {
+		fileInfoList.push_back( FileInformation( file,
+								app.parameters["rdialect"].as<std::string>().c_str(),
+								app.parameters["rf"].as<std::string>().c_str(),
+								widget_name,
+								ImageHolder::structural_image,
+								app.parameters["split"].as<bool>() ) );
 	}
-	core->getUICore()->getMainWindow()->toggleLoadingIcon(false);
+	BOOST_FOREACH( util::slist::const_reference file, zmapFileList ) {
+		fileInfoList.push_back( FileInformation( file,
+								app.parameters["rdialect"].as<std::string>().c_str(),
+								app.parameters["rf"].as<std::string>().c_str(),
+								widget_name,
+								ImageHolder::statistical_image,
+								app.parameters["split"].as<bool>() ) );
+	}
+
+	core->openFileList( fileInfoList );
+	core->getUICore()->getMainWindow()->toggleLoadingIcon( false );
 	core->getUICore()->showMainWindow();
 
 	core->settingsChanged();
-	
 	return app.getQApplication().exec();
 }

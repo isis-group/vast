@@ -54,7 +54,7 @@ void isis::viewer::plugin::CorrelationPlotterDialog::lockClicked()
 void isis::viewer::plugin::CorrelationPlotterDialog::physicalCoordsChanged( isis::util::fvector4 /*physicalCoords*/ )
 {
 	if( !m_Interface.lock->isChecked() ) {
-		m_CurrentVoxelPos = m_CurrentFunctionalImage->voxelCoords;
+		m_CurrentVoxelPos = m_CurrentFunctionalImage->getImageProperties().voxelCoords;
 		calculateCorrelation();
 		m_ViewerCore->updateScene();
 	}
@@ -83,10 +83,10 @@ void isis::viewer::plugin::CorrelationPlotterDialog::showEvent( QShowEvent * )
 
 		if( !m_CurrentFunctionalImage ) {
 			if( m_ViewerCore->getCurrentImage()->getImageSize()[3] == 1 ) {
-				BOOST_FOREACH( DataContainer::const_reference image, m_ViewerCore->getDataContainer() ) {
-					if( image.second->getImageSize()[3] > 1 ) {
+				BOOST_FOREACH( ImageHolder::Vector::const_reference image, m_ViewerCore->getImageList() ) {
+					if( image->getImageSize()[dim_time] > 1 ) {
 						hasFunctionalImage = true;
-						m_CurrentFunctionalImage = image.second;
+						m_CurrentFunctionalImage = image;
 					}
 				}
 			} else {
@@ -103,34 +103,28 @@ void isis::viewer::plugin::CorrelationPlotterDialog::showEvent( QShowEvent * )
 			QMessageBox msgBox;
 			msgBox.setText( "Can not find any functional dataset. Will not calculate correlation map!" );
 			msgBox.exec();
+			setVisible( false );
 			return;
 		} else {
 			if ( !m_CurrentCorrelationMap ) {
-				createCorrelationMap() ;
-				BOOST_FOREACH( UICore::ViewWidgetEnsembleListType::const_reference ensemble, m_ViewerCore->getUICore()->getEnsembleList() ) {
-					WidgetInterface::ImageVectorType iVector;
-
-					for( unsigned short i = 0; i < 3; i++ ) {
-						iVector = ensemble[i].widgetImplementation->getImageVector();
-
-						if( std::find( iVector.begin(), iVector.end(), m_CurrentFunctionalImage ) != iVector.end() ) {
-							m_ViewerCore->attachImageToWidget( m_CurrentCorrelationMap, ensemble[i].widgetImplementation ) ;
-						}
+				createCorrelationMap();
+				BOOST_FOREACH( WidgetEnsemble::Vector::reference ensemble, m_ViewerCore->getUICore()->getEnsembleList() ) {
+					if( ensemble->hasImage( m_CurrentFunctionalImage ) ) {
+						ensemble->addImage( m_CurrentCorrelationMap );
 					}
 				}
 			}
 
 			connect( m_ViewerCore, SIGNAL( emitPhysicalCoordsChanged( util::fvector4 ) ), this, SLOT( physicalCoordsChanged( util::fvector4 ) ) );
 
-			if( m_ViewerCore->getMode() != ViewerCoreBase::zmap ) {
-				m_ViewerCore->setMode( ViewerCoreBase::zmap );
+			if( m_ViewerCore->getMode() != ViewerCoreBase::statistical_mode ) {
+				m_ViewerCore->setMode( ViewerCoreBase::statistical_mode );
 			}
 
 			m_ViewerCore->getUICore()->refreshUI();
-
 		}
 
-		physicalCoordsChanged( m_CurrentFunctionalImage->physicalCoords );
+		physicalCoordsChanged( m_CurrentFunctionalImage->getImageProperties().physicalCoords );
 	}
 
 }
@@ -152,30 +146,31 @@ bool isis::viewer::plugin::CorrelationPlotterDialog::createCorrelationMap()
 			isis::data::Image corrMap ( ch );
 			corrMap.setPropertyAs<std::string>( "source", "correlation_map" );
 
-			m_CurrentCorrelationMap = m_ViewerCore->addImage( corrMap, ImageHolder::z_map );
-			m_CurrentCorrelationMap->lut = std::string( "standard_zmap" );
-			m_CurrentCorrelationMap->minMax.first = util::Value<MapImageType>( -1 );
-			m_CurrentCorrelationMap->minMax.second = util::Value<MapImageType>( 1 );
-			m_CurrentCorrelationMap->internMinMax.first = util::Value<MapImageType>( 0 );
-			m_CurrentCorrelationMap->internMinMax.second = util::Value<MapImageType>( 255 );
-			m_CurrentCorrelationMap->scalingToInternalType.first = util::Value<MapImageType>(128);
-			m_CurrentCorrelationMap->scalingToInternalType.second = util::Value<MapImageType>(127);
-			m_CurrentCorrelationMap->extent = m_CurrentCorrelationMap->minMax.second->as<double>() -  m_CurrentCorrelationMap->minMax.first->as<double>();
-			isis::data::ValuePtr<InternalFunctionalImageType> imagePtr( ( InternalFunctionalImageType * )
+			m_CurrentCorrelationMap = m_ViewerCore->addImage( corrMap, ImageHolder::statistical_image );
+			m_CurrentCorrelationMap->getImageProperties().lut = std::string( "standard_zmap" );
+			m_CurrentCorrelationMap->getImageProperties().minMax.first = util::Value<MapImageType>( -1 );
+			m_CurrentCorrelationMap->getImageProperties().minMax.second = util::Value<MapImageType>( 1 );
+			m_CurrentCorrelationMap->getImageProperties().internMinMax.first = util::Value<MapImageType>( 0 );
+			m_CurrentCorrelationMap->getImageProperties().internMinMax.second = util::Value<MapImageType>( 255 );
+			m_CurrentCorrelationMap->getImageProperties().scalingToInternalType.first = util::Value<MapImageType>( 128 );
+			m_CurrentCorrelationMap->getImageProperties().scalingToInternalType.second = util::Value<MapImageType>( 127 );
+			m_CurrentCorrelationMap->getImageProperties().extent = m_CurrentCorrelationMap->getImageProperties().minMax.second->as<double>() -  m_CurrentCorrelationMap->getImageProperties().minMax.first->as<double>();
+			isis::data::ValueArray<InternalFunctionalImageType> imagePtr( ( InternalFunctionalImageType * )
 					calloc( m_CurrentFunctionalImage->getISISImage()->getVolume(), sizeof( InternalFunctionalImageType ) ), m_CurrentFunctionalImage->getISISImage()->getVolume() );
 			m_CurrentFunctionalImage->getISISImage()->copyToMem<InternalFunctionalImageType>( &imagePtr[0], m_CurrentFunctionalImage->getISISImage()->getVolume() );
 			m_InternalChunk.reset( new isis::data::Chunk( imagePtr, size[0], size[1], size[2], size[3] ) );
 			m_CurrentCorrelationMap->updateColorMap();
-			util::ivector4 voxelCoords = m_CurrentFunctionalImage->voxelCoords;
-			util::fvector4 physicalCoords = m_CurrentFunctionalImage->physicalCoords;
+			util::ivector4 voxelCoords = m_CurrentFunctionalImage->getImageProperties().voxelCoords;
+			util::fvector4 physicalCoords = m_CurrentFunctionalImage->getImageProperties().physicalCoords;
 			voxelCoords[3] = 0;
 			physicalCoords[3] = 0;
-			m_CurrentCorrelationMap->voxelCoords = voxelCoords;
-			m_CurrentCorrelationMap->physicalCoords = physicalCoords;
+			m_CurrentCorrelationMap->getImageProperties().voxelCoords = voxelCoords;
+			m_CurrentCorrelationMap->getImageProperties().physicalCoords = physicalCoords;
 			m_CurrentVoxelPos = voxelCoords;
 			return true;
 		}
 	}
+
 	return false;
 }
 
@@ -198,7 +193,7 @@ void isis::viewer::plugin::CorrelationPlotterDialog::calculateCorrelation( bool 
 	const double s_x = std::sqrt( ( 1 / float( n - 1 ) ) * ( sum_quad_x - n * _x * _x ) );
 
 	if( !all ) {
-		#pragma omp parallel for
+#pragma omp parallel for
 
 		for( unsigned int z = 0; z < m_CurrentFunctionalImage->getImageSize()[2]; z++ ) {
 			for( unsigned int y = 0; y < m_CurrentFunctionalImage->getImageSize()[1]; y++ ) {
@@ -206,7 +201,7 @@ void isis::viewer::plugin::CorrelationPlotterDialog::calculateCorrelation( bool 
 			}
 		}
 
-		#pragma omp parallel for
+#pragma omp parallel for
 
 		for( unsigned int y = 0; y < m_CurrentFunctionalImage->getImageSize()[1]; y++ ) {
 			for( unsigned int x = 0; x < m_CurrentFunctionalImage->getImageSize()[0]; x++ ) {
@@ -214,7 +209,7 @@ void isis::viewer::plugin::CorrelationPlotterDialog::calculateCorrelation( bool 
 			}
 		}
 
-		#pragma omp parallel for
+#pragma omp parallel for
 
 		for( unsigned int z = 0; z < m_CurrentFunctionalImage->getImageSize()[2]; z++ ) {
 			for( unsigned int x = 0; x < m_CurrentFunctionalImage->getImageSize()[0]; x++ ) {
@@ -222,19 +217,21 @@ void isis::viewer::plugin::CorrelationPlotterDialog::calculateCorrelation( bool 
 			}
 		}
 	} else {
-		
+
 
 		for( unsigned int z = 0; z < m_CurrentFunctionalImage->getImageSize()[2]; z++ ) {
 			for( unsigned int y = 0; y < m_CurrentFunctionalImage->getImageSize()[1]; y++ ) {
-				#pragma omp parallel for
+#pragma omp parallel for
+
 				for( unsigned int x = 0; x < m_CurrentFunctionalImage->getImageSize()[0]; x++ ) {
 					_internCalculateCorrelation( util::ivector4( x, y, z ), s_x, _x, vx, n, vol );
 				}
 			}
 		}
+
 		m_CurrentCorrelationMap->updateHistogram();;
 	}
-	
+
 
 }
 
@@ -258,11 +255,11 @@ void isis::viewer::plugin::CorrelationPlotterDialog::_internCalculateCorrelation
 	const double s_y = std::sqrt( ( 1 / float( n - 1 ) ) * ( sum_quad_y - n * _y * _y ) );
 
 	double r_xy = s_xy / ( s_x * s_y );
-	
+
 	if( !std::isnan( r_xy ) ) {
-		m_CurrentCorrelationMap->setTypedVoxel<MapImageType>(vec[0], vec[1], vec[2], 0, r_xy );
+		m_CurrentCorrelationMap->setTypedVoxel<MapImageType>( vec[0], vec[1], vec[2], 0, r_xy );
 	} else {
-		m_CurrentCorrelationMap->setTypedVoxel<MapImageType>(vec[0], vec[1], vec[2], 0, 0 );
+		m_CurrentCorrelationMap->setTypedVoxel<MapImageType>( vec[0], vec[1], vec[2], 0, 0 );
 	}
 
 }

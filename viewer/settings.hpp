@@ -16,29 +16,53 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * Author: Erik Türke, tuerke@cbs.mpg.de
+ * Author: Erik Tuerke, tuerke@cbs.mpg.de
  *
- * QMemoryHandler.cpp
+ * settings.hpp
  *
  * Description:
  *
- *  Created on: Aug 12, 2011
+ *  Created on: Mar 14, 2012
  *      Author: tuerke
  ******************************************************************/
-#include "QMemoryHandler.hpp"
 
+#ifndef VAST_DEFAULT_SETTINGS_HPP
+#define VAST_DEFAULT_SETTINGS_HPP
+
+#include <CoreUtils/propmap.hpp>
+#include <QSettings>
+#include "fileinformation.hpp"
 
 namespace isis
 {
 namespace viewer
 {
 
-QMemoryHandler::QMemoryHandler( QViewerCore *core )
-	: m_ViewerCore( core )
+class Settings : public util::PropertyMap
 {
+public:
+	Settings();
+	void initializeWithDefaultSettings();
+	void save();
+	void load();
 
+	QSettings *getQSettings() { return m_QSettings; }
+	const QSettings *getQSettings() const { return m_QSettings; }
+
+	FileInformationMap &getFavoriteFiles() { return m_FavFiles; }
+	FileInformationMap &getRecentFiles() { return m_RecentFiles; }
+
+private:
+	QSettings *m_QSettings;
+	FileInformationMap m_RecentFiles;
+	FileInformationMap m_FavFiles;
+};
+
+
+
+}
 }
 
 
-}
-} // end namespace
+
+#endif //VAST_DEFAULT_SETTINGS_HPP

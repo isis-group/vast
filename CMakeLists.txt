@@ -9,6 +9,7 @@ PROJECT(vast)
 # set install infix for plugin installation path
 ############################################################
 set(VAST_PLUGIN_INFIX lib/vast/plugins)
+set(VAST_WIDGET_INFIX lib/vast/widgets)
 set(VAST_DOC_INFIX share/vast/doc/html)
 
 include_directories(widgets)
@@ -16,7 +17,6 @@ include_directories(widgets)
 # collecting files
 file (GLOB VIEWER_FILES_CPP  viewer/*.cpp)
 file (GLOB WIDGET_FILES_CPP widgets/*.cpp )
-file (GLOB QWIDGET_FILES_CPP QImageWidget/*.cpp )
 file (GLOB UI_FILES forms/*.ui)
 file (GLOB RESOURCE_FILES resources/*.qrc)
 file (GLOB INTERNAL_FILES_CPP viewer/internal/*.cpp )
@@ -40,14 +40,11 @@ set(VIEWER_FILES_HPP
 	widgets/aboutDialog.hpp
 )
 
-set(WIDGET_FILES_HPP
-	QImageWidget/QImageWidgetImplementation.hpp)
-
 ##########################################################
 # set viewer version number
 ##########################################################
 set(VAST_VERSION_MAJOR "0")
-set(VAST_VERSION_MINOR "3")
+set(VAST_VERSION_MINOR "4")
 set(VAST_VERSION_PATCH "0")
 
 add_definitions(-D_VAST_VERSION_MAJOR=${VAST_VERSION_MAJOR})
@@ -58,7 +55,7 @@ add_definitions(-D_VAST_VERSION_PATCH=${VAST_VERSION_PATCH})
 ###########################################################
 # documentation
 ###########################################################
-option(VAST_DOCUMENTATION "Build the documentation for vast" OFF)
+option(${CMAKE_PROJECT_NAME}_DOCUMENTATION "Build the documentation for vast" OFF)
 
 IF(VAST_DOCUMENTATION)
 	add_subdirectory(documentation)	
@@ -74,31 +71,31 @@ SET(ISIS_DIR /usr/share/isis/cmake CACHE PATH
     "The directory where the isis cmake configuration script is located.")
 find_package(ISIS REQUIRED)
 
-option(VAST_RUNTIME_LOG "Toggles the vast runtime logging" ON)
-option(VAST_DEBUG_LOG "Toggles the vast debug logging" OFF)
-option(VAST_ENABLE_DEV "Toggles vast development logging" ON)
+option(${CMAKE_PROJECT_NAME}_RUNTIME_LOG "Toggles the vast runtime logging" ON)
+option(${CMAKE_PROJECT_NAME}_DEBUG_LOG "Toggles the vast debug logging" OFF)
+option(${CMAKE_PROJECT_NAME}_ENABLE_DEV "Toggles vast development logging" ON)
 
 # we use the log definitions of the core
-IF(VAST_RUNTIME_LOG)
+IF(${CMAKE_PROJECT_NAME}_RUNTIME_LOG)
 	ADD_DEFINITIONS(-D_ENABLE_LOG=1)
-ELSE(VAST_RUNTIME_LOG)
+ELSE(${CMAKE_PROJECT_NAME}_RUNTIME_LOG)
 	ADD_DEFINITIONS(-D_ENABLE_LOG=0)
-ENDIF(VAST_RUNTIME_LOG)
+ENDIF(${CMAKE_PROJECT_NAME}_RUNTIME_LOG)
 
 # enable DEBUG_LOG
-IF(VAST_DEBUG_LOG)
+IF(${CMAKE_PROJECT_NAME}_DEBUG_LOG)
 	ADD_DEFINITIONS(-D_ENABLE_DEBUG=1)
 	MESSAGE(STATUS "Debug code enabled, this will will have a big impact on the performance")
-ELSE(VAST_DEBUG_LOG)
+ELSE(${CMAKE_PROJECT_NAME}_DEBUG_LOG)
 	ADD_DEFINITIONS(-D_ENABLE_DEBUG=0)
-ENDIF(VAST_DEBUG_LOG)
+ENDIF(${CMAKE_PROJECT_NAME}_DEBUG_LOG)
 
-IF(VAST_ENABLE_DEV)
+IF(${CMAKE_PROJECT_NAME}_ENABLE_DEV)
 	add_definitions(-D_ENABLE_DEV=1)
-else(VAST_ENABLE_DEV)
+else(${CMAKE_PROJECT_NAME}_ENABLE_DEV)
 	add_definitions(-D_ENABLE_DEV=0)
 	message(WARNING "vast development logging was turned off. Creating of log will not be possible!")
-endif(VAST_ENABLE_DEV)
+endif(${CMAKE_PROJECT_NAME}_ENABLE_DEV)
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR} ${ISIS_INCLUDE_DIRS})
 
@@ -109,14 +106,12 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR} ${ISIS_INCLUDE_DIRS})
 FIND_PACKAGE(Qt4 COMPONENTS QtCore QtGui QtWebKit REQUIRED)
 
 set(QT_USE_QTUITOOLS TRUE)
-set(QT_USE_QTOPENGL TRUE)
-set(QT_USE_OPENGL TRUE )
 
 INCLUDE(${QT_USE_FILE})
 
 QT4_ADD_RESOURCES(vast_rcc_files ${RESOURCE_FILES})
 
-qt4_wrap_cpp(vast_moc_files ${VIEWER_FILES_HPP} ${WIDGET_FILES_HPP})
+qt4_wrap_cpp(vast_moc_files ${VIEWER_FILES_HPP} )
 QT4_WRAP_UI(vast_UIS_H ${UI_FILES})
 
 #for some reasons this is necessary on lenny 64 bit distributions
@@ -133,7 +128,7 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/QImageWidget)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/viewer)
 
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ftemplate-depth-100 -Wextra -Wall -Wfatal-errors"  )
-SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}  -Wextra -Wall -Wfatal-errors -Wall" )
+SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}  -Wextra -Wall -Wfatal-errors" )
 
 
 ############################################################
@@ -171,9 +166,10 @@ set_source_files_properties( "viewer/pluginloader.cpp" PROPERTIES COMPILE_FLAGS
 	"-D_VAST_PLUGIN_PATH=\\\"${CMAKE_INSTALL_PREFIX}/${VAST_PLUGIN_INFIX}\\\" -DDL_SUFFIX=\\\"${CMAKE_SHARED_LIBRARY_SUFFIX}\\\" -DDL_PREFIX=\\\"${CMAKE_SHARED_LIBRARY_PREFIX}\\\""
 )
 
-############################################################
-# set the documentation path
-############################################################
+set_source_files_properties( "viewer/widgetloader.cpp" PROPERTIES COMPILE_FLAGS
+	"-D_VAST_WIDGET_PATH=\\\"${CMAKE_INSTALL_PREFIX}/${VAST_WIDGET_INFIX}\\\" -DDL_SUFFIX=\\\"${CMAKE_SHARED_LIBRARY_SUFFIX}\\\" -DDL_PREFIX=\\\"${CMAKE_SHARED_LIBRARY_PREFIX}\\\""
+)
+
 
 ###########################################################
 # CPack config
@@ -192,16 +188,21 @@ SET(CPACK_PACKAGE_FILE_NAME ${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION_MAJOR}
 INCLUDE(CPack)
 
 ###########################################################
-# OPenMP config
+# OpenMP config
 ###########################################################
-option(VAST_OPENMP "Toggles the omp support for vast." OFF)
+option(${CMAKE_PROJECT_NAME}_OPENMP "Toggles the omp support for vast." OFF)
 
 IF(VAST_OPENMP)
 	SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fopenmp ")
 	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fopenmp ")
 ENDIF(VAST_OPENMP)
 
-add_executable(vast main.cpp ${QWIDGET_FILES_CPP} ${WIDGET_FILES_CPP} ${VIEWER_FILES_CPP} ${WIDGET_FILES_CPP} ${vast_UIS_H} ${vast_moc_files} ${vast_rcc_files} ${INTERNAL_FILES_CPP})
+
+###########################################################
+# Build stuff
+###########################################################
+
+add_executable(vast main.cpp ${VIEWER_FILES_CPP} ${WIDGET_FILES_CPP} ${vast_UIS_H} ${vast_moc_files} ${vast_rcc_files} ${INTERNAL_FILES_CPP})
 find_library(isisqt4_LIBRARY "isisAdapter_qt4")
 
 message(STATUS "QT libraries: ${QT_LIBRARIES} ")
@@ -217,6 +218,9 @@ set(NEEDED_LIBS
 
 #add the plugin directory
 add_subdirectory(plugins)
+
+#add the view_widgets directory
+add_subdirectory(view_widgets)
 
 target_link_libraries(vast ${NEEDED_LIBS})
 

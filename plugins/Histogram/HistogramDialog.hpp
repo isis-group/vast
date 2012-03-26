@@ -59,7 +59,7 @@ private:
 	QwtPlot *m_Plotter;
 	QwtPlotGrid *m_Grid;
 	QwtPlotZoomer *m_Zoomer;
-    unsigned short m_length;
+	unsigned short m_length;
 
 
 

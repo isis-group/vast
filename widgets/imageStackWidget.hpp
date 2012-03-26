@@ -8,7 +8,7 @@ namespace isis
 {
 namespace viewer
 {
-namespace widget
+namespace ui
 {
 
 
@@ -34,22 +34,32 @@ public:
 
 	Ui::imageStackWidget &getInterface() { return m_Interface; }
 
-	void synchronize();
+
 
 	friend class ImageStack;
 
 public Q_SLOTS:
 	void itemClicked( QListWidgetItem * );
+	void itemChanged( QListWidgetItem * );
 	void itemSelected( QListWidgetItem * );
 	void closeImage();
 	void distributeImages();
 	void closeAllImages();
+	void synchronize();
+	void moveUp();
+	void moveDown();
+	void viewAllImagesClicked();
 
 private:
 	QViewerCore *m_ViewerCore;
 	Ui::imageStackWidget m_Interface;
 	ImageStack *m_ImageStack;
-	void _closeImage( QString );
+
+	bool checkEnsembleCanUp( const WidgetEnsemble::Pointer );
+	bool checkEnsembleCanDown( const WidgetEnsemble::Pointer );
+	const WidgetEnsemble::Pointer getEnsembleFromItem( const QListWidgetItem * );
+
+	WidgetEnsemble::Pointer m_CurrentSelectedEnsemble;
 
 };
 

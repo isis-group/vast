@@ -31,7 +31,7 @@
 #include "DataStorage/io_factory.hpp"
 #include "uicore.hpp"
 #include <qviewercore.hpp>
-#include "internal/fileinformation.hpp"
+#include "fileinformation.hpp"
 #include "scalingWidget.hpp"
 
 
@@ -41,23 +41,23 @@ namespace viewer
 {
 
 MainWindow::MainWindow( QViewerCore *core ) :
-	preferencesDialog( new widget::PreferencesDialog( this, core ) ),
-	loggingDialog( new widget::LoggingDialog( this, core ) ),
-	fileDialog( new widget::FileDialog( this, core ) ),
-	startWidget( new widget::StartWidget( this, core ) ),
-	scalingWidget( new widget::ScalingWidget( this, core ) ),
-	keyCommandsdialog( new widget::KeyCommandsDialog( this ) ),
-	helpDialog( new widget::HelpDialog( this ) ),
-	aboutDialog( new widget::AboutDialog( this, core ) ),
+	preferencesDialog( new ui::PreferencesDialog( this, core ) ),
+	loggingDialog( new ui::LoggingDialog( this, core ) ),
+	fileDialog( new ui::FileDialog( this, core ) ),
+	startWidget( new ui::StartWidget( this, core ) ),
+	scalingWidget( new ui::ScalingWidget( this, core ) ),
+	keyCommandsdialog( new ui::KeyCommandsDialog( this ) ),
+	helpDialog( new ui::HelpDialog( this ) ),
+	aboutDialog( new ui::AboutDialog( this, core ) ),
 	m_ViewerCore( core ),
 	m_Toolbar( new QToolBar( this ) ),
 	m_RadiusSpin( new QSpinBox( this ) ),
 	m_StatusTextLabel( new QLabel( this ) ),
-	m_StatusMovieLabel( new QLabel(this ) ),
+	m_StatusMovieLabel( new QLabel( this ) ),
 	m_StatusMovie( new QMovie( this ) )
 {
 	m_Interface.setupUi( this );
-	setWindowIcon( QIcon( m_ViewerCore->getOptionMap()->getPropertyAs<std::string>("vastSymbol").c_str() ) );
+	setWindowIcon( QIcon( m_ViewerCore->getSettings()->getPropertyAs<std::string>( "vastSymbol" ).c_str() ) );
 	m_ActionReset_Scaling = new QAction( this );
 	m_ActionAuto_Scaling = new QAction( this );
 	m_ActionReset_Scaling->setShortcut( QKeySequence( tr( "R, S" ) ) );
@@ -112,7 +112,7 @@ MainWindow::MainWindow( QViewerCore *core ) :
 	connect( m_Interface.actionKey_Commands, SIGNAL( triggered() ), this, SLOT( showKeyCommandDialog() ) );
 	connect( m_Interface.actionCreate_Screenshot, SIGNAL( triggered() ), this, SLOT( createScreenshot() ) );
 	connect( m_Interface.actionHelp, SIGNAL( triggered() ), helpDialog, SLOT( show() ) );
-	connect( m_Interface.actionAbout_Dialog, SIGNAL( triggered()), aboutDialog, SLOT( show() ) );
+	connect( m_Interface.actionAbout_Dialog, SIGNAL( triggered() ), aboutDialog, SLOT( show() ) );
 	connect( m_Interface.actionLogging, SIGNAL( triggered() ), this, SLOT( showLoggingDialog() ) );
 	connect( m_Interface.actionAxial_View, SIGNAL( triggered( bool ) ), this, SLOT( toggleAxialView( bool ) ) );
 	connect( m_Interface.actionSagittal_View, SIGNAL( triggered( bool ) ), this, SLOT( toggleSagittalView( bool ) ) );
@@ -140,17 +140,17 @@ MainWindow::MainWindow( QViewerCore *core ) :
 	m_RadiusSpin->setMinimum( 0 );
 	m_RadiusSpin->setMaximum( 500 );
 	m_RadiusSpin->setToolTip( "Search radius for finding local minimum/maximum. If radius is 0 it will search the entire image." );
-	m_Interface.statusbar->addPermanentWidget( m_ViewerCore->getProgressFeedback()->getProgressBar() );
 
-	m_Interface.statusbar->insertPermanentWidget(0, m_StatusTextLabel );
-	m_Interface.statusbar->insertPermanentWidget(1, m_StatusMovieLabel );
+	m_Interface.statusbar->addPermanentWidget( m_ViewerCore->getProgressFeedback()->getProgressBar() );
+	m_Interface.statusbar->addPermanentWidget( m_StatusTextLabel );
+	m_Interface.statusbar->addPermanentWidget( m_StatusMovieLabel );
 	m_StatusMovie->setFileName( ":/common/loading.gif" );
-	m_StatusMovie->setScaledSize(QSize( m_Interface.statusbar->height(), m_Interface.statusbar->height() ) );
+	m_StatusMovie->setScaledSize( QSize( m_Interface.statusbar->height(), m_Interface.statusbar->height() ) );
 	m_StatusMovieLabel->setMovie( m_StatusMovie );
 	m_StatusMovieLabel->setVisible( false );
-	m_Interface.statusbar->setVisible(false);
-	
-	
+	m_Interface.statusbar->setVisible( false );
+
+
 
 	scalingWidget->setVisible( false );
 	loadSettings();
@@ -163,31 +163,35 @@ void MainWindow::toggleLoadingIcon ( bool start, const QString &text )
 	if( text.length() ) {
 		m_ViewerCore->receiveMessage( text.toStdString() );
 	}
-	m_StatusMovieLabel->setVisible(start);
+
+	m_StatusMovieLabel->setVisible( start );
 	m_Interface.statusbar->setVisible( start );
+
 	if( start ) {
 		m_StatusMovie->start();
 		m_StatusTextLabel->setText( text );
 	} else {
 		m_StatusMovie->stop();
 	}
-	QApplication::processEvents();	
+
+	QApplication::processEvents();
 }
 
 void MainWindow::createScreenshot()
 {
 	if( m_ViewerCore->hasImage() ) {
-		
+
 		QString fileName = QFileDialog::getSaveFileName( this, tr( "Save Screenshot" ),
 						   m_ViewerCore->getCurrentPath().c_str(),
 						   tr( "Images (*.png *.xpm *.jpg)" ) );
 
 		if( fileName.size() ) {
-			toggleLoadingIcon(true, QString("Creating and saving screenshot to ") + fileName );
-			m_ViewerCore->getUICore()->getScreenshot().save( fileName, 0, m_ViewerCore->getOptionMap()->getPropertyAs<uint16_t>( "screenshotQuality" ) );
+			toggleLoadingIcon( true, QString( "Creating and saving screenshot to " ) + fileName );
+			m_ViewerCore->getUICore()->getScreenshot().save( fileName, 0, m_ViewerCore->getSettings()->getPropertyAs<uint16_t>( "screenshotQuality" ) );
 			m_ViewerCore->setCurrentPath( fileName.toStdString() );
 		}
-		toggleLoadingIcon(false);
+
+		toggleLoadingIcon( false );
 	}
 
 
@@ -212,26 +216,26 @@ void MainWindow::toggleSagittalView( bool visible )
 
 void MainWindow::loadSettings()
 {
-	m_ViewerCore->getSettings()->beginGroup( "MainWindow" );
-	move( m_ViewerCore->getSettings()->value( "pos", QPoint( 0, 0 ) ).toPoint() );
+	m_ViewerCore->getSettings()->getQSettings()->beginGroup( "MainWindow" );
+	move( m_ViewerCore->getSettings()->getQSettings()->value( "pos", QPoint( 0, 0 ) ).toPoint() );
 
-	if( m_ViewerCore->getSettings()->value( "maximized", false ).toBool() ) {
+	if( m_ViewerCore->getSettings()->getQSettings()->value( "maximized", false ).toBool() ) {
 		showMaximized();
 	}
 
-	resize( m_ViewerCore->getSettings()->value( "size", QSize( 900, 900 ) ).toSize() );
-	m_ViewerCore->getSettings()->endGroup();
+	resize( m_ViewerCore->getSettings()->getQSettings()->value( "size", QSize( 900, 900 ) ).toSize() );
+	m_ViewerCore->getSettings()->getQSettings()->endGroup();
 }
 
 void MainWindow::saveSettings()
 {
 	toggleLoadingIcon( true );
-	m_ViewerCore->getSettings()->beginGroup( "MainWindow" );
-	m_ViewerCore->getSettings()->setValue( "size", size() );
-	m_ViewerCore->getSettings()->setValue( "maximized", isMaximized() );
-	m_ViewerCore->getSettings()->setValue( "pos", pos() );
-	m_ViewerCore->getSettings()->endGroup();
-	m_ViewerCore->getSettings()->sync();
+	m_ViewerCore->getSettings()->getQSettings()->beginGroup( "MainWindow" );
+	m_ViewerCore->getSettings()->getQSettings()->setValue( "size", size() );
+	m_ViewerCore->getSettings()->getQSettings()->setValue( "maximized", isMaximized() );
+	m_ViewerCore->getSettings()->getQSettings()->setValue( "pos", pos() );
+	m_ViewerCore->getSettings()->getQSettings()->endGroup();
+	m_ViewerCore->getSettings()->getQSettings()->sync();
 	toggleLoadingIcon( false );
 }
 
@@ -250,9 +254,9 @@ void MainWindow::showKeyCommandDialog()
 void MainWindow::toggleZMapMode( bool zmap )
 {
 	if( zmap ) {
-		m_ViewerCore->setMode( ViewerCoreBase::zmap );
+		m_ViewerCore->setMode( ViewerCoreBase::statistical_mode );
 	} else {
-		m_ViewerCore->setMode( ViewerCoreBase::standard );
+		m_ViewerCore->setMode( ViewerCoreBase::default_mode );
 	}
 
 	m_ViewerCore->getUICore()->refreshUI();
@@ -262,10 +266,10 @@ void MainWindow::toggleZMapMode( bool zmap )
 
 void MainWindow::resetScaling()
 {
-	BOOST_FOREACH( DataContainer::reference image, m_ViewerCore->getDataContainer() ) {
-		image.second->scaling = 1.0;
-		image.second->offset = 0.0;
-		image.second->updateColorMap();
+	BOOST_FOREACH( ImageHolder::Vector::const_reference image, m_ViewerCore->getImageList() ) {
+		image->getImageProperties().scaling = 1.0;
+		image->getImageProperties().offset = 0.0;
+		image->updateColorMap();
 	}
 	m_ViewerCore->updateScene();
 	scalingWidget->synchronize();
@@ -274,7 +278,7 @@ void MainWindow::resetScaling()
 
 void MainWindow::propagateZooming( bool propagate )
 {
-	m_ViewerCore->getOptionMap()->setPropertyAs<bool>( "propagateZooming", propagate );
+	m_ViewerCore->getSettings()->setPropertyAs<bool>( "propagateZooming", propagate );
 	m_ViewerCore->updateScene();
 }
 
@@ -288,21 +292,21 @@ void MainWindow::showLoggingDialog()
 
 void MainWindow::ignoreOrientation( bool ignore )
 {
-	BOOST_FOREACH( DataContainer::reference image, m_ViewerCore->getDataContainer() ) {
+	BOOST_FOREACH( ImageHolder::Vector::const_reference image, m_ViewerCore->getImageList() ) {
 		if( ignore ) {
-			setOrientationToIdentity( *image.second->getISISImage() );
-			checkForCaCp( image.second );
-			image.second->updateOrientation();
+			setOrientationToIdentity( *image->getISISImage() );
+			checkForCaCp( image );
+			image->updateOrientation();
 		} else {
-			image.second->getISISImage()->setPropertyAs<util::fvector4>( "rowVec", image.second->getPropMap().getPropertyAs<util::fvector4>( "originalRowVec" ) );
-			image.second->getISISImage()->setPropertyAs<util::fvector4>( "columnVec", image.second->getPropMap().getPropertyAs<util::fvector4>( "originalColumnVec" ) );
-			image.second->getISISImage()->setPropertyAs<util::fvector4>( "sliceVec", image.second->getPropMap().getPropertyAs<util::fvector4>( "originalSliceVec" ) );
-			image.second->getISISImage()->setPropertyAs<util::fvector4>( "indexOrigin", image.second->getPropMap().getPropertyAs<util::fvector4>( "originalIndexOrigin" ) );
-			image.second->updateOrientation();
-			checkForCaCp( image.second );
+			image->getISISImage()->setPropertyAs<util::fvector4>( "rowVec", image->getPropMap().getPropertyAs<util::fvector4>( "originalRowVec" ) );
+			image->getISISImage()->setPropertyAs<util::fvector4>( "columnVec", image->getPropMap().getPropertyAs<util::fvector4>( "originalColumnVec" ) );
+			image->getISISImage()->setPropertyAs<util::fvector4>( "sliceVec", image->getPropMap().getPropertyAs<util::fvector4>( "originalSliceVec" ) );
+			image->getISISImage()->setPropertyAs<util::fvector4>( "indexOrigin", image->getPropMap().getPropertyAs<util::fvector4>( "originalIndexOrigin" ) );
+			image->updateOrientation();
+			checkForCaCp( image );
 		}
 
-		image.second->physicalCoords = image.second->getISISImage()->getPhysicalCoordsFromIndex( image.second->voxelCoords );
+		image->getImageProperties().physicalCoords = image->getISISImage()->getPhysicalCoordsFromIndex( image->getImageProperties().voxelCoords );
 	}
 
 	m_ViewerCore->getUICore()->refreshUI();
@@ -321,12 +325,12 @@ void MainWindow::showScalingOption()
 
 void MainWindow::spinRadiusChanged( int radius )
 {
-	m_ViewerCore->getOptionMap()->setPropertyAs<uint16_t>( "minMaxSearchRadius", radius );
+	m_ViewerCore->getSettings()->setPropertyAs<uint16_t>( "minMaxSearchRadius", radius );
 }
 
 void MainWindow::openImage()
 {
-	fileDialog->setMode( isis::viewer::widget::FileDialog::OPEN_FILE );
+	fileDialog->setMode( isis::viewer::ui::FileDialog::OPEN_FILE );
 	fileDialog->show();
 }
 
@@ -341,7 +345,7 @@ void MainWindow::saveImage()
 			QMessageBox msgBox;
 			msgBox.setIcon( QMessageBox::Information );
 			std::stringstream text;
-			text << "This will overwrite" << m_ViewerCore->getCurrentImage()->getFileNames().front() << " !";
+			text << "This will overwrite" << m_ViewerCore->getCurrentImage()->getImageProperties().fileName << " !";
 			msgBox.setText( text.str().c_str() );
 			msgBox.setInformativeText( "Do you want to proceed?" );
 			std::stringstream detailedText;
@@ -358,8 +362,8 @@ void MainWindow::saveImage()
 				return;
 				break;
 			case QMessageBox::Yes:
-				toggleLoadingIcon( true, QString( "Saving image to ") + m_ViewerCore->getCurrentImage()->getFileNames().front().c_str() );
-				isis::data::IOFactory::write( *m_ViewerCore->getCurrentImage()->getISISImage(), m_ViewerCore->getCurrentImage()->getFileNames().front(), "", "" );
+				toggleLoadingIcon( true, QString( "Saving image to " ) + m_ViewerCore->getCurrentImage()->getImageProperties().fileName.c_str() );
+				isis::data::IOFactory::write( *m_ViewerCore->getCurrentImage()->getISISImage(), m_ViewerCore->getCurrentImage()->getImageProperties().fileName, "", "" );
 				toggleLoadingIcon( false );
 				break;
 			}
@@ -372,11 +376,11 @@ void MainWindow::saveAllImages()
 	if( m_ViewerCore->hasImage() ) {
 		std::list<util::slist> changedAttributesList;
 		util::slist fileNames;
-		BOOST_FOREACH( DataContainer::const_reference image, m_ViewerCore->getDataContainer() ) {
-			fileNames.push_back( image.second->getFileNames().front() );
+		BOOST_FOREACH( ImageHolder::Vector::const_reference image, m_ViewerCore->getImageList() ) {
+			fileNames.push_back( image->getImageProperties().fileName );
 
-			if( image.second->getPropMap().getPropertyAs<util::slist>( "changedAttributes" ).size() ) {
-				changedAttributesList.push_back( image.second->getPropMap().getPropertyAs<util::slist>( "changedAttributes" ) );
+			if( image->getPropMap().getPropertyAs<util::slist>( "changedAttributes" ).size() ) {
+				changedAttributesList.push_back( image->getPropMap().getPropertyAs<util::slist>( "changedAttributes" ) );
 			}
 		}
 
@@ -392,10 +396,10 @@ void MainWindow::saveAllImages()
 			msgBox.setInformativeText( "Do you want to proceed?" );
 			std::stringstream detailedText;
 			detailedText << "Changed attributes: " << std::endl;
-			BOOST_FOREACH( DataContainer::const_reference image, m_ViewerCore->getDataContainer() ) {
-				if( image.second->getPropMap().getPropertyAs<util::slist>( "changedAttributes" ).size() ) {
-					detailedText << image.second->getFileNames().front() << " : " << std::endl;
-					BOOST_FOREACH( util::slist::const_reference changedAttribute, image.second->getPropMap().getPropertyAs<util::slist>( "changedAttributes" ) ) {
+			BOOST_FOREACH( ImageHolder::Vector::const_reference image, m_ViewerCore->getImageList() ) {
+				if( image->getPropMap().getPropertyAs<util::slist>( "changedAttributes" ).size() ) {
+					detailedText << image->getImageProperties().fileName << " : " << std::endl;
+					BOOST_FOREACH( util::slist::const_reference changedAttribute, image->getPropMap().getPropertyAs<util::slist>( "changedAttributes" ) ) {
 						detailedText << changedAttribute << std::endl;
 					}
 				}
@@ -409,11 +413,11 @@ void MainWindow::saveAllImages()
 				return;
 				break;
 			case QMessageBox::Yes:
-				BOOST_FOREACH( DataContainer::const_reference image, m_ViewerCore->getDataContainer() ) {
-					toggleLoadingIcon( true, QString( "Saving image to ") + image.second->getFileNames().front().c_str() );
-					isis::data::IOFactory::write( *image.second->getISISImage(), image.second->getFileNames().front(), "", "" );
+				BOOST_FOREACH( ImageHolder::Vector::const_reference image, m_ViewerCore->getImageList() ) {
+					toggleLoadingIcon( true, QString( "Saving image to " ) + image->getImageProperties().fileName.c_str() );
+					isis::data::IOFactory::write( *image->getISISImage(), image->getImageProperties().fileName, "", "" );
 				}
-                toggleLoadingIcon(false);
+				toggleLoadingIcon( false );
 				break;
 			}
 
@@ -438,10 +442,10 @@ void MainWindow::saveImageAs()
 						   tr( fileFormats.str().c_str() ) );
 
 		if( filename.size() ) {
-			toggleLoadingIcon( true, QString( "Saving image to ") + filename );
+			toggleLoadingIcon( true, QString( "Saving image to " ) + filename );
 			isis::data::IOFactory::write( *m_ViewerCore->getCurrentImage()->getISISImage(), filename.toStdString(), "", "" );
 			m_ViewerCore->setCurrentPath( filename.toStdString() );
-			toggleLoadingIcon(false);
+			toggleLoadingIcon( false );
 		}
 	}
 
@@ -458,7 +462,7 @@ void MainWindow::reloadPluginsToGUI()
 		getInterface().menu_Tools->addMenu( processMenu );
 
 		QSignalMapper *signalMapper = new QSignalMapper( this );
-		BOOST_FOREACH( ViewerCoreBase::PluginListType::const_reference plugin, m_ViewerCore->getPlugins() ) {
+		BOOST_FOREACH( plugin::PluginLoader::PluginListType::const_reference plugin, m_ViewerCore->getPlugins() ) {
 			std::list<std::string> sepName = isis::util::stringToList<std::string>( plugin->getName(), boost::regex( "/" ) );
 			QMenu *tmpMenu = processMenu;
 			std::list<std::string>::iterator iter = sepName.begin();
@@ -489,48 +493,51 @@ void MainWindow::reloadPluginsToGUI()
 void MainWindow::updateRecentOpenList()
 {
 	QSignalMapper *signalMapper = new QSignalMapper( this );
-	m_Interface.actionOpen_recent->setEnabled(!m_ViewerCore->getRecentFiles().empty() );
+	m_Interface.actionOpen_recent->setEnabled( !m_ViewerCore->getSettings()->getRecentFiles().empty() );
 	//first we have to remove all actions
-	BOOST_FOREACH( QList<QAction*>::const_reference action, m_Interface.actionOpen_recent->menu()->actions() )
-	{
+	BOOST_FOREACH( QList<QAction *>::const_reference action, m_Interface.actionOpen_recent->menu()->actions() ) {
 		m_Interface.actionOpen_recent->menu()->removeAction( action );
 	}
-	BOOST_FOREACH( _internal::FileInformationMap::const_reference path, m_ViewerCore->getRecentFiles() ) {
+	BOOST_FOREACH( FileInformationMap::const_reference path, m_ViewerCore->getSettings()->getRecentFiles() ) {
 		std::stringstream recentFileName;
 		recentFileName << path.first;
-        if( path.second.getImageType() == ImageHolder::z_map ) {
+
+		if( path.second.getImageType() == ImageHolder::statistical_image ) {
 			recentFileName << " (zmap)";
 		}
+
 		if( !path.second.getDialect().empty() ) {
 			recentFileName << " (Dialect: " << path.second.getDialect() <<  ")";
 		}
+
 		if( !path.second.getReadFormat().empty() ) {
 			recentFileName << " (Readformat: " << path.second.getReadFormat() << ")";
 		}
+
 		QAction *recentAction = new QAction( recentFileName.str().c_str() , this );
 		recentAction->setData( QVariant( path.first.c_str() ) );
 		signalMapper->setMapping( recentAction, recentAction->data().toString() );
-		
+
 		m_Interface.actionOpen_recent->menu()->addAction( recentAction );
-		connect( recentAction, SIGNAL( triggered()), signalMapper, SLOT( map() ) );
+		connect( recentAction, SIGNAL( triggered() ), signalMapper, SLOT( map() ) );
 	}
-	connect( signalMapper, SIGNAL( mapped(QString)), this, SLOT( openRecentPath(QString)));
+	connect( signalMapper, SIGNAL( mapped( QString ) ), this, SLOT( openRecentPath( QString ) ) );
 }
 
 void MainWindow::openRecentPath ( QString path )
 {
-	m_ViewerCore->openPath( m_ViewerCore->getRecentFiles().at(path.toStdString() ) );
+	m_ViewerCore->openFile( m_ViewerCore->getSettings()->getRecentFiles().at( path.toStdString() ) );
 }
 
 void MainWindow::refreshUI()
 {
-	m_Interface.actionShow_Labels->setChecked( m_ViewerCore->getOptionMap()->getPropertyAs<bool>( "showLabels" ) );
-	m_Interface.actionShow_Crosshair->setChecked( m_ViewerCore->getOptionMap()->getPropertyAs<bool>( "showCrosshair" ) );
+	m_Interface.actionShow_Labels->setChecked( m_ViewerCore->getSettings()->getPropertyAs<bool>( "showLabels" ) );
+	m_Interface.actionShow_Crosshair->setChecked( m_ViewerCore->getSettings()->getPropertyAs<bool>( "showCrosshair" ) );
 	m_ViewerCore->setShowLabels( m_Interface.actionShow_Labels->isChecked() );
-	m_Interface.actionPropagate_Zooming->setChecked( m_ViewerCore->getOptionMap()->getPropertyAs<bool>( "propagateZooming" ) );
-	m_RadiusSpin->setValue( m_ViewerCore->getOptionMap()->getPropertyAs<uint16_t>( "minMaxSearchRadius" ) );
+	m_Interface.actionPropagate_Zooming->setChecked( m_ViewerCore->getSettings()->getPropertyAs<bool>( "propagateZooming" ) );
+	m_RadiusSpin->setValue( m_ViewerCore->getSettings()->getPropertyAs<uint16_t>( "minMaxSearchRadius" ) );
 
-	if( m_ViewerCore->getMode() == ViewerCoreBase::zmap ) {
+	if( m_ViewerCore->getMode() == ViewerCoreBase::statistical_mode ) {
 		m_Interface.actionToggle_Zmap_Mode->setChecked( true );
 		m_Interface.actionFind_Global_Max->setVisible( true );
 		m_Interface.actionFind_Global_Min->setVisible( true );
@@ -555,6 +562,12 @@ void MainWindow::refreshUI()
 	m_Interface.actionShow_scaling_option->setEnabled( m_ViewerCore->hasImage() );
 	m_Interface.actionShow_Labels->setEnabled( m_ViewerCore->hasImage() );
 	updateRecentOpenList();
+
+	if( m_ViewerCore->getMode() == ViewerCoreBase::statistical_mode ) {
+		setWindowTitle( QString(  m_ViewerCore->getSettings()->getPropertyAs<std::string>( "signature" ).c_str() ) + QString( "(statistical mode)" ) );
+	} else  if ( m_ViewerCore->getMode() == ViewerCoreBase::default_mode ) {
+		setWindowTitle( QString(  m_ViewerCore->getSettings()->getPropertyAs<std::string>( "signature" ).c_str() ) );
+	}
 }
 
 
@@ -562,7 +575,7 @@ void MainWindow::closeEvent( QCloseEvent * )
 {
 	m_ViewerCore->close();
 	saveSettings();
-	m_ViewerCore->saveSettings();
+	m_ViewerCore->getSettings()->save();
 }
 
 
@@ -570,14 +583,18 @@ void MainWindow::findGlobalMin()
 {
 	if( m_ViewerCore->hasImage() ) {
 		const int radius = m_RadiusSpin->value();
+
 		if( m_ViewerCore->getCurrentImage()->getISISImage()->getVolume() >= 1e6 && radius == 0 ) {
-			toggleLoadingIcon(true, QString( "Searching for global min of ") + m_ViewerCore->getCurrentImage()->getFileNames().front().c_str() );
+			toggleLoadingIcon( true, QString( "Searching for global min of " ) + m_ViewerCore->getCurrentImage()->getImageProperties().fileName.c_str() );
 		}
+
 		const util::ivector4 minVoxel = operation::NativeImageOps::getGlobalMin( m_ViewerCore->getCurrentImage(),
-										m_ViewerCore->getCurrentImage()->voxelCoords,
+										m_ViewerCore->getCurrentImage()->getImageProperties().voxelCoords,
 										radius );
+
 		m_ViewerCore->physicalCoordsChanged( m_ViewerCore->getCurrentImage()->getISISImage()->getPhysicalCoordsFromIndex( minVoxel ) );
-		toggleLoadingIcon(false);
+
+		toggleLoadingIcon( false );
 	}
 }
 
@@ -585,14 +602,18 @@ void MainWindow::findGlobalMax()
 {
 	if( m_ViewerCore->hasImage() ) {
 		const int radius = m_RadiusSpin->value();
+
 		if( m_ViewerCore->getCurrentImage()->getISISImage()->getVolume() >= 1e6 && radius == 0  ) {
-			toggleLoadingIcon(true, QString( "Searching for global max of ") + m_ViewerCore->getCurrentImage()->getFileNames().front().c_str() );
+			toggleLoadingIcon( true, QString( "Searching for global max of " ) + m_ViewerCore->getCurrentImage()->getImageProperties().fileName.c_str() );
 		}
+
 		const util::ivector4 maxVoxel = operation::NativeImageOps::getGlobalMax( m_ViewerCore->getCurrentImage(),
-										m_ViewerCore->getCurrentImage()->voxelCoords,
+										m_ViewerCore->getCurrentImage()->getImageProperties().voxelCoords,
 										radius );
+
 		m_ViewerCore->physicalCoordsChanged( m_ViewerCore->getCurrentImage()->getISISImage()->getPhysicalCoordsFromIndex( maxVoxel ) );
-		toggleLoadingIcon(false);
+
+		toggleLoadingIcon( false );
 	}
 }
 

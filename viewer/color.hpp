@@ -28,12 +28,12 @@
 #ifndef COLOR_HPP
 #define COLOR_HPP
 
-#include "common.hpp"
+#include <boost/regex.hpp>
 #include <QColor>
 #include <QVector>
 #include <QIcon>
 #include <QRgb>
-#include <boost/regex.h>
+#include <map>
 
 namespace isis
 {
@@ -45,11 +45,14 @@ class ImageHolder;
 namespace color
 {
 
+const QColor currentEnsemble = QColor(255,238,203);
+const QColor currentImage = QColor( 34, 139, 34 );
 
 class Color
 {
 public:
 	typedef QVector<QRgb> ColormapType;
+	typedef QVector<float> AlphamapType;
 	typedef std::map<std::string, ColormapType > ColormapMapType;
 	enum icon_type { lower_half, upper_half, both };
 

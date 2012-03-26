@@ -40,9 +40,10 @@ namespace viewer
 {
 namespace plugin
 {
- 
-namespace _internal {
- 
+
+namespace _internal
+{
+
 template<typename TYPE> struct fromString {
 	TYPE operator()( const std::string &string, bool &ok ) {
 		ok = true;
@@ -51,93 +52,100 @@ template<typename TYPE> struct fromString {
 };
 
 
-template<typename TYPE> struct fromString<util::vector4<TYPE> >{
+template<typename TYPE> struct fromString<util::vector4<TYPE> > {
 	util::vector4<TYPE> operator()( const std::string &string, bool &ok ) {
 		util::vector4<TYPE> ret;
-		const std::list<std::string> elems = util::stringToList<std::string>(string, boost::regex("[^\\.\\-0-9]"));
+		const std::list<std::string> elems = util::stringToList<std::string>( string, boost::regex( "[^\\.\\-0-9]" ) );
+
 		if( elems.size() == 4 ) {
 			ok = true;
 			unsigned short index = 0;
+
 			for( std::list<std::string>::const_iterator iter = elems.begin(); iter != elems.end(); iter++, index++ ) {
-				boost::regex e("^\\-?[[:digit:]]+\\.?[[:digit:]]*");
-				if( !iter->length() || !boost::regex_match( iter->c_str(),  e) ) {
+				boost::regex e( "^\\-?[[:digit:]]+\\.?[[:digit:]]*" );
+
+				if( !iter->length() || !boost::regex_match( iter->c_str(),  e ) ) {
 					ok = false;
 				}
-				ret[index] = util::Value<std::string>(*iter).as<TYPE>();
+
+				ret[index] = util::Value<std::string>( *iter ).as<TYPE>();
 			}
 		} else {
 			ok = false;
 		}
+
 		return ret;
-		
+
 	}
 };
 
- 
+
 }
- 
-class TreePropMap : public util::PropertyMap 
+
+class TreePropMap : public util::PropertyMap
 {
 public:
-    void fillTreeWidget( QTreeWidget *treeWidget );
-    TreePropMap( const PropertyMap& propMap ) { static_cast<util::PropertyMap&>( *this ) = propMap; }
+	void fillTreeWidget( QTreeWidget *treeWidget );
+	TreePropMap( const PropertyMap &propMap ) { static_cast<util::PropertyMap &>( *this ) = propMap; }
 private:
-    QTreeWidget *m_TreeWidget;
-    void walkTree( QTreeWidgetItem *item, const TreePropMap &propMap, bool topLevel );
+	QTreeWidget *m_TreeWidget;
+	void walkTree( QTreeWidgetItem *item, const TreePropMap &propMap, bool topLevel );
 };
-    
+
 class PropertyToolDialog : public QDialog
 {
-    Q_OBJECT
-    
+	Q_OBJECT
+
 public:
-    PropertyToolDialog( QWidget *parent, QViewerCore *core );
- 
-    
+	PropertyToolDialog( QWidget *parent, QViewerCore *core );
+
+
 public Q_SLOTS:
-    void updateProperties();
-    void selectionChanged( int );
-    void onPropertyTreeClicked();
+	void updateProperties();
+	void selectionChanged( int );
+	void onPropertyTreeClicked();
 	void editRequested();
-	QString getItemName( QTreeWidgetItem* item );
-    virtual void showEvent( QShowEvent * );
-    
+	QString getItemName( QTreeWidgetItem *item );
+	virtual void showEvent( QShowEvent * );
+
 private:
-    Ui::propertyToolDialog m_Interface;
-    QViewerCore *m_ViewerCore;
-	
-    void setIfHas( const std::string &name, QLabel *nameLabel, QLabel *propLabel, const boost::shared_ptr<data::Image> image );
-	
-    void buildUpTree( const util::PropertyMap &image );
-    
-    template<typename TYPE> 
-    TYPE fromString( const std::string &string, bool &ok )  {
-        return _internal::fromString<TYPE>()(string, ok);
-    }
+	Ui::propertyToolDialog m_Interface;
+	QViewerCore *m_ViewerCore;
+
+	void setIfHas( const std::string &name, QLabel *nameLabel, QLabel *propLabel, const boost::shared_ptr<data::Image> image );
+
+	void buildUpTree( const util::PropertyMap &image );
+
+	template<typename TYPE>
+	TYPE fromString( const std::string &string, bool &ok )  {
+		return _internal::fromString<TYPE>()( string, ok );
+	}
 
 	QString genericPrintPropertyValue( const std::string &name ) {
-		return QString( static_cast<util::PropertyMap&>( *m_ViewerCore->getCurrentImage()->getISISImage() ).propertyValue(name.c_str()).toString().c_str() );
-		
+		return QString( static_cast<util::PropertyMap &>( *m_ViewerCore->getCurrentImage()->getISISImage() ).propertyValue( name.c_str() ).toString().c_str() );
+
 	}
 	template<typename TYPE>
-	void checkAndSet( util::PropertyMap& map, const util::PropertyMap::PropPath &path, const QString &name )
-	{
+	void checkAndSet( util::PropertyMap &map, const util::PropertyMap::PropPath &path, const QString &name ) {
 		bool ok;
 		TYPE value = fromString<TYPE>( name.toStdString(), ok );
+
 		if( ok ) {
-			map.setPropertyAs<TYPE>(path, value );
+			map.setPropertyAs<TYPE>( path, value );
 		} else {
 			QMessageBox msgBox;
-			msgBox.setText( "Could not parse input!");
+			msgBox.setText( "Could not parse input!" );
 			msgBox.exec();
 		}
-		
+
 	}
 
 
 };
 
- 
-}}}
+
+}
+}
+}
 
 #endif

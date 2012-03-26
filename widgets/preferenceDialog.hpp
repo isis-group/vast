@@ -35,17 +35,17 @@ namespace isis
 {
 namespace viewer
 {
-namespace widget
+namespace ui
 {
 
 class PreferencesDialog : public QDialog
 {
-	Q_OBJECT;
+	Q_OBJECT
 
 public:
 	PreferencesDialog( QWidget *parent, QViewerCore *core );
 protected:
-	Ui::preferencesDialog preferencesUi;
+	Ui::preferencesDialog m_Interface;
 
 
 public Q_SLOTS:
@@ -58,6 +58,7 @@ public Q_SLOTS:
 	void numberOfThreadsChanged( int );
 	void screenshotXChanged( int );
 	virtual void showEvent( QShowEvent * ) { loadSettings(); }
+	Ui::preferencesDialog &getUI() { return m_Interface; }
 
 private:
 	QViewerCore *m_ViewerCore;

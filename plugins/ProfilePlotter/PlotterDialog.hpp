@@ -38,7 +38,7 @@
 #include "ui_plotting.h"
 #include <iostream>
 #include "qviewercore.hpp"
-#include "DataStorage/typeptr.hpp"
+#include "DataStorage/valuearray.hpp"
 
 namespace isis
 {
@@ -53,11 +53,11 @@ class PlotterDialog : public QDialog
 public:
 	PlotterDialog( QWidget *parent, QViewerCore *core );
 public Q_SLOTS:
-    void showEvent( QShowEvent * );
+	void showEvent( QShowEvent * );
 	void updateScene();
 
 	virtual void refresh( util::fvector4 physicalCoords );
-	
+
 private:
 	Ui::plottingDialog ui;
 	QwtPlot *plot;
@@ -65,13 +65,22 @@ private:
 	QwtPlotMarker *plotMarker;
 	QViewerCore *m_ViewerCore;
 	util::fvector4 m_CurrentPhysicalCoords;
-	
+
 	void fillProfile( boost::shared_ptr<ImageHolder> image, const util::ivector4 &voxCoords, QwtPlotCurve *curve, const unsigned short &axis );
-	void fillSpectrum(  boost::shared_ptr<ImageHolder> image, const util::ivector4 &voxCoords, QwtPlotCurve *curve, const unsigned short &axis ); 
-	
+	void fillSpectrum(  boost::shared_ptr<ImageHolder> image, const util::ivector4 &voxCoords, QwtPlotCurve *curve, const unsigned short &axis );
+
 	template<typename TYPE>
-	void fillVector( QVector<double> &iv, const util::ivector4 &vox, boost::shared_ptr<ImageHolder> image ) {
-		iv.push_back( image->getISISImage()->voxel<TYPE>( vox[0], vox[1], vox[2], vox[3] ) );
+	void fillVector( QVector<double> &iv, const util::ivector4 &vox, const boost::shared_ptr<ImageHolder> image, const unsigned short &axis ) {
+		util::ivector4 _coords = vox;
+
+		for ( size_t i = 0; i < image->getImageSize()[axis]; i++ ) {
+			_coords[axis] = i;
+			iv.push_back( image->getISISImage( true )->voxel<TYPE>( _coords[0], _coords[1], _coords[2], _coords[3] ) );
+		}
+	}
+
+	template<typename TYPE>
+	void fillVectorForFFTW( double *n, const unsigned short &axis ) {
 	}
 
 };

@@ -28,7 +28,7 @@
 #include "keycommandsdialog.hpp"
 
 
-isis::viewer::widget::KeyCommandsDialog::KeyCommandsDialog( QWidget *parent )
+isis::viewer::ui::KeyCommandsDialog::KeyCommandsDialog( QWidget *parent )
 	: QDialog( parent )
 {
 	m_Interface.setupUi( this );
@@ -60,7 +60,7 @@ isis::viewer::widget::KeyCommandsDialog::KeyCommandsDialog( QWidget *parent )
 	insertIntoTable();
 }
 
-void isis::viewer::widget::KeyCommandsDialog::insertIntoTable()
+void isis::viewer::ui::KeyCommandsDialog::insertIntoTable()
 {
 	unsigned short index = 0;
 	typedef std::list< std::pair< std::string, std::string > >::const_reference CommandsRef;
