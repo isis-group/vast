@@ -59,6 +59,8 @@ private:
 	bool checkEnsembleCanDown( const WidgetEnsemble::Pointer );
 	const WidgetEnsemble::Pointer getEnsembleFromItem( const QListWidgetItem * );
 
+	WidgetEnsemble::Pointer m_CurrentSelectedEnsemble;
+
 };
 
 

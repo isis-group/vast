@@ -118,6 +118,7 @@ void ImageStackWidget::viewAllImagesClicked()
 void ImageStackWidget::synchronize()
 {
 	setVisible( m_ViewerCore->hasImage() );
+	
 	m_Interface.frame->setMaximumHeight( m_ViewerCore->getSettings()->getPropertyAs<uint16_t>( "maxOptionWidgetHeight" ) );
 	m_Interface.frame->setMinimumHeight( m_ViewerCore->getSettings()->getPropertyAs<uint16_t>( "minOptionWidgetHeight" ) );
 
@@ -129,10 +130,11 @@ void ImageStackWidget::synchronize()
 	ImageHolder::Vector imageList;
 
 	if( m_ViewerCore->hasImage() ) {
+		m_CurrentSelectedEnsemble = m_ViewerCore->getUICore()->getCurrentEnsemble();
 		if( m_Interface.checkViewAllImages->isChecked() ) {
 			imageList = m_ViewerCore->getImageList() ;
 		} else {
-			imageList = m_ViewerCore->getUICore()->getCurrentEnsemble()->getImageList();
+			imageList = m_CurrentSelectedEnsemble->getImageList();
 		}
 
 		BOOST_FOREACH( ImageHolder::Vector::const_reference image, imageList ) {
@@ -149,7 +151,7 @@ void ImageStackWidget::synchronize()
 					item->setCheckState( Qt::Unchecked );
 				}
 				if ( m_Interface.checkViewAllImages->isChecked() ) {
-					const ImageHolder::Vector iList = m_ViewerCore->getUICore()->getCurrentEnsemble()->getImageList();
+					const ImageHolder::Vector iList = m_CurrentSelectedEnsemble->getImageList();
 					if( std::find( iList.begin(), iList.end(), image ) != iList.end() ) {
 						item->setBackgroundColor( color::currentEnsemble );
 					}
@@ -162,39 +164,39 @@ void ImageStackWidget::synchronize()
 				m_ImageStack->addItem( item );
 			}
 		}
-	}
-	if( m_ViewerCore->getUICore()->getEnsembleList().size() > 1 ) {
-		m_Interface.checkViewAllImages->setVisible( true );
-		m_Interface.moveDown->setVisible( true );
-		m_Interface.moveUp->setVisible( true );
+		if( m_ViewerCore->getUICore()->getEnsembleList().size() > 1 ) {
+			m_Interface.checkViewAllImages->setVisible( true );
+			m_Interface.moveDown->setVisible( true );
+			m_Interface.moveUp->setVisible( true );
 
-		if ( m_ImageStack->currentItem() ) {
-			m_Interface.moveUp->setEnabled( checkEnsembleCanUp( getEnsembleFromItem( m_ImageStack->currentItem() ) ) );
-			m_Interface.moveDown->setEnabled( checkEnsembleCanDown( getEnsembleFromItem( m_ImageStack->currentItem() ) ) );
+			if ( m_ImageStack->currentItem() ) {
+				m_Interface.moveUp->setEnabled( checkEnsembleCanUp( getEnsembleFromItem( m_ImageStack->currentItem() ) ) );
+				m_Interface.moveDown->setEnabled( checkEnsembleCanDown( getEnsembleFromItem( m_ImageStack->currentItem() ) ) );
+			} else {
+				m_Interface.moveDown->setEnabled( checkEnsembleCanDown( m_CurrentSelectedEnsemble ) );
+				m_Interface.moveUp->setEnabled( checkEnsembleCanUp( m_CurrentSelectedEnsemble ) );
+			}
 		} else {
-			m_Interface.moveDown->setEnabled( false );
-			m_Interface.moveUp->setEnabled( false );
+			m_Interface.moveDown->setVisible(false );
+			m_Interface.moveUp->setVisible( false );
+			m_Interface.checkViewAllImages->setVisible( false );
+
 		}
-	} else {
-		m_Interface.moveDown->setVisible(false );
-		m_Interface.moveUp->setVisible( false );
-		m_Interface.checkViewAllImages->setVisible( false );
-		
 	}
+
 
 }
 
 void ImageStackWidget::itemClicked ( QListWidgetItem */*item*/ )
 {
 	if( m_ViewerCore->hasImage() ) {
-
-		if ( m_ViewerCore->getUICore()->getEnsembleList().size() > 1 && m_ImageStack->currentItem() ) {
-			m_Interface.moveUp->setEnabled( checkEnsembleCanUp( getEnsembleFromItem( m_ImageStack->currentItem() ) ) );
-			m_Interface.moveDown->setEnabled( checkEnsembleCanDown( getEnsembleFromItem( m_ImageStack->currentItem() ) ) );
+		if( m_ImageStack->currentItem() ) {
+			m_CurrentSelectedEnsemble = getEnsembleFromItem( m_ImageStack->currentItem() );
 		} else {
-			m_Interface.moveDown->setEnabled( false );
-			m_Interface.moveUp->setEnabled( false );
+			m_CurrentSelectedEnsemble = m_ViewerCore->getUICore()->getCurrentEnsemble();
 		}
+		m_Interface.moveDown->setEnabled( checkEnsembleCanDown( m_CurrentSelectedEnsemble ) );
+		m_Interface.moveUp->setEnabled( checkEnsembleCanUp( m_CurrentSelectedEnsemble ) );
 	}
 }
 
@@ -259,7 +261,7 @@ void ImageStackWidget::distributeImages()
 
 void ImageStackWidget::moveDown()
 {	
-	const WidgetEnsemble::Vector::iterator eIter = std::find(m_ViewerCore->getUICore()->getEnsembleList().begin(), m_ViewerCore->getUICore()->getEnsembleList().end(), getEnsembleFromItem(m_ImageStack->currentItem()));
+	const WidgetEnsemble::Vector::iterator eIter = std::find(m_ViewerCore->getUICore()->getEnsembleList().begin(), m_ViewerCore->getUICore()->getEnsembleList().end(), m_CurrentSelectedEnsemble );
 	if( eIter != m_ViewerCore->getUICore()->getEnsembleList().end() && (eIter+1) != m_ViewerCore->getUICore()->getEnsembleList().end() ) {
 		std::iter_swap( eIter, eIter+1 );
 	}
@@ -278,7 +280,7 @@ void ImageStackWidget::moveDown()
 
 void ImageStackWidget::moveUp()
 {
-	const WidgetEnsemble::Vector::iterator eIter = std::find(m_ViewerCore->getUICore()->getEnsembleList().begin(), m_ViewerCore->getUICore()->getEnsembleList().end(), getEnsembleFromItem(m_ImageStack->currentItem()));
+	const WidgetEnsemble::Vector::iterator eIter = std::find(m_ViewerCore->getUICore()->getEnsembleList().begin(), m_ViewerCore->getUICore()->getEnsembleList().end(), m_CurrentSelectedEnsemble );
 	if( eIter != m_ViewerCore->getUICore()->getEnsembleList().begin() ) {
 		std::iter_swap( eIter, eIter-1 );
 	}
