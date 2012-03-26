@@ -28,8 +28,6 @@
 #include "viewercorebase.hpp"
 #include "common.hpp"
 
-#include <boost/uuid/uuid_generators.hpp>
-
 #define STR(s) _xstr_(s)
 #define _xstr_(s) std::string(#s)
 
@@ -105,11 +103,7 @@ ImageHolder::Pointer ViewerCoreBase::addImage( const isis::data::Image &image, c
 	retImage->setImage( image, imageType, fileName );
 	m_ImageList.push_back( retImage );
 
-
-	const boost::uuids::uuid id = boost::uuids::random_generator()();
-	std::string id_str( id.begin(), id.end() );
-	m_ImageMap[id_str] = retImage;
-	retImage->getImageProperties().id = id_str;
+	m_ImageMap[fileName] = retImage;
 
 	if( retImage->hasAmbiguousOrientation() ) {
 		QMessageBox msgBox;

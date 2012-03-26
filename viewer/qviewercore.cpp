@@ -433,7 +433,7 @@ void QViewerCore::closeImage ( ImageHolder::Pointer image, bool refreshUI )
 	}
 
 	getImageList().erase( std::find ( getImageList().begin(), getImageList().end(), image ) );
-	getImageMap().erase( image->getImageProperties().id );
+	getImageMap().erase( image->getImageProperties().fileName );
 
 	if( refreshUI ) {
 		getUICore()->refreshUI( false );

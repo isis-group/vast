@@ -60,7 +60,6 @@ public:
 private:
 	struct ImageProperties {
 		std::string fileName;
-		std::string id;
 		util::ivector4 voxelCoords;
 		util::fvector4 physicalCoords;
 		util::fvector4 voxelSize;
@@ -97,7 +96,7 @@ private:
 public:
 	typedef boost::shared_ptr< ImageHolder > Pointer;
 	typedef std::vector< Pointer > Vector;
-	typedef std::map<std::string, Pointer > Map;
+	typedef std::map< std::string, Pointer > Map;
 
 	ImageHolder();
 

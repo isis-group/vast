@@ -305,7 +305,7 @@ void QImageWidgetImplementation::mousePressEvent( QMouseEvent *e )
 	if( e->button() == Qt::LeftButton && geometry().contains( e->pos() ) && QApplication::keyboardModifiers() == Qt::ControlModifier ) {
 		QDrag *drag = new QDrag( this );
 		QMimeData *mimeData = new QMimeData;
-		mimeData->setText( getWidgetSpecCurrentImage()->getImageProperties().id.c_str() );
+		mimeData->setText( getWidgetSpecCurrentImage()->getImageProperties().fileName.c_str() );
 		drag->setMimeData( mimeData );
 		drag->setPixmap( QIcon( ":/common/vast.jpg" ).pixmap( 15 ) );
 		drag->exec();
@@ -559,7 +559,7 @@ void QImageWidgetImplementation::dragEnterEvent( QDragEnterEvent *e )
 	if( e->mimeData()->hasFormat( "text/plain" ) ) {
 		bool hasImage = false;
 		BOOST_FOREACH( ImageHolder::Vector::const_reference image, getWidgetEnsemble()->getImageList() ) {
-			if( image->getImageProperties().id == e->mimeData()->text().toStdString() ) {
+			if( image->getImageProperties().fileName == e->mimeData()->text().toStdString() ) {
 				hasImage = true;
 			}
 		}
@@ -573,9 +573,6 @@ void QImageWidgetImplementation::dragEnterEvent( QDragEnterEvent *e )
 
 void QImageWidgetImplementation::dropEvent( QDropEvent *e )
 {
-	if( m_ViewerCore->getImageMap().find( e->mimeData()->text().toStdString() ) == m_ViewerCore->getImageMap().end()) {
-		LOG( Dev, error ) << "Can not find image with id " << e->mimeData()->text().toStdString() << "!";
-	}
 	const ImageHolder::Pointer image = m_ViewerCore->getImageMap().at( e->mimeData()->text().toStdString() );
 	WidgetEnsemble::Pointer myEnsemble;
 	BOOST_FOREACH( WidgetEnsemble::Vector::reference ensemble, m_ViewerCore->getUICore()->getEnsembleList() ) {

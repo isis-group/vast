@@ -141,7 +141,7 @@ void ImageStackWidget::synchronize()
 				QString sD = image->getPropMap().getPropertyAs<std::string>( "sequenceDescription" ).c_str();
 				item->setText( QString( image->getImageProperties().fileName.c_str() ) );
 				item->setFlags( Qt::ItemIsEnabled | Qt::ItemIsUserCheckable | Qt::ItemIsSelectable );
-				item->setData( Qt::UserRole, QVariant( image->getImageProperties().id.c_str() ) );
+				item->setData( Qt::UserRole, QVariant( image->getImageProperties().fileName.c_str() ) );
 
 				if( image->getImageProperties().isVisible ) {
 					item->setCheckState( Qt::Checked );
