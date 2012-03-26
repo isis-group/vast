@@ -53,11 +53,11 @@ MainWindow::MainWindow( QViewerCore *core ) :
 	m_Toolbar( new QToolBar( this ) ),
 	m_RadiusSpin( new QSpinBox( this ) ),
 	m_StatusTextLabel( new QLabel( this ) ),
-	m_StatusMovieLabel( new QLabel(this ) ),
+	m_StatusMovieLabel( new QLabel( this ) ),
 	m_StatusMovie( new QMovie( this ) )
 {
 	m_Interface.setupUi( this );
-	setWindowIcon( QIcon( m_ViewerCore->getSettings()->getPropertyAs<std::string>("vastSymbol").c_str() ) );
+	setWindowIcon( QIcon( m_ViewerCore->getSettings()->getPropertyAs<std::string>( "vastSymbol" ).c_str() ) );
 	m_ActionReset_Scaling = new QAction( this );
 	m_ActionAuto_Scaling = new QAction( this );
 	m_ActionReset_Scaling->setShortcut( QKeySequence( tr( "R, S" ) ) );
@@ -112,7 +112,7 @@ MainWindow::MainWindow( QViewerCore *core ) :
 	connect( m_Interface.actionKey_Commands, SIGNAL( triggered() ), this, SLOT( showKeyCommandDialog() ) );
 	connect( m_Interface.actionCreate_Screenshot, SIGNAL( triggered() ), this, SLOT( createScreenshot() ) );
 	connect( m_Interface.actionHelp, SIGNAL( triggered() ), helpDialog, SLOT( show() ) );
-	connect( m_Interface.actionAbout_Dialog, SIGNAL( triggered()), aboutDialog, SLOT( show() ) );
+	connect( m_Interface.actionAbout_Dialog, SIGNAL( triggered() ), aboutDialog, SLOT( show() ) );
 	connect( m_Interface.actionLogging, SIGNAL( triggered() ), this, SLOT( showLoggingDialog() ) );
 	connect( m_Interface.actionAxial_View, SIGNAL( triggered( bool ) ), this, SLOT( toggleAxialView( bool ) ) );
 	connect( m_Interface.actionSagittal_View, SIGNAL( triggered( bool ) ), this, SLOT( toggleSagittalView( bool ) ) );
@@ -140,17 +140,17 @@ MainWindow::MainWindow( QViewerCore *core ) :
 	m_RadiusSpin->setMinimum( 0 );
 	m_RadiusSpin->setMaximum( 500 );
 	m_RadiusSpin->setToolTip( "Search radius for finding local minimum/maximum. If radius is 0 it will search the entire image." );
-	
+
 	m_Interface.statusbar->addPermanentWidget( m_ViewerCore->getProgressFeedback()->getProgressBar() );
 	m_Interface.statusbar->addPermanentWidget( m_StatusTextLabel );
 	m_Interface.statusbar->addPermanentWidget( m_StatusMovieLabel );
 	m_StatusMovie->setFileName( ":/common/loading.gif" );
-	m_StatusMovie->setScaledSize(QSize( m_Interface.statusbar->height(), m_Interface.statusbar->height() ) );
+	m_StatusMovie->setScaledSize( QSize( m_Interface.statusbar->height(), m_Interface.statusbar->height() ) );
 	m_StatusMovieLabel->setMovie( m_StatusMovie );
 	m_StatusMovieLabel->setVisible( false );
-	m_Interface.statusbar->setVisible(false);
-	
-	
+	m_Interface.statusbar->setVisible( false );
+
+
 
 	scalingWidget->setVisible( false );
 	loadSettings();
@@ -163,31 +163,35 @@ void MainWindow::toggleLoadingIcon ( bool start, const QString &text )
 	if( text.length() ) {
 		m_ViewerCore->receiveMessage( text.toStdString() );
 	}
-	m_StatusMovieLabel->setVisible(start);
+
+	m_StatusMovieLabel->setVisible( start );
 	m_Interface.statusbar->setVisible( start );
+
 	if( start ) {
 		m_StatusMovie->start();
 		m_StatusTextLabel->setText( text );
 	} else {
 		m_StatusMovie->stop();
 	}
-	QApplication::processEvents();	
+
+	QApplication::processEvents();
 }
 
 void MainWindow::createScreenshot()
 {
 	if( m_ViewerCore->hasImage() ) {
-		
+
 		QString fileName = QFileDialog::getSaveFileName( this, tr( "Save Screenshot" ),
 						   m_ViewerCore->getCurrentPath().c_str(),
 						   tr( "Images (*.png *.xpm *.jpg)" ) );
 
 		if( fileName.size() ) {
-			toggleLoadingIcon(true, QString("Creating and saving screenshot to ") + fileName );
+			toggleLoadingIcon( true, QString( "Creating and saving screenshot to " ) + fileName );
 			m_ViewerCore->getUICore()->getScreenshot().save( fileName, 0, m_ViewerCore->getSettings()->getPropertyAs<uint16_t>( "screenshotQuality" ) );
 			m_ViewerCore->setCurrentPath( fileName.toStdString() );
 		}
-		toggleLoadingIcon(false);
+
+		toggleLoadingIcon( false );
 	}
 
 
@@ -358,7 +362,7 @@ void MainWindow::saveImage()
 				return;
 				break;
 			case QMessageBox::Yes:
-				toggleLoadingIcon( true, QString( "Saving image to ") + m_ViewerCore->getCurrentImage()->getImageProperties().fileName.c_str() );
+				toggleLoadingIcon( true, QString( "Saving image to " ) + m_ViewerCore->getCurrentImage()->getImageProperties().fileName.c_str() );
 				isis::data::IOFactory::write( *m_ViewerCore->getCurrentImage()->getISISImage(), m_ViewerCore->getCurrentImage()->getImageProperties().fileName, "", "" );
 				toggleLoadingIcon( false );
 				break;
@@ -410,10 +414,10 @@ void MainWindow::saveAllImages()
 				break;
 			case QMessageBox::Yes:
 				BOOST_FOREACH( ImageHolder::List::const_reference image, m_ViewerCore->getImageList() ) {
-					toggleLoadingIcon( true, QString( "Saving image to ") + image->getImageProperties().fileName.c_str() );
+					toggleLoadingIcon( true, QString( "Saving image to " ) + image->getImageProperties().fileName.c_str() );
 					isis::data::IOFactory::write( *image->getISISImage(), image->getImageProperties().fileName, "", "" );
 				}
-                toggleLoadingIcon(false);
+				toggleLoadingIcon( false );
 				break;
 			}
 
@@ -438,10 +442,10 @@ void MainWindow::saveImageAs()
 						   tr( fileFormats.str().c_str() ) );
 
 		if( filename.size() ) {
-			toggleLoadingIcon( true, QString( "Saving image to ") + filename );
+			toggleLoadingIcon( true, QString( "Saving image to " ) + filename );
 			isis::data::IOFactory::write( *m_ViewerCore->getCurrentImage()->getISISImage(), filename.toStdString(), "", "" );
 			m_ViewerCore->setCurrentPath( filename.toStdString() );
-			toggleLoadingIcon(false);
+			toggleLoadingIcon( false );
 		}
 	}
 
@@ -489,37 +493,40 @@ void MainWindow::reloadPluginsToGUI()
 void MainWindow::updateRecentOpenList()
 {
 	QSignalMapper *signalMapper = new QSignalMapper( this );
-	m_Interface.actionOpen_recent->setEnabled(!m_ViewerCore->getSettings()->getRecentFiles().empty() );
+	m_Interface.actionOpen_recent->setEnabled( !m_ViewerCore->getSettings()->getRecentFiles().empty() );
 	//first we have to remove all actions
-	BOOST_FOREACH( QList<QAction*>::const_reference action, m_Interface.actionOpen_recent->menu()->actions() )
-	{
+	BOOST_FOREACH( QList<QAction *>::const_reference action, m_Interface.actionOpen_recent->menu()->actions() ) {
 		m_Interface.actionOpen_recent->menu()->removeAction( action );
 	}
 	BOOST_FOREACH( FileInformationMap::const_reference path, m_ViewerCore->getSettings()->getRecentFiles() ) {
 		std::stringstream recentFileName;
 		recentFileName << path.first;
-        if( path.second.getImageType() == ImageHolder::statistical_image ) {
+
+		if( path.second.getImageType() == ImageHolder::statistical_image ) {
 			recentFileName << " (zmap)";
 		}
+
 		if( !path.second.getDialect().empty() ) {
 			recentFileName << " (Dialect: " << path.second.getDialect() <<  ")";
 		}
+
 		if( !path.second.getReadFormat().empty() ) {
 			recentFileName << " (Readformat: " << path.second.getReadFormat() << ")";
 		}
+
 		QAction *recentAction = new QAction( recentFileName.str().c_str() , this );
 		recentAction->setData( QVariant( path.first.c_str() ) );
 		signalMapper->setMapping( recentAction, recentAction->data().toString() );
-		
+
 		m_Interface.actionOpen_recent->menu()->addAction( recentAction );
-		connect( recentAction, SIGNAL( triggered()), signalMapper, SLOT( map() ) );
+		connect( recentAction, SIGNAL( triggered() ), signalMapper, SLOT( map() ) );
 	}
-	connect( signalMapper, SIGNAL( mapped(QString)), this, SLOT( openRecentPath(QString)));
+	connect( signalMapper, SIGNAL( mapped( QString ) ), this, SLOT( openRecentPath( QString ) ) );
 }
 
 void MainWindow::openRecentPath ( QString path )
 {
-	m_ViewerCore->openFile( m_ViewerCore->getSettings()->getRecentFiles().at(path.toStdString() ) );
+	m_ViewerCore->openFile( m_ViewerCore->getSettings()->getRecentFiles().at( path.toStdString() ) );
 }
 
 void MainWindow::refreshUI()
@@ -555,10 +562,11 @@ void MainWindow::refreshUI()
 	m_Interface.actionShow_scaling_option->setEnabled( m_ViewerCore->hasImage() );
 	m_Interface.actionShow_Labels->setEnabled( m_ViewerCore->hasImage() );
 	updateRecentOpenList();
+
 	if( m_ViewerCore->getMode() == ViewerCoreBase::statistical_mode ) {
-		setWindowTitle( QString(  m_ViewerCore->getSettings()->getPropertyAs<std::string>("signature").c_str() ) + QString("(statistical mode)" ) );
+		setWindowTitle( QString(  m_ViewerCore->getSettings()->getPropertyAs<std::string>( "signature" ).c_str() ) + QString( "(statistical mode)" ) );
 	} else  if ( m_ViewerCore->getMode() == ViewerCoreBase::default_mode ) {
-		setWindowTitle( QString(  m_ViewerCore->getSettings()->getPropertyAs<std::string>("signature").c_str() ) );
+		setWindowTitle( QString(  m_ViewerCore->getSettings()->getPropertyAs<std::string>( "signature" ).c_str() ) );
 	}
 }
 
@@ -575,14 +583,18 @@ void MainWindow::findGlobalMin()
 {
 	if( m_ViewerCore->hasImage() ) {
 		const int radius = m_RadiusSpin->value();
+
 		if( m_ViewerCore->getCurrentImage()->getISISImage()->getVolume() >= 1e6 && radius == 0 ) {
-			toggleLoadingIcon(true, QString( "Searching for global min of ") + m_ViewerCore->getCurrentImage()->getImageProperties().fileName.c_str() );
+			toggleLoadingIcon( true, QString( "Searching for global min of " ) + m_ViewerCore->getCurrentImage()->getImageProperties().fileName.c_str() );
 		}
+
 		const util::ivector4 minVoxel = operation::NativeImageOps::getGlobalMin( m_ViewerCore->getCurrentImage(),
 										m_ViewerCore->getCurrentImage()->getImageProperties().voxelCoords,
 										radius );
+
 		m_ViewerCore->physicalCoordsChanged( m_ViewerCore->getCurrentImage()->getISISImage()->getPhysicalCoordsFromIndex( minVoxel ) );
-		toggleLoadingIcon(false);
+
+		toggleLoadingIcon( false );
 	}
 }
 
@@ -590,14 +602,18 @@ void MainWindow::findGlobalMax()
 {
 	if( m_ViewerCore->hasImage() ) {
 		const int radius = m_RadiusSpin->value();
+
 		if( m_ViewerCore->getCurrentImage()->getISISImage()->getVolume() >= 1e6 && radius == 0  ) {
-			toggleLoadingIcon(true, QString( "Searching for global max of ") + m_ViewerCore->getCurrentImage()->getImageProperties().fileName.c_str() );
+			toggleLoadingIcon( true, QString( "Searching for global max of " ) + m_ViewerCore->getCurrentImage()->getImageProperties().fileName.c_str() );
 		}
+
 		const util::ivector4 maxVoxel = operation::NativeImageOps::getGlobalMax( m_ViewerCore->getCurrentImage(),
 										m_ViewerCore->getCurrentImage()->getImageProperties().voxelCoords,
 										radius );
+
 		m_ViewerCore->physicalCoordsChanged( m_ViewerCore->getCurrentImage()->getISISImage()->getPhysicalCoordsFromIndex( maxVoxel ) );
-		toggleLoadingIcon(false);
+
+		toggleLoadingIcon( false );
 	}
 }
 

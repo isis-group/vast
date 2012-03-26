@@ -32,7 +32,8 @@ namespace isis
 
 namespace viewer
 {
-namespace widget {
+namespace widget
+{
 
 QOrientationHandler::ViewPortType QOrientationHandler::getViewPort(  const float &zoom, const boost::shared_ptr< ImageHolder > image, const size_t &w, const size_t &h, PlaneOrientation orientation, unsigned short border )
 {

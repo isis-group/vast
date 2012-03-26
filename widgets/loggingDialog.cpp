@@ -38,15 +38,15 @@ isis::viewer::ui::LoggingDialog::LoggingDialog( QWidget *parent, isis::viewer::Q
 	m_Interface.infoCheck->setCheckState( Qt::Unchecked );
 	m_Interface.verboseCheck->setCheckState( Qt::Unchecked );
 	m_Interface.noticeCheck->setCheckState( Qt::Unchecked );
-	m_Interface.checkRuntime->setChecked(true);
-	m_Interface.checkDev->setChecked(false);
+	m_Interface.checkRuntime->setChecked( true );
+	m_Interface.checkDev->setChecked( false );
 	connect( m_Interface.verboseCheck, SIGNAL( clicked() ), this, SLOT( synchronize() ) );
 	connect( m_Interface.infoCheck, SIGNAL( clicked() ), this, SLOT( synchronize() ) );
 	connect( m_Interface.warningCheck, SIGNAL( clicked() ), this, SLOT( synchronize() ) );
 	connect( m_Interface.errorCheck, SIGNAL( clicked() ), this, SLOT( synchronize() ) );
 	connect( m_Interface.noticeCheck, SIGNAL( clicked() ), this, SLOT( synchronize() ) );
-	connect( m_Interface.checkDev, SIGNAL( clicked()), this, SLOT( synchronize()) );
-	connect( m_Interface.checkRuntime, SIGNAL( clicked()), this, SLOT( synchronize()) );
+	connect( m_Interface.checkDev, SIGNAL( clicked() ), this, SLOT( synchronize() ) );
+	connect( m_Interface.checkRuntime, SIGNAL( clicked() ), this, SLOT( synchronize() ) );
 	QPalette pal;
 	pal.setBrush( QPalette::Base, Qt::red );
 	m_Interface.errorCheck->setPalette( pal );
@@ -60,7 +60,7 @@ isis::viewer::ui::LoggingDialog::LoggingDialog( QWidget *parent, isis::viewer::Q
 
 void isis::viewer::ui::LoggingDialog::printLog ( std::list< isis::qt4::QMessage > messageList )
 {
-BOOST_FOREACH( std::list< qt4::QMessage>::const_reference message, messageList ) {
+	BOOST_FOREACH( std::list< qt4::QMessage>::const_reference message, messageList ) {
 		QListWidgetItem *item = new QListWidgetItem();
 		std::stringstream logStream;
 		logStream << message.m_module << "(" << message.time_str << ") -> " << message.message ;
@@ -115,12 +115,14 @@ BOOST_FOREACH( std::list< qt4::QMessage>::const_reference message, messageList )
 void isis::viewer::ui::LoggingDialog::synchronize()
 {
 	m_Interface.logList->clear();
+
 	if( m_Interface.checkDev->isChecked() ) {
 		printLog( m_ViewerCore->getMessageLogDev() );
 	}
+
 	if( m_Interface.checkRuntime->isChecked() ) {
 		printLog( m_ViewerCore->getMessageLog() );
 	}
 
-	
+
 }

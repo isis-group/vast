@@ -107,6 +107,7 @@ void OrientatioCorrectionDialog::flipPressed()
 	if( m_ViewerCore->hasImage() ) {
 		boost::numeric::ublas::matrix<float> transform = boost::numeric::ublas::identity_matrix<float>( 3, 3 );
 		std::string desc;
+
 		if( ui.checkFlipZ->isChecked() ) {
 			transform( 2, 2 ) = -1;
 			desc = "Flip Z";
@@ -121,6 +122,7 @@ void OrientatioCorrectionDialog::flipPressed()
 			transform( 0, 0 ) = -1;
 			desc = "Flip X";
 		}
+
 		applyTransform( transform, false, desc );
 	}
 }

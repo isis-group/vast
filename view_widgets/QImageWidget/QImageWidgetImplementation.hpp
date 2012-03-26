@@ -128,7 +128,7 @@ private:
 	float currentZoom;
 	int m_CrosshairWidth;
 
-	util::fvector4 mouseCoords2PhysCoords(const int &x, const int &y );
+	util::fvector4 mouseCoords2PhysCoords( const int &x, const int &y );
 
 	std::pair<int, int> m_StartCoordsPair;
 

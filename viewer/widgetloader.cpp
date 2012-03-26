@@ -96,17 +96,19 @@ unsigned int WidgetLoader::findWidgets( std::list< std::string > paths )
 #else
 					void *handle = dlopen( widgetName.c_str(), RTLD_NOW );
 #endif
+
 					if ( handle ) {
 #ifdef WIN32
-						const util::PropertyMap* ( *loadProperties_func )() = ( const util::PropertyMap* ( * )() )GetProcAddress( handle, "getProperties" );
+						const util::PropertyMap* ( *loadProperties_func )() = ( const util::PropertyMap * ( * )() )GetProcAddress( handle, "getProperties" );
 						loadWidget_func loadFunc = ( isis::viewer::widget::WidgetInterface * ( * )() )GetProcAddress( handle, "loadWidget" );
 #else
-						const util::PropertyMap* ( *loadProperties_func )() = ( const util::PropertyMap* ( * )() )dlsym( handle, "getProperties" );
+						const util::PropertyMap* ( *loadProperties_func )() = ( const util::PropertyMap * ( * )() )dlsym( handle, "getProperties" );
 						loadWidget_func loadFunc = ( isis::viewer::widget::WidgetInterface * ( * )() )dlsym( handle, "loadWidget" );
 #endif
+
 						if ( loadFunc && loadProperties_func ) {
-							if( loadProperties_func()->hasProperty("widgetIdent") ) {
-								const std::string widgetIdent = loadProperties_func()->getPropertyAs<std::string>("widgetIdent");
+							if( loadProperties_func()->hasProperty( "widgetIdent" ) ) {
+								const std::string widgetIdent = loadProperties_func()->getPropertyAs<std::string>( "widgetIdent" );
 								widgetMap[widgetIdent] = loadFunc;
 								widgetPropertyMap[widgetIdent] = loadProperties_func();
 								ret++;

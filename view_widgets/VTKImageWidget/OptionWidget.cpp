@@ -27,18 +27,23 @@
 
 #include "OptionWidget.hpp"
 
-namespace isis {
-namespace viewer {
-namespace widget {
-
-OptionWidget::OptionWidget ( QWidget* parent, QViewerCore *core )
-	: QWidget ( parent ),
-	m_ViewerCore( core )
+namespace isis
 {
-	m_Interface.setupUi(this);
+namespace viewer
+{
+namespace widget
+{
+
+OptionWidget::OptionWidget ( QWidget *parent, QViewerCore *core )
+	: QWidget ( parent ),
+	  m_ViewerCore( core )
+{
+	m_Interface.setupUi( this );
 }
 
-	
 
 
-}}} // end namespace
+
+}
+}
+} // end namespace

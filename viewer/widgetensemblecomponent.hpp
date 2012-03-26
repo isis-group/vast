@@ -80,7 +80,8 @@ private:
 	bool m_needed;
 };
 
-}} // end namespace
+}
+} // end namespace
 
 #include "widgetinterface.h"
 #endif //VAST_WIDGETENSEMBLECOMPONENT_HPP

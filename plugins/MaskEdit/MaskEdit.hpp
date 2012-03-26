@@ -85,6 +85,7 @@ private:
 			start[i] =  voxel[i] - m_Radius;
 			end[i] =  voxel[i] + m_Radius;
 		}
+
 		unsigned short radSquare = m_Radius * m_Radius;
 
 
@@ -96,13 +97,15 @@ private:
 					int x = voxel[0] - i;
 					int y = voxel[1] - j;
 					int z = voxel[2] - k;
+
 					if( x *x + y *y + z *z <= radSquare ) {
-						util::ivector4 finalVoxel( i,j,k );
+						util::ivector4 finalVoxel( i, j, k );
 						image->checkVoxelCoords( finalVoxel );
+
 						if ( !cut ) {
-							image->setTypedVoxel<TYPE>(finalVoxel[0], finalVoxel[1], finalVoxel[2], 0, image->getImageProperties().minMax.second->as<TYPE>());
+							image->setTypedVoxel<TYPE>( finalVoxel[0], finalVoxel[1], finalVoxel[2], 0, image->getImageProperties().minMax.second->as<TYPE>() );
 						} else {
-							image->setTypedVoxel<TYPE>(finalVoxel[0],finalVoxel[1], finalVoxel[2],0, image->getImageProperties().minMax.first->as<TYPE>() );
+							image->setTypedVoxel<TYPE>( finalVoxel[0], finalVoxel[1], finalVoxel[2], 0, image->getImageProperties().minMax.first->as<TYPE>() );
 						}
 					}
 				}

@@ -40,25 +40,25 @@ VoxelInformationWidget::VoxelInformationWidget( QWidget *parent, QViewerCore *co
 	: QWidget( parent ),
 	  m_ViewerCore( core ),
 	  isConnected( false ),
-	  m_UpperHalfColormapLabel(new QLabel(this)),
+	  m_UpperHalfColormapLabel( new QLabel( this ) ),
 	  m_sepWidget( new QWidget( this ) ),
-	  m_LowerHalfColormapLabel( new QLabel(this)),
-	  m_LabelMin( new QLabel (this )),
+	  m_LowerHalfColormapLabel( new QLabel( this ) ),
+	  m_LabelMin( new QLabel ( this ) ),
 	  m_LabelMax( new QLabel( this ) ),
-	  m_LowerThreshold( new QLabel( this )),
+	  m_LowerThreshold( new QLabel( this ) ),
 	  m_UpperThreshold( new QLabel( this ) )
 {
 	m_Interface.setupUi( this );
 	m_LayoutLeft = new QVBoxLayout( m_Interface.leftFrame );
 	m_LayoutRight = new QVBoxLayout( m_Interface.rightFrame );
-	m_LayoutLeft->setContentsMargins(2,0,0,0);
-	m_LayoutRight->setContentsMargins(2,0,0,0);
+	m_LayoutLeft->setContentsMargins( 2, 0, 0, 0 );
+	m_LayoutRight->setContentsMargins( 2, 0, 0, 0 );
 	m_LayoutLeft->setAlignment( Qt::AlignVCenter );
 	m_LayoutRight->setAlignment( Qt::AlignVCenter );
 	m_LowerThreshold->setAlignment( Qt::AlignRight );
 	m_UpperThreshold->setAlignment( Qt::AlignRight );
 	m_LabelMax->setAlignment( Qt::AlignLeft );
-	
+
 	m_Interface.frame_4->setMaximumHeight( m_ViewerCore->getSettings()->getPropertyAs<uint16_t>( "maxOptionWidgetHeight" ) );
 	m_Interface.frame_4->setMinimumHeight( m_ViewerCore->getSettings()->getPropertyAs<uint16_t>( "minOptionWidgetHeight" ) );
 	m_Interface.rowBox->setMinimum( 0 );
@@ -68,14 +68,14 @@ VoxelInformationWidget::VoxelInformationWidget( QWidget *parent, QViewerCore *co
 	m_Interface.playButton->setIcon( QIcon( ":/common/play.png" ) );
 	m_tThread = new TimePlayThread( m_ViewerCore, &m_Interface );
 	QVBoxLayout *layout = new QVBoxLayout( );
-	layout->setContentsMargins(5,0,5,0);
+	layout->setContentsMargins( 5, 0, 5, 0 );
 	layout->addWidget( m_UpperHalfColormapLabel );
 	layout->addWidget( m_sepWidget );
 	layout->addWidget( m_LowerHalfColormapLabel );
 	m_Interface.colormapButton->setLayout( layout );
 	m_Interface.colormapButton->setSizePolicy( QSizePolicy::Minimum, QSizePolicy::Minimum );
 	m_Interface.colormapButton->setMinimumHeight( 10 );
-	
+
 
 }
 
@@ -118,7 +118,7 @@ void VoxelInformationWidget::connectSignals()
 	connect( m_Interface.timestepSpinBox, SIGNAL( valueChanged( int ) ), m_Interface.timestepSlider, SLOT( setValue( int ) ) );
 	connect( m_tThread, SIGNAL( finished() ), this, SLOT( timePlayFinished() ) );
 	connect( m_Interface.playButton, SIGNAL( clicked() ), this, SLOT( playTimecourse() ) );
-	connect( m_Interface.colormapButton, SIGNAL( clicked()), this, SLOT( onLUTMenuClicked()) );
+	connect( m_Interface.colormapButton, SIGNAL( clicked() ), this, SLOT( onLUTMenuClicked() ) );
 	isConnected = true;
 }
 
@@ -177,13 +177,13 @@ void VoxelInformationWidget::voxPosChanged()
 void VoxelInformationWidget::synchronize()
 {
 	if( m_ViewerCore->hasImage() ) {
-		setVisible(true);
+		setVisible( true );
 		const boost::shared_ptr<ImageHolder> image = m_ViewerCore->getCurrentImage();
 		disconnectSignals();
 		m_Interface.colormapFrame->setVisible( !image->getImageProperties().isRGB );
 
 		if( image->getImageProperties().imageType == ImageHolder::structural_image ) {
-			m_Interface.frame_6->setMinimumHeight(15);
+			m_Interface.frame_6->setMinimumHeight( 15 );
 			m_sepWidget->setVisible( false );
 			m_LowerThreshold->setVisible( false );
 			m_UpperThreshold->setVisible( false );
@@ -194,18 +194,19 @@ void VoxelInformationWidget::synchronize()
 			m_LabelMin->setAlignment( Qt::AlignRight );
 			m_LowerHalfColormapLabel->setVisible( false );
 		} else if ( image->getImageProperties().imageType == ImageHolder::statistical_image ) {
-			m_Interface.frame_6->setMinimumHeight(40);
-			m_sepWidget->setVisible(true);
+			m_Interface.frame_6->setMinimumHeight( 40 );
+			m_sepWidget->setVisible( true );
 			m_LowerThreshold->setText( QString::number( image->getImageProperties().lowerThreshold, 'g', 4 ) );
 			m_UpperThreshold->setText( QString::number( image->getImageProperties().upperThreshold, 'g', 4 ) );
 			m_UpperThreshold->setVisible( true );
 			m_LabelMax->setVisible( true );
+
 			if( image->getImageProperties().minMax.first->as<double>() < 0 && image->getImageProperties().minMax.second->as<double>() > 0 ) {
 				m_sepWidget->setVisible( true );
 			} else {
 				m_sepWidget->setVisible( false );
 			}
-			
+
 			if( image->getImageProperties().minMax.first->as<double>() >= 0 ) {
 				m_LowerHalfColormapLabel->setVisible( false );
 				m_LowerThreshold->setVisible( false );
@@ -216,8 +217,8 @@ void VoxelInformationWidget::synchronize()
 				m_LowerHalfColormapLabel->setVisible( true );
 				m_LowerThreshold->setVisible( true );
 				m_LabelMin->setVisible( true );
-				m_LayoutLeft->addWidget(m_UpperThreshold);
-				m_LayoutLeft->addWidget( m_LowerThreshold);
+				m_LayoutLeft->addWidget( m_UpperThreshold );
+				m_LayoutLeft->addWidget( m_LowerThreshold );
 				m_LayoutRight->addWidget( m_LabelMax );
 				m_LayoutRight->addWidget( m_LabelMin );
 				m_LabelMin->setAlignment( Qt::AlignLeft );
@@ -227,7 +228,7 @@ void VoxelInformationWidget::synchronize()
 				m_UpperHalfColormapLabel->setVisible( false );
 				m_UpperThreshold->setVisible( false );
 				m_LabelMax->setVisible( false );
-				m_LabelMin->setVisible(true);
+				m_LabelMin->setVisible( true );
 				m_LowerThreshold->setVisible( true );
 				m_LowerHalfColormapLabel->setVisible( true );
 				m_LayoutRight->addWidget( m_LabelMin );
@@ -306,7 +307,9 @@ void VoxelInformationWidget::synchronize()
 		} else {
 			m_Interface.timeStepFrame->setVisible( false );
 		}
+
 		m_Interface.colormapFrame->adjustSize();
+
 		if( image->getImageProperties().imageType == ImageHolder::structural_image ) {
 			QSize size = m_Interface.colormapButton->size();
 			m_UpperHalfColormapLabel->setPixmap(
@@ -318,11 +321,11 @@ void VoxelInformationWidget::synchronize()
 			m_LowerHalfColormapLabel->setPixmap(
 				util::Singletons::get<color::Color, 10>().getIcon( image->getImageProperties().lut, size.width(), size.height() - 15, color::Color::lower_half, true ).pixmap( size.width(), size.height() - 15 ) );
 		}
-	
+
 
 		reconnectSignals();
 	} else {
-		setVisible(false);
+		setVisible( false );
 	}
 }
 
@@ -393,7 +396,7 @@ void VoxelInformationWidget::synchronizePos( util::ivector4 voxelCoords )
 
 void VoxelInformationWidget::onLUTMenuClicked()
 {
-	m_ViewerCore->getUICore()->getMainWindow()->preferencesDialog->getUI().tabWidget->setCurrentIndex(0);
+	m_ViewerCore->getUICore()->getMainWindow()->preferencesDialog->getUI().tabWidget->setCurrentIndex( 0 );
 	m_ViewerCore->getUICore()->getMainWindow()->preferencesDialog->show();
 }
 

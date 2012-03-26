@@ -95,8 +95,8 @@ std::map< util::istring, std::list< util::istring > > getDialectsAsMap ( image_i
 {
 	std::map<util::istring, std::list< util::istring > > retMap;
 	BOOST_FOREACH( isis::data::IOFactory::FileFormatList::const_reference format, isis::data::IOFactory::getFormats() ) {
-		std::list<util::istring> dialectList = util::stringToList<util::istring>(format->dialects("").c_str());
-        BOOST_FOREACH( std::list< util::istring>::const_reference suffix, format->getSuffixes( mode ) ) {
+		std::list<util::istring> dialectList = util::stringToList<util::istring>( format->dialects( "" ).c_str() );
+		BOOST_FOREACH( std::list< util::istring>::const_reference suffix, format->getSuffixes( mode ) ) {
 			retMap[suffix.c_str()]  = dialectList;
 		}
 	}
@@ -170,7 +170,7 @@ util::fvector4 mapCoordsToOrientation( const util::fvector4 &coords, const boost
 		LOG( Runtime, warning ) << "Can not transform to PlaneOrientation \"not_specified\"!";
 		break;
 	}
-	
+
 
 	if( back ) {
 		finVec = prod( trans( prod(  transformMatrix, orientationMatrix ) ), vec );

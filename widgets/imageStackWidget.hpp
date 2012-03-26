@@ -34,7 +34,7 @@ public:
 
 	Ui::imageStackWidget &getInterface() { return m_Interface; }
 
-	
+
 
 	friend class ImageStack;
 

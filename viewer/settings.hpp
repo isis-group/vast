@@ -33,8 +33,10 @@
 #include <QSettings>
 #include "fileinformation.hpp"
 
-namespace isis {
-namespace viewer {
+namespace isis
+{
+namespace viewer
+{
 
 class Settings : public util::PropertyMap
 {
@@ -58,7 +60,8 @@ private:
 
 
 
-}}
+}
+}
 
 
 

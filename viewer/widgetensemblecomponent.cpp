@@ -28,15 +28,17 @@
 
 #include "widgetensemblecomponent.hpp"
 
-namespace isis {
-namespace viewer {
+namespace isis
+{
+namespace viewer
+{
 
-WidgetEnsembleComponent::WidgetEnsembleComponent ( QFrame* frame, QDockWidget* dockWidget, QWidget* placeHolder, widget::WidgetInterface* widgetImplementation )
+WidgetEnsembleComponent::WidgetEnsembleComponent ( QFrame *frame, QDockWidget *dockWidget, QWidget *placeHolder, widget::WidgetInterface *widgetImplementation )
 	: m_frame( frame ),
-	m_dockWidget( dockWidget ),
-	m_placeHolder( placeHolder ),
-	m_widgetImplementation( widgetImplementation ),
-	m_needed(true)
+	  m_dockWidget( dockWidget ),
+	  m_placeHolder( placeHolder ),
+	  m_widgetImplementation( widgetImplementation ),
+	  m_needed( true )
 {}
 
 bool WidgetEnsembleComponent::checkIfNeeded()
@@ -44,6 +46,7 @@ bool WidgetEnsembleComponent::checkIfNeeded()
 	bool needed = false;
 	BOOST_FOREACH( ImageHolder::List::const_reference image, getWidgetInterface()->getWidgetEnsemble()->getImageList() ) {
 		const util::ivector4 mappedSize = mapCoordsToOrientation( image->getImageSize(), image->getImageProperties().latchedOrientation, getWidgetInterface()->getPlaneOrientation() );
+
 		if( mappedSize[0] > 1 && mappedSize[1] > 1 ) {
 			needed = true;
 		}
@@ -52,4 +55,5 @@ bool WidgetEnsembleComponent::checkIfNeeded()
 	return needed;
 }
 
-}}
+}
+}

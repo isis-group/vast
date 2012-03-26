@@ -29,8 +29,10 @@
 #include "settings.hpp"
 #include "viewercorebase.hpp"
 
-namespace isis {
-namespace viewer {
+namespace isis
+{
+namespace viewer
+{
 
 Settings::Settings()
 	: m_QSettings( new QSettings() )
@@ -43,7 +45,7 @@ void Settings::save()
 	LOG( Dev, info ) << "Saving settings to " << m_QSettings->fileName().toStdString();
 	m_QSettings->beginGroup ( "ViewerCore" );
 	m_QSettings->setValue ( "lutZMap", getPropertyAs<std::string> ( "lutZMap" ).c_str() );
-	m_QSettings->setValue( "visualizeOnlyFirstVista", getPropertyAs<bool>("visualizeOnlyFirstVista") );
+	m_QSettings->setValue( "visualizeOnlyFirstVista", getPropertyAs<bool>( "visualizeOnlyFirstVista" ) );
 	m_QSettings->setValue ( "interpolationType", getPropertyAs<uint16_t> ( "interpolationType" ) );
 	m_QSettings->setValue ( "propagateZooming", getPropertyAs<bool> ( "propagateZooming" ) );
 	m_QSettings->setValue ( "viewAllImagesInStack", getPropertyAs<bool> ( "viewAllImagesInStack" ) );
@@ -59,7 +61,7 @@ void Settings::save()
 	m_QSettings->setValue ( "enableMultithreading", getPropertyAs<bool> ( "enableMultithreading" ) );
 	m_QSettings->setValue ( "useAllAvailablethreads", getPropertyAs<bool> ( "useAllAvailableThreads" ) );
 	m_QSettings->setValue ( "histogramOmitZero", getPropertyAs<bool> ( "histogramOmitZero" ) );
-	m_QSettings->setValue ( "defaultViewWidgetIdentifier", getPropertyAs<std::string>("defaultViewWidgetIdentifier").c_str() );
+	m_QSettings->setValue ( "defaultViewWidgetIdentifier", getPropertyAs<std::string>( "defaultViewWidgetIdentifier" ).c_str() );
 	//screenshot stuff
 	m_QSettings->setValue ( "screenshotWidth", getPropertyAs<uint16_t> ( "screenshotWidth" ) );
 	m_QSettings->setValue ( "screenshotHeight", getPropertyAs<uint16_t> ( "screenshotHeight" ) );
@@ -70,8 +72,8 @@ void Settings::save()
 	m_QSettings->setValue ( "screenshotManualScaling", getPropertyAs<bool> ( "screenshotManualScaling" ) );
 
 	m_QSettings->endGroup();
-	m_RecentFiles.writeFileInformationMap(m_QSettings, "RecentImages" );
-	m_FavFiles.writeFileInformationMap(m_QSettings, "FavoriteImages" );
+	m_RecentFiles.writeFileInformationMap( m_QSettings, "RecentImages" );
+	m_FavFiles.writeFileInformationMap( m_QSettings, "FavoriteImages" );
 	m_QSettings->sync();
 	LOG( Dev, info ) << "Finished saving settings";
 }
@@ -88,7 +90,7 @@ void Settings::load()
 	setPropertyAs<bool> ( "showLabels", m_QSettings->value ( "showLabels", false ).toBool() );
 	setPropertyAs<bool> ( "showCrosshair", m_QSettings->value ( "showCrosshair", true ).toBool() );
 	setPropertyAs<uint16_t> ( "minMaxSearchRadius",
-			m_QSettings->value ( "minMaxSearchRadius", getPropertyAs<uint16_t> ( "minMaxSearchRadius" ) ).toUInt() );
+							  m_QSettings->value ( "minMaxSearchRadius", getPropertyAs<uint16_t> ( "minMaxSearchRadius" ) ).toUInt() );
 	setPropertyAs<bool> ( "showAdvancedFileDialogOptions", m_QSettings->value ( "showAdvancedFileDialogOptions", false ).toBool() );
 	setPropertyAs<bool> ( "showFavoriteFileList", m_QSettings->value ( "showFavoriteFileList", false ).toBool() );
 	setPropertyAs<bool> ( "showStartWidget", m_QSettings->value ( "showStartWidget", true ).toBool() );
@@ -97,7 +99,7 @@ void Settings::load()
 	setPropertyAs<bool> ( "enableMultithreading", m_QSettings->value ( "enableMultithreading" ).toBool() );
 	setPropertyAs<bool> ( "useAllAvailablethreads", m_QSettings->value ( "useAllAvailableThreads" ).toBool() );
 	setPropertyAs<bool> ( "histogramOmitZero", m_QSettings->value ( "histogramOmitZero" ).toBool() );
-	setPropertyAs<bool>( "visualizeOnlyFirstVista", m_QSettings->value( "visualizeOnlyFirstVista", getPropertyAs<bool>("visualizeOnlyFirstVista") ).toBool() );
+	setPropertyAs<bool>( "visualizeOnlyFirstVista", m_QSettings->value( "visualizeOnlyFirstVista", getPropertyAs<bool>( "visualizeOnlyFirstVista" ) ).toBool() );
 	setPropertyAs<std::string>( "defaultViewWidgetIdentifier", m_QSettings->value( "defaultViewWidgetIdentifier", getPropertyAs<std::string>( "defaultViewWidgetIdentifier" ).c_str() ).toString().toStdString() );
 	//screenshot stuff
 	setPropertyAs<uint16_t> ( "screenshotWidth", m_QSettings->value ( "screenshotWidth", getPropertyAs<uint16_t> ( "screenshotWidth" ) ).toUInt() );
@@ -108,8 +110,8 @@ void Settings::load()
 	setPropertyAs<uint16_t> ( "screenshotDPIY", m_QSettings->value ( "screenshotDPIY", getPropertyAs<uint16_t> ( "screenshotDPIY" ) ).toUInt() );
 	setPropertyAs<bool> ( "screenshotManualScaling", m_QSettings->value ( "screenshotManualScaling", getPropertyAs<bool> ( "screenshotManualScaling" ) ).toBool() );
 	m_QSettings->endGroup();
-	m_RecentFiles.readFileInfortmationMap(m_QSettings, "RecentImages");
-	m_FavFiles.readFileInfortmationMap(m_QSettings, "FavoriteImages");
+	m_RecentFiles.readFileInfortmationMap( m_QSettings, "RecentImages" );
+	m_FavFiles.readFileInfortmationMap( m_QSettings, "FavoriteImages" );
 }
 
 
@@ -117,13 +119,13 @@ void Settings::initializeWithDefaultSettings()
 {
 	setPropertyAs<bool>( "zmapGlobal", false );
 	setPropertyAs<bool>( "viewAllImagesInStack", false );
-	setPropertyAs<bool>("visualizeOnlyFirstVista", false );
+	setPropertyAs<bool>( "visualizeOnlyFirstVista", false );
 	setPropertyAs<bool>( "propagateZooming", false );
 	setPropertyAs<bool>( "propagateTimestepChange", false );
 	setPropertyAs<uint16_t>( "interpolationType" , 0 );
 	setPropertyAs<bool>( "showLables", false );
 	setPropertyAs<bool>( "showCrosshair", true );
-	setPropertyAs<float>( "currentGlobalZoom", 1.0);
+	setPropertyAs<float>( "currentGlobalZoom", 1.0 );
 	setPropertyAs<uint16_t>( "minMaxSearchRadius", 20 );
 	setPropertyAs<bool>( "showAdvancedFileDialogOptions", false );
 	setPropertyAs<bool>( "showFavoriteFileList", false );
@@ -136,8 +138,8 @@ void Settings::initializeWithDefaultSettings()
 	setPropertyAs<uint16_t>( "startWidgetHeight", 600 );
 	setPropertyAs<uint16_t>( "startWidgetWidth", 400 );
 	setPropertyAs<uint16_t>( "viewerWidgetMargin", 5 );
-	setPropertyAs<std::string>("fallbackWidgetIdentifier", "qt4_geometrical_widget" );
-	setPropertyAs<std::string>("defaultViewWidgetIdentifier", getPropertyAs<std::string>("fallbackWidgetIdentifier") );
+	setPropertyAs<std::string>( "fallbackWidgetIdentifier", "qt4_geometrical_widget" );
+	setPropertyAs<std::string>( "defaultViewWidgetIdentifier", getPropertyAs<std::string>( "fallbackWidgetIdentifier" ) );
 	//omp
 	setPropertyAs<uint16_t>( "numberOfThreads", 0 );
 	setPropertyAs<bool>( "ompAvailable", false );
@@ -159,7 +161,7 @@ void Settings::initializeWithDefaultSettings()
 	//misc
 	setPropertyAs<uint16_t>( "timeseriesPlayDelayTime", 50 );
 	setPropertyAs<bool>( "histogramOmitZero", true );
-	setPropertyAs<uint16_t>("maxRecentOpenListSize", 10 );
+	setPropertyAs<uint16_t>( "maxRecentOpenListSize", 10 );
 	//logging
 	setPropertyAs<uint16_t>( "logDelayTime", 6000 );
 	setPropertyAs<bool>( "showErrorMessages", true );
@@ -167,14 +169,15 @@ void Settings::initializeWithDefaultSettings()
 	setPropertyAs<bool>( "showWarningMessages", false );
 	setPropertyAs<bool>( "showInfoMessages", false );
 	setPropertyAs<bool>( "showVerboseInfoMessages", false );
-	setPropertyAs<std::string>("vastSymbol", std::string(":/common/minerva-MPG.png") );
+	setPropertyAs<std::string>( "vastSymbol", std::string( ":/common/minerva-MPG.png" ) );
 
 	std::stringstream signature;
 	signature << "vast v" << ViewerCoreBase::getVersion() ;
 	setPropertyAs<std::string>( "signature", signature.str() );
-        setPropertyAs<std::string>( "copyright", "2012 Max Planck Institute for Human and Brain Science Leipzig");
+	setPropertyAs<std::string>( "copyright", "2012 Max Planck Institute for Human and Brain Science Leipzig" );
 }
 
 
 
-}}//end namespace
+}
+}//end namespace

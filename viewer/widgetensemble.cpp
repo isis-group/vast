@@ -29,17 +29,19 @@
 #include "widgetensemblecomponent.hpp"
 #include "imageholder.hpp"
 
-namespace isis {
-namespace viewer {
+namespace isis
+{
+namespace viewer
+{
 
 WidgetEnsemble::WidgetEnsemble()
 	: m_frame( new QFrame() ),
-	m_layout( new QGridLayout() ),
-	m_cols(0)
+	  m_layout( new QGridLayout() ),
+	  m_cols( 0 )
 {
 	m_frame->setLayout( m_layout );
-	m_layout->setContentsMargins(0,0,0,0);
-	m_frame->setContentsMargins(0,0,0,0);
+	m_layout->setContentsMargins( 0, 0, 0, 0 );
+	m_frame->setContentsMargins( 0, 0, 0, 0 );
 }
 
 void WidgetEnsemble::addImage ( const ImageHolder::Pointer image )
@@ -47,7 +49,7 @@ void WidgetEnsemble::addImage ( const ImageHolder::Pointer image )
 	//if image is not in list
 	if( std::find( m_imageList.begin(), m_imageList.end(), image ) == m_imageList.end()  ) {
 		m_imageList.push_back( image );
-		emitAddImage(image);
+		emitAddImage( image );
 		emitCheckIfNeeded();
 	} else {
 		LOG( Dev, warning ) << "Trying to add image " << image->getImageProperties().fileName << ". But this image already exists in ensemble";
@@ -58,6 +60,7 @@ void WidgetEnsemble::addImage ( const ImageHolder::Pointer image )
 void WidgetEnsemble::removeImage ( const ImageHolder::Pointer image )
 {
 	const ImageHolder::List::iterator iter = std::find( m_imageList.begin(), m_imageList.end(), image );
+
 	if( iter != m_imageList.end() ) {
 		m_imageList.erase( iter );
 		emitRemoveImage( image );
@@ -78,7 +81,7 @@ void WidgetEnsemble::insertComponent ( WidgetEnsembleComponent::Pointer componen
 	m_layout->addWidget( component->getDockWidget(), 0, m_cols++ );
 }
 
-bool WidgetEnsemble::hasImage ( const ImageHolder::Pointer image ) const 
+bool WidgetEnsemble::hasImage ( const ImageHolder::Pointer image ) const
 {
 	return find( m_imageList.begin(), m_imageList.end(), image ) != m_imageList.end();
 }
@@ -87,6 +90,7 @@ bool WidgetEnsemble::hasImage ( const ImageHolder::Pointer image ) const
 void WidgetEnsemble::setIsCurrent ( bool current )
 {
 	m_isCurrent = current;
+
 	if( current ) {
 		QPalette pal;
 		pal.setColor( QPalette::Background, QColor( 119, 136, 153 ) );
@@ -106,7 +110,7 @@ void WidgetEnsemble::setIsCurrent ( bool current )
 	}
 }
 
-void WidgetEnsemble::update( const ViewerCoreBase* core )
+void WidgetEnsemble::update( const ViewerCoreBase *core )
 {
 	if( core->hasImage() ) {
 		ImageHolder::Pointer currentImage = core->getCurrentImage();
@@ -118,25 +122,31 @@ void WidgetEnsemble::update( const ViewerCoreBase* core )
 				visible = true;
 			}
 		}
-		getFrame()->setVisible(visible);
+		getFrame()->setVisible( visible );
+
 		//if this ensemble contains the current image make this the current ensemble either
 		if( visible ) {
 			setIsCurrent( currentImageIterator != m_imageList.end() );
 		}
+
 		//resort the ensembles image list -> current image has to be the top image
 		ImageHolder::List tmpList;
+
 		if( currentImageIterator != m_imageList.end() ) {
 			tmpList.push_back( currentImage );
 		}
+
 		for( ImageHolder::List::const_iterator iter = m_imageList.begin(); iter != m_imageList.end(); iter++ ) {
 			if( iter != currentImageIterator ) {
 				tmpList.push_back( *iter );
 			}
 		}
+
 		m_imageList = tmpList;
 	}
 }
 
 
 
-}} // end namespace
+}
+} // end namespace

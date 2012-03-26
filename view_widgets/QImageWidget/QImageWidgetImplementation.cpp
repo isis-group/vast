@@ -40,8 +40,8 @@ namespace widget
 
 QImageWidgetImplementation::QImageWidgetImplementation()
 	: QWidget(),
-	m_Painter( new QPainter() ),
-	m_ShowLabels( false )
+	  m_Painter( new QPainter() ),
+	  m_ShowLabels( false )
 {
 }
 
@@ -52,15 +52,15 @@ QImageWidgetImplementation::QImageWidgetImplementation( QViewerCore *core, QWidg
 	  m_Painter( new QPainter() ),
 	  m_ShowLabels( false )
 {
-	setup(core, parent, orientation );
+	setup( core, parent, orientation );
 	commonInit();
 }
 
-void QImageWidgetImplementation::setup ( QViewerCore* core, QWidget* parent, PlaneOrientation orientation)
+void QImageWidgetImplementation::setup ( QViewerCore *core, QWidget *parent, PlaneOrientation orientation )
 {
 	WidgetInterface::setup( core, parent, orientation );
-	setParent(parent);
-	m_Layout = new QVBoxLayout(parent);
+	setParent( parent );
+	m_Layout = new QVBoxLayout( parent );
 	commonInit();
 }
 
@@ -330,8 +330,11 @@ void QImageWidgetImplementation::mousePressEvent( QMouseEvent *e )
 			}
 		}
 	}
+
 	setFocus();
-	if( m_LeftMouseButtonPressed )	m_ViewerCore->onWidgetClicked( this, mouseCoords2PhysCoords( e->x(), e->y() ), Qt::LeftButton );
+
+	if( m_LeftMouseButtonPressed )  m_ViewerCore->onWidgetClicked( this, mouseCoords2PhysCoords( e->x(), e->y() ), Qt::LeftButton );
+
 	if( m_RightMouseButtonPressed ) m_ViewerCore->onWidgetClicked( this, mouseCoords2PhysCoords( e->x(), e->y() ), Qt::RightButton );
 }
 
@@ -359,7 +362,8 @@ void QImageWidgetImplementation::mouseMoveEvent( QMouseEvent *e )
 		m_ShowScalingOffset = true;
 		m_ViewerCore->updateScene();
 	} else {
-		if( m_LeftMouseButtonPressed )	m_ViewerCore->onWidgetMoved( this, mouseCoords2PhysCoords( e->x(), e->y() ), Qt::LeftButton );
+		if( m_LeftMouseButtonPressed )  m_ViewerCore->onWidgetMoved( this, mouseCoords2PhysCoords( e->x(), e->y() ), Qt::LeftButton );
+
 		if( m_RightMouseButtonPressed ) m_ViewerCore->onWidgetMoved( this, mouseCoords2PhysCoords( e->x(), e->y() ), Qt::RightButton );
 	}
 
@@ -367,7 +371,7 @@ void QImageWidgetImplementation::mouseMoveEvent( QMouseEvent *e )
 }
 
 
-util::fvector4 QImageWidgetImplementation::mouseCoords2PhysCoords ( const int& x, const int& y )
+util::fvector4 QImageWidgetImplementation::mouseCoords2PhysCoords ( const int &x, const int &y )
 {
 	const boost::shared_ptr<ImageHolder> image = getWidgetSpecCurrentImage();
 	const ImageProperties &imgProps = m_ImageProperties.at( image );
@@ -464,6 +468,7 @@ void QImageWidgetImplementation::mouseReleaseEvent( QMouseEvent *e )
 	if ( e->button() == Qt::LeftButton ) {
 		m_LeftMouseButtonPressed = false;
 	}
+
 	QWidget::mouseReleaseEvent( e );
 }
 
@@ -598,10 +603,10 @@ isis::viewer::widget::WidgetInterface *loadWidget()
 	return new isis::viewer::widget::QImageWidgetImplementation();
 }
 
-const isis::util::PropertyMap* getProperties()
+const isis::util::PropertyMap *getProperties()
 {
 	isis::util::PropertyMap *properties = new isis::util::PropertyMap();
-	properties->setPropertyAs<std::string>("widgetIdent", "qt4_plane_widget");
-	properties->setPropertyAs<uint8_t>("numberOfEntitiesInEnsemble", 3);
+	properties->setPropertyAs<std::string>( "widgetIdent", "qt4_plane_widget" );
+	properties->setPropertyAs<uint8_t>( "numberOfEntitiesInEnsemble", 3 );
 	return properties;
 }

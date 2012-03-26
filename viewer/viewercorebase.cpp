@@ -46,24 +46,28 @@ ViewerCoreBase::ViewerCoreBase( )
 	initOMP();
 	util::Singletons::get<color::Color, 10>().initStandardColormaps();
 }
- 
+
 void ViewerCoreBase::initOMP()
 {
 #ifdef _OPENMP
 	const uint16_t nMaxThreads = omp_get_num_procs();
-	getSettings()->setPropertyAs<uint16_t>("maxNumberOfThreads", nMaxThreads);
+	getSettings()->setPropertyAs<uint16_t>( "maxNumberOfThreads", nMaxThreads );
+
 	if( getSettings()->getPropertyAs<uint16_t> ( "numberOfThreads" ) == 0 ) {
-		if( nMaxThreads <= getSettings()->getPropertyAs<uint16_t>("initialMaxNumberThreads" ) ) {
+		if( nMaxThreads <= getSettings()->getPropertyAs<uint16_t>( "initialMaxNumberThreads" ) ) {
 			getSettings()->setPropertyAs<uint16_t> ( "numberOfThreads", nMaxThreads );
 			getSettings()->setPropertyAs<bool> ( "useAllAvailableThreads", true );
 		} else {
-			getSettings()->setPropertyAs<uint16_t> ( "numberOfThreads", getSettings()->getPropertyAs<uint16_t>("initialMaxNumberThreads" ) );
+			getSettings()->setPropertyAs<uint16_t> ( "numberOfThreads", getSettings()->getPropertyAs<uint16_t>( "initialMaxNumberThreads" ) );
 		}
+
 		getSettings()->setPropertyAs<bool> ( "enableMultithreading", true );
 	}
+
 	if( getSettings()->getPropertyAs<bool>( "useAllAvailableThreads" ) ) {
 		getSettings()->setPropertyAs<uint16_t> ( "numberOfThreads", nMaxThreads );
 	}
+
 	omp_set_num_threads ( getSettings()->getPropertyAs<uint16_t> ( "numberOfThreads" ) );
 	getSettings()->setPropertyAs<bool> ( "ompAvailable", true );
 #else
@@ -89,17 +93,19 @@ ImageHolder::List ViewerCoreBase::addImageList( const std::list< data::Image > i
 ImageHolder::Pointer ViewerCoreBase::addImage( const isis::data::Image &image, const isis::viewer::ImageHolder::ImageType &imageType )
 {
 	std::string fileName;
+
 	if( image.hasProperty( "source" ) ) {
 		fileName = image.getPropertyAs<std::string>( "source" );
 	} else {
 		boost::filesystem::path path = image.getChunk( 0 ).getPropertyAs<std::string>( "source" );
 		fileName = path.branch_path().string();
 	}
+
 	ImageHolder::Pointer  retImage = ImageHolder::Pointer( new ImageHolder ) ;
 	retImage->setImage( image, imageType, fileName );
 	m_ImageList.push_back( retImage );
 
-	
+
 	const boost::uuids::uuid id = boost::uuids::random_generator()();
 	std::string id_str( id.begin(), id.end() );
 	m_ImageMap[id_str] = retImage;
@@ -107,13 +113,14 @@ ImageHolder::Pointer ViewerCoreBase::addImage( const isis::data::Image &image, c
 
 	if( retImage->hasAmbiguousOrientation() ) {
 		QMessageBox msgBox;
-		msgBox.setIcon(QMessageBox::Warning);
+		msgBox.setIcon( QMessageBox::Warning );
 		std::stringstream message;
 		message << "The image " << retImage->getImageProperties().fileName
-			<< " has an ambiguous orientation (rotated through 45 degrees).\n\n Alignment might look wrong.";
+				<< " has an ambiguous orientation (rotated through 45 degrees).\n\n Alignment might look wrong.";
 		msgBox.setText( message.str().c_str() );
 		msgBox.exec();
 	}
+
 	//setting the lutStructural
 	if( imageType == ImageHolder::structural_image ) {
 		retImage->getImageProperties().lut = getSettings()->getPropertyAs<std::string>( "lutStructural" );
@@ -140,6 +147,7 @@ ImageHolder::Pointer ViewerCoreBase::addImage( const isis::data::Image &image, c
 	if( getMode() == ViewerCoreBase::statistical_mode && retImage->getImageSize()[3] > 1 && retImage->getImageProperties().imageType != ImageHolder::statistical_image ) {
 		retImage->getImageProperties().isVisible = false;
 	}
+
 	//emit the signal
 	emitAddImage( retImage );
 	return retImage;
@@ -157,49 +165,53 @@ ImageHolder::Pointer ViewerCoreBase::getCurrentImage() const
 }
 
 
-std::string ViewerCoreBase::getVersion() 
+std::string ViewerCoreBase::getVersion()
 {
 #ifdef VAST_RCS_REVISION
-        return STR( _VAST_VERSION_MAJOR ) + "." + STR( _VAST_VERSION_MINOR ) + "." + STR( _VAST_VERSION_PATCH ) + " [" + STR( VAST_RCS_REVISION ) + "]";
+	return STR( _VAST_VERSION_MAJOR ) + "." + STR( _VAST_VERSION_MINOR ) + "." + STR( _VAST_VERSION_PATCH ) + " [" + STR( VAST_RCS_REVISION ) + "]";
 #else
-        return STR( _VAST_VERSION_MAJOR ) + "." + STR( _VAST_VERSION_MINOR ) + "." + STR( _VAST_VERSION_PATCH );
+	return STR( _VAST_VERSION_MAJOR ) + "." + STR( _VAST_VERSION_MINOR ) + "." + STR( _VAST_VERSION_PATCH );
 #endif
 }
 
-widget::WidgetInterface* ViewerCoreBase::getWidget ( const std::string& identifier ) throw( std::runtime_error & )
+widget::WidgetInterface *ViewerCoreBase::getWidget ( const std::string &identifier ) throw( std::runtime_error & )
 {
 	widget::WidgetLoader::WidgetMapType widgetMap = util::Singletons::get<widget::WidgetLoader, 10>().getWidgetMap();
+
 	if( widgetMap.empty() ) {
 		LOG( Dev, error ) << "Could not find any widget!" ;
 	}
-	if( widgetMap.find(identifier) != widgetMap.end() ) {
-		LOG(Dev, info ) << "Loading widget of identifier \"" << identifier << "\".";
-		return widgetMap.at(identifier)();
+
+	if( widgetMap.find( identifier ) != widgetMap.end() ) {
+		LOG( Dev, info ) << "Loading widget of identifier \"" << identifier << "\".";
+		return widgetMap.at( identifier )();
 	} else {
 		LOG( Dev, error ) << "Can not find any widget with identifier \"" << identifier
-			<< "\"! Returning first widget i can find.";
+						  << "\"! Returning first widget i can find.";
 		const std::string fallback = widgetMap.begin()->first;
-		getSettings()->setPropertyAs<std::string>("defaultViewWidgetIdentifier", fallback );
+		getSettings()->setPropertyAs<std::string>( "defaultViewWidgetIdentifier", fallback );
 		getSettings()->save();
 		return getWidget( fallback );
 	}
 }
 
 
-const util::PropertyMap* ViewerCoreBase::getWidgetProperties ( const std::string& identifier )
+const util::PropertyMap *ViewerCoreBase::getWidgetProperties ( const std::string &identifier )
 {
 	widget::WidgetLoader::WidgetPropertyMapType widgetPropertyMap = util::Singletons::get<widget::WidgetLoader, 10>().getWidgetPropertyMap();
+
 	if( widgetPropertyMap.empty() ) {
 		LOG( Dev, error ) << "Could not find any widget!" ;
 	}
-	if( widgetPropertyMap.find(identifier) != widgetPropertyMap.end() ) {
-		LOG(Dev, info ) << "Loading widget properties of identifier \"" << identifier << "\".";
-		return widgetPropertyMap.at(identifier);
+
+	if( widgetPropertyMap.find( identifier ) != widgetPropertyMap.end() ) {
+		LOG( Dev, info ) << "Loading widget properties of identifier \"" << identifier << "\".";
+		return widgetPropertyMap.at( identifier );
 	} else {
 		LOG( Dev, error ) << "Can not find any widget properties with identifier \"" << identifier
-			<< "\"! Returning properties of the first widget i can find.";
+						  << "\"! Returning properties of the first widget i can find.";
 		const std::string fallback = widgetPropertyMap.begin()->first;
-		getSettings()->setPropertyAs<std::string>("defaultViewWidgetIdentifier", fallback );
+		getSettings()->setPropertyAs<std::string>( "defaultViewWidgetIdentifier", fallback );
 		getSettings()->save();
 		return getWidgetProperties( fallback );
 	}

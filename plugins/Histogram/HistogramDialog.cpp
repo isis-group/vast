@@ -53,6 +53,7 @@ isis::viewer::plugin::HistogramDialog::HistogramDialog( QWidget *parent, isis::v
 void isis::viewer::plugin::HistogramDialog::paintHistogram()
 {
 	m_Plotter->clear();
+
 	if( m_ViewerCore->hasImage() && isVisible() ) {
 		std::stringstream title;
 		title << "Histogram of " << boost::filesystem::path( m_ViewerCore->getCurrentImage()->getImageProperties().fileName ).leaf();
@@ -60,7 +61,7 @@ void isis::viewer::plugin::HistogramDialog::paintHistogram()
 		if( m_ViewerCore->getCurrentImage()->getImageSize()[3] > 1 ) {
 			title << " (volume " << m_ViewerCore->getCurrentImage()->getImageProperties().voxelCoords[3] << ")";
 		}
-		
+
 		m_Plotter->setTitle( title.str().c_str() );
 		double xData[255];
 		BOOST_FOREACH( ImageHolder::List::const_reference image, m_ViewerCore->getImageList() ) {
@@ -89,10 +90,11 @@ void isis::viewer::plugin::HistogramDialog::paintHistogram()
 				}
 
 				const uint16_t timestep = image->getImageSize()[3] > 1 ? image->getImageProperties().voxelCoords[3] : 0;
+
 				curve->setData( xData, image->getImageProperties().histogramVectorWOZero[timestep], 255 );
 			}
 		}
-		m_Zoomer->setZoomBase(true);
+		m_Zoomer->setZoomBase( true );
 	}
 }
 void isis::viewer::plugin::HistogramDialog::showEvent( QShowEvent * )

@@ -27,17 +27,20 @@
 
 #include "ImageComponents.hpp"
 
-namespace isis {
-namespace viewer {
-namespace widget {
+namespace isis
+{
+namespace viewer
+{
+namespace widget
+{
 
 VTKImageComponents::VTKImageComponents()
-: volume( vtkVolume::New() ),
-	property( vtkVolumeProperty::New() ),
-	mapper( vtkFixedPointVolumeRayCastMapper::New() ),
-	colorFunction( vtkColorTransferFunction::New() ),
-	opacityFunction( vtkPiecewiseFunction::New() ),
-	imageData( vtkImageData::New() )
+	: volume( vtkVolume::New() ),
+	  property( vtkVolumeProperty::New() ),
+	  mapper( vtkFixedPointVolumeRayCastMapper::New() ),
+	  colorFunction( vtkColorTransferFunction::New() ),
+	  opacityFunction( vtkPiecewiseFunction::New() ),
+	  imageData( vtkImageData::New() )
 {
 	volume->SetMapper( mapper );
 	volume->SetProperty( property );
@@ -46,12 +49,14 @@ VTKImageComponents::VTKImageComponents()
 }
 
 
-void VTKImageComponents::setVTKImageData ( vtkImageData* image )
+void VTKImageComponents::setVTKImageData ( vtkImageData *image )
 {
 	mapper->SetInput( image );
 	imageData = image;
 }
-	
 
 
-}}} // end namespace
+
+}
+}
+} // end namespace

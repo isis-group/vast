@@ -1,4 +1,4 @@
-        /****************************************************************
+/****************************************************************
  *
  * <Copyright information>
  *
@@ -25,19 +25,20 @@
  *  Created on: Aug 12, 2011
  *      Author: tuerke
  ******************************************************************/
-		
+
 #include "PlotterDialog.hpp"
 
 #include <fftw3.h>
 
-isis::viewer::plugin::PlotterDialog::PlotterDialog ( QWidget* parent, isis::viewer::QViewerCore* core ) 
-	: QDialog( parent ), m_ViewerCore( core ) {
+isis::viewer::plugin::PlotterDialog::PlotterDialog ( QWidget *parent, isis::viewer::QViewerCore *core )
+	: QDialog( parent ), m_ViewerCore( core )
+{
 	ui.setupUi( this );
 	ui.timeCourseRadio->setChecked( true );
 	plot = new QwtPlot( tr( "Timecourse" ), ui.widget );
 	grid = new QwtPlotGrid();
 	plotMarker = new QwtPlotMarker();
-	plotMarker->setLineStyle(QwtPlotMarker::VLine);
+	plotMarker->setLineStyle( QwtPlotMarker::VLine );
 	ui.verticalLayout->addWidget( plot );
 	plot->setAxisTitle( 2, tr( "Timestep" ) );
 	plot->setAxisTitle( 0, tr( "Intensity" ) );
@@ -45,13 +46,14 @@ isis::viewer::plugin::PlotterDialog::PlotterDialog ( QWidget* parent, isis::view
 	plot->setFont( QFont( "", 2 ) );
 	connect( m_ViewerCore, SIGNAL( emitPhysicalCoordsChanged( util::fvector4 ) ), this, ( SLOT( refresh( util::fvector4 ) ) ) );
 	connect( m_ViewerCore, SIGNAL( emitUpdateScene() ), this, SLOT( updateScene() ) );
-	connect( ui.comboAxis, SIGNAL( currentIndexChanged(int)), this, SLOT( updateScene() ) );
-	connect( ui.timeCourseRadio, SIGNAL( clicked(bool)), this, SLOT( updateScene() ) );
-	connect( ui.spectrumRadio, SIGNAL(clicked(bool)), this, SLOT( updateScene()));
+	connect( ui.comboAxis, SIGNAL( currentIndexChanged( int ) ), this, SLOT( updateScene() ) );
+	connect( ui.timeCourseRadio, SIGNAL( clicked( bool ) ), this, SLOT( updateScene() ) );
+	connect( ui.spectrumRadio, SIGNAL( clicked( bool ) ), this, SLOT( updateScene() ) );
 	ui.comboAxis->addItem( "X" );
 	ui.comboAxis->addItem( "Y" );
 	ui.comboAxis->addItem( "Z" );
 	ui.comboAxis->addItem( "time" );
+
 	if( m_ViewerCore->hasImage() ) {
 		refresh( m_ViewerCore->getCurrentImage()->getImageProperties().physicalCoords );
 	}
@@ -60,52 +62,57 @@ isis::viewer::plugin::PlotterDialog::PlotterDialog ( QWidget* parent, isis::view
 	setMaximumHeight( 500 );
 
 	//TODO
-	ui.spectrumRadio->setEnabled(false);
-	ui.spectrumRadio->setToolTip(tr("Not yet supported."));
+	ui.spectrumRadio->setEnabled( false );
+	ui.spectrumRadio->setToolTip( tr( "Not yet supported." ) );
 
 }
 
-void isis::viewer::plugin::PlotterDialog::showEvent ( QShowEvent* )
+void isis::viewer::plugin::PlotterDialog::showEvent ( QShowEvent * )
 {
 	if( m_ViewerCore->hasImage() ) {
-		int i=3;
+		int i = 3;
+
 		while ( m_ViewerCore->getCurrentImage()->getImageSize()[i] <= 1 && i >= 0 ) {
 			i--;
 		}
-		ui.comboAxis->setCurrentIndex(i);
+
+		ui.comboAxis->setCurrentIndex( i );
 	}
+
 	updateScene();
 }
 
 void isis::viewer::plugin::PlotterDialog::updateScene()
 {
 	if( m_ViewerCore->hasImage() ) {
-		m_ViewerCore->getCurrentImage()->getImageProperties().physicalCoords = m_ViewerCore->getCurrentImage()->getISISImage()->getPhysicalCoordsFromIndex( m_ViewerCore->getCurrentImage()->getImageProperties().voxelCoords) ;
+		m_ViewerCore->getCurrentImage()->getImageProperties().physicalCoords = m_ViewerCore->getCurrentImage()->getISISImage()->getPhysicalCoordsFromIndex( m_ViewerCore->getCurrentImage()->getImageProperties().voxelCoords ) ;
 		refresh( m_ViewerCore->getCurrentImage()->getImageProperties().physicalCoords );
 	}
 }
 
 void isis::viewer::plugin::PlotterDialog::refresh ( isis::util::fvector4 physicalCoords )
 {
-	if( !ui.checkLock->isChecked() && isVisible()) {
+	if( !ui.checkLock->isChecked() && isVisible() ) {
 		m_CurrentPhysicalCoords = physicalCoords;
 		plot->clear();
 		BOOST_FOREACH( ImageHolder::List::const_reference image, m_ViewerCore->getImageList() ) {
-			const unsigned short axis = image->getISISImage()->mapScannerAxisToImageDimension(static_cast<isis::data::scannerAxis>( ui.comboAxis->currentIndex() ) );
+			const unsigned short axis = image->getISISImage()->mapScannerAxisToImageDimension( static_cast<isis::data::scannerAxis>( ui.comboAxis->currentIndex() ) );
+
 			if( image->getImageSize()[axis] > 1 ) {
 				QwtPlotCurve *curve = new QwtPlotCurve();
 				curve->detach();
-				
+
 				const util::ivector4 voxCoords = image->getISISImage()->getIndexFromPhysicalCoords( physicalCoords, true );
+
 				if( ui.timeCourseRadio->isChecked() ) {
 					fillProfile( image, voxCoords, curve, axis );
 				} else {
 					fillSpectrum( image, voxCoords, curve, axis );
 				}
-				
+
 				if( image.get() == m_ViewerCore->getCurrentImage().get() || m_ViewerCore->getMode() == ViewerCoreBase::statistical_mode ) {
 					curve->attach( plot );
-					plotMarker->attach(plot);
+					plotMarker->attach( plot );
 					curve->setPen( QPen( Qt::red ) );
 				} else {
 					if( image->getImageProperties().isVisible ) {
@@ -130,17 +137,18 @@ void isis::viewer::plugin::PlotterDialog::refresh ( isis::util::fvector4 physica
 
 
 
-void isis::viewer::plugin::PlotterDialog::fillProfile ( boost::shared_ptr< isis::viewer::ImageHolder > image, const isis::util::ivector4& voxCoords, QwtPlotCurve* curve, const unsigned short &axis )
+void isis::viewer::plugin::PlotterDialog::fillProfile ( boost::shared_ptr< isis::viewer::ImageHolder > image, const isis::util::ivector4 &voxCoords, QwtPlotCurve *curve, const unsigned short &axis )
 {
 	std::stringstream title;
 	std::stringstream coordsAsString;
 	float factor = 1;
+
 	if( axis == 3 ) {
 		title << "Timecourse for " << m_ViewerCore->getCurrentImage()->getImageProperties().fileName;
 		coordsAsString << "<" <<  voxCoords[0] << "|" << voxCoords[1] << "|" << voxCoords[2] << ">";
 		plot->setTitle( coordsAsString.str().c_str() );
 		setWindowTitle( title.str().c_str() );
-		
+
 
 		if ( image->getISISImage()->hasProperty( "repetitionTime" ) ) {
 			factor = ( float )image->getISISImage()->getPropertyAs<uint16_t>( "repetitionTime" ) / 1000;
@@ -155,23 +163,27 @@ void isis::viewer::plugin::PlotterDialog::fillProfile ( boost::shared_ptr< isis:
 		plotTitle << "Profile for axis " << ui.comboAxis->currentText().toStdString();
 		axisTitle << ui.comboAxis->currentText().toStdString() << " / mm";
 		plot->setTitle( plotTitle.str().c_str() );
-		plot->setAxisTitle(2, axisTitle.str().c_str() );
+		plot->setAxisTitle( 2, axisTitle.str().c_str() );
 		setWindowTitle( title.str().c_str() );
 	}
-	plotMarker->setXValue( image->getISISImage()->getPhysicalCoordsFromIndex(voxCoords)[ui.comboAxis->currentIndex()] * factor );
-	
+
+	plotMarker->setXValue( image->getISISImage()->getPhysicalCoordsFromIndex( voxCoords )[ui.comboAxis->currentIndex()] * factor );
+
 	QVector<double> xValues;
 	QVector<double> intensityValues;
 	using namespace isis::data;
-    util::ivector4 _coords = voxCoords;
+	util::ivector4 _coords = voxCoords;
+
 	for ( size_t i = 0; i < image->getImageSize()[axis]; i++ ) {
 		_coords[axis] = i;
-		if( axis != 3) {
-			xValues.push_back( image->getISISImage()->getPhysicalCoordsFromIndex(_coords)[ui.comboAxis->currentIndex()]);
+
+		if( axis != 3 ) {
+			xValues.push_back( image->getISISImage()->getPhysicalCoordsFromIndex( _coords )[ui.comboAxis->currentIndex()] );
 		} else {
 			xValues.push_back( factor * i );
 		}
 	}
+
 	switch( image->getImageProperties().majorTypeID ) {
 	case ValueArray<bool>::staticID:
 		fillVector<bool>( intensityValues, _coords, image, axis );
@@ -195,7 +207,7 @@ void isis::viewer::plugin::PlotterDialog::fillProfile ( boost::shared_ptr< isis:
 		fillVector<uint32_t>( intensityValues, _coords, image, axis );
 		break;
 	case ValueArray<int64_t>::staticID:
-		fillVector<int64_t>( intensityValues, _coords, image, axis);
+		fillVector<int64_t>( intensityValues, _coords, image, axis );
 		break;
 	case ValueArray<uint64_t>::staticID:
 		fillVector<uint64_t>( intensityValues, _coords, image, axis );
@@ -207,48 +219,55 @@ void isis::viewer::plugin::PlotterDialog::fillProfile ( boost::shared_ptr< isis:
 		fillVector<double>( intensityValues, _coords, image, axis );
 		break;
 	}
-	
+
 	curve->setData( xValues, intensityValues );
 
 }
 
-void isis::viewer::plugin::PlotterDialog::fillSpectrum ( boost::shared_ptr< isis::viewer::ImageHolder > image, const isis::util::ivector4& voxCoords, QwtPlotCurve* curve, const unsigned short &axis )
+void isis::viewer::plugin::PlotterDialog::fillSpectrum ( boost::shared_ptr< isis::viewer::ImageHolder > image, const isis::util::ivector4 &voxCoords, QwtPlotCurve *curve, const unsigned short &axis )
 {
 	plot->setAxisTitle( 2, tr( "1 / Hz" ) );
 	plot->setAxisTitle( 0, tr( "" ) );
-	
-	double powermin=10000000, powermax=-10000000;
+
+	double powermin = 10000000, powermax = -10000000;
 	fftw_plan plan;
 
 	size_t n = image->getImageSize()[3];
-	
-	const size_t nc = (n / 2 ) + 1;
-	double *in = (double *) fftw_malloc(sizeof(double) * n);
-	fftw_complex *out = (fftw_complex *) fftw_malloc (sizeof (fftw_complex ) * nc);
-	
-	plan = fftw_plan_dft_r2c_1d(n, in, out, FFTW_ESTIMATE);
+
+	const size_t nc = ( n / 2 ) + 1;
+	double *in = ( double * ) fftw_malloc( sizeof( double ) * n );
+	fftw_complex *out = ( fftw_complex * ) fftw_malloc ( sizeof ( fftw_complex ) * nc );
+
+	plan = fftw_plan_dft_r2c_1d( n, in, out, FFTW_ESTIMATE );
 	util::ivector4 _coords = voxCoords;
+
 	for( size_t i = 0; i < n; i++ ) {
 		_coords[axis] = i;
-		in[i] = image->getISISImage()->voxel<int16_t>(_coords[0], _coords[1], _coords[2], _coords[3] );
+		in[i] = image->getISISImage()->voxel<int16_t>( _coords[0], _coords[1], _coords[2], _coords[3] );
 	}
-	fftw_execute(plan); 
-	QVector<double> yVec(nc + 2);
-	QVector<double> xVec(nc + 2);
-	for (int k = 1; k < static_cast<int>(nc); k++) {
-      yVec[k] = (double)sqrt(out[k][0] * out[k][0] + out[k][1] * out[k][1]);
-	  if (powermin>yVec[k]) powermin=yVec[k];
-	  if (powermax<yVec[k]) powermax=yVec[k];
-	  xVec[k] = k;
+
+	fftw_execute( plan );
+	QVector<double> yVec( nc + 2 );
+	QVector<double> xVec( nc + 2 );
+
+	for ( int k = 1; k < static_cast<int>( nc ); k++ ) {
+		yVec[k] = ( double )sqrt( out[k][0] * out[k][0] + out[k][1] * out[k][1] );
+
+		if ( powermin > yVec[k] ) powermin = yVec[k];
+
+		if ( powermax < yVec[k] ) powermax = yVec[k];
+
+		xVec[k] = k;
 	}
+
 	yVec[0] = 0.0;
 	yVec[nc] = powermin;
 	xVec[nc] = nc;
 	yVec[nc+1] = powermax;
 	xVec[nc+1] = nc + 1;
-	curve->setData(xVec,yVec);
-	
-	
+	curve->setData( xVec, yVec );
+
+
 }
 
 

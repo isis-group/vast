@@ -119,7 +119,7 @@ public:
 	boost::shared_ptr<const void>
 	getRawAdress( size_t timestep = 0 ) const;
 
-// 	bool operator<( const ImageHolder &ref ) const { return m_ID < ref.getID(); }
+	//  bool operator<( const ImageHolder &ref ) const { return m_ID < ref.getID(); }
 
 	void checkVoxelCoords( util::ivector4 &voxelCoords );
 

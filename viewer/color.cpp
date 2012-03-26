@@ -108,8 +108,9 @@ bool Color::addColormap( const std::string &path, const boost::regex &separator 
 		} else if ( lutTyp == std::string( "hsla" ) ) {
 			lutVec.push_back( QColor::fromHsl( colorVec[0], colorVec[1], colorVec[2], colorVec[3] ).rgba() );
 		}
+
 #else
-	LOG( Dev, info ) << "QT_VERSION < 0x040600 QColor::fromHsl is not supported";
+		LOG( Dev, info ) << "QT_VERSION < 0x040600 QColor::fromHsl is not supported";
 #endif
 		else {
 			LOG( Runtime, warning ) << "Unknown lut type " << lutTyp << " !";
@@ -173,7 +174,7 @@ QIcon Color::getIcon( const std::string &colormapName, size_t w, size_t h, icon_
 	}
 
 	QPixmap pixmap( QPixmap::fromImage( tmpImage ) );
-	LOG(Dev, verbose_info) << "Created Icon " << colormapName;
+	LOG( Dev, verbose_info ) << "Created Icon " << colormapName;
 	return QIcon( pixmap.scaled( w, h ) );
 }
 
@@ -188,6 +189,7 @@ bool Color::hasColormap( const std::string &name ) const
 Color::ColormapType Color::getFallbackColormap() const
 {
 	ColormapType retColormap;
+
 	for ( unsigned short i = 0; i < 256; i++ ) {
 		retColormap.push_back( QColor( i, i, i, 255 ).rgba() );
 	}
@@ -211,16 +213,18 @@ void Color::adaptColorMapToImage( ImageHolder *image, bool split )
 	const double offset = image->getImageProperties().offset;
 	const double scaling = image->getImageProperties().scaling;
 	const double norm = 256.0 / extent;
-	const unsigned short mid = (norm * fabs( min ));
+	const unsigned short mid = ( norm * fabs( min ) );
 	unsigned short scaledVal;
-	const float normMid = mid + (offset * norm );
+	const float normMid = mid + ( offset * norm );
 #warning implement this correctly
+
 	for ( unsigned short i = 0; i < 256; i++ ) {
 		if( i > normMid ) {
 			scaledVal = normMid + ( i - normMid ) * scaling > 255 ? 255 : normMid + ( i - normMid ) * scaling;
 		} else {
 			scaledVal = normMid - ( normMid * scaling ) + i * scaling < 0 ? 0 : normMid - ( normMid * scaling ) + i * scaling;
 		}
+
 		retMap[i] = tmpMap[scaledVal];
 	}
 
@@ -228,8 +232,9 @@ void Color::adaptColorMapToImage( ImageHolder *image, bool split )
 	AlphamapType negAlphas( mid );
 	ColormapType posVec( 256 - mid );
 	AlphamapType posAlphas( 256 - mid );
-	negAlphas.fill(0);
-	posAlphas.fill(0);
+	negAlphas.fill( 0 );
+	posAlphas.fill( 0 );
+
 	//only stuff necessary for colormaps
 	if( image->getImageProperties().imageType == ImageHolder::statistical_image ) {
 
@@ -240,9 +245,10 @@ void Color::adaptColorMapToImage( ImageHolder *image, bool split )
 			if( min < 0 ) {
 				const double scaleMin = 1 - fabs( lowerThreshold / min );
 				const double normMin = 128.0 / mid;
+
 				for ( unsigned short i = 0; i < mid; i++ ) {
-					negVec[i * scaleMin] = retMap[i * normMin];
-					negAlphas[i * scaleMin] = 1;
+					negVec[i *scaleMin] = retMap[i * normMin];
+					negAlphas[i *scaleMin] = 1;
 				}
 			}
 
@@ -250,7 +256,7 @@ void Color::adaptColorMapToImage( ImageHolder *image, bool split )
 				const double normMax = 128.0 / ( 256 - mid );
 				const double scaleMax = fabs( upperThreshold / max );
 				const double offset = ( 255 - mid ) * scaleMax;
-				
+
 				for( unsigned short i = 0; i < ( 256 - mid ); i++ ) {
 					const unsigned short index = ( i * ( 1 - scaleMax ) + offset );
 					posVec[index] = retMap[128 + i * normMax];
@@ -260,7 +266,7 @@ void Color::adaptColorMapToImage( ImageHolder *image, bool split )
 
 			retMap = negVec << posVec;
 			image->getImageProperties().alphaMap = negAlphas << posAlphas;
-			
+
 		}
 	}
 
@@ -274,7 +280,7 @@ void Color::adaptColorMapToImage( ImageHolder *image, bool split )
 			zrLUT[i + 1] = retMap[i * ( 256.0 / 255.0 )];
 			tmpAM[i + 1] = image->getImageProperties().alphaMap[i * ( 256.0 / 255.0 )];
 		}
-		
+
 		//kill the zero value
 		zrLUT[0] = QColor( 0, 0, 0, 0 ).rgba();
 		tmpAM[0] = 0;

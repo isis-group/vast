@@ -152,7 +152,7 @@ void PreferencesDialog::loadSettings()
 
 	m_Interface.checkStartUpScreen->setChecked( m_ViewerCore->getSettings()->getPropertyAs<bool>( "showStartWidget" ) );
 	m_Interface.checkCrashMessage->setChecked( m_ViewerCore->getSettings()->getPropertyAs<bool>( "showCrashMessage" ) );
-	m_Interface.checkOnlyFirst->setChecked( m_ViewerCore->getSettings()->getPropertyAs<bool>("visualizeOnlyFirstVista") );
+	m_Interface.checkOnlyFirst->setChecked( m_ViewerCore->getSettings()->getPropertyAs<bool>( "visualizeOnlyFirstVista" ) );
 	m_Interface.enableMultithreading->setVisible( m_ViewerCore->getSettings()->getPropertyAs<bool>( "ompAvailable" ) );
 	m_Interface.multithreadingFrame->setVisible( m_ViewerCore->getSettings()->getPropertyAs<bool>( "ompAvailable" ) );
 
@@ -181,11 +181,10 @@ void PreferencesDialog::loadSettings()
 	m_Interface.defaultViewWidgetComboBox->clear();
 	const widget::WidgetLoader::WidgetMapType &widgetMap = util::Singletons::get<widget::WidgetLoader, 10>().getWidgetMap();
 	m_Interface.defaultViewWidgetFrame->setVisible( widgetMap.size() > 1 );
-	BOOST_FOREACH( widget::WidgetLoader::WidgetMapType::const_reference w, widgetMap )
-	{
+	BOOST_FOREACH( widget::WidgetLoader::WidgetMapType::const_reference w, widgetMap ) {
 		m_Interface.defaultViewWidgetComboBox->addItem( w.first.c_str() );
 	}
-	m_Interface.defaultViewWidgetComboBox->setCurrentIndex( m_Interface.defaultViewWidgetComboBox->findText( m_ViewerCore->getSettings()->getPropertyAs<std::string>("defaultViewWidgetIdentifier").c_str() ) );
+	m_Interface.defaultViewWidgetComboBox->setCurrentIndex( m_Interface.defaultViewWidgetComboBox->findText( m_ViewerCore->getSettings()->getPropertyAs<std::string>( "defaultViewWidgetIdentifier" ).c_str() ) );
 }
 
 void PreferencesDialog::saveSettings()

@@ -46,8 +46,8 @@ StartWidget::StartWidget( QWidget *parent, QViewerCore *core )
 	m_Interface.setupUi( this );
 	connect( m_Interface.openImageButton, SIGNAL( clicked() ), this, SLOT( openImageButtonClicked() ) );
 	connect( m_Interface.showMeCheck, SIGNAL( clicked( bool ) ), this, SLOT( showMeChecked( bool ) ) );
-	connect( m_Interface.favList, SIGNAL( doubleClicked(QModelIndex) ), this, SLOT( openFavPath() ) );
-	connect( m_Interface.recentList, SIGNAL( doubleClicked(QModelIndex)), this, SLOT( openRecentPath() ) );
+	connect( m_Interface.favList, SIGNAL( doubleClicked( QModelIndex ) ), this, SLOT( openFavPath() ) );
+	connect( m_Interface.recentList, SIGNAL( doubleClicked( QModelIndex ) ), this, SLOT( openRecentPath() ) );
 
 }
 
@@ -73,13 +73,13 @@ void StartWidget::closeEvent( QCloseEvent * )
 void StartWidget::openFavPath()
 {
 	close();
-	m_ViewerCore->openFile( m_ViewerCore->getSettings()->getFavoriteFiles().at( m_Interface.favList->currentItem()->text().toStdString()) );
+	m_ViewerCore->openFile( m_ViewerCore->getSettings()->getFavoriteFiles().at( m_Interface.favList->currentItem()->text().toStdString() ) );
 }
 
 void StartWidget::openRecentPath()
 {
 	close();
-	m_ViewerCore->openFile(	m_ViewerCore->getSettings()->getFavoriteFiles().at( m_Interface.recentList->currentItem()->text().toStdString() ) );
+	m_ViewerCore->openFile( m_ViewerCore->getSettings()->getFavoriteFiles().at( m_Interface.recentList->currentItem()->text().toStdString() ) );
 }
 
 void StartWidget::showEvent( QShowEvent * )
@@ -93,29 +93,29 @@ void StartWidget::showEvent( QShowEvent * )
 	setMinimumHeight( height );
 	setMinimumWidth( width );
 	const float scale = 0.9;
-	QPixmap pixMap( m_ViewerCore->getSettings()->getPropertyAs<std::string>("vastSymbol").c_str() );
+	QPixmap pixMap( m_ViewerCore->getSettings()->getPropertyAs<std::string>( "vastSymbol" ).c_str() );
 	float ratio = pixMap.height() / ( float )pixMap.width() * scale;
 	m_Interface.imageLabel->setMinimumHeight( width * ratio );
 	m_Interface.imageLabel->setMaximumHeight( width * ratio );
 	m_Interface.imageLabel->setPixmap( pixMap.scaled( width, width * ratio ) );
-	m_Interface.imageLabel->setAlignment( Qt::AlignCenter);
+	m_Interface.imageLabel->setAlignment( Qt::AlignCenter );
 	move( m_ViewerCore->getUICore()->getMainWindow()->rect().center().x() - this->width() / 2,  m_ViewerCore->getUICore()->getMainWindow()->rect().center().y() - this->height() / 2 );
 
 
 	m_ViewerCore->getUICore()->getMainWindow()->setEnabled( false );
 	setEnabled( true );
-		m_Interface.buttonFrame->setVisible( true );
+	m_Interface.buttonFrame->setVisible( true );
 	m_Interface.showMeCheck->setChecked( m_ViewerCore->getSettings()->getPropertyAs<bool>( "showStartWidget" ) );
-	
-    m_Interface.favoritesLabel->setVisible( fillList( m_ViewerCore->getSettings()->getFavoriteFiles(), m_Interface.favList ) );
+
+	m_Interface.favoritesLabel->setVisible( fillList( m_ViewerCore->getSettings()->getFavoriteFiles(), m_Interface.favList ) );
 	m_Interface.recentLabel->setVisible( fillList( m_ViewerCore->getSettings()->getRecentFiles(), m_Interface.recentList ) );
 }
 
-bool StartWidget::fillList ( const FileInformationMap& fileInfoList, QListWidget* list )
+bool StartWidget::fillList ( const FileInformationMap &fileInfoList, QListWidget *list )
 {
 	if( !fileInfoList.empty() ) {
 		list->clear();
-		list->setVisible(true);
+		list->setVisible( true );
 		BOOST_FOREACH( FileInformationMap::const_reference fileInfo, fileInfoList ) {
 			unsigned short validFiles;
 			QListWidgetItem *item = new QListWidgetItem( fileInfo.first.c_str() );
@@ -130,9 +130,10 @@ bool StartWidget::fillList ( const FileInformationMap& fileInfoList, QListWidget
 		}
 		return true;
 	} else {
-		list->setVisible(false);
+		list->setVisible( false );
 		return false;
 	}
+
 	return false; // supress warning
 }
 

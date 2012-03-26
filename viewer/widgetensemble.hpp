@@ -34,8 +34,10 @@
 #include <boost/signals2.hpp>
 #include "widgetensemblecomponent.hpp"
 
-namespace isis {
-namespace viewer {
+namespace isis
+{
+namespace viewer
+{
 
 class ViewerCoreBase;
 
@@ -66,7 +68,7 @@ public:
 	void setIsCurrent( bool current );
 	bool isCurrent() const { return m_isCurrent; }
 
-	void update( const ViewerCoreBase* );
+	void update( const ViewerCoreBase * );
 
 	//signals
 	boost::signals2::signal<void ( ImageHolder::Pointer ) > emitAddImage;

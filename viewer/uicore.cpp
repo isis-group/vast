@@ -119,14 +119,16 @@ WidgetEnsemble::Pointer UICore::createViewWidgetEnsemble( const std::string &wid
 {
 	WidgetEnsemble::Pointer ensemble( new WidgetEnsemble );
 	uint8_t numberWidgets;
-	if( m_ViewerCore->getWidgetProperties(widgetIdentifier)->hasProperty("numberOfEntitiesInEnsemble") ) {
-		numberWidgets = m_ViewerCore->getWidgetProperties(widgetIdentifier)->getPropertyAs<uint8_t>("numberOfEntitiesInEnsemble");
+
+	if( m_ViewerCore->getWidgetProperties( widgetIdentifier )->hasProperty( "numberOfEntitiesInEnsemble" ) ) {
+		numberWidgets = m_ViewerCore->getWidgetProperties( widgetIdentifier )->getPropertyAs<uint8_t>( "numberOfEntitiesInEnsemble" );
 	} else {
 		LOG( Dev, error ) << "Your widget \"" << widgetIdentifier << "\" has no property \"numberOfEntitiesInEnsemble\" ! Setting it to 1";
 		numberWidgets = 1;
 	}
+
 	if( numberWidgets == 1 ) {
-		ensemble->insertComponent( createEnsembleComponent( widgetIdentifier, not_specified) );
+		ensemble->insertComponent( createEnsembleComponent( widgetIdentifier, not_specified ) );
 	} else if ( numberWidgets == 3 ) {
 		ensemble->insertComponent( createEnsembleComponent( widgetIdentifier, axial ) );
 		ensemble->insertComponent( createEnsembleComponent( widgetIdentifier, sagittal ) );
@@ -136,25 +138,29 @@ WidgetEnsemble::Pointer UICore::createViewWidgetEnsemble( const std::string &wid
 			ensemble->insertComponent( createEnsembleComponent( widgetIdentifier, not_specified ) );
 		}
 	}
+
 	if( show ) {
 		attachWidgetEnsemble( ensemble );
 	}
+
 	m_EnsembleList.push_back( ensemble );
 	return ensemble;
 }
 
-WidgetEnsemble::Pointer UICore::createViewWidgetEnsemble ( const std::string& widgetType, ImageHolder::List imageList, bool show )
+WidgetEnsemble::Pointer UICore::createViewWidgetEnsemble ( const std::string &widgetType, ImageHolder::List imageList, bool show )
 {
 	WidgetEnsemble::Pointer ensemble = createViewWidgetEnsemble( widgetType, show );
+
 	if( show ) {
 		BOOST_FOREACH( ImageHolder::List::const_reference image, imageList ) {
 			ensemble->addImage( image );
 		}
 	}
+
 	return ensemble;
 }
 
-WidgetEnsemble::List UICore::createViewWidgetEnsembleList(const std::string& widgetType, ImageHolder::List imageList, bool show)
+WidgetEnsemble::List UICore::createViewWidgetEnsembleList( const std::string &widgetType, ImageHolder::List imageList, bool show )
 {
 	WidgetEnsemble::List retWidgetEnsembleList;
 	BOOST_FOREACH( ImageHolder::List::const_reference image, imageList ) {
@@ -169,16 +175,18 @@ WidgetEnsemble::List UICore::createViewWidgetEnsembleList(const std::string& wid
 ImageHolder::List UICore::closeWidgetEnsemble( WidgetEnsemble::Pointer ensemble )
 {
 	const WidgetEnsemble::List::iterator iter = std::find( m_EnsembleList.begin(), m_EnsembleList.end(), ensemble );
+
 	if( iter != m_EnsembleList.end() ) {
 		ImageHolder::List retList = ensemble->getImageList();
 		ensemble->getImageList().clear();
 		ensemble->getFrame()->close();
-		m_EnsembleList.erase(iter);
+		m_EnsembleList.erase( iter );
 		return retList;
 	} else {
 		LOG( Dev, error ) << "Tried to remove an widget ensemble that is not in the ensemble list!";
 		return ImageHolder::List();
 	}
+
 	return ImageHolder::List();
 }
 
@@ -190,7 +198,7 @@ void UICore::closeAllWidgetEnsembles()
 		closeWidgetEnsemble( ensemble );
 	}
 	LOG_IF( !m_EnsembleList.empty(), Dev, error ) << "Removed all widget ensembles, but ensemble list still contains "
-						<< m_EnsembleList.size() << " elements!";
+			<< m_EnsembleList.size() << " elements!";
 }
 
 void UICore::attachWidgetEnsemble( WidgetEnsemble::Pointer ensemble )
@@ -211,7 +219,7 @@ WidgetEnsembleComponent::Pointer UICore::createEnsembleComponent( const std::str
 	frameWidget->layout()->addWidget( placeHolder );
 	frameWidget->layout()->setMargin( m_ViewerCore->getSettings()->getPropertyAs<uint16_t>( "viewerWidgetMargin" ) );
 
-	widget::WidgetInterface * widgetImpl = m_ViewerCore->getWidget(widgetIdentifier);
+	widget::WidgetInterface *widgetImpl = m_ViewerCore->getWidget( widgetIdentifier );
 	widgetImpl->setup( m_ViewerCore, placeHolder, planeOrientation );
 
 	WidgetEnsembleComponent::Pointer component( new WidgetEnsembleComponent( frameWidget, dockWidget, placeHolder, widgetImpl ) );
@@ -225,7 +233,7 @@ void UICore::reloadPluginsToGUI()
 	m_MainWindow->reloadPluginsToGUI();
 }
 
-void UICore::refreshUI(const bool &mainwindow)
+void UICore::refreshUI( const bool &mainwindow )
 {
 	WidgetEnsemble::List cp = getEnsembleList();
 	BOOST_FOREACH( WidgetEnsemble::List::reference ensemble, cp ) {
@@ -239,6 +247,7 @@ void UICore::refreshUI(const bool &mainwindow)
 	m_SliderWidget->synchronize();
 	m_ImageStackWidget->synchronize();
 	m_VoxelInformationWidget->synchronize();
+
 	if( mainwindow ) {
 		m_MainWindow->refreshUI();
 	}
@@ -257,6 +266,7 @@ WidgetEnsemble::Pointer UICore::getCurrentEnsemble() const
 	} else {
 		LOG( Dev, error ) << "Viewer has no ensemble yet. So can not pick the current one!";
 	}
+
 	return WidgetEnsemble::Pointer();
 }
 
@@ -267,7 +277,8 @@ bool UICore::registerEnsembleComponent( WidgetEnsembleComponent::Pointer compone
 		LOG( Runtime, warning ) << "Widget with id" << component->getWidgetInterface()->getWidgetName() << "!";
 		return false;
 	}
-	m_WidgetMap.insert( std::make_pair< widget::WidgetInterface*, WidgetEnsembleComponent::Pointer >( component->getWidgetInterface(), component ) );
+
+	m_WidgetMap.insert( std::make_pair< widget::WidgetInterface *, WidgetEnsembleComponent::Pointer >( component->getWidgetInterface(), component ) );
 	return true;
 
 }
@@ -289,6 +300,7 @@ QImage UICore::getScreenshot()
 			if( ensemble->size() > biggestWidth ) {
 				biggestWidth = ensemble->size();
 			}
+
 			BOOST_FOREACH( WidgetEnsemble::reference ensembleComponent, *ensemble ) {
 				ensembleComponent->getFrame()->setFrameStyle( 0 );
 				ensembleComponent->getFrame()->setAutoFillBackground( false );
@@ -343,7 +355,7 @@ QImage UICore::getScreenshot()
 								 m_ViewerCore->getSettings()->getPropertyAs<uint16_t>( "screenshotHeight" ),
 								 m_ViewerCore->getSettings()->getPropertyAs<bool>( "screenshotKeepAspectRatio" ) ? Qt::KeepAspectRatioByExpanding : Qt::IgnoreAspectRatio,
 								 Qt::SmoothTransformation
-																																   ).toImage() : screenshot.toImage() );
+																																  ).toImage() : screenshot.toImage() );
 		const double dpiMeter = 39.3700787;
 		screenshotImage.setDotsPerMeterX( m_ViewerCore->getSettings()->getPropertyAs<uint16_t>( "screenshotDPIX" ) * dpiMeter );
 		screenshotImage.setDotsPerMeterY( m_ViewerCore->getSettings()->getPropertyAs<uint16_t>( "screenshotDPIY" ) * dpiMeter );

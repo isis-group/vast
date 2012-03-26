@@ -41,7 +41,7 @@ ScalingWidget::ScalingWidget( QWidget *parent, isis::viewer::QViewerCore *core )
 	  m_ViewerCore( core )
 {
 	m_Interface.setupUi( this );
-//TODO	
+	//TODO
 	m_Interface.autoButton->setVisible( false );
 	connect( m_Interface.min, SIGNAL( valueChanged( double ) ), this, SLOT( minChanged( double ) ) );
 	connect( m_Interface.max, SIGNAL( valueChanged( double ) ), this, SLOT( maxChanged( double ) ) );
@@ -131,11 +131,11 @@ void ScalingWidget::setScalingOffset( std::pair< double, double > scalingOffset 
 
 void ScalingWidget::autoScale()
 {
-//TODO	
-// 	ImageHolder::Pointer image = m_ViewerCore->getCurrentImage();
-// 	std::pair<double, double> scalingOffset = image->scaling;
-// 	setScalingOffset( scalingOffset );
-// 	setMinMax( getMinMaxFromScalingOffset( scalingOffset, image ), image );
+	//TODO
+	//  ImageHolder::Pointer image = m_ViewerCore->getCurrentImage();
+	//  std::pair<double, double> scalingOffset = image->scaling;
+	//  setScalingOffset( scalingOffset );
+	//  setMinMax( getMinMaxFromScalingOffset( scalingOffset, image ), image );
 }
 
 void ScalingWidget::reset()
@@ -144,7 +144,7 @@ void ScalingWidget::reset()
 }
 
 std::pair< double, double > ScalingWidget::getMinMaxFromScalingOffset( const std::pair< double, double >& scalingOffset, ImageHolder::Pointer image )
-{	
+{
 	std::pair<double, double> retMinMax;
 	const double min = image->getImageProperties().minMax.first->as<double>();
 	const double max = image->getImageProperties().minMax.second->as<double>();
@@ -175,7 +175,7 @@ void ScalingWidget::applyScalingOffset( const double &scaling, const double &off
 			image->getImageProperties().scaling = scaling;
 			image->getImageProperties().offset = offset;
 			image->updateColorMap();
-			
+
 		}
 		m_ViewerCore->updateScene();
 	} else {

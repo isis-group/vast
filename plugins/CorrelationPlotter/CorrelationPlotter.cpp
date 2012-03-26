@@ -103,7 +103,7 @@ void isis::viewer::plugin::CorrelationPlotterDialog::showEvent( QShowEvent * )
 			QMessageBox msgBox;
 			msgBox.setText( "Can not find any functional dataset. Will not calculate correlation map!" );
 			msgBox.exec();
-			setVisible(false);
+			setVisible( false );
 			return;
 		} else {
 			if ( !m_CurrentCorrelationMap ) {
@@ -123,6 +123,7 @@ void isis::viewer::plugin::CorrelationPlotterDialog::showEvent( QShowEvent * )
 
 			m_ViewerCore->getUICore()->refreshUI();
 		}
+
 		physicalCoordsChanged( m_CurrentFunctionalImage->getImageProperties().physicalCoords );
 	}
 
@@ -151,8 +152,8 @@ bool isis::viewer::plugin::CorrelationPlotterDialog::createCorrelationMap()
 			m_CurrentCorrelationMap->getImageProperties().minMax.second = util::Value<MapImageType>( 1 );
 			m_CurrentCorrelationMap->getImageProperties().internMinMax.first = util::Value<MapImageType>( 0 );
 			m_CurrentCorrelationMap->getImageProperties().internMinMax.second = util::Value<MapImageType>( 255 );
-			m_CurrentCorrelationMap->getImageProperties().scalingToInternalType.first = util::Value<MapImageType>(128);
-			m_CurrentCorrelationMap->getImageProperties().scalingToInternalType.second = util::Value<MapImageType>(127);
+			m_CurrentCorrelationMap->getImageProperties().scalingToInternalType.first = util::Value<MapImageType>( 128 );
+			m_CurrentCorrelationMap->getImageProperties().scalingToInternalType.second = util::Value<MapImageType>( 127 );
 			m_CurrentCorrelationMap->getImageProperties().extent = m_CurrentCorrelationMap->getImageProperties().minMax.second->as<double>() -  m_CurrentCorrelationMap->getImageProperties().minMax.first->as<double>();
 			isis::data::ValueArray<InternalFunctionalImageType> imagePtr( ( InternalFunctionalImageType * )
 					calloc( m_CurrentFunctionalImage->getISISImage()->getVolume(), sizeof( InternalFunctionalImageType ) ), m_CurrentFunctionalImage->getISISImage()->getVolume() );
@@ -169,6 +170,7 @@ bool isis::viewer::plugin::CorrelationPlotterDialog::createCorrelationMap()
 			return true;
 		}
 	}
+
 	return false;
 }
 
@@ -191,7 +193,7 @@ void isis::viewer::plugin::CorrelationPlotterDialog::calculateCorrelation( bool 
 	const double s_x = std::sqrt( ( 1 / float( n - 1 ) ) * ( sum_quad_x - n * _x * _x ) );
 
 	if( !all ) {
-		#pragma omp parallel for
+#pragma omp parallel for
 
 		for( unsigned int z = 0; z < m_CurrentFunctionalImage->getImageSize()[2]; z++ ) {
 			for( unsigned int y = 0; y < m_CurrentFunctionalImage->getImageSize()[1]; y++ ) {
@@ -199,7 +201,7 @@ void isis::viewer::plugin::CorrelationPlotterDialog::calculateCorrelation( bool 
 			}
 		}
 
-		#pragma omp parallel for
+#pragma omp parallel for
 
 		for( unsigned int y = 0; y < m_CurrentFunctionalImage->getImageSize()[1]; y++ ) {
 			for( unsigned int x = 0; x < m_CurrentFunctionalImage->getImageSize()[0]; x++ ) {
@@ -207,7 +209,7 @@ void isis::viewer::plugin::CorrelationPlotterDialog::calculateCorrelation( bool 
 			}
 		}
 
-		#pragma omp parallel for
+#pragma omp parallel for
 
 		for( unsigned int z = 0; z < m_CurrentFunctionalImage->getImageSize()[2]; z++ ) {
 			for( unsigned int x = 0; x < m_CurrentFunctionalImage->getImageSize()[0]; x++ ) {
@@ -215,19 +217,21 @@ void isis::viewer::plugin::CorrelationPlotterDialog::calculateCorrelation( bool 
 			}
 		}
 	} else {
-		
+
 
 		for( unsigned int z = 0; z < m_CurrentFunctionalImage->getImageSize()[2]; z++ ) {
 			for( unsigned int y = 0; y < m_CurrentFunctionalImage->getImageSize()[1]; y++ ) {
-				#pragma omp parallel for
+#pragma omp parallel for
+
 				for( unsigned int x = 0; x < m_CurrentFunctionalImage->getImageSize()[0]; x++ ) {
 					_internCalculateCorrelation( util::ivector4( x, y, z ), s_x, _x, vx, n, vol );
 				}
 			}
 		}
+
 		m_CurrentCorrelationMap->updateHistogram();;
 	}
-	
+
 
 }
 
@@ -251,11 +255,11 @@ void isis::viewer::plugin::CorrelationPlotterDialog::_internCalculateCorrelation
 	const double s_y = std::sqrt( ( 1 / float( n - 1 ) ) * ( sum_quad_y - n * _y * _y ) );
 
 	double r_xy = s_xy / ( s_x * s_y );
-	
+
 	if( !std::isnan( r_xy ) ) {
-		m_CurrentCorrelationMap->setTypedVoxel<MapImageType>(vec[0], vec[1], vec[2], 0, r_xy );
+		m_CurrentCorrelationMap->setTypedVoxel<MapImageType>( vec[0], vec[1], vec[2], 0, r_xy );
 	} else {
-		m_CurrentCorrelationMap->setTypedVoxel<MapImageType>(vec[0], vec[1], vec[2], 0, 0 );
+		m_CurrentCorrelationMap->setTypedVoxel<MapImageType>( vec[0], vec[1], vec[2], 0, 0 );
 	}
 
 }

@@ -28,10 +28,12 @@
 
 #include "memoryhandler.hpp"
 
-namespace isis {
-namespace viewer {
+namespace isis
+{
+namespace viewer
+{
 
-util::ivector4 MemoryHandler::get32BitAlignedSize ( const util::ivector4& origSize )
+util::ivector4 MemoryHandler::get32BitAlignedSize ( const util::ivector4 &origSize )
 {
 	util::ivector4 retSize;
 
@@ -49,4 +51,5 @@ util::ivector4 MemoryHandler::get32BitAlignedSize ( const util::ivector4& origSi
 }
 
 
-}} // end namespace
+}
+} // end namespace

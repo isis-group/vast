@@ -91,7 +91,7 @@ public:
 
 public Q_SLOTS:
 	virtual void reloadPluginsToGUI();
-	virtual void refreshUI( const bool &mainwindow=true );
+	virtual void refreshUI( const bool &mainwindow = true );
 	void showInformationAreas( bool );
 
 
@@ -100,7 +100,7 @@ protected:
 
 private:
 
-	
+
 
 	WidgetEnsembleComponent::Pointer createEnsembleComponent( const std::string &widgetIdentifier, PlaneOrientation planeOrientation );
 

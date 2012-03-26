@@ -49,14 +49,15 @@ public:
 			m_OrienatationCorrectionDialog = new OrientatioCorrectionDialog( parentWidget, viewerCore );
 			isInitialized = true;
 		}
-        if( viewerCore->hasImage() ) {
-            m_OrienatationCorrectionDialog->show();
-        } else {
-            QMessageBox msg(parentWidget);
-            msg.setText("No image has been loaded or selected!");
-            msg.exec();
-        }
-        
+
+		if( viewerCore->hasImage() ) {
+			m_OrienatationCorrectionDialog->show();
+		} else {
+			QMessageBox msg( parentWidget );
+			msg.setText( "No image has been loaded or selected!" );
+			msg.exec();
+		}
+
 		return true;
 	};
 

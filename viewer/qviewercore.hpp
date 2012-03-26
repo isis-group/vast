@@ -76,8 +76,8 @@ public Q_SLOTS:
 	virtual void close( );
 	virtual void zoomChanged( float zoomFactor );
 	virtual void physicalCoordsChanged( util::fvector4 );
-	virtual void onWidgetClicked( widget::WidgetInterface*, util::fvector4, Qt::MouseButton );
-	virtual void onWidgetMoved( widget::WidgetInterface*, util::fvector4, Qt::MouseButton );
+	virtual void onWidgetClicked( widget::WidgetInterface *, util::fvector4, Qt::MouseButton );
+	virtual void onWidgetMoved( widget::WidgetInterface *, util::fvector4, Qt::MouseButton );
 	virtual void timestepChanged( int );
 	virtual void setShowLabels( bool );
 	virtual void setShowCrosshair( bool );
