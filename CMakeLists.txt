@@ -192,10 +192,10 @@ INCLUDE(CPack)
 ###########################################################
 option(${CMAKE_PROJECT_NAME}_OPENMP "Toggles the omp support for vast." OFF)
 
-IF(VAST_OPENMP)
+IF(${CMAKE_PROJECT_NAME}_OPENMP)
 	SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fopenmp ")
 	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fopenmp ")
-ENDIF(VAST_OPENMP)
+ENDIF(${CMAKE_PROJECT_NAME}_OPENMP)
 
 
 ###########################################################
