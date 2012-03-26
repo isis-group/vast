@@ -177,6 +177,7 @@ void VoxelInformationWidget::voxPosChanged()
 void VoxelInformationWidget::synchronize()
 {
 	if( m_ViewerCore->hasImage() ) {
+		setVisible(true);
 		const boost::shared_ptr<ImageHolder> image = m_ViewerCore->getCurrentImage();
 		disconnectSignals();
 		m_Interface.colormapFrame->setVisible( !image->getImageProperties().isRGB );
@@ -320,6 +321,8 @@ void VoxelInformationWidget::synchronize()
 	
 
 		reconnectSignals();
+	} else {
+		setVisible(false);
 	}
 }
 

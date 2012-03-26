@@ -37,6 +37,8 @@
 namespace isis {
 namespace viewer {
 
+class ViewerCoreBase;
+
 class WidgetEnsemble : public std::vector< WidgetEnsembleComponent::Pointer >
 {
 public:
@@ -64,7 +66,7 @@ public:
 	void setIsCurrent( bool current );
 	bool isCurrent() const { return m_isCurrent; }
 
-	void update( const ImageHolder::Pointer currentImage );
+	void update( const ViewerCoreBase* );
 
 	//signals
 	boost::signals2::signal<void ( ImageHolder::Pointer ) > emitAddImage;
@@ -85,5 +87,6 @@ private:
 }
 } //end namespace
 
+#include "viewercorebase.hpp"
 
 #endif //VAST_WIDGET_ENSEMBLE_HPP

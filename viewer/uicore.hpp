@@ -84,11 +84,14 @@ public:
 
 	QImage getScreenshot();
 
-	void removeAllWidgetEnsembles();
+	///Closes all widget ensembles
+	void closeAllWidgetEnsembles();
+	///Closes the widget ensemble and returns its images
+	ImageHolder::List closeWidgetEnsemble( WidgetEnsemble::Pointer ensemble );
 
 public Q_SLOTS:
 	virtual void reloadPluginsToGUI();
-	virtual void refreshUI( );
+	virtual void refreshUI( const bool &mainwindow=true );
 	void showInformationAreas( bool );
 
 
@@ -97,7 +100,7 @@ protected:
 
 private:
 
-	virtual void removeWidgetEnsemble( WidgetEnsemble::Pointer ensemble );
+	
 
 	WidgetEnsembleComponent::Pointer createEnsembleComponent( const std::string &widgetIdentifier, PlaneOrientation planeOrientation );
 

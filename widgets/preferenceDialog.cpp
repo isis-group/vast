@@ -39,23 +39,23 @@ PreferencesDialog::PreferencesDialog( QWidget *parent, QViewerCore *core ):
 	QDialog( parent ),
 	m_ViewerCore( core )
 {
-	preferencesUi.setupUi( this );
-	connect( preferencesUi.lutStructural, SIGNAL( activated( int ) ), this, SLOT( apply( int ) ) );
-	connect( preferencesUi.lutZmap, SIGNAL( activated( int ) ), this, SLOT( apply( int ) ) );
-	connect( preferencesUi.comboInterpolation, SIGNAL( activated( int ) ), this, SLOT( apply( int ) ) );
-	connect( preferencesUi.enableMultithreading, SIGNAL( clicked( bool ) ), this, SLOT( toggleMultithreading( bool ) ) );
-	connect( preferencesUi.useAllThreads, SIGNAL( clicked( bool ) ), this, SLOT( toggleUseAllThreads( bool ) ) );
-	connect( preferencesUi.numberOfThreads, SIGNAL( valueChanged( int ) ), this, SLOT( numberOfThreadsChanged( int ) ) );
-	connect( preferencesUi.sizeX, SIGNAL( valueChanged( int ) ), this, SLOT( screenshotXChanged( int ) ) );
+	m_Interface.setupUi( this );
+	connect( m_Interface.lutStructural, SIGNAL( activated( int ) ), this, SLOT( apply( int ) ) );
+	connect( m_Interface.lutZmap, SIGNAL( activated( int ) ), this, SLOT( apply( int ) ) );
+	connect( m_Interface.comboInterpolation, SIGNAL( activated( int ) ), this, SLOT( apply( int ) ) );
+	connect( m_Interface.enableMultithreading, SIGNAL( clicked( bool ) ), this, SLOT( toggleMultithreading( bool ) ) );
+	connect( m_Interface.useAllThreads, SIGNAL( clicked( bool ) ), this, SLOT( toggleUseAllThreads( bool ) ) );
+	connect( m_Interface.numberOfThreads, SIGNAL( valueChanged( int ) ), this, SLOT( numberOfThreadsChanged( int ) ) );
+	connect( m_Interface.sizeX, SIGNAL( valueChanged( int ) ), this, SLOT( screenshotXChanged( int ) ) );
 
-	QSize size( QSize( preferencesUi.lutStructural->size().width() / 4, preferencesUi.lutStructural->height() - 10 ) );
-	preferencesUi.lutStructural->setIconSize( size );
-	preferencesUi.lutZmap->setIconSize( size );
+	QSize size( QSize( m_Interface.lutStructural->size().width() / 4, m_Interface.lutStructural->height() - 10 ) );
+	m_Interface.lutStructural->setIconSize( size );
+	m_Interface.lutZmap->setIconSize( size );
 }
 
 void PreferencesDialog::screenshotXChanged( int val )
 {
-	if( preferencesUi.keepRatio->isChecked() ) {
+	if( m_Interface.keepRatio->isChecked() ) {
 		if( m_ViewerCore->hasImage() ) {
 			WidgetEnsemble::List ensembleList = m_ViewerCore->getUICore()->getEnsembleList();
 			//preparation
@@ -65,7 +65,7 @@ void PreferencesDialog::screenshotXChanged( int val )
 			const int widgetWidth = 3 * ensembleList.front()->front()->getPlaceHolder()->width();
 
 			const double ratio = ( double )widgetHeight / widgetWidth;
-			preferencesUi.sizeY->setValue( val * ratio );
+			m_Interface.sizeY->setValue( val * ratio );
 		}
 	}
 }
@@ -80,30 +80,30 @@ void PreferencesDialog::numberOfThreadsChanged( int threads )
 void PreferencesDialog::toggleMultithreading( bool toggle )
 {
 	m_ViewerCore->getSettings()->setPropertyAs<bool>( "enableMultithreading", toggle );
-	preferencesUi.multithreadingFrame->setVisible( toggle );
+	m_Interface.multithreadingFrame->setVisible( toggle );
 
 	if( !toggle ) {
 		m_ViewerCore->getSettings()->setPropertyAs<uint16_t>( "numberOfThreads", 1 );
 	} else {
-		m_ViewerCore->getSettings()->setPropertyAs<uint16_t>( "numberOfThreads", preferencesUi.numberOfThreads->value() );
+		m_ViewerCore->getSettings()->setPropertyAs<uint16_t>( "numberOfThreads", m_Interface.numberOfThreads->value() );
 
-		if( preferencesUi.useAllThreads->isChecked() ) {
-			preferencesUi.numberOfThreads->setValue( m_ViewerCore->getSettings()->getPropertyAs<uint16_t>( "maxNumberOfThreads" ) );
+		if( m_Interface.useAllThreads->isChecked() ) {
+			m_Interface.numberOfThreads->setValue( m_ViewerCore->getSettings()->getPropertyAs<uint16_t>( "maxNumberOfThreads" ) );
 		} else {
-			preferencesUi.numberOfThreads->setValue( m_ViewerCore->getSettings()->getPropertyAs<uint16_t>( "numberOfThreads" ) );
+			m_Interface.numberOfThreads->setValue( m_ViewerCore->getSettings()->getPropertyAs<uint16_t>( "numberOfThreads" ) );
 		}
 	}
 }
 
 void PreferencesDialog::toggleUseAllThreads( bool toggle )
 {
-	preferencesUi.numberOfThreads->setEnabled( !toggle );
+	m_Interface.numberOfThreads->setEnabled( !toggle );
 	m_ViewerCore->getSettings()->setPropertyAs<bool>( "useAllAvailableThreads", toggle );
 
 	if( toggle ) {
-		preferencesUi.numberOfThreads->setValue( m_ViewerCore->getSettings()->getPropertyAs<uint16_t>( "maxNumberOfThreads" ) );
+		m_Interface.numberOfThreads->setValue( m_ViewerCore->getSettings()->getPropertyAs<uint16_t>( "maxNumberOfThreads" ) );
 	} else {
-		preferencesUi.numberOfThreads->setValue( m_ViewerCore->getSettings()->getPropertyAs<uint16_t>( "numberOfThreads" ) );
+		m_Interface.numberOfThreads->setValue( m_ViewerCore->getSettings()->getPropertyAs<uint16_t>( "numberOfThreads" ) );
 	}
 }
 
@@ -127,92 +127,92 @@ void PreferencesDialog::closeEvent( QCloseEvent * )
 
 void PreferencesDialog::loadSettings()
 {
-	preferencesUi.lutStructural->clear();
-	preferencesUi.lutZmap->clear();
-	const QSize size = preferencesUi.lutStructural->iconSize();
+	m_Interface.lutStructural->clear();
+	m_Interface.lutZmap->clear();
+	const QSize size = m_Interface.lutStructural->iconSize();
 	unsigned short index = 0;
 	color::Color::ColormapMapType colorMap = util::Singletons::get<color::Color, 10>().getColormapMap();
 	BOOST_FOREACH( color::Color::ColormapMapType::const_reference lut, colorMap ) {
 		if( lut.first != std::string( "fallback" ) ) {
-			preferencesUi.lutStructural->insertItem( index++, util::Singletons::get<color::Color, 10>().getIcon( lut.first, size.width() , size.height() ), QString( lut.first.c_str() ) ) ;
-			preferencesUi.lutZmap->insertItem( index++, util::Singletons::get<color::Color, 10>().getIcon( lut.first, size.width() , size.height() ), QString( lut.first.c_str() ) ) ;
+			m_Interface.lutStructural->insertItem( index++, util::Singletons::get<color::Color, 10>().getIcon( lut.first, size.width() , size.height() ), QString( lut.first.c_str() ) ) ;
+			m_Interface.lutZmap->insertItem( index++, util::Singletons::get<color::Color, 10>().getIcon( lut.first, size.width() , size.height() ), QString( lut.first.c_str() ) ) ;
 		}
 	}
-	preferencesUi.comboInterpolation->setCurrentIndex( m_ViewerCore->getSettings()->getPropertyAs<uint16_t>( "interpolationType" ) );
+	m_Interface.comboInterpolation->setCurrentIndex( m_ViewerCore->getSettings()->getPropertyAs<uint16_t>( "interpolationType" ) );
 
 	if( m_ViewerCore->hasImage() ) {
 		if( m_ViewerCore->getCurrentImage()->getImageProperties().imageType == ImageHolder::statistical_image ) {
-			preferencesUi.lutZmap->setCurrentIndex( preferencesUi.lutZmap->findText( m_ViewerCore->getCurrentImage()->getImageProperties().lut.c_str() ) );
-			preferencesUi.lutStructural->setCurrentIndex( preferencesUi.lutStructural->findText( m_ViewerCore->getSettings()->getPropertyAs<std::string>( "lutStructural" ).c_str() ) );
+			m_Interface.lutZmap->setCurrentIndex( m_Interface.lutZmap->findText( m_ViewerCore->getCurrentImage()->getImageProperties().lut.c_str() ) );
+			m_Interface.lutStructural->setCurrentIndex( m_Interface.lutStructural->findText( m_ViewerCore->getSettings()->getPropertyAs<std::string>( "lutStructural" ).c_str() ) );
 		} else if ( m_ViewerCore->getCurrentImage()->getImageProperties().imageType == ImageHolder::structural_image ) {
-			preferencesUi.lutStructural->setCurrentIndex( preferencesUi.lutStructural->findText( m_ViewerCore->getCurrentImage()->getImageProperties().lut.c_str() ) );
-			preferencesUi.lutZmap->setCurrentIndex( preferencesUi.lutZmap->findText( m_ViewerCore->getSettings()->getPropertyAs<std::string>( "lutZMap" ).c_str() ) );
+			m_Interface.lutStructural->setCurrentIndex( m_Interface.lutStructural->findText( m_ViewerCore->getCurrentImage()->getImageProperties().lut.c_str() ) );
+			m_Interface.lutZmap->setCurrentIndex( m_Interface.lutZmap->findText( m_ViewerCore->getSettings()->getPropertyAs<std::string>( "lutZMap" ).c_str() ) );
 		}
 	}
 
-	preferencesUi.checkStartUpScreen->setChecked( m_ViewerCore->getSettings()->getPropertyAs<bool>( "showStartWidget" ) );
-	preferencesUi.checkCrashMessage->setChecked( m_ViewerCore->getSettings()->getPropertyAs<bool>( "showCrashMessage" ) );
-	preferencesUi.checkOnlyFirst->setChecked( m_ViewerCore->getSettings()->getPropertyAs<bool>("visualizeOnlyFirstVista") );
-	preferencesUi.enableMultithreading->setVisible( m_ViewerCore->getSettings()->getPropertyAs<bool>( "ompAvailable" ) );
-	preferencesUi.multithreadingFrame->setVisible( m_ViewerCore->getSettings()->getPropertyAs<bool>( "ompAvailable" ) );
+	m_Interface.checkStartUpScreen->setChecked( m_ViewerCore->getSettings()->getPropertyAs<bool>( "showStartWidget" ) );
+	m_Interface.checkCrashMessage->setChecked( m_ViewerCore->getSettings()->getPropertyAs<bool>( "showCrashMessage" ) );
+	m_Interface.checkOnlyFirst->setChecked( m_ViewerCore->getSettings()->getPropertyAs<bool>("visualizeOnlyFirstVista") );
+	m_Interface.enableMultithreading->setVisible( m_ViewerCore->getSettings()->getPropertyAs<bool>( "ompAvailable" ) );
+	m_Interface.multithreadingFrame->setVisible( m_ViewerCore->getSettings()->getPropertyAs<bool>( "ompAvailable" ) );
 
 	//screenshot
-	preferencesUi.screenshotQuality->setValue( m_ViewerCore->getSettings()->getPropertyAs<uint16_t>( "screenshotQuality" ) );
-	preferencesUi.dpiX->setValue( m_ViewerCore->getSettings()->getPropertyAs<uint16_t>( "screenshotDPIX" ) );
-	preferencesUi.dpiY->setValue( m_ViewerCore->getSettings()->getPropertyAs<uint16_t>( "screenshotDPIY" ) );
-	preferencesUi.sizeX->setValue( m_ViewerCore->getSettings()->getPropertyAs<uint16_t>( "screenshotWidth" ) );
-	preferencesUi.sizeY->setValue( m_ViewerCore->getSettings()->getPropertyAs<uint16_t>( "screenshotHeight" ) );
-	preferencesUi.keepRatio->setChecked( m_ViewerCore->getSettings()->getPropertyAs<bool>( "screenshotKeepAspectRatio" ) );
-	preferencesUi.manualScaling->setChecked( m_ViewerCore->getSettings()->getPropertyAs<bool>( "screenshotManualScaling" ) );
-	preferencesUi.scalingFrame->setVisible( m_ViewerCore->getSettings()->getPropertyAs<bool>( "screenshotManualScaling" ) );
+	m_Interface.screenshotQuality->setValue( m_ViewerCore->getSettings()->getPropertyAs<uint16_t>( "screenshotQuality" ) );
+	m_Interface.dpiX->setValue( m_ViewerCore->getSettings()->getPropertyAs<uint16_t>( "screenshotDPIX" ) );
+	m_Interface.dpiY->setValue( m_ViewerCore->getSettings()->getPropertyAs<uint16_t>( "screenshotDPIY" ) );
+	m_Interface.sizeX->setValue( m_ViewerCore->getSettings()->getPropertyAs<uint16_t>( "screenshotWidth" ) );
+	m_Interface.sizeY->setValue( m_ViewerCore->getSettings()->getPropertyAs<uint16_t>( "screenshotHeight" ) );
+	m_Interface.keepRatio->setChecked( m_ViewerCore->getSettings()->getPropertyAs<bool>( "screenshotKeepAspectRatio" ) );
+	m_Interface.manualScaling->setChecked( m_ViewerCore->getSettings()->getPropertyAs<bool>( "screenshotManualScaling" ) );
+	m_Interface.scalingFrame->setVisible( m_ViewerCore->getSettings()->getPropertyAs<bool>( "screenshotManualScaling" ) );
 
 	if( m_ViewerCore->getSettings()->getPropertyAs<bool>( "ompAvailable" ) ) {
-		preferencesUi.enableMultithreading->setChecked( m_ViewerCore->getSettings()->getPropertyAs<bool>( "enableMultithreading" ) );
-		preferencesUi.numberOfThreads->setValue( m_ViewerCore->getSettings()->getPropertyAs<uint16_t>( "numberOfThreads" ) );
-		preferencesUi.useAllThreads->setChecked( m_ViewerCore->getSettings()->getPropertyAs<bool>( "useAllAvailablethreads" ) );
-		preferencesUi.multithreadingFrame->setVisible( m_ViewerCore->getSettings()->getPropertyAs<bool>( "enableMultithreading" ) );
-		preferencesUi.numberOfThreads->setEnabled( !m_ViewerCore->getSettings()->getPropertyAs<bool>( "useAllAvailableThreads" ) );
-		preferencesUi.numberOfThreads->setMinimum( 1 );
-		preferencesUi.numberOfThreads->setMaximum( m_ViewerCore->getSettings()->getPropertyAs<uint16_t>( "maxNumberOfThreads" ) );
+		m_Interface.enableMultithreading->setChecked( m_ViewerCore->getSettings()->getPropertyAs<bool>( "enableMultithreading" ) );
+		m_Interface.numberOfThreads->setValue( m_ViewerCore->getSettings()->getPropertyAs<uint16_t>( "numberOfThreads" ) );
+		m_Interface.useAllThreads->setChecked( m_ViewerCore->getSettings()->getPropertyAs<bool>( "useAllAvailablethreads" ) );
+		m_Interface.multithreadingFrame->setVisible( m_ViewerCore->getSettings()->getPropertyAs<bool>( "enableMultithreading" ) );
+		m_Interface.numberOfThreads->setEnabled( !m_ViewerCore->getSettings()->getPropertyAs<bool>( "useAllAvailableThreads" ) );
+		m_Interface.numberOfThreads->setMinimum( 1 );
+		m_Interface.numberOfThreads->setMaximum( m_ViewerCore->getSettings()->getPropertyAs<uint16_t>( "maxNumberOfThreads" ) );
 	}
 
-	screenshotXChanged( preferencesUi.sizeX->value() );
+	screenshotXChanged( m_Interface.sizeX->value() );
 
-	preferencesUi.defaultViewWidgetComboBox->clear();
+	m_Interface.defaultViewWidgetComboBox->clear();
 	const widget::WidgetLoader::WidgetMapType &widgetMap = util::Singletons::get<widget::WidgetLoader, 10>().getWidgetMap();
-	preferencesUi.defaultViewWidgetFrame->setVisible( widgetMap.size() > 1 );
+	m_Interface.defaultViewWidgetFrame->setVisible( widgetMap.size() > 1 );
 	BOOST_FOREACH( widget::WidgetLoader::WidgetMapType::const_reference w, widgetMap )
 	{
-		preferencesUi.defaultViewWidgetComboBox->addItem( w.first.c_str() );
+		m_Interface.defaultViewWidgetComboBox->addItem( w.first.c_str() );
 	}
-	preferencesUi.defaultViewWidgetComboBox->setCurrentIndex( preferencesUi.defaultViewWidgetComboBox->findText( m_ViewerCore->getSettings()->getPropertyAs<std::string>("defaultViewWidgetIdentifier").c_str() ) );
+	m_Interface.defaultViewWidgetComboBox->setCurrentIndex( m_Interface.defaultViewWidgetComboBox->findText( m_ViewerCore->getSettings()->getPropertyAs<std::string>("defaultViewWidgetIdentifier").c_str() ) );
 }
 
 void PreferencesDialog::saveSettings()
 {
-	m_ViewerCore->getSettings()->setPropertyAs<uint16_t>( "interpolationType", preferencesUi.comboInterpolation->currentIndex() );
-	m_ViewerCore->getSettings()->setPropertyAs<bool>( "showStartWidget", preferencesUi.checkStartUpScreen->isChecked() );
-	m_ViewerCore->getSettings()->setPropertyAs<bool>( "showCrashMessage", preferencesUi.checkCrashMessage->isChecked() );
-	m_ViewerCore->getSettings()->setPropertyAs<bool>( "visualizeOnlyFirstVista", preferencesUi.checkOnlyFirst->isChecked() );
+	m_ViewerCore->getSettings()->setPropertyAs<uint16_t>( "interpolationType", m_Interface.comboInterpolation->currentIndex() );
+	m_ViewerCore->getSettings()->setPropertyAs<bool>( "showStartWidget", m_Interface.checkStartUpScreen->isChecked() );
+	m_ViewerCore->getSettings()->setPropertyAs<bool>( "showCrashMessage", m_Interface.checkCrashMessage->isChecked() );
+	m_ViewerCore->getSettings()->setPropertyAs<bool>( "visualizeOnlyFirstVista", m_Interface.checkOnlyFirst->isChecked() );
 	//screenshot
-	m_ViewerCore->getSettings()->setPropertyAs<bool>( "screenshotKeepAspectRatio", preferencesUi.keepRatio->isChecked() );
-	m_ViewerCore->getSettings()->setPropertyAs<uint16_t>( "screenshotQuality", preferencesUi.screenshotQuality->value() );
-	m_ViewerCore->getSettings()->setPropertyAs<uint16_t>( "screenshotDPIX", preferencesUi.dpiX->value() );
-	m_ViewerCore->getSettings()->setPropertyAs<uint16_t>( "screenshotDPIY", preferencesUi.dpiY->value() );
-	m_ViewerCore->getSettings()->setPropertyAs<uint16_t>( "screenshotWidth", preferencesUi.sizeX->value() );
-	m_ViewerCore->getSettings()->setPropertyAs<uint16_t>( "screenshotHeight", preferencesUi.sizeY->value() );
-	m_ViewerCore->getSettings()->setPropertyAs<bool>( "screenshotManualScaling", preferencesUi.manualScaling->isChecked() );
-	m_ViewerCore->getSettings()->setPropertyAs<std::string>( "defaultViewWidgetIdentifier", preferencesUi.defaultViewWidgetComboBox->currentText().toStdString() );
+	m_ViewerCore->getSettings()->setPropertyAs<bool>( "screenshotKeepAspectRatio", m_Interface.keepRatio->isChecked() );
+	m_ViewerCore->getSettings()->setPropertyAs<uint16_t>( "screenshotQuality", m_Interface.screenshotQuality->value() );
+	m_ViewerCore->getSettings()->setPropertyAs<uint16_t>( "screenshotDPIX", m_Interface.dpiX->value() );
+	m_ViewerCore->getSettings()->setPropertyAs<uint16_t>( "screenshotDPIY", m_Interface.dpiY->value() );
+	m_ViewerCore->getSettings()->setPropertyAs<uint16_t>( "screenshotWidth", m_Interface.sizeX->value() );
+	m_ViewerCore->getSettings()->setPropertyAs<uint16_t>( "screenshotHeight", m_Interface.sizeY->value() );
+	m_ViewerCore->getSettings()->setPropertyAs<bool>( "screenshotManualScaling", m_Interface.manualScaling->isChecked() );
+	m_ViewerCore->getSettings()->setPropertyAs<std::string>( "defaultViewWidgetIdentifier", m_Interface.defaultViewWidgetComboBox->currentText().toStdString() );
 
 	if( m_ViewerCore->hasImage() ) {
 		if( m_ViewerCore->getCurrentImage()->getImageProperties().imageType == ImageHolder::statistical_image ) {
-			m_ViewerCore->getCurrentImage()->getImageProperties().lut = preferencesUi.lutZmap->currentText().toStdString() ;
+			m_ViewerCore->getCurrentImage()->getImageProperties().lut = m_Interface.lutZmap->currentText().toStdString() ;
 		} else if ( m_ViewerCore->getCurrentImage()->getImageProperties().imageType == ImageHolder::structural_image ) {
-			m_ViewerCore->getCurrentImage()->getImageProperties().lut = preferencesUi.lutStructural->currentText().toStdString() ;
+			m_ViewerCore->getCurrentImage()->getImageProperties().lut = m_Interface.lutStructural->currentText().toStdString() ;
 		}
 
-		m_ViewerCore->getSettings()->setPropertyAs<std::string>( "lutZMap", preferencesUi.lutZmap->currentText().toStdString() );
-		m_ViewerCore->getSettings()->setPropertyAs<std::string>( "lutStructural", preferencesUi.lutStructural->currentText().toStdString() );
+		m_ViewerCore->getSettings()->setPropertyAs<std::string>( "lutZMap", m_Interface.lutZmap->currentText().toStdString() );
+		m_ViewerCore->getSettings()->setPropertyAs<std::string>( "lutStructural", m_Interface.lutStructural->currentText().toStdString() );
 	}
 }
 

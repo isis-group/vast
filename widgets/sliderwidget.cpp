@@ -147,6 +147,7 @@ void SliderWidget::upperThresholdChanged( int sliderPos )
 
 void SliderWidget::synchronize()
 {
+	setVisible(m_ViewerCore->hasImage());
 	if( m_ViewerCore->getMode() == ViewerCoreBase::statistical_mode ) {
 		m_Interface.zmapModeFrame->setVisible( true );
 		unsigned short zmapImages = 0;

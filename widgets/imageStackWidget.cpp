@@ -44,6 +44,7 @@ ImageStack::ImageStack( QWidget *parent, ImageStackWidget *widget )
 	setHorizontalScrollBarPolicy( Qt::ScrollBarAsNeeded );
 	setVerticalScrollMode( ScrollPerItem );
 	setVerticalScrollBarPolicy( Qt::ScrollBarAsNeeded );
+	setSortingEnabled(false);
 }
 
 void ImageStack::contextMenuEvent( QContextMenuEvent *event )
@@ -143,6 +144,7 @@ void ImageStackWidget::viewAllImagesClicked()
 
 void ImageStackWidget::synchronize()
 {
+	setVisible( m_ViewerCore->hasImage() );
 	m_Interface.frame->setMaximumHeight( m_ViewerCore->getSettings()->getPropertyAs<uint16_t>( "maxOptionWidgetHeight" ) );
 	m_Interface.frame->setMinimumHeight( m_ViewerCore->getSettings()->getPropertyAs<uint16_t>( "minOptionWidgetHeight" ) );
 	
@@ -189,14 +191,14 @@ void ImageStackWidget::synchronize()
 		m_Interface.moveDown->setEnabled(false);
 		m_Interface.moveUp->setEnabled(false );
 	}
-	m_Interface.checkViewAllImages->setEnabled( m_ViewerCore->getUICore()->getEnsembleList().size() > 1 );
+	m_Interface.checkViewAllImages->setVisible( m_ViewerCore->getUICore()->getEnsembleList().size() > 1 );
 }
 
 void ImageStackWidget::itemClicked ( QListWidgetItem* item)
 {
 	if( m_ViewerCore->hasImage() ) {
 		const int numItems = m_ImageStack->findItems( QString( "*" ), Qt::MatchWrap | Qt::MatchWildcard ).size() ;
-		if ( numItems > 1 && m_ImageStack->currentItem() ) {
+		if ( numItems > 1 && m_ImageStack->currentItem() ) {	
 			m_Interface.moveUp->setEnabled(m_ImageStack->currentIndex().row() > 0);
 			m_Interface.moveDown->setEnabled( m_ImageStack->currentIndex().row() < numItems - 1);
 		}else {
@@ -218,13 +220,13 @@ void ImageStackWidget::itemClicked ( QListWidgetItem* item)
 void ImageStackWidget::itemChanged( QListWidgetItem *item )
 {
 	if( m_ViewerCore->hasImage() ) {
-		ImageHolder::Pointer image = m_ViewerCore->getImageMap().at( item->data(Qt::UserRole).toString().toStdString() );
+		const ImageHolder::Pointer image = m_ViewerCore->getImageMap().at( item->data(Qt::UserRole).toString().toStdString() );
 		if( item->checkState() == Qt::Checked ) {
 			image->getImageProperties().isVisible = true ;
 		} else {
 			image->getImageProperties().isVisible = false ;
 		}
-		m_ViewerCore->getUICore()->refreshUI();
+		m_ViewerCore->getUICore()->refreshUI(false); //no update of the mainwindow is needed here
 		m_ViewerCore->updateScene();
 	}
 
@@ -258,23 +260,16 @@ void ImageStackWidget::closeImage()
 
 void ImageStackWidget::distributeImages()
 {
-// 	ImageHolder::List tmpImageList;
-// 	BOOST_FOREACH( ImageHolder::List::reference image, m_ViewerCore->getImageList() ) {
-// 		tmpImageList.push_back( image);
-// 		m_ViewerCore->getDataContainer().erase( image.first );
-// 		BOOST_FOREACH( WidgetEnsembleComponent::Map::reference ensemble, m_ViewerCore->getUICore()->getWidgets() ) {
-// 			ensemble.first->removeImage(image.second);
-// 		}
-// 	}
-// 	m_ViewerCore->getUICore()->removeAllWidgetEnsembles();
-// 	m_ViewerCore->getUICore()->refreshUI();
-// 	BOOST_FOREACH( DataContainer::const_reference image, tmpContainer ) {
-// 		m_ViewerCore->getDataContainer().insert( image );
-// 		m_ViewerCore->getUICore()->createViewWidgetEnsemble( m_ViewerCore->getSettings()->getPropertyAs<std::string>("defaultViewWidgetIdentifier"), image.second );
-// 	}
-// 	m_ViewerCore->getUICore()->refreshUI();
-// 	m_ViewerCore->settingsChanged();
-// 	m_ViewerCore->updateScene();
+	m_ViewerCore->getUICore()->closeAllWidgetEnsembles();
+	BOOST_FOREACH( ImageHolder::List::const_reference image, m_ViewerCore->getImageList() ) {
+		m_ViewerCore->getUICore()->createViewWidgetEnsemble( m_ViewerCore->getSettings()->getPropertyAs<std::string>("defaultViewWidgetIdentifier"), image );
+	}
+	LOG_IF( m_ViewerCore->getImageList().size() != m_ViewerCore->getUICore()->getEnsembleList().size(), Dev, error ) << "Distributed the images. But amount of images ("
+				<< m_ViewerCore->getImageList().size() << ") and amount of widget ensembles (" << m_ViewerCore->getUICore()->getEnsembleList().size()
+				<< ") does not coincide!";
+	m_ViewerCore->getUICore()->refreshUI(false);
+	m_ViewerCore->updateScene();
+	m_ViewerCore->settingsChanged();
 }
 
 void ImageStackWidget::moveDown()

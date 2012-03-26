@@ -49,7 +49,7 @@ UICore::UICore( QViewerCore *core )
 	setOptionPosition( );
 	connect( m_MainWindow->getInterface().actionInformation_Areas, SIGNAL( triggered( bool ) ), SLOT( showInformationAreas( bool ) ) );
 
-	m_ViewerCore->emitCurrentImageChanged.connect( boost::bind( &UICore::refreshUI, this ) );
+	m_ViewerCore->emitCurrentImageChanged.connect( boost::bind( &UICore::refreshUI, this, _1 ) );
 }
 
 void UICore::setOptionPosition( UICore::OptionPosition pos )
@@ -166,25 +166,37 @@ WidgetEnsemble::List UICore::createViewWidgetEnsembleList(const std::string& wid
 }
 
 
-void UICore::removeWidgetEnsemble( WidgetEnsemble::Pointer ensemble )
+ImageHolder::List UICore::closeWidgetEnsemble( WidgetEnsemble::Pointer ensemble )
 {
-	m_MainWindow->getInterface().centralGridLayout->removeWidget( ensemble->getFrame() );
+	const WidgetEnsemble::List::iterator iter = std::find( m_EnsembleList.begin(), m_EnsembleList.end(), ensemble );
+	if( iter != m_EnsembleList.end() ) {
+		ImageHolder::List retList = ensemble->getImageList();
+		ensemble->getImageList().clear();
+		ensemble->getFrame()->close();
+		m_EnsembleList.erase(iter);
+		return retList;
+	} else {
+		LOG( Dev, error ) << "Tried to remove an widget ensemble that is not in the ensemble list!";
+		return ImageHolder::List();
+	}
+	return ImageHolder::List();
 }
 
+
+void UICore::closeAllWidgetEnsembles()
+{
+	WidgetEnsemble::List cp = m_EnsembleList; //make a copy of the list to iterate on
+	BOOST_FOREACH( WidgetEnsemble::List::reference ensemble, cp ) {
+		closeWidgetEnsemble( ensemble );
+	}
+	LOG_IF( !m_EnsembleList.empty(), Dev, error ) << "Removed all widget ensembles, but ensemble list still contains "
+						<< m_EnsembleList.size() << " elements!";
+}
 
 void UICore::attachWidgetEnsemble( WidgetEnsemble::Pointer ensemble )
 {
 	m_MainWindow->getInterface().centralGridLayout->addWidget( ensemble->getFrame() );
 }
-
-void UICore::removeAllWidgetEnsembles()
-{
-	BOOST_FOREACH( WidgetEnsemble::List::reference ensemble, m_EnsembleList ) {
-		removeWidgetEnsemble( ensemble );
-	}
-	m_EnsembleList.clear();
-}
-
 
 WidgetEnsembleComponent::Pointer UICore::createEnsembleComponent( const std::string &widgetIdentifier, PlaneOrientation planeOrientation )
 {
@@ -213,24 +225,18 @@ void UICore::reloadPluginsToGUI()
 	m_MainWindow->reloadPluginsToGUI();
 }
 
-void UICore::refreshUI()
+void UICore::refreshUI(const bool &mainwindow)
 {
-
-	const bool hasImages = m_ViewerCore->hasImage();
-
-	if( hasImages ) {
-		BOOST_FOREACH( WidgetEnsemble::List::reference ensemble, getEnsembleList() ) {
-			ensemble->update( m_ViewerCore->getCurrentImage() );
-		}
+	BOOST_FOREACH( WidgetEnsemble::List::reference ensemble, getEnsembleList() ) {
+		ensemble->update( m_ViewerCore );
 	}
 	//refresh peripherals
 	m_SliderWidget->synchronize();
 	m_ImageStackWidget->synchronize();
 	m_VoxelInformationWidget->synchronize();
-	m_MainWindow->refreshUI();
-	m_VoxelInformationWidget->setVisible( hasImages );
-	m_ImageStackWidget->setVisible( hasImages );
-	m_SliderWidget->setVisible( hasImages );
+	if( mainwindow ) {
+		m_MainWindow->refreshUI();
+	}
 }
 
 WidgetEnsemble::Pointer UICore::getCurrentEnsemble() const
@@ -246,6 +252,7 @@ WidgetEnsemble::Pointer UICore::getCurrentEnsemble() const
 	} else {
 		LOG( Dev, error ) << "Viewer has no ensemble yet. So can not pick the current one!";
 	}
+	return WidgetEnsemble::Pointer();
 }
 
 

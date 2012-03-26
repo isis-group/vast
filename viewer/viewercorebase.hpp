@@ -65,7 +65,7 @@ public:
 	
 	void setCurrentImage( const ImageHolder::Pointer image ) { m_CurrentImage = image; emitCurrentImageChanged( image ); }
 
-	ImageHolder::Pointer getCurrentImage();
+	ImageHolder::Pointer getCurrentImage() const;
 
 	ImageHolder::Pointer getCurrentAnatomicalRefernce() const { return m_CurrentAnatomicalReference; }
 
@@ -88,8 +88,9 @@ public:
 	boost::signals2::signal<void (ImageHolder::Pointer)> emitCurrentImageChanged;
 
 private:
-	//this is the container which actually holds all the images
+	//this is the container which holds all the images
 	ImageHolder::List m_ImageList;
+	//this map associates all the images with an uuid
 	ImageHolder::Map m_ImageMap;
 	ImageHolder::Pointer  m_CurrentImage;
 	void initOMP();

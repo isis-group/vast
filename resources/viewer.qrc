@@ -1,5 +1,6 @@
 <RCC>
   <qresource prefix="common">
+    <file>merge.png</file>
     <file>arrow_up.png</file>
     <file>arrow_down.png</file>
     <file>icon_email.gif</file>

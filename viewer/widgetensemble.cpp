@@ -27,6 +27,7 @@
  ******************************************************************/
 #include "widgetensemble.hpp"
 #include "widgetensemblecomponent.hpp"
+#include "imageholder.hpp"
 
 namespace isis {
 namespace viewer {
@@ -56,7 +57,7 @@ void WidgetEnsemble::addImage ( const ImageHolder::Pointer image )
 
 void WidgetEnsemble::removeImage ( const ImageHolder::Pointer image )
 {
-	const ImageHolder::List::iterator iter = find( m_imageList.begin(), m_imageList.end(), image );
+	const ImageHolder::List::iterator iter = std::find( m_imageList.begin(), m_imageList.end(), image );
 	if( iter != m_imageList.end() ) {
 		m_imageList.erase( iter );
 		emitRemoveImage( image );
@@ -105,24 +106,39 @@ void WidgetEnsemble::setIsCurrent ( bool current )
 	}
 }
 
-void WidgetEnsemble::update( const ImageHolder::Pointer currentImage )
+void WidgetEnsemble::update( const ViewerCoreBase* core )
 {
 	//if this ensemble contains no image close it
-	if( getImageList().empty() ) {
+	if( m_imageList.empty() ) {
 		getFrame()->close();
 		return;
 	}
-	//if no image is visible make this ensemble invisible either
-	bool visible = false;
-	BOOST_FOREACH( ImageHolder::List::const_reference image, getImageList() ) {
-		if( image->getImageProperties().isVisible ) {
-			visible = true;
+	if( core->hasImage() ) {
+		ImageHolder::Pointer currentImage = core->getCurrentImage();
+		const ImageHolder::List::const_iterator currentImageIterator = std::find( m_imageList.begin(), m_imageList.end(), currentImage );
+		//if no image is visible make this ensemble invisible either
+		bool visible = false;
+		BOOST_FOREACH( ImageHolder::List::const_reference image, m_imageList ) {
+			if( image->getImageProperties().isVisible ) {
+				visible = true;
+			}
 		}
-	}
-	getFrame()->setVisible(visible);
-	//if this ensemble contains the current image make this the current ensemble either
-	if( visible ) {
-		setIsCurrent( std::find( getImageList().begin(), getImageList().end(), currentImage ) != getImageList().end() );
+		getFrame()->setVisible(visible);
+		//if this ensemble contains the current image make this the current ensemble either
+		if( visible ) {
+			setIsCurrent( currentImageIterator != m_imageList.end() );
+		}
+		//resort the ensembles image list -> current image has to be the top image
+		ImageHolder::List tmpList;
+		if( currentImageIterator != m_imageList.end() ) {
+			tmpList.push_back( currentImage );
+		}
+		for( ImageHolder::List::const_iterator iter = m_imageList.begin(); iter != m_imageList.end(); iter++ ) {
+			if( iter != currentImageIterator ) {
+				tmpList.push_back( *iter );
+			}
+		}
+		m_imageList = tmpList;
 	}
 }
 

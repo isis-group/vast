@@ -145,12 +145,12 @@ ImageHolder::Pointer ViewerCoreBase::addImage( const isis::data::Image &image, c
 	return retImage;
 }
 
-ImageHolder::Pointer ViewerCoreBase::getCurrentImage()
+ImageHolder::Pointer ViewerCoreBase::getCurrentImage() const
 {
 	if( m_CurrentImage.get() ) {
 		return m_CurrentImage;
 	} else {
-		LOG( Dev, error ) << "Trying to fetch the current image. But there is no current image at all. Should be checked before.";
+		LOG( Dev, error ) << "Trying to fetch the current image. But there is no current image. Should be checked before.";
 		return ImageHolder::Pointer();
 	}
 

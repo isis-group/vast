@@ -134,7 +134,7 @@ void QViewerCore::physicalCoordsChanged ( util::fvector4 physicalCoords )
 void QViewerCore::onWidgetClicked ( widget::WidgetInterface* origin, util::fvector4 physicalCoords, Qt::MouseButton mouseButton )
 {
 	setCurrentImage( origin->getWidgetEnsemble()->getImageList().front() );
-	getUICore()->refreshUI();
+	getUICore()->refreshUI(false); //no update of mainwindow is needed here
 	emitOnWidgetClicked(physicalCoords, mouseButton);
 	emitPhysicalCoordsChanged(physicalCoords);
 }
@@ -430,12 +430,11 @@ void QViewerCore::openFileList(const std::list< FileInformation > fileInfoList)
 void QViewerCore::closeImage ( ImageHolder::Pointer image, bool refreshUI )
 {
 	const size_t oldNumberImages = getImageList().size();
-	std::cout << oldNumberImages << std::endl;
 	LOG( Dev, info ) << "Closing image " << image->getImageProperties().fileName;
 	BOOST_FOREACH( WidgetEnsemble::List::reference ensemble, getUICore()->getEnsembleList() ) {
 		ensemble->removeImage( image );
 	}
-	//if this image is the current one, we have to set one of the residual images to the current ones
+	//if this image is the current one, we have to set one of the residual images to the current one
 	if( getCurrentImage().get() == image.get() ) {
 		LOG( Dev, info ) << "This was the current image so setting one of the residual images to current image";
 		ImageHolder::List tmpList = getImageList();
@@ -449,7 +448,7 @@ void QViewerCore::closeImage ( ImageHolder::Pointer image, bool refreshUI )
 	getImageList().erase( std::find (getImageList().begin(), getImageList().end(), image) );
 	getImageMap().erase( image->getImageProperties().id );
 	if( refreshUI ) {
-		getUICore()->refreshUI();
+		getUICore()->refreshUI(false);
 	}
 	updateScene();
 	if( ( getImageList().size() == getImageMap().size() ) && ( getImageList().size() == ( oldNumberImages - 1 ) ) ) {
