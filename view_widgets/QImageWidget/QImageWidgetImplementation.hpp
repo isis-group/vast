@@ -80,7 +80,7 @@ public Q_SLOTS:
 	virtual void setCrossHairColor( QColor color ) { m_CrosshairColor = color; }
 	virtual void setCrossHairWidth( int width ) { m_CrosshairWidth = width; }
 
-	virtual std::string getWidgetName() const { return std::string( "qt4_image_widget" ); }
+	virtual std::string getWidgetName() const { return std::string( "qt4_plane_widget" ); }
 	virtual void keyPressEvent( QKeyEvent *e );
 
 	virtual void dragEnterEvent( QDragEnterEvent * );
