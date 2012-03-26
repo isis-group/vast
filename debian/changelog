@@ -1,5 +1,9 @@
 vast (0.4.0~beta-1) UNRELEASED; urgency=low
 
+  [ ISIS Group (The friendly isis team) ]
+  * fixed a lot of bugs
+  * image widgets are now plugins
+  * revised some design concepts
 
  -- Michael Hanke <mih@debian.org>  Mon, 26 Mar 2012 14:39:33 + 0100
 
