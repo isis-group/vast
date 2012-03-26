@@ -108,11 +108,6 @@ void WidgetEnsemble::setIsCurrent ( bool current )
 
 void WidgetEnsemble::update( const ViewerCoreBase* core )
 {
-	//if this ensemble contains no image close it
-	if( m_imageList.empty() ) {
-		getFrame()->close();
-		return;
-	}
 	if( core->hasImage() ) {
 		ImageHolder::Pointer currentImage = core->getCurrentImage();
 		const ImageHolder::List::const_iterator currentImageIterator = std::find( m_imageList.begin(), m_imageList.end(), currentImage );

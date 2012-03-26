@@ -227,8 +227,13 @@ void UICore::reloadPluginsToGUI()
 
 void UICore::refreshUI(const bool &mainwindow)
 {
-	BOOST_FOREACH( WidgetEnsemble::List::reference ensemble, getEnsembleList() ) {
-		ensemble->update( m_ViewerCore );
+	WidgetEnsemble::List cp = getEnsembleList();
+	BOOST_FOREACH( WidgetEnsemble::List::reference ensemble, cp ) {
+		if( ensemble->getImageList().empty() ) {
+			closeWidgetEnsemble( ensemble );
+		} else {
+			ensemble->update( m_ViewerCore );
+		}
 	}
 	//refresh peripherals
 	m_SliderWidget->synchronize();

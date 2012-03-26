@@ -239,15 +239,17 @@ void ImageStackWidget::itemSelected( QListWidgetItem *item )
 
 void ImageStackWidget::closeAllImages()
 {
-	QList<QListWidgetItem *> items = m_ImageStack->findItems( QString( "*" ), Qt::MatchWrap | Qt::MatchWildcard );
-	BOOST_FOREACH( QList<QListWidgetItem *>::const_reference item, items ) {
-		ImageHolder::Map::iterator iter = m_ViewerCore->getImageMap().find( item->data(Qt::UserRole).toString().toStdString() );
-
-		if( iter != m_ViewerCore->getImageMap().end() ) {
-			m_ViewerCore->closeImage( iter->second, false );
-		}
+	//ok we assume that "close all images" actually means to close all images - not only those that are listed by the imagestack
+	ImageHolder::List cp = m_ViewerCore->getImageList();
+	BOOST_FOREACH( ImageHolder::List::const_reference image, cp ) {
+		m_ViewerCore->closeImage( image, false ); //do not refresh the ui with each close
 	}
 	m_ViewerCore->getUICore()->refreshUI();
+	LOG_IF( !m_ViewerCore->getUICore()->getEnsembleList().empty(), Dev, error ) << "Closed all images. But the amount of widget ensembles is not 0 ("
+					<< m_ViewerCore->getUICore()->getEnsembleList().size() << ") !";
+	LOG_IF( !m_ViewerCore->getImageList().empty(), Dev, error ) << "Closed all images. But there are still "
+					<< m_ViewerCore->getImageList().size() << " in the global image list!";
+
 }
 
 
