@@ -14,7 +14,7 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 qt4_wrap_cpp(widget_moc_files QGeomWidget.hpp )
 
-add_library(vastImageWidget_QtGeom SHARED QGeomWidget.cpp ${widget_moc_files} )
+add_library(vastImageWidget_QtGeom SHARED QGeomWidget.cpp geomhandler.cpp ${widget_moc_files} )
 target_link_libraries(vastImageWidget_QtGeom ${ISIS_LIB}  ${ISIS_LIB_DEPENDS} ${QT_LIBRARIES})
 
 install(TARGETS vastImageWidget_QtGeom DESTINATION ${VAST_WIDGET_INFIX} COMPONENT "vast widgets" )

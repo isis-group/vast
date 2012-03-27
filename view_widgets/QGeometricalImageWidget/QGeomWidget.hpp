@@ -52,6 +52,8 @@ public:
 	
 	virtual void updateScene();
     virtual void lookAtPhysicalCoords ( const util::fvector4& physicalCoords );
+	virtual void addImage( const ImageHolder::Pointer image );
+	virtual bool removeImage( const ImageHolder::Pointer image );
     virtual void setEnableCrosshair ( bool enable );
     virtual void setInterpolationType ( InterpolationType interpolation );
     virtual void setMouseCursorIcon ( QIcon );
@@ -59,10 +61,15 @@ public:
 
 protected:
 	void paintEvent( QPaintEvent *event );
+	void resizeEvent( QResizeEvent *event );
 	
 private:
+	void paintImage( const ImageHolder::Pointer );
+	
 	QPainter *m_Painter;
 	QVBoxLayout *m_Layout;
+	util::fvector4 m_BoundingBox;
+	util::fvector4 m_ViewPort;
 };
 
 

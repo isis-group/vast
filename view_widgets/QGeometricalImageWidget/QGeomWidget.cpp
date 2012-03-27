@@ -27,6 +27,9 @@
  ******************************************************************/
 
 #include "QGeomWidget.hpp"
+#include "geomhandler.hpp"
+
+#include "memoryhandler.hpp"
 
 namespace isis {
 namespace viewer {
@@ -53,27 +56,68 @@ void QGeomWidget::setup ( QViewerCore* core, QWidget* parent , PlaneOrientation 
 	
 }
 
+void QGeomWidget::resizeEvent ( QResizeEvent* event )
+{
+	//update viewport
+	const float _width = fabs( m_BoundingBox[2] - m_BoundingBox[0] );
+	const float _height = fabs( m_BoundingBox[3] - m_BoundingBox[1] );
+	
+	const float scalew = width() / _width;
+	const  float scaleh = height() / _height;
+	
+	const float scale = std::min(scaleh, scalew);
+	m_ViewPort = util::fvector4( (width() - (_width * scale)) / 2.  , (height() - (_height * scale)) / 2., _width * scale, _height * scale );
+    QWidget::resizeEvent ( event );
+}
+
+
 void QGeomWidget::updateScene()
 {
 	update();
 }
 
+void QGeomWidget::addImage ( const ImageHolder::Pointer /*image*/ )
+{
+	m_BoundingBox = _internal::getPhysicalBoundingBox( getWidgetEnsemble()->getImageList(), m_PlaneOrientation );
+}
+
+bool QGeomWidget::removeImage ( const ImageHolder::Pointer /*image*/ )
+{
+	m_BoundingBox = _internal::getPhysicalBoundingBox( getWidgetEnsemble()->getImageList(), m_PlaneOrientation );
+}
+
+
 void QGeomWidget::paintEvent ( QPaintEvent* event )
 {
 	m_Painter->begin(this);
-	QMatrix matrix;
-	matrix.reset();
-	m_Painter->setMatrix(matrix.scale(1.5,1.5));
-	m_Painter->setWindow(-100,-100,200,200);
-	m_Painter->setViewport(0, (height() - width())/2 , width(), width() );
-	m_Painter->drawLine(-10,-10,-10,10);
-	m_Painter->drawLine(-10,10,10,10);
-	m_Painter->drawLine(10,10,10,-10);
-	m_Painter->drawLine(10,-10,-10,-10);
+	m_Painter->setViewport( m_ViewPort[0], m_ViewPort[1], m_ViewPort[2], m_ViewPort[3] );
+	m_Painter->setWindow( m_BoundingBox[0], m_BoundingBox[1], m_BoundingBox[2], m_BoundingBox[3] );
+	BOOST_FOREACH( ImageHolder::Vector::const_reference image, getWidgetEnsemble()->getImageList() )
+	{
+		paintImage( image );
+	}
+
+	
 
 	m_Painter->end();
-//     QWidget::paintEvent ( event );
 }
+
+void QGeomWidget::paintImage( const ImageHolder::Pointer image )
+{
+	m_Painter->setTransform( _internal::getQTransform( image, m_PlaneOrientation) );
+
+	
+	const util::ivector4 mappedSizeAligned = mapCoordsToOrientation( image->getImageProperties().alignedSize32, image->getImageProperties().latchedOrientation, m_PlaneOrientation );
+	isis::data::MemChunk<InternalImageType> sliceChunk( mappedSizeAligned[0], mappedSizeAligned[1] );
+	MemoryHandler::fillSliceChunk<InternalImageType>( sliceChunk, image, m_PlaneOrientation );
+
+	
+	QImage qImage( ( InternalImageType * ) sliceChunk.asValueArray<InternalImageType>().getRawAddress().get(),
+					   mappedSizeAligned[0], mappedSizeAligned[1], QImage::Format_Indexed8 );
+	qImage.setColorTable( image->getImageProperties().colorMap );
+	m_Painter->drawImage( 0,0, qImage );
+}
+
 
 
 void QGeomWidget::lookAtPhysicalCoords ( const util::fvector4& physicalCoords )
