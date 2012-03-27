@@ -87,6 +87,7 @@ void isis::viewer::ui::FileDialog::fileDialectChanged ( QString dialect )
 void isis::viewer::ui::FileDialog::showEvent( QShowEvent * )
 {
 	setup();
+	m_Interface.fileDirEdit->clearEditText();
 	adjustSize();
 }
 
@@ -150,6 +151,7 @@ void isis::viewer::ui::FileDialog::setup()
 	m_Interface.openSaveButton->setEnabled( false );
 	m_PathList.clear();
 	m_Interface.fileDirEdit->clear();
+
 	m_Interface.rfComboBox->clear();
 	m_Interface.rfComboBox->addItem( "auto" );
 	BOOST_FOREACH( std::list<util::istring>::const_reference suffix, getFileFormatsAsList( isis::image_io::FileFormat::read_only ) ) {
@@ -290,7 +292,9 @@ bool isis::viewer::ui::FileDialog::checkIfPathIsValid( QString path, unsigned sh
 
 void isis::viewer::ui::FileDialog::browse()
 {
-	boost::filesystem::path p( m_Interface.fileDirEdit->currentText().toStdString() );
+	std::string path_str = m_Interface.fileDirEdit->currentText().toStdString();
+	boost::trim( path_str );
+	boost::filesystem::path p( path_str );
 
 	if ( boost::filesystem::is_directory(  boost::filesystem::path( p.directory_string() ) ) ) {
 		m_FileDialog.setDirectory( p.directory_string().c_str() );
