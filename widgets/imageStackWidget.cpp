@@ -150,7 +150,7 @@ void ImageStackWidget::synchronize()
 				} else {
 					item->setCheckState( Qt::Unchecked );
 				}
-				if ( m_Interface.checkViewAllImages->isChecked() ) {
+				if ( m_Interface.checkViewAllImages->isChecked() && m_ViewerCore->getUICore()->getEnsembleList().size() > 1 ) {
 					const ImageHolder::Vector iList = m_CurrentSelectedEnsemble->getImageList();
 					if( std::find( iList.begin(), iList.end(), image ) != iList.end() ) {
 						item->setBackgroundColor( color::currentEnsemble );

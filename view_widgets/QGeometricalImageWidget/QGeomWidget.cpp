@@ -50,12 +50,31 @@ void QGeomWidget::setup ( QViewerCore* core, QWidget* parent , PlaneOrientation 
 	setAutoFillBackground( true );
 	setPalette( QPalette( Qt::black ) );
 	setAcceptDrops( true );
+	
 }
 
 void QGeomWidget::updateScene()
 {
-
+	update();
 }
+
+void QGeomWidget::paintEvent ( QPaintEvent* event )
+{
+	m_Painter->begin(this);
+	QMatrix matrix;
+	matrix.reset();
+	m_Painter->setMatrix(matrix.scale(1.5,1.5));
+	m_Painter->setWindow(-100,-100,200,200);
+	m_Painter->setViewport(0, (height() - width())/2 , width(), width() );
+	m_Painter->drawLine(-10,-10,-10,10);
+	m_Painter->drawLine(-10,10,10,10);
+	m_Painter->drawLine(10,10,10,-10);
+	m_Painter->drawLine(10,-10,-10,-10);
+
+	m_Painter->end();
+//     QWidget::paintEvent ( event );
+}
+
 
 void QGeomWidget::lookAtPhysicalCoords ( const util::fvector4& physicalCoords )
 {

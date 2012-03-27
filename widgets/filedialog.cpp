@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * Author: Erik Türke, tuerke@cbs.mpg.de
+ * Author: Erik Tuerke, tuerke@cbs.mpg.de
  *
  * filedialog.cpp
  *
@@ -32,6 +32,7 @@
 #include "widgetloader.hpp"
 #include "fileinformation.hpp"
 
+#include <boost/algorithm/string.hpp>
 
 isis::viewer::ui::FileDialog::FileDialog( QWidget *parent, QViewerCore *core )
 	: QDialog ( parent ),
@@ -246,7 +247,9 @@ void isis::viewer::ui::FileDialog::parsePath()
 
 bool isis::viewer::ui::FileDialog::checkIfPathIsValid( QString path, unsigned short &validFiles, const util::istring &suffix, FileMode mode, bool /*acceptNoSuffix*/ )
 {
-	boost::filesystem::path p( path.toStdString() );
+	std::string path_str = path.toStdString();
+	boost::trim( path_str );	//use trim to remove leading ant trailing white spaces
+	boost::filesystem::path p( path_str ); 
 	std::list<util::istring> fileFormatList = getFileFormatsAsList( isis::image_io::FileFormat::read_only );
 
 	//ok, path exists

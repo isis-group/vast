@@ -56,7 +56,9 @@ public:
     virtual void setInterpolationType ( InterpolationType interpolation );
     virtual void setMouseCursorIcon ( QIcon );
     virtual void setZoom ( float zoom );
-	
+
+protected:
+	void paintEvent( QPaintEvent *event );
 	
 private:
 	QPainter *m_Painter;
