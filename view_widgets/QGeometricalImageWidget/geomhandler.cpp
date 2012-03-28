@@ -27,6 +27,7 @@
  ******************************************************************/
 
 #include "geomhandler.hpp"
+#include <boost/numeric/ublas/vector.hpp>
 #include <Adapter/qmatrixconversion.hpp>
 
 namespace isis {
@@ -84,14 +85,37 @@ util::fvector4 getPhysicalBoundingBox ( const ImageHolder::Vector images, const 
 
 QTransform getQTransform ( const ImageHolder::Pointer image, const PlaneOrientation& orientation )
 {
-	image->getImageProperties().orientation;
+	using namespace boost::numeric::ublas;
+	vector<float> transformed_io = prod( trans(image->getImageProperties().orientation), image->getImageProperties().indexOrigin.getBoostVector() );
+	
 	QTransform retTransform;
-	return retTransform.translate(-79.5,-99.5);
-	
-	
-	
+	switch(orientation) {
+		case axial:
+			return retTransform.translate(transformed_io[0], transformed_io[1]);
+			break;
+		case sagittal:
+			return retTransform.translate(transformed_io[1], transformed_io[2]);
+			break;
+		case coronal:
+			return retTransform.translate(transformed_io[0], transformed_io[2]);
+			break;
+	}
 }
 
+QMatrix getMatrix2ISISSpace ( const PlaneOrientation& orientation )
+{
+	switch ( orientation ) {
+		case axial:
+			return QMatrix ( -1, 0, 0, 1, 1, 1 );
+			break;
+		case sagittal:
+			return QMatrix( 1,0,0,1,1,1);
+			break;
+		case coronal:
+			return QMatrix(-1,0,0,1,1,1);
+			break;
+	}
+}
 	
 
 }}}}

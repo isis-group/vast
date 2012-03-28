@@ -43,6 +43,7 @@ util::fvector4 getPhysicalBoundingBox( const ImageHolder::Vector images, const P
 
 QTransform getQTransform( const ImageHolder::Pointer image, const PlaneOrientation &orientation );
 
+QMatrix getMatrix2ISISSpace( const PlaneOrientation &orientation );
 	
 
 }}}}// end namespace

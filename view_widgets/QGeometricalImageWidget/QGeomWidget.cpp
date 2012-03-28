@@ -92,6 +92,7 @@ void QGeomWidget::paintEvent ( QPaintEvent* event )
 	m_Painter->begin(this);
 	m_Painter->setViewport( m_ViewPort[0], m_ViewPort[1], m_ViewPort[2], m_ViewPort[3] );
 	m_Painter->setWindow( m_BoundingBox[0], m_BoundingBox[1], m_BoundingBox[2], m_BoundingBox[3] );
+	
 	BOOST_FOREACH( ImageHolder::Vector::const_reference image, getWidgetEnsemble()->getImageList() )
 	{
 		paintImage( image );
@@ -104,7 +105,9 @@ void QGeomWidget::paintEvent ( QPaintEvent* event )
 
 void QGeomWidget::paintImage( const ImageHolder::Pointer image )
 {
-	m_Painter->setTransform( _internal::getQTransform( image, m_PlaneOrientation) );
+	
+	m_Painter->setMatrix(_internal::getMatrix2ISISSpace(m_PlaneOrientation) );
+	m_Painter->setTransform( _internal::getQTransform( image, m_PlaneOrientation), true );
 
 	
 	const util::ivector4 mappedSizeAligned = mapCoordsToOrientation( image->getImageProperties().alignedSize32, image->getImageProperties().latchedOrientation, m_PlaneOrientation );
