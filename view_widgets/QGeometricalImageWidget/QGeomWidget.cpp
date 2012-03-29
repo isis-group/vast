@@ -105,10 +105,36 @@ void QGeomWidget::paintEvent ( QPaintEvent* event )
 
 void QGeomWidget::paintImage( const ImageHolder::Pointer image )
 {
+	m_Painter->setTransform(_internal::getTransform2ISISSpace(m_PlaneOrientation, m_BoundingBox) );	
 	
-	m_Painter->setMatrix(_internal::getMatrix2ISISSpace(m_PlaneOrientation) );
-	m_Painter->setTransform( _internal::getQTransform( image, m_PlaneOrientation), true );
+// 	if( m_PlaneOrientation == sagittal ){
+// 	QPen pen1;
+// 	pen1.setBrush(QBrush( Qt::white ) );
+// 	pen1.setWidthF(1);
+// 	pen1.setColor(Qt::white);
+// 	pen1.setCapStyle(Qt::RoundCap);
+// 	m_Painter->setPen(pen1);
+// 	m_Painter->drawLine(-83,94,-130,-29);
+// 	m_Painter->drawLine(-130,-29,46,-96);
+// 	m_Painter->drawLine(46,-96,93,27 );
+// 	m_Painter->drawLine(93,27,-83,94);
+// 
+// 	m_Painter->drawRect(m_BoundingBox[0], m_BoundingBox[1], m_BoundingBox[2], m_BoundingBox[3]);
+// 
+// 	QPen pen2;
+// 	pen2.setBrush(QBrush( Qt::red ) );
+// 	pen2.setWidthF(3);
+// 	pen2.brush().setColor(Qt::red);
+// 	pen2.setCapStyle(Qt::RoundCap);
+// 	m_Painter->setPen(pen2);
+// 	m_Painter->drawPoint(-141,109); //origin
+// 	m_Painter->drawText(-85,101, "origin");
+// 	m_Painter->drawPoint(-130,-29);
+// 	m_Painter->drawPoint(46,-96);
+// 	m_Painter->drawPoint(93,27);
 
+// 	}
+	m_Painter->setTransform( _internal::getQTransform( image, m_PlaneOrientation ), true );
 	
 	const util::ivector4 mappedSizeAligned = mapCoordsToOrientation( image->getImageProperties().alignedSize32, image->getImageProperties().latchedOrientation, m_PlaneOrientation );
 	isis::data::MemChunk<InternalImageType> sliceChunk( mappedSizeAligned[0], mappedSizeAligned[1] );

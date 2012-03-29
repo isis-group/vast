@@ -141,7 +141,11 @@ void ImageStackWidget::synchronize()
 			if( !( m_ViewerCore->getMode() == ViewerCoreBase::statistical_mode && image->getImageProperties().imageType == ImageHolder::structural_image ) ) {
 				QListWidgetItem *item = new QListWidgetItem;
 				QString sD = image->getPropMap().getPropertyAs<std::string>( "sequenceDescription" ).c_str();
-				item->setText( QString( image->getImageProperties().fileName.c_str() ) );
+				if( m_ViewerCore->getSettings()->getPropertyAs<bool>("showFullFilePath") ){
+					item->setText( QString( image->getImageProperties().filePath.c_str() ) );
+				} else {
+					item->setText( QString( image->getImageProperties().fileName.c_str() ) );
+				}
 				item->setFlags( Qt::ItemIsEnabled | Qt::ItemIsUserCheckable | Qt::ItemIsSelectable );
 				item->setData( Qt::UserRole, QVariant( image->getImageProperties().fileName.c_str() ) );
 

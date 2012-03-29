@@ -234,7 +234,9 @@ bool ImageHolder::setImage( const data::Image &image, const ImageType &_imageTyp
 	}
 
 	m_Image.reset( new data::Image( image ) );
-	getImageProperties().fileName = filename;
+	getImageProperties().filePath = filename;
+	boost::filesystem::path p(filename);
+	getImageProperties().fileName = p.filename();
 
 	// get some image information
 	//add some more properties
@@ -308,7 +310,7 @@ bool ImageHolder::setImage( const data::Image &image, const ImageType &_imageTyp
 	m_PropMap.setPropertyAs<util::fvector4>( "originalSliceVec", image.getPropertyAs<util::fvector4>( "sliceVec" ) );
 	m_PropMap.setPropertyAs<util::fvector4>( "originalIndexOrigin", image.getPropertyAs<util::fvector4>( "indexOrigin" ) );
 	updateColorMap();
-	logImageProps();
+	logImageProps();	
 	return true;
 }
 

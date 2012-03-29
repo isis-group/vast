@@ -48,6 +48,7 @@ void Settings::save()
 	m_QSettings->setValue( "visualizeOnlyFirstVista", getPropertyAs<bool>( "visualizeOnlyFirstVista" ) );
 	m_QSettings->setValue ( "interpolationType", getPropertyAs<uint16_t> ( "interpolationType" ) );
 	m_QSettings->setValue ( "propagateZooming", getPropertyAs<bool> ( "propagateZooming" ) );
+	m_QSettings->setValue ( "showFullFilePath", getPropertyAs<bool> ( "showFullFilePath" ) );
 	m_QSettings->setValue ( "viewAllImagesInStack", getPropertyAs<bool> ( "viewAllImagesInStack" ) );
 	m_QSettings->setValue ( "propagateTimestepChange", getPropertyAs<bool> ( "propagateTimestepChange" ) );
 	m_QSettings->setValue ( "minMaxSearchRadius", getPropertyAs<uint16_t> ( "minMaxSearchRadius" ) );
@@ -83,6 +84,7 @@ void Settings::load()
 	LOG( Dev, info ) << "Loading settings from " << m_QSettings->fileName().toStdString();
 	m_QSettings->beginGroup ( "ViewerCore" );
 	setPropertyAs<std::string> ( "lutZMap", m_QSettings->value ( "lutZMap", getPropertyAs<std::string> ( "lutZMap" ).c_str() ).toString().toStdString() );
+	setPropertyAs<bool> ( "showFullFilePath", m_QSettings->value ( "showFullFilePath", getPropertyAs<bool>("showFullFilePath") ).toBool() );
 	setPropertyAs<bool> ( "propagateZooming", m_QSettings->value ( "propagateZooming", false ).toBool() );
 	setPropertyAs<bool> ( "viewAllImagesInStack", m_QSettings->value ( "viewAllImagesInStack", false ).toBool() );
 	setPropertyAs<bool> ( "propagateTimestepChange", m_QSettings->value ( "propagateTimestepChange", false ).toBool() );
@@ -117,6 +119,7 @@ void Settings::load()
 
 void Settings::initializeWithDefaultSettings()
 {
+	setPropertyAs<bool>( "showFullFilePath", true );
 	setPropertyAs<bool>( "zmapGlobal", false );
 	setPropertyAs<bool>( "viewAllImagesInStack", false );
 	setPropertyAs<bool>( "visualizeOnlyFirstVista", false );
@@ -162,13 +165,7 @@ void Settings::initializeWithDefaultSettings()
 	setPropertyAs<uint16_t>( "timeseriesPlayDelayTime", 50 );
 	setPropertyAs<bool>( "histogramOmitZero", true );
 	setPropertyAs<uint16_t>( "maxRecentOpenListSize", 10 );
-	//logging
-	setPropertyAs<uint16_t>( "logDelayTime", 6000 );
-	setPropertyAs<bool>( "showErrorMessages", true );
-	setPropertyAs<bool>( "showNoticeMessages", true );
-	setPropertyAs<bool>( "showWarningMessages", false );
-	setPropertyAs<bool>( "showInfoMessages", false );
-	setPropertyAs<bool>( "showVerboseInfoMessages", false );
+
 	setPropertyAs<std::string>( "vastSymbol", std::string( ":/common/minerva-MPG.png" ) );
 
 	std::stringstream signature;

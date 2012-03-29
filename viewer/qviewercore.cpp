@@ -39,15 +39,12 @@ namespace isis
 namespace viewer
 {
 
-QViewerCore::QViewerCore ( const std::string &appName, const std::string &orgName, QWidget *parent )
+QViewerCore::QViewerCore ()
 	: ViewerCoreBase( ),
-	  m_Parent ( parent ),
 	  m_CurrentPath ( QDir::currentPath().toStdString() ),
 	  m_ProgressFeedback ( boost::shared_ptr<QProgressFeedback> ( new QProgressFeedback() ) ),
 	  m_UI ( new isis::viewer::UICore ( this ) )
 {
-	QCoreApplication::setApplicationName ( QString ( appName.c_str() ) );
-	QCoreApplication::setOrganizationName ( QString ( orgName.c_str() ) );
 	QApplication::setStartDragTime ( 1000 );
 
 	setParentWidget ( m_UI->getMainWindow() );

@@ -30,6 +30,7 @@
 
 #include "common.hpp"
 #include "color.hpp"
+#include "geometrical.hpp"
 #include <boost/foreach.hpp>
 #include <boost/numeric/ublas/matrix.hpp>
 #include <boost/uuid/uuid.hpp>
@@ -60,6 +61,7 @@ public:
 private:
 	struct ImageProperties {
 		std::string fileName;
+		std::string filePath;
 		util::ivector4 voxelCoords;
 		util::fvector4 physicalCoords;
 		util::fvector4 voxelSize;
@@ -91,12 +93,14 @@ private:
 		std::vector< double *> histogramVector;
 		std::vector< double *> histogramVectorWOZero;
 		std::pair<util::ValueReference, util::ValueReference> scalingToInternalType;
+		geometrical::BoundingBoxType boundingBox;
 	};
 
 public:
 	typedef boost::shared_ptr< ImageHolder > Pointer;
 	typedef std::vector< Pointer > Vector;
 	typedef std::map< std::string, Pointer > Map;
+	
 
 	ImageHolder();
 

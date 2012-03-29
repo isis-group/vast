@@ -59,6 +59,18 @@ public:
 			}
 		}
 	}
+
+	template< typename TYPE >
+	static void extractSliceFromChunk( data::MemChunk<TYPE> &sliceChunk, const ImageHolder::Pointer image, const PlaneOrientation &orientation ) {
+		//test for axial
+		if( orientation == axial ) {
+			const util::fvector4 first = image->getImageProperties().rowVec;
+			const util::fvector4 second = image->getImageProperties().columnVec;
+
+			
+		}
+	}
+	
 };
 
 

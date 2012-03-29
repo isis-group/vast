@@ -47,7 +47,7 @@ class QViewerCore : public QObject, public ViewerCoreBase
 	Q_OBJECT
 public:
 
-	QViewerCore( const std::string &appName = std::string(), const std::string &orgName = std::string(), QWidget *parent = 0 );
+	QViewerCore();
 
 	virtual ImageHolder::Vector addImageList( const std::list< data::Image > imageList, const ImageHolder::ImageType &imageType );
 

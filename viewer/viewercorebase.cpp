@@ -27,6 +27,7 @@
  ******************************************************************/
 #include "viewercorebase.hpp"
 #include "common.hpp"
+#include "geometrical.hpp"
 
 #define STR(s) _xstr_(s)
 #define _xstr_(s) std::string(#s)
@@ -141,6 +142,7 @@ ImageHolder::Pointer ViewerCoreBase::addImage( const isis::data::Image &image, c
 	if( getMode() == ViewerCoreBase::statistical_mode && retImage->getImageSize()[3] > 1 && retImage->getImageProperties().imageType != ImageHolder::statistical_image ) {
 		retImage->getImageProperties().isVisible = false;
 	}
+	retImage->getImageProperties().boundingBox = geometrical::getPhysicalBoundingBox(retImage);
 
 	//emit the signal
 	emitAddImage( retImage );

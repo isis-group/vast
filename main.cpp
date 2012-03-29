@@ -63,6 +63,8 @@ int main( int argc, char *argv[] )
 
 	std::string appName = "vast";
 	std::string orgName = "cbs.mpg.de";
+	QCoreApplication::setApplicationName(appName.c_str());
+	QCoreApplication::setOrganizationName(orgName.c_str());
 	//setting up vast graphics_system
 #if QT_VERSION >= 0x040500
 	const char *graphics_system = getenv( "VAST_GRAPHICS_SYSTEM" );
@@ -109,8 +111,7 @@ int main( int argc, char *argv[] )
 	boost::shared_ptr< util::ProgressFeedback > feedback = boost::shared_ptr<util::ProgressFeedback>( new util::ConsoleFeedback );
 	data::IOFactory::setProgressFeedback( feedback );
 	app.init( argc, argv, false );
-
-
+	QViewerCore *core = new QViewerCore;
 
 	util::_internal::Log<isis::data::Runtime>::setHandler( logging_hanlder_runtime );
 	util::_internal::Log<isis::util::Runtime>::setHandler( logging_hanlder_runtime );
@@ -119,7 +120,7 @@ int main( int argc, char *argv[] )
 	util::_internal::Log<isis::image_io::Runtime>::setHandler( logging_hanlder_runtime );
 	util::_internal::Log<isis::image_io::Debug>::setHandler( logging_hanlder_runtime );
 
-	QViewerCore *core = new QViewerCore( appName, orgName );
+
 
 	core->addMessageHandler( logging_hanlder_runtime.get() );
 	core->addMessageHandlerDev( logging_hanlder_dev.get() );
