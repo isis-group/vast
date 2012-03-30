@@ -66,10 +66,10 @@ util::fvector4 getPhysicalBoundingBox ( const ImageHolder::Vector images, const 
 	return ret * rasteringFac;
 }
 
-QTransform getQTransform ( const ImageHolder::Pointer image, const PlaneOrientation& orientation )
+QTransform getQTransform ( const ImageHolder::Pointer image, const PlaneOrientation& orientation, bool latched )
 {
 	using namespace boost::numeric::ublas;
-	const matrix<float> mat = extract2DMatrix(image, orientation, false );
+	const matrix<float> mat = extract2DMatrix(image, orientation, latched, false );
 	const util::fvector4 mapped_voxelSize = mapCoordsToOrientation(image->getImageProperties().voxelSize, image->getImageProperties().latchedOrientation, orientation, false, true) * rasteringFac;
 	const uint16_t slice = mapCoordsToOrientation(image->getImageProperties().voxelCoords, image->getImageProperties().latchedOrientation, orientation, false, true)[2];
 	const util::ivector4 mappedCoords = mapCoordsToOrientation(util::ivector4(0,0,slice), image->getImageProperties().latchedOrientation, orientation, true, true);
@@ -119,7 +119,7 @@ QTransform getTransform2ISISSpace ( const PlaneOrientation& orientation, const u
 	return retTransform;
 }
 
-boost::numeric::ublas::matrix< float > extract2DMatrix ( const boost::shared_ptr<ImageHolder> image, const PlaneOrientation& orientation, bool inverse )
+boost::numeric::ublas::matrix< float > extract2DMatrix ( const boost::shared_ptr<ImageHolder> image, const PlaneOrientation& orientation, bool latched, bool inverse )
 {
 	using namespace boost::numeric::ublas;
 	
@@ -146,7 +146,7 @@ boost::numeric::ublas::matrix< float > extract2DMatrix ( const boost::shared_ptr
 		invLatchedOrientation = trans(latchedOrientation_abs);
 	}
 
-	const matrix<float> mat = prod( image->getImageProperties().orientation, invLatchedOrientation );
+	const matrix<float> mat = prod( latched ? image->getImageProperties().latchedOrientation : image->getImageProperties().orientation, invLatchedOrientation );
 	switch(orientation) {
 		case axial:
 			retMatrix(0,0) = mat(0,0);
@@ -190,7 +190,6 @@ util::fvector4 mapPhysicalCoords2Orientation ( const util::fvector4& coords, con
 	}
 	return retCoords;
 }
-
 
 
 }}}}

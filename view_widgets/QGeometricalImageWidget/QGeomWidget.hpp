@@ -63,12 +63,23 @@ public Q_SLOTS:
 protected:
 	void paintEvent( QPaintEvent *event );
 	void resizeEvent( QResizeEvent *event );
+	void mousePressEvent( QMouseEvent *e );
+	void mouseMoveEvent( QMouseEvent *e );
+	void mouseReleaseEvent( QMouseEvent *e );
 	
 private:
 	void paintImage( const ImageHolder::Pointer );
 	void paintCrossHair() const;
 
 	void updateViewPort();
+
+	bool m_LatchOrientation;
+	bool m_RasterPhysicalCoords;
+	bool m_LeftMouseButtonPressed;
+	bool m_RightMouseButtonPressed;
+	float m_WindowViewPortScaling;
+
+	void emitPhysicalCoordsFromMouseCoords( const int &x, const int &y) const;
 	
 	QPainter *m_Painter;
 	QVBoxLayout *m_Layout;

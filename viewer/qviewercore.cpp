@@ -145,7 +145,7 @@ void QViewerCore::onWidgetClicked ( widget::WidgetInterface *origin, util::fvect
 
 void QViewerCore::onWidgetMoved ( widget::WidgetInterface* /*origin*/, util::fvector4 physicalCoords, Qt::MouseButton mouseButton )
 {
-// 	emitOnWidgetMoved( physicalCoords, mouseButton );
+	emitOnWidgetMoved( physicalCoords, mouseButton );
 	physicalCoordsChanged( physicalCoords );
 }
 

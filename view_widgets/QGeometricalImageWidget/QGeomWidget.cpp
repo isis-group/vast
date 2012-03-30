@@ -54,6 +54,10 @@ void QGeomWidget::setup ( QViewerCore* core, QWidget* parent , PlaneOrientation 
 	setPalette( QPalette( Qt::black ) );
 	setAcceptDrops( true );
 	m_CrosshairColor = QColor( 255, 102, 0 );
+	m_LatchOrientation = false;
+	m_LeftMouseButtonPressed = false;
+	m_RightMouseButtonPressed = false;
+	m_RasterPhysicalCoords = true;
 	connect(m_ViewerCore, SIGNAL( emitUpdateScene()), this, SLOT( updateScene()));
 	
 }
@@ -67,16 +71,16 @@ void QGeomWidget::resizeEvent ( QResizeEvent* event )
 void QGeomWidget::updateViewPort()
 {
 	//update viewport
-	const float _width = m_BoundingBox[2];
-	const float _height = m_BoundingBox[3];
+	const float _width = m_BoundingBox[2] / _internal::rasteringFac;
+	const float _height = m_BoundingBox[3] / _internal::rasteringFac;
 	
 	const float scalew = width() / _width;
 	const  float scaleh = height() / _height;
 
-	const float scale = std::min(scaleh, scalew);
-	const float offsetW = (width() - (_width * scale)) / 2. ;
-	const float offsetH = (height() - (_height * scale)) / 2.;
-	m_ViewPort = util::fvector4( offsetW, offsetH, _width * scale, _height * scale );
+	m_WindowViewPortScaling = std::min(scaleh, scalew);
+	const float offsetW = (width() - (_width * m_WindowViewPortScaling)) / 2. ;
+	const float offsetH = (height() - (_height * m_WindowViewPortScaling)) / 2.;
+	m_ViewPort = util::fvector4( offsetW, offsetH, _width * m_WindowViewPortScaling, _height * m_WindowViewPortScaling );
 }
 
 
@@ -124,7 +128,7 @@ void QGeomWidget::paintImage( const ImageHolder::Pointer image )
 {
 	m_Painter->setTransform(_internal::getTransform2ISISSpace(m_PlaneOrientation, m_BoundingBox) );
 
-	m_Painter->setTransform( _internal::getQTransform( image, m_PlaneOrientation ), true );
+	m_Painter->setTransform( _internal::getQTransform( image, m_PlaneOrientation, m_LatchOrientation), true );
 
 	const util::ivector4 mappedSizeAligned = mapCoordsToOrientation( image->getImageProperties().alignedSize32, image->getImageProperties().latchedOrientation, m_PlaneOrientation );
 	isis::data::MemChunk<InternalImageType> sliceChunk( mappedSizeAligned[0], mappedSizeAligned[1] );
@@ -143,7 +147,7 @@ void QGeomWidget::paintCrossHair() const
 	const ImageHolder::Pointer image = m_ViewerCore->getCurrentImage();
 
 	const util::fvector4 mappedCoords = (_internal::mapPhysicalCoords2Orientation(image->getImageProperties().physicalCoords, m_PlaneOrientation) ) * _internal::rasteringFac;
-	short border = -5000;
+	short border = -15000;
 	const QLine xline1( mappedCoords[0], border, mappedCoords[0], mappedCoords[1] - 15 * _internal::rasteringFac );
 	const QLine xline2( mappedCoords[0], mappedCoords[1] + 15 * _internal::rasteringFac, mappedCoords[0], height() - border  );
 
@@ -165,6 +169,65 @@ void QGeomWidget::paintCrossHair() const
 	m_Painter->drawLine( yline1 );
 	m_Painter->drawLine( yline2 );
 	m_Painter->drawPoint( mappedCoords[0], mappedCoords[1] );
+}
+
+void QGeomWidget::emitPhysicalCoordsFromMouseCoords ( const int& x, const int& y ) const
+{
+	if( m_ViewerCore->hasImage() ) {
+		util::fvector4 physicalCoords = m_ViewerCore->getCurrentImage()->getImageProperties().physicalCoords;
+		switch(m_PlaneOrientation) {
+			case axial:
+				physicalCoords[0] = ((width() - x) - m_ViewPort[0]) / m_WindowViewPortScaling + m_BoundingBox[0] / _internal::rasteringFac;
+				physicalCoords[1] = (y - m_ViewPort[1]) / m_WindowViewPortScaling + m_BoundingBox[1] / _internal::rasteringFac;
+				break;
+			case sagittal:
+				physicalCoords[1] = (x - m_ViewPort[0]) / m_WindowViewPortScaling + m_BoundingBox[0] / _internal::rasteringFac;
+				physicalCoords[2] = (height() - y - m_ViewPort[1]) / m_WindowViewPortScaling + m_BoundingBox[1] / _internal::rasteringFac;
+				break;
+			case coronal:
+				physicalCoords[0] = ((width() - x) - m_ViewPort[0]) / m_WindowViewPortScaling + m_BoundingBox[0] / _internal::rasteringFac;
+				physicalCoords[2] = (height() - y - m_ViewPort[1]) / m_WindowViewPortScaling + m_BoundingBox[1] / _internal::rasteringFac;
+				break;
+			case not_specified:
+				break;
+		}
+		
+		if( m_RasterPhysicalCoords ) {
+			physicalCoords = m_ViewerCore->getCurrentImage()->getISISImage()->getPhysicalCoordsFromIndex(
+						m_ViewerCore->getCurrentImage()->getISISImage()->getIndexFromPhysicalCoords( physicalCoords ) );
+		}
+		m_ViewerCore->physicalCoordsChanged(physicalCoords);
+	}
+}
+
+
+void QGeomWidget::mousePressEvent ( QMouseEvent* e )
+{
+	if( e->button() == Qt::LeftButton ) {
+		m_LeftMouseButtonPressed = true;
+	}
+	if( e->button() == Qt::RightButton ) {
+		m_RightMouseButtonPressed = true;
+	}
+	emitPhysicalCoordsFromMouseCoords( e->x(), e->y() );
+    
+}
+
+void QGeomWidget::mouseMoveEvent ( QMouseEvent* e )
+{
+	if( m_RightMouseButtonPressed || m_LeftMouseButtonPressed ) {
+		emitPhysicalCoordsFromMouseCoords(e->x(), e->y() );
+	}
+}
+
+void QGeomWidget::mouseReleaseEvent ( QMouseEvent* e )
+{
+	if( e->button() == Qt::LeftButton ) {
+		m_LeftMouseButtonPressed = false;
+	}
+	if( e->button() == Qt::RightButton ) {
+		m_RightMouseButtonPressed = false;
+	}
 }
 
 
