@@ -69,7 +69,7 @@ void OrientatioCorrectionDialog::alignOnCenter( bool align )
 			const util::fvector4 &rowVec = m_ViewerCore->getCurrentImage()->getISISImage()->getPropertyAs<util::fvector4>( "rowVec" );
 			const util::fvector4 &columnVec = m_ViewerCore->getCurrentImage()->getISISImage()->getPropertyAs<util::fvector4>( "columnVec" );
 			const util::fvector4 &sliceVec = m_ViewerCore->getCurrentImage()->getISISImage()->getPropertyAs<util::fvector4>( "sliceVec" );
-			BOOST_FOREACH( ImageHolder::Vector::const_reference image, m_ViewerCore->getImageList() ) {
+			BOOST_FOREACH( ImageHolder::Vector::const_reference image, m_ViewerCore->getImageVector() ) {
 				const util::ivector4 size = image->getImageSize();
 
 				const util::fvector4 &voxelSize = image->getISISImage()->getPropertyAs<util::fvector4>( "voxelSize" );
@@ -85,7 +85,7 @@ void OrientatioCorrectionDialog::alignOnCenter( bool align )
 				image->addChangedAttribute( "Centered and aligned to " + m_ImageNameAlignedTo );
 			}
 		} else {
-			BOOST_FOREACH( ImageHolder::Vector::const_reference image, m_ViewerCore->getImageList() ) {
+			BOOST_FOREACH( ImageHolder::Vector::const_reference image, m_ViewerCore->getImageVector() ) {
 				image->getISISImage()->setPropertyAs<util::fvector4>( "indexOrigin", image->getPropMap().getPropertyAs<util::fvector4>( "originalIndexOrigin" ) );
 				image->getISISImage()->setPropertyAs<util::fvector4>( "rowVec", image->getPropMap().getPropertyAs<util::fvector4>( "originalRowVec" ) );
 				image->getISISImage()->setPropertyAs<util::fvector4>( "columnVec", image->getPropMap().getPropertyAs<util::fvector4>( "originalColumnVec" ) );

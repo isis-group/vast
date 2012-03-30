@@ -102,7 +102,7 @@ ImageHolder::Pointer ViewerCoreBase::addImage( const isis::data::Image &image, c
 
 	ImageHolder::Pointer  retImage = ImageHolder::Pointer( new ImageHolder ) ;
 	retImage->setImage( image, imageType, fileName );
-	m_ImageList.push_back( retImage );
+	m_imageVector.push_back( retImage );
 
 	m_ImageMap[fileName] = retImage;
 

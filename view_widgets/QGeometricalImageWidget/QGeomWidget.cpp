@@ -87,39 +87,42 @@ void QGeomWidget::updateScene()
 
 void QGeomWidget::addImage ( const ImageHolder::Pointer /*image*/ )
 {
-	m_BoundingBox = _internal::getPhysicalBoundingBox( getWidgetEnsemble()->getImageList(), m_PlaneOrientation );
+	m_BoundingBox = _internal::getPhysicalBoundingBox( getWidgetEnsemble()->getImageVector(), m_PlaneOrientation );
 }
 
 bool QGeomWidget::removeImage ( const ImageHolder::Pointer /*image*/ )
 {
-	m_BoundingBox = _internal::getPhysicalBoundingBox( getWidgetEnsemble()->getImageList(), m_PlaneOrientation );
+	m_BoundingBox = _internal::getPhysicalBoundingBox( getWidgetEnsemble()->getImageVector(), m_PlaneOrientation );
 }
 
 
 void QGeomWidget::paintEvent ( QPaintEvent* event )
 {
-	m_Painter->begin(this);
-	m_Painter->resetTransform();
-	m_BoundingBox = _internal::getPhysicalBoundingBox( getWidgetEnsemble()->getImageList(), m_PlaneOrientation );
-	updateViewPort();
-	m_Painter->setWindow( m_BoundingBox[0], m_BoundingBox[1], m_BoundingBox[2], m_BoundingBox[3] );
-	m_Painter->setViewport( m_ViewPort[0], m_ViewPort[1], m_ViewPort[2], m_ViewPort[3] );
-	BOOST_FOREACH( ImageHolder::Vector::const_reference image, getWidgetEnsemble()->getImageList() )
-	{
-		if( image->getImageProperties().isVisible && image->getImageProperties().opacity != 0 ) {
-			paintImage( image );
-		}
-	}
 	if( m_ViewerCore->hasImage() ) {
-		paintCrossHair();
-	}
+		m_Painter->begin(this);
+		m_Painter->resetTransform();
+		m_BoundingBox = _internal::getPhysicalBoundingBox( getWidgetEnsemble()->getImageVector(), m_PlaneOrientation );
+		updateViewPort();
+		m_Painter->setWindow( m_BoundingBox[0], m_BoundingBox[1], m_BoundingBox[2], m_BoundingBox[3] );
+		m_Painter->setViewport( m_ViewPort[0], m_ViewPort[1], m_ViewPort[2], m_ViewPort[3] );
+		BOOST_FOREACH( ImageHolder::Vector::const_reference image, getWidgetEnsemble()->getImageVector() )
+		{
+			if( image->getImageProperties().isVisible && image->getImageProperties().opacity != 0 ) {
+				paintImage( image );
+			}
+		}
+		
+		if( m_ViewerCore->hasImage() ) {
+			paintCrossHair();
+		}
 
-	m_Painter->end();
+		m_Painter->end();
+	}
 }
 
 void QGeomWidget::paintImage( const ImageHolder::Pointer image )
 {
-	m_Painter->setTransform(_internal::getTransform2ISISSpace(m_PlaneOrientation, m_BoundingBox), true );
+	m_Painter->setTransform(_internal::getTransform2ISISSpace(m_PlaneOrientation, m_BoundingBox) );
 
 	m_Painter->setTransform( _internal::getQTransform( image, m_PlaneOrientation ), true );
 
@@ -148,7 +151,6 @@ void QGeomWidget::paintCrossHair() const
 	const QLine yline2( mappedCoords[0] + 15 * _internal::rasteringFac, mappedCoords[1],  width() - border, mappedCoords[1]  );
 
 	QPen pen;
-	m_Painter->setRenderHint(QPainter::NonCosmeticDefaultPen);
 	pen.setColor( m_CrosshairColor );
 	pen.setWidth( 1 );
 	pen.setCosmetic(true);

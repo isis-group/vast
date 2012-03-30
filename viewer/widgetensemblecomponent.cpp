@@ -44,7 +44,7 @@ WidgetEnsembleComponent::WidgetEnsembleComponent ( QFrame *frame, QDockWidget *d
 bool WidgetEnsembleComponent::checkIfNeeded()
 {
 	bool needed = false;
-	BOOST_FOREACH( ImageHolder::Vector::const_reference image, getWidgetInterface()->getWidgetEnsemble()->getImageList() ) {
+	BOOST_FOREACH( ImageHolder::Vector::const_reference image, getWidgetInterface()->getWidgetEnsemble()->getImageVector() ) {
 		const util::ivector4 mappedSize = mapCoordsToOrientation( image->getImageSize(), image->getImageProperties().latchedOrientation, getWidgetInterface()->getPlaneOrientation() );
 
 		if( mappedSize[0] > 1 && mappedSize[1] > 1 ) {

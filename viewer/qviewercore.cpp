@@ -127,7 +127,7 @@ void QViewerCore::receiveMessage ( std::string message )
 
 void QViewerCore::physicalCoordsChanged ( util::fvector4 physicalCoords )
 {
-	BOOST_FOREACH( ImageHolder::Vector::const_reference image, getImageList() ) {
+	BOOST_FOREACH( ImageHolder::Vector::const_reference image, getImageVector() ) {
 		image->getImageProperties().physicalCoords = physicalCoords;
 		image->getImageProperties().voxelCoords = image->getISISImage()->getIndexFromPhysicalCoords(physicalCoords);
 	}
@@ -137,7 +137,7 @@ void QViewerCore::physicalCoordsChanged ( util::fvector4 physicalCoords )
 
 void QViewerCore::onWidgetClicked ( widget::WidgetInterface *origin, util::fvector4 physicalCoords, Qt::MouseButton mouseButton )
 {
-	setCurrentImage( origin->getWidgetEnsemble()->getImageList().front() );
+	setCurrentImage( origin->getWidgetEnsemble()->getImageVector().front() );
 	getUICore()->refreshUI( false ); //no update of mainwindow is needed here
 	emitOnWidgetClicked( physicalCoords, mouseButton );
 	physicalCoordsChanged( physicalCoords );
@@ -158,7 +158,7 @@ void QViewerCore::timestepChanged ( int timestep )
 			timestep = getCurrentImage()->getImageSize() [3] - 1;
 		}
 
-		BOOST_FOREACH ( ImageHolder::Vector::const_reference image, getImageList() ) {
+		BOOST_FOREACH ( ImageHolder::Vector::const_reference image, getImageVector() ) {
 			if ( static_cast<size_t> ( timestep ) < image->getImageSize() [3] ) {
 				image->getImageProperties().voxelCoords[3] = timestep;
 			}
@@ -230,7 +230,7 @@ void QViewerCore::settingsChanged()
 	}
 
 	if ( getMode() == ViewerCoreBase::statistical_mode ) {
-		BOOST_FOREACH ( ImageHolder::Vector::const_reference image, getImageList() ) {
+		BOOST_FOREACH ( ImageHolder::Vector::const_reference image, getImageVector() ) {
 			if ( image->getImageProperties().imageType == ImageHolder::structural_image ) {
 				image->getImageProperties().lut = getSettings()->getPropertyAs<std::string> ( "lutStructural" );
 				image->updateColorMap();
@@ -239,7 +239,7 @@ void QViewerCore::settingsChanged()
 	}
 
 	if ( getMode() == ViewerCoreBase::statistical_mode && getSettings()->getPropertyAs<bool> ( "zmapGlobal" ) ) {
-		BOOST_FOREACH ( ImageHolder::Vector::const_reference image, getImageList() ) {
+		BOOST_FOREACH ( ImageHolder::Vector::const_reference image, getImageVector() ) {
 			if ( image->getImageProperties().imageType == ImageHolder::statistical_image ) {
 				image->getImageProperties().lut = getSettings()->getPropertyAs<std::string> ( "lutZMap" );
 				image->updateColorMap();
@@ -415,7 +415,7 @@ void QViewerCore::openFileList( const std::list< FileInformation > fileInfoList 
 
 void QViewerCore::closeImage ( ImageHolder::Pointer image, bool refreshUI )
 {
-	const size_t oldNumberImages = getImageList().size();
+	const size_t oldNumberImages = getImageVector().size();
 	LOG( Dev, info ) << "Closing image " << image->getImageProperties().fileName;
 	BOOST_FOREACH( WidgetEnsemble::Vector::reference ensemble, getUICore()->getEnsembleList() ) {
 		ensemble->removeImage( image );
@@ -424,7 +424,7 @@ void QViewerCore::closeImage ( ImageHolder::Pointer image, bool refreshUI )
 	//if this image is the current one, we have to set one of the residual images to the current one
 	if( getCurrentImage().get() == image.get() ) {
 		LOG( Dev, info ) << "This was the current image so setting one of the residual images to current image";
-		ImageHolder::Vector tmpList = getImageList();
+		ImageHolder::Vector tmpList = getImageVector();
 		tmpList.erase( std::find ( tmpList.begin(), tmpList.end(), image ) );
 
 		if( tmpList.size() ) {
@@ -434,7 +434,7 @@ void QViewerCore::closeImage ( ImageHolder::Pointer image, bool refreshUI )
 		}
 	}
 
-	getImageList().erase( std::find ( getImageList().begin(), getImageList().end(), image ) );
+	getImageVector().erase( std::find ( getImageVector().begin(), getImageVector().end(), image ) );
 	getImageMap().erase( image->getImageProperties().fileName );
 
 	if( refreshUI ) {
@@ -443,7 +443,7 @@ void QViewerCore::closeImage ( ImageHolder::Pointer image, bool refreshUI )
 
 	updateScene();
 
-	if( ( getImageList().size() == getImageMap().size() ) && ( getImageList().size() == ( oldNumberImages - 1 ) ) ) {
+	if( ( getImageVector().size() == getImageMap().size() ) && ( getImageVector().size() == ( oldNumberImages - 1 ) ) ) {
 		LOG( Dev, info ) << "Successfully removed image.";
 	} else {
 		LOG( Dev, error ) << "Error during removing of image " << image->getImageProperties().fileName;

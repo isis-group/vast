@@ -160,7 +160,7 @@ void VTKImageWidgetImplementation::addImage ( const boost::shared_ptr< ImageHold
 	m_Renderer->AddVolume( component.volume );
 	component.setVTKImageData( VolumeHandler::getVTKImageData( image, image->getImageProperties().voxelCoords[3] ) );
 
-	if( getWidgetEnsemble()->getImageList().size() == 1 ) {
+	if( getWidgetEnsemble()->getImageVector().size() == 1 ) {
 		m_Renderer->GetActiveCamera()->SetPosition( image->getImageProperties().indexOrigin[0] * 2, image->getImageProperties().indexOrigin[1] * 2, image->getImageProperties().indexOrigin[2] );
 		m_Renderer->GetActiveCamera()->Roll( -65 );
 	}

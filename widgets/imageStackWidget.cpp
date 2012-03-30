@@ -132,9 +132,9 @@ void ImageStackWidget::synchronize()
 	if( m_ViewerCore->hasImage() ) {
 		m_CurrentSelectedEnsemble = m_ViewerCore->getUICore()->getCurrentEnsemble();
 		if( m_Interface.checkViewAllImages->isChecked() ) {
-			imageList = m_ViewerCore->getImageList() ;
+			imageList = m_ViewerCore->getImageVector() ;
 		} else {
-			imageList = m_CurrentSelectedEnsemble->getImageList();
+			imageList = m_CurrentSelectedEnsemble->getImageVector();
 		}
 
 		BOOST_FOREACH( ImageHolder::Vector::const_reference image, imageList ) {
@@ -155,7 +155,7 @@ void ImageStackWidget::synchronize()
 					item->setCheckState( Qt::Unchecked );
 				}
 				if ( m_Interface.checkViewAllImages->isChecked() && m_ViewerCore->getUICore()->getEnsembleList().size() > 1 ) {
-					const ImageHolder::Vector iList = m_CurrentSelectedEnsemble->getImageList();
+					const ImageHolder::Vector iList = m_CurrentSelectedEnsemble->getImageVector();
 					if( std::find( iList.begin(), iList.end(), image ) != iList.end() ) {
 						item->setBackgroundColor( color::currentEnsemble );
 					}
@@ -229,15 +229,15 @@ void ImageStackWidget::itemSelected( QListWidgetItem *item )
 void ImageStackWidget::closeAllImages()
 {
 	//ok we assume that "close all images" actually means to close all images - not only those that are listed by the imagestack
-	ImageHolder::Vector cp = m_ViewerCore->getImageList();
+	ImageHolder::Vector cp = m_ViewerCore->getImageVector();
 	BOOST_FOREACH( ImageHolder::Vector::const_reference image, cp ) {
 		m_ViewerCore->closeImage( image, false ); //do not refresh the ui with each close
 	}
 	m_ViewerCore->getUICore()->refreshUI();
 	LOG_IF( !m_ViewerCore->getUICore()->getEnsembleList().empty(), Dev, error ) << "Closed all images. But the amount of widget ensembles is not 0 ("
 			<< m_ViewerCore->getUICore()->getEnsembleList().size() << ") !";
-	LOG_IF( !m_ViewerCore->getImageList().empty(), Dev, error ) << "Closed all images. But there are still "
-			<< m_ViewerCore->getImageList().size() << " in the global image list!";
+	LOG_IF( !m_ViewerCore->getImageVector().empty(), Dev, error ) << "Closed all images. But there are still "
+			<< m_ViewerCore->getImageVector().size() << " in the global image list!";
 
 }
 
@@ -252,11 +252,11 @@ void ImageStackWidget::closeImage()
 void ImageStackWidget::distributeImages()
 {
 	m_ViewerCore->getUICore()->closeAllWidgetEnsembles();
-	BOOST_FOREACH( ImageHolder::Vector::const_reference image, m_ViewerCore->getImageList() ) {
+	BOOST_FOREACH( ImageHolder::Vector::const_reference image, m_ViewerCore->getImageVector() ) {
 		m_ViewerCore->getUICore()->createViewWidgetEnsemble( m_ViewerCore->getSettings()->getPropertyAs<std::string>( "defaultViewWidgetIdentifier" ), image );
 	}
-	LOG_IF( m_ViewerCore->getImageList().size() != m_ViewerCore->getUICore()->getEnsembleList().size(), Dev, error ) << "Distributed the images. But amount of images ("
-			<< m_ViewerCore->getImageList().size() << ") and amount of widget ensembles (" << m_ViewerCore->getUICore()->getEnsembleList().size()
+	LOG_IF( m_ViewerCore->getImageVector().size() != m_ViewerCore->getUICore()->getEnsembleList().size(), Dev, error ) << "Distributed the images. But amount of images ("
+			<< m_ViewerCore->getImageVector().size() << ") and amount of widget ensembles (" << m_ViewerCore->getUICore()->getEnsembleList().size()
 			<< ") does not coincide!";
 	m_ViewerCore->getUICore()->refreshUI( false );
 	m_ViewerCore->updateScene();
@@ -271,11 +271,11 @@ void ImageStackWidget::moveDown()
 	}
 	ImageHolder::Vector newImageList;
 	BOOST_FOREACH( WidgetEnsemble::Vector::const_reference e, m_ViewerCore->getUICore()->getEnsembleList() ) {
-		BOOST_FOREACH( ImageHolder::Vector::const_reference imageInE, e->getImageList() ) {
+		BOOST_FOREACH( ImageHolder::Vector::const_reference imageInE, e->getImageVector() ) {
 			newImageList.push_back(imageInE);
 		}
 	}
-	m_ViewerCore->getImageList() = newImageList;	
+	m_ViewerCore->getImageVector() = newImageList;
 	m_ViewerCore->getUICore()->refreshEnsembles();
 	m_ViewerCore->getUICore()->refreshUI();
 	
@@ -290,11 +290,11 @@ void ImageStackWidget::moveUp()
 	}
 	ImageHolder::Vector newImageList;
 	BOOST_FOREACH( WidgetEnsemble::Vector::const_reference e, m_ViewerCore->getUICore()->getEnsembleList() ) {
-		BOOST_FOREACH( ImageHolder::Vector::const_reference imageInE, e->getImageList() ) {
+		BOOST_FOREACH( ImageHolder::Vector::const_reference imageInE, e->getImageVector() ) {
 			newImageList.push_back(imageInE);
 		}
 	}
-	m_ViewerCore->getImageList() = newImageList;
+	m_ViewerCore->getImageVector() = newImageList;
 	m_ViewerCore->getUICore()->refreshEnsembles();
 	m_ViewerCore->getUICore()->refreshUI();
 }
