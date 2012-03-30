@@ -49,13 +49,14 @@ public:
 	virtual void setup( QViewerCore *, QWidget *, PlaneOrientation );
 
 	virtual std::string getWidgetName() const { return std::string( "qt4_geometrical_plane_widget" ); }
-	
+public Q_SLOTS:
 	virtual void updateScene();
     virtual void lookAtPhysicalCoords ( const util::fvector4& physicalCoords );
 	virtual void addImage( const ImageHolder::Pointer image );
 	virtual bool removeImage( const ImageHolder::Pointer image );
     virtual void setEnableCrosshair ( bool enable );
     virtual void setInterpolationType ( InterpolationType interpolation );
+	virtual void setCrossHairColor( QColor color ) { m_CrosshairColor = color; }
     virtual void setMouseCursorIcon ( QIcon );
     virtual void setZoom ( float zoom );
 
@@ -65,9 +66,13 @@ protected:
 	
 private:
 	void paintImage( const ImageHolder::Pointer );
+	void paintCrossHair() const;
+
+	void updateViewPort();
 	
 	QPainter *m_Painter;
 	QVBoxLayout *m_Layout;
+	QColor m_CrosshairColor;
 	util::fvector4 m_BoundingBox;
 	util::fvector4 m_ViewPort;
 };

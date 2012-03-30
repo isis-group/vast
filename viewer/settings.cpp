@@ -141,7 +141,7 @@ void Settings::initializeWithDefaultSettings()
 	setPropertyAs<uint16_t>( "startWidgetHeight", 600 );
 	setPropertyAs<uint16_t>( "startWidgetWidth", 400 );
 	setPropertyAs<uint16_t>( "viewerWidgetMargin", 5 );
-	setPropertyAs<std::string>( "fallbackWidgetIdentifier", "qt4_geometrical_widget" );
+	setPropertyAs<std::string>( "fallbackWidgetIdentifier", "qt4_plane_widget" );
 	setPropertyAs<std::string>( "defaultViewWidgetIdentifier", getPropertyAs<std::string>( "fallbackWidgetIdentifier" ) );
 	//omp
 	setPropertyAs<uint16_t>( "numberOfThreads", 0 );

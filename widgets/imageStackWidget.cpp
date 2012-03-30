@@ -147,7 +147,7 @@ void ImageStackWidget::synchronize()
 					item->setText( QString( image->getImageProperties().fileName.c_str() ) );
 				}
 				item->setFlags( Qt::ItemIsEnabled | Qt::ItemIsUserCheckable | Qt::ItemIsSelectable );
-				item->setData( Qt::UserRole, QVariant( image->getImageProperties().fileName.c_str() ) );
+				item->setData( Qt::UserRole, QVariant( image->getImageProperties().filePath.c_str() ) );
 
 				if( image->getImageProperties().isVisible ) {
 					item->setCheckState( Qt::Checked );

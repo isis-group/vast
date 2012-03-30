@@ -53,21 +53,30 @@ void QGeomWidget::setup ( QViewerCore* core, QWidget* parent , PlaneOrientation 
 	setAutoFillBackground( true );
 	setPalette( QPalette( Qt::black ) );
 	setAcceptDrops( true );
+	m_CrosshairColor = QColor( 255, 102, 0 );
+	connect(m_ViewerCore, SIGNAL( emitUpdateScene()), this, SLOT( updateScene()));
 	
 }
 
 void QGeomWidget::resizeEvent ( QResizeEvent* event )
 {
+
+    QWidget::resizeEvent ( event );
+}
+
+void QGeomWidget::updateViewPort()
+{
 	//update viewport
-	const float _width = fabs( m_BoundingBox[2] - m_BoundingBox[0] );
-	const float _height = fabs( m_BoundingBox[3] - m_BoundingBox[1] );
+	const float _width = m_BoundingBox[2];
+	const float _height = m_BoundingBox[3];
 	
 	const float scalew = width() / _width;
 	const  float scaleh = height() / _height;
-	
+
 	const float scale = std::min(scaleh, scalew);
-	m_ViewPort = util::fvector4( (width() - (_width * scale)) / 2.  , (height() - (_height * scale)) / 2., _width * scale, _height * scale );
-    QWidget::resizeEvent ( event );
+	const float offsetW = (width() - (_width * scale)) / 2. ;
+	const float offsetH = (height() - (_height * scale)) / 2.;
+	m_ViewPort = util::fvector4( offsetW, offsetH, _width * scale, _height * scale );
 }
 
 
@@ -90,63 +99,71 @@ bool QGeomWidget::removeImage ( const ImageHolder::Pointer /*image*/ )
 void QGeomWidget::paintEvent ( QPaintEvent* event )
 {
 	m_Painter->begin(this);
-	m_Painter->setViewport( m_ViewPort[0], m_ViewPort[1], m_ViewPort[2], m_ViewPort[3] );
+	m_Painter->resetTransform();
+	m_BoundingBox = _internal::getPhysicalBoundingBox( getWidgetEnsemble()->getImageList(), m_PlaneOrientation );
+	updateViewPort();
 	m_Painter->setWindow( m_BoundingBox[0], m_BoundingBox[1], m_BoundingBox[2], m_BoundingBox[3] );
-	
+	m_Painter->setViewport( m_ViewPort[0], m_ViewPort[1], m_ViewPort[2], m_ViewPort[3] );
 	BOOST_FOREACH( ImageHolder::Vector::const_reference image, getWidgetEnsemble()->getImageList() )
 	{
-		paintImage( image );
+		if( image->getImageProperties().isVisible && image->getImageProperties().opacity != 0 ) {
+			paintImage( image );
+		}
 	}
-
-	
+	if( m_ViewerCore->hasImage() ) {
+		paintCrossHair();
+	}
 
 	m_Painter->end();
 }
 
 void QGeomWidget::paintImage( const ImageHolder::Pointer image )
 {
-	m_Painter->setTransform(_internal::getTransform2ISISSpace(m_PlaneOrientation, m_BoundingBox) );	
-	
-// 	if( m_PlaneOrientation == sagittal ){
-// 	QPen pen1;
-// 	pen1.setBrush(QBrush( Qt::white ) );
-// 	pen1.setWidthF(1);
-// 	pen1.setColor(Qt::white);
-// 	pen1.setCapStyle(Qt::RoundCap);
-// 	m_Painter->setPen(pen1);
-// 	m_Painter->drawLine(-83,94,-130,-29);
-// 	m_Painter->drawLine(-130,-29,46,-96);
-// 	m_Painter->drawLine(46,-96,93,27 );
-// 	m_Painter->drawLine(93,27,-83,94);
-// 
-// 	m_Painter->drawRect(m_BoundingBox[0], m_BoundingBox[1], m_BoundingBox[2], m_BoundingBox[3]);
-// 
-// 	QPen pen2;
-// 	pen2.setBrush(QBrush( Qt::red ) );
-// 	pen2.setWidthF(3);
-// 	pen2.brush().setColor(Qt::red);
-// 	pen2.setCapStyle(Qt::RoundCap);
-// 	m_Painter->setPen(pen2);
-// 	m_Painter->drawPoint(-141,109); //origin
-// 	m_Painter->drawText(-85,101, "origin");
-// 	m_Painter->drawPoint(-130,-29);
-// 	m_Painter->drawPoint(46,-96);
-// 	m_Painter->drawPoint(93,27);
+	m_Painter->setTransform(_internal::getTransform2ISISSpace(m_PlaneOrientation, m_BoundingBox), true );
 
-// 	}
 	m_Painter->setTransform( _internal::getQTransform( image, m_PlaneOrientation ), true );
-	
+
 	const util::ivector4 mappedSizeAligned = mapCoordsToOrientation( image->getImageProperties().alignedSize32, image->getImageProperties().latchedOrientation, m_PlaneOrientation );
 	isis::data::MemChunk<InternalImageType> sliceChunk( mappedSizeAligned[0], mappedSizeAligned[1] );
 	MemoryHandler::fillSliceChunk<InternalImageType>( sliceChunk, image, m_PlaneOrientation );
 
-	
 	QImage qImage( ( InternalImageType * ) sliceChunk.asValueArray<InternalImageType>().getRawAddress().get(),
 					   mappedSizeAligned[0], mappedSizeAligned[1], QImage::Format_Indexed8 );
+	
 	qImage.setColorTable( image->getImageProperties().colorMap );
+	m_Painter->setOpacity(image->getImageProperties().opacity);
 	m_Painter->drawImage( 0,0, qImage );
 }
 
+void QGeomWidget::paintCrossHair() const
+{
+	const ImageHolder::Pointer image = m_ViewerCore->getCurrentImage();
+
+	const util::fvector4 mappedCoords = (_internal::mapPhysicalCoords2Orientation(image->getImageProperties().physicalCoords, m_PlaneOrientation) ) * _internal::rasteringFac;
+	short border = -5000;
+	const QLine xline1( mappedCoords[0], border, mappedCoords[0], mappedCoords[1] - 15 * _internal::rasteringFac );
+	const QLine xline2( mappedCoords[0], mappedCoords[1] + 15 * _internal::rasteringFac, mappedCoords[0], height() - border  );
+
+	const QLine yline1( border, mappedCoords[1], mappedCoords[0] - 15 * _internal::rasteringFac, mappedCoords[1] );
+	const QLine yline2( mappedCoords[0] + 15 * _internal::rasteringFac, mappedCoords[1],  width() - border, mappedCoords[1]  );
+
+	QPen pen;
+	m_Painter->setRenderHint(QPainter::NonCosmeticDefaultPen);
+	pen.setColor( m_CrosshairColor );
+	pen.setWidth( 1 );
+	pen.setCosmetic(true);
+	m_Painter->resetTransform();
+	m_Painter->setWindow( m_BoundingBox[0], m_BoundingBox[1], m_BoundingBox[2], m_BoundingBox[3] );
+	m_Painter->setViewport( m_ViewPort[0], m_ViewPort[1], m_ViewPort[2], m_ViewPort[3] );
+	m_Painter->setTransform(_internal::getTransform2ISISSpace(m_PlaneOrientation, m_BoundingBox) );
+	m_Painter->setOpacity( 1.0 );
+	m_Painter->setPen( pen );
+	m_Painter->drawLine( xline1 );
+	m_Painter->drawLine( xline2 );
+	m_Painter->drawLine( yline1 );
+	m_Painter->drawLine( yline2 );
+	m_Painter->drawPoint( mappedCoords[0], mappedCoords[1] );
+}
 
 
 void QGeomWidget::lookAtPhysicalCoords ( const util::fvector4& physicalCoords )

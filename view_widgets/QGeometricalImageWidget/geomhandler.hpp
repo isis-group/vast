@@ -40,15 +40,19 @@ namespace _internal {
 const QTransform toISISAxial( -1, 0, 0, 1, 0, 0 );
 const QTransform toISISSagittal( 1, 0, 0, -1, 0, 0 );
 const QTransform toISISCoronal( -1, 0, 0, -1, 0, 0 );
-	
+
+const uint8_t rasteringFac = 10;
 
 util::fvector4 getPhysicalBoundingBox( const ImageHolder::Vector images, const PlaneOrientation &orientation );
 
 QTransform getQTransform( const ImageHolder::Pointer image, const PlaneOrientation &orientation );
 
-QTransform getTransform2ISISSpace( const PlaneOrientation &orientation, const util::ivector4 &);
+QTransform getTransform2ISISSpace( const PlaneOrientation &orientation, const util::fvector4 &);
 
 boost::numeric::ublas::matrix<float> extract2DMatrix( const boost::shared_ptr<ImageHolder> image, const PlaneOrientation &orientation, bool inv = true );
+
+util::fvector4 mapPhysicalCoords2Orientation( const util::fvector4 &coords, const PlaneOrientation &orientation );
+
 	
 
 }}}}// end namespace

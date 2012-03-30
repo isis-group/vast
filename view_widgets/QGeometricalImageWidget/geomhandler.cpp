@@ -63,39 +63,45 @@ util::fvector4 getPhysicalBoundingBox ( const ImageHolder::Vector images, const 
 									fabs(  currentBoundingBox[2].second - currentBoundingBox[2].first ) );
 			break;
 	}
-	return ret;
+	return ret * rasteringFac;
 }
 
 QTransform getQTransform ( const ImageHolder::Pointer image, const PlaneOrientation& orientation )
 {
 	using namespace boost::numeric::ublas;
 	const matrix<float> mat = extract2DMatrix(image, orientation, false );
-	const util::fvector4 io = image->getImageProperties().indexOrigin;
-	const util::fvector4 mapped_voxelSize = mapCoordsToOrientation(image->getImageProperties().voxelSize, image->getImageProperties().latchedOrientation, orientation, false, true);
+	const util::fvector4 mapped_voxelSize = mapCoordsToOrientation(image->getImageProperties().voxelSize, image->getImageProperties().latchedOrientation, orientation, false, true) * rasteringFac;
+	const uint16_t slice = mapCoordsToOrientation(image->getImageProperties().voxelCoords, image->getImageProperties().latchedOrientation, orientation, false, true)[2];
+	const util::ivector4 mappedCoords = mapCoordsToOrientation(util::ivector4(0,0,slice), image->getImageProperties().latchedOrientation, orientation, true, true);
+
+	vector<float> vc = vector<float>(2);
+	vc[0] = mapped_voxelSize[0] / 2.; vc[1] = mapped_voxelSize[1] / 2.;
+		
+	vector<float> _vc = prod( mat, vc);
+	
+	const util::fvector4 _io = image->getISISImage()->getPhysicalCoordsFromIndex(mappedCoords) * rasteringFac ;
+		
 	switch(orientation) {
 		case axial:{
 			QTransform tr1;
-			QTransform &tr2 = tr1.translate(io[0], io[1]).scale(mapped_voxelSize[0], mapped_voxelSize[1]);
-			return QTransform(mat(0,0), mat(0,1), mat(1,0), mat(1,1),0,0) * tr2;
-		}
+			return QTransform(QTransform(mat(0,0), mat(0,1), mat(1,0), mat(1,1),0,0) * tr1.translate(_io[0] - _vc[0], _io[1] - _vc[1])).scale(mapped_voxelSize[0], mapped_voxelSize[1]);
 			break;
+		}
 		case sagittal:{
 			QTransform tr1;
-			QTransform &tr2 = tr1.translate(io[1], io[2]).scale(mapped_voxelSize[0], mapped_voxelSize[1]);
-			return QTransform(mat(0,0), mat(0,1), mat(1,0), mat(1,1),0,0) * tr2;
+			return QTransform(QTransform(mat(0,0), mat(0,1), mat(1,0), mat(1,1),0,0) * tr1.translate(_io[1] - _vc[0], _io[2] - _vc[1])).scale(mapped_voxelSize[0], mapped_voxelSize[1]);
 			break;
 		}
 		case coronal:{
 			QTransform tr1;
-			QTransform &tr2 = tr1.translate(io[0], io[2]).scale(mapped_voxelSize[0], mapped_voxelSize[1]);
-			return QTransform(mat(0,0), mat(0,1), mat(1,0), mat(1,1),0,0) * tr2;
+			return QTransform(QTransform(mat(0,0), mat(0,1), mat(1,0), mat(1,1),0,0) * tr1.translate(_io[0] - _vc[0], _io[2] - _vc[1])).scale(mapped_voxelSize[0], mapped_voxelSize[1]);
 			break;
 		}
 	}
 	return QTransform();
 }
 
-QTransform getTransform2ISISSpace ( const PlaneOrientation& orientation, const util::ivector4 &bb )
+QTransform getTransform2ISISSpace ( const PlaneOrientation& orientation, const util::fvector4 &bb )
 {
 	QTransform retTransform;
 	switch ( orientation ) {
@@ -144,8 +150,8 @@ boost::numeric::ublas::matrix< float > extract2DMatrix ( const boost::shared_ptr
 	switch(orientation) {
 		case axial:
 			retMatrix(0,0) = mat(0,0);
-			retMatrix(1,0) = mat(1,0);
-			retMatrix(0,1) = mat(0,1);
+			retMatrix(0,1) = mat(1,0);
+			retMatrix(1,0) = mat(0,1);
 			retMatrix(1,1) = mat(1,1);
 			break;
 		case sagittal:
@@ -159,10 +165,32 @@ boost::numeric::ublas::matrix< float > extract2DMatrix ( const boost::shared_ptr
 			retMatrix(1,0) = mat(0,2);
 			retMatrix(0,1) = mat(2,0);
 			retMatrix(1,1) = mat(2,2);
+			break;
 	}
 	return retMatrix;
 	
 }
+
+util::fvector4 mapPhysicalCoords2Orientation ( const util::fvector4& coords, const PlaneOrientation& orientation )
+{
+	util::fvector4 retCoords = coords;
+	switch( orientation ) {
+		case axial:
+			retCoords = coords;
+			break;
+		case sagittal:
+			retCoords[0] = coords[1];
+			retCoords[1] = coords[2];
+			retCoords[2] = coords[0];
+			break;
+		case coronal:
+			retCoords[1] = coords[2];
+			retCoords[2] = coords[1];
+			break;
+	}
+	return retCoords;
+}
+
 
 
 }}}}
