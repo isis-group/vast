@@ -13,7 +13,7 @@ INCLUDE(${QT_USE_FILE})
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 QT4_WRAP_UI(vtkoption_ui_h forms/option_widget.ui)
-qt4_wrap_cpp(widget_moc_files VTKImageWidgetImplementation.hpp OptionWidget.hpp )
+qt4_wrap_cpp(widget_moc_files VTKImageWidgetImplementation.hpp OptionWidget.hpp OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED)
 QT4_ADD_RESOURCES(vtkwidget_rcc_files resources/vtkwidget.qrc)
 
 ###########################################################

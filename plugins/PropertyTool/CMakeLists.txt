@@ -14,7 +14,7 @@ INCLUDE(${QT_USE_FILE})
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 QT4_ADD_RESOURCES(propertytool_rcc_files resources/propertytool.qrc)
-qt4_wrap_cpp(plugin_moc_files PropertyToolDialog.hpp)
+qt4_wrap_cpp(plugin_moc_files PropertyToolDialog.hpp OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED)
 QT4_WRAP_UI(propertytool_ui_h forms/propertyToolDialog.ui)
 
 add_library(vastPlugin_PropertyTool SHARED vastPlugin_PropertyTool.cpp PropertyToolDialog.cpp  ${propertytool_ui_h} ${plugin_moc_files} ${propertytool_rcc_files})
