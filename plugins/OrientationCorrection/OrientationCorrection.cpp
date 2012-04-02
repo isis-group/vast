@@ -159,7 +159,6 @@ void OrientatioCorrectionDialog::rotatePressed()
 	transform( 0, 2 ) = -sin( normY );
 	transform( 1, 2 ) = sin( normX ) * cos( normY );
 	transform( 2, 2 ) = cos( normX ) * cos( normY );
-
 	std::stringstream desc;
 
 	if( ui.rotateX->text().toDouble() != 0 ) {

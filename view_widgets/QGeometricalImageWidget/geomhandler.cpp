@@ -62,6 +62,8 @@ util::fvector4 getPhysicalBoundingBox ( const ImageHolder::Vector images, const 
 									fabs(  currentBoundingBox[0].second - currentBoundingBox[0].first ),
 									fabs(  currentBoundingBox[2].second - currentBoundingBox[2].first ) );
 			break;
+		case not_specified:
+			break;
 	}
 	return ret * rasteringFac;
 }
@@ -75,30 +77,29 @@ QTransform getQTransform ( const ImageHolder::Pointer image, const PlaneOrientat
 	const uint16_t slice = mapCoordsToOrientation(image->getImageProperties().voxelCoords, image->getImageProperties().latchedOrientation, orientation, false, true)[2];
 	const util::ivector4 mappedCoords = mapCoordsToOrientation(util::ivector4(0,0,slice), image->getImageProperties().latchedOrientation, orientation, true, true);
 	util::FixedVector<float,2> vc;
-	vc[0] = mapped_voxelSize[0]; vc[1] = mapped_voxelSize[1];
+	vc[0] = mapped_voxelSize[0] / 2.0; vc[1] = mapped_voxelSize[1] / 2.0;
 
 	util::FixedVector<float,2> _vc = mat.dot(vc);
-	if( orientation == axial ) std::cout << vc / rasteringFac << " -> " << _vc /rasteringFac << std::endl;
-	
+
 	const util::fvector4 _io = image->getISISImage()->getPhysicalCoordsFromIndex(mappedCoords) * rasteringFac ;
-		
+	
 	switch(orientation) {
 		case axial:{
 			QTransform tr1;
-			return QTransform(QTransform(mat.elem(0,0), mat.elem(1,0), mat.elem(0,1), mat.elem(1,1),0,0)
-					* tr1.translate(_io[0] - _vc[0] / 2., _io[1] - _vc[1] / 2)).scale(mapped_voxelSize[0], mapped_voxelSize[1]);
+			return QTransform(QTransform(mat.elem(0,0), mat.elem(0,1), mat.elem(1,0), mat.elem(1,1),0,0)
+					* tr1.translate(_io[0] - _vc[0], _io[1] - _vc[1])).scale(mapped_voxelSize[0], mapped_voxelSize[1]);
 			break;
 		}
 		case sagittal:{
 			QTransform tr1;
-			return QTransform(QTransform(mat.elem(0,0), mat.elem(1,0), mat.elem(0,1), mat.elem(1,1),0,0)
-					* tr1.translate(_io[1] - _vc[0] / 2, _io[2] - _vc[1] / 2)).scale(mapped_voxelSize[0], mapped_voxelSize[1]);
+			return QTransform(QTransform(mat.elem(0,0), mat.elem(0,1), mat.elem(1,0), mat.elem(1,1),0,0)
+					* tr1.translate(_io[1] - _vc[0], _io[2] - _vc[1])).scale(mapped_voxelSize[0], mapped_voxelSize[1]);
 			break;
 		}
 		case coronal:{
 			QTransform tr1;
-			return QTransform(QTransform(mat.elem(0,0), mat.elem(1,0), mat.elem(0,1), mat.elem(1,1),0,0)
-					* tr1.translate(_io[0] - _vc[0] / 2, _io[2] - _vc[1] / 2)).scale(mapped_voxelSize[0], mapped_voxelSize[1]);
+			return QTransform(QTransform(mat.elem(0,0), mat.elem(0,1), mat.elem(1,0), mat.elem(1,1),0,0)
+					* tr1.translate(_io[0] - _vc[0], _io[2] - _vc[1])).scale(mapped_voxelSize[0], mapped_voxelSize[1]);
 			break;
 		}
 	}
@@ -112,12 +113,13 @@ QTransform getTransform2ISISSpace ( const PlaneOrientation& orientation, const u
 		case axial:
 			retTransform = QTransform( -1, 0, 0, 1, bb[2] + (bb[0]*2), 0 );
 			break;
-		case sagittal:{
+		case sagittal:
 			retTransform = QTransform( 1, 0, 0, -1, 0, bb[3] + (bb[1]*2) );
 			break;
-		}
 		case coronal:
 			retTransform = QTransform( -1, 0, 0, -1, bb[2] + (bb[0]*2), bb[3] + (bb[1]*2) );
+			break;
+		case not_specified:
 			break;
 	}
 	return retTransform;
@@ -146,26 +148,27 @@ util::FixedMatrix<float,2,2> extract2DMatrix ( const boost::shared_ptr<ImageHold
 	if( !inverse || !invOk ) {
 		invLatchedOrientation = latchedOrientation_abs.transpose();
 	}
-
 	const util::Matrix4x4<float> mat = latched ? image->getImageProperties().latchedOrientation.dot(invLatchedOrientation) : image->getImageProperties().orientation.dot(invLatchedOrientation);
 	switch(orientation) {
 		case axial:
 			retMatrix.elem(0,0) = mat.elem(0,0);
-			retMatrix.elem(0,1) = mat.elem(1,0);
-			retMatrix.elem(1,0) = mat.elem(0,1);
+			retMatrix.elem(0,1) = mat.elem(0,1);
+			retMatrix.elem(1,0) = mat.elem(1,0);
 			retMatrix.elem(1,1) = mat.elem(1,1);
 			break;
 		case sagittal:
 			retMatrix.elem(0,0) = mat.elem(1,1);
-			retMatrix.elem(1,0) = mat.elem(1,2);
-			retMatrix.elem(0,1) = mat.elem(2,1);
+			retMatrix.elem(1,0) = mat.elem(2,1);
+			retMatrix.elem(0,1) = mat.elem(1,2);
 			retMatrix.elem(1,1) = mat.elem(2,2);
 			break;
 		case coronal:
 			retMatrix.elem(0,0) = mat.elem(0,0);
-			retMatrix.elem(1,0) = mat.elem(0,2);
-			retMatrix.elem(0,1) = mat.elem(2,0);
+			retMatrix.elem(1,0) = mat.elem(2,0);
+			retMatrix.elem(0,1) = mat.elem(0,2);
 			retMatrix.elem(1,1) = mat.elem(2,2);
+			break;
+		case not_specified:
 			break;
 	}
 	return retMatrix;
@@ -187,6 +190,8 @@ util::fvector4 mapPhysicalCoords2Orientation ( const util::fvector4& coords, con
 		case coronal:
 			retCoords[1] = coords[2];
 			retCoords[2] = coords[1];
+			break;
+		case not_specified:
 			break;
 	}
 	return retCoords;

@@ -57,9 +57,9 @@ util::Matrix4x4<float> ImageHolder::calculateImageOrientation( bool transposed )
 										m_Image->getPropertyAs<util::fvector4>( "columnVec" ),
 										m_Image->getPropertyAs<util::fvector4>( "sliceVec" ) );
 	if( transposed ) {
-		return retMatrix.transpose();
+		return retMatrix;
 	}
-	return retMatrix;
+	return retMatrix.transpose(); // has to be transposed!!!!!!!!!!
 }
 
 util::Matrix4x4<float> ImageHolder::calculateLatchedImageOrientation( bool transposed )

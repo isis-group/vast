@@ -137,7 +137,9 @@ void QViewerCore::physicalCoordsChanged ( util::fvector4 physicalCoords )
 
 void QViewerCore::onWidgetClicked ( widget::WidgetInterface *origin, util::fvector4 physicalCoords, Qt::MouseButton mouseButton )
 {
-	setCurrentImage( origin->getWidgetEnsemble()->getImageVector().front() );
+	if( getMode() != statistical_mode ) {
+		setCurrentImage( origin->getWidgetEnsemble()->getImageVector().front() );
+	}
 	getUICore()->refreshUI( false ); //no update of mainwindow is needed here
 	emitOnWidgetClicked( physicalCoords, mouseButton );
 	physicalCoordsChanged( physicalCoords );
