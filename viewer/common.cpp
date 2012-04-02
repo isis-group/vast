@@ -118,17 +118,10 @@ std::string getCrashLogFilePath()
 	return logFilePath.str();
 }
 
-util::fvector4 mapCoordsToOrientation( const util::fvector4 &coords, const boost::numeric::ublas::matrix<float> &orientationMatrix, PlaneOrientation orientation, bool back, bool absolute )
+util::fvector4 mapCoordsToOrientation( const util::fvector4 &coords, const util::Matrix4x4<float> &orientationMatrix, PlaneOrientation orientation, bool back, bool absolute )
 {
-	using namespace boost::numeric::ublas;
-	matrix<float> transformMatrix = identity_matrix<float>( 4, 4 );
-	matrix<float> finMatrix = identity_matrix<float>( 4, 4 );
-	vector<float> vec = vector<float>( 4 );
-	vector<float> finVec = vector<float>( 4 );
-
-	for( size_t i = 0; i < 4 ; i++ ) {
-		vec( i ) = coords[i];
-	}
+	util::Matrix4x4<float> transformMatrix = util::IdentityMatrix<float,4>();
+	util::fvector4 retVec;
 
 	switch ( orientation ) {
 	case axial:
@@ -137,8 +130,8 @@ util::fvector4 mapCoordsToOrientation( const util::fvector4 &coords, const boost
 		* 0 -1  0
 		* 0  0  1
 		*/
-		transformMatrix( 0, 0 ) = -1;
-		transformMatrix( 1, 1 ) = 1;
+		transformMatrix.elem( 0, 0 ) = -1;
+		transformMatrix.elem( 1, 1 ) = 1;
 		break;
 	case sagittal:
 		/*setup sagittal matrix
@@ -146,12 +139,12 @@ util::fvector4 mapCoordsToOrientation( const util::fvector4 &coords, const boost
 		* 0  0  1
 		* 1  0  0
 		*/
-		transformMatrix( 0, 0 ) = 0;
-		transformMatrix( 2, 0 ) = 1;
-		transformMatrix( 0, 1 ) = 1;
-		transformMatrix( 2, 2 ) = 0;
-		transformMatrix( 1, 2 ) = -1;
-		transformMatrix( 1, 1 ) = 0;
+		transformMatrix.elem( 0, 0 ) = 0;
+		transformMatrix.elem( 0, 2 ) = 1;
+		transformMatrix.elem( 1, 0 ) = 1;
+		transformMatrix.elem( 2, 2 ) = 0;
+		transformMatrix.elem( 2, 1 ) = -1;
+		transformMatrix.elem( 1, 1 ) = 0;
 		break;
 	case coronal:
 		/*setup coronal matrix
@@ -160,28 +153,26 @@ util::fvector4 mapCoordsToOrientation( const util::fvector4 &coords, const boost
 		*  0  1  0
 		*/
 
-		transformMatrix( 0, 0 ) = -1;
-		transformMatrix( 1, 1 ) = 0;
-		transformMatrix( 2, 2 ) = 0;
-		transformMatrix( 2, 1 ) = 1;
-		transformMatrix( 1, 2 ) = -1;
+		transformMatrix.elem( 0, 0 ) = -1;
+		transformMatrix.elem( 1, 1 ) = 0;
+		transformMatrix.elem( 2, 2 ) = 0;
+		transformMatrix.elem( 1, 2 ) = 1;
+		transformMatrix.elem( 2, 1 ) = -1;
 		break;
 	case not_specified:
 		LOG( Runtime, warning ) << "Can not transform to PlaneOrientation \"not_specified\"!";
 		break;
 	}
 
-
 	if( back ) {
-		finVec = prod( trans( prod(  transformMatrix, orientationMatrix ) ), vec );
+		retVec = transformMatrix.dot(orientationMatrix).transpose().dot(coords);
 	} else {
-		finVec = prod( prod( transformMatrix, orientationMatrix ) , vec );
+		retVec = transformMatrix.dot(orientationMatrix).dot(coords);
 	}
-
 	if( absolute ) {
-		return util::fvector4( fabs( finVec( 0 ) ), fabs( finVec( 1 ) ), fabs( finVec( 2 ) ) , fabs( finVec( 3 ) ) );
+		return util::fvector4( fabs( retVec[0] ), fabs( retVec[1] ), fabs( retVec[2] ) , fabs( retVec[3] ) );
 	} else {
-		return util::fvector4( finVec( 0 ), finVec( 1 ), finVec( 2 ), finVec( 3 ) );
+		return retVec;
 	}
 
 }

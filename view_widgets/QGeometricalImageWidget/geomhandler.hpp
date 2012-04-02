@@ -45,7 +45,7 @@ QTransform getQTransform( const ImageHolder::Pointer image, const PlaneOrientati
 
 QTransform getTransform2ISISSpace( const PlaneOrientation &orientation, const util::fvector4 &);
 
-boost::numeric::ublas::matrix<float> extract2DMatrix( const boost::shared_ptr<ImageHolder> image, const PlaneOrientation &orientation, bool latched, bool inv = true );
+util::FixedMatrix<float,2,2> extract2DMatrix( const boost::shared_ptr<ImageHolder> image, const PlaneOrientation &orientation, bool latched, bool inv = true );
 
 util::fvector4 mapPhysicalCoords2Orientation( const util::fvector4 &coords, const PlaneOrientation &orientation );
 	

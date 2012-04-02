@@ -49,7 +49,6 @@ public:
 		const util::ivector4 mapping = mapCoordsToOrientation( util::ivector4( 0, 1, 2, 3 ), image->getImageProperties().latchedOrientation, orientation, true );
 		const data::Chunk &chunk = image->getChunkVector()[image->getImageProperties().voxelCoords[dim_time]];
 
-
 		for ( util::ivector4::value_type y = 0; y < mappedSize[1]; y++ ) {
 #pragma omp parallel for
 

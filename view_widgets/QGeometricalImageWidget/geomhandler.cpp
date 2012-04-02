@@ -69,32 +69,36 @@ util::fvector4 getPhysicalBoundingBox ( const ImageHolder::Vector images, const 
 QTransform getQTransform ( const ImageHolder::Pointer image, const PlaneOrientation& orientation, bool latched )
 {
 	using namespace boost::numeric::ublas;
-	const matrix<float> mat = extract2DMatrix(image, orientation, latched, false );
+	
+	const util::FixedMatrix<float,2,2> mat = extract2DMatrix(image, orientation, latched, false );
 	const util::fvector4 mapped_voxelSize = mapCoordsToOrientation(image->getImageProperties().voxelSize, image->getImageProperties().latchedOrientation, orientation, false, true) * rasteringFac;
 	const uint16_t slice = mapCoordsToOrientation(image->getImageProperties().voxelCoords, image->getImageProperties().latchedOrientation, orientation, false, true)[2];
 	const util::ivector4 mappedCoords = mapCoordsToOrientation(util::ivector4(0,0,slice), image->getImageProperties().latchedOrientation, orientation, true, true);
+	util::FixedVector<float,2> vc;
+	vc[0] = mapped_voxelSize[0]; vc[1] = mapped_voxelSize[1];
 
-	vector<float> vc = vector<float>(2);
-	vc[0] = mapped_voxelSize[0] / 2.; vc[1] = mapped_voxelSize[1] / 2.;
-		
-	vector<float> _vc = prod( mat, vc);
+	util::FixedVector<float,2> _vc = mat.dot(vc);
+	if( orientation == axial ) std::cout << vc / rasteringFac << " -> " << _vc /rasteringFac << std::endl;
 	
 	const util::fvector4 _io = image->getISISImage()->getPhysicalCoordsFromIndex(mappedCoords) * rasteringFac ;
 		
 	switch(orientation) {
 		case axial:{
 			QTransform tr1;
-			return QTransform(QTransform(mat(0,0), mat(0,1), mat(1,0), mat(1,1),0,0) * tr1.translate(_io[0] - _vc[0], _io[1] - _vc[1])).scale(mapped_voxelSize[0], mapped_voxelSize[1]);
+			return QTransform(QTransform(mat.elem(0,0), mat.elem(1,0), mat.elem(0,1), mat.elem(1,1),0,0)
+					* tr1.translate(_io[0] - _vc[0] / 2., _io[1] - _vc[1] / 2)).scale(mapped_voxelSize[0], mapped_voxelSize[1]);
 			break;
 		}
 		case sagittal:{
 			QTransform tr1;
-			return QTransform(QTransform(mat(0,0), mat(0,1), mat(1,0), mat(1,1),0,0) * tr1.translate(_io[1] - _vc[0], _io[2] - _vc[1])).scale(mapped_voxelSize[0], mapped_voxelSize[1]);
+			return QTransform(QTransform(mat.elem(0,0), mat.elem(1,0), mat.elem(0,1), mat.elem(1,1),0,0)
+					* tr1.translate(_io[1] - _vc[0] / 2, _io[2] - _vc[1] / 2)).scale(mapped_voxelSize[0], mapped_voxelSize[1]);
 			break;
 		}
 		case coronal:{
 			QTransform tr1;
-			return QTransform(QTransform(mat(0,0), mat(0,1), mat(1,0), mat(1,1),0,0) * tr1.translate(_io[0] - _vc[0], _io[2] - _vc[1])).scale(mapped_voxelSize[0], mapped_voxelSize[1]);
+			return QTransform(QTransform(mat.elem(0,0), mat.elem(1,0), mat.elem(0,1), mat.elem(1,1),0,0)
+					* tr1.translate(_io[0] - _vc[0] / 2, _io[2] - _vc[1] / 2)).scale(mapped_voxelSize[0], mapped_voxelSize[1]);
 			break;
 		}
 	}
@@ -119,52 +123,49 @@ QTransform getTransform2ISISSpace ( const PlaneOrientation& orientation, const u
 	return retTransform;
 }
 
-boost::numeric::ublas::matrix< float > extract2DMatrix ( const boost::shared_ptr<ImageHolder> image, const PlaneOrientation& orientation, bool latched, bool inverse )
+util::FixedMatrix<float,2,2> extract2DMatrix ( const boost::shared_ptr<ImageHolder> image, const PlaneOrientation& orientation, bool latched, bool inverse )
 {
-	using namespace boost::numeric::ublas;
-	
-	matrix<float> retMatrix = matrix<float>(2,2);
 
-	matrix<float> latchedOrientation = image->getImageProperties().latchedOrientation;
-	matrix<float> latchedOrientation_abs = matrix<float>(4,4);
+	util::FixedMatrix<float,2,2> retMatrix;
+	util::Matrix4x4<float> latchedOrientation_abs;
 	
 	for( unsigned short i = 0; i<3; i++ ) {
 		for( unsigned short j = 0; j<3; j++ ) {
-			latchedOrientation_abs(i,j) = fabs(latchedOrientation(i,j));
+			latchedOrientation_abs.elem(i,j) = fabs(image->getImageProperties().latchedOrientation.elem(i,j));
 		}
 	}
-	matrix<float> invLatchedOrientation = matrix<float>(4,4);
+	util::Matrix4x4<float> invLatchedOrientation;
 	bool invOk;
 	if( inverse ) {
-		invOk = data::_internal::inverseMatrix<float>(latchedOrientation_abs, invLatchedOrientation);
+		invLatchedOrientation = latchedOrientation_abs.inverse(invOk);
 		if( !invOk ) {
 			LOG( Dev, warning ) << "Failed to usee inverse to extract 2D matrix for image " << image->getImageProperties().filePath
 						<< "! Falling back to transposed.";
 		}
 	}
 	if( !inverse || !invOk ) {
-		invLatchedOrientation = trans(latchedOrientation_abs);
+		invLatchedOrientation = latchedOrientation_abs.transpose();
 	}
 
-	const matrix<float> mat = prod( latched ? image->getImageProperties().latchedOrientation : image->getImageProperties().orientation, invLatchedOrientation );
+	const util::Matrix4x4<float> mat = latched ? image->getImageProperties().latchedOrientation.dot(invLatchedOrientation) : image->getImageProperties().orientation.dot(invLatchedOrientation);
 	switch(orientation) {
 		case axial:
-			retMatrix(0,0) = mat(0,0);
-			retMatrix(0,1) = mat(1,0);
-			retMatrix(1,0) = mat(0,1);
-			retMatrix(1,1) = mat(1,1);
+			retMatrix.elem(0,0) = mat.elem(0,0);
+			retMatrix.elem(0,1) = mat.elem(1,0);
+			retMatrix.elem(1,0) = mat.elem(0,1);
+			retMatrix.elem(1,1) = mat.elem(1,1);
 			break;
 		case sagittal:
-			retMatrix(0,0) = mat(1,1);
-			retMatrix(1,0) = mat(1,2);
-			retMatrix(0,1) = mat(2,1);
-			retMatrix(1,1) = mat(2,2);
+			retMatrix.elem(0,0) = mat.elem(1,1);
+			retMatrix.elem(1,0) = mat.elem(1,2);
+			retMatrix.elem(0,1) = mat.elem(2,1);
+			retMatrix.elem(1,1) = mat.elem(2,2);
 			break;
 		case coronal:
-			retMatrix(0,0) = mat(0,0);
-			retMatrix(1,0) = mat(0,2);
-			retMatrix(0,1) = mat(2,0);
-			retMatrix(1,1) = mat(2,2);
+			retMatrix.elem(0,0) = mat.elem(0,0);
+			retMatrix.elem(1,0) = mat.elem(0,2);
+			retMatrix.elem(0,1) = mat.elem(2,0);
+			retMatrix.elem(1,1) = mat.elem(2,2);
 			break;
 	}
 	return retMatrix;

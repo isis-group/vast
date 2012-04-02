@@ -57,13 +57,13 @@ vtkImageData *VolumeHandler::getVTKImageData( boost::shared_ptr< ImageHolder > i
 	newImage = importer->GetOutput();
 
 	//transform the image with orientation matrix
-	const vector<float> mappedSize = prod( image->getImageProperties().orientation, size.getBoostVector() );
-	const vector<float> mappedSpacing = prod( image->getImageProperties().orientation, image->getImageProperties().voxelSize.getBoostVector() );
+	const util::fvector4 mappedSize = image->getImageProperties().orientation.dot( size );
+	const util::fvector4 mappedSpacing = image->getImageProperties().orientation.dot( image->getImageProperties().voxelSize );
 	orientationMatrix->SetElement( 3, 3, 1 );
 
 	for( uint8_t i = 0; i < 4; i++ ) {
 		for ( uint8_t j = 0; j < 4; j++ ) {
-			orientationMatrix->SetElement( i, j, image->getImageProperties().orientation( j, i ) / fabs( mappedSpacing[j] ) );
+			orientationMatrix->SetElement( i, j, image->getImageProperties().orientation.elem( j, i ) / fabs( mappedSpacing[j] ) );
 		}
 	}
 
