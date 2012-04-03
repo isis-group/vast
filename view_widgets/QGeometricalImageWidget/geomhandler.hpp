@@ -39,15 +39,19 @@ namespace _internal {
 
 const uint8_t rasteringFac = 20;
 
-util::fvector4 getPhysicalBoundingBox( const ImageHolder::Vector images, const PlaneOrientation &orientation );
+geometrical::BoundingBoxType getVoxelBoundingBox( const ImageHolder::Vector &images );
+
+util::fvector4 getPhysicalBoundingBox( const ImageHolder::Vector &images, const PlaneOrientation &orientation, const bool &latched );
 
 QTransform getQTransform( const ImageHolder::Pointer image, const PlaneOrientation &orientation, bool latched );
 
 QTransform getTransform2ISISSpace( const PlaneOrientation &orientation, const util::fvector4 &);
 
-util::FixedMatrix<float,2,2> extract2DMatrix( const boost::shared_ptr<ImageHolder> image, const PlaneOrientation &orientation, bool latched, bool inv = true );
+util::FixedMatrix<qreal,2,2> extract2DMatrix( const boost::shared_ptr<ImageHolder> image, const PlaneOrientation &orientation, bool latched, bool inv = true );
 
 util::fvector4 mapPhysicalCoords2Orientation( const util::fvector4 &coords, const PlaneOrientation &orientation );
+
+void zoomBoundingBox( util::fvector4 &boundingBox, const util::fvector4 &physCoord, const float &zoom, const PlaneOrientation &orientation );
 	
 
 }}}}// end namespace

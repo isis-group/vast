@@ -66,6 +66,7 @@ protected:
 	void mousePressEvent( QMouseEvent *e );
 	void mouseMoveEvent( QMouseEvent *e );
 	void mouseReleaseEvent( QMouseEvent *e );
+	void wheelEvent( QWheelEvent *e );
 	
 private:
 	void paintImage( const ImageHolder::Pointer );
@@ -79,13 +80,15 @@ private:
 	bool m_RightMouseButtonPressed;
 	float m_WindowViewPortScaling;
 
-	void emitPhysicalCoordsFromMouseCoords( const int &x, const int &y) const;
+	util::fvector4 getPhysicalCoordsFromMouseCoords( const int &x, const int &y) const;
 	
 	QPainter *m_Painter;
 	QVBoxLayout *m_Layout;
 	QColor m_CrosshairColor;
 	util::fvector4 m_BoundingBox;
 	util::fvector4 m_ViewPort;
+	float m_Zoom;
+	InterpolationType m_InterpolationType;
 };
 
 

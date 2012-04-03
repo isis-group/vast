@@ -38,9 +38,35 @@ namespace viewer {
 namespace widget {
 namespace _internal {
 
-util::fvector4 getPhysicalBoundingBox ( const ImageHolder::Vector images, const PlaneOrientation &orientation )
+geometrical::BoundingBoxType getVoxelBoundingBox ( const ImageHolder::Vector& images )
 {
-	const geometrical::BoundingBoxType currentBoundingBox = geometrical::getPhysicalBoundingBox(images);
+	geometrical::BoundingBoxType retBox;
+	for( unsigned short i = 0; i< 3;i++ ) {
+		retBox[i].first = 0;
+		retBox[i].second = -std::numeric_limits<float>::max();
+	}
+	BOOST_FOREACH(const ImageHolder::Vector::const_reference image, images ) {
+		const util::ivector4 size = mapCoordsToOrientation(image->getISISImage()->getSizeAsVector(), image->getImageProperties().latchedOrientation, axial, false, true);
+		const util::ivector4 vsize = mapCoordsToOrientation(image->getImageProperties().voxelSize, image->getImageProperties().latchedOrientation, axial, false, true);
+		for( unsigned short i = 0; i<3;i++ ) {
+			if( size[i] > retBox[i].second ) {
+				retBox[i].second = size[i] * vsize[i];
+			}
+		}
+	}
+	return retBox;
+}
+
+
+	
+util::fvector4 getPhysicalBoundingBox ( const ImageHolder::Vector &images, const PlaneOrientation &orientation, const bool &latched )
+{
+	geometrical::BoundingBoxType currentBoundingBox;
+	if( latched ) {
+		currentBoundingBox = getVoxelBoundingBox( images );
+	} else {
+		currentBoundingBox = geometrical::getPhysicalBoundingBox(images);
+	}
 
 	util::fvector4 ret;
 	switch(orientation ) {
@@ -70,19 +96,24 @@ util::fvector4 getPhysicalBoundingBox ( const ImageHolder::Vector images, const 
 
 QTransform getQTransform ( const ImageHolder::Pointer image, const PlaneOrientation& orientation, bool latched )
 {
-	using namespace boost::numeric::ublas;
 	
-	const util::FixedMatrix<float,2,2> mat = extract2DMatrix(image, orientation, latched, false );
-	const util::fvector4 mapped_voxelSize = mapCoordsToOrientation(image->getImageProperties().voxelSize, image->getImageProperties().latchedOrientation, orientation, false, true) * rasteringFac;
-	const uint16_t slice = mapCoordsToOrientation(image->getImageProperties().voxelCoords, image->getImageProperties().latchedOrientation, orientation, false, true)[2];
-	const util::ivector4 mappedCoords = mapCoordsToOrientation(util::ivector4(0,0,slice), image->getImageProperties().latchedOrientation, orientation, true, true);
-	util::FixedVector<float,2> vc;
-	vc[0] = mapped_voxelSize[0] / 2.0; vc[1] = mapped_voxelSize[1] / 2.0;
-
-	util::FixedVector<float,2> _vc = mat.dot(vc);
-
-	const util::fvector4 _io = image->getISISImage()->getPhysicalCoordsFromIndex(mappedCoords) * rasteringFac ;
+	const util::FixedMatrix<qreal,2,2> mat = extract2DMatrix(image, orientation, latched, false );
 	
+	util::FixedVector<qreal,2> vc;
+	util::fvector4 mapped_voxelSize = mapCoordsToOrientation(image->getImageProperties().voxelSize, image->getImageProperties().latchedOrientation, orientation, false, true) * rasteringFac;
+	util::FixedVector<qreal,2> _vc;
+	util::fvector4 _io;
+
+	if(latched) {
+		_io.fill(0);
+		_vc.fill(0);
+	} else {
+		const uint16_t slice = mapCoordsToOrientation(image->getImageProperties().voxelCoords, image->getImageProperties().latchedOrientation, orientation, false, true)[2];
+		const util::ivector4 mappedCoords = mapCoordsToOrientation(util::ivector4(0,0,slice), image->getImageProperties().latchedOrientation, orientation, true, true);
+		_io = image->getISISImage()->getPhysicalCoordsFromIndex(mappedCoords) * rasteringFac ;
+		vc[0] = mapped_voxelSize[0] / 2.0; vc[1] = mapped_voxelSize[1] / 2.0;
+		_vc = mat.dot(vc);
+	}
 	switch(orientation) {
 		case axial:{
 			QTransform tr1;
@@ -125,18 +156,18 @@ QTransform getTransform2ISISSpace ( const PlaneOrientation& orientation, const u
 	return retTransform;
 }
 
-util::FixedMatrix<float,2,2> extract2DMatrix ( const boost::shared_ptr<ImageHolder> image, const PlaneOrientation& orientation, bool latched, bool inverse )
+util::FixedMatrix<qreal,2,2> extract2DMatrix ( const boost::shared_ptr<ImageHolder> image, const PlaneOrientation& orientation, bool latched, bool inverse )
 {
 
-	util::FixedMatrix<float,2,2> retMatrix;
-	util::Matrix4x4<float> latchedOrientation_abs;
+	util::FixedMatrix<qreal,2,2> retMatrix;
+	util::Matrix4x4<qreal> latchedOrientation_abs;
 	
 	for( unsigned short i = 0; i<3; i++ ) {
 		for( unsigned short j = 0; j<3; j++ ) {
 			latchedOrientation_abs.elem(i,j) = fabs(image->getImageProperties().latchedOrientation.elem(i,j));
 		}
 	}
-	util::Matrix4x4<float> invLatchedOrientation;
+	util::Matrix4x4<qreal> invLatchedOrientation;
 	bool invOk;
 	if( inverse ) {
 		invLatchedOrientation = latchedOrientation_abs.inverse(invOk);
@@ -148,7 +179,7 @@ util::FixedMatrix<float,2,2> extract2DMatrix ( const boost::shared_ptr<ImageHold
 	if( !inverse || !invOk ) {
 		invLatchedOrientation = latchedOrientation_abs.transpose();
 	}
-	const util::Matrix4x4<float> mat = latched ? image->getImageProperties().latchedOrientation.dot(invLatchedOrientation) : image->getImageProperties().orientation.dot(invLatchedOrientation);
+	const util::Matrix4x4<qreal> mat = latched ? image->getImageProperties().latchedOrientation.dot(invLatchedOrientation) : image->getImageProperties().orientation.dot(invLatchedOrientation);
 	switch(orientation) {
 		case axial:
 			retMatrix.elem(0,0) = mat.elem(0,0);
@@ -195,6 +226,32 @@ util::fvector4 mapPhysicalCoords2Orientation ( const util::fvector4& coords, con
 			break;
 	}
 	return retCoords;
+}
+
+void zoomBoundingBox ( util::fvector4& boundingBox, const util::fvector4& physCoord, const float &zoom, const PlaneOrientation &orientation )
+{
+	const util::fvector4 mappedPhysicalCoords = mapPhysicalCoords2Orientation( physCoord, orientation ) * rasteringFac;
+	const util::fvector4 oldBoundingBox = boundingBox;
+	//test
+	const float center = boundingBox[0] + ( boundingBox[2] / 2.);
+	const float diff = center - mappedPhysicalCoords[0];
+	std::cout << ((diff / (boundingBox[2] / 2.))) * zoom << std::endl;
+
+	
+	
+	
+// 	boundingBox[0] -= (1-(diff / (boundingBox[2] / 2.)));
+	
+	//changing extent of the bounding box
+	boundingBox[2] /= zoom;
+	boundingBox[3] /= zoom;
+
+	//translate bounding box
+// 	boundingBox[0] += (oldBoundingBox[2] - boundingBox[2] ) / 2.;
+// 	boundingBox[1] += (oldBoundingBox[3] - boundingBox[3] ) / 2.;
+
+
+	
 }
 
 

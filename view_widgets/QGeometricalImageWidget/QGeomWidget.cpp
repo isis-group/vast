@@ -28,6 +28,7 @@
 
 #include "QGeomWidget.hpp"
 #include "geomhandler.hpp"
+#include <Adapter/qmatrixconversion.hpp>
 
 #include "memoryhandler.hpp"
 
@@ -58,7 +59,9 @@ void QGeomWidget::setup ( QViewerCore* core, QWidget* parent , PlaneOrientation 
 	m_LeftMouseButtonPressed = false;
 	m_RightMouseButtonPressed = false;
 	m_RasterPhysicalCoords = true;
+	m_Zoom = 1.;
 	connect(m_ViewerCore, SIGNAL( emitUpdateScene()), this, SLOT( updateScene()));
+	connect( m_ViewerCore, SIGNAL( emitZoomChanged( float ) ), this, SLOT( setZoom( float ) ) );
 	
 }
 
@@ -91,12 +94,10 @@ void QGeomWidget::updateScene()
 
 void QGeomWidget::addImage ( const ImageHolder::Pointer /*image*/ )
 {
-	m_BoundingBox = _internal::getPhysicalBoundingBox( getWidgetEnsemble()->getImageVector(), m_PlaneOrientation );
 }
 
 bool QGeomWidget::removeImage ( const ImageHolder::Pointer /*image*/ )
 {
-	m_BoundingBox = _internal::getPhysicalBoundingBox( getWidgetEnsemble()->getImageVector(), m_PlaneOrientation );
 }
 
 
@@ -104,8 +105,18 @@ void QGeomWidget::paintEvent ( QPaintEvent* event )
 {
 	if( m_ViewerCore->hasImage() ) {
 		m_Painter->begin(this);
+		switch( m_InterpolationType ) {
+		case nn:
+			m_Painter->setRenderHint( QPainter::NonCosmeticDefaultPen, true );
+			break;
+		case lin:
+			m_Painter->setRenderHint( QPainter::SmoothPixmapTransform, true );
+			break;
+		}
+
 		m_Painter->resetTransform();
-		m_BoundingBox = _internal::getPhysicalBoundingBox( getWidgetEnsemble()->getImageVector(), m_PlaneOrientation );
+		m_BoundingBox = _internal::getPhysicalBoundingBox( getWidgetEnsemble()->getImageVector(), m_PlaneOrientation, m_LatchOrientation );
+		_internal::zoomBoundingBox( m_BoundingBox, m_ViewerCore->getCurrentImage()->getImageProperties().physicalCoords, m_Zoom, m_PlaneOrientation );
 		updateViewPort();
 		m_Painter->setWindow( m_BoundingBox[0], m_BoundingBox[1], m_BoundingBox[2], m_BoundingBox[3] );
 		m_Painter->setViewport( m_ViewPort[0], m_ViewPort[1], m_ViewPort[2], m_ViewPort[3] );
@@ -146,7 +157,13 @@ void QGeomWidget::paintCrossHair() const
 {
 	const ImageHolder::Pointer image = m_ViewerCore->getCurrentImage();
 
-	const util::fvector4 mappedCoords = (_internal::mapPhysicalCoords2Orientation(image->getImageProperties().physicalCoords, m_PlaneOrientation) ) * _internal::rasteringFac;
+	util::fvector4 mappedCoords;
+	if( !m_LatchOrientation ) {
+		mappedCoords = (_internal::mapPhysicalCoords2Orientation(image->getImageProperties().physicalCoords, m_PlaneOrientation) ) * _internal::rasteringFac;
+	} else {
+		mappedCoords = mapCoordsToOrientation( image->getImageProperties().voxelCoords, image->getImageProperties().latchedOrientation, m_PlaneOrientation, false, true ) * _internal::rasteringFac;
+	}
+	
 	short border = -15000;
 	const QLine xline1( mappedCoords[0], border, mappedCoords[0], mappedCoords[1] - 15 * _internal::rasteringFac );
 	const QLine xline2( mappedCoords[0], mappedCoords[1] + 15 * _internal::rasteringFac, mappedCoords[0], height() - border  );
@@ -171,7 +188,7 @@ void QGeomWidget::paintCrossHair() const
 	m_Painter->drawPoint( mappedCoords[0], mappedCoords[1] );
 }
 
-void QGeomWidget::emitPhysicalCoordsFromMouseCoords ( const int& x, const int& y ) const
+util::fvector4 QGeomWidget::getPhysicalCoordsFromMouseCoords ( const int& x, const int& y ) const
 {
 	if( m_ViewerCore->hasImage() ) {
 		util::fvector4 physicalCoords = m_ViewerCore->getCurrentImage()->getImageProperties().physicalCoords;
@@ -196,27 +213,29 @@ void QGeomWidget::emitPhysicalCoordsFromMouseCoords ( const int& x, const int& y
 			physicalCoords = m_ViewerCore->getCurrentImage()->getISISImage()->getPhysicalCoordsFromIndex(
 						m_ViewerCore->getCurrentImage()->getISISImage()->getIndexFromPhysicalCoords( physicalCoords ) );
 		}
-		m_ViewerCore->physicalCoordsChanged(physicalCoords);
+		return physicalCoords;
 	}
 }
 
 
 void QGeomWidget::mousePressEvent ( QMouseEvent* e )
 {
+	const util::fvector4 physicalCoords = getPhysicalCoordsFromMouseCoords( e->x(), e->y() );
+	m_ViewerCore->onWidgetClicked(this, physicalCoords, e->button() );
 	if( e->button() == Qt::LeftButton ) {
 		m_LeftMouseButtonPressed = true;
 	}
 	if( e->button() == Qt::RightButton ) {
 		m_RightMouseButtonPressed = true;
 	}
-	emitPhysicalCoordsFromMouseCoords( e->x(), e->y() );
+
     
 }
 
 void QGeomWidget::mouseMoveEvent ( QMouseEvent* e )
 {
 	if( m_RightMouseButtonPressed || m_LeftMouseButtonPressed ) {
-		emitPhysicalCoordsFromMouseCoords(e->x(), e->y() );
+	 	m_ViewerCore->onWidgetMoved( this, getPhysicalCoordsFromMouseCoords(e->x(), e->y() ), e->button() );
 	}
 }
 
@@ -228,6 +247,24 @@ void QGeomWidget::mouseReleaseEvent ( QMouseEvent* e )
 	if( e->button() == Qt::RightButton ) {
 		m_RightMouseButtonPressed = false;
 	}
+}
+
+void QGeomWidget::wheelEvent ( QWheelEvent* e )
+{
+   	float oldZoom = m_Zoom;
+	if ( e->delta() < 0 ) {
+		oldZoom /= 1.5;
+	} else {
+		oldZoom *= 1.5;
+
+	}
+
+	if( m_ViewerCore->getSettings()->getPropertyAs<bool>( "propagateZooming" ) ) {
+		m_ViewerCore->zoomChanged( oldZoom );
+	} else {
+		setZoom( oldZoom );
+	}
+ 
 }
 
 
@@ -243,7 +280,7 @@ void QGeomWidget::setEnableCrosshair ( bool enable )
 
 void QGeomWidget::setInterpolationType ( InterpolationType interpolation )
 {
-
+	m_InterpolationType = interpolation;
 }
 
 void QGeomWidget::setMouseCursorIcon ( QIcon )
@@ -253,7 +290,8 @@ void QGeomWidget::setMouseCursorIcon ( QIcon )
 
 void QGeomWidget::setZoom ( float zoom )
 {
-
+	m_Zoom = zoom;
+	updateScene();
 }
 
 

@@ -262,7 +262,7 @@ void QViewerCore::updateScene()
 void QViewerCore::zoomChanged ( float zoomFactor )
 {
 	if ( getSettings()->getPropertyAs<bool> ( "propagateZooming" ) ) {
-		emitZoomChanged ( zoomFactor );
+		emitZoomChanged( zoomFactor );
 	}
 }
 
@@ -358,6 +358,10 @@ ImageHolder::Vector QViewerCore::openFile ( const FileInformation &fileInfo, boo
 }
 void QViewerCore::openFileList( const std::list< FileInformation > fileInfoList )
 {
+	if( fileInfoList.empty() ) {
+		LOG( Dev, warning ) << "Trying to open an empty file info list. Abort!";
+		return;
+	}
 	ImageHolder::Vector structuralImageList;
 	ImageHolder::Vector statisticalImageList;
 	BOOST_FOREACH( std::list<FileInformation>::const_reference file, fileInfoList ) {

@@ -56,7 +56,7 @@ int main( int argc, char *argv[] )
 	boost::shared_ptr<qt4::QDefaultMessagePrint> logging_hanlder_runtime ( new qt4::QDefaultMessagePrint( verbose_info ) );
 	boost::shared_ptr<qt4::QDefaultMessagePrint> logging_hanlder_dev ( new qt4::QDefaultMessagePrint( verbose_info ) );
 	util::_internal::Log<viewer::Dev>::setHandler( logging_hanlder_dev );
-	util::_internal::Log<viewer::Runtime>::setHandler( logging_hanlder_runtime );
+	util::_internal::Log<viewer::Runtime>::setHandler( logging_hanlder_runtime );	
 
 	//make vast showing qmessage if an error log is thrown
 	logging_hanlder_dev->qmessageBelow( isis::warning );
@@ -121,7 +121,6 @@ int main( int argc, char *argv[] )
 	util::_internal::Log<isis::image_io::Debug>::setHandler( logging_hanlder_runtime );
 
 
-
 	core->addMessageHandler( logging_hanlder_runtime.get() );
 	core->addMessageHandlerDev( logging_hanlder_dev.get() );
 	//scan for plugins and hand them to the core
@@ -168,7 +167,9 @@ int main( int argc, char *argv[] )
 								app.parameters["split"].as<bool>() ) );
 	}
 
-	core->openFileList( fileInfoList );
+	if( !fileInfoList.empty() ) {
+		core->openFileList( fileInfoList );
+	}
 	core->getUICore()->getMainWindow()->toggleLoadingIcon( false );
 	core->getUICore()->showMainWindow();
 
