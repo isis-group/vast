@@ -238,8 +238,8 @@ void zoomBoundingBox ( util::fvector4& boundingBox, util::FixedVector<float,2> &
 		const util::fvector4 mappedPhysicalCoords = mapPhysicalCoords2Orientation( physCoord, orientation ) * rasteringFac;
 		const float diffX = ((centerX - mappedPhysicalCoords[0]) / (boundingBox[2] / 2.));
 		const float diffY = ((centerY - mappedPhysicalCoords[1]) / (boundingBox[3] / 2.));
-		translation[0] = diffX * ( (boundingBox[2] - (boundingBox[2] / zoom)) / 2.);
-		translation[1] = diffY * ( (boundingBox[3] - (boundingBox[3] / zoom)) / 2.);
+		translation[0] = diffX * ( (boundingBox[2] - (boundingBox[2] / zoom * 0.9)) / 2.);
+		translation[1] = diffY * ( (boundingBox[3] - (boundingBox[3] / zoom * 0.9)) / 2.);
 	}
 	boundingBox[2] /= zoom;
 	boundingBox[3] /= zoom;

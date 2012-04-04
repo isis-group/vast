@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>527</width>
-    <height>536</height>
+    <width>443</width>
+    <height>428</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -66,13 +66,6 @@
                </property>
               </widget>
              </item>
-             <item>
-              <widget class="QPushButton" name="flipButton">
-               <property name="text">
-                <string>Flip</string>
-               </property>
-              </widget>
-             </item>
             </layout>
            </widget>
           </item>
@@ -93,6 +86,12 @@
              </property>
              <item>
               <widget class="QWidget" name="widget_2" native="true">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
                <layout class="QGridLayout" name="gridLayout_3">
                 <property name="topMargin">
                  <number>2</number>
@@ -107,19 +106,6 @@
                   </property>
                  </widget>
                 </item>
-                <item row="0" column="2">
-                 <widget class="QLineEdit" name="rotateX">
-                  <property name="layoutDirection">
-                   <enum>Qt::LeftToRight</enum>
-                  </property>
-                  <property name="text">
-                   <string>0</string>
-                  </property>
-                  <property name="alignment">
-                   <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                  </property>
-                 </widget>
-                </item>
                 <item row="1" column="0">
                  <widget class="QLabel" name="label_3">
                   <property name="text">
@@ -127,30 +113,10 @@
                   </property>
                  </widget>
                 </item>
-                <item row="1" column="2">
-                 <widget class="QLineEdit" name="rotateY">
-                  <property name="text">
-                   <string>0</string>
-                  </property>
-                  <property name="alignment">
-                   <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                  </property>
-                 </widget>
-                </item>
                 <item row="2" column="0">
                  <widget class="QLabel" name="label_4">
                   <property name="text">
                    <string>Z:</string>
-                  </property>
-                 </widget>
-                </item>
-                <item row="2" column="2">
-                 <widget class="QLineEdit" name="rotateZ">
-                  <property name="text">
-                   <string>0</string>
-                  </property>
-                  <property name="alignment">
-                   <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
                   </property>
                  </widget>
                 </item>
@@ -188,14 +154,46 @@
                   </property>
                  </spacer>
                 </item>
+                <item row="0" column="2">
+                 <widget class="QDoubleSpinBox" name="rotateX">
+                  <property name="minimum">
+                   <double>-1000.000000000000000</double>
+                  </property>
+                  <property name="maximum">
+                   <double>1000.000000000000000</double>
+                  </property>
+                  <property name="singleStep">
+                   <double>0.500000000000000</double>
+                  </property>
+                 </widget>
+                </item>
+                <item row="1" column="2">
+                 <widget class="QDoubleSpinBox" name="rotateY">
+                  <property name="minimum">
+                   <double>-1000.000000000000000</double>
+                  </property>
+                  <property name="maximum">
+                   <double>1000.000000000000000</double>
+                  </property>
+                  <property name="singleStep">
+                   <double>0.500000000000000</double>
+                  </property>
+                 </widget>
+                </item>
+                <item row="2" column="2">
+                 <widget class="QDoubleSpinBox" name="rotateZ">
+                  <property name="minimum">
+                   <double>-1000.000000000000000</double>
+                  </property>
+                  <property name="maximum">
+                   <double>1000.000000000000000</double>
+                  </property>
+                  <property name="singleStep">
+                   <double>0.500000000000000</double>
+                  </property>
+                 </widget>
+                </item>
                </layout>
-              </widget>
-             </item>
-             <item>
-              <widget class="QPushButton" name="rotateButton">
-               <property name="text">
-                <string>Rotate</string>
-               </property>
               </widget>
              </item>
             </layout>
@@ -236,21 +234,11 @@
                   </property>
                   <property name="sizeHint" stdset="0">
                    <size>
-                    <width>187</width>
-                    <height>20</height>
+                    <width>202</width>
+                    <height>12</height>
                    </size>
                   </property>
                  </spacer>
-                </item>
-                <item row="0" column="2">
-                 <widget class="QLineEdit" name="translateX">
-                  <property name="text">
-                   <string>0</string>
-                  </property>
-                  <property name="alignment">
-                   <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                  </property>
-                 </widget>
                 </item>
                 <item row="0" column="3">
                  <widget class="QLabel" name="label_11">
@@ -263,16 +251,6 @@
                  <widget class="QLabel" name="label_9">
                   <property name="text">
                    <string>Y:</string>
-                  </property>
-                 </widget>
-                </item>
-                <item row="1" column="2">
-                 <widget class="QLineEdit" name="translateY">
-                  <property name="text">
-                   <string>0</string>
-                  </property>
-                  <property name="alignment">
-                   <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
                   </property>
                  </widget>
                 </item>
@@ -290,16 +268,6 @@
                   </property>
                  </widget>
                 </item>
-                <item row="2" column="2">
-                 <widget class="QLineEdit" name="translateZ">
-                  <property name="text">
-                   <string>0</string>
-                  </property>
-                  <property name="alignment">
-                   <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                  </property>
-                 </widget>
-                </item>
                 <item row="2" column="3">
                  <widget class="QLabel" name="label_13">
                   <property name="text">
@@ -307,14 +275,46 @@
                   </property>
                  </widget>
                 </item>
+                <item row="1" column="2">
+                 <widget class="QDoubleSpinBox" name="translateY">
+                  <property name="minimum">
+                   <double>-10000.000000000000000</double>
+                  </property>
+                  <property name="maximum">
+                   <double>10000.000000000000000</double>
+                  </property>
+                  <property name="singleStep">
+                   <double>0.500000000000000</double>
+                  </property>
+                 </widget>
+                </item>
+                <item row="0" column="2">
+                 <widget class="QDoubleSpinBox" name="translateX">
+                  <property name="minimum">
+                   <double>-10000.000000000000000</double>
+                  </property>
+                  <property name="maximum">
+                   <double>10000.000000000000000</double>
+                  </property>
+                  <property name="singleStep">
+                   <double>0.500000000000000</double>
+                  </property>
+                 </widget>
+                </item>
+                <item row="2" column="2">
+                 <widget class="QDoubleSpinBox" name="translateZ">
+                  <property name="minimum">
+                   <double>-10000.000000000000000</double>
+                  </property>
+                  <property name="maximum">
+                   <double>10000.000000000000000</double>
+                  </property>
+                  <property name="singleStep">
+                   <double>0.500000000000000</double>
+                  </property>
+                 </widget>
+                </item>
                </layout>
-              </widget>
-             </item>
-             <item>
-              <widget class="QPushButton" name="translateButton">
-               <property name="text">
-                <string>Translate</string>
-               </property>
               </widget>
              </item>
             </layout>
@@ -417,6 +417,13 @@
           </item>
          </layout>
         </widget>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QPushButton" name="resetButton">
+        <property name="text">
+         <string>Reset</string>
+        </property>
        </widget>
       </item>
      </layout>
