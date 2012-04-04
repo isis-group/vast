@@ -61,8 +61,13 @@ void QGeomWidget::setup ( QViewerCore* core, QWidget* parent , PlaneOrientation 
 	m_ZoomEvent = false;
 	m_RasterPhysicalCoords = true;
 	m_Zoom = 1.;
+	m_Border = 0;
+	m_ShowLabels = false;
+	m_ShowCrosshair = true;
 	connect(m_ViewerCore, SIGNAL( emitUpdateScene()), this, SLOT( updateScene()));
 	connect( m_ViewerCore, SIGNAL( emitZoomChanged( float ) ), this, SLOT( setZoom( float ) ) );
+	connect( m_ViewerCore, SIGNAL( emitShowLabels( bool ) ), this, SLOT( setShowLabels( bool ) ) );
+	connect( m_ViewerCore, SIGNAL( emitSetEnableCrosshair( bool ) ), this, SLOT( setEnableCrosshair( bool ) ) );
 	
 }
 
@@ -84,7 +89,10 @@ void QGeomWidget::updateViewPort()
 	m_WindowViewPortScaling = std::min(scaleh, scalew);
 	const float offsetW = (width() - (_width * m_WindowViewPortScaling)) / 2. ;
 	const float offsetH = (height() - (_height * m_WindowViewPortScaling)) / 2.;
-	m_ViewPort = util::fvector4( offsetW, offsetH, _width * m_WindowViewPortScaling, _height * m_WindowViewPortScaling );
+	m_ViewPort = util::fvector4( offsetW + m_Border,
+								 offsetH + m_Border,
+								( _width * m_WindowViewPortScaling ) - 2 * m_Border,
+								(_height * m_WindowViewPortScaling )  - 2 * m_Border );
 }
 
 
@@ -138,8 +146,11 @@ void QGeomWidget::paintEvent ( QPaintEvent* event )
 			}
 		}
 		
-		if( m_ViewerCore->hasImage() ) {
+		if( m_ViewerCore->hasImage() && m_ShowCrosshair ) {
 			paintCrossHair();
+		}
+		if( m_ShowLabels ) {
+			paintLabels();
 		}
 
 		m_Painter->end();
@@ -176,11 +187,13 @@ void QGeomWidget::paintCrossHair() const
 	}
 	
 	short border = -15000;
-	const QLine xline1( mappedCoords[0], border, mappedCoords[0], mappedCoords[1] - 15 * _internal::rasteringFac );
-	const QLine xline2( mappedCoords[0], mappedCoords[1] + 15 * _internal::rasteringFac, mappedCoords[0], height() - border  );
 
-	const QLine yline1( border, mappedCoords[1], mappedCoords[0] - 15 * _internal::rasteringFac, mappedCoords[1] );
-	const QLine yline2( mappedCoords[0] + 15 * _internal::rasteringFac, mappedCoords[1],  width() - border, mappedCoords[1]  );
+	const float gap = 15 / m_Zoom;
+	const QLine xline1( mappedCoords[0], border, mappedCoords[0], mappedCoords[1] - gap * _internal::rasteringFac );
+	const QLine xline2( mappedCoords[0], mappedCoords[1] + gap * _internal::rasteringFac, mappedCoords[0], height() - border  );
+
+	const QLine yline1( border, mappedCoords[1], mappedCoords[0] - gap * _internal::rasteringFac, mappedCoords[1] );
+	const QLine yline2( mappedCoords[0] + gap * _internal::rasteringFac, mappedCoords[1],  width() - border, mappedCoords[1]  );
 
 	QPen pen;
 	pen.setColor( m_CrosshairColor );
@@ -196,8 +209,44 @@ void QGeomWidget::paintCrossHair() const
 	m_Painter->drawLine( xline2 );
 	m_Painter->drawLine( yline1 );
 	m_Painter->drawLine( yline2 );
+	pen.setWidth(3);
 	m_Painter->drawPoint( mappedCoords[0], mappedCoords[1] );
 }
+
+void QGeomWidget::paintLabels() const
+{
+	m_Painter->resetMatrix();
+	m_Painter->resetTransform();
+	m_Painter->setFont( QFont( "Chicago", 13 ) );
+	switch( m_PlaneOrientation ) {
+	case axial:
+		m_Painter->setPen( QColor( 255, 0, 0 ) );
+		m_Painter->drawText( 0, height() / 2 + 7, "L" );
+		m_Painter->drawText( width() - 15, height() / 2 + 7, "R" );
+		m_Painter->setPen( QColor( 0, 255, 0 ) );
+		m_Painter->drawText( width() / 2 - 7, 15, "A" );
+		m_Painter->drawText( width() / 2 - 7, height() - 2, "P" );
+		break;
+	case sagittal:
+		m_Painter->setPen( QColor( 0, 255, 0 ) );
+		m_Painter->drawText( 0, height() / 2 + 7, "A" );
+		m_Painter->drawText( width() - 15, height() / 2 + 7, "P" );
+		m_Painter->setPen( QColor( 0, 0, 255 ) );
+		m_Painter->drawText( width() / 2 - 7, 15, "S" );
+		m_Painter->drawText( width() / 2 - 7, height() - 2, "I" );
+		break;
+	case coronal:
+		m_Painter->setPen( QColor( 255, 0, 0 ) );
+		m_Painter->drawText( 0, height() / 2 + 10, "L" );
+		m_Painter->drawText( width() - 15, height() / 2 + 7, "R" );
+		m_Painter->setPen( QColor( 0, 0, 255 ) );
+		m_Painter->drawText( width() / 2 - 7, 15, "S" );
+		m_Painter->drawText( width() / 2 - 7, height() - 2, "I" );
+		break;
+	}
+
+}
+
 
 util::fvector4 QGeomWidget::getPhysicalCoordsFromMouseCoords ( const int& x, const int& y ) const
 {
@@ -231,23 +280,36 @@ util::fvector4 QGeomWidget::getPhysicalCoordsFromMouseCoords ( const int& x, con
 
 void QGeomWidget::mousePressEvent ( QMouseEvent* e )
 {
+	if( e->button() == Qt::LeftButton && geometry().contains( e->pos() ) && QApplication::keyboardModifiers() == Qt::ControlModifier ) {
+		QDrag *drag = new QDrag( this );
+		QMimeData *mimeData = new QMimeData;
+		mimeData->setText( getWidgetEnsemble()->getImageVector().back()->getImageProperties().fileName.c_str() );
+		drag->setMimeData( mimeData );
+		drag->setPixmap( QIcon( ":/common/vast.jpg" ).pixmap( 15 ) );
+		drag->exec();
+		return;
+	}
+	
 	const util::fvector4 physicalCoords = getPhysicalCoordsFromMouseCoords( e->x(), e->y() );
-	m_ViewerCore->onWidgetClicked(this, physicalCoords, e->button() );
 	if( e->button() == Qt::LeftButton ) {
 		m_LeftMouseButtonPressed = true;
 	}
 	if( e->button() == Qt::RightButton ) {
 		m_RightMouseButtonPressed = true;
 	}
-
+	if( m_LeftMouseButtonPressed )  m_ViewerCore->onWidgetClicked( this, physicalCoords, Qt::LeftButton );
+	if( m_RightMouseButtonPressed ) m_ViewerCore->onWidgetClicked( this, physicalCoords, Qt::RightButton );
     
 }
 
 void QGeomWidget::mouseMoveEvent ( QMouseEvent* e )
 {
-	if( m_RightMouseButtonPressed || m_LeftMouseButtonPressed ) {
-	 	m_ViewerCore->onWidgetMoved( this, getPhysicalCoordsFromMouseCoords(e->x(), e->y() ), e->button() );
+	if( m_LeftMouseButtonPressed || m_RightMouseButtonPressed ) {
+		const util::fvector4 physicalCoords = getPhysicalCoordsFromMouseCoords(  e->x(), e->y() );
+		if( m_LeftMouseButtonPressed )  m_ViewerCore->onWidgetMoved( this, physicalCoords, Qt::LeftButton );
+		if( m_RightMouseButtonPressed ) m_ViewerCore->onWidgetMoved( this, physicalCoords, Qt::RightButton );
 	}
+
 }
 
 void QGeomWidget::mouseReleaseEvent ( QMouseEvent* e )
@@ -283,19 +345,19 @@ void QGeomWidget::lookAtPhysicalCoords ( const util::fvector4& physicalCoords )
 
 }
 
-void QGeomWidget::setEnableCrosshair ( bool enable )
-{
-
-}
 
 void QGeomWidget::setInterpolationType ( InterpolationType interpolation )
 {
 	m_InterpolationType = interpolation;
 }
 
-void QGeomWidget::setMouseCursorIcon ( QIcon )
+void QGeomWidget::setMouseCursorIcon ( QIcon icon )
 {
-
+	if( !icon.isNull() )  {
+		setCursor( QCursor( icon.pixmap( 45, 45 ) ) );
+	} else {
+		setCursor( Qt::ArrowCursor );
+	}
 }
 
 void QGeomWidget::setZoom ( float zoom )
@@ -303,6 +365,45 @@ void QGeomWidget::setZoom ( float zoom )
 	m_ZoomEvent = true;
 	m_Zoom = zoom;
 	updateScene();
+}
+
+void QGeomWidget::dragEnterEvent ( QDragEnterEvent* e )
+{
+	if( e->mimeData()->hasFormat( "text/plain" ) ) {
+		bool hasImage = false;
+		BOOST_FOREACH( ImageHolder::Vector::const_reference image, getWidgetEnsemble()->getImageVector() ) {
+			if( image->getImageProperties().fileName == e->mimeData()->text().toStdString() ) {
+				hasImage = true;
+			}
+		}
+
+		if( !hasImage ) {
+			e->acceptProposedAction();
+		}
+	}
+}
+
+void QGeomWidget::dropEvent ( QDropEvent* e )
+{
+	const ImageHolder::Pointer image = m_ViewerCore->getImageMap().at( e->mimeData()->text().toStdString() );
+	WidgetEnsemble::Pointer myEnsemble;
+	BOOST_FOREACH( WidgetEnsemble::Vector::reference ensemble, m_ViewerCore->getUICore()->getEnsembleList() ) {
+		BOOST_FOREACH( WidgetEnsemble::reference ensembleComponent, *ensemble ) {
+			if( ensembleComponent->getWidgetInterface() == this ) {
+				myEnsemble = ensemble;
+			}
+		}
+	}
+	myEnsemble->addImage( image  );
+	BOOST_FOREACH( WidgetEnsemble::Vector::reference ensemble, m_ViewerCore->getUICore()->getEnsembleList() ) {
+		if( ensemble != myEnsemble ) {
+			ensemble->removeImage( image );
+		}
+	}
+
+	m_ViewerCore->setCurrentImage( image );
+	m_ViewerCore->updateScene();
+	m_ViewerCore->getUICore()->refreshUI();
 }
 
 

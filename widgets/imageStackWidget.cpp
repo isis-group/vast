@@ -251,9 +251,10 @@ void ImageStackWidget::closeImage()
 
 void ImageStackWidget::distributeImages()
 {
+	const std::string widgetIdent = m_ViewerCore->getUICore()->getCurrentEnsemble()->front()->getWidgetInterface()->getWidgetName();
 	m_ViewerCore->getUICore()->closeAllWidgetEnsembles();
 	BOOST_FOREACH( ImageHolder::Vector::const_reference image, m_ViewerCore->getImageVector() ) {
-		m_ViewerCore->getUICore()->createViewWidgetEnsemble( m_ViewerCore->getSettings()->getPropertyAs<std::string>( "defaultViewWidgetIdentifier" ), image );
+		m_ViewerCore->getUICore()->createViewWidgetEnsemble( widgetIdent, image );
 	}
 	LOG_IF( m_ViewerCore->getImageVector().size() != m_ViewerCore->getUICore()->getEnsembleList().size(), Dev, error ) << "Distributed the images. But amount of images ("
 			<< m_ViewerCore->getImageVector().size() << ") and amount of widget ensembles (" << m_ViewerCore->getUICore()->getEnsembleList().size()

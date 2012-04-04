@@ -54,12 +54,15 @@ public Q_SLOTS:
     virtual void lookAtPhysicalCoords ( const util::fvector4& physicalCoords );
 	virtual void addImage( const ImageHolder::Pointer image );
 	virtual bool removeImage( const ImageHolder::Pointer image );
-    virtual void setEnableCrosshair ( bool enable );
     virtual void setInterpolationType ( InterpolationType interpolation );
 	virtual void setCrossHairColor( QColor color ) { m_CrosshairColor = color; }
     virtual void setMouseCursorIcon ( QIcon );
     virtual void setZoom ( float zoom );
-
+	virtual void setShowLabels( bool show ) { m_ShowLabels = show; m_Border = show ? 18 : 0; }
+	virtual void setEnableCrosshair( bool enable ) { m_ShowCrosshair = enable; }
+	
+	virtual void dragEnterEvent( QDragEnterEvent * );
+	virtual void dropEvent( QDropEvent * );
 protected:
 	void paintEvent( QPaintEvent *event );
 	void resizeEvent( QResizeEvent *event );
@@ -71,7 +74,7 @@ protected:
 private:
 	void paintImage( const ImageHolder::Pointer );
 	void paintCrossHair() const;
-
+	void paintLabels() const;
 	void updateViewPort();
 
 	bool m_LatchOrientation;
@@ -79,6 +82,8 @@ private:
 	bool m_LeftMouseButtonPressed;
 	bool m_RightMouseButtonPressed;
 	bool m_ZoomEvent;
+	bool m_ShowLabels;
+	bool m_ShowCrosshair;
 	util::FixedVector<float,2> m_Translation;
 	float m_WindowViewPortScaling;
 
@@ -90,6 +95,7 @@ private:
 	util::fvector4 m_BoundingBox;
 	util::fvector4 m_ViewPort;
 	float m_Zoom;
+	uint16_t m_Border;
 	InterpolationType m_InterpolationType;
 };
 
