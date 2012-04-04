@@ -58,6 +58,7 @@ void QGeomWidget::setup ( QViewerCore* core, QWidget* parent , PlaneOrientation 
 	m_LatchOrientation = false;
 	m_LeftMouseButtonPressed = false;
 	m_RightMouseButtonPressed = false;
+	m_ZoomEvent = false;
 	m_RasterPhysicalCoords = true;
 	m_Zoom = 1.;
 	connect(m_ViewerCore, SIGNAL( emitUpdateScene()), this, SLOT( updateScene()));
@@ -115,8 +116,18 @@ void QGeomWidget::paintEvent ( QPaintEvent* event )
 		}
 
 		m_Painter->resetTransform();
+
+		//bounding box calculation
 		m_BoundingBox = _internal::getPhysicalBoundingBox( getWidgetEnsemble()->getImageVector(), m_PlaneOrientation, m_LatchOrientation );
-		_internal::zoomBoundingBox( m_BoundingBox, m_ViewerCore->getCurrentImage()->getImageProperties().physicalCoords, m_Zoom, m_PlaneOrientation );
+		_internal::zoomBoundingBox( m_BoundingBox,
+									m_Translation,
+									m_ViewerCore->getCurrentImage()->getImageProperties().physicalCoords,
+									m_Zoom, m_PlaneOrientation,
+									(m_RightMouseButtonPressed && !m_LeftMouseButtonPressed) || m_ZoomEvent );
+		m_BoundingBox[0] -= m_Translation[0];
+		m_BoundingBox[1] -= m_Translation[1];
+		m_ZoomEvent = false;
+		
 		updateViewPort();
 		m_Painter->setWindow( m_BoundingBox[0], m_BoundingBox[1], m_BoundingBox[2], m_BoundingBox[3] );
 		m_Painter->setViewport( m_ViewPort[0], m_ViewPort[1], m_ViewPort[2], m_ViewPort[3] );
@@ -264,7 +275,6 @@ void QGeomWidget::wheelEvent ( QWheelEvent* e )
 	} else {
 		setZoom( oldZoom );
 	}
- 
 }
 
 
@@ -290,6 +300,7 @@ void QGeomWidget::setMouseCursorIcon ( QIcon )
 
 void QGeomWidget::setZoom ( float zoom )
 {
+	m_ZoomEvent = true;
 	m_Zoom = zoom;
 	updateScene();
 }

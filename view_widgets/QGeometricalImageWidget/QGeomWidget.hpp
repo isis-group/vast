@@ -78,6 +78,8 @@ private:
 	bool m_RasterPhysicalCoords;
 	bool m_LeftMouseButtonPressed;
 	bool m_RightMouseButtonPressed;
+	bool m_ZoomEvent;
+	util::FixedVector<float,2> m_Translation;
 	float m_WindowViewPortScaling;
 
 	util::fvector4 getPhysicalCoordsFromMouseCoords( const int &x, const int &y) const;

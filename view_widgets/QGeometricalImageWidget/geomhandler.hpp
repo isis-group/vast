@@ -51,7 +51,7 @@ util::FixedMatrix<qreal,2,2> extract2DMatrix( const boost::shared_ptr<ImageHolde
 
 util::fvector4 mapPhysicalCoords2Orientation( const util::fvector4 &coords, const PlaneOrientation &orientation );
 
-void zoomBoundingBox( util::fvector4 &boundingBox, const util::fvector4 &physCoord, const float &zoom, const PlaneOrientation &orientation );
+void zoomBoundingBox( util::fvector4 &boundingBox, util::FixedVector<float,2> &translation, const util::fvector4 &physCoord, const float &zoom, const PlaneOrientation &orientation, const bool &translate );
 	
 
 }}}}// end namespace
