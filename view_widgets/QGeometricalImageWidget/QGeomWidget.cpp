@@ -65,6 +65,7 @@ void QGeomWidget::setup ( QViewerCore* core, QWidget* parent , PlaneOrientation 
 	m_ShowLabels = false;
 	m_ShowCrosshair = true;
 	connect(m_ViewerCore, SIGNAL( emitUpdateScene()), this, SLOT( updateScene()));
+	connect( m_ViewerCore, SIGNAL( emitPhysicalCoordsChanged(util::fvector4)), this, SLOT( updateScene()));
 	connect( m_ViewerCore, SIGNAL( emitZoomChanged( float ) ), this, SLOT( setZoom( float ) ) );
 	connect( m_ViewerCore, SIGNAL( emitShowLabels( bool ) ), this, SLOT( setShowLabels( bool ) ) );
 	connect( m_ViewerCore, SIGNAL( emitSetEnableCrosshair( bool ) ), this, SLOT( setEnableCrosshair( bool ) ) );
@@ -73,7 +74,6 @@ void QGeomWidget::setup ( QViewerCore* core, QWidget* parent , PlaneOrientation 
 
 void QGeomWidget::resizeEvent ( QResizeEvent* event )
 {
-
     QWidget::resizeEvent ( event );
 }
 
@@ -92,7 +92,7 @@ void QGeomWidget::updateViewPort()
 	m_ViewPort = util::fvector4( offsetW,
 								 offsetH,
 								( _width * m_WindowViewPortScaling ),
-								(_height * m_WindowViewPortScaling ));
+								(_height * m_WindowViewPortScaling ) );
 }
 
 
@@ -283,7 +283,7 @@ void QGeomWidget::mousePressEvent ( QMouseEvent* e )
 	if( e->button() == Qt::LeftButton && geometry().contains( e->pos() ) && QApplication::keyboardModifiers() == Qt::ControlModifier ) {
 		QDrag *drag = new QDrag( this );
 		QMimeData *mimeData = new QMimeData;
-		mimeData->setText( getWidgetEnsemble()->getImageVector().back()->getImageProperties().fileName.c_str() );
+		mimeData->setText( getWidgetEnsemble()->getImageVector().back()->getImageProperties().filePath.c_str() );
 		drag->setMimeData( mimeData );
 		drag->setPixmap( QIcon( ":/common/vast.jpg" ).pixmap( 15 ) );
 		drag->exec();

@@ -305,7 +305,7 @@ void QImageWidgetImplementation::mousePressEvent( QMouseEvent *e )
 	if( e->button() == Qt::LeftButton && geometry().contains( e->pos() ) && QApplication::keyboardModifiers() == Qt::ControlModifier ) {
 		QDrag *drag = new QDrag( this );
 		QMimeData *mimeData = new QMimeData;
-		mimeData->setText( getWidgetSpecCurrentImage()->getImageProperties().fileName.c_str() );
+		mimeData->setText( getWidgetSpecCurrentImage()->getImageProperties().filePath.c_str() );
 		drag->setMimeData( mimeData );
 		drag->setPixmap( QIcon( ":/common/vast.jpg" ).pixmap( 15 ) );
 		drag->exec();

@@ -156,7 +156,6 @@ void QViewerCore::onWidgetMoved ( widget::WidgetInterface* /*origin*/, util::fve
 void QViewerCore::timestepChanged ( int timestep )
 {
 	if ( hasImage() ) {
-
 		if ( !getCurrentImage()->getImageSize() [3] > timestep ) {
 			timestep = getCurrentImage()->getImageSize() [3] - 1;
 		}
@@ -164,9 +163,10 @@ void QViewerCore::timestepChanged ( int timestep )
 		BOOST_FOREACH ( ImageHolder::Vector::const_reference image, getImageVector() ) {
 			if ( static_cast<size_t> ( timestep ) < image->getImageSize() [3] ) {
 				image->getImageProperties().voxelCoords[3] = timestep;
+				image->getImageProperties().physicalCoords[3] = timestep;
 			}
 		}
-		updateScene();
+		emitPhysicalCoordsChanged( getCurrentImage()->getImageProperties().physicalCoords );
 	}
 }
 
@@ -446,7 +446,7 @@ void QViewerCore::closeImage ( ImageHolder::Pointer image, bool refreshUI )
 	}
 
 	getImageVector().erase( std::find ( getImageVector().begin(), getImageVector().end(), image ) );
-	getImageMap().erase( image->getImageProperties().fileName );
+	getImageMap().erase( image->getImageProperties().filePath );
 
 	if( refreshUI ) {
 		getUICore()->refreshUI( false );

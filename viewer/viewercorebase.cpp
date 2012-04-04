@@ -103,18 +103,7 @@ ImageHolder::Pointer ViewerCoreBase::addImage( const isis::data::Image &image, c
 	ImageHolder::Pointer  retImage = ImageHolder::Pointer( new ImageHolder ) ;
 	retImage->setImage( image, imageType, fileName );
 	m_imageVector.push_back( retImage );
-
 	m_ImageMap[fileName] = retImage;
-
-	if( retImage->hasAmbiguousOrientation() ) {
-		QMessageBox msgBox;
-		msgBox.setIcon( QMessageBox::Warning );
-		std::stringstream message;
-		message << "The image " << retImage->getImageProperties().fileName
-				<< " has an ambiguous orientation (rotated through 45 degrees).\n\n Alignment might look wrong.";
-		msgBox.setText( message.str().c_str() );
-		msgBox.exec();
-	}
 
 	//setting the lutStructural
 	if( imageType == ImageHolder::structural_image ) {
