@@ -83,16 +83,16 @@ void QGeomWidget::updateViewPort()
 	const float _width = m_BoundingBox[2] / _internal::rasteringFac;
 	const float _height = m_BoundingBox[3] / _internal::rasteringFac;
 	
-	const float scalew = width() / _width;
-	const  float scaleh = height() / _height;
+	const float scalew = (width() - 2 * m_Border ) / _width;
+	const  float scaleh = (height() - 2 * m_Border) / _height;
 
 	m_WindowViewPortScaling = std::min(scaleh, scalew);
 	const float offsetW = (width() - (_width * m_WindowViewPortScaling)) / 2. ;
 	const float offsetH = (height() - (_height * m_WindowViewPortScaling)) / 2.;
-	m_ViewPort = util::fvector4( offsetW + m_Border,
-								 offsetH + m_Border,
-								( _width * m_WindowViewPortScaling ) - 2 * m_Border,
-								(_height * m_WindowViewPortScaling )  - 2 * m_Border );
+	m_ViewPort = util::fvector4( offsetW,
+								 offsetH,
+								( _width * m_WindowViewPortScaling ),
+								(_height * m_WindowViewPortScaling ));
 }
 
 
