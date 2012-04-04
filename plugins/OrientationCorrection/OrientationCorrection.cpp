@@ -54,8 +54,13 @@ OrientatioCorrectionDialog::OrientatioCorrectionDialog( QWidget *parent, QViewer
 			ui.tableWidget->setItem( i, j, m_MatrixItems( i, j ) );
 		}
 	}
-
+	connectAll();
 	connect( ui.pushButton, SIGNAL( pressed() ), this, SLOT( applyPressed() ) );
+	connect( ui.resetButton, SIGNAL( clicked(bool)), this, SLOT( resetPressed()));
+}
+
+void OrientatioCorrectionDialog::connectAll()
+{
 	connect( ui.checkFlipX, SIGNAL( clicked(bool)), this, SLOT( applyTransform()));
 	connect( ui.checkFlipY, SIGNAL( clicked(bool)), this, SLOT( applyTransform()));
 	connect( ui.checkFlipZ, SIGNAL( clicked(bool)), this, SLOT( applyTransform()));
@@ -65,7 +70,19 @@ OrientatioCorrectionDialog::OrientatioCorrectionDialog( QWidget *parent, QViewer
 	connect( ui.translateX, SIGNAL( valueChanged(double)), this, SLOT( applyTransform()));
 	connect( ui.translateY, SIGNAL( valueChanged(double)), this, SLOT( applyTransform()));
 	connect( ui.translateZ, SIGNAL( valueChanged(double)), this, SLOT( applyTransform()));
-	connect( ui.resetButton, SIGNAL( clicked(bool)), this, SLOT( resetPressed()));
+}
+
+void OrientatioCorrectionDialog::disconnectAll()
+{
+	disconnect( ui.checkFlipX, SIGNAL( clicked(bool)), this, SLOT( applyTransform()));
+	disconnect( ui.checkFlipY, SIGNAL( clicked(bool)), this, SLOT( applyTransform()));
+	disconnect( ui.checkFlipZ, SIGNAL( clicked(bool)), this, SLOT( applyTransform()));
+	disconnect( ui.rotateX, SIGNAL( valueChanged(double)), this, SLOT( applyTransform()));
+	disconnect( ui.rotateY, SIGNAL( valueChanged(double)), this, SLOT( applyTransform()));
+	disconnect( ui.rotateZ, SIGNAL( valueChanged(double)), this, SLOT( applyTransform()));
+	disconnect( ui.translateX, SIGNAL( valueChanged(double)), this, SLOT( applyTransform()));
+	disconnect( ui.translateY, SIGNAL( valueChanged(double)), this, SLOT( applyTransform()));
+	disconnect( ui.translateZ, SIGNAL( valueChanged(double)), this, SLOT( applyTransform()));
 }
 
 
@@ -87,6 +104,7 @@ void OrientatioCorrectionDialog::closeEvent ( QCloseEvent* e )
 
 void OrientatioCorrectionDialog::updateValues( ImageHolder::Pointer image )
 {
+	setValuesToZero();
 	if( !image->getPropMap().hasProperty("OrientationCorrection/origRowVec") ) {
 		image->getPropMap().setPropertyAs<util::fvector4>("OrientationCorrection/origRowVec",
 																		image->getISISImage()->getPropertyAs<util::fvector4>("rowVec"));
@@ -128,23 +146,44 @@ void OrientatioCorrectionDialog::updateValues( ImageHolder::Pointer image )
 
 void OrientatioCorrectionDialog::applyPressed()
 {
-	boost::numeric::ublas::matrix<float> transform = boost::numeric::ublas::matrix<float>( 3, 3 );
+	if( m_ViewerCore->hasImage() ) {
+		ImageHolder::Pointer image = m_ViewerCore->getCurrentImage();
+		boost::numeric::ublas::matrix<float> transform = boost::numeric::ublas::matrix<float>( 3, 3 );
 
-	for( unsigned short i = 0; i < 3; i++ ) {
-		for( unsigned short j = 0; j < 3; j++ ) {
-			transform( i, j ) = m_MatrixItems( i, j )->text().toFloat();
+		for( unsigned short i = 0; i < 3; i++ ) {
+			for( unsigned short j = 0; j < 3; j++ ) {
+				transform( i, j ) = m_MatrixItems( i, j )->text().toFloat();
+			}
 		}
-	}
 
-	std::stringstream desc;
-	desc << "Transformation matrix: " << std::endl << transform( 0, 0 ) << " " << transform( 1, 0 ) << " " << transform( 2, 0 ) << std::endl <<
-		 transform( 0, 1 ) << " " << transform( 1, 1 ) << " " << transform( 2, 1 ) << std::endl <<
-		 transform( 0, 2 ) << " " << transform( 1, 2 ) << " " << transform( 2, 2 ) << std::endl;
-// 	applyTransform( transform, false, desc.str() );
+		std::stringstream desc;
+		desc << "Transformation matrix: " << std::endl << transform( 0, 0 ) << " " << transform( 1, 0 ) << " " << transform( 2, 0 ) << std::endl <<
+			transform( 0, 1 ) << " " << transform( 1, 1 ) << " " << transform( 2, 1 ) << std::endl <<
+			transform( 0, 2 ) << " " << transform( 1, 2 ) << " " << transform( 2, 2 ) << std::endl;
+		bool ret = image->getISISImage()->transformCoords( transform, false );
+		if( ret ) {
+			image->getPropMap().setPropertyAs<util::fvector4>( "originalRowVec", image->getISISImage()->getPropertyAs<util::fvector4>( "rowVec" ) );
+			image->getPropMap().setPropertyAs<util::fvector4>( "originalColumnVec", image->getISISImage()->getPropertyAs<util::fvector4>( "columnVec" ) );
+			image->getPropMap().setPropertyAs<util::fvector4>( "originalSliceVec", image->getISISImage()->getPropertyAs<util::fvector4>( "sliceVec" ) );
+			image->addChangedAttribute( desc.str() );
+		} else {
+			LOG( Runtime, error ) << "Could not apply transform " << transform << " to the image " << image->getImageProperties().fileName << " !";
+		}
+		image->updateOrientation();
+		m_ViewerCore->updateScene();
+	}
 }
 
 void OrientatioCorrectionDialog::resetPressed()
 {
+	setValuesToZero();
+	applyTransform();
+	
+}
+
+void OrientatioCorrectionDialog::setValuesToZero()
+{
+	disconnectAll();
 	ui.checkFlipX->setChecked(false);
 	ui.checkFlipY->setChecked(false);
 	ui.checkFlipZ->setChecked(false);
@@ -154,8 +193,7 @@ void OrientatioCorrectionDialog::resetPressed()
 	ui.rotateX->setValue(0);
 	ui.rotateY->setValue(0);
 	ui.rotateZ->setValue(0);
-	applyTransform();
-	
+	connectAll();
 }
 
 
@@ -241,9 +279,8 @@ bool OrientatioCorrectionDialog::applyTransform( ) const
 		} else {
 			LOG( Runtime, error ) << "Could not apply transform " << finalMatrix << " to the image " << image->getImageProperties().fileName << " !";
 		}
-
 		image->updateOrientation();
-		m_ViewerCore->updateScene();
+		m_ViewerCore->physicalCoordsChanged(image->getISISImage()->getPhysicalCoordsFromIndex( image->getImageProperties().voxelCoords ) );
 		return ret;
 	}
 

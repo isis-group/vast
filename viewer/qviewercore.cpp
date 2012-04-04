@@ -138,9 +138,10 @@ void QViewerCore::physicalCoordsChanged ( util::fvector4 physicalCoords )
 void QViewerCore::onWidgetClicked ( widget::WidgetInterface *origin, util::fvector4 physicalCoords, Qt::MouseButton mouseButton )
 {
 	if( getMode() != statistical_mode ) {
-		setCurrentImage( origin->getWidgetEnsemble()->getImageVector().front() );
+		if( ! origin->getWidgetEnsemble()->isCurrent() ) {
+			setCurrentImage( origin->getWidgetEnsemble()->getImageVector().front() );
+		}
 	}
-	getUICore()->refreshUI( false ); //no update of mainwindow is needed here
 	emitOnWidgetClicked( physicalCoords, mouseButton );
 	physicalCoordsChanged( physicalCoords );
 }
@@ -344,6 +345,7 @@ ImageHolder::Vector QViewerCore::openFile ( const FileInformation &fileInfo, boo
 				}
 
 				setCurrentImage( imgList.front() );
+				physicalCoordsChanged( getCurrentImage()->getImageProperties().physicalCoords );
 			}
 		}
 
@@ -416,6 +418,9 @@ void QViewerCore::openFileList( const std::list< FileInformation > fileInfoList 
 		}
 
 		setCurrentImage( structuralImageList.front() );
+	}
+	if( hasImage() ) {
+		physicalCoordsChanged( getCurrentImage()->getImageProperties().physicalCoords );
 	}
 }
 

@@ -51,9 +51,12 @@ public Q_SLOTS:
 	void closeEvent( QCloseEvent *);
 	void updateValues( ImageHolder::Pointer );
 private:
+	void connectAll();
+	void disconnectAll();
 	QViewerCore *m_ViewerCore;
 	Ui::OrientationCorrection ui;
 	boost::numeric::ublas::matrix<QTableWidgetItem *> m_MatrixItems;
+	void setValuesToZero();
 private Q_SLOTS:
 	bool applyTransform ( ) const ;
 
