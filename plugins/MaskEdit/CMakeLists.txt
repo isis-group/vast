@@ -13,7 +13,7 @@ INCLUDE(${QT_USE_FILE})
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
-qt4_wrap_cpp(plugin_moc_files MaskEdit.hpp CreateMaskDialog.hpp)
+qt4_wrap_cpp(plugin_moc_files MaskEdit.hpp CreateMaskDialog.hpp OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED)
 QT4_WRAP_UI(orientationcorrection_ui_h forms/maskEdit.ui forms/createMask.ui)
 QT4_ADD_RESOURCES(maskedit_rcc_files resources/maskedit.qrc)
 
