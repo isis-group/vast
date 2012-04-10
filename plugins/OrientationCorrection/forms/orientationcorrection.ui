@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>443</width>
-    <height>428</height>
+    <height>498</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -20,7 +20,7 @@
    <item>
     <widget class="QWidget" name="widget" native="true">
      <layout class="QGridLayout" name="gridLayout">
-      <item row="0" column="0">
+      <item row="1" column="0">
        <widget class="QTabWidget" name="tabWidget">
         <property name="currentIndex">
          <number>0</number>
@@ -419,12 +419,15 @@
         </widget>
        </widget>
       </item>
-      <item row="1" column="0">
+      <item row="2" column="0">
        <widget class="QPushButton" name="resetButton">
         <property name="text">
          <string>Reset</string>
         </property>
        </widget>
+      </item>
+      <item row="0" column="0">
+       <widget class="QComboBox" name="imageBox"/>
       </item>
      </layout>
     </widget>

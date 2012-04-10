@@ -50,6 +50,7 @@ public Q_SLOTS:
 	void showEvent( QShowEvent *);
 	void closeEvent( QCloseEvent *);
 	void updateValues( ImageHolder::Pointer );
+	void imageChanged( QString );
 private:
 	void connectAll();
 	void disconnectAll();

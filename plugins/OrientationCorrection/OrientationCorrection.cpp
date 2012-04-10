@@ -57,6 +57,7 @@ OrientatioCorrectionDialog::OrientatioCorrectionDialog( QWidget *parent, QViewer
 	connectAll();
 	connect( ui.pushButton, SIGNAL( pressed() ), this, SLOT( applyPressed() ) );
 	connect( ui.resetButton, SIGNAL( clicked(bool)), this, SLOT( resetPressed()));
+	
 }
 
 void OrientatioCorrectionDialog::connectAll()
@@ -70,6 +71,7 @@ void OrientatioCorrectionDialog::connectAll()
 	connect( ui.translateX, SIGNAL( valueChanged(double)), this, SLOT( applyTransform()));
 	connect( ui.translateY, SIGNAL( valueChanged(double)), this, SLOT( applyTransform()));
 	connect( ui.translateZ, SIGNAL( valueChanged(double)), this, SLOT( applyTransform()));
+	connect( ui.imageBox, SIGNAL( currentIndexChanged(QString)), this, SLOT( imageChanged(QString)));
 }
 
 void OrientatioCorrectionDialog::disconnectAll()
@@ -83,22 +85,36 @@ void OrientatioCorrectionDialog::disconnectAll()
 	disconnect( ui.translateX, SIGNAL( valueChanged(double)), this, SLOT( applyTransform()));
 	disconnect( ui.translateY, SIGNAL( valueChanged(double)), this, SLOT( applyTransform()));
 	disconnect( ui.translateZ, SIGNAL( valueChanged(double)), this, SLOT( applyTransform()));
+	disconnect( ui.imageBox, SIGNAL( currentIndexChanged(QString)), this, SLOT( imageChanged(QString)));
 }
 
 
 void OrientatioCorrectionDialog::showEvent ( QShowEvent* e )
 {
 	if( m_ViewerCore->hasImage() ) {
+		disconnectAll();
+		ui.imageBox->clear();
+		BOOST_FOREACH( const ImageHolder::Vector::const_reference image, m_ViewerCore->getImageVector() ) {
+		ui.imageBox->addItem( image->getImageProperties().filePath.c_str() );
+	}
+	ui.imageBox->setCurrentIndex(ui.imageBox->findText(m_ViewerCore->getCurrentImage()->getImageProperties().filePath.c_str() ) );
 		updateValues( m_ViewerCore->getCurrentImage() );
 	}
-	m_ViewerCore->emitCurrentImageChanged.connect( boost::bind( &OrientatioCorrectionDialog::updateValues, this, _1 ) );
+	connectAll();
+// 	m_ViewerCore->emitCurrentImageChanged.connect( boost::bind( &OrientatioCorrectionDialog::updateValues, this, _1 ) );
+
     QDialog::showEvent(e);
 }
 
 void OrientatioCorrectionDialog::closeEvent ( QCloseEvent* e )
 {
-	m_ViewerCore->emitCurrentImageChanged.disconnect( boost::bind( &OrientatioCorrectionDialog::updateValues, this, _1 ) );
+// 	m_ViewerCore->emitCurrentImageChanged.disconnect( boost::bind( &OrientatioCorrectionDialog::updateValues, this, _1 ) );
     QDialog::closeEvent(e);
+}
+
+void OrientatioCorrectionDialog::imageChanged ( QString path )
+{
+	updateValues( m_ViewerCore->getImageMap().at( path.toStdString() ) );
 }
 
 
@@ -147,7 +163,7 @@ void OrientatioCorrectionDialog::updateValues( ImageHolder::Pointer image )
 void OrientatioCorrectionDialog::applyPressed()
 {
 	if( m_ViewerCore->hasImage() ) {
-		ImageHolder::Pointer image = m_ViewerCore->getCurrentImage();
+		ImageHolder::Pointer image = m_ViewerCore->getImageMap().at( ui.imageBox->currentText().toStdString() );
 		boost::numeric::ublas::matrix<float> transform = boost::numeric::ublas::matrix<float>( 3, 3 );
 
 		for( unsigned short i = 0; i < 3; i++ ) {
@@ -200,7 +216,7 @@ void OrientatioCorrectionDialog::setValuesToZero()
 bool OrientatioCorrectionDialog::applyTransform( ) const
 {
 	if( m_ViewerCore->hasImage() ) {
-		ImageHolder::Pointer image = m_ViewerCore->getCurrentImage();
+		ImageHolder::Pointer image = m_ViewerCore->getImageMap().at( ui.imageBox->currentText().toStdString() );
 		image->getISISImage()->setPropertyAs<util::fvector4>("rowVec", image->getPropMap().getPropertyAs<util::fvector4>("OrientationCorrection/origRowVec") );
 		image->getISISImage()->setPropertyAs<util::fvector4>("columnVec", image->getPropMap().getPropertyAs<util::fvector4>("OrientationCorrection/origColumnVec") );
 		image->getISISImage()->setPropertyAs<util::fvector4>("sliceVec", image->getPropMap().getPropertyAs<util::fvector4>("OrientationCorrection/origSliceVec") );

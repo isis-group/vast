@@ -166,6 +166,7 @@ void QGeomWidget::paintImage( const ImageHolder::Pointer image )
 	const util::ivector4 mappedSizeAligned = mapCoordsToOrientation( image->getImageProperties().alignedSize32, image->getImageProperties().latchedOrientation, m_PlaneOrientation );
 	isis::data::MemChunk<InternalImageType> sliceChunk( mappedSizeAligned[0], mappedSizeAligned[1] );
 	MemoryHandler::fillSliceChunk<InternalImageType>( sliceChunk, image, m_PlaneOrientation );
+// 	_internal::extractSliceFromChunk<InternalImageType>( sliceChunk, image, m_PlaneOrientation );
 
 	QImage qImage( ( InternalImageType * ) sliceChunk.asValueArray<InternalImageType>().getRawAddress().get(),
 					   mappedSizeAligned[0], mappedSizeAligned[1], QImage::Format_Indexed8 );
