@@ -145,6 +145,8 @@ QTransform getQTransform ( const ImageHolder::Pointer image, const PlaneOrientat
 						   * tr1.translate( _io[0] - _vc[0], _io[2] - _vc[1] ) ).scale( mapped_voxelSize[0], mapped_voxelSize[1] );
 		break;
 	}
+	case not_specified:
+		break;
 	}
 
 	return QTransform();
@@ -171,7 +173,7 @@ QTransform getTransform2ISISSpace ( const PlaneOrientation &orientation, const u
 	return retTransform;
 }
 
-util::Matrix4x4< qreal > getOrderedMatrix ( const boost::shared_ptr< ImageHolder > image, const PlaneOrientation &orientation, bool latched, bool inverse )
+util::Matrix4x4< qreal > getOrderedMatrix ( const boost::shared_ptr< ImageHolder > image, bool latched, bool inverse )
 {
 	util::Matrix4x4<qreal> latchedOrientation_abs;
 
@@ -205,7 +207,7 @@ util::Matrix4x4< qreal > getOrderedMatrix ( const boost::shared_ptr< ImageHolder
 
 util::FixedMatrix<qreal, 2, 2> extract2DMatrix ( const boost::shared_ptr<ImageHolder> image, const PlaneOrientation &orientation, bool latched, bool inverse )
 {
-	const util::Matrix4x4<qreal> mat = getOrderedMatrix( image, orientation, latched, inverse );
+	const util::Matrix4x4<qreal> mat = getOrderedMatrix( image, latched, inverse );
 	util::FixedMatrix<qreal, 2, 2> retMatrix;
 
 	switch( orientation ) {

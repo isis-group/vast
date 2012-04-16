@@ -193,9 +193,9 @@ void VTKImageWidgetImplementation::lookAtPhysicalCoords ( const util::fvector4 &
 	}
 }
 
-bool VTKImageWidgetImplementation::removeImage ( const boost::shared_ptr< ImageHolder > image )
+bool VTKImageWidgetImplementation::removeImage ( const boost::shared_ptr< ImageHolder > /*image*/ )
 {
-
+	return true;
 }
 void VTKImageWidgetImplementation::setInterpolationType ( InterpolationType interpolation )
 {
