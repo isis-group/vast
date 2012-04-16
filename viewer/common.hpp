@@ -36,6 +36,7 @@
 #include <CoreUtils/common.hpp>
 #include <CoreUtils/types.hpp>
 #include <DataStorage/io_interface.h>
+#include <CoreUtils/matrix.hpp>
 
 
 namespace isis
@@ -75,7 +76,7 @@ std::list<std::string> getSupportedTypeList() ;
 typedef ViewerLog Runtime;
 typedef ViewerDev Dev;
 
-util::fvector4 mapCoordsToOrientation( const util::fvector4 &coords, const boost::numeric::ublas::matrix<float> &orientationMatrix, PlaneOrientation orientation, bool back = false, bool absolute = true );
+util::fvector4 mapCoordsToOrientation( const util::fvector4 &coords, const util::Matrix4x4<float> &orientationMatrix, PlaneOrientation orientation, bool back = false, bool absolute = true );
 
 std::string getCrashLogFilePath();
 

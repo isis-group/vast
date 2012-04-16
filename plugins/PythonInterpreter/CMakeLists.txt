@@ -7,7 +7,7 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR})
 include_directories(qpyconsole)
 
 
-qt4_wrap_cpp(plugin_moc_files PythonInterpreterDialog.hpp)
+qt4_wrap_cpp(plugin_moc_files PythonInterpreterDialog.hpp OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED)
 QT4_WRAP_UI(pythoninterpreter_ui_h forms/pythonInterpreter.ui)
 QT4_ADD_RESOURCES(pythoninterpreter_rcc_files resources/pythoninterpreter.qrc)
 

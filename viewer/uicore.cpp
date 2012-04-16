@@ -177,8 +177,8 @@ ImageHolder::Vector UICore::closeWidgetEnsemble( WidgetEnsemble::Pointer ensembl
 	const WidgetEnsemble::Vector::iterator iter = std::find( m_EnsembleList.begin(), m_EnsembleList.end(), ensemble );
 
 	if( iter != m_EnsembleList.end() ) {
-		ImageHolder::Vector retList = ensemble->getImageList();
-		ensemble->getImageList().clear();
+		ImageHolder::Vector retList = ensemble->getImageVector();
+		ensemble->getImageVector().clear();
 		ensemble->getFrame()->close();
 		m_EnsembleList.erase( iter );
 		return retList;
@@ -237,7 +237,7 @@ void UICore::refreshUI( const bool &mainwindow )
 {
 	WidgetEnsemble::Vector cp = getEnsembleList();
 	BOOST_FOREACH( WidgetEnsemble::Vector::reference ensemble, cp ) {
-		if( ensemble->getImageList().empty() ) {
+		if( ensemble->getImageVector().empty() ) {
 			closeWidgetEnsemble( ensemble );
 		} else {
 			ensemble->update( m_ViewerCore );
@@ -381,7 +381,7 @@ WidgetEnsemble::Pointer UICore::getEnsembleFromImage ( const ImageHolder::Pointe
 	WidgetEnsemble::Pointer retEnsemble;
 	bool found = false;
 	BOOST_FOREACH( WidgetEnsemble::Vector::const_reference ensemble, m_EnsembleList ) {
-		if( std::find( ensemble->getImageList().begin(), ensemble->getImageList().end(), image ) != ensemble->getImageList().end() ) {
+		if( std::find( ensemble->getImageVector().begin(), ensemble->getImageVector().end(), image ) != ensemble->getImageVector().end() ) {
 			retEnsemble = ensemble;
 			found = true;
 		}

@@ -30,6 +30,7 @@
 #define PLUGINLOADER_HPP
 
 #include "plugininterface.h"
+#define BOOST_FILESYSTEM_VERSION 2 //@todo switch to 3 as soon as we drop support for boost < 1.44
 #include <boost/filesystem.hpp>
 #include <boost/regex.h>
 #include <boost/shared_ptr.hpp>

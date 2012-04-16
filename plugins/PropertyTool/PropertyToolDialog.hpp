@@ -86,11 +86,13 @@ class TreePropMap : public util::PropertyMap
 {
 public:
 	void fillTreeWidget( QTreeWidget *treeWidget );
-	TreePropMap( const PropertyMap &propMap ) { static_cast<util::PropertyMap &>( *this ) = propMap; }
+	TreePropMap( const PropertyMap &propMap );
 private:
 	QTreeWidget *m_TreeWidget;
 	void walkTree( QTreeWidgetItem *item, const TreePropMap &propMap, bool topLevel );
 };
+
+
 
 class PropertyToolDialog : public QDialog
 {

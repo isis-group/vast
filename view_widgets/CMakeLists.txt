@@ -11,6 +11,7 @@ add_subdirectory(QImageWidget)
 ############################################################
 
 option(${CMAKE_PROJECT_NAME}_WIDGET_VTK "Enable VTK rendering widget" OFF)
+option(${CMAKE_PROJECT_NAME}_WIDGET_QGEOM "Enable Qt Geometrical widget" OFF)
 
 SET (CMAKE_SHARED_LINKER_FLAGS ${CMAKE_SHARED_LINKER_FLAGS_INIT} -Wl,-undefined,dynamic_lookup)
 
@@ -20,3 +21,10 @@ SET (CMAKE_SHARED_LINKER_FLAGS ${CMAKE_SHARED_LINKER_FLAGS_INIT} -Wl,-undefined,
 if(${CMAKE_PROJECT_NAME}_WIDGET_VTK)
 	add_subdirectory(VTKImageWidget)
 endif(${CMAKE_PROJECT_NAME}_WIDGET_VTK)
+
+############################################################
+# QGeom widget
+############################################################
+if(${CMAKE_PROJECT_NAME}_WIDGET_QGEOM)
+	add_subdirectory(QGeometricalImageWidget)
+endif(${CMAKE_PROJECT_NAME}_WIDGET_QGEOM)

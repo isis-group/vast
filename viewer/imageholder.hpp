@@ -30,12 +30,12 @@
 
 #include "common.hpp"
 #include "color.hpp"
+#include "geometrical.hpp"
 #include <boost/foreach.hpp>
-#include <boost/numeric/ublas/matrix.hpp>
-#include <boost/uuid/uuid.hpp>
 #include <vector>
 #include <CoreUtils/propmap.hpp>
 #include <DataStorage/image.hpp>
+#include <CoreUtils/matrix.hpp>
 
 
 namespace isis
@@ -60,6 +60,7 @@ public:
 private:
 	struct ImageProperties {
 		std::string fileName;
+		std::string filePath;
 		util::ivector4 voxelCoords;
 		util::fvector4 physicalCoords;
 		util::fvector4 voxelSize;
@@ -83,20 +84,22 @@ private:
 		InterpolationType interpolationType;
 		std::pair<util::ValueReference, util::ValueReference> minMax;
 		std::pair<util::ValueReference, util::ValueReference> internMinMax;
-		boost::numeric::ublas::matrix<double> orientation;
 		util::fvector4 indexOrigin;
-		boost::numeric::ublas::matrix<double> latchedOrientation;
+		util::Matrix4x4<float> orientation;
+		util::Matrix4x4<float> latchedOrientation;
 		unsigned short majorTypeID;
 		std::string majorTypeName;
 		std::vector< double *> histogramVector;
 		std::vector< double *> histogramVectorWOZero;
 		std::pair<util::ValueReference, util::ValueReference> scalingToInternalType;
+		geometrical::BoundingBoxType boundingBox;
 	};
 
 public:
 	typedef boost::shared_ptr< ImageHolder > Pointer;
 	typedef std::vector< Pointer > Vector;
 	typedef std::map< std::string, Pointer > Map;
+	
 
 	ImageHolder();
 
@@ -148,8 +151,8 @@ public:
 
 
 private:
-	boost::numeric::ublas::matrix<double> calculateLatchedImageOrientation( bool transposed = false );
-	boost::numeric::ublas::matrix<double> calculateImageOrientation( bool transposed = false ) const;
+	util::Matrix4x4<float> calculateLatchedImageOrientation( bool transposed = false );
+	util::Matrix4x4<float> calculateImageOrientation( bool transposed = false ) const;
 	void logImageProps() const;
 	unsigned short getMajorTypeID() const;
 	void collectImageInfo();

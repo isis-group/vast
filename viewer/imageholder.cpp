@@ -50,33 +50,22 @@ boost::shared_ptr< const void > ImageHolder::getRawAdress ( size_t timestep ) co
 	}
 }
 
-boost::numeric::ublas::matrix< double > ImageHolder::calculateImageOrientation( bool transposed ) const
+util::Matrix4x4<float> ImageHolder::calculateImageOrientation( bool transposed ) const
 {
-	boost::numeric::ublas::matrix<double> retMatrix = boost::numeric::ublas::zero_matrix<double>( 4, 4 );
-	retMatrix( 3, 3 ) = 1;
-	const util::fvector4 &rowVec = m_Image->getPropertyAs<util::fvector4>( "rowVec" );
-	const util::fvector4 &columnVec = m_Image->getPropertyAs<util::fvector4>( "columnVec" );
-	const util::fvector4 &sliceVec = m_Image->getPropertyAs<util::fvector4>( "sliceVec" );
-
-	for ( uint16_t i = 0; i < 3; i++ ) {
-		if( !transposed ) {
-			retMatrix( i, 0 ) = rowVec[i];
-			retMatrix( i, 1 ) = columnVec[i];
-			retMatrix( i, 2 ) = sliceVec[i];
-		} else {
-			retMatrix( 0, i ) = rowVec[i];
-			retMatrix( 1, i ) = columnVec[i];
-			retMatrix( 2, i ) = sliceVec[i];
-		}
+	
+	util::Matrix4x4<float> retMatrix ( 	m_Image->getPropertyAs<util::fvector4>( "rowVec" ),
+										m_Image->getPropertyAs<util::fvector4>( "columnVec" ),
+										m_Image->getPropertyAs<util::fvector4>( "sliceVec" ) );
+	if( transposed ) {
+		return retMatrix;
 	}
-
-	return retMatrix;
+	return retMatrix.transpose(); // has to be transposed!!!!!!!!!!
 }
 
-boost::numeric::ublas::matrix< double > ImageHolder::calculateLatchedImageOrientation( bool transposed )
+util::Matrix4x4<float> ImageHolder::calculateLatchedImageOrientation( bool transposed )
 {
-	boost::numeric::ublas::matrix<double> retMatrix = boost::numeric::ublas::zero_matrix<double>( 4, 4 );
-	retMatrix( 3, 3 ) = 1;
+	util::Matrix4x4<float> retMatrix;
+	retMatrix.fill(0);
 	const util::fvector4 &rowVec = m_Image->getPropertyAs<util::fvector4>( "rowVec" );
 	const util::fvector4 &columnVec = m_Image->getPropertyAs<util::fvector4>( "columnVec" );
 	const util::fvector4 &sliceVec = m_Image->getPropertyAs<util::fvector4>( "sliceVec" );
@@ -127,16 +116,13 @@ boost::numeric::ublas::matrix< double > ImageHolder::calculateLatchedImageOrient
 		}
 	}
 
-	if( !transposed ) {
-		retMatrix( rB, 0 ) = rowVec[rB] < 0 ? -1 : 1;
-		retMatrix( cB, 1 ) = columnVec[cB] < 0 ? -1 : 1;
-		retMatrix( sB, 2 ) =  sliceVec[sB] < 0 ? -1 : 1;
-	} else {
-		retMatrix( 0, rB ) = rowVec[rB] < 0 ? -1 : 1;
-		retMatrix( 1, cB ) =  columnVec[cB] < 0 ? -1 : 1;
-		retMatrix( 2, sB ) = sliceVec[sB] < 0 ? -1 : 1;
-	}
+	retMatrix.elem( 0, rB ) = rowVec[rB] < 0 ? -1 : 1;
+	retMatrix.elem( 1, cB ) =  columnVec[cB] < 0 ? -1 : 1;
+	retMatrix.elem( 2, sB ) = sliceVec[sB] < 0 ? -1 : 1;
 
+	if( transposed ) {
+		return retMatrix.transpose();
+	}
 	return retMatrix;
 }
 
@@ -234,7 +220,9 @@ bool ImageHolder::setImage( const data::Image &image, const ImageType &_imageTyp
 	}
 
 	m_Image.reset( new data::Image( image ) );
-	getImageProperties().fileName = filename;
+	getImageProperties().filePath = filename;
+	boost::filesystem::path p(filename);
+	getImageProperties().fileName = p.filename();
 
 	// get some image information
 	//add some more properties
@@ -308,7 +296,7 @@ bool ImageHolder::setImage( const data::Image &image, const ImageType &_imageTyp
 	m_PropMap.setPropertyAs<util::fvector4>( "originalSliceVec", image.getPropertyAs<util::fvector4>( "sliceVec" ) );
 	m_PropMap.setPropertyAs<util::fvector4>( "originalIndexOrigin", image.getPropertyAs<util::fvector4>( "indexOrigin" ) );
 	updateColorMap();
-	logImageProps();
+	logImageProps();	
 	return true;
 }
 

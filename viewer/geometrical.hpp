@@ -18,42 +18,35 @@
  *
  * Author: Erik Tuerke, tuerke@cbs.mpg.de
  *
- * widgetensemblecomponent.cpp
+ * orienttionhandler.hpp
  *
  * Description:
  *
- *  Created on: Mar 21, 2012
+ *  Created on: Mar 28, 2012
  *      Author: tuerke
  ******************************************************************/
+#ifndef VAST_GEOMETRICAL_HPP
+#define VAST_GEOMETRICAL_HPP
 
-#include "widgetensemblecomponent.hpp"
+#include <CoreUtils/vector.hpp>
 
-namespace isis
-{
-namespace viewer
-{
 
-WidgetEnsembleComponent::WidgetEnsembleComponent ( QFrame *frame, QDockWidget *dockWidget, QWidget *placeHolder, widget::WidgetInterface *widgetImplementation )
-	: m_frame( frame ),
-	  m_dockWidget( dockWidget ),
-	  m_placeHolder( placeHolder ),
-	  m_widgetImplementation( widgetImplementation ),
-	  m_needed( true )
-{}
+namespace isis {
+namespace viewer {
+class ImageHolder;
+namespace geometrical {
+	
+///l:r, a:p, s:i
+typedef util::FixedVector<std::pair<float,float>, 3 > BoundingBoxType;
 
-bool WidgetEnsembleComponent::checkIfNeeded()
-{
-	bool needed = false;
-	BOOST_FOREACH( ImageHolder::Vector::const_reference image, getWidgetInterface()->getWidgetEnsemble()->getImageVector() ) {
-		const util::ivector4 mappedSize = mapCoordsToOrientation( image->getImageSize(), image->getImageProperties().latchedOrientation, getWidgetInterface()->getPlaneOrientation() );
-
-		if( mappedSize[0] > 1 && mappedSize[1] > 1 ) {
-			needed = true;
-		}
-	}
-	m_needed = needed;
-	return needed;
+namespace _internal {
 }
 
-}
-}
+BoundingBoxType getPhysicalBoundingBox( const boost::shared_ptr<ImageHolder> image, const unsigned short &border = 0 );
+
+BoundingBoxType getPhysicalBoundingBox ( const std::vector<boost::shared_ptr<ImageHolder> > images, const unsigned short &border = 0 );
+	
+}}}
+#include "imageholder.hpp"
+
+#endif // VAST_GEOMETRICAL_HPP

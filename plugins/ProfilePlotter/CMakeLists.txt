@@ -24,7 +24,7 @@ INCLUDE(${QT_USE_FILE})
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 QT4_ADD_RESOURCES(profileplotter_rcc_files resources/timeplotter.qrc)
-qt4_wrap_cpp(plugin_moc_files PlotterDialog.hpp)
+qt4_wrap_cpp(plugin_moc_files PlotterDialog.hpp OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED)
 QT4_WRAP_UI(profileplotter_ui_h ${FILES_UI})
 
 # look for fftw3

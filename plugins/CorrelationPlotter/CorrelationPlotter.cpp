@@ -83,7 +83,7 @@ void isis::viewer::plugin::CorrelationPlotterDialog::showEvent( QShowEvent * )
 
 		if( !m_CurrentFunctionalImage ) {
 			if( m_ViewerCore->getCurrentImage()->getImageSize()[3] == 1 ) {
-				BOOST_FOREACH( ImageHolder::Vector::const_reference image, m_ViewerCore->getImageList() ) {
+				BOOST_FOREACH( ImageHolder::Vector::const_reference image, m_ViewerCore->getImageVector() ) {
 					if( image->getImageSize()[dim_time] > 1 ) {
 						hasFunctionalImage = true;
 						m_CurrentFunctionalImage = image;

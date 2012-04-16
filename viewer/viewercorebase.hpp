@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * Author: Erik Türke, tuerke@cbs.mpg.de
+ * Author: Erik Tuerke, tuerke@cbs.mpg.de
  *
  * viewercorebase.hpp
  *
@@ -69,7 +69,7 @@ public:
 
 	ImageHolder::Pointer getCurrentAnatomicalRefernce() const { return m_CurrentAnatomicalReference; }
 
-	bool hasImage() const { return m_ImageList.size() && m_CurrentImage.get(); }
+	bool hasImage() const { return m_imageVector.size() && m_CurrentImage.get(); }
 
 	widget::WidgetInterface *getWidget( const std::string &identifier ) throw( std::runtime_error & );
 	const util::PropertyMap *getWidgetProperties( const std::string &identifier ) ;
@@ -77,8 +77,8 @@ public:
 	virtual void setMode( const Mode &mode ) { m_Mode = mode; }
 	virtual Mode getMode() const { return m_Mode; }
 
-	ImageHolder::Vector &getImageList() { return m_ImageList; }
-	const ImageHolder::Vector &getImageList() const { return m_ImageList; }
+	ImageHolder::Vector &getImageVector() { return m_imageVector; }
+	const ImageHolder::Vector &getImageVector() const { return m_imageVector; }
 
 	ImageHolder::Map &getImageMap() { return m_ImageMap; }
 	const ImageHolder::Map &getImageMap() const { return m_ImageMap; }
@@ -89,7 +89,7 @@ public:
 
 private:
 	//this is the container which holds all the images
-	ImageHolder::Vector m_ImageList;
+	ImageHolder::Vector m_imageVector;
 	//this map associates all the images with an uuid
 	ImageHolder::Map m_ImageMap;
 	ImageHolder::Pointer  m_CurrentImage;

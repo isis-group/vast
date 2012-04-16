@@ -48,8 +48,8 @@ WidgetEnsemble::WidgetEnsemble()
 void WidgetEnsemble::addImage ( const ImageHolder::Pointer image )
 {
 	//if image is not in list
-	if( std::find( m_imageList.begin(), m_imageList.end(), image ) == m_imageList.end()  ) {
-		m_imageList.push_back( image );
+	if( std::find( m_imageVector.begin(), m_imageVector.end(), image ) == m_imageVector.end()  ) {
+		m_imageVector.push_back( image );
 		emitAddImage( image );
 		emitCheckIfNeeded();
 	} else {
@@ -60,10 +60,10 @@ void WidgetEnsemble::addImage ( const ImageHolder::Pointer image )
 
 void WidgetEnsemble::removeImage ( const ImageHolder::Pointer image )
 {
-	const ImageHolder::Vector::iterator iter = std::find( m_imageList.begin(), m_imageList.end(), image );
+	const ImageHolder::Vector::iterator iter = std::find( m_imageVector.begin(), m_imageVector.end(), image );
 
-	if( iter != m_imageList.end() ) {
-		m_imageList.erase( iter );
+	if( iter != m_imageVector.end() ) {
+		m_imageVector.erase( iter );
 		emitRemoveImage( image );
 		emitCheckIfNeeded();
 	} else {
@@ -84,7 +84,7 @@ void WidgetEnsemble::insertComponent ( WidgetEnsembleComponent::Pointer componen
 
 bool WidgetEnsemble::hasImage ( const ImageHolder::Pointer image ) const
 {
-	return find( m_imageList.begin(), m_imageList.end(), image ) != m_imageList.end();
+	return find( m_imageVector.begin(), m_imageVector.end(), image ) != m_imageVector.end();
 }
 
 
@@ -115,10 +115,10 @@ void WidgetEnsemble::update( const ViewerCoreBase *core )
 {
 	if( core->hasImage() ) {
 		ImageHolder::Pointer currentImage = core->getCurrentImage();
-		const ImageHolder::Vector::const_iterator currentImageIterator = std::find( m_imageList.begin(), m_imageList.end(), currentImage );
+		const ImageHolder::Vector::const_iterator currentImageIterator = std::find( m_imageVector.begin(), m_imageVector.end(), currentImage );
 		//if no image is visible make this ensemble invisible either
 		bool visible = false;
-		BOOST_FOREACH( ImageHolder::Vector::const_reference image, m_imageList ) {
+		BOOST_FOREACH( ImageHolder::Vector::const_reference image, m_imageVector ) {
 			if( image->getImageProperties().isVisible ) {
 				visible = true;
 			}
@@ -127,23 +127,21 @@ void WidgetEnsemble::update( const ViewerCoreBase *core )
 
 		//if this ensemble contains the current image make this the current ensemble either
 		if( visible ) {
-			setIsCurrent( currentImageIterator != m_imageList.end() );
+			setIsCurrent( currentImageIterator != m_imageVector.end() );
 		}
 
 		//resort the ensembles image list -> current image has to be the top image
 		ImageHolder::Vector tmpList;
 
-		if( currentImageIterator != m_imageList.end() ) {
-			tmpList.push_back( currentImage );
-		}
-
-		for( ImageHolder::Vector::const_iterator iter = m_imageList.begin(); iter != m_imageList.end(); iter++ ) {
+		for( ImageHolder::Vector::const_iterator iter = m_imageVector.begin(); iter != m_imageVector.end(); iter++ ) {
 			if( iter != currentImageIterator ) {
 				tmpList.push_back( *iter );
 			}
 		}
-
-		m_imageList = tmpList;
+		if( currentImageIterator != m_imageVector.end() ) {
+			tmpList.push_back( currentImage );
+		}
+		m_imageVector = tmpList;
 	}
 }
 

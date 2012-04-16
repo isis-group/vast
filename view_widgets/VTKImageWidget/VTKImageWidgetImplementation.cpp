@@ -160,7 +160,7 @@ void VTKImageWidgetImplementation::addImage ( const boost::shared_ptr< ImageHold
 	m_Renderer->AddVolume( component.volume );
 	component.setVTKImageData( VolumeHandler::getVTKImageData( image, image->getImageProperties().voxelCoords[3] ) );
 
-	if( getWidgetEnsemble()->getImageList().size() == 1 ) {
+	if( getWidgetEnsemble()->getImageVector().size() == 1 ) {
 		m_Renderer->GetActiveCamera()->SetPosition( image->getImageProperties().indexOrigin[0] * 2, image->getImageProperties().indexOrigin[1] * 2, image->getImageProperties().indexOrigin[2] );
 		m_Renderer->GetActiveCamera()->Roll( -65 );
 	}
@@ -183,8 +183,8 @@ void VTKImageWidgetImplementation::lookAtPhysicalCoords ( const util::fvector4 &
 	if( m_ViewerCore->hasImage() ) {
 		boost::shared_ptr<ImageHolder> image = m_ViewerCore->getCurrentImage();
 		const util::ivector4 voxelCoords = image->getISISImage()->getIndexFromPhysicalCoords( physicalCoords );
-		boost::numeric::ublas::vector<float> mappedVoxels = boost::numeric::ublas::prod( image->getImageProperties().orientation, voxelCoords.getBoostVector() );
-		boost::numeric::ublas::vector<float> mappedVoxelSize = boost::numeric::ublas::prod( image->getImageProperties().orientation, image->getImageProperties().voxelSize.getBoostVector() );
+		const util::fvector4 mappedVoxels = image->getImageProperties().orientation.dot(voxelCoords);
+		const util::fvector4 mappedVoxelSize = image->getImageProperties().orientation.dot(image->getImageProperties().voxelSize);
 
 		m_Cursor->SetFocalPoint( mappedVoxels[0] * fabs( mappedVoxelSize[0] ),
 								 mappedVoxels[1] * fabs( mappedVoxelSize[1] ),

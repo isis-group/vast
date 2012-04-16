@@ -27,6 +27,7 @@
  ******************************************************************/
 #include "viewercorebase.hpp"
 #include "common.hpp"
+#include "geometrical.hpp"
 
 #define STR(s) _xstr_(s)
 #define _xstr_(s) std::string(#s)
@@ -95,24 +96,28 @@ ImageHolder::Pointer ViewerCoreBase::addImage( const isis::data::Image &image, c
 	if( image.hasProperty( "source" ) ) {
 		fileName = image.getPropertyAs<std::string>( "source" );
 	} else {
-		boost::filesystem::path path = image.getChunk( 0 ).getPropertyAs<std::string>( "source" );
+		const boost::filesystem::path path = image.getChunk( 0 ).getPropertyAs<std::string>( "source" );
 		fileName = path.branch_path().string();
 	}
 
-	ImageHolder::Pointer  retImage = ImageHolder::Pointer( new ImageHolder ) ;
-	retImage->setImage( image, imageType, fileName );
-	m_ImageList.push_back( retImage );
+	ImageHolder::Pointer  retImage = ImageHolder::Pointer( new ImageHolder );
+	
+	m_imageVector.push_back( retImage );
 
-	m_ImageMap[fileName] = retImage;
-
-	if( retImage->hasAmbiguousOrientation() ) {
-		QMessageBox msgBox;
-		msgBox.setIcon( QMessageBox::Warning );
-		std::stringstream message;
-		message << "The image " << retImage->getImageProperties().fileName
-				<< " has an ambiguous orientation (rotated through 45 degrees).\n\n Alignment might look wrong.";
-		msgBox.setText( message.str().c_str() );
-		msgBox.exec();
+	//look if this filename already exists.
+	if( m_ImageMap.find( fileName ) != m_ImageMap.end() ) {
+		unsigned short index = 0;
+		std::string newFileName = fileName;
+		while( m_ImageMap.find(newFileName) != m_ImageMap.end() ) {
+			std::stringstream ss;
+			ss << fileName << " (" << ++index << ")";
+			newFileName = ss.str();
+		}
+		retImage->setImage( image, imageType, newFileName );
+		m_ImageMap[newFileName] = retImage;
+	} else {
+		retImage->setImage( image, imageType, fileName );
+		m_ImageMap[fileName] = retImage;
 	}
 
 	//setting the lutStructural
@@ -141,6 +146,7 @@ ImageHolder::Pointer ViewerCoreBase::addImage( const isis::data::Image &image, c
 	if( getMode() == ViewerCoreBase::statistical_mode && retImage->getImageSize()[3] > 1 && retImage->getImageProperties().imageType != ImageHolder::statistical_image ) {
 		retImage->getImageProperties().isVisible = false;
 	}
+	retImage->getImageProperties().boundingBox = geometrical::getPhysicalBoundingBox(retImage);
 
 	//emit the signal
 	emitAddImage( retImage );

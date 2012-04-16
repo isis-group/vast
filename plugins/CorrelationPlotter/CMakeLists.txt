@@ -10,7 +10,7 @@ set(QT_USE_QTUITOOLS TRUE)
 INCLUDE(${QT_USE_FILE})
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
-qt4_wrap_cpp(plugin_moc_files CorrelationPlotter.hpp )
+qt4_wrap_cpp(plugin_moc_files CorrelationPlotter.hpp OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED)
 QT4_WRAP_UI(correlationplotter_ui_h forms/correlationPlotter.ui)
 QT4_ADD_RESOURCES(correlationplotter_rcc_files resources/correlationplotter.qrc)
 

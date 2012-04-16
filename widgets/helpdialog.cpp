@@ -28,6 +28,7 @@
 #include "helpdialog.hpp"
 
 #include <QMessageBox>
+#define BOOST_FILESYSTEM_VERSION 2 //@todo switch to 3 as soon as we drop support for boost < 1.44
 #include <boost/filesystem.hpp>
 
 isis::viewer::ui::HelpDialog::HelpDialog( QWidget *parent )
@@ -35,6 +36,11 @@ isis::viewer::ui::HelpDialog::HelpDialog( QWidget *parent )
 {
 	m_Interface.setupUi( this );
 
+
+}
+
+void isis::viewer::ui::HelpDialog::showEvent ( QShowEvent *e )
+{
 	if( boost::filesystem::is_directory( boost::filesystem::path( std::string( VAST_DOC_PATH ) ) ) ) {
 		std::string indexFile = std::string ( VAST_DOC_PATH ) + std::string( "/index.html" );
 		m_Interface.helpView->load( QUrl( indexFile.c_str() ) );
@@ -43,4 +49,5 @@ isis::viewer::ui::HelpDialog::HelpDialog( QWidget *parent )
 		msgBox.setText( "Could not find help path for vast." );
 		msgBox.exec();
 	}
+	QDialog::showEvent(e);
 }

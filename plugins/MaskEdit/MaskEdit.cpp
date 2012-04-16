@@ -92,6 +92,7 @@ void MaskEditDialog::radiusChange( int r )
 void MaskEditDialog::showEvent( QShowEvent * )
 {
 	connect( m_ViewerCore, SIGNAL ( emitOnWidgetMoved( util::fvector4, Qt::MouseButton ) ), this, SLOT( physicalCoordChanged( util::fvector4, Qt::MouseButton ) ) );
+	connect( m_ViewerCore, SIGNAL ( emitOnWidgetClicked(util::fvector4,Qt::MouseButton)), this, SLOT( physicalCoordChanged(util::fvector4,Qt::MouseButton)));
 
 	if( !m_CurrentMask ) {
 		m_Interface.cut->setEnabled( false );

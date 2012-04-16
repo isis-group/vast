@@ -44,8 +44,8 @@ set(VIEWER_FILES_HPP
 # set viewer version number
 ##########################################################
 set(VAST_VERSION_MAJOR "0")
-set(VAST_VERSION_MINOR "4")
-set(VAST_VERSION_PATCH "0")
+set(VAST_VERSION_MINOR "5")
+set(VAST_VERSION_PATCH "1")
 
 add_definitions(-D_VAST_VERSION_MAJOR=${VAST_VERSION_MAJOR})
 add_definitions(-D_VAST_VERSION_MINOR=${VAST_VERSION_MINOR})
@@ -111,7 +111,7 @@ INCLUDE(${QT_USE_FILE})
 
 QT4_ADD_RESOURCES(vast_rcc_files ${RESOURCE_FILES})
 
-qt4_wrap_cpp(vast_moc_files ${VIEWER_FILES_HPP} )
+qt4_wrap_cpp(vast_moc_files ${VIEWER_FILES_HPP}  OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED)
 QT4_WRAP_UI(vast_UIS_H ${UI_FILES})
 
 #for some reasons this is necessary on lenny 64 bit distributions

@@ -45,16 +45,22 @@ class OrientatioCorrectionDialog : public QDialog
 public:
 	OrientatioCorrectionDialog( QWidget *parent, QViewerCore *core );
 public Q_SLOTS:
-	virtual void applyPressed();
-	virtual void flipPressed();
-	virtual void rotatePressed();
-	virtual void alignOnCenter( bool );
+	void applyPressed();
+	void resetPressed();
+	void showEvent( QShowEvent *);
+	void closeEvent( QCloseEvent *);
+	void updateValues( ImageHolder::Pointer );
+	void imageChanged( QString );
 private:
+	void connectAll();
+	void disconnectAll();
 	QViewerCore *m_ViewerCore;
 	Ui::OrientationCorrection ui;
 	boost::numeric::ublas::matrix<QTableWidgetItem *> m_MatrixItems;
-	bool applyTransform ( const boost::numeric::ublas::matrix<float> &trans, bool center, const std::string &desc ) const ;
-	std::string m_ImageNameAlignedTo;
+	void setValuesToZero();
+private Q_SLOTS:
+	bool applyTransform ( ) const ;
+
 
 };
 

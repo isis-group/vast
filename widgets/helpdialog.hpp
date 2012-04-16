@@ -43,6 +43,8 @@ class HelpDialog : public QDialog
 	Q_OBJECT
 public:
 	HelpDialog( QWidget *parent );
+public Q_SLOTS:
+	void showEvent( QShowEvent * );
 
 private:
 	Ui::helpDialog m_Interface;

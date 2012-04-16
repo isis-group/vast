@@ -13,7 +13,7 @@ INCLUDE(${QT_USE_FILE})
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
-qt4_wrap_cpp(plugin_moc_files OrientationCorrection.hpp)
+qt4_wrap_cpp(plugin_moc_files OrientationCorrection.hpp OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED)
 QT4_WRAP_UI(orientationcorrection_ui_h forms/orientationcorrection.ui)
 
 add_library(vastPlugin_OrientationCorrection SHARED vastPlugin_OrientationCorrection.cpp OrientationCorrection.cpp ${orientationcorrection_ui_h} ${plugin_moc_files})

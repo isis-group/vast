@@ -62,8 +62,8 @@ public:
 
 	bool hasImage( const ImageHolder::Pointer image ) const;
 
-	const ImageHolder::Vector &getImageList() const { return m_imageList; }
-	ImageHolder::Vector &getImageList() { return m_imageList; }
+	const ImageHolder::Vector &getImageVector() const { return m_imageVector; }
+	ImageHolder::Vector &getImageVector() { return m_imageVector; }
 
 	void setIsCurrent( bool current );
 	bool isCurrent() const { return m_isCurrent; }
@@ -80,7 +80,7 @@ private:
 	QGridLayout *m_layout;
 	unsigned short m_cols;
 	void push_back( const value_type &value ) { std::vector< WidgetEnsembleComponent::Pointer >::push_back( value ); }
-	ImageHolder::Vector m_imageList;
+	ImageHolder::Vector m_imageVector;
 	bool m_isCurrent;
 };
 

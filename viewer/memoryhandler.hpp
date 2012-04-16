@@ -49,16 +49,18 @@ public:
 		const util::ivector4 mapping = mapCoordsToOrientation( util::ivector4( 0, 1, 2, 3 ), image->getImageProperties().latchedOrientation, orientation, true );
 		const data::Chunk &chunk = image->getChunkVector()[image->getImageProperties().voxelCoords[dim_time]];
 
-
 		for ( util::ivector4::value_type y = 0; y < mappedSize[1]; y++ ) {
 #pragma omp parallel for
 
 			for ( util::ivector4::value_type x = 0; x < mappedSize[0]; x++ ) {
 				const util::ivector4::value_type coords[3] = {x, y, mappedCoords[2] };
-				static_cast<data::Chunk &>( sliceChunk ).voxel<TYPE>( coords[0], coords[1] ) = chunk.voxel<TYPE>( coords[mapping[0]], coords[mapping[1]], coords[mapping[2]] );
+				static_cast<data::Chunk &>( sliceChunk ).voxel<TYPE>( x, y ) = chunk.voxel<TYPE>( coords[mapping[0]], coords[mapping[1]], coords[mapping[2]] );
 			}
 		}
 	}
+
+
+	
 };
 
 

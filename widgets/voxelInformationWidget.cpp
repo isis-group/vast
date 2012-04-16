@@ -252,22 +252,30 @@ void VoxelInformationWidget::synchronize()
 
 		m_Interface.sliceBox->setMaximum( outerCorner[2] );
 
-		const util::fvector4 physicalBegin = image->getISISImage()->getPhysicalCoordsFromIndex( util::ivector4() );
+// 		m_Interface.xBox->setMinimum( image->getImageProperties().boundingBox[0].first );
+// 
+// 		m_Interface.xBox->setMaximum( image->getImageProperties().boundingBox[0].second );
+// 
+// 		m_Interface.yBox->setMinimum( image->getImageProperties().boundingBox[1].first );
+// 
+// 		m_Interface.yBox->setMaximum( image->getImageProperties().boundingBox[1].second );
+// 
+// 		m_Interface.zBox->setMinimum( image->getImageProperties().boundingBox[2].first );
+// 
+// 		m_Interface.zBox->setMaximum( image->getImageProperties().boundingBox[2].second );
+		
+		m_Interface.xBox->setMinimum( -1000 );
 
-		const util::fvector4 physicalEnd = image->getISISImage()->getPhysicalCoordsFromIndex( outerCorner );
+		m_Interface.xBox->setMaximum( 1000 );
 
-		m_Interface.xBox->setMinimum( physicalBegin[0] < physicalEnd[0] ? physicalBegin[0] : physicalEnd[0] );
+		m_Interface.yBox->setMinimum( -1000 );
 
-		m_Interface.xBox->setMaximum( physicalBegin[0] > physicalEnd[0] ? physicalBegin[0] : physicalEnd[0] );
+		m_Interface.yBox->setMaximum( 1000 );
 
-		m_Interface.yBox->setMinimum( physicalBegin[1] < physicalEnd[1] ? physicalBegin[1] : physicalEnd[1] );
+		m_Interface.zBox->setMinimum( -1000 );
 
-		m_Interface.yBox->setMaximum( physicalBegin[1] > physicalEnd[1] ? physicalBegin[1] : physicalEnd[1] );
-
-		m_Interface.zBox->setMinimum( physicalBegin[2] < physicalEnd[2] ? physicalBegin[2] : physicalEnd[2] );
-
-		m_Interface.zBox->setMaximum( physicalBegin[2] > physicalEnd[2] ? physicalBegin[2] : physicalEnd[2] );
-
+		m_Interface.zBox->setMaximum( 1000 );
+		
 		synchronizePos( image->getImageProperties().voxelCoords );
 
 		util::fvector4 voxelSpacing;
@@ -277,17 +285,11 @@ void VoxelInformationWidget::synchronize()
 		} else {
 			voxelSpacing = image->getISISImage()->getPropertyAs<util::fvector4>( "voxelSize" );
 		}
+		const util::fvector4 transformedVec = image->getImageProperties().latchedOrientation.dot(voxelSpacing);
 
-		boost::numeric::ublas::vector<float> vSpacing = boost::numeric::ublas::vector<float>( 4 );
-
-		for( unsigned short i = 0; i < 4; i++ ) {
-			vSpacing( i ) = voxelSpacing[i];
-		}
-
-		boost::numeric::ublas::vector<float> transformedVec = boost::numeric::ublas::prod( image->getImageProperties().latchedOrientation, vSpacing );
-		m_Interface.xBox->setSingleStep( fabs( transformedVec( 0 ) ) );
-		m_Interface.yBox->setSingleStep( fabs( transformedVec( 1 ) ) );
-		m_Interface.zBox->setSingleStep( fabs( transformedVec( 2 ) ) );
+		m_Interface.xBox->setSingleStep( fabs( transformedVec[0] ) );
+		m_Interface.yBox->setSingleStep( fabs( transformedVec[1] ) );
+		m_Interface.zBox->setSingleStep( fabs( transformedVec[2] ) );
 
 		if( !isConnected ) {
 			connectSignals();
