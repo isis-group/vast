@@ -64,6 +64,7 @@ void QGeomWidget::setup ( QViewerCore* core, QWidget* parent , PlaneOrientation 
 	m_Border = 0;
 	m_ShowLabels = false;
 	m_ShowCrosshair = true;
+	m_ShowScalingOffset = false;
 	connect(m_ViewerCore, SIGNAL( emitUpdateScene()), this, SLOT( updateScene()));
 	connect( m_ViewerCore, SIGNAL( emitPhysicalCoordsChanged(util::fvector4)), this, SLOT( updateScene()));
 	connect( m_ViewerCore, SIGNAL( emitZoomChanged( float ) ), this, SLOT( setZoom( float ) ) );
@@ -153,7 +154,18 @@ void QGeomWidget::paintEvent ( QPaintEvent* /*event*/ )
 		if( m_ShowLabels ) {
 			paintLabels();
 		}
+		if( m_ShowScalingOffset ) {
+			m_Painter->resetMatrix();
+			m_Painter->setFont( QFont( "Chicago", 10 ) );
+			m_Painter->setPen( Qt::red );
+			std::stringstream scalingOffset;
+			const ImageHolder::Pointer image = getWidgetEnsemble()->getImageVector().back();
+			scalingOffset << "Scaling: " << image->getImageProperties().scaling
+						  << " Offset: " << image->getImageProperties().offset;
+			m_Painter->drawText( 10, 30, scalingOffset.str().c_str() );
+		}
 
+		m_ShowScalingOffset = false;
 		m_Painter->end();
 	}
 }
@@ -302,6 +314,11 @@ void QGeomWidget::mousePressEvent ( QMouseEvent* e )
 	if( e->button() == Qt::RightButton ) {
 		m_RightMouseButtonPressed = true;
 	}
+	if( m_LeftMouseButtonPressed && m_RightMouseButtonPressed ) {
+		m_StartCoordsPair.first = e->x();
+		m_StartCoordsPair.second = e->y();
+	}
+	
 	if( m_LeftMouseButtonPressed )  m_ViewerCore->onWidgetClicked( this, physicalCoords, Qt::LeftButton );
 	if( m_RightMouseButtonPressed ) m_ViewerCore->onWidgetClicked( this, physicalCoords, Qt::RightButton );
     
@@ -309,7 +326,29 @@ void QGeomWidget::mousePressEvent ( QMouseEvent* e )
 
 void QGeomWidget::mouseMoveEvent ( QMouseEvent* e )
 {
-	if( m_LeftMouseButtonPressed || m_RightMouseButtonPressed ) {
+	if( m_RightMouseButtonPressed && m_LeftMouseButtonPressed ) {
+		if( QApplication::keyboardModifiers() == Qt::ShiftModifier ) {
+			BOOST_FOREACH( ImageHolder::Vector::const_reference image, m_ViewerCore->getImageVector() ) {
+				const double offset =  ( m_StartCoordsPair.second - e->y() ) / ( float )height() * image->getImageProperties().extent;
+				const double scaling = 1.0 - ( m_StartCoordsPair.first - e->x() ) / ( float )width() * 5;
+				image->getImageProperties().offset = offset;
+				image->getImageProperties().scaling = scaling < 0.0 ? 0.0 : scaling;
+				image->updateColorMap();
+			}
+		} else {
+			boost::shared_ptr<ImageHolder> image = getWidgetEnsemble()->getImageVector().back();
+			const double offset =  ( m_StartCoordsPair.second - e->y() ) / ( float )height() * image->getImageProperties().extent;
+			const double scaling = 1.0 - ( m_StartCoordsPair.first - e->x() ) / ( float )width() * 5;
+			image->getImageProperties().offset = offset;
+			image->getImageProperties().scaling = scaling < 0.0 ? 0.0 : scaling;
+			image->updateColorMap();
+		}
+
+		m_ShowScalingOffset = true;
+		m_ViewerCore->updateScene();
+
+	}
+	else {
 		const util::fvector4 physicalCoords = getPhysicalCoordsFromMouseCoords(  e->x(), e->y() );
 		if( m_LeftMouseButtonPressed )  m_ViewerCore->onWidgetMoved( this, physicalCoords, Qt::LeftButton );
 		if( m_RightMouseButtonPressed ) m_ViewerCore->onWidgetMoved( this, physicalCoords, Qt::RightButton );

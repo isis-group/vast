@@ -84,6 +84,7 @@ private:
 	bool m_ZoomEvent;
 	bool m_ShowLabels;
 	bool m_ShowCrosshair;
+	bool m_ShowScalingOffset;
 	util::FixedVector<float,2> m_Translation;
 	float m_WindowViewPortScaling;
 
@@ -97,6 +98,7 @@ private:
 	float m_Zoom;
 	uint16_t m_Border;
 	InterpolationType m_InterpolationType;
+	std::pair<int, int> m_StartCoordsPair;
 };
 
 
