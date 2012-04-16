@@ -107,10 +107,11 @@ void QGeomWidget::addImage ( const ImageHolder::Pointer /*image*/ )
 
 bool QGeomWidget::removeImage ( const ImageHolder::Pointer /*image*/ )
 {
+	return true;
 }
 
 
-void QGeomWidget::paintEvent ( QPaintEvent* event )
+void QGeomWidget::paintEvent ( QPaintEvent* /*event*/ )
 {
 	if( m_ViewerCore->hasImage() ) {
 		m_Painter->begin(this);
@@ -244,6 +245,8 @@ void QGeomWidget::paintLabels() const
 		m_Painter->drawText( width() / 2 - 7, 15, "S" );
 		m_Painter->drawText( width() / 2 - 7, height() - 2, "I" );
 		break;
+	case not_specified:
+		break;
 	}
 
 }
@@ -276,6 +279,7 @@ util::fvector4 QGeomWidget::getPhysicalCoordsFromMouseCoords ( const int& x, con
 		}
 		return physicalCoords;
 	}
+	return util::fvector4();
 }
 
 
@@ -341,7 +345,7 @@ void QGeomWidget::wheelEvent ( QWheelEvent* e )
 }
 
 
-void QGeomWidget::lookAtPhysicalCoords ( const util::fvector4& physicalCoords )
+void QGeomWidget::lookAtPhysicalCoords ( const util::fvector4& /*physicalCoords*/ )
 {
 
 }
