@@ -42,7 +42,7 @@ PropertyToolDialog::PropertyToolDialog( QWidget *parent, QViewerCore *core )
 {
 	m_Interface.setupUi( this );
 	m_Interface.tabWidget->setCurrentIndex( 0 );
-	setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Maximum );
+	setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Maximum );
 	connect( m_ViewerCore, SIGNAL( emitUpdateScene() ), this, SLOT( updateProperties() ) );
 	connect( m_Interface.selection, SIGNAL( currentIndexChanged( int ) ), this, SLOT( selectionChanged( int ) ) );
 	connect( m_Interface.propertyTree, SIGNAL( itemSelectionChanged() ) , this, SLOT( onPropertyTreeClicked() ) );

@@ -406,9 +406,11 @@ void QGeomWidget::setMouseCursorIcon ( QIcon icon )
 
 void QGeomWidget::setZoom ( float zoom )
 {
-	m_ZoomEvent = true;
-	m_Zoom = zoom;
-	updateScene();
+	if( zoom >= 1 && zoom < 100 ) {
+		m_ZoomEvent = true;
+		m_Zoom = zoom;
+		updateScene();
+	}
 }
 
 void QGeomWidget::dragEnterEvent ( QDragEnterEvent* e )
