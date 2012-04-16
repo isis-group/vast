@@ -1,3 +1,12 @@
+vast (0.5.1~1) UNRELEASED; urgency=low
+
+  [ ISIS Group (The friendly isis team) ]
+  * internal test release
+  * add new widgets: VTK and geometrical plane widget
+  * fixed bugs
+
+ -- ISIS Group (The friendly isis team) <gr_isis@cbs.mpg.de>  Mon, 16 Apr 2012 12:21:00 +0200
+
 vast (0.4.0~beta-1) UNRELEASED; urgency=low
 
   [ ISIS Group (The friendly isis team) ]
