@@ -96,14 +96,29 @@ ImageHolder::Pointer ViewerCoreBase::addImage( const isis::data::Image &image, c
 	if( image.hasProperty( "source" ) ) {
 		fileName = image.getPropertyAs<std::string>( "source" );
 	} else {
-		boost::filesystem::path path = image.getChunk( 0 ).getPropertyAs<std::string>( "source" );
+		const boost::filesystem::path path = image.getChunk( 0 ).getPropertyAs<std::string>( "source" );
 		fileName = path.branch_path().string();
 	}
 
-	ImageHolder::Pointer  retImage = ImageHolder::Pointer( new ImageHolder ) ;
-	retImage->setImage( image, imageType, fileName );
+	ImageHolder::Pointer  retImage = ImageHolder::Pointer( new ImageHolder );
+	
 	m_imageVector.push_back( retImage );
-	m_ImageMap[fileName] = retImage;
+
+	//look if this filename already exists.
+	if( m_ImageMap.find( fileName ) != m_ImageMap.end() ) {
+		unsigned short index = 0;
+		std::string newFileName = fileName;
+		while( m_ImageMap.find(newFileName) != m_ImageMap.end() ) {
+			std::stringstream ss;
+			ss << fileName << " (" << ++index << ")";
+			newFileName = ss.str();
+		}
+		retImage->setImage( image, imageType, newFileName );
+		m_ImageMap[newFileName] = retImage;
+	} else {
+		retImage->setImage( image, imageType, fileName );
+		m_ImageMap[fileName] = retImage;
+	}
 
 	//setting the lutStructural
 	if( imageType == ImageHolder::structural_image ) {
