@@ -47,8 +47,8 @@ public:
 public Q_SLOTS:
 	void applyPressed();
 	void resetPressed();
-	void showEvent( QShowEvent *);
-	void closeEvent( QCloseEvent *);
+	void showEvent( QShowEvent * );
+	void closeEvent( QCloseEvent * );
 	void updateValues( ImageHolder::Pointer );
 	void imageChanged( QString );
 private:

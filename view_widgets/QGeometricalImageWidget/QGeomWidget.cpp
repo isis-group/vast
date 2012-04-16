@@ -32,20 +32,23 @@
 
 #include "memoryhandler.hpp"
 
-namespace isis {
-namespace viewer {
-namespace widget {
+namespace isis
+{
+namespace viewer
+{
+namespace widget
+{
 
 QGeomWidget::QGeomWidget()
 	: QWidget(),
-	m_Painter( new QPainter( ) )
+	  m_Painter( new QPainter( ) )
 {
 
 }
 
-void QGeomWidget::setup ( QViewerCore* core, QWidget* parent , PlaneOrientation planeOrienation )
+void QGeomWidget::setup ( QViewerCore *core, QWidget *parent , PlaneOrientation planeOrienation )
 {
-    isis::viewer::widget::WidgetInterface::setup ( core , parent , planeOrienation );
+	isis::viewer::widget::WidgetInterface::setup ( core , parent , planeOrienation );
 	setParent( parent );
 	m_Layout = new QVBoxLayout( parent );
 	m_Layout->addWidget( this );
@@ -65,17 +68,17 @@ void QGeomWidget::setup ( QViewerCore* core, QWidget* parent , PlaneOrientation 
 	m_ShowLabels = false;
 	m_ShowCrosshair = true;
 	m_ShowScalingOffset = false;
-	connect(m_ViewerCore, SIGNAL( emitUpdateScene()), this, SLOT( updateScene()));
-	connect( m_ViewerCore, SIGNAL( emitPhysicalCoordsChanged(util::fvector4)), this, SLOT( updateScene()));
+	connect( m_ViewerCore, SIGNAL( emitUpdateScene() ), this, SLOT( updateScene() ) );
+	connect( m_ViewerCore, SIGNAL( emitPhysicalCoordsChanged( util::fvector4 ) ), this, SLOT( updateScene() ) );
 	connect( m_ViewerCore, SIGNAL( emitZoomChanged( float ) ), this, SLOT( setZoom( float ) ) );
 	connect( m_ViewerCore, SIGNAL( emitShowLabels( bool ) ), this, SLOT( setShowLabels( bool ) ) );
 	connect( m_ViewerCore, SIGNAL( emitSetEnableCrosshair( bool ) ), this, SLOT( setEnableCrosshair( bool ) ) );
-	
+
 }
 
-void QGeomWidget::resizeEvent ( QResizeEvent* event )
+void QGeomWidget::resizeEvent ( QResizeEvent *event )
 {
-    QWidget::resizeEvent ( event );
+	QWidget::resizeEvent ( event );
 }
 
 void QGeomWidget::updateViewPort()
@@ -83,17 +86,17 @@ void QGeomWidget::updateViewPort()
 	//update viewport
 	const float _width = m_BoundingBox[2] / _internal::rasteringFac;
 	const float _height = m_BoundingBox[3] / _internal::rasteringFac;
-	
-	const float scalew = (width() - 2 * m_Border ) / _width;
-	const  float scaleh = (height() - 2 * m_Border) / _height;
 
-	m_WindowViewPortScaling = std::min(scaleh, scalew);
-	const float offsetW = (width() - (_width * m_WindowViewPortScaling)) / 2. ;
-	const float offsetH = (height() - (_height * m_WindowViewPortScaling)) / 2.;
+	const float scalew = ( width() - 2 * m_Border ) / _width;
+	const  float scaleh = ( height() - 2 * m_Border ) / _height;
+
+	m_WindowViewPortScaling = std::min( scaleh, scalew );
+	const float offsetW = ( width() - ( _width * m_WindowViewPortScaling ) ) / 2. ;
+	const float offsetH = ( height() - ( _height * m_WindowViewPortScaling ) ) / 2.;
 	m_ViewPort = util::fvector4( offsetW,
 								 offsetH,
-								( _width * m_WindowViewPortScaling ),
-								(_height * m_WindowViewPortScaling ) );
+								 ( _width * m_WindowViewPortScaling ),
+								 ( _height * m_WindowViewPortScaling ) );
 }
 
 
@@ -115,7 +118,8 @@ bool QGeomWidget::removeImage ( const ImageHolder::Pointer /*image*/ )
 void QGeomWidget::paintEvent ( QPaintEvent* /*event*/ )
 {
 	if( m_ViewerCore->hasImage() ) {
-		m_Painter->begin(this);
+		m_Painter->begin( this );
+
 		switch( m_InterpolationType ) {
 		case nn:
 			m_Painter->setRenderHint( QPainter::NonCosmeticDefaultPen, true );
@@ -133,27 +137,28 @@ void QGeomWidget::paintEvent ( QPaintEvent* /*event*/ )
 									m_Translation,
 									m_ViewerCore->getCurrentImage()->getImageProperties().physicalCoords,
 									m_Zoom, m_PlaneOrientation,
-									(m_RightMouseButtonPressed && !m_LeftMouseButtonPressed) || m_ZoomEvent );
+									( m_RightMouseButtonPressed && !m_LeftMouseButtonPressed ) || m_ZoomEvent );
 		m_BoundingBox[0] -= m_Translation[0];
 		m_BoundingBox[1] -= m_Translation[1];
 		m_ZoomEvent = false;
-		
+
 		updateViewPort();
 		m_Painter->setWindow( m_BoundingBox[0], m_BoundingBox[1], m_BoundingBox[2], m_BoundingBox[3] );
 		m_Painter->setViewport( m_ViewPort[0], m_ViewPort[1], m_ViewPort[2], m_ViewPort[3] );
-		BOOST_FOREACH( ImageHolder::Vector::const_reference image, getWidgetEnsemble()->getImageVector() )
-		{
+		BOOST_FOREACH( ImageHolder::Vector::const_reference image, getWidgetEnsemble()->getImageVector() ) {
 			if( image->getImageProperties().isVisible && image->getImageProperties().opacity != 0 ) {
 				paintImage( image );
 			}
 		}
-		
+
 		if( m_ViewerCore->hasImage() && m_ShowCrosshair ) {
 			paintCrossHair();
 		}
+
 		if( m_ShowLabels ) {
 			paintLabels();
 		}
+
 		if( m_ShowScalingOffset ) {
 			m_Painter->resetMatrix();
 			m_Painter->setFont( QFont( "Chicago", 10 ) );
@@ -172,27 +177,27 @@ void QGeomWidget::paintEvent ( QPaintEvent* /*event*/ )
 
 void QGeomWidget::paintImage( const ImageHolder::Pointer image )
 {
-	m_Painter->setTransform(_internal::getTransform2ISISSpace(m_PlaneOrientation, m_BoundingBox) );
+	m_Painter->setTransform( _internal::getTransform2ISISSpace( m_PlaneOrientation, m_BoundingBox ) );
 
-	m_Painter->setTransform( _internal::getQTransform( image, m_PlaneOrientation, m_LatchOrientation), true );
-	m_Painter->setOpacity(image->getImageProperties().opacity);
+	m_Painter->setTransform( _internal::getQTransform( image, m_PlaneOrientation, m_LatchOrientation ), true );
+	m_Painter->setOpacity( image->getImageProperties().opacity );
 	const util::ivector4 mappedSizeAligned = mapCoordsToOrientation( image->getImageProperties().alignedSize32, image->getImageProperties().latchedOrientation, m_PlaneOrientation );
+
 	if ( !image->getImageProperties().isRGB ) {
 		isis::data::MemChunk<InternalImageType> sliceChunk( mappedSizeAligned[0], mappedSizeAligned[1] );
 		MemoryHandler::fillSliceChunk<InternalImageType>( sliceChunk, image, m_PlaneOrientation );
 
 		QImage qImage( ( InternalImageType * ) sliceChunk.asValueArray<InternalImageType>().getRawAddress().get(),
-						mappedSizeAligned[0], mappedSizeAligned[1], QImage::Format_Indexed8 );
+					   mappedSizeAligned[0], mappedSizeAligned[1], QImage::Format_Indexed8 );
 
 		qImage.setColorTable( image->getImageProperties().colorMap );
-		
-		m_Painter->drawImage( 0,0, qImage );
+		m_Painter->drawImage( 0, 0, qImage );
 	} else {
 		isis::data::MemChunk<InternalImageColorType> sliceChunk( mappedSizeAligned[0], mappedSizeAligned[1] );
 		MemoryHandler::fillSliceChunk<InternalImageColorType>( sliceChunk, image, m_PlaneOrientation );
 		QImage qImage( ( InternalImageType * ) sliceChunk.asValueArray<InternalImageColorType>().getRawAddress().get(),
-						mappedSizeAligned[0], mappedSizeAligned[1], QImage::Format_RGB888 );
-		m_Painter->drawImage( 0,0, qImage );
+					   mappedSizeAligned[0], mappedSizeAligned[1], QImage::Format_RGB888 );
+		m_Painter->drawImage( 0, 0, qImage );
 	}
 }
 
@@ -201,12 +206,13 @@ void QGeomWidget::paintCrossHair() const
 	const ImageHolder::Pointer image = m_ViewerCore->getCurrentImage();
 
 	util::fvector4 mappedCoords;
+
 	if( !m_LatchOrientation ) {
-		mappedCoords = (_internal::mapPhysicalCoords2Orientation(image->getImageProperties().physicalCoords, m_PlaneOrientation) ) * _internal::rasteringFac;
+		mappedCoords = ( _internal::mapPhysicalCoords2Orientation( image->getImageProperties().physicalCoords, m_PlaneOrientation ) ) * _internal::rasteringFac;
 	} else {
 		mappedCoords = mapCoordsToOrientation( image->getImageProperties().voxelCoords, image->getImageProperties().latchedOrientation, m_PlaneOrientation, false, true ) * _internal::rasteringFac;
 	}
-	
+
 	short border = -15000;
 
 	const float gap = 15 / m_Zoom;
@@ -219,18 +225,18 @@ void QGeomWidget::paintCrossHair() const
 	QPen pen;
 	pen.setColor( m_CrosshairColor );
 	pen.setWidth( 1 );
-	pen.setCosmetic(true);
+	pen.setCosmetic( true );
 	m_Painter->resetTransform();
 	m_Painter->setWindow( m_BoundingBox[0], m_BoundingBox[1], m_BoundingBox[2], m_BoundingBox[3] );
 	m_Painter->setViewport( m_ViewPort[0], m_ViewPort[1], m_ViewPort[2], m_ViewPort[3] );
-	m_Painter->setTransform(_internal::getTransform2ISISSpace(m_PlaneOrientation, m_BoundingBox) );
+	m_Painter->setTransform( _internal::getTransform2ISISSpace( m_PlaneOrientation, m_BoundingBox ) );
 	m_Painter->setOpacity( 1.0 );
 	m_Painter->setPen( pen );
 	m_Painter->drawLine( xline1 );
 	m_Painter->drawLine( xline2 );
 	m_Painter->drawLine( yline1 );
 	m_Painter->drawLine( yline2 );
-	pen.setWidth(3);
+	pen.setWidth( 3 );
 	m_Painter->drawPoint( mappedCoords[0], mappedCoords[1] );
 }
 
@@ -239,6 +245,7 @@ void QGeomWidget::paintLabels() const
 	m_Painter->resetMatrix();
 	m_Painter->resetTransform();
 	m_Painter->setFont( QFont( "Chicago", 13 ) );
+
 	switch( m_PlaneOrientation ) {
 	case axial:
 		m_Painter->setPen( QColor( 255, 0, 0 ) );
@@ -271,38 +278,41 @@ void QGeomWidget::paintLabels() const
 }
 
 
-util::fvector4 QGeomWidget::getPhysicalCoordsFromMouseCoords ( const int& x, const int& y ) const
+util::fvector4 QGeomWidget::getPhysicalCoordsFromMouseCoords ( const int &x, const int &y ) const
 {
 	if( m_ViewerCore->hasImage() ) {
 		util::fvector4 physicalCoords = m_ViewerCore->getCurrentImage()->getImageProperties().physicalCoords;
-		switch(m_PlaneOrientation) {
-			case axial:
-				physicalCoords[0] = ((width() - x) - m_ViewPort[0]) / m_WindowViewPortScaling + m_BoundingBox[0] / _internal::rasteringFac;
-				physicalCoords[1] = (y - m_ViewPort[1]) / m_WindowViewPortScaling + m_BoundingBox[1] / _internal::rasteringFac;
-				break;
-			case sagittal:
-				physicalCoords[1] = (x - m_ViewPort[0]) / m_WindowViewPortScaling + m_BoundingBox[0] / _internal::rasteringFac;
-				physicalCoords[2] = (height() - y - m_ViewPort[1]) / m_WindowViewPortScaling + m_BoundingBox[1] / _internal::rasteringFac;
-				break;
-			case coronal:
-				physicalCoords[0] = ((width() - x) - m_ViewPort[0]) / m_WindowViewPortScaling + m_BoundingBox[0] / _internal::rasteringFac;
-				physicalCoords[2] = (height() - y - m_ViewPort[1]) / m_WindowViewPortScaling + m_BoundingBox[1] / _internal::rasteringFac;
-				break;
-			case not_specified:
-				break;
+
+		switch( m_PlaneOrientation ) {
+		case axial:
+			physicalCoords[0] = ( ( width() - x ) - m_ViewPort[0] ) / m_WindowViewPortScaling + m_BoundingBox[0] / _internal::rasteringFac;
+			physicalCoords[1] = ( y - m_ViewPort[1] ) / m_WindowViewPortScaling + m_BoundingBox[1] / _internal::rasteringFac;
+			break;
+		case sagittal:
+			physicalCoords[1] = ( x - m_ViewPort[0] ) / m_WindowViewPortScaling + m_BoundingBox[0] / _internal::rasteringFac;
+			physicalCoords[2] = ( height() - y - m_ViewPort[1] ) / m_WindowViewPortScaling + m_BoundingBox[1] / _internal::rasteringFac;
+			break;
+		case coronal:
+			physicalCoords[0] = ( ( width() - x ) - m_ViewPort[0] ) / m_WindowViewPortScaling + m_BoundingBox[0] / _internal::rasteringFac;
+			physicalCoords[2] = ( height() - y - m_ViewPort[1] ) / m_WindowViewPortScaling + m_BoundingBox[1] / _internal::rasteringFac;
+			break;
+		case not_specified:
+			break;
 		}
-		
+
 		if( m_RasterPhysicalCoords ) {
 			physicalCoords = m_ViewerCore->getCurrentImage()->getISISImage()->getPhysicalCoordsFromIndex(
-						m_ViewerCore->getCurrentImage()->getISISImage()->getIndexFromPhysicalCoords( physicalCoords ) );
+								 m_ViewerCore->getCurrentImage()->getISISImage()->getIndexFromPhysicalCoords( physicalCoords ) );
 		}
+
 		return physicalCoords;
 	}
+
 	return util::fvector4();
 }
 
 
-void QGeomWidget::mousePressEvent ( QMouseEvent* e )
+void QGeomWidget::mousePressEvent ( QMouseEvent *e )
 {
 	if( e->button() == Qt::LeftButton && geometry().contains( e->pos() ) && QApplication::keyboardModifiers() == Qt::ControlModifier ) {
 		QDrag *drag = new QDrag( this );
@@ -313,25 +323,29 @@ void QGeomWidget::mousePressEvent ( QMouseEvent* e )
 		drag->exec();
 		return;
 	}
-	
+
 	const util::fvector4 physicalCoords = getPhysicalCoordsFromMouseCoords( e->x(), e->y() );
+
 	if( e->button() == Qt::LeftButton ) {
 		m_LeftMouseButtonPressed = true;
 	}
+
 	if( e->button() == Qt::RightButton ) {
 		m_RightMouseButtonPressed = true;
 	}
+
 	if( m_LeftMouseButtonPressed && m_RightMouseButtonPressed ) {
 		m_StartCoordsPair.first = e->x();
 		m_StartCoordsPair.second = e->y();
 	}
-	
+
 	if( m_LeftMouseButtonPressed )  m_ViewerCore->onWidgetClicked( this, physicalCoords, Qt::LeftButton );
+
 	if( m_RightMouseButtonPressed ) m_ViewerCore->onWidgetClicked( this, physicalCoords, Qt::RightButton );
-    
+
 }
 
-void QGeomWidget::mouseMoveEvent ( QMouseEvent* e )
+void QGeomWidget::mouseMoveEvent ( QMouseEvent *e )
 {
 	if( m_RightMouseButtonPressed && m_LeftMouseButtonPressed ) {
 		if( QApplication::keyboardModifiers() == Qt::ShiftModifier ) {
@@ -354,28 +368,31 @@ void QGeomWidget::mouseMoveEvent ( QMouseEvent* e )
 		m_ShowScalingOffset = true;
 		m_ViewerCore->updateScene();
 
-	}
-	else {
+	} else {
 		const util::fvector4 physicalCoords = getPhysicalCoordsFromMouseCoords(  e->x(), e->y() );
+
 		if( m_LeftMouseButtonPressed )  m_ViewerCore->onWidgetMoved( this, physicalCoords, Qt::LeftButton );
+
 		if( m_RightMouseButtonPressed ) m_ViewerCore->onWidgetMoved( this, physicalCoords, Qt::RightButton );
 	}
 
 }
 
-void QGeomWidget::mouseReleaseEvent ( QMouseEvent* e )
+void QGeomWidget::mouseReleaseEvent ( QMouseEvent *e )
 {
 	if( e->button() == Qt::LeftButton ) {
 		m_LeftMouseButtonPressed = false;
 	}
+
 	if( e->button() == Qt::RightButton ) {
 		m_RightMouseButtonPressed = false;
 	}
 }
 
-void QGeomWidget::wheelEvent ( QWheelEvent* e )
+void QGeomWidget::wheelEvent ( QWheelEvent *e )
 {
-   	float oldZoom = m_Zoom;
+	float oldZoom = m_Zoom;
+
 	if ( e->delta() < 0 ) {
 		oldZoom /= 1.5;
 	} else {
@@ -420,7 +437,7 @@ void QGeomWidget::setZoom ( float zoom )
 	}
 }
 
-void QGeomWidget::dragEnterEvent ( QDragEnterEvent* e )
+void QGeomWidget::dragEnterEvent ( QDragEnterEvent *e )
 {
 	if( e->mimeData()->hasFormat( "text/plain" ) ) {
 		bool hasImage = false;
@@ -436,7 +453,7 @@ void QGeomWidget::dragEnterEvent ( QDragEnterEvent* e )
 	}
 }
 
-void QGeomWidget::dropEvent ( QDropEvent* e )
+void QGeomWidget::dropEvent ( QDropEvent *e )
 {
 	const ImageHolder::Pointer image = m_ViewerCore->getImageMap().at( e->mimeData()->text().toStdString() );
 	WidgetEnsemble::Pointer myEnsemble;
@@ -461,7 +478,9 @@ void QGeomWidget::dropEvent ( QDropEvent* e )
 
 
 
-}}}// end namespace
+}
+}
+}// end namespace
 
 
 isis::viewer::widget::WidgetInterface *loadWidget()

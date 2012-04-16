@@ -84,7 +84,7 @@ void Settings::load()
 	LOG( Dev, info ) << "Loading settings from " << m_QSettings->fileName().toStdString();
 	m_QSettings->beginGroup ( "ViewerCore" );
 	setPropertyAs<std::string> ( "lutZMap", m_QSettings->value ( "lutZMap", getPropertyAs<std::string> ( "lutZMap" ).c_str() ).toString().toStdString() );
-	setPropertyAs<bool> ( "showFullFilePath", m_QSettings->value ( "showFullFilePath", getPropertyAs<bool>("showFullFilePath") ).toBool() );
+	setPropertyAs<bool> ( "showFullFilePath", m_QSettings->value ( "showFullFilePath", getPropertyAs<bool>( "showFullFilePath" ) ).toBool() );
 	setPropertyAs<bool> ( "propagateZooming", m_QSettings->value ( "propagateZooming", false ).toBool() );
 	setPropertyAs<bool> ( "viewAllImagesInStack", m_QSettings->value ( "viewAllImagesInStack", false ).toBool() );
 	setPropertyAs<bool> ( "propagateTimestepChange", m_QSettings->value ( "propagateTimestepChange", false ).toBool() );

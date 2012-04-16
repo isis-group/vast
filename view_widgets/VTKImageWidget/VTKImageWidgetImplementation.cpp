@@ -183,8 +183,8 @@ void VTKImageWidgetImplementation::lookAtPhysicalCoords ( const util::fvector4 &
 	if( m_ViewerCore->hasImage() ) {
 		boost::shared_ptr<ImageHolder> image = m_ViewerCore->getCurrentImage();
 		const util::ivector4 voxelCoords = image->getISISImage()->getIndexFromPhysicalCoords( physicalCoords );
-		const util::fvector4 mappedVoxels = image->getImageProperties().orientation.dot(voxelCoords);
-		const util::fvector4 mappedVoxelSize = image->getImageProperties().orientation.dot(image->getImageProperties().voxelSize);
+		const util::fvector4 mappedVoxels = image->getImageProperties().orientation.dot( voxelCoords );
+		const util::fvector4 mappedVoxelSize = image->getImageProperties().orientation.dot( image->getImageProperties().voxelSize );
 
 		m_Cursor->SetFocalPoint( mappedVoxels[0] * fabs( mappedVoxelSize[0] ),
 								 mappedVoxels[1] * fabs( mappedVoxelSize[1] ),

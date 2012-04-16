@@ -252,18 +252,18 @@ void VoxelInformationWidget::synchronize()
 
 		m_Interface.sliceBox->setMaximum( outerCorner[2] );
 
-// 		m_Interface.xBox->setMinimum( image->getImageProperties().boundingBox[0].first );
-// 
-// 		m_Interface.xBox->setMaximum( image->getImageProperties().boundingBox[0].second );
-// 
-// 		m_Interface.yBox->setMinimum( image->getImageProperties().boundingBox[1].first );
-// 
-// 		m_Interface.yBox->setMaximum( image->getImageProperties().boundingBox[1].second );
-// 
-// 		m_Interface.zBox->setMinimum( image->getImageProperties().boundingBox[2].first );
-// 
-// 		m_Interface.zBox->setMaximum( image->getImageProperties().boundingBox[2].second );
-		
+		//      m_Interface.xBox->setMinimum( image->getImageProperties().boundingBox[0].first );
+		//
+		//      m_Interface.xBox->setMaximum( image->getImageProperties().boundingBox[0].second );
+		//
+		//      m_Interface.yBox->setMinimum( image->getImageProperties().boundingBox[1].first );
+		//
+		//      m_Interface.yBox->setMaximum( image->getImageProperties().boundingBox[1].second );
+		//
+		//      m_Interface.zBox->setMinimum( image->getImageProperties().boundingBox[2].first );
+		//
+		//      m_Interface.zBox->setMaximum( image->getImageProperties().boundingBox[2].second );
+
 		m_Interface.xBox->setMinimum( -1000 );
 
 		m_Interface.xBox->setMaximum( 1000 );
@@ -275,7 +275,7 @@ void VoxelInformationWidget::synchronize()
 		m_Interface.zBox->setMinimum( -1000 );
 
 		m_Interface.zBox->setMaximum( 1000 );
-		
+
 		synchronizePos( image->getImageProperties().voxelCoords );
 
 		util::fvector4 voxelSpacing;
@@ -285,10 +285,13 @@ void VoxelInformationWidget::synchronize()
 		} else {
 			voxelSpacing = image->getISISImage()->getPropertyAs<util::fvector4>( "voxelSize" );
 		}
-		const util::fvector4 transformedVec = image->getImageProperties().latchedOrientation.dot(voxelSpacing);
+
+		const util::fvector4 transformedVec = image->getImageProperties().latchedOrientation.dot( voxelSpacing );
 
 		m_Interface.xBox->setSingleStep( fabs( transformedVec[0] ) );
+
 		m_Interface.yBox->setSingleStep( fabs( transformedVec[1] ) );
+
 		m_Interface.zBox->setSingleStep( fabs( transformedVec[2] ) );
 
 		if( !isConnected ) {

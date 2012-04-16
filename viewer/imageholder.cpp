@@ -52,20 +52,22 @@ boost::shared_ptr< const void > ImageHolder::getRawAdress ( size_t timestep ) co
 
 util::Matrix4x4<float> ImageHolder::calculateImageOrientation( bool transposed ) const
 {
-	
-	util::Matrix4x4<float> retMatrix ( 	m_Image->getPropertyAs<util::fvector4>( "rowVec" ),
+
+	util::Matrix4x4<float> retMatrix (  m_Image->getPropertyAs<util::fvector4>( "rowVec" ),
 										m_Image->getPropertyAs<util::fvector4>( "columnVec" ),
 										m_Image->getPropertyAs<util::fvector4>( "sliceVec" ) );
+
 	if( transposed ) {
 		return retMatrix;
 	}
+
 	return retMatrix.transpose(); // has to be transposed!!!!!!!!!!
 }
 
 util::Matrix4x4<float> ImageHolder::calculateLatchedImageOrientation( bool transposed )
 {
 	util::Matrix4x4<float> retMatrix;
-	retMatrix.fill(0);
+	retMatrix.fill( 0 );
 	const util::fvector4 &rowVec = m_Image->getPropertyAs<util::fvector4>( "rowVec" );
 	const util::fvector4 &columnVec = m_Image->getPropertyAs<util::fvector4>( "columnVec" );
 	const util::fvector4 &sliceVec = m_Image->getPropertyAs<util::fvector4>( "sliceVec" );
@@ -123,6 +125,7 @@ util::Matrix4x4<float> ImageHolder::calculateLatchedImageOrientation( bool trans
 	if( transposed ) {
 		return retMatrix.transpose();
 	}
+
 	return retMatrix;
 }
 
@@ -221,7 +224,7 @@ bool ImageHolder::setImage( const data::Image &image, const ImageType &_imageTyp
 
 	m_Image.reset( new data::Image( image ) );
 	getImageProperties().filePath = filename;
-	boost::filesystem::path p(filename);
+	boost::filesystem::path p( filename );
 	getImageProperties().fileName = p.filename();
 
 	// get some image information
@@ -296,7 +299,7 @@ bool ImageHolder::setImage( const data::Image &image, const ImageType &_imageTyp
 	m_PropMap.setPropertyAs<util::fvector4>( "originalSliceVec", image.getPropertyAs<util::fvector4>( "sliceVec" ) );
 	m_PropMap.setPropertyAs<util::fvector4>( "originalIndexOrigin", image.getPropertyAs<util::fvector4>( "indexOrigin" ) );
 	updateColorMap();
-	logImageProps();	
+	logImageProps();
 	return true;
 }
 

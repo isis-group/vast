@@ -54,62 +54,64 @@ OrientatioCorrectionDialog::OrientatioCorrectionDialog( QWidget *parent, QViewer
 			ui.tableWidget->setItem( i, j, m_MatrixItems( i, j ) );
 		}
 	}
+
 	connectAll();
 	connect( ui.pushButton, SIGNAL( pressed() ), this, SLOT( applyPressed() ) );
-	connect( ui.resetButton, SIGNAL( clicked(bool)), this, SLOT( resetPressed()));
-	
+	connect( ui.resetButton, SIGNAL( clicked( bool ) ), this, SLOT( resetPressed() ) );
+
 }
 
 void OrientatioCorrectionDialog::connectAll()
 {
-	connect( ui.checkFlipX, SIGNAL( clicked(bool)), this, SLOT( applyTransform()));
-	connect( ui.checkFlipY, SIGNAL( clicked(bool)), this, SLOT( applyTransform()));
-	connect( ui.checkFlipZ, SIGNAL( clicked(bool)), this, SLOT( applyTransform()));
-	connect( ui.rotateX, SIGNAL( valueChanged(double)), this, SLOT( applyTransform()));
-	connect( ui.rotateY, SIGNAL( valueChanged(double)), this, SLOT( applyTransform()));
-	connect( ui.rotateZ, SIGNAL( valueChanged(double)), this, SLOT( applyTransform()));
-	connect( ui.translateX, SIGNAL( valueChanged(double)), this, SLOT( applyTransform()));
-	connect( ui.translateY, SIGNAL( valueChanged(double)), this, SLOT( applyTransform()));
-	connect( ui.translateZ, SIGNAL( valueChanged(double)), this, SLOT( applyTransform()));
-	connect( ui.imageBox, SIGNAL( currentIndexChanged(QString)), this, SLOT( imageChanged(QString)));
+	connect( ui.checkFlipX, SIGNAL( clicked( bool ) ), this, SLOT( applyTransform() ) );
+	connect( ui.checkFlipY, SIGNAL( clicked( bool ) ), this, SLOT( applyTransform() ) );
+	connect( ui.checkFlipZ, SIGNAL( clicked( bool ) ), this, SLOT( applyTransform() ) );
+	connect( ui.rotateX, SIGNAL( valueChanged( double ) ), this, SLOT( applyTransform() ) );
+	connect( ui.rotateY, SIGNAL( valueChanged( double ) ), this, SLOT( applyTransform() ) );
+	connect( ui.rotateZ, SIGNAL( valueChanged( double ) ), this, SLOT( applyTransform() ) );
+	connect( ui.translateX, SIGNAL( valueChanged( double ) ), this, SLOT( applyTransform() ) );
+	connect( ui.translateY, SIGNAL( valueChanged( double ) ), this, SLOT( applyTransform() ) );
+	connect( ui.translateZ, SIGNAL( valueChanged( double ) ), this, SLOT( applyTransform() ) );
+	connect( ui.imageBox, SIGNAL( currentIndexChanged( QString ) ), this, SLOT( imageChanged( QString ) ) );
 }
 
 void OrientatioCorrectionDialog::disconnectAll()
 {
-	disconnect( ui.checkFlipX, SIGNAL( clicked(bool)), this, SLOT( applyTransform()));
-	disconnect( ui.checkFlipY, SIGNAL( clicked(bool)), this, SLOT( applyTransform()));
-	disconnect( ui.checkFlipZ, SIGNAL( clicked(bool)), this, SLOT( applyTransform()));
-	disconnect( ui.rotateX, SIGNAL( valueChanged(double)), this, SLOT( applyTransform()));
-	disconnect( ui.rotateY, SIGNAL( valueChanged(double)), this, SLOT( applyTransform()));
-	disconnect( ui.rotateZ, SIGNAL( valueChanged(double)), this, SLOT( applyTransform()));
-	disconnect( ui.translateX, SIGNAL( valueChanged(double)), this, SLOT( applyTransform()));
-	disconnect( ui.translateY, SIGNAL( valueChanged(double)), this, SLOT( applyTransform()));
-	disconnect( ui.translateZ, SIGNAL( valueChanged(double)), this, SLOT( applyTransform()));
-	disconnect( ui.imageBox, SIGNAL( currentIndexChanged(QString)), this, SLOT( imageChanged(QString)));
+	disconnect( ui.checkFlipX, SIGNAL( clicked( bool ) ), this, SLOT( applyTransform() ) );
+	disconnect( ui.checkFlipY, SIGNAL( clicked( bool ) ), this, SLOT( applyTransform() ) );
+	disconnect( ui.checkFlipZ, SIGNAL( clicked( bool ) ), this, SLOT( applyTransform() ) );
+	disconnect( ui.rotateX, SIGNAL( valueChanged( double ) ), this, SLOT( applyTransform() ) );
+	disconnect( ui.rotateY, SIGNAL( valueChanged( double ) ), this, SLOT( applyTransform() ) );
+	disconnect( ui.rotateZ, SIGNAL( valueChanged( double ) ), this, SLOT( applyTransform() ) );
+	disconnect( ui.translateX, SIGNAL( valueChanged( double ) ), this, SLOT( applyTransform() ) );
+	disconnect( ui.translateY, SIGNAL( valueChanged( double ) ), this, SLOT( applyTransform() ) );
+	disconnect( ui.translateZ, SIGNAL( valueChanged( double ) ), this, SLOT( applyTransform() ) );
+	disconnect( ui.imageBox, SIGNAL( currentIndexChanged( QString ) ), this, SLOT( imageChanged( QString ) ) );
 }
 
 
-void OrientatioCorrectionDialog::showEvent ( QShowEvent* e )
+void OrientatioCorrectionDialog::showEvent ( QShowEvent *e )
 {
 	if( m_ViewerCore->hasImage() ) {
 		disconnectAll();
 		ui.imageBox->clear();
 		BOOST_FOREACH( const ImageHolder::Vector::const_reference image, m_ViewerCore->getImageVector() ) {
-		ui.imageBox->addItem( image->getImageProperties().filePath.c_str() );
-	}
-	ui.imageBox->setCurrentIndex(ui.imageBox->findText(m_ViewerCore->getCurrentImage()->getImageProperties().filePath.c_str() ) );
+			ui.imageBox->addItem( image->getImageProperties().filePath.c_str() );
+		}
+		ui.imageBox->setCurrentIndex( ui.imageBox->findText( m_ViewerCore->getCurrentImage()->getImageProperties().filePath.c_str() ) );
 		updateValues( m_ViewerCore->getCurrentImage() );
 	}
-	connectAll();
-// 	m_ViewerCore->emitCurrentImageChanged.connect( boost::bind( &OrientatioCorrectionDialog::updateValues, this, _1 ) );
 
-    QDialog::showEvent(e);
+	connectAll();
+	//  m_ViewerCore->emitCurrentImageChanged.connect( boost::bind( &OrientatioCorrectionDialog::updateValues, this, _1 ) );
+
+	QDialog::showEvent( e );
 }
 
-void OrientatioCorrectionDialog::closeEvent ( QCloseEvent* e )
+void OrientatioCorrectionDialog::closeEvent ( QCloseEvent *e )
 {
-// 	m_ViewerCore->emitCurrentImageChanged.disconnect( boost::bind( &OrientatioCorrectionDialog::updateValues, this, _1 ) );
-    QDialog::closeEvent(e);
+	//  m_ViewerCore->emitCurrentImageChanged.disconnect( boost::bind( &OrientatioCorrectionDialog::updateValues, this, _1 ) );
+	QDialog::closeEvent( e );
 }
 
 void OrientatioCorrectionDialog::imageChanged ( QString path )
@@ -121,42 +123,52 @@ void OrientatioCorrectionDialog::imageChanged ( QString path )
 void OrientatioCorrectionDialog::updateValues( ImageHolder::Pointer image )
 {
 	setValuesToZero();
-	if( !image->getPropMap().hasProperty("OrientationCorrection/origRowVec") ) {
-		image->getPropMap().setPropertyAs<util::fvector4>("OrientationCorrection/origRowVec",
-																		image->getISISImage()->getPropertyAs<util::fvector4>("rowVec"));
-		image->getPropMap().setPropertyAs<util::fvector4>("OrientationCorrection/origColumnVec",
-																		image->getISISImage()->getPropertyAs<util::fvector4>("columnVec"));
-		image->getPropMap().setPropertyAs<util::fvector4>("OrientationCorrection/origSliceVec",
-																		image->getISISImage()->getPropertyAs<util::fvector4>("sliceVec"));
-		image->getPropMap().setPropertyAs<util::fvector4>("OrientationCorrection/origIndexOrigin",
-																		image->getISISImage()->getPropertyAs<util::fvector4>("indexOrigin"));
+
+	if( !image->getPropMap().hasProperty( "OrientationCorrection/origRowVec" ) ) {
+		image->getPropMap().setPropertyAs<util::fvector4>( "OrientationCorrection/origRowVec",
+				image->getISISImage()->getPropertyAs<util::fvector4>( "rowVec" ) );
+		image->getPropMap().setPropertyAs<util::fvector4>( "OrientationCorrection/origColumnVec",
+				image->getISISImage()->getPropertyAs<util::fvector4>( "columnVec" ) );
+		image->getPropMap().setPropertyAs<util::fvector4>( "OrientationCorrection/origSliceVec",
+				image->getISISImage()->getPropertyAs<util::fvector4>( "sliceVec" ) );
+		image->getPropMap().setPropertyAs<util::fvector4>( "OrientationCorrection/origIndexOrigin",
+				image->getISISImage()->getPropertyAs<util::fvector4>( "indexOrigin" ) );
 	}
-	if( image->getPropMap().hasProperty("OrientationCorrection/translateX") ) {
-		ui.translateX->setValue( image->getPropMap().getPropertyAs<float>("OrientationCorrection/translateX") );
+
+	if( image->getPropMap().hasProperty( "OrientationCorrection/translateX" ) ) {
+		ui.translateX->setValue( image->getPropMap().getPropertyAs<float>( "OrientationCorrection/translateX" ) );
 	}
-	if( image->getPropMap().hasProperty("OrientationCorrection/translateY") ) {
-		ui.translateY->setValue( image->getPropMap().getPropertyAs<float>("OrientationCorrection/translateY") );
+
+	if( image->getPropMap().hasProperty( "OrientationCorrection/translateY" ) ) {
+		ui.translateY->setValue( image->getPropMap().getPropertyAs<float>( "OrientationCorrection/translateY" ) );
 	}
-	if( image->getPropMap().hasProperty("OrientationCorrection/translateZ") ) {
-		ui.translateZ->setValue( image->getPropMap().getPropertyAs<float>("OrientationCorrection/translateZ") );
+
+	if( image->getPropMap().hasProperty( "OrientationCorrection/translateZ" ) ) {
+		ui.translateZ->setValue( image->getPropMap().getPropertyAs<float>( "OrientationCorrection/translateZ" ) );
 	}
-	if( image->getPropMap().hasProperty("OrientationCorrection/rotateX") ) {
-		ui.rotateX->setValue( image->getPropMap().getPropertyAs<float>("OrientationCorrection/rotateX") );
+
+	if( image->getPropMap().hasProperty( "OrientationCorrection/rotateX" ) ) {
+		ui.rotateX->setValue( image->getPropMap().getPropertyAs<float>( "OrientationCorrection/rotateX" ) );
 	}
-	if( image->getPropMap().hasProperty("OrientationCorrection/rotateY") ) {
-		ui.rotateY->setValue( image->getPropMap().getPropertyAs<float>("OrientationCorrection/rotateY") );
+
+	if( image->getPropMap().hasProperty( "OrientationCorrection/rotateY" ) ) {
+		ui.rotateY->setValue( image->getPropMap().getPropertyAs<float>( "OrientationCorrection/rotateY" ) );
 	}
-	if( image->getPropMap().hasProperty("OrientationCorrection/rotateZ") ) {
-		ui.rotateZ->setValue( image->getPropMap().getPropertyAs<float>("OrientationCorrection/rotateZ") );
+
+	if( image->getPropMap().hasProperty( "OrientationCorrection/rotateZ" ) ) {
+		ui.rotateZ->setValue( image->getPropMap().getPropertyAs<float>( "OrientationCorrection/rotateZ" ) );
 	}
-	if( image->getPropMap().hasProperty("OrientationCorrection/flippedX") ) {
-		ui.checkFlipX->setChecked( image->getPropMap().getPropertyAs<bool>("OrientationCorrection/flippedX") );
+
+	if( image->getPropMap().hasProperty( "OrientationCorrection/flippedX" ) ) {
+		ui.checkFlipX->setChecked( image->getPropMap().getPropertyAs<bool>( "OrientationCorrection/flippedX" ) );
 	}
-	if( image->getPropMap().hasProperty("OrientationCorrection/flippedY") ) {
-		ui.checkFlipY->setChecked( image->getPropMap().getPropertyAs<bool>("OrientationCorrection/flippedY") );
+
+	if( image->getPropMap().hasProperty( "OrientationCorrection/flippedY" ) ) {
+		ui.checkFlipY->setChecked( image->getPropMap().getPropertyAs<bool>( "OrientationCorrection/flippedY" ) );
 	}
-	if( image->getPropMap().hasProperty("OrientationCorrection/flippedZ") ) {
-		ui.checkFlipZ->setChecked( image->getPropMap().getPropertyAs<bool>("OrientationCorrection/flippedZ") );
+
+	if( image->getPropMap().hasProperty( "OrientationCorrection/flippedZ" ) ) {
+		ui.checkFlipZ->setChecked( image->getPropMap().getPropertyAs<bool>( "OrientationCorrection/flippedZ" ) );
 	}
 }
 
@@ -174,9 +186,10 @@ void OrientatioCorrectionDialog::applyPressed()
 
 		std::stringstream desc;
 		desc << "Transformation matrix: " << std::endl << transform( 0, 0 ) << " " << transform( 1, 0 ) << " " << transform( 2, 0 ) << std::endl <<
-			transform( 0, 1 ) << " " << transform( 1, 1 ) << " " << transform( 2, 1 ) << std::endl <<
-			transform( 0, 2 ) << " " << transform( 1, 2 ) << " " << transform( 2, 2 ) << std::endl;
+			 transform( 0, 1 ) << " " << transform( 1, 1 ) << " " << transform( 2, 1 ) << std::endl <<
+			 transform( 0, 2 ) << " " << transform( 1, 2 ) << " " << transform( 2, 2 ) << std::endl;
 		bool ret = image->getISISImage()->transformCoords( transform, false );
+
 		if( ret ) {
 			image->getPropMap().setPropertyAs<util::fvector4>( "originalRowVec", image->getISISImage()->getPropertyAs<util::fvector4>( "rowVec" ) );
 			image->getPropMap().setPropertyAs<util::fvector4>( "originalColumnVec", image->getISISImage()->getPropertyAs<util::fvector4>( "columnVec" ) );
@@ -185,6 +198,7 @@ void OrientatioCorrectionDialog::applyPressed()
 		} else {
 			LOG( Runtime, error ) << "Could not apply transform " << transform << " to the image " << image->getImageProperties().fileName << " !";
 		}
+
 		image->updateOrientation();
 		m_ViewerCore->updateScene();
 	}
@@ -194,21 +208,21 @@ void OrientatioCorrectionDialog::resetPressed()
 {
 	setValuesToZero();
 	applyTransform();
-	
+
 }
 
 void OrientatioCorrectionDialog::setValuesToZero()
 {
 	disconnectAll();
-	ui.checkFlipX->setChecked(false);
-	ui.checkFlipY->setChecked(false);
-	ui.checkFlipZ->setChecked(false);
-	ui.translateX->setValue(0);
-	ui.translateY->setValue(0);
-	ui.translateZ->setValue(0);
-	ui.rotateX->setValue(0);
-	ui.rotateY->setValue(0);
-	ui.rotateZ->setValue(0);
+	ui.checkFlipX->setChecked( false );
+	ui.checkFlipY->setChecked( false );
+	ui.checkFlipZ->setChecked( false );
+	ui.translateX->setValue( 0 );
+	ui.translateY->setValue( 0 );
+	ui.translateZ->setValue( 0 );
+	ui.rotateX->setValue( 0 );
+	ui.rotateY->setValue( 0 );
+	ui.rotateZ->setValue( 0 );
 	connectAll();
 }
 
@@ -217,25 +231,29 @@ bool OrientatioCorrectionDialog::applyTransform( ) const
 {
 	if( m_ViewerCore->hasImage() ) {
 		ImageHolder::Pointer image = m_ViewerCore->getImageMap().at( ui.imageBox->currentText().toStdString() );
-		image->getISISImage()->setPropertyAs<util::fvector4>("rowVec", image->getPropMap().getPropertyAs<util::fvector4>("OrientationCorrection/origRowVec") );
-		image->getISISImage()->setPropertyAs<util::fvector4>("columnVec", image->getPropMap().getPropertyAs<util::fvector4>("OrientationCorrection/origColumnVec") );
-		image->getISISImage()->setPropertyAs<util::fvector4>("sliceVec", image->getPropMap().getPropertyAs<util::fvector4>("OrientationCorrection/origSliceVec") );
-		image->getISISImage()->setPropertyAs<util::fvector4>("indexOrigin", image->getPropMap().getPropertyAs<util::fvector4>("OrientationCorrection/origIndexOrigin") );
+		image->getISISImage()->setPropertyAs<util::fvector4>( "rowVec", image->getPropMap().getPropertyAs<util::fvector4>( "OrientationCorrection/origRowVec" ) );
+		image->getISISImage()->setPropertyAs<util::fvector4>( "columnVec", image->getPropMap().getPropertyAs<util::fvector4>( "OrientationCorrection/origColumnVec" ) );
+		image->getISISImage()->setPropertyAs<util::fvector4>( "sliceVec", image->getPropMap().getPropertyAs<util::fvector4>( "OrientationCorrection/origSliceVec" ) );
+		image->getISISImage()->setPropertyAs<util::fvector4>( "indexOrigin", image->getPropMap().getPropertyAs<util::fvector4>( "OrientationCorrection/origIndexOrigin" ) );
 		boost::numeric::ublas::matrix<float> ftransform = boost::numeric::ublas::identity_matrix<float>( 3, 3 );
 		std::stringstream desc;
+
 		//matrix from flip
 		if( ui.checkFlipZ->isChecked() ) {
 			ftransform( 2, 2 ) *= -1;
-			image->getPropMap().setPropertyAs<float>("OrientationCorrection/flippedZ", ui.checkFlipZ->isChecked() );
+			image->getPropMap().setPropertyAs<float>( "OrientationCorrection/flippedZ", ui.checkFlipZ->isChecked() );
 		}
+
 		if( ui.checkFlipY->isChecked() ) {
 			ftransform( 1, 1 ) *= -1;
-			image->getPropMap().setPropertyAs<float>("OrientationCorrection/flippedY", ui.checkFlipY->isChecked() );
+			image->getPropMap().setPropertyAs<float>( "OrientationCorrection/flippedY", ui.checkFlipY->isChecked() );
 		}
+
 		if( ui.checkFlipX->isChecked() ) {
 			ftransform( 0, 0 ) *= -1;
-			image->getPropMap().setPropertyAs<float>("OrientationCorrection/flippedX", ui.checkFlipX->isChecked() );
+			image->getPropMap().setPropertyAs<float>( "OrientationCorrection/flippedX", ui.checkFlipX->isChecked() );
 		}
+
 		//matrix from rotation
 		boost::numeric::ublas::matrix<float> transform = boost::numeric::ublas::zero_matrix<float>( 3, 3 );
 		double normX = ( ui.rotateX->value() / 180 ) * M_PI;
@@ -250,43 +268,50 @@ bool OrientatioCorrectionDialog::applyTransform( ) const
 		transform( 0, 2 ) = -sin( normY );
 		transform( 1, 2 ) = sin( normX ) * cos( normY );
 		transform( 2, 2 ) = cos( normX ) * cos( normY );
+
 		if( ui.rotateX->value() != 0 ) {
 			desc << "X Rotation: " << ui.rotateX->value() << std::endl;
-			image->getPropMap().setPropertyAs<float>("OrientationCorrection/rotateX", ui.rotateX->value());
+			image->getPropMap().setPropertyAs<float>( "OrientationCorrection/rotateX", ui.rotateX->value() );
 		}
 
 		if( ui.rotateY->value() != 0 ) {
 			desc << "Y Rotation: " << ui.rotateY->value() << std::endl;
-			image->getPropMap().setPropertyAs<float>("OrientationCorrection/rotateY", ui.rotateY->value());
+			image->getPropMap().setPropertyAs<float>( "OrientationCorrection/rotateY", ui.rotateY->value() );
 		}
 
 		if( ui.rotateZ->value() != 0 ) {
 			desc << "Z Rotation: " << ui.rotateZ->value() << std::endl;
-			image->getPropMap().setPropertyAs<float>("OrientationCorrection/rotateZ", ui.rotateZ->value());
+			image->getPropMap().setPropertyAs<float>( "OrientationCorrection/rotateZ", ui.rotateZ->value() );
 		}
-		
+
 		boost::numeric::ublas::matrix<float> finalMatrix = boost::numeric::ublas::prod( ftransform, transform );
 
 
 		//translation
 		const util::fvector4 translation( ui.translateX->text().toFloat(), ui.translateY->text().toFloat(), ui.translateZ->text().toFloat() );
+
 		if( translation[0] != 0 ) {
 			desc << "X Translation: " << translation[0] << std::endl;
-			image->getPropMap().setPropertyAs<float>("OrientationCorrection/translateX", translation[0] );
+			image->getPropMap().setPropertyAs<float>( "OrientationCorrection/translateX", translation[0] );
 		}
+
 		if( translation[1] != 0 ) {
 			desc << "Y Translation: " << translation[1] << std::endl;
-			image->getPropMap().setPropertyAs<float>("OrientationCorrection/translateY", translation[1] );
+			image->getPropMap().setPropertyAs<float>( "OrientationCorrection/translateY", translation[1] );
 		}
+
 		if( translation[2] != 0 ) {
 			desc << "Z Translation: " << translation[2] << std::endl;
-			image->getPropMap().setPropertyAs<float>("OrientationCorrection/translateZ", translation[2] );
+			image->getPropMap().setPropertyAs<float>( "OrientationCorrection/translateZ", translation[2] );
 		}
-		const util::fvector4 oldIO = image->getISISImage()->getPropertyAs<util::fvector4>("indexOrigin");
-		image->getISISImage()->setPropertyAs<util::fvector4>("indexOrigin", oldIO + translation );
-		
-		
+
+		const util::fvector4 oldIO = image->getISISImage()->getPropertyAs<util::fvector4>( "indexOrigin" );
+
+		image->getISISImage()->setPropertyAs<util::fvector4>( "indexOrigin", oldIO + translation );
+
+
 		bool ret = image->getISISImage()->transformCoords( finalMatrix, false );
+
 		if( ret ) {
 			image->getPropMap().setPropertyAs<util::fvector4>( "originalRowVec", image->getISISImage()->getPropertyAs<util::fvector4>( "rowVec" ) );
 			image->getPropMap().setPropertyAs<util::fvector4>( "originalColumnVec", image->getISISImage()->getPropertyAs<util::fvector4>( "columnVec" ) );
@@ -295,8 +320,9 @@ bool OrientatioCorrectionDialog::applyTransform( ) const
 		} else {
 			LOG( Runtime, error ) << "Could not apply transform " << finalMatrix << " to the image " << image->getImageProperties().fileName << " !";
 		}
+
 		image->updateOrientation();
-		m_ViewerCore->physicalCoordsChanged(image->getISISImage()->getPhysicalCoordsFromIndex( image->getImageProperties().voxelCoords ) );
+		m_ViewerCore->physicalCoordsChanged( image->getISISImage()->getPhysicalCoordsFromIndex( image->getImageProperties().voxelCoords ) );
 		return ret;
 	}
 

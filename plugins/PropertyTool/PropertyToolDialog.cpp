@@ -42,7 +42,7 @@ PropertyToolDialog::PropertyToolDialog( QWidget *parent, QViewerCore *core )
 {
 	m_Interface.setupUi( this );
 	m_Interface.tabWidget->setCurrentIndex( 0 );
-	setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Maximum );
+	setSizePolicy( QSizePolicy::MinimumExpanding, QSizePolicy::Maximum );
 	connect( m_ViewerCore, SIGNAL( emitUpdateScene() ), this, SLOT( updateProperties() ) );
 	connect( m_Interface.selection, SIGNAL( currentIndexChanged( int ) ), this, SLOT( selectionChanged( int ) ) );
 	connect( m_Interface.propertyTree, SIGNAL( itemSelectionChanged() ) , this, SLOT( onPropertyTreeClicked() ) );
@@ -138,7 +138,7 @@ void PropertyToolDialog::updateProperties()
 
 	m_Interface.propertyName->clear();
 	m_Interface.propertyValue->clear();
-	m_Interface.propertyTree->resizeColumnToContents(0);
+	m_Interface.propertyTree->resizeColumnToContents( 0 );
 	adjustSize();
 }
 
@@ -163,7 +163,7 @@ void PropertyToolDialog::buildUpTree( const util::PropertyMap &image )
 
 }
 
-TreePropMap::TreePropMap ( const util::PropertyMap& propMap )
+TreePropMap::TreePropMap ( const util::PropertyMap &propMap )
 {
 	static_cast<util::PropertyMap &>( *this ) = propMap;
 }
@@ -180,6 +180,7 @@ void TreePropMap::walkTree( QTreeWidgetItem *item, const TreePropMap &propMap, b
 			} else {
 				newItem = new QTreeWidgetItem( item );
 			}
+
 			newItem->setText( 0, i->first.c_str() );
 			newItem->setText( 1, i->second.toString().c_str() );
 		} else {
@@ -194,7 +195,7 @@ void TreePropMap::fillTreeWidget( QTreeWidget *treeWidget )
 {
 	m_TreeWidget = treeWidget;
 	m_TreeWidget->clear();
-	walkTree( new QTreeWidgetItem(m_TreeWidget), *this, true );
+	walkTree( new QTreeWidgetItem( m_TreeWidget ), *this, true );
 }
 
 QString PropertyToolDialog::getItemName ( QTreeWidgetItem *item )

@@ -101,18 +101,20 @@ ImageHolder::Pointer ViewerCoreBase::addImage( const isis::data::Image &image, c
 	}
 
 	ImageHolder::Pointer  retImage = ImageHolder::Pointer( new ImageHolder );
-	
+
 	m_imageVector.push_back( retImage );
 
 	//look if this filename already exists.
 	if( m_ImageMap.find( fileName ) != m_ImageMap.end() ) {
 		unsigned short index = 0;
 		std::string newFileName = fileName;
-		while( m_ImageMap.find(newFileName) != m_ImageMap.end() ) {
+
+		while( m_ImageMap.find( newFileName ) != m_ImageMap.end() ) {
 			std::stringstream ss;
 			ss << fileName << " (" << ++index << ")";
 			newFileName = ss.str();
 		}
+
 		retImage->setImage( image, imageType, newFileName );
 		m_ImageMap[newFileName] = retImage;
 	} else {
@@ -146,7 +148,8 @@ ImageHolder::Pointer ViewerCoreBase::addImage( const isis::data::Image &image, c
 	if( getMode() == ViewerCoreBase::statistical_mode && retImage->getImageSize()[3] > 1 && retImage->getImageProperties().imageType != ImageHolder::statistical_image ) {
 		retImage->getImageProperties().isVisible = false;
 	}
-	retImage->getImageProperties().boundingBox = geometrical::getPhysicalBoundingBox(retImage);
+
+	retImage->getImageProperties().boundingBox = geometrical::getPhysicalBoundingBox( retImage );
 
 	//emit the signal
 	emitAddImage( retImage );

@@ -28,14 +28,17 @@
 
 #include "geometrical.hpp"
 
-namespace isis {
-namespace viewer {
-namespace geometrical {
+namespace isis
+{
+namespace viewer
+{
+namespace geometrical
+{
 
 BoundingBoxType getPhysicalBoundingBox ( const ImageHolder::Pointer image, const unsigned short &border )
 {
 	ImageHolder::Vector images;
-	images.push_back(image);
+	images.push_back( image );
 	return getPhysicalBoundingBox( images, border  );
 }
 
@@ -43,21 +46,26 @@ BoundingBoxType getPhysicalBoundingBox ( const ImageHolder::Pointer image, const
 BoundingBoxType getPhysicalBoundingBox ( const ImageHolder::Vector images, const unsigned short &border )
 {
 	BoundingBoxType retBox;
-	for( unsigned short i = 0; i< 3;i++ ) {
+
+	for( unsigned short i = 0; i < 3; i++ ) {
 		retBox[i].first = std::numeric_limits<float>::max();
 		retBox[i].second = -std::numeric_limits<float>::max();
 	}
+
 	BOOST_FOREACH( ImageHolder::Vector::const_reference image, images ) {
 		const util::ivector4 imageSize = image->getISISImage()->getSizeAsVector();
-		for( unsigned short i = 0; i<2;i++ ) {
-			for( unsigned short j = 0; j<2;j++ ) {
-				for( unsigned short k = 0; k<2;k++ ) {
-					const util::ivector4 currentCorner ( i * (imageSize[0] + border), j * (imageSize[1] + border), k * (imageSize[2] + border ) );
-					const util::fvector4 currentPhysicalCorner = image->getISISImage()->getPhysicalCoordsFromIndex(currentCorner);
+
+		for( unsigned short i = 0; i < 2; i++ ) {
+			for( unsigned short j = 0; j < 2; j++ ) {
+				for( unsigned short k = 0; k < 2; k++ ) {
+					const util::ivector4 currentCorner ( i * ( imageSize[0] + border ), j * ( imageSize[1] + border ), k * ( imageSize[2] + border ) );
+					const util::fvector4 currentPhysicalCorner = image->getISISImage()->getPhysicalCoordsFromIndex( currentCorner );
+
 					for ( unsigned short l = 0; l < 3; l++ ) {
 						if( currentPhysicalCorner[l] < retBox[l].first ) {
 							retBox[l].first = currentPhysicalCorner[l];
 						}
+
 						if( currentPhysicalCorner[l] > retBox[l].second ) {
 							retBox[l].second = currentPhysicalCorner[l];
 						}
@@ -70,4 +78,6 @@ BoundingBoxType getPhysicalBoundingBox ( const ImageHolder::Vector images, const
 }
 
 
-}}}
+}
+}
+}

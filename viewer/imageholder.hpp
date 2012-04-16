@@ -99,7 +99,7 @@ public:
 	typedef boost::shared_ptr< ImageHolder > Pointer;
 	typedef std::vector< Pointer > Vector;
 	typedef std::map< std::string, Pointer > Map;
-	
+
 
 	ImageHolder();
 
