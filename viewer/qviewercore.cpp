@@ -129,10 +129,10 @@ void QViewerCore::physicalCoordsChanged ( util::fvector4 physicalCoords )
 {
 	BOOST_FOREACH( ImageHolder::Vector::const_reference image, getImageVector() ) {
 		image->getImageProperties().physicalCoords = physicalCoords;
-		image->getImageProperties().voxelCoords = image->getISISImage()->getIndexFromPhysicalCoords(physicalCoords,true);
+		image->getImageProperties().voxelCoords = image->getISISImage()->getIndexFromPhysicalCoords( physicalCoords, true );
 	}
 	emitUpdateScene();
-	emitPhysicalCoordsChanged(physicalCoords);
+	emitPhysicalCoordsChanged( physicalCoords );
 }
 
 void QViewerCore::onWidgetClicked ( widget::WidgetInterface *origin, util::fvector4 physicalCoords, Qt::MouseButton mouseButton )
@@ -142,6 +142,7 @@ void QViewerCore::onWidgetClicked ( widget::WidgetInterface *origin, util::fvect
 			setCurrentImage( origin->getWidgetEnsemble()->getImageVector().front() );
 		}
 	}
+
 	emitOnWidgetClicked( physicalCoords, mouseButton );
 	physicalCoordsChanged( physicalCoords );
 }
@@ -364,6 +365,7 @@ void QViewerCore::openFileList( const std::list< FileInformation > fileInfoList 
 		LOG( Dev, warning ) << "Trying to open an empty file info list. Abort!";
 		return;
 	}
+
 	ImageHolder::Vector structuralImageList;
 	ImageHolder::Vector statisticalImageList;
 	BOOST_FOREACH( std::list<FileInformation>::const_reference file, fileInfoList ) {
@@ -419,6 +421,7 @@ void QViewerCore::openFileList( const std::list< FileInformation > fileInfoList 
 
 		setCurrentImage( structuralImageList.front() );
 	}
+
 	if( hasImage() ) {
 		physicalCoordsChanged( getCurrentImage()->getImageProperties().physicalCoords );
 	}

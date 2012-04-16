@@ -31,22 +31,28 @@
 #include <CoreUtils/vector.hpp>
 
 
-namespace isis {
-namespace viewer {
+namespace isis
+{
+namespace viewer
+{
 class ImageHolder;
-namespace geometrical {
-	
-///l:r, a:p, s:i
-typedef util::FixedVector<std::pair<float,float>, 3 > BoundingBoxType;
+namespace geometrical
+{
 
-namespace _internal {
+///l:r, a:p, s:i
+typedef util::FixedVector<std::pair<float, float>, 3 > BoundingBoxType;
+
+namespace _internal
+{
 }
 
 BoundingBoxType getPhysicalBoundingBox( const boost::shared_ptr<ImageHolder> image, const unsigned short &border = 0 );
 
 BoundingBoxType getPhysicalBoundingBox ( const std::vector<boost::shared_ptr<ImageHolder> > images, const unsigned short &border = 0 );
-	
-}}}
+
+}
+}
+}
 #include "imageholder.hpp"
 
 #endif // VAST_GEOMETRICAL_HPP

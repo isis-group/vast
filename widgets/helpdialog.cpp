@@ -49,5 +49,6 @@ void isis::viewer::ui::HelpDialog::showEvent ( QShowEvent *e )
 		msgBox.setText( "Could not find help path for vast." );
 		msgBox.exec();
 	}
-	QDialog::showEvent(e);
+
+	QDialog::showEvent( e );
 }

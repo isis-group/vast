@@ -138,9 +138,11 @@ void WidgetEnsemble::update( const ViewerCoreBase *core )
 				tmpList.push_back( *iter );
 			}
 		}
+
 		if( currentImageIterator != m_imageVector.end() ) {
 			tmpList.push_back( currentImage );
 		}
+
 		m_imageVector = tmpList;
 	}
 }

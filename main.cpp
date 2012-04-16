@@ -56,15 +56,15 @@ int main( int argc, char *argv[] )
 	boost::shared_ptr<qt4::QDefaultMessagePrint> logging_hanlder_runtime ( new qt4::QDefaultMessagePrint( verbose_info ) );
 	boost::shared_ptr<qt4::QDefaultMessagePrint> logging_hanlder_dev ( new qt4::QDefaultMessagePrint( verbose_info ) );
 	util::_internal::Log<viewer::Dev>::setHandler( logging_hanlder_dev );
-	util::_internal::Log<viewer::Runtime>::setHandler( logging_hanlder_runtime );	
+	util::_internal::Log<viewer::Runtime>::setHandler( logging_hanlder_runtime );
 
 	//make vast showing qmessage if an error log is thrown
 	logging_hanlder_dev->qmessageBelow( isis::warning );
 
 	std::string appName = "vast";
 	std::string orgName = "cbs.mpg.de";
-	QCoreApplication::setApplicationName(appName.c_str());
-	QCoreApplication::setOrganizationName(orgName.c_str());
+	QCoreApplication::setApplicationName( appName.c_str() );
+	QCoreApplication::setOrganizationName( orgName.c_str() );
 	//setting up vast graphics_system
 #if QT_VERSION >= 0x040500
 	const char *graphics_system = getenv( "VAST_GRAPHICS_SYSTEM" );
@@ -170,6 +170,7 @@ int main( int argc, char *argv[] )
 	if( !fileInfoList.empty() ) {
 		core->openFileList( fileInfoList );
 	}
+
 	core->getUICore()->getMainWindow()->toggleLoadingIcon( false );
 	core->getUICore()->showMainWindow();
 

@@ -387,7 +387,7 @@ WidgetEnsemble::Pointer UICore::getEnsembleFromImage ( const ImageHolder::Pointe
 		}
 	}
 	LOG_IF( !found, Dev, error ) << "Trying to find the ensemble that contains the image \"" << image->getImageProperties().fileName
-					<< "\", but there seems to be no such ensemble!";
+								 << "\", but there seems to be no such ensemble!";
 	return retEnsemble;
 }
 

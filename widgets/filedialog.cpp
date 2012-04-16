@@ -250,8 +250,8 @@ void isis::viewer::ui::FileDialog::parsePath()
 bool isis::viewer::ui::FileDialog::checkIfPathIsValid( QString path, unsigned short &validFiles, const util::istring &suffix, FileMode mode, bool /*acceptNoSuffix*/ )
 {
 	std::string path_str = path.toStdString();
-	boost::trim( path_str );	//use trim to remove leading ant trailing white spaces
-	boost::filesystem::path p( path_str ); 
+	boost::trim( path_str );    //use trim to remove leading ant trailing white spaces
+	boost::filesystem::path p( path_str );
 	std::list<util::istring> fileFormatList = getFileFormatsAsList( isis::image_io::FileFormat::read_only );
 
 	//ok, path exists

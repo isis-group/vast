@@ -120,7 +120,7 @@ std::string getCrashLogFilePath()
 
 util::fvector4 mapCoordsToOrientation( const util::fvector4 &coords, const util::Matrix4x4<float> &orientationMatrix, PlaneOrientation orientation, bool back, bool absolute )
 {
-	util::Matrix4x4<float> transformMatrix = util::IdentityMatrix<float,4>();
+	util::Matrix4x4<float> transformMatrix = util::IdentityMatrix<float, 4>();
 	util::fvector4 retVec;
 
 	switch ( orientation ) {
@@ -165,10 +165,11 @@ util::fvector4 mapCoordsToOrientation( const util::fvector4 &coords, const util:
 	}
 
 	if( back ) {
-		retVec = transformMatrix.dot(orientationMatrix).transpose().dot(coords);
+		retVec = transformMatrix.dot( orientationMatrix ).transpose().dot( coords );
 	} else {
-		retVec = transformMatrix.dot(orientationMatrix).dot(coords);
+		retVec = transformMatrix.dot( orientationMatrix ).dot( coords );
 	}
+
 	if( absolute ) {
 		return util::fvector4( fabs( retVec[0] ), fabs( retVec[1] ), fabs( retVec[2] ) , fabs( retVec[3] ) );
 	} else {

@@ -36,9 +36,12 @@
 #include "qviewercore.hpp"
 #include "color.hpp"
 
-namespace isis {
-namespace viewer {
-namespace widget {
+namespace isis
+{
+namespace viewer
+{
+namespace widget
+{
 
 class QGeomWidget : public QWidget, public WidgetInterface
 {
@@ -51,16 +54,16 @@ public:
 	virtual std::string getWidgetName() const { return std::string( "qt4_geometrical_plane_widget" ); }
 public Q_SLOTS:
 	virtual void updateScene();
-    virtual void lookAtPhysicalCoords ( const util::fvector4& physicalCoords );
+	virtual void lookAtPhysicalCoords ( const util::fvector4 &physicalCoords );
 	virtual void addImage( const ImageHolder::Pointer image );
 	virtual bool removeImage( const ImageHolder::Pointer image );
-    virtual void setInterpolationType ( InterpolationType interpolation );
+	virtual void setInterpolationType ( InterpolationType interpolation );
 	virtual void setCrossHairColor( QColor color ) { m_CrosshairColor = color; }
-    virtual void setMouseCursorIcon ( QIcon );
-    virtual void setZoom ( float zoom );
+	virtual void setMouseCursorIcon ( QIcon );
+	virtual void setZoom ( float zoom );
 	virtual void setShowLabels( bool show ) { m_ShowLabels = show; m_Border = show ? 18 : 0; }
 	virtual void setEnableCrosshair( bool enable ) { m_ShowCrosshair = enable; }
-	
+
 	virtual void dragEnterEvent( QDragEnterEvent * );
 	virtual void dropEvent( QDropEvent * );
 protected:
@@ -70,7 +73,7 @@ protected:
 	void mouseMoveEvent( QMouseEvent *e );
 	void mouseReleaseEvent( QMouseEvent *e );
 	void wheelEvent( QWheelEvent *e );
-	
+
 private:
 	void paintImage( const ImageHolder::Pointer );
 	void paintCrossHair() const;
@@ -85,11 +88,11 @@ private:
 	bool m_ShowLabels;
 	bool m_ShowCrosshair;
 	bool m_ShowScalingOffset;
-	util::FixedVector<float,2> m_Translation;
+	util::FixedVector<float, 2> m_Translation;
 	float m_WindowViewPortScaling;
 
-	util::fvector4 getPhysicalCoordsFromMouseCoords( const int &x, const int &y) const;
-	
+	util::fvector4 getPhysicalCoordsFromMouseCoords( const int &x, const int &y ) const;
+
 	QPainter *m_Painter;
 	QVBoxLayout *m_Layout;
 	QColor m_CrosshairColor;
@@ -102,6 +105,8 @@ private:
 };
 
 
-}}}// end namespac
+}
+}
+}// end namespac
 
 #endif //VAST_QGEOMWIDGET_HPP
