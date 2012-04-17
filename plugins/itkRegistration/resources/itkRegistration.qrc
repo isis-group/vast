@@ -1,0 +1,5 @@
+<RCC>
+  <qresource prefix="common">
+    <file>itkLogo.jpg</file>
+  </qresource>
+</RCC>

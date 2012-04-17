@@ -26,8 +26,28 @@
  *      Author: tuerke
  ******************************************************************/
 
+#ifndef VAST_ITKREGISTRATIONDIALOG_HPP
+#define VAST_ITKREGISTRATIONDIALOG_HPP
+
+#include "ui_itkRegistrationDialog.h"
+#include "qviewercore.hpp"
+
 namespace isis {
 namespace viewer {
-namespace widget {
+namespace plugin {
 
+class RegistrationDialog : public QDialog
+{
+	Q_OBJECT
+public:
+	RegistrationDialog( QWidget *parent, QViewerCore *core );
+
+private:
+	QViewerCore *m_ViewerCore;
+	Ui::RegistrationDialog m_Interface;
+	
+};
+	
 }}}
+
+#endif

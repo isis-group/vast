@@ -29,6 +29,15 @@
 
 namespace isis {
 namespace viewer {
-namespace widget {
+namespace plugin {
+
+RegistrationDialog::RegistrationDialog ( QWidget* parent, QViewerCore* core )
+	: QDialog ( parent ),
+	m_ViewerCore( core )
+{
+	m_Interface.setupUi(this);
+
+}
+
 
 }}}

@@ -26,6 +26,7 @@
  *      Author: tuerke
  ******************************************************************/
 #include "plugininterface.h"
+#include "RegistrationDialog.hpp"
 
 namespace isis
 {
@@ -37,7 +38,34 @@ namespace plugin
 class itkRegistration : public PluginInterface
 {
 public:
+	itkRegistration() : isInitialized( false ) {}
+	virtual std::string getName() { return std::string( "itk/Registration" ) ; }
+	virtual std::string getDescription() { return std::string( "" ); }
+	virtual std::string getTooltip() { return std::string( "itk Registration plugin" ); }
+	virtual QKeySequence getShortcut() { return QKeySequence( "P, T" ) ;}
+	virtual QIcon *getToolbarIcon() { return new QIcon( ":/common/itkLogo.jpg" ); }
+	virtual bool isGUI() { return true; }
+	virtual bool call() {
+		if( !isInitialized ) {
+			m_RegistrationDialgo = new RegistrationDialog( parentWidget, viewerCore );
+			isInitialized = true;
+		}
 
+		if( viewerCore->hasImage() ) {
+			m_RegistrationDialgo->show();
+		} else {
+			QMessageBox msg( parentWidget );
+			msg.setText( "No image has been loaded or selected!" );
+			msg.exec();
+		}
+
+		return true;
+	};
+
+	virtual ~itkRegistration() {};
+private:
+	RegistrationDialog *m_RegistrationDialgo;
+	bool isInitialized;
 };
 
 }}}
