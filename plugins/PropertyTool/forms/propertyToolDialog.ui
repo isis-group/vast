@@ -1485,9 +1485,15 @@
            <verstretch>0</verstretch>
           </sizepolicy>
          </property>
+         <property name="horizontalScrollBarPolicy">
+          <enum>Qt::ScrollBarAsNeeded</enum>
+         </property>
          <property name="columnCount">
           <number>2</number>
          </property>
+         <attribute name="headerCascadingSectionResizes">
+          <bool>true</bool>
+         </attribute>
          <column>
           <property name="text">
            <string notr="true">1</string>
