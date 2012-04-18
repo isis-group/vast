@@ -42,6 +42,8 @@ class RegistrationDialog : public QDialog
 public:
 	RegistrationDialog( QWidget *parent, QViewerCore *core );
 
+public Q_SLOTS:
+	
 private:
 	QViewerCore *m_ViewerCore;
 	Ui::RegistrationDialog m_Interface;

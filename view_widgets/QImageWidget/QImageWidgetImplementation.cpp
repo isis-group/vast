@@ -411,6 +411,8 @@ void QImageWidgetImplementation::showLabels() const
 		m_Painter->drawText( width() / 2 - 7, 15, "S" );
 		m_Painter->drawText( width() / 2 - 7, height() - 2, "I" );
 		break;
+	case not_specified:
+		break;
 	}
 
 
