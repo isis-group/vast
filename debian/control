@@ -13,7 +13,7 @@ Package: vast
 Section: science
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
-Recommends: libisis-ioplugins-common, libisis-ioplugins-dicom, libjs-jquery, libjs-underscore, vast-widget-qtgeom
+Recommends: libisis-ioplugins-common, libisis-ioplugins-dicom, libjs-jquery, libjs-underscore, vast-widget-qtgeom, vast-plugin-voxelop
 Description: Viewer for medical image data
  Vast supports all image formats that are supportet by the isis package,
  including nifti, dicom, vista, png, tar.gz, and raw. The viewer is capable
