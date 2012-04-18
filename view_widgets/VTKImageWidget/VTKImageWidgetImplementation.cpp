@@ -95,7 +95,7 @@ void VTKImageWidgetImplementation::paintEvent ( QPaintEvent *event )
 	QVTKWidget::paintEvent( event );
 }
 
-void VTKImageWidgetImplementation::wheelEvent ( QWheelEvent *e )
+void VTKImageWidgetImplementation::wheelEvent ( QWheelEvent */*e*/ )
 {
 	//     QVTKWidget::wheelEvent ( e );
 }
@@ -134,7 +134,7 @@ void VTKImageWidgetImplementation::updateScene()
 	update();
 }
 
-void VTKImageWidgetImplementation::setZoom ( float zoom )
+void VTKImageWidgetImplementation::setZoom ( float /*zoom*/ )
 {
 
 }

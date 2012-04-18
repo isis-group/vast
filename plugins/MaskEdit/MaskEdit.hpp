@@ -91,8 +91,9 @@ private:
 
 		for( short k = start[2] + 1; k < end[2]; k++ ) {
 			for( short j = start[1] + 1; j < end[1]; j++ ) {
+#ifdef _OPENMP
 #pragma omp parallel for
-
+#endif
 				for( short i = start[0] + 1; i < end[0]; i++ ) {
 					int x = voxel[0] - i;
 					int y = voxel[1] - j;

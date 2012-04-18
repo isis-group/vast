@@ -147,11 +147,12 @@ std::pair< double, double > ScalingWidget::getMinMaxFromScalingOffset( const std
 {
 	std::pair<double, double> retMinMax;
 	const double min = image->getImageProperties().minMax.first->as<double>();
-	const double max = image->getImageProperties().minMax.second->as<double>();
+// 	const double max = image->getImageProperties().minMax.second->as<double>();
+	const double extent = image->getImageProperties().extent;
 	const double offset = scalingOffset.second;
 	const double scaling = scalingOffset.first;
-	retMinMax.first = offset + min / scaling;
-	retMinMax.second = offset + max / scaling;
+	retMinMax.first = min + offset;
+	retMinMax.second = (min + offset) + extent / scaling;
 	return retMinMax;
 }
 
@@ -162,7 +163,7 @@ std::pair< double, double > ScalingWidget::getScalingOffsetFromMinMax( const std
 	const double _extent = minMax.second - minMax.first;
 	const double min = image->getImageProperties().minMax.first->as<double>();
 	retScalingOffset.first = extent / _extent;
-	retScalingOffset.second = minMax.first - min / retScalingOffset.first;
+	retScalingOffset.second = minMax.first - min ;
 	return retScalingOffset;
 }
 

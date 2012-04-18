@@ -50,7 +50,9 @@ public:
 		const data::Chunk &chunk = image->getChunkVector()[image->getImageProperties().voxelCoords[dim_time]];
 
 		for ( util::ivector4::value_type y = 0; y < mappedSize[1]; y++ ) {
+#ifdef _OPENMP
 #pragma omp parallel for
+#endif
 
 			for ( util::ivector4::value_type x = 0; x < mappedSize[0]; x++ ) {
 				const util::ivector4::value_type coords[3] = {x, y, mappedCoords[2] };
