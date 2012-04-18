@@ -28,6 +28,7 @@
 
 #include "QGeomWidget.hpp"
 #include "geomhandler.hpp"
+#include "geometrical.hpp"
 #include <Adapter/qmatrixconversion.hpp>
 
 #include "memoryhandler.hpp"

@@ -53,12 +53,19 @@ void VoxelOperationDialog::calculatePressed()
 
 		try {
 			_internal::VoxelOp vop( op );
-			m_ViewerCore->getCurrentImage()->getISISImage()->foreachVoxel<double>(vop);
-			m_ViewerCore->getCurrentImage()->synchronize( m_ViewerCore->getCurrentImage()->zeroIsReserved() );
-			m_ViewerCore->getCurrentImage()->updateColorMap();
-			m_ViewerCore->getCurrentImage()->updateHistogram();
+			const ImageHolder::Pointer image = m_ViewerCore->getCurrentImage();
+			image->getISISImage()->foreachVoxel<double>(vop);
+			util::slist voxelOpHistory;
+			if( image->getPropMap().hasProperty("VoxelOperation/opHistory") ) {
+				voxelOpHistory = image->getPropMap().getPropertyAs<util::slist>("VoxelOperation/opHistory");
+			}
+			voxelOpHistory.push_back(op);
+			image->getPropMap().setPropertyAs<util::slist>("VoxelOperation/opHistory", voxelOpHistory );
+			image->synchronize( image->zeroIsReserved() );
+			image->updateColorMap();
+			image->updateHistogram();
 			m_ViewerCore->updateScene();
-			m_ViewerCore->getUICore()->refreshUI(true);
+			m_ViewerCore->getUICore()->refreshUI(true);			
 		} catch( mu::Parser::exception_type &e ) {
 			QMessageBox msgBox;
 			msgBox.setText( e.GetMsg().c_str() );
