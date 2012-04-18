@@ -177,6 +177,7 @@ private:
 
 	template<typename TYPE>
 	void copyImageToVector( const data::Image &image, bool reserveZero ) {
+		m_ChunkVector.clear();
 		data::ValueArray<TYPE> imagePtr( ( TYPE * ) calloc( image.getVolume(), sizeof( TYPE ) ), image.getVolume() );
 		getImageProperties().memSizeInternal = image.getVolume() * sizeof( TYPE );
 		LOG( Dev, info ) << "Needed memory: " << getImageProperties().memSizeInternal / ( 1024.0 * 1024.0 ) << " mb.";

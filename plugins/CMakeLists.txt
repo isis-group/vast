@@ -16,6 +16,7 @@ option(${CMAKE_PROJECT_NAME}_PLUGIN_PYTHONINTERPRETER "Enable PythonInterpreter 
 option(${CMAKE_PROJECT_NAME}_PLUGIN_HISTOGRAM "Enable Histogram plugin" OFF)
 option(${CMAKE_PROJECT_NAME}_PLUGIN_PROPERTYTOOL "Enable PropertyTool plugin" OFF)
 option(${CMAKE_PROJECT_NAME}_PLUGIN_ITK_REGISTRATION "Enable itkRegistration plugin" OFF)
+option(${CMAKE_PROJECT_NAME}_PLUGIN_VOXELOPERATION "Enable VoxelOperation plugin" OFF)
 
 SET (CMAKE_SHARED_LINKER_FLAGS ${CMAKE_SHARED_LINKER_FLAGS_INIT} -Wl,-undefined,dynamic_lookup)
 
@@ -74,3 +75,10 @@ endif(${CMAKE_PROJECT_NAME}_PLUGIN_PROPERTYTOOL)
 if(${CMAKE_PROJECT_NAME}_PLUGIN_ITK_REGISTRATION)
 	add_subdirectory(itkRegistration)
 endif(${CMAKE_PROJECT_NAME}_PLUGIN_ITK_REGISTRATION)
+
+############################################################
+# VoxelOperation plugin
+############################################################
+if(${CMAKE_PROJECT_NAME}_PLUGIN_VOXELOPERATION)
+	add_subdirectory(VoxelOperation)
+endif(${CMAKE_PROJECT_NAME}_PLUGIN_VOXELOPERATION)
