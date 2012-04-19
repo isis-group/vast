@@ -339,7 +339,7 @@ void MainWindow::saveImage()
 	if( m_ViewerCore->hasImage() ) {
 		if( !m_ViewerCore->getCurrentImage()->getPropMap().getPropertyAs<util::slist>( "changedAttributes" ).size() ) {
 			QMessageBox msgBox;
-			msgBox.setText( "The image that is currently selected has no changes! WonŽt save anything." );
+			msgBox.setText( "The image that is currently selected has no changes! Will not save anything." );
 			msgBox.exec();
 		} else {
 			QMessageBox msgBox;
@@ -363,7 +363,7 @@ void MainWindow::saveImage()
 				break;
 			case QMessageBox::Yes:
 				toggleLoadingIcon( true, QString( "Saving image to " ) + m_ViewerCore->getCurrentImage()->getImageProperties().fileName.c_str() );
-				isis::data::IOFactory::write( *m_ViewerCore->getCurrentImage()->getISISImage(), m_ViewerCore->getCurrentImage()->getImageProperties().fileName, "", "" );
+				isis::data::IOFactory::write( *m_ViewerCore->getCurrentImage()->getISISImage(), m_ViewerCore->getCurrentImage()->getImageProperties().filePath, "", "" );
 				toggleLoadingIcon( false );
 				break;
 			}
