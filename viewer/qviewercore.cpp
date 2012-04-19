@@ -125,15 +125,6 @@ void QViewerCore::receiveMessage ( std::string message )
 }
 
 
-void QViewerCore::physicalCoordsChanged ( util::fvector4 physicalCoords )
-{
-	BOOST_FOREACH( ImageHolder::Vector::const_reference image, getImageVector() ) {
-		image->getImageProperties().physicalCoords = physicalCoords;
-		image->getImageProperties().voxelCoords = image->getISISImage()->getIndexFromPhysicalCoords( physicalCoords, true );
-	}
-	emitPhysicalCoordsChanged( physicalCoords );
-}
-
 void QViewerCore::onWidgetClicked ( widget::WidgetInterface *origin, util::fvector4 physicalCoords, Qt::MouseButton mouseButton )
 {
 	if( getMode() != statistical_mode ) {
@@ -142,14 +133,14 @@ void QViewerCore::onWidgetClicked ( widget::WidgetInterface *origin, util::fvect
 		}
 	}
 
-	emitOnWidgetClicked( physicalCoords, mouseButton );
 	physicalCoordsChanged( physicalCoords );
+	emitOnWidgetClicked( physicalCoords, mouseButton );
 }
 
 void QViewerCore::onWidgetMoved ( widget::WidgetInterface* /*origin*/, util::fvector4 physicalCoords, Qt::MouseButton mouseButton )
 {
-	emitOnWidgetMoved( physicalCoords, mouseButton );
 	physicalCoordsChanged( physicalCoords );
+	emitOnWidgetMoved( physicalCoords, mouseButton );
 }
 
 
@@ -253,6 +244,14 @@ void QViewerCore::settingsChanged()
 
 	updateScene();
 	m_UI->refreshUI();
+}
+void QViewerCore::physicalCoordsChanged ( util::fvector4 physicalCoords )
+{
+	BOOST_FOREACH( ImageHolder::Vector::const_reference image, getImageVector() ) {
+		image->getImageProperties().physicalCoords = physicalCoords;
+		image->getImageProperties().voxelCoords = image->getISISImage()->getIndexFromPhysicalCoords( physicalCoords, true );
+	}
+	emitPhysicalCoordsChanged( physicalCoords );
 }
 
 void QViewerCore::updateScene()

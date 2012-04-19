@@ -150,7 +150,7 @@ ImageHolder::Pointer ViewerCoreBase::addImage( const isis::data::Image &image, c
 	}
 
 	retImage->getImageProperties().boundingBox = geometrical::getPhysicalBoundingBox( retImage );
-
+	
 	//emit the signal
 	emitAddImage( retImage );
 	return retImage;

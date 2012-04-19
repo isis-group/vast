@@ -282,7 +282,10 @@ void QGeomWidget::paintLabels() const
 util::fvector4 QGeomWidget::getPhysicalCoordsFromMouseCoords ( const int &x, const int &y ) const
 {
 	if( m_ViewerCore->hasImage() ) {
-		util::fvector4 physicalCoords = m_ViewerCore->getCurrentImage()->getImageProperties().physicalCoords;
+		const ImageHolder::Pointer image =  m_ViewerCore->getCurrentImage();
+
+		util::fvector4 physicalCoords = image->getImageProperties().physicalCoords;
+		
 
 		switch( m_PlaneOrientation ) {
 		case axial:
