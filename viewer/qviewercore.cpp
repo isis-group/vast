@@ -131,7 +131,6 @@ void QViewerCore::physicalCoordsChanged ( util::fvector4 physicalCoords )
 		image->getImageProperties().physicalCoords = physicalCoords;
 		image->getImageProperties().voxelCoords = image->getISISImage()->getIndexFromPhysicalCoords( physicalCoords, true );
 	}
-	emitUpdateScene();
 	emitPhysicalCoordsChanged( physicalCoords );
 }
 

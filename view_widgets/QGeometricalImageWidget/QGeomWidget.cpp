@@ -372,9 +372,13 @@ void QGeomWidget::mouseMoveEvent ( QMouseEvent *e )
 	} else {
 		const util::fvector4 physicalCoords = getPhysicalCoordsFromMouseCoords(  e->x(), e->y() );
 
-		if( m_LeftMouseButtonPressed )  m_ViewerCore->onWidgetMoved( this, physicalCoords, Qt::LeftButton );
+		if( m_LeftMouseButtonPressed ) {
+			m_ViewerCore->onWidgetMoved( this, physicalCoords, Qt::LeftButton );
+		}
 
-		if( m_RightMouseButtonPressed ) m_ViewerCore->onWidgetMoved( this, physicalCoords, Qt::RightButton );
+		if( m_RightMouseButtonPressed ) {
+			m_ViewerCore->onWidgetMoved( this, physicalCoords, Qt::RightButton );
+		}
 	}
 
 }
