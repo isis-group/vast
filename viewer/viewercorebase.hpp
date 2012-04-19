@@ -34,7 +34,6 @@
 #include "settings.hpp"
 
 #include <map>
-#include <boost/uuid/uuid.hpp>
 #include <boost/signals2.hpp>
 
 #ifdef _OPENMP
@@ -90,7 +89,7 @@ public:
 private:
 	//this is the container which holds all the images
 	ImageHolder::Vector m_imageVector;
-	//this map associates all the images with an uuid
+	//this map associates all the images with their filenames
 	ImageHolder::Map m_ImageMap;
 	ImageHolder::Pointer  m_CurrentImage;
 	void initOMP();
