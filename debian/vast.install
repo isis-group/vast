@@ -1,1 +1,2 @@
 debian/vast.desktop usr/share/applications
+debian/tmp/usr/share/pixmaps/*

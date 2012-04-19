@@ -14,7 +14,7 @@ vast (0.4.0~beta-1) UNRELEASED; urgency=low
   * image widgets are now plugins
   * revised some design concepts
 
- -- Michael Hanke <mih@debian.org>  Mon, 26 Mar 2012 14:39:33 + 0100
+ -- Michael Hanke <mih@debian.org>  Mon, 26 Mar 2012 14:39:33 +0100
 
 vast (0.3.0~beta-1) UNRELEASED; urgency=low
 
