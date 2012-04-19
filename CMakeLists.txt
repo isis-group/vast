@@ -114,6 +114,7 @@ QT4_ADD_RESOURCES(vast_rcc_files ${RESOURCE_FILES})
 qt4_wrap_cpp(vast_moc_files ${VIEWER_FILES_HPP}  OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED)
 QT4_WRAP_UI(vast_UIS_H ${UI_FILES})
 
+#for some reasons this is necessary on lenny 64 bit distributions
 find_library(QT4_WEBKIT_LIB QtWebKit)
 
 ###########################################################
@@ -208,7 +209,7 @@ message(STATUS "QT libraries: ${QT_LIBRARIES} ")
 
 set(NEEDED_LIBS
 	${QT_LIBRARIES}
-    ${QT4_WEBKIT_LIB}
+	${QT4_WEBKIT_LIB}
 	${Boost_LIBRARIES}
 	${ISIS_LIB}
 	${ISIS_LIB_DEPENDS}
