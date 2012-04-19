@@ -12,7 +12,7 @@ set(QT_USE_OPENGL TRUE )
 INCLUDE(${QT_USE_FILE})
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
-qt4_wrap_cpp(widget_moc_files QGeomWidget.hpp )
+qt4_wrap_cpp(widget_moc_files QGeomWidget.hpp OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED)
 
 add_library(vastImageWidget_QtGeom SHARED QGeomWidget.cpp geomhandler.cpp ${widget_moc_files} )
 target_link_libraries(vastImageWidget_QtGeom ${ISIS_LIB}  ${ISIS_LIB_DEPENDS} ${QT_LIBRARIES})

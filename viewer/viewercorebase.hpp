@@ -85,6 +85,7 @@ public:
 	//signals
 	boost::signals2::signal<void ( ImageHolder::Pointer )> emitAddImage;
 	boost::signals2::signal<void ( ImageHolder::Pointer )> emitCurrentImageChanged;
+	boost::signals2::signal<void ( const util::fvector4& )> emitPhysicalCoordsChanged;
 
 private:
 	//this is the container which holds all the images

@@ -149,6 +149,8 @@ public:
 		}
 	}
 
+	void phyisicalCoordsChanged( const util::fvector4 &physicalCoords );
+	void voxelCoordsChanged( const util::ivector4 &voxelCoords );
 
 private:
 	util::Matrix4x4<float> calculateLatchedImageOrientation( bool transposed = false );

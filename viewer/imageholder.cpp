@@ -500,6 +500,18 @@ void ImageHolder::synchronize ( bool isReserved )
 	}
 }
 
+void ImageHolder::phyisicalCoordsChanged ( const util::fvector4& physicalCoords )
+{
+	getImageProperties().physicalCoords = physicalCoords;
+	getImageProperties().voxelCoords = getISISImage()->getIndexFromPhysicalCoords( physicalCoords, true );
+}
+
+void ImageHolder::voxelCoordsChanged ( const util::ivector4& voxelCoords )
+{
+	getImageProperties().voxelCoords = voxelCoords;
+	getImageProperties().physicalCoords = getISISImage()->getPhysicalCoordsFromIndex( voxelCoords );
+}
+
 
 }
 } //end namespace

@@ -96,7 +96,7 @@ Q_SIGNALS:
 	void emitVoxelCoordChanged( util::ivector4 );
 	void emitOnWidgetClicked( util::fvector4, Qt::MouseButton );
 	void emitOnWidgetMoved( util::fvector4, Qt::MouseButton );
-	void emitPhysicalCoordsChanged( util::fvector4 );
+// 	void emitPhysicalCoordsChanged( util::fvector4 );
 	void emitTimeStepChange( unsigned int );
 	void emitShowLabels( bool );
 	void emitUpdateScene( );
