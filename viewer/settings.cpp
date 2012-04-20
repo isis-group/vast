@@ -166,7 +166,7 @@ void Settings::initializeWithDefaultSettings()
 	setPropertyAs<bool>( "histogramOmitZero", true );
 	setPropertyAs<uint16_t>( "maxRecentOpenListSize", 10 );
 
-	setPropertyAs<std::string>( "vastSymbol", std::string( ":/common/minerva-MPG.png" ) );
+	setPropertyAs<std::string>( "vastSymbol", std::string( ":/common/vast.png" ) );
 
 	std::stringstream signature;
 	signature << "vast v" << ViewerCoreBase::getVersion() ;

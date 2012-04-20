@@ -119,7 +119,7 @@
          <bool>true</bool>
         </property>
         <property name="insertPolicy">
-         <enum>QComboBox::NoInsert</enum>
+         <enum>QComboBox::InsertAtTop</enum>
         </property>
        </widget>
       </item>
