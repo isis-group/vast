@@ -1,3 +1,9 @@
 debian/vast.desktop usr/share/applications
 debian/tmp/usr/share/pixmaps/*
 debian/tmp/usr/bin/*
+debian/tmp/usr/lib/vast/plugins/libvastPlugin_ProfilePlotter.so usr/lib/vast/plugins
+debian/tmp/usr/lib/vast/plugins/libvastPlugin_OrientationCorrection.so usr/lib/vast/plugins
+debian/tmp/usr/lib/vast/plugins/libvastPlugin_MaskEdit.so usr/lib/vast/plugins
+debian/tmp/usr/lib/vast/plugins/libvastPlugin_CorrelationPlotter.so usr/lib/vast/plugins
+debian/tmp/usr/lib/vast/plugins/libvastPlugin_Histogram.so usr/lib/vast/plugins
+debian/tmp/usr/lib/vast/plugins/libvastPlugin_PropertyTool.so usr/lib/vast/plugins
