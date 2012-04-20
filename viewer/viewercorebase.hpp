@@ -59,6 +59,8 @@ public:
 	virtual ImageHolder::Vector addImageList( const std::list< data::Image > imageList, const ImageHolder::ImageType &imageType );
 	virtual ImageHolder::Pointer addImage( const data::Image &image, const ImageHolder::ImageType &imageType );
 
+	bool removeImage( const ImageHolder::Pointer image );
+
 	const boost::shared_ptr<Settings> getSettings() const { return m_Settings; }
 	boost::shared_ptr<Settings> getSettings() { return m_Settings; }
 
@@ -88,6 +90,7 @@ public:
 	boost::signals2::signal<void ( const util::fvector4& )> emitGlobalPhysicalCoordsChanged;
 	boost::signals2::signal<void ( const util::ivector4& )> emitGlobalVoxelCoordsChanged;
 	boost::signals2::signal<void ( const size_t& )> emitGlobalTimestepChanged;
+	boost::signals2::signal<void ()> emitRefreshAllWidgets;
 
 private:
 	//this is the container which holds all the images
