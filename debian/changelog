@@ -1,3 +1,11 @@
+vast (0.5.2-1) UNRELEASED; urgency=low
+
+  [ ISIS Group (The friendly isis team) ]
+  * fixed bug that caused saving image to the wrong location
+  * fixed vast icon problems
+
+ -- ISIS Group (The friendly isis team) <gr_isis@cbs.mpg.de>  Fri, 20 Apr 2012 09:46:00 +0200
+
 vast (0.5.1-1) UNRELEASED; urgency=low
 
   [ ISIS Group (The friendly isis team) ]
