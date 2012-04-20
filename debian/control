@@ -13,6 +13,7 @@ Package: vast
 Section: science
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
+Conflicts: vast-correlationplotter, vast-histogram, vast-maskedit, vast-orientationcorrection, vast-propertytool, vast-timeplotter
 Recommends: libisis-ioplugins-common, libisis-ioplugins-dicom, libjs-jquery, libjs-underscore, vast-widget-qtgeom, vast-plugin-voxelop
 Description: Viewer for medical image data
  Vast supports all image formats that are supportet by the isis package,
