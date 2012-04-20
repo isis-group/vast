@@ -150,6 +150,11 @@ ImageHolder::Pointer ViewerCoreBase::addImage( const isis::data::Image &image, c
 	}
 
 	retImage->getImageProperties().boundingBox = geometrical::getPhysicalBoundingBox( retImage );
+
+	//connect signals to image
+	emitGlobalPhysicalCoordsChanged.connect( boost::bind( &ImageHolder::phyisicalCoordsChanged, retImage, _1 ) );
+	emitGlobalVoxelCoordsChanged.connect( boost::bind( &ImageHolder::voxelCoordsChanged, retImage, _1 ) );
+	emitGlobalTimestepChanged.connect( boost::bind( &ImageHolder::timestepChanged, retImage, _1 ) );
 	
 	//emit the signal
 	emitAddImage( retImage );

@@ -63,6 +63,7 @@ private:
 		std::string filePath;
 		util::ivector4 voxelCoords;
 		util::fvector4 physicalCoords;
+		size_t timestep;
 		util::fvector4 voxelSize;
 		bool isVisible;
 		bool isRGB;
@@ -151,6 +152,7 @@ public:
 
 	void phyisicalCoordsChanged( const util::fvector4 &physicalCoords );
 	void voxelCoordsChanged( const util::ivector4 &voxelCoords );
+	void timestepChanged( const size_t &timestep );
 
 private:
 	util::Matrix4x4<float> calculateLatchedImageOrientation( bool transposed = false );
