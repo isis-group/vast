@@ -88,6 +88,7 @@ void isis::viewer::ui::FileDialog::showEvent( QShowEvent * )
 {
 	setup();
 	m_Interface.fileDirEdit->clearEditText();
+	m_Interface.fileDirEdit->clear();
 	adjustSize();
 }
 
