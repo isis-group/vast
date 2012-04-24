@@ -236,8 +236,7 @@ bool ImageHolder::setImage( const data::Image &image, const ImageType &_imageTyp
 	LOG( Dev, verbose_info )  << "Fetched image of size " << m_ImageSize << " and type "
 							  << image.getMajorTypeName() << ".";
 	//copy the image into continuous memory space and assure consistent data type
-	m_ZeroIsReserved  = !getImageProperties().isRGB && getImageProperties().imageType == statistical_image;
-	synchronize( m_ZeroIsReserved );
+	synchronize( );
 
 	LOG_IF( m_ChunkVector.empty(), Dev, error ) << "Size of chunk vector is 0!";
 
@@ -450,15 +449,15 @@ void ImageHolder::setVoxel ( const size_t &first, const size_t &second, const si
 	}
 }
 
-void ImageHolder::synchronize ( bool isReserved )
+void ImageHolder::synchronize ()
 {
 	collectImageInfo();
-	m_ZeroIsReserved = isReserved;
+	m_ZeroIsReserved = !getImageProperties().isRGB && getImageProperties().imageType == statistical_image;
 
 	if( getImageProperties().isRGB ) {
-		copyImageToVector<InternalImageColorType>( *getISISImage(), isReserved );
+		copyImageToVector<InternalImageColorType>( *getISISImage(), m_ZeroIsReserved );
 	} else {
-		copyImageToVector<InternalImageType>( *getISISImage(), isReserved );
+		copyImageToVector<InternalImageType>( *getISISImage(), m_ZeroIsReserved );
 	}
 
 	if( m_ZeroIsReserved ) {

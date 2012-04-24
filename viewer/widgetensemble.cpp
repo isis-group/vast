@@ -49,7 +49,11 @@ void WidgetEnsemble::addImage ( const ImageHolder::Pointer image )
 {
 	//if image is not in list
 	if( std::find( m_imageVector.begin(), m_imageVector.end(), image ) == m_imageVector.end()  ) {
-		m_imageVector.push_back( image );
+		if( image->getImageProperties().imageType == ImageHolder::structural_image ) {
+			m_imageVector.insert( m_imageVector.begin(), image );
+		} else {
+			m_imageVector.push_back( image );
+		}
 		emitAddImage( image );
 		emitCheckIfNeeded();
 	} else {
@@ -147,6 +151,16 @@ void WidgetEnsemble::update( const ViewerCoreBase *core )
 	}
 }
 
+const ImageHolder::Pointer WidgetEnsemble::getFirstImageOfType ( const ImageHolder::ImageType& imageType ) const
+{
+	BOOST_FOREACH( const ImageHolder::Vector::const_reference image, getImageVector() ) {
+		if( image->getImageProperties().imageType == imageType ) {
+			return image;
+		}
+	}
+	LOG( Dev, warning ) << "getFirstImageOfType: Could not find any image of type " << imageType;
+	return ImageHolder::Pointer();
+}
 
 
 }

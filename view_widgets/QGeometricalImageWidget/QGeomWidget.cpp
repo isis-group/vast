@@ -138,9 +138,13 @@ void QGeomWidget::paintEvent ( QPaintEvent* /*event*/ )
 									m_Translation,
 									m_ViewerCore->getCurrentImage()->getImageProperties().physicalCoords,
 									m_Zoom, m_PlaneOrientation,
-									( m_RightMouseButtonPressed && !m_LeftMouseButtonPressed ) || m_ZoomEvent );
-		m_BoundingBox[0] -= m_Translation[0];
-		m_BoundingBox[1] -= m_Translation[1];
+									( m_RightMouseButtonPressed && !m_LeftMouseButtonPressed )
+									|| m_ZoomEvent
+									|| ( !m_RightMouseButtonPressed && !m_LeftMouseButtonPressed  ) );
+		if( m_Zoom > 1 ) {
+			m_BoundingBox[0] -= m_Translation[0];
+			m_BoundingBox[1] -= m_Translation[1];
+		}
 		m_ZoomEvent = false;
 
 		updateViewPort();

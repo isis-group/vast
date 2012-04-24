@@ -143,7 +143,6 @@ int main( int argc, char *argv[] )
 
 	if( zmapIsSet ) {
 		core->setMode( ViewerCoreBase::statistical_mode );
-
 	}  else {
 		core->setMode( ViewerCoreBase::default_mode );
 	}

@@ -122,11 +122,9 @@ public:
 	boost::shared_ptr<const void>
 	getRawAdress( size_t timestep = 0 ) const;
 
-	//  bool operator<( const ImageHolder &ref ) const { return m_ID < ref.getID(); }
-
 	void checkVoxelCoords( util::ivector4 &voxelCoords );
 
-	void synchronize( bool isReserved );
+	void synchronize( );
 	double getInternalExtent()  const;
 
 	void updateColorMap();
@@ -224,7 +222,6 @@ private:
 		LOG( Dev, info ) << "Setting true zero for " << getImageProperties().fileName;
 		// first make shure the images datatype is consistent
 		data::TypedImage<TYPE> tImage ( image );
-
 		//now set all voxels to the m_ReservedValue that are 0 in the origin image
 
 		for( size_t t = 0; t < getImageSize()[3]; t++ ) {
