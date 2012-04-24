@@ -283,10 +283,10 @@ util::fvector4 QGeomWidget::getPhysicalCoordsFromMouseCoords ( const int &x, con
 {
 	if( m_ViewerCore->hasImage() ) {
 		const ImageHolder::Pointer image =  m_ViewerCore->getCurrentImage();
-
-		util::fvector4 physicalCoords = image->getImageProperties().physicalCoords;
 		
-
+		util::fvector4 physicalCoords = image->getImageProperties().physicalCoords;
+		const util::ivector4 oldVoxelCoords = image->getImageProperties().voxelCoords;
+		
 		switch( m_PlaneOrientation ) {
 		case axial:
 			physicalCoords[0] = ( ( width() - x ) - m_ViewPort[0] ) / m_WindowViewPortScaling + m_BoundingBox[0] / _internal::rasteringFac;
@@ -304,12 +304,15 @@ util::fvector4 QGeomWidget::getPhysicalCoordsFromMouseCoords ( const int &x, con
 			break;
 		}
 
+		const util::ivector4 mappingVec = mapCoordsToOrientation( util::ivector4(0,1,2,3), image->getImageProperties().latchedOrientation, m_PlaneOrientation, true  );
 		if( m_RasterPhysicalCoords ) {
-			physicalCoords = m_ViewerCore->getCurrentImage()->getISISImage()->getPhysicalCoordsFromIndex(
-								 m_ViewerCore->getCurrentImage()->getISISImage()->getIndexFromPhysicalCoords( physicalCoords ) );
+			util::ivector4 voxelCoords = image->getISISImage()->getIndexFromPhysicalCoords( physicalCoords );
+			voxelCoords[mappingVec[2]] = oldVoxelCoords[mappingVec[2]];
+			return image->getISISImage()->getPhysicalCoordsFromIndex( voxelCoords );
+		} else {
+			return physicalCoords;
+			
 		}
-
-		return physicalCoords;
 	}
 
 	return util::fvector4();
