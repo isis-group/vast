@@ -1,3 +1,9 @@
+vast (0.5.3-1) UNRELEASED; urgency=low
+
+  * Fixed bugs
+
+ -- ISIS Group (The friendly isis team) <gr_isis@cbs.mpg.de>  Tue, 24 Apr 2012 14:39:21 +0200
+
 vast (0.5.2-2) natty; urgency=low
 
   * fixed missing executalbe
