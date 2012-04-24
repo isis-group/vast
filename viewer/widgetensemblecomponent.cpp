@@ -52,6 +52,7 @@ bool WidgetEnsembleComponent::checkIfNeeded()
 		}
 	}
 	m_needed = needed;
+	m_dockWidget->setVisible(m_needed);
 	return needed;
 }
 

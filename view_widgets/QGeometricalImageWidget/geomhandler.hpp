@@ -41,7 +41,7 @@ namespace widget
 namespace _internal
 {
 
-const uint8_t rasteringFac = 20;
+const uint8_t rasteringFac = 50;
 
 geometrical::BoundingBoxType getVoxelBoundingBox( const ImageHolder::Vector &images );
 

@@ -427,39 +427,24 @@ void QViewerCore::openFileList( const std::list< FileInformation > fileInfoList 
 
 void QViewerCore::closeImage ( ImageHolder::Pointer image, bool refreshUI )
 {
-	const size_t oldNumberImages = getImageVector().size();
-	LOG( Dev, info ) << "Closing image " << image->getImageProperties().fileName;
 	BOOST_FOREACH( WidgetEnsemble::Vector::reference ensemble, getUICore()->getEnsembleList() ) {
 		ensemble->removeImage( image );
 	}
 
-	//if this image is the current one, we have to set one of the residual images to the current one
-	if( getCurrentImage().get() == image.get() ) {
-		LOG( Dev, info ) << "This was the current image so setting one of the residual images to current image";
-		ImageHolder::Vector tmpList = getImageVector();
-		tmpList.erase( std::find ( tmpList.begin(), tmpList.end(), image ) );
-
-		if( tmpList.size() ) {
-			setCurrentImage( tmpList.front() );
-		} else {
-			setCurrentImage( ImageHolder::Pointer() );
-		}
-	}
-
-	getImageVector().erase( std::find ( getImageVector().begin(), getImageVector().end(), image ) );
-	getImageMap().erase( image->getImageProperties().filePath );
-
-	if( refreshUI ) {
-		getUICore()->refreshUI( false );
-	}
-
-	updateScene();
-
-	if( ( getImageVector().size() == getImageMap().size() ) && ( getImageVector().size() == ( oldNumberImages - 1 ) ) ) {
+	const bool ok = removeImage( image );
+	if( ok ) {
 		LOG( Dev, info ) << "Successfully removed image.";
 	} else {
 		LOG( Dev, error ) << "Error during removing of image " << image->getImageProperties().fileName;
 	}
+	updateScene();
+	
+	if( refreshUI ) {
+		getUICore()->refreshUI( false );
+	}
+
+
+
 }
 
 

@@ -65,7 +65,6 @@ geometrical::BoundingBoxType getVoxelBoundingBox ( const ImageHolder::Vector &im
 }
 
 
-
 util::fvector4 getPhysicalBoundingBox ( const ImageHolder::Vector &images, const PlaneOrientation &orientation, const bool &latched )
 {
 	geometrical::BoundingBoxType currentBoundingBox;

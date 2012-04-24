@@ -512,6 +512,14 @@ void ImageHolder::voxelCoordsChanged ( const util::ivector4& voxelCoords )
 	getImageProperties().physicalCoords = getISISImage()->getPhysicalCoordsFromIndex( voxelCoords );
 }
 
+void ImageHolder::timestepChanged ( const size_t& timestep )
+{
+	getImageProperties().timestep = timestep;
+	if( getImageProperties().timestep >= getISISImage()->getSizeAsVector()[3] ) {
+		getImageProperties().timestep = getISISImage()->getSizeAsVector()[3] - 1;
+	}
+}
+
 
 }
 } //end namespace
