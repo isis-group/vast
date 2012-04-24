@@ -304,7 +304,7 @@ util::fvector4 QGeomWidget::getPhysicalCoordsFromMouseCoords ( const int &x, con
 			break;
 		}
 
-		const util::ivector4 mappingVec = mapCoordsToOrientation( util::ivector4(0,1,2,3), image->getImageProperties().latchedOrientation, m_PlaneOrientation, true  );
+		const util::ivector4 mappingVec = mapCoordsToOrientation( util::ivector4(0,1,2,3), image->getImageProperties().latchedOrientation, m_PlaneOrientation  );
 		if( m_RasterPhysicalCoords ) {
 			util::ivector4 voxelCoords = image->getISISImage()->getIndexFromPhysicalCoords( physicalCoords );
 			voxelCoords[mappingVec[2]] = oldVoxelCoords[mappingVec[2]];
