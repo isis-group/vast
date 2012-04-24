@@ -65,6 +65,8 @@ public:
 	const ImageHolder::Vector &getImageVector() const { return m_imageVector; }
 	ImageHolder::Vector &getImageVector() { return m_imageVector; }
 
+	const ImageHolder::Pointer getFirstImageOfType( const ImageHolder::ImageType &imageType ) const;
+
 	void setIsCurrent( bool current );
 	bool isCurrent() const { return m_isCurrent; }
 

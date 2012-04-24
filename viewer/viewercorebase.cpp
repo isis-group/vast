@@ -92,7 +92,6 @@ ImageHolder::Vector ViewerCoreBase::addImageList( const std::list< data::Image >
 ImageHolder::Pointer ViewerCoreBase::addImage( const isis::data::Image &image, const isis::viewer::ImageHolder::ImageType &imageType )
 {
 	std::string fileName;
-
 	if( image.hasProperty( "source" ) ) {
 		fileName = image.getPropertyAs<std::string>( "source" );
 	} else {
@@ -101,7 +100,6 @@ ImageHolder::Pointer ViewerCoreBase::addImage( const isis::data::Image &image, c
 	}
 
 	ImageHolder::Pointer  retImage = ImageHolder::Pointer( new ImageHolder );
-
 	m_imageVector.push_back( retImage );
 
 	//look if this filename already exists.

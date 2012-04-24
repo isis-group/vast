@@ -61,7 +61,7 @@ void VoxelOperationDialog::calculatePressed()
 			}
 			voxelOpHistory.push_back(op);
 			image->getPropMap().setPropertyAs<util::slist>("VoxelOperation/opHistory", voxelOpHistory );
-			image->synchronize( image->zeroIsReserved() );
+			image->synchronize( );
 			image->updateColorMap();
 			image->updateHistogram();
 			m_ViewerCore->updateScene();
