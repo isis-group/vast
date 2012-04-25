@@ -85,8 +85,9 @@ public:
 	const ImageHolder::Map &getImageMap() const { return m_ImageMap; }
 
 	//signals
-	boost::signals2::signal<void ( ImageHolder::Pointer )> emitAddImage;
-	boost::signals2::signal<void ( ImageHolder::Pointer )> emitCurrentImageChanged;
+	boost::signals2::signal<void ( const ImageHolder::Pointer )> emitAddImage;
+	boost::signals2::signal<void ( const ImageHolder::Pointer )> emitCurrentImageChanged;
+	boost::signals2::signal<void ( const ImageHolder::Pointer )> emitImageContentChanged;
 	boost::signals2::signal<void ( const util::fvector4& )> emitGlobalPhysicalCoordsChanged;
 	boost::signals2::signal<void ( const util::ivector4& )> emitGlobalVoxelCoordsChanged;
 	boost::signals2::signal<void ( const size_t& )> emitGlobalTimestepChanged;

@@ -107,7 +107,9 @@ private:
 
 	float m_OpacityGradientFactor;
 	OptionWidget *m_OptionWidget;
-
+	
+private Q_SLOTS:
+	void reloadImage( const ImageHolder::Pointer );
 
 };
 

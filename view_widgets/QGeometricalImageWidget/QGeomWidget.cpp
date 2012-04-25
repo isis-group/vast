@@ -75,6 +75,8 @@ void QGeomWidget::setup ( QViewerCore *core, QWidget *parent , PlaneOrientation 
 	connect( m_ViewerCore, SIGNAL( emitShowLabels( bool ) ), this, SLOT( setShowLabels( bool ) ) );
 	connect( m_ViewerCore, SIGNAL( emitSetEnableCrosshair( bool ) ), this, SLOT( setEnableCrosshair( bool ) ) );
 
+	m_ViewerCore->emitImageContentChanged.connect( boost::bind( &QGeomWidget::updateScene, this ) );
+
 }
 
 void QGeomWidget::resizeEvent ( QResizeEvent *event )

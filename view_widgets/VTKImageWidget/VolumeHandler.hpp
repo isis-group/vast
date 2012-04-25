@@ -47,7 +47,7 @@ class VolumeHandler
 public:
 	VolumeHandler();
 
-	static vtkImageData *getVTKImageData( boost::shared_ptr<ImageHolder> image, const size_t &timestep = 0 );
+	static vtkImageData *getVTKImageData( const ImageHolder::Pointer image, const size_t &timestep = 0 );
 
 };
 

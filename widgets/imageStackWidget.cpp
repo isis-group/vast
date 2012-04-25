@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * Author: Erik Türke, tuerke@cbs.mpg.de
+ * Author: Erik Tuerke, tuerke@cbs.mpg.de
  *
  * imageStackWidget.cpp
  *
@@ -46,21 +46,58 @@ ImageStack::ImageStack( QWidget *parent, ImageStackWidget *widget )
 	setVerticalScrollMode( ScrollPerItem );
 	setVerticalScrollBarPolicy( Qt::ScrollBarAsNeeded );
 	setSortingEnabled( false );
+	typedef widget::WidgetLoader::WidgetMapType::const_reference WRef;
+	QSignalMapper *signalMapper = new QSignalMapper( this );
+	const widget::WidgetLoader::WidgetMapType &widgetMap = util::Singletons::get<widget::WidgetLoader, 10>().getWidgetMap();
+	BOOST_FOREACH( WRef w, widgetMap ) {
+		QAction *action = new QAction( w.first.c_str(), this );
+		m_WidgetActions.push_back( action );
+		signalMapper->setMapping( action, w.first.c_str() );
+		connect( action, SIGNAL( triggered(bool)), signalMapper, SLOT( map()) );
+	}
+	connect( signalMapper, SIGNAL( mapped(QString)), m_Widget, SLOT( openImageInWidget(QString)) );
+}
+
+void ImageStackWidget::openImageInWidget ( QString widget )
+{
+	const std::string imageName = m_ImageStack->currentItem()->data( Qt::UserRole ).toString().toStdString();
+	if( m_ViewerCore->getImageMap().find( imageName ) != m_ViewerCore->getImageMap().end() ) {
+		const ImageHolder::Pointer image = m_ViewerCore->getImageMap().at( imageName );
+		std::stringstream ss;
+		ss << "Show \"" << image->getImageProperties().fileName << "\" in new widget...";
+		QMessageBox msgBox;
+		msgBox.setText(ss.str().c_str());
+		msgBox.setInformativeText("Do you want to copy this image?");
+		msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+		msgBox.setIcon( QMessageBox::Question );
+		const int ret = msgBox.exec();
+
+		switch( ret ) {
+			case QMessageBox::Yes:
+				//TODO actually we do not have to do a copy of the image
+				m_ViewerCore->getUICore()->createViewWidgetEnsemble( widget.toStdString(), m_ViewerCore->addImage( *image->getISISImage().get(), image->getImageProperties().imageType ) );
+				break;
+			case QMessageBox::No:
+				m_ViewerCore->getUICore()->createViewWidgetEnsemble( widget.toStdString(), image );
+				break;
+		}
+		m_ViewerCore->getUICore()->refreshUI();
+	}
 }
 
 void ImageStack::contextMenuEvent( QContextMenuEvent *event )
 {
-
 	QMenu menu( this );
+	QMenu *openInWidgetMenu = new QMenu( "Show in new widget...", this );
+	BOOST_FOREACH( const std::list<QAction*>::const_reference action, m_WidgetActions ) {
+		openInWidgetMenu->addAction( action );
+	}
 	menu.addAction( m_Widget->m_Interface.actionClose_image );
-	QMenu *imageTypeMenu = new QMenu( tr( "Image type" ), this );
-	imageTypeMenu->addAction( m_Widget->m_Interface.actionStructural_image );
-	imageTypeMenu->addAction( m_Widget->m_Interface.actionImage_type_stats );
-	//TODO
-	//  menu.addMenu( imageTypeMenu );
+	menu.addMenu( openInWidgetMenu );
 	menu.addSeparator();
 	menu.addAction( m_Widget->m_Interface.actionDistribute_images );
 	menu.addAction( m_Widget->m_Interface.actionClose_all_images );
+
 	menu.exec( event->globalPos() );
 }
 
