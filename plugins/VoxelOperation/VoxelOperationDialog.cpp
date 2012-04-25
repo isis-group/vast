@@ -64,7 +64,7 @@ void VoxelOperationDialog::calculatePressed()
 			image->synchronize( );
 			image->updateColorMap();
 			image->updateHistogram();
-			m_ViewerCore->updateScene();
+			m_ViewerCore->emitImageContentChanged( image );
 			m_ViewerCore->getUICore()->refreshUI(true);			
 		} catch( mu::Parser::exception_type &e ) {
 			QMessageBox msgBox;

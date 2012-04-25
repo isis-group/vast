@@ -173,22 +173,6 @@
     <string>Close all images</string>
    </property>
   </action>
-  <action name="actionImage_type_stats">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>Statistical image</string>
-   </property>
-  </action>
-  <action name="actionStructural_image">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>Structural image</string>
-   </property>
-  </action>
  </widget>
  <resources>
   <include location="../resources/viewer.qrc"/>

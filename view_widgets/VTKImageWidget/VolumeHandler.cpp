@@ -38,7 +38,7 @@ VolumeHandler::VolumeHandler( )
 {
 }
 
-vtkImageData *VolumeHandler::getVTKImageData( boost::shared_ptr< ImageHolder > image, const size_t &timestep )
+vtkImageData *VolumeHandler::getVTKImageData( const ImageHolder::Pointer image, const size_t &timestep )
 {
 	using namespace boost::numeric::ublas;
 	const util::ivector4 size = image->getImageSize();

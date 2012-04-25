@@ -109,6 +109,7 @@ void VTKImageWidgetImplementation::commonInit()
 	connect( m_ViewerCore, SIGNAL( emitPhysicalCoordsChanged( util::fvector4 ) ), this, SLOT( lookAtPhysicalCoords( util::fvector4 ) ) );
 	connect( m_ViewerCore, SIGNAL( emitZoomChanged( float ) ), this, SLOT( setZoom( float ) ) );
 	connect( m_ViewerCore, SIGNAL( emitSetEnableCrosshair( bool ) ), this, SLOT( setEnableCrosshair( bool ) ) );
+	m_ViewerCore->emitImageContentChanged.connect( boost::bind( &VTKImageWidgetImplementation::reloadImage, this, _1 ) );
 	setFocus();
 	SetRenderWindow( m_RenderWindow );
 
@@ -151,12 +152,18 @@ void VTKImageWidgetImplementation::setEnableCrosshair ( bool enable )
 	m_RenderWindow->Render();
 }
 
+void VTKImageWidgetImplementation::reloadImage ( const ImageHolder::Pointer image )
+{
+	const ComponentsMapType::iterator iter = m_VTKImageComponentsMap.find( image );
+	if( iter != m_VTKImageComponentsMap.end() ) {
+		iter->second.setVTKImageData( VolumeHandler::getVTKImageData( image, image->getImageProperties().voxelCoords[3] ) );
+	}
+}
+
+
 void VTKImageWidgetImplementation::addImage ( const boost::shared_ptr< ImageHolder > image )
 {
 	VTKImageComponents component = m_VTKImageComponentsMap[image];
-	component.mapper->SetCroppingRegionPlanes( -100, 100, -100, 100, -100, 100 );
-	//  component.mapper->SetCropping(1);
-	//  m_ImageList.push_back( image );
 	m_Renderer->AddVolume( component.volume );
 	component.setVTKImageData( VolumeHandler::getVTKImageData( image, image->getImageProperties().voxelCoords[3] ) );
 
