@@ -1,3 +1,10 @@
+vast (0.5.5-1) UNRELEASED; urgency=low
+
+  * add capability to show image in new widget
+  * image operations are now propagate to all widgets
+
+ -- ISIS Group (The friendly isis team) <gr_isis@cbs.mpg.de>  Wed, 25 Apr 2012 10:26:22 +0200
+ 
 vast (0.5.4-1) UNRELEASED; urgency=low
 
   * fixed bug when visualizing statistical images
