@@ -34,14 +34,30 @@ namespace viewer
 namespace widget
 {
 
-OptionWidget::OptionWidget ( QWidget *parent, QViewerCore *core )
-	: QWidget ( parent ),
-	  m_ViewerCore( core )
+OptionWidget::OptionWidget ( QWidget *parent )
+	: QWidget ( parent )
 {
 	m_Interface.setupUi( this );
+
 }
 
+void OptionWidget::setWidget ( VTKImageWidgetImplementation* widget)
+{
+	m_Widget = widget;
+	connect( m_Interface.anterior, SIGNAL( pressed()), m_Widget, SLOT( showAnterior() ) );
+	connect( m_Interface.inferior, SIGNAL( pressed()), m_Widget, SLOT( showInferior() ) );
+	connect( m_Interface.posterior, SIGNAL( pressed()), m_Widget, SLOT( showPosterior() ) );
+	connect( m_Interface.superior, SIGNAL( pressed()), m_Widget, SLOT( showSuperior() ) );
+	connect( m_Interface.right, SIGNAL( pressed()), m_Widget, SLOT( showRight() ) );
+	connect( m_Interface.left, SIGNAL( pressed()), m_Widget, SLOT( showLeft() ) );
+	connect( m_Interface.opacityGradient, SIGNAL( valueChanged(int)), this, SLOT( opacityGradientChanged(int)));
+}
 
+void OptionWidget::opacityGradientChanged ( int value )
+{
+	m_Widget->setOpacityGradientFactor( value / (double)m_Interface.opacityGradient->maximum());
+	m_Widget->updateScene();
+}
 
 
 }

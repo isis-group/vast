@@ -49,7 +49,9 @@ public:
 	typedef boost::shared_ptr< WidgetInterface > WidgetInterfacePointer;
 
 	typedef isis::viewer::widget::WidgetInterface* ( *loadWidget_func )() ;
+	typedef QWidget* (  *loadOption_func )() ;
 	typedef std::map<std::string, loadWidget_func > WidgetMapType;
+	typedef std::map<std::string, loadOption_func > OptionDialogMapType;
 	typedef std::map<std::string, const util::PropertyMap *> WidgetPropertyMapType;
 
 	typedef std::list<std::string> PathsType;
@@ -59,6 +61,7 @@ public:
 
 	WidgetMapType getWidgetMap() const { return widgetMap; }
 	WidgetPropertyMapType getWidgetPropertyMap() const { return widgetPropertyMap; }
+	OptionDialogMapType getOptionWidgetMap() const { return optionDialogMap; }
 
 	static WidgetLoader &get();
 
@@ -67,6 +70,7 @@ protected:
 
 	unsigned int findWidgets( std::list<std::string> paths );
 	WidgetPropertyMapType widgetPropertyMap;
+	OptionDialogMapType optionDialogMap;
 	WidgetMapType widgetMap;
 
 private:

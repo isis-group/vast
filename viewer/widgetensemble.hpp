@@ -61,6 +61,8 @@ public:
 	void removeImage( const ImageHolder::Pointer image );
 
 	bool hasImage( const ImageHolder::Pointer image ) const;
+	bool hasOptionWidget() const { return m_hasOptionWidget; }
+	QWidget *getOptionWidget() const { return m_optionWidget; }
 
 	const ImageHolder::Vector &getImageVector() const { return m_imageVector; }
 	ImageHolder::Vector &getImageVector() { return m_imageVector; }
@@ -70,6 +72,8 @@ public:
 	void setIsCurrent( bool current );
 	bool isCurrent() const { return m_isCurrent; }
 
+	void setOptionWidget( QWidget *optionWidget ) { m_optionWidget = optionWidget; m_hasOptionWidget = optionWidget; }
+
 	void update( const ViewerCoreBase * );
 
 	//signals
@@ -78,6 +82,8 @@ public:
 	boost::signals2::signal<void () > emitCheckIfNeeded;
 
 private:
+	QWidget *m_optionWidget;
+	bool m_hasOptionWidget;
 	QFrame *m_frame;
 	QGridLayout *m_layout;
 	unsigned short m_cols;

@@ -115,16 +115,20 @@ extern "C" {
 #ifdef WIN32
 	extern __declspec( dllexport ) isis::viewer::widget::WidgetInterface *loadWidget();
 	extern __declspec( dllexport ) const isis::util::PropertyMap* getProperties();
+	extern __declspec( dllexport ) const QWidget* loadOptionWidget();
 #else
 	extern isis::viewer::widget::WidgetInterface *loadWidget();
 	extern const isis::util::PropertyMap* getProperties();
+	extern const QWidget* loadOptionWidget();
 #endif
 #else
 #ifdef WIN32
 	extern __declspec( dllexport ) WidgetInterface *loadWidget();
 	extern __declspec( dllexport ) const isis::util::PropertyMap* getProperties();
+	extern __declspec( dllexport ) const QWidget* loadOptionWidget();
 #else
 	extern WidgetInterface *loadWidget();
+	extern const QWdiget* loadOptionWidget();
 	extern const isis::util::PropertyMap* getProperties();
 #endif
 #endif

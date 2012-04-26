@@ -90,7 +90,7 @@
     <item row="1" column="0">
      <layout class="QGridLayout" name="leftGridLayout">
       <property name="sizeConstraint">
-       <enum>QLayout::SetMinimumSize</enum>
+       <enum>QLayout::SetDefaultConstraint</enum>
       </property>
       <property name="spacing">
        <number>2</number>

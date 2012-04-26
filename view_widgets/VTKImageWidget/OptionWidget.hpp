@@ -38,20 +38,28 @@ namespace viewer
 namespace widget
 {
 
+class VTKImageWidgetImplementation;
+	
 class OptionWidget : public QWidget
 {
 	Q_OBJECT
 public:
-	OptionWidget( QWidget *parent, QViewerCore *core );
+	OptionWidget( QWidget *parent = 0 );
+	void setWidget( VTKImageWidgetImplementation* );
+
+public Q_SLOTS:
+	void opacityGradientChanged(int);
+
 private:
 	Ui::vtkOptionWidget m_Interface;
-	QViewerCore *m_ViewerCore;
+	VTKImageWidgetImplementation* m_Widget;
+	
 };
-
 
 }
 }
 } // end namespace
 
+#include "VTKImageWidgetImplementation.hpp"
 
 #endif //VTK_OPTION_WIDGET_HPP

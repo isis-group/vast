@@ -84,8 +84,15 @@ public Q_SLOTS:
 	virtual bool hasOptionWidget() const { return true; }
 	virtual QWidget *getOptionWidget() { return m_OptionWidget; }
 
+	void showAnterior();
+	void showPosterior();
+	void showRight();
+	void showLeft();
+	void showSuperior();
+	void showInferior();
 
-	void setOpacityGradientFactor( float factor ) { m_OpacityGradientFactor = factor; }
+
+	void setOpacityGradientFactor( double factor ) { m_OpacityGradientFactor = factor; }
 
 protected:
 	void paintEvent( QPaintEvent *event );
@@ -105,8 +112,10 @@ private:
 
 	ComponentsMapType m_VTKImageComponentsMap;
 
-	float m_OpacityGradientFactor;
+	double m_OpacityGradientFactor;
 	OptionWidget *m_OptionWidget;
+
+	util::FixedVector<double, 3> getCenterOfBoundingBox();
 	
 private Q_SLOTS:
 	void reloadImage( const ImageHolder::Pointer );

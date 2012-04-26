@@ -46,7 +46,6 @@ VTKImageWidgetImplementation::VTKImageWidgetImplementation()
 	  m_CursorMapper( vtkPolyDataMapper::New() ),
 	  m_Cursor( vtkCursor3D::New() )
 {
-
 }
 
 VTKImageWidgetImplementation::VTKImageWidgetImplementation ( QViewerCore *core, QWidget *parent, PlaneOrientation orientation )
@@ -66,6 +65,7 @@ void VTKImageWidgetImplementation::setup ( QViewerCore *core, QWidget *parent, P
 	setParent( parent );
 	m_Layout = new QVBoxLayout( parent );
 	commonInit();
+	dynamic_cast<OptionWidget*>( getWidgetEnsemble()->getOptionWidget() )->setWidget(this);
 }
 
 
@@ -113,6 +113,8 @@ void VTKImageWidgetImplementation::commonInit()
 	setFocus();
 	SetRenderWindow( m_RenderWindow );
 
+	
+	
 	m_RenderWindow->AddRenderer( m_Renderer );
 	m_Renderer->SetBackground( 0.1, 0.2, 0.4 );
 	m_OpacityGradientFactor = 0;
@@ -217,15 +219,92 @@ void VTKImageWidgetImplementation::setInterpolationType ( InterpolationType inte
 		}
 	}
 }
+
 void VTKImageWidgetImplementation::setMouseCursorIcon ( QIcon )
 {
+}
+
+void VTKImageWidgetImplementation::showAnterior()
+{
+	const util::FixedVector<double,3> center = getCenterOfBoundingBox();
+	m_Renderer->ResetCamera();
+	m_Renderer->GetActiveCamera()->SetPosition(center[0],-600,center[2]);
+	m_Renderer->GetActiveCamera()->SetParallelProjection(1);
+	m_Renderer->GetActiveCamera()->SetViewUp(0,0,1);
+	m_RenderWindow->Render();
+	
+}
+
+void VTKImageWidgetImplementation::showInferior()
+{
+	const util::FixedVector<double,3> center = getCenterOfBoundingBox();
+	m_Renderer->ResetCamera();
+	m_Renderer->GetActiveCamera()->SetPosition(center[0], -center[1], -600);
+	m_Renderer->GetActiveCamera()->SetParallelProjection(1);
+	m_Renderer->GetActiveCamera()->SetViewUp(0,-1,0);
+	m_RenderWindow->Render();
+}
+
+void VTKImageWidgetImplementation::showLeft()
+{
+	const util::FixedVector<double,3> center = getCenterOfBoundingBox();
+	m_Renderer->ResetCamera();
+	m_Renderer->GetActiveCamera()->SetPosition(600, -center[1], center[2]);
+	m_Renderer->GetActiveCamera()->SetParallelProjection(1);
+	m_Renderer->GetActiveCamera()->SetViewUp(0,0,1);
+	m_RenderWindow->Render();
 
 }
 
+void VTKImageWidgetImplementation::showPosterior()
+{
+	const util::FixedVector<double,3> center = getCenterOfBoundingBox();
+	m_Renderer->ResetCamera();
+	m_Renderer->GetActiveCamera()->SetPosition(center[0],800,center[2]);
+	m_Renderer->GetActiveCamera()->SetParallelProjection(1);
+	m_Renderer->GetActiveCamera()->SetViewUp(0,0,1);
+	m_RenderWindow->Render();
+}
+
+void VTKImageWidgetImplementation::showRight()
+{
+	const util::FixedVector<double,3> center = getCenterOfBoundingBox();
+	m_Renderer->ResetCamera();
+	m_Renderer->GetActiveCamera()->SetPosition(-600, -center[1], center[2]);
+	m_Renderer->GetActiveCamera()->SetParallelProjection(1);
+	m_Renderer->GetActiveCamera()->SetViewUp(0,0,1);
+	m_RenderWindow->Render();
+}
+
+void VTKImageWidgetImplementation::showSuperior()
+{
+	const util::FixedVector<double,3> center = getCenterOfBoundingBox();
+	m_Renderer->ResetCamera();
+	m_Renderer->GetActiveCamera()->SetPosition(center[0], -center[1], 600);
+	m_Renderer->GetActiveCamera()->SetParallelProjection(1);
+	m_Renderer->GetActiveCamera()->SetViewUp(0,-1,0);
+	m_RenderWindow->Render();
+}
+
+
+isis::util::FixedVector< double, 3 > VTKImageWidgetImplementation::getCenterOfBoundingBox()
+{
+	util::FixedVector<double,3> ret;
+	const double *bounds = m_Actor->GetBounds();
+	ret[0] = (bounds[0] - bounds[1]) / 2.0;
+	ret[1] = (bounds[2] - bounds[3]) / 2.0;
+	ret[2] = (bounds[4] - bounds[5]) / 2.0;
+	return ret;
+}
 
 
 }}} //end namespace
 
+
+const QWidget* loadOptionWidget()
+{
+	return new isis::viewer::widget::OptionWidget();
+}
 
 isis::viewer::widget::WidgetInterface *loadWidget()
 {
@@ -237,5 +316,6 @@ const isis::util::PropertyMap *getProperties()
 	isis::util::PropertyMap *properties = new isis::util::PropertyMap();
 	properties->setPropertyAs<std::string>( "widgetIdent", "vtk_rendering_widget" );
 	properties->setPropertyAs<uint8_t>( "numberOfEntitiesInEnsemble", 1 );
+	properties->setPropertyAs<bool>("hasOptionWidget", true);
 	return properties;
 }
