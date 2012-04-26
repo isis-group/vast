@@ -180,11 +180,12 @@ void PreferencesDialog::loadSettings()
 
 	m_Interface.defaultViewWidgetComboBox->clear();
 	const widget::WidgetLoader::WidgetMapType &widgetMap = util::Singletons::get<widget::WidgetLoader, 10>().getWidgetMap();
+	const widget::WidgetLoader::WidgetPropertyMapType &optionsMap = util::Singletons::get<widget::WidgetLoader, 10>().getWidgetPropertyMap();	
 	m_Interface.defaultViewWidgetFrame->setVisible( widgetMap.size() > 1 );
 	BOOST_FOREACH( widget::WidgetLoader::WidgetMapType::const_reference w, widgetMap ) {
-		m_Interface.defaultViewWidgetComboBox->addItem( w.first.c_str() );
+		m_Interface.defaultViewWidgetComboBox->addItem( optionsMap.at( w.first)->getPropertyAs<std::string>("widgetName").c_str(), QVariant( w.first.c_str() ) );
 	}
-	m_Interface.defaultViewWidgetComboBox->setCurrentIndex( m_Interface.defaultViewWidgetComboBox->findText( m_ViewerCore->getSettings()->getPropertyAs<std::string>( "defaultViewWidgetIdentifier" ).c_str() ) );
+	m_Interface.defaultViewWidgetComboBox->setCurrentIndex( m_Interface.defaultViewWidgetComboBox->findData( QVariant( m_ViewerCore->getSettings()->getPropertyAs<std::string>( "defaultViewWidgetIdentifier" ).c_str() ) ) );
 }
 
 void PreferencesDialog::saveSettings()
@@ -201,7 +202,8 @@ void PreferencesDialog::saveSettings()
 	m_ViewerCore->getSettings()->setPropertyAs<uint16_t>( "screenshotWidth", m_Interface.sizeX->value() );
 	m_ViewerCore->getSettings()->setPropertyAs<uint16_t>( "screenshotHeight", m_Interface.sizeY->value() );
 	m_ViewerCore->getSettings()->setPropertyAs<bool>( "screenshotManualScaling", m_Interface.manualScaling->isChecked() );
-	m_ViewerCore->getSettings()->setPropertyAs<std::string>( "defaultViewWidgetIdentifier", m_Interface.defaultViewWidgetComboBox->currentText().toStdString() );
+	
+	m_ViewerCore->getSettings()->setPropertyAs<std::string>( "defaultViewWidgetIdentifier", m_Interface.defaultViewWidgetComboBox->itemData(m_Interface.defaultViewWidgetComboBox->currentIndex()).toString().toStdString() );
 
 	if( m_ViewerCore->hasImage() ) {
 		if( m_ViewerCore->getCurrentImage()->getImageProperties().imageType == ImageHolder::statistical_image ) {

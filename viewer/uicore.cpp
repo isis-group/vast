@@ -189,7 +189,9 @@ ImageHolder::Vector UICore::closeWidgetEnsemble( WidgetEnsemble::Pointer ensembl
 		ImageHolder::Vector retList = ensemble->getImageVector();
 		ensemble->getImageVector().clear();
 		ensemble->getFrame()->close();
-		ensemble->getOptionWidget()->close();
+		if( ensemble->hasOptionWidget() ) {
+			ensemble->getOptionWidget()->close();
+		}
 		m_EnsembleList.erase( iter );
 		return retList;
 	} else {
@@ -214,9 +216,6 @@ void UICore::closeAllWidgetEnsembles()
 void UICore::attachWidgetEnsemble( WidgetEnsemble::Pointer ensemble )
 {
 	m_MainWindow->getInterface().centralGridLayout->addWidget( ensemble->getFrame() );
-	if( ensemble->hasOptionWidget() ) {
-		m_MainWindow->getInterface().leftGridLayout->addWidget( ensemble->getOptionWidget() );
-	}
 }
 
 WidgetEnsembleComponent::Pointer UICore::createEnsembleComponent( const std::string &widgetIdentifier, PlaneOrientation planeOrientation, WidgetEnsemble::Pointer ensemble )
@@ -288,7 +287,7 @@ WidgetEnsemble::Pointer UICore::getCurrentEnsemble() const
 bool UICore::registerEnsembleComponent( WidgetEnsembleComponent::Pointer component )
 {
 	if( m_WidgetMap.find( component->getWidgetInterface() ) != m_WidgetMap.end() ) {
-		LOG( Runtime, warning ) << "Widget with id" << component->getWidgetInterface()->getWidgetName() << "!";
+		LOG( Runtime, warning ) << "Widget with id" << component->getWidgetInterface()->getWidgetIdent() << "!";
 		return false;
 	}
 

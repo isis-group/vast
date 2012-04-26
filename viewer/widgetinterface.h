@@ -64,6 +64,7 @@ public:
 	virtual void setZoom( float zoom ) = 0;
 	virtual void addImage( const boost::shared_ptr<ImageHolder>  ) {};
 	virtual bool removeImage( const boost::shared_ptr< ImageHolder >  ) { return true; };
+	virtual std::string getWidgetIdent() const = 0;
 	virtual std::string getWidgetName() const = 0;
 	virtual void setInterpolationType( InterpolationType interpolation ) = 0;
 	virtual void setMouseCursorIcon( QIcon ) = 0;

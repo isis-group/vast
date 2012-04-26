@@ -87,18 +87,18 @@
       </property>
      </layout>
     </item>
-    <item row="1" column="0">
-     <layout class="QGridLayout" name="leftGridLayout">
-      <property name="sizeConstraint">
-       <enum>QLayout::SetDefaultConstraint</enum>
-      </property>
+    <item row="1" column="2">
+     <layout class="QGridLayout" name="rightGridLayout">
       <property name="spacing">
        <number>2</number>
       </property>
      </layout>
     </item>
-    <item row="1" column="2">
-     <layout class="QGridLayout" name="rightGridLayout">
+    <item row="1" column="0">
+     <layout class="QGridLayout" name="leftGridLayout">
+      <property name="sizeConstraint">
+       <enum>QLayout::SetDefaultConstraint</enum>
+      </property>
       <property name="spacing">
        <number>2</number>
       </property>

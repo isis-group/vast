@@ -49,8 +49,10 @@ ImageStack::ImageStack( QWidget *parent, ImageStackWidget *widget )
 	typedef widget::WidgetLoader::WidgetMapType::const_reference WRef;
 	QSignalMapper *signalMapper = new QSignalMapper( this );
 	const widget::WidgetLoader::WidgetMapType &widgetMap = util::Singletons::get<widget::WidgetLoader, 10>().getWidgetMap();
+	const widget::WidgetLoader::WidgetPropertyMapType &optionsMap = util::Singletons::get<widget::WidgetLoader, 10>().getWidgetPropertyMap();
 	BOOST_FOREACH( WRef w, widgetMap ) {
-		QAction *action = new QAction( w.first.c_str(), this );
+		QAction *action = new QAction( this );
+		action->setText( optionsMap.at( w.first )->getPropertyAs<std::string>("widgetName").c_str() );
 		m_WidgetActions.push_back( action );
 		signalMapper->setMapping( action, w.first.c_str() );
 		connect( action, SIGNAL( triggered(bool)), signalMapper, SLOT( map()) );
@@ -296,7 +298,7 @@ void ImageStackWidget::closeImage()
 
 void ImageStackWidget::distributeImages()
 {
-	const std::string widgetIdent = m_ViewerCore->getUICore()->getCurrentEnsemble()->front()->getWidgetInterface()->getWidgetName();
+	const std::string widgetIdent = m_ViewerCore->getUICore()->getCurrentEnsemble()->front()->getWidgetInterface()->getWidgetIdent();
 	m_ViewerCore->getUICore()->closeAllWidgetEnsembles();
 	BOOST_FOREACH( ImageHolder::Vector::const_reference image, m_ViewerCore->getImageVector() ) {
 		m_ViewerCore->getUICore()->createViewWidgetEnsemble( widgetIdent, image );

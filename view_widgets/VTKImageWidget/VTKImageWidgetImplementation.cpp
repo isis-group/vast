@@ -112,12 +112,15 @@ void VTKImageWidgetImplementation::commonInit()
 	m_ViewerCore->emitImageContentChanged.connect( boost::bind( &VTKImageWidgetImplementation::reloadImage, this, _1 ) );
 	setFocus();
 	SetRenderWindow( m_RenderWindow );
-
+	setAcceptDrops(true);
 	
 	
 	m_RenderWindow->AddRenderer( m_Renderer );
 	m_Renderer->SetBackground( 0.1, 0.2, 0.4 );
 	m_OpacityGradientFactor = 0;
+	m_CameraDistance = 500;
+	m_RightButtonPressed = false;
+	m_LeftButtonPressed = false;
 
 	if( m_ViewerCore->getSettings()->getPropertyAs<bool>( "showCrosshair" ) ) {
 		m_Cursor->AllOn();
@@ -141,6 +144,86 @@ void VTKImageWidgetImplementation::setZoom ( float /*zoom*/ )
 {
 
 }
+
+void VTKImageWidgetImplementation::mousePressEvent ( QMouseEvent *e )
+{
+	if( e->button() == Qt::LeftButton && geometry().contains( e->pos() ) && QApplication::keyboardModifiers() == Qt::ControlModifier ) {
+		QDrag *drag = new QDrag( this );
+		QMimeData *mimeData = new QMimeData;
+		mimeData->setText( getWidgetEnsemble()->getImageVector().back()->getImageProperties().filePath.c_str() );
+		drag->setMimeData( mimeData );
+		drag->setPixmap( QIcon( ":/common/vast.jpg" ).pixmap( 15 ) );
+		drag->exec();
+		return;
+	}	
+	if( e->button() == Qt::LeftButton ) {
+		m_LeftButtonPressed = true;
+	}
+	if( e->button() == Qt::RightButton ) {
+		m_RightButtonPressed = true;
+	}
+	if( m_ViewerCore->hasImage() ) {
+		m_ViewerCore->onWidgetClicked(this, m_ViewerCore->getCurrentImage()->getImageProperties().physicalCoords, e->button() );
+	}
+    QVTKWidget::mousePressEvent(e);
+}
+
+void VTKImageWidgetImplementation::mouseMoveEvent ( QMouseEvent *e )
+{
+
+    QVTKWidget::mouseMoveEvent(e);
+}
+
+void VTKImageWidgetImplementation::mouseReleaseEvent ( QMouseEvent *e )
+{
+	if( e->button() == Qt::LeftButton ) {
+		m_LeftButtonPressed = false;
+	}
+	if( e->button() == Qt::RightButton ) {
+		m_RightButtonPressed = false;
+	}
+    QVTKWidget::mouseReleaseEvent(e);
+}
+
+void VTKImageWidgetImplementation::dragEnterEvent ( QDragEnterEvent *e )
+{
+	if( e->mimeData()->hasFormat( "text/plain" ) ) {
+		bool hasImage = false;
+		BOOST_FOREACH( ImageHolder::Vector::const_reference image, getWidgetEnsemble()->getImageVector() ) {
+			if( image->getImageProperties().fileName == e->mimeData()->text().toStdString() ) {
+				hasImage = true;
+			}
+		}
+
+		if( !hasImage ) {
+			e->acceptProposedAction();
+		}
+	}	
+}
+
+void VTKImageWidgetImplementation::dropEvent ( QDropEvent *e )
+{
+	const ImageHolder::Pointer image = m_ViewerCore->getImageMap().at( e->mimeData()->text().toStdString() );
+	WidgetEnsemble::Pointer myEnsemble;
+	BOOST_FOREACH( WidgetEnsemble::Vector::reference ensemble, m_ViewerCore->getUICore()->getEnsembleList() ) {
+		BOOST_FOREACH( WidgetEnsemble::reference ensembleComponent, *ensemble ) {
+			if( ensembleComponent->getWidgetInterface() == this ) {
+				myEnsemble = ensemble;
+			}
+		}
+	}
+	myEnsemble->addImage( image  );
+	BOOST_FOREACH( WidgetEnsemble::Vector::reference ensemble, m_ViewerCore->getUICore()->getEnsembleList() ) {
+		if( ensemble != myEnsemble ) {
+			ensemble->removeImage( image );
+		}
+	}
+
+	m_ViewerCore->setCurrentImage( image );
+	m_ViewerCore->updateScene();
+	m_ViewerCore->getUICore()->refreshUI();	
+}
+
 
 void VTKImageWidgetImplementation::setEnableCrosshair ( bool enable )
 {
@@ -224,77 +307,75 @@ void VTKImageWidgetImplementation::setMouseCursorIcon ( QIcon )
 {
 }
 
+
 void VTKImageWidgetImplementation::showAnterior()
 {
-	const util::FixedVector<double,3> center = getCenterOfBoundingBox();
-	m_Renderer->ResetCamera();
-	m_Renderer->GetActiveCamera()->SetPosition(center[0],-600,center[2]);
+	const util::dvector4 center = getCenterOfBoundingBox();
 	m_Renderer->GetActiveCamera()->SetParallelProjection(1);
 	m_Renderer->GetActiveCamera()->SetViewUp(0,0,1);
-	m_RenderWindow->Render();
-	
+	m_Renderer->GetActiveCamera()->SetPosition(-center[0], -m_CameraDistance ,-center[2]);
+	update();
 }
 
 void VTKImageWidgetImplementation::showInferior()
 {
-	const util::FixedVector<double,3> center = getCenterOfBoundingBox();
-	m_Renderer->ResetCamera();
-	m_Renderer->GetActiveCamera()->SetPosition(center[0], -center[1], -600);
+	const util::dvector4 center = getCenterOfBoundingBox();
 	m_Renderer->GetActiveCamera()->SetParallelProjection(1);
 	m_Renderer->GetActiveCamera()->SetViewUp(0,-1,0);
-	m_RenderWindow->Render();
+	m_Renderer->GetActiveCamera()->SetPosition(-center[0], -center[1], -m_CameraDistance);
+	update();
 }
 
 void VTKImageWidgetImplementation::showLeft()
 {
-	const util::FixedVector<double,3> center = getCenterOfBoundingBox();
-	m_Renderer->ResetCamera();
-	m_Renderer->GetActiveCamera()->SetPosition(600, -center[1], center[2]);
+	const util::dvector4 center = getCenterOfBoundingBox();
 	m_Renderer->GetActiveCamera()->SetParallelProjection(1);
 	m_Renderer->GetActiveCamera()->SetViewUp(0,0,1);
-	m_RenderWindow->Render();
-
+	m_Renderer->GetActiveCamera()->SetPosition(m_CameraDistance, -center[1], -center[2]);
+	update();
 }
 
 void VTKImageWidgetImplementation::showPosterior()
 {
-	const util::FixedVector<double,3> center = getCenterOfBoundingBox();
-	m_Renderer->ResetCamera();
-	m_Renderer->GetActiveCamera()->SetPosition(center[0],800,center[2]);
+	const util::dvector4 center = getCenterOfBoundingBox();
 	m_Renderer->GetActiveCamera()->SetParallelProjection(1);
 	m_Renderer->GetActiveCamera()->SetViewUp(0,0,1);
-	m_RenderWindow->Render();
+	m_Renderer->GetActiveCamera()->SetPosition(-center[0], m_CameraDistance,-center[2]);
+	update();
 }
 
 void VTKImageWidgetImplementation::showRight()
 {
-	const util::FixedVector<double,3> center = getCenterOfBoundingBox();
-	m_Renderer->ResetCamera();
-	m_Renderer->GetActiveCamera()->SetPosition(-600, -center[1], center[2]);
+	const util::dvector4 center = getCenterOfBoundingBox();
 	m_Renderer->GetActiveCamera()->SetParallelProjection(1);
 	m_Renderer->GetActiveCamera()->SetViewUp(0,0,1);
-	m_RenderWindow->Render();
+	m_Renderer->GetActiveCamera()->SetPosition(-m_CameraDistance, -center[1], -center[2]);
+	update();
 }
 
 void VTKImageWidgetImplementation::showSuperior()
 {
-	const util::FixedVector<double,3> center = getCenterOfBoundingBox();
-	m_Renderer->ResetCamera();
-	m_Renderer->GetActiveCamera()->SetPosition(center[0], -center[1], 600);
+	const util::dvector4 center = getCenterOfBoundingBox();
 	m_Renderer->GetActiveCamera()->SetParallelProjection(1);
 	m_Renderer->GetActiveCamera()->SetViewUp(0,-1,0);
-	m_RenderWindow->Render();
+	m_Renderer->GetActiveCamera()->SetPosition(-center[0], -center[1], m_CameraDistance);
+	update();
 }
 
 
-isis::util::FixedVector< double, 3 > VTKImageWidgetImplementation::getCenterOfBoundingBox()
+isis::util::dvector4 VTKImageWidgetImplementation::getCenterOfBoundingBox()
 {
-	util::FixedVector<double,3> ret;
-	const double *bounds = m_Actor->GetBounds();
-	ret[0] = (bounds[0] - bounds[1]) / 2.0;
-	ret[1] = (bounds[2] - bounds[3]) / 2.0;
-	ret[2] = (bounds[4] - bounds[5]) / 2.0;
-	return ret;
+	if( m_ViewerCore->hasImage() ) {
+		const ImageHolder::Pointer image = m_ViewerCore->getCurrentImage();
+		const util::ivector4 mapping = image->getImageProperties().latchedOrientation.dot(util::ivector4(1,1,1,1));
+		util::dvector4 ret;
+		const double *bounds = m_Actor->GetBounds();
+		ret[0] = (bounds[0] - bounds[1]) / 2.0 * mapping[0];
+		ret[1] = (bounds[2] - bounds[3]) / 2.0 * mapping[1];
+		ret[2] = (bounds[4] - bounds[5]) / 2.0 * mapping[2];
+		return ret;
+	}
+	return util::dvector4();
 }
 
 
@@ -315,6 +396,7 @@ const isis::util::PropertyMap *getProperties()
 {
 	isis::util::PropertyMap *properties = new isis::util::PropertyMap();
 	properties->setPropertyAs<std::string>( "widgetIdent", "vtk_rendering_widget" );
+	properties->setPropertyAs<std::string>( "widgetName", "3D Rendering widget (vtk) " );
 	properties->setPropertyAs<uint8_t>( "numberOfEntitiesInEnsemble", 1 );
 	properties->setPropertyAs<bool>("hasOptionWidget", true);
 	return properties;

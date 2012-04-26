@@ -63,10 +63,9 @@ vtkImageData *VolumeHandler::getVTKImageData( const ImageHolder::Pointer image, 
 
 	for( uint8_t i = 0; i < 4; i++ ) {
 		for ( uint8_t j = 0; j < 4; j++ ) {
-			orientationMatrix->SetElement( i, j, image->getImageProperties().orientation.elem( i, j ) / fabs( mappedSpacing[j] ) );
+			orientationMatrix->SetElement( i, j, image->getImageProperties().orientation.elem( i, j ) / fabs( mappedSpacing[i] ) );
 		}
 	}
-
 	transform->SetMatrix( orientationMatrix );
 
 	reslicer->SetInput( newImage );
@@ -82,7 +81,6 @@ vtkImageData *VolumeHandler::getVTKImageData( const ImageHolder::Pointer image, 
 			end[i] = -image->getImageProperties().indexOrigin[i];
 		}
 	}
-
 	reslicer->SetOutputExtent( start[0], end[0], start[1], end[1], start[2] , end[2]  );
 	reslicer->SetOutputOrigin( image->getImageProperties().indexOrigin[0], image->getImageProperties().indexOrigin[1], image->getImageProperties().indexOrigin[2] );
 	reslicer->SetOutputSpacing( 1, 1, 1 );

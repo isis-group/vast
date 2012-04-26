@@ -29,6 +29,7 @@
 #ifndef VAST_WIDGET_ENSEMBLE_HPP
 #define VAST_WIDGET_ENSEMBLE_HPP
 
+#include <QHBoxLayout>
 #include <map>
 #include <list>
 #include <boost/signals2.hpp>
@@ -52,8 +53,8 @@ public:
 	QFrame *getFrame() { return m_frame; }
 	const QFrame *getFrame() const { return m_frame; }
 
-	QGridLayout *getLayout() { return m_layout; }
-	const QGridLayout *getLayout() const { return m_layout; }
+	QHBoxLayout *getLayout() { return m_layout; }
+	const QHBoxLayout *getLayout() const { return m_layout; }
 
 	void insertComponent( WidgetEnsembleComponent::Pointer component );
 
@@ -72,7 +73,7 @@ public:
 	void setIsCurrent( bool current );
 	bool isCurrent() const { return m_isCurrent; }
 
-	void setOptionWidget( QWidget *optionWidget ) { m_optionWidget = optionWidget; m_hasOptionWidget = optionWidget; }
+	void setOptionWidget( QWidget *optionWidget );
 
 	void update( const ViewerCoreBase * );
 
@@ -85,7 +86,7 @@ private:
 	QWidget *m_optionWidget;
 	bool m_hasOptionWidget;
 	QFrame *m_frame;
-	QGridLayout *m_layout;
+	QHBoxLayout *m_layout;
 	unsigned short m_cols;
 	void push_back( const value_type &value ) { std::vector< WidgetEnsembleComponent::Pointer >::push_back( value ); }
 	ImageHolder::Vector m_imageVector;
