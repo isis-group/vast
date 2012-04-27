@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>135</width>
-    <height>838</height>
+    <height>595</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -38,7 +38,7 @@
       <item>
        <widget class="QGroupBox" name="groupBox">
         <property name="sizePolicy">
-         <sizepolicy hsizetype="Minimum" vsizetype="Maximum">
+         <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
           <horstretch>0</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
@@ -47,8 +47,17 @@
          <string>Camera</string>
         </property>
         <layout class="QGridLayout" name="gridLayout">
-         <property name="margin">
+         <property name="leftMargin">
           <number>2</number>
+         </property>
+         <property name="topMargin">
+          <number>9</number>
+         </property>
+         <property name="rightMargin">
+          <number>2</number>
+         </property>
+         <property name="bottomMargin">
+          <number>9</number>
          </property>
          <item row="2" column="1" rowspan="2">
           <widget class="QFrame" name="frame_2">
@@ -187,8 +196,17 @@
          <string>Settings</string>
         </property>
         <layout class="QGridLayout" name="gridLayout_3">
-         <property name="margin">
+         <property name="leftMargin">
           <number>2</number>
+         </property>
+         <property name="topMargin">
+          <number>9</number>
+         </property>
+         <property name="rightMargin">
+          <number>2</number>
+         </property>
+         <property name="bottomMargin">
+          <number>9</number>
          </property>
          <item row="1" column="0">
           <widget class="QLabel" name="label">
@@ -241,8 +259,17 @@
       <string>Cropping</string>
      </property>
      <layout class="QVBoxLayout" name="verticalLayout_2">
-      <property name="margin">
+      <property name="leftMargin">
        <number>2</number>
+      </property>
+      <property name="topMargin">
+       <number>9</number>
+      </property>
+      <property name="rightMargin">
+       <number>2</number>
+      </property>
+      <property name="bottomMargin">
+       <number>9</number>
       </property>
       <item>
        <widget class="QGroupBox" name="groupBox_4">
@@ -250,8 +277,17 @@
          <string>X</string>
         </property>
         <layout class="QVBoxLayout" name="verticalLayout_3">
-         <property name="margin">
+         <property name="leftMargin">
           <number>2</number>
+         </property>
+         <property name="topMargin">
+          <number>9</number>
+         </property>
+         <property name="rightMargin">
+          <number>2</number>
+         </property>
+         <property name="bottomMargin">
+          <number>9</number>
          </property>
          <item>
           <widget class="QSlider" name="croppingX1">
@@ -285,8 +321,17 @@
          <string>Y</string>
         </property>
         <layout class="QVBoxLayout" name="verticalLayout_4">
-         <property name="margin">
+         <property name="leftMargin">
           <number>2</number>
+         </property>
+         <property name="topMargin">
+          <number>9</number>
+         </property>
+         <property name="rightMargin">
+          <number>2</number>
+         </property>
+         <property name="bottomMargin">
+          <number>9</number>
          </property>
          <item>
           <widget class="QSlider" name="croppingY1">
@@ -320,8 +365,17 @@
          <string>Z</string>
         </property>
         <layout class="QVBoxLayout" name="verticalLayout_5">
-         <property name="margin">
+         <property name="leftMargin">
           <number>2</number>
+         </property>
+         <property name="topMargin">
+          <number>9</number>
+         </property>
+         <property name="rightMargin">
+          <number>2</number>
+         </property>
+         <property name="bottomMargin">
+          <number>9</number>
          </property>
          <item>
           <widget class="QSlider" name="croppingZ1">
@@ -356,6 +410,9 @@
     <spacer name="verticalSpacer">
      <property name="orientation">
       <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeType">
+      <enum>QSizePolicy::Expanding</enum>
      </property>
      <property name="sizeHint" stdset="0">
       <size>

@@ -323,6 +323,9 @@
                 <verstretch>0</verstretch>
                </sizepolicy>
               </property>
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
               <property name="readOnly">
                <bool>true</bool>
               </property>
