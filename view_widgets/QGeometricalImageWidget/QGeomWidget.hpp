@@ -51,7 +51,8 @@ public:
 
 	virtual void setup( QViewerCore *, QWidget *, PlaneOrientation );
 
-	virtual std::string getWidgetName() const { return std::string( "qt4_geometrical_plane_widget" ); }
+	virtual std::string getWidgetIdent() const { return std::string( "qt4_geometrical_plane_widget" ); }
+	virtual std::string getWidgetName() const { return std::string( "Geometrical widget" ); }
 public Q_SLOTS:
 	virtual void updateScene();
 	virtual void lookAtPhysicalCoords ( const util::fvector4 &physicalCoords );

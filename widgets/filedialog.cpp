@@ -188,11 +188,12 @@ void isis::viewer::ui::FileDialog::setup()
 	m_Interface.widgetTypeComboBox->clear();
 	typedef widget::WidgetLoader::WidgetMapType::const_reference WRef;
 	const widget::WidgetLoader::WidgetMapType &widgetMap = util::Singletons::get<widget::WidgetLoader, 10>().getWidgetMap();
+	const widget::WidgetLoader::WidgetPropertyMapType &optionsMap = util::Singletons::get<widget::WidgetLoader, 10>().getWidgetPropertyMap();	
 	BOOST_FOREACH( WRef w, widgetMap ) {
-		m_Interface.widgetTypeComboBox->addItem( w.first.c_str() );
+		m_Interface.widgetTypeComboBox->addItem( optionsMap.at( w.first )->getPropertyAs<std::string>("widgetName").c_str(), QVariant( w.first.c_str() ) );
 	}
 	m_Interface.widgetTypeframe->setVisible( widgetMap.size() > 1 );
-	m_Interface.widgetTypeComboBox->setCurrentIndex( m_Interface.widgetTypeComboBox->findText( m_ViewerCore->getSettings()->getPropertyAs<std::string>( "defaultViewWidgetIdentifier" ).c_str() ) );
+	m_Interface.widgetTypeComboBox->setCurrentIndex( m_Interface.widgetTypeComboBox->findData( QVariant( m_ViewerCore->getSettings()->getPropertyAs<std::string>( "defaultViewWidgetIdentifier" ).c_str() ) ) );
 	adjustSize();
 }
 
@@ -326,7 +327,7 @@ void isis::viewer::ui::FileDialog::openPath()
 		m_ViewerCore->openFile( FileInformation( path.toStdString(),
 								m_Dialect,
 								m_Suffix == "auto" ? "" : m_Suffix,
-								m_Interface.widgetTypeComboBox->currentText().toStdString(),
+								m_Interface.widgetTypeComboBox->itemData( m_Interface.widgetTypeComboBox->currentIndex() ).toString().toStdString(),
 								m_ImageType,
 								m_Interface.newWidgetCheck->isChecked() ) ) ;
 	}

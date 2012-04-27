@@ -26,6 +26,7 @@
  *      Author: tuerke
  ******************************************************************/
 #include "VoxelOperationDialog.hpp"
+#include <uicore.hpp>
 
 namespace isis {
 namespace viewer {
@@ -54,7 +55,15 @@ void VoxelOperationDialog::calculatePressed()
 		try {
 			_internal::VoxelOp vop( op );
 			const ImageHolder::Pointer image = m_ViewerCore->getCurrentImage();
+			m_Interface.calcButton->setEnabled(false);
+			m_Interface.calcButton->setText("Calculating...");
+			std::stringstream ss;
+			ss << "Calculating " << op << "...";
+			m_ViewerCore->getUICore()->getMainWindow()->toggleLoadingIcon(true, ss.str().c_str());
 			image->getISISImage()->foreachVoxel<double>(vop);
+			m_ViewerCore->getUICore()->getMainWindow()->toggleLoadingIcon(false);
+			m_Interface.calcButton->setEnabled(true);
+			m_Interface.calcButton->setText("Calculate");
 			util::slist voxelOpHistory;
 			if( image->getPropMap().hasProperty("VoxelOperation/opHistory") ) {
 				voxelOpHistory = image->getPropMap().getPropertyAs<util::slist>("VoxelOperation/opHistory");

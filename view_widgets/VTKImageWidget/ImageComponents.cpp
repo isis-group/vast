@@ -34,27 +34,51 @@ namespace viewer
 namespace widget
 {
 
-VTKImageComponents::VTKImageComponents()
+VTKImageComponents::VTKImageComponents(bool ray)
 	: volume( vtkVolume::New() ),
 	  property( vtkVolumeProperty::New() ),
-	  mapper( vtkFixedPointVolumeRayCastMapper::New() ),
+	  rayMapper( vtkFixedPointVolumeRayCastMapper::New() ),
+	  textureMapper( vtkVolumeTextureMapper3D::New() ),
 	  colorFunction( vtkColorTransferFunction::New() ),
 	  opacityFunction( vtkPiecewiseFunction::New() ),
-	  imageData( vtkImageData::New() )
+	  imageData( vtkImageData::New() ),
+	  rayMapping( ray )
 {
-	volume->SetMapper( mapper );
+	if( ray ) {
+		volume->SetMapper( rayMapper );
+	} else {
+		volume->SetMapper( textureMapper );
+	}
 	volume->SetProperty( property );
 	property->SetColor( colorFunction );
 	property->SetScalarOpacity( opacityFunction );
+
 }
 
 
 void VTKImageComponents::setVTKImageData ( vtkImageData *image )
 {
-	mapper->SetInput( image );
 	imageData = image;
+	if( rayMapping ) {
+		rayMapper->SetInput( image );
+	} else {
+		textureMapper->SetInput( image );
+	}
 }
 
+void VTKImageComponents::setCropping ( double* cropping )
+{
+	if( rayMapping ) {
+		rayMapper->CroppingOn();
+		rayMapper->SetCroppingRegionFlagsToFence();
+		rayMapper->SetCroppingRegionPlanes( cropping );
+	} else {
+		textureMapper->CroppingOn();
+		textureMapper->SetCroppingRegionFlagsToFence();
+		textureMapper->SetCroppingRegionPlanes( cropping );
+		
+	}
+}
 
 
 }

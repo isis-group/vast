@@ -63,7 +63,7 @@ class VTKImageWidgetImplementation : public QVTKWidget, public WidgetInterface
 
 public:
 
-	typedef std::map< boost::shared_ptr<ImageHolder>, VTKImageComponents > ComponentsMapType;
+	typedef std::map< ImageHolder::Pointer, VTKImageComponents > ComponentsMapType;
 
 	VTKImageWidgetImplementation();
 	VTKImageWidgetImplementation( QViewerCore *core, QWidget *parent = 0, PlaneOrientation orientation = axial );
@@ -75,17 +75,36 @@ public Q_SLOTS:
 	virtual void setZoom( float zoom );
 	virtual void updateScene();
 	virtual void setEnableCrosshair( bool enable );
-	virtual void addImage( const boost::shared_ptr<ImageHolder> image );
-	virtual bool removeImage( const boost::shared_ptr< ImageHolder > image );
-	virtual std::string getWidgetName() const { return std::string( "vtk_rendering_widget" ); }
+	virtual void addImage( const ImageHolder::Pointer image );
+	virtual bool removeImage( const ImageHolder::Pointer image );
+	virtual std::string getWidgetIdent() const { return std::string( "vtk_rendering_widget" ); }
+	virtual std::string getWidgetName() const { return std::string( "3D Rendering widget (vtk)"); }
 	virtual void setInterpolationType( InterpolationType interpolation );
 	virtual void setMouseCursorIcon( QIcon );
 	virtual void lookAtPhysicalCoords( const util::fvector4 &physicalCoords );
 	virtual bool hasOptionWidget() const { return true; }
 	virtual QWidget *getOptionWidget() { return m_OptionWidget; }
+	
+	virtual void mousePressEvent( QMouseEvent *);
+	virtual void mouseReleaseEvent( QMouseEvent *);
+	virtual void mouseMoveEvent( QMouseEvent *);
 
+	virtual void dragEnterEvent( QDragEnterEvent * );
+	virtual void dropEvent( QDropEvent * );
 
-	void setOpacityGradientFactor( float factor ) { m_OpacityGradientFactor = factor; }
+	void showAnterior();
+	void showPosterior();
+	void showRight();
+	void showLeft();
+	void showSuperior();
+	void showInferior();
+
+	void setOpacityGradientFactor( double factor ) { m_OpacityGradientFactor = factor; }
+	void setShade( bool shade );
+
+	void resetCamera();
+
+	void setCropping( double *cropping );
 
 protected:
 	void paintEvent( QPaintEvent *event );
@@ -105,8 +124,16 @@ private:
 
 	ComponentsMapType m_VTKImageComponentsMap;
 
-	float m_OpacityGradientFactor;
+	double m_OpacityGradientFactor;
+	int m_CameraDistance;
 	OptionWidget *m_OptionWidget;
+
+	util::dvector4 getCenterOfBoundingBox();
+
+	bool m_RightButtonPressed;
+	bool m_LeftButtonPressed;
+
+	std::pair<int, int> m_StartCoordsPair;
 	
 private Q_SLOTS:
 	void reloadImage( const ImageHolder::Pointer );

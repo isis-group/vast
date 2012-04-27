@@ -499,6 +499,10 @@ void QGeomWidget::dropEvent ( QDropEvent *e )
 }
 }// end namespace
 
+const QWidget* loadOptionWidget()
+{
+	return new QWidget();
+}
 
 isis::viewer::widget::WidgetInterface *loadWidget()
 {
@@ -509,6 +513,8 @@ const isis::util::PropertyMap *getProperties()
 {
 	isis::util::PropertyMap *properties = new isis::util::PropertyMap();
 	properties->setPropertyAs<std::string>( "widgetIdent", "qt4_geometrical_plane_widget" );
+	properties->setPropertyAs<std::string>( "widgetName", "Geometrical plane widget" );
 	properties->setPropertyAs<uint8_t>( "numberOfEntitiesInEnsemble", 3 );
+	properties->setPropertyAs<bool>("hasOptionWidget", false );
 	return properties;
 }

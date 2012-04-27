@@ -176,7 +176,6 @@ void ScalingWidget::applyScalingOffset( const double &scaling, const double &off
 			image->getImageProperties().scaling = scaling;
 			image->getImageProperties().offset = offset;
 			image->updateColorMap();
-
 		}
 		m_ViewerCore->updateScene();
 	} else {

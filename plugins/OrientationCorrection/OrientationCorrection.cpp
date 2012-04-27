@@ -322,6 +322,7 @@ bool OrientatioCorrectionDialog::applyTransform( ) const
 		}
 
 		image->updateOrientation();
+		m_ViewerCore->emitImageContentChanged( image );
 		m_ViewerCore->physicalCoordsChanged( image->getISISImage()->getPhysicalCoordsFromIndex( image->getImageProperties().voxelCoords ) );
 		return ret;
 	}

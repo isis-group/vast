@@ -18,45 +18,40 @@
  *
  * Author: Erik Tuerke, tuerke@cbs.mpg.de
  *
- * VolumeHandler.cpp
+ * style.hpp
  *
  * Description:
  *
- *  Created on: Feb 28, 2012
+ *  Created on: Apr 27, 2012
+ *      Author: tuerke
  ******************************************************************/
-#ifndef VAST_VOLUME_HANDLER_HPP
-#define VAST_VOLUME_HANDLER_HPP
+#ifndef VAST_STYLE_HPP
+#define VAST_STYLE_HPP
 
-#include <vtkImageData.h>
-#include <vtkImageImport.h>
-#include <vtkTransform.h>
-#include <vtkImageReslice.h>
-#include <vtkMatrix4x4.h>
-#include <vtkImageAppendComponents.h>
-#include "qviewercore.hpp"
+#include <QString>
+#include <map>
 
-namespace isis
-{
-namespace viewer
-{
-namespace widget
-{
+namespace isis {
+namespace viewer {
+namespace style {
 
-class VolumeHandler
-{
+
+class Style {
 
 public:
-	VolumeHandler();
+	Style();
 
-	static vtkImageData *getVTKImageData( const ImageHolder::Pointer image, const size_t &timestep = 0 );
+	bool addStyleSheet( const std::string &path, const std::string &name );
+	QString getStyleSheet( const std::string &name );
 
+private:
+	std::map< std::string, QString > m_StyleSheetMap;
 };
+	
+
+}}}
 
 
 
-}
-}
-} //end namespace
 
-
-#endif //VAST_VOLUME_HANDLER_HPP
+#endif

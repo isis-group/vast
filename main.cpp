@@ -44,6 +44,7 @@
 #include "common.hpp"
 #include "error.hpp"
 #include "mainwindow.hpp"
+#include "style.hpp"
 
 
 int main( int argc, char *argv[] )
@@ -111,6 +112,7 @@ int main( int argc, char *argv[] )
 	boost::shared_ptr< util::ProgressFeedback > feedback = boost::shared_ptr<util::ProgressFeedback>( new util::ConsoleFeedback );
 	data::IOFactory::setProgressFeedback( feedback );
 	app.init( argc, argv, false );
+	app.getQApplication().setStyleSheet( util::Singletons::get<style::Style,10>().getStyleSheet("fancy") );
 	QViewerCore *core = new QViewerCore;
 
 	util::_internal::Log<isis::data::Runtime>::setHandler( logging_hanlder_runtime );

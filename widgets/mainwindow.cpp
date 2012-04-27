@@ -345,7 +345,7 @@ void MainWindow::saveImage()
 			QMessageBox msgBox;
 			msgBox.setIcon( QMessageBox::Information );
 			std::stringstream text;
-			text << "This will overwrite" << m_ViewerCore->getCurrentImage()->getImageProperties().fileName << " !";
+			text << "This will overwrite " << m_ViewerCore->getCurrentImage()->getImageProperties().fileName << " !";
 			msgBox.setText( text.str().c_str() );
 			msgBox.setInformativeText( "Do you want to proceed?" );
 			std::stringstream detailedText;

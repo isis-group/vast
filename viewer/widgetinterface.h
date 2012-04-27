@@ -64,6 +64,7 @@ public:
 	virtual void setZoom( float zoom ) = 0;
 	virtual void addImage( const boost::shared_ptr<ImageHolder>  ) {};
 	virtual bool removeImage( const boost::shared_ptr< ImageHolder >  ) { return true; };
+	virtual std::string getWidgetIdent() const = 0;
 	virtual std::string getWidgetName() const = 0;
 	virtual void setInterpolationType( InterpolationType interpolation ) = 0;
 	virtual void setMouseCursorIcon( QIcon ) = 0;
@@ -115,16 +116,20 @@ extern "C" {
 #ifdef WIN32
 	extern __declspec( dllexport ) isis::viewer::widget::WidgetInterface *loadWidget();
 	extern __declspec( dllexport ) const isis::util::PropertyMap* getProperties();
+	extern __declspec( dllexport ) const QWidget* loadOptionWidget();
 #else
 	extern isis::viewer::widget::WidgetInterface *loadWidget();
 	extern const isis::util::PropertyMap* getProperties();
+	extern const QWidget* loadOptionWidget();
 #endif
 #else
 #ifdef WIN32
 	extern __declspec( dllexport ) WidgetInterface *loadWidget();
 	extern __declspec( dllexport ) const isis::util::PropertyMap* getProperties();
+	extern __declspec( dllexport ) const QWidget* loadOptionWidget();
 #else
 	extern WidgetInterface *loadWidget();
+	extern const QWdiget* loadOptionWidget();
 	extern const isis::util::PropertyMap* getProperties();
 #endif
 #endif

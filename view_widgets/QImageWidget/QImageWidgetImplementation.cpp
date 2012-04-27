@@ -26,7 +26,7 @@
  *      Author: tuerke
  ******************************************************************/
 #include "QImageWidgetImplementation.hpp"
-
+#include <QWidget>
 #include "QOrientationHandler.hpp"
 #include "uicore.hpp"
 #include "memoryhandler.hpp"
@@ -601,6 +601,11 @@ void QImageWidgetImplementation::dropEvent( QDropEvent *e )
 }
 } //end namespace
 
+const QWidget* loadOptionWidget()
+{
+	return new QWidget();
+}
+
 isis::viewer::widget::WidgetInterface *loadWidget()
 {
 	return new isis::viewer::widget::QImageWidgetImplementation();
@@ -610,6 +615,8 @@ const isis::util::PropertyMap *getProperties()
 {
 	isis::util::PropertyMap *properties = new isis::util::PropertyMap();
 	properties->setPropertyAs<std::string>( "widgetIdent", "qt4_plane_widget" );
+	properties->setPropertyAs<std::string>( "widgetName", "Simple plane widget" );
 	properties->setPropertyAs<uint8_t>( "numberOfEntitiesInEnsemble", 3 );
+	properties->setPropertyAs<bool>("hasOptionWidget", false );
 	return properties;
 }

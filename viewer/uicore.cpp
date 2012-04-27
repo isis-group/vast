@@ -118,6 +118,17 @@ WidgetEnsemble::Pointer UICore::createViewWidgetEnsemble( const std::string &wid
 WidgetEnsemble::Pointer UICore::createViewWidgetEnsemble( const std::string &widgetIdentifier, bool show )
 {
 	WidgetEnsemble::Pointer ensemble( new WidgetEnsemble );
+
+	//if this widget has an option widget we are loading it and passing it to the ensemble
+	if( m_ViewerCore->getWidgetProperties( widgetIdentifier )->hasProperty( "hasOptionWidget" ) ) {
+		if( m_ViewerCore->getWidgetProperties( widgetIdentifier )->getPropertyAs<bool>("hasOptionWidget" ) ) {
+			widget::WidgetLoader::OptionDialogMapType optionMap = util::Singletons::get<widget::WidgetLoader, 10>().getOptionWidgetMap();
+			const widget::WidgetLoader::OptionDialogMapType::const_iterator iter = optionMap.find(widgetIdentifier);
+			if( iter != optionMap.end() ) {
+				ensemble->setOptionWidget( iter->second() );  //looks strange since we are calling a funtion pointer
+			}
+		}
+	}
 	uint8_t numberWidgets;
 
 	if( m_ViewerCore->getWidgetProperties( widgetIdentifier )->hasProperty( "numberOfEntitiesInEnsemble" ) ) {
@@ -126,23 +137,21 @@ WidgetEnsemble::Pointer UICore::createViewWidgetEnsemble( const std::string &wid
 		LOG( Dev, error ) << "Your widget \"" << widgetIdentifier << "\" has no property \"numberOfEntitiesInEnsemble\" ! Setting it to 1";
 		numberWidgets = 1;
 	}
-
 	if( numberWidgets == 1 ) {
-		ensemble->insertComponent( createEnsembleComponent( widgetIdentifier, not_specified ) );
+		ensemble->insertComponent( createEnsembleComponent( widgetIdentifier, not_specified, ensemble ) );
 	} else if ( numberWidgets == 3 ) {
-		ensemble->insertComponent( createEnsembleComponent( widgetIdentifier, axial ) );
-		ensemble->insertComponent( createEnsembleComponent( widgetIdentifier, sagittal ) );
-		ensemble->insertComponent( createEnsembleComponent( widgetIdentifier, coronal ) );
+		ensemble->insertComponent( createEnsembleComponent( widgetIdentifier, axial, ensemble ) );
+		ensemble->insertComponent( createEnsembleComponent( widgetIdentifier, sagittal, ensemble ) );
+		ensemble->insertComponent( createEnsembleComponent( widgetIdentifier, coronal, ensemble ) );
 	} else {
 		for( uint8_t i = 0; i < numberWidgets; i++ ) {
-			ensemble->insertComponent( createEnsembleComponent( widgetIdentifier, not_specified ) );
+			ensemble->insertComponent( createEnsembleComponent( widgetIdentifier, not_specified, ensemble ) );
 		}
 	}
 
 	if( show ) {
 		attachWidgetEnsemble( ensemble );
 	}
-
 	m_EnsembleList.push_back( ensemble );
 	return ensemble;
 }
@@ -180,6 +189,9 @@ ImageHolder::Vector UICore::closeWidgetEnsemble( WidgetEnsemble::Pointer ensembl
 		ImageHolder::Vector retList = ensemble->getImageVector();
 		ensemble->getImageVector().clear();
 		ensemble->getFrame()->close();
+		if( ensemble->hasOptionWidget() ) {
+			ensemble->getOptionWidget()->close();
+		}
 		m_EnsembleList.erase( iter );
 		return retList;
 	} else {
@@ -206,7 +218,7 @@ void UICore::attachWidgetEnsemble( WidgetEnsemble::Pointer ensemble )
 	m_MainWindow->getInterface().centralGridLayout->addWidget( ensemble->getFrame() );
 }
 
-WidgetEnsembleComponent::Pointer UICore::createEnsembleComponent( const std::string &widgetIdentifier, PlaneOrientation planeOrientation )
+WidgetEnsembleComponent::Pointer UICore::createEnsembleComponent( const std::string &widgetIdentifier, PlaneOrientation planeOrientation, WidgetEnsemble::Pointer ensemble )
 {
 	QFrame *frameWidget = new QFrame();
 	QWidget *placeHolder = new QWidget( frameWidget );
@@ -220,6 +232,7 @@ WidgetEnsembleComponent::Pointer UICore::createEnsembleComponent( const std::str
 	frameWidget->layout()->setMargin( m_ViewerCore->getSettings()->getPropertyAs<uint16_t>( "viewerWidgetMargin" ) );
 
 	widget::WidgetInterface *widgetImpl = m_ViewerCore->getWidget( widgetIdentifier );
+	widgetImpl->setWidgetEnsemble( ensemble );
 	widgetImpl->setup( m_ViewerCore, placeHolder, planeOrientation );
 
 	WidgetEnsembleComponent::Pointer component( new WidgetEnsembleComponent( frameWidget, dockWidget, placeHolder, widgetImpl ) );
@@ -274,7 +287,7 @@ WidgetEnsemble::Pointer UICore::getCurrentEnsemble() const
 bool UICore::registerEnsembleComponent( WidgetEnsembleComponent::Pointer component )
 {
 	if( m_WidgetMap.find( component->getWidgetInterface() ) != m_WidgetMap.end() ) {
-		LOG( Runtime, warning ) << "Widget with id" << component->getWidgetInterface()->getWidgetName() << "!";
+		LOG( Runtime, warning ) << "Widget with id" << component->getWidgetInterface()->getWidgetIdent() << "!";
 		return false;
 	}
 

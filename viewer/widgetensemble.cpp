@@ -36,8 +36,9 @@ namespace viewer
 {
 
 WidgetEnsemble::WidgetEnsemble()
-	: m_frame( new QFrame() ),
-	  m_layout( new QGridLayout() ),
+	: m_hasOptionWidget(false),
+	  m_frame( new QFrame() ),
+	  m_layout( new QHBoxLayout() ),
 	  m_cols( 0 )
 {
 	m_frame->setLayout( m_layout );
@@ -82,8 +83,7 @@ void WidgetEnsemble::insertComponent ( WidgetEnsembleComponent::Pointer componen
 	emitAddImage.connect( boost::bind( &widget::WidgetInterface::addImage, component->getWidgetInterface(), _1 ) );
 	emitRemoveImage.connect( boost::bind( &widget::WidgetInterface::removeImage, component->getWidgetInterface(), _1 ) );
 	emitCheckIfNeeded.connect( boost::bind( &WidgetEnsembleComponent::checkIfNeeded, component.get() ) );
-	component->getWidgetInterface()->setWidgetEnsemble( WidgetEnsemble::Pointer( this ) );
-	m_layout->addWidget( component->getDockWidget(), 0, m_cols++ );
+	m_layout->addWidget( component->getDockWidget() );
 }
 
 bool WidgetEnsemble::hasImage ( const ImageHolder::Pointer image ) const
@@ -114,6 +114,13 @@ void WidgetEnsemble::setIsCurrent ( bool current )
 		}
 	}
 }
+void WidgetEnsemble::setOptionWidget ( QWidget* optionWidget )
+{
+	m_optionWidget = optionWidget;
+	m_hasOptionWidget = optionWidget;
+	m_layout->addWidget(m_optionWidget, 0, Qt::AlignLeft );
+	
+}
 
 void WidgetEnsemble::update( const ViewerCoreBase *core )
 {
@@ -128,10 +135,13 @@ void WidgetEnsemble::update( const ViewerCoreBase *core )
 			}
 		}
 		getFrame()->setVisible( visible );
-
+		if( hasOptionWidget() ) {
+			getOptionWidget()->setVisible( visible );
+		}
 		//if this ensemble contains the current image make this the current ensemble either
 		if( visible ) {
 			setIsCurrent( currentImageIterator != m_imageVector.end() );
+			//we do not want to see the option widget if the ensemble is not current
 		}
 
 		//resort the ensembles image list -> current image has to be the top image

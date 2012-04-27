@@ -45,4 +45,8 @@
     <file>lut/standard_grey_values</file>
     <file>lut/standard_zmap</file>
   </qresource>
+  <qresource prefix="style">
+    <file>stylesheets/fancy</file>
+    <file>stylesheets/default</file>
+  </qresource>
 </RCC>
