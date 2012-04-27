@@ -1,3 +1,5 @@
 <RCC>
-  <qresource prefix="common"/>
+  <qresource prefix="common">
+    <file>reset.png</file>
+  </qresource>
 </RCC>

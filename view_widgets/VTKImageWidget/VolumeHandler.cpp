@@ -61,8 +61,8 @@ vtkImageData *VolumeHandler::getVTKImageData( const ImageHolder::Pointer image, 
 	const util::fvector4 mappedSpacing = image->getImageProperties().orientation.dot( image->getImageProperties().voxelSize );
 	orientationMatrix->SetElement( 3, 3, 1 );
 
-	for( uint8_t i = 0; i < 4; i++ ) {
-		for ( uint8_t j = 0; j < 4; j++ ) {
+	for( uint8_t i = 0; i < 3; i++ ) {
+		for ( uint8_t j = 0; j < 3; j++ ) {
 			orientationMatrix->SetElement( i, j, image->getImageProperties().orientation.elem( i, j ) / fabs( mappedSpacing[i] ) );
 		}
 	}
@@ -72,7 +72,7 @@ vtkImageData *VolumeHandler::getVTKImageData( const ImageHolder::Pointer image, 
 	util::fvector4 start;
 	util::fvector4 end;
 
-	for( uint8_t i = 0; i < 4; i++ ) {
+	for( uint8_t i = 0; i < 3; i++ ) {
 		if( mappedSize[i] > 0 ) {
 			start[i] = -image->getImageProperties().indexOrigin[i];
 			end[i] = mappedSize[i] * fabs( mappedSpacing[i] ) - image->getImageProperties().indexOrigin[i];
@@ -89,8 +89,6 @@ vtkImageData *VolumeHandler::getVTKImageData( const ImageHolder::Pointer image, 
 	reslicer->Update();
 	return reslicer->GetOutput();
 }
-
-
 
 
 }

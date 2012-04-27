@@ -63,7 +63,7 @@ class VTKImageWidgetImplementation : public QVTKWidget, public WidgetInterface
 
 public:
 
-	typedef std::map< boost::shared_ptr<ImageHolder>, VTKImageComponents > ComponentsMapType;
+	typedef std::map< ImageHolder::Pointer, VTKImageComponents > ComponentsMapType;
 
 	VTKImageWidgetImplementation();
 	VTKImageWidgetImplementation( QViewerCore *core, QWidget *parent = 0, PlaneOrientation orientation = axial );
@@ -75,8 +75,8 @@ public Q_SLOTS:
 	virtual void setZoom( float zoom );
 	virtual void updateScene();
 	virtual void setEnableCrosshair( bool enable );
-	virtual void addImage( const boost::shared_ptr<ImageHolder> image );
-	virtual bool removeImage( const boost::shared_ptr< ImageHolder > image );
+	virtual void addImage( const ImageHolder::Pointer image );
+	virtual bool removeImage( const ImageHolder::Pointer image );
 	virtual std::string getWidgetIdent() const { return std::string( "vtk_rendering_widget" ); }
 	virtual std::string getWidgetName() const { return std::string( "3D Rendering widget (vtk)"); }
 	virtual void setInterpolationType( InterpolationType interpolation );
@@ -100,6 +100,11 @@ public Q_SLOTS:
 	void showInferior();
 
 	void setOpacityGradientFactor( double factor ) { m_OpacityGradientFactor = factor; }
+	void setShade( bool shade );
+
+	void resetCamera();
+
+	void setCropping( double *cropping );
 
 protected:
 	void paintEvent( QPaintEvent *event );
@@ -129,7 +134,6 @@ private:
 	bool m_LeftButtonPressed;
 
 	std::pair<int, int> m_StartCoordsPair;
-
 	
 private Q_SLOTS:
 	void reloadImage( const ImageHolder::Pointer );

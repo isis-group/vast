@@ -32,6 +32,7 @@
 #include <vtkTransform.h>
 #include <vtkImageReslice.h>
 #include <vtkMatrix4x4.h>
+#include <vtkImageAppendComponents.h>
 #include "qviewercore.hpp"
 
 namespace isis

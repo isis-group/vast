@@ -245,10 +245,30 @@ void VTKImageWidgetImplementation::reloadImage ( const ImageHolder::Pointer imag
 	}
 }
 
+void VTKImageWidgetImplementation::setCropping ( double *cropping )
+{
+	const util::dvector4 cBB = getCenterOfBoundingBox();
+	const double boundX =  -cBB[0] / 500.0;
+	const double boundY =  -cBB[1] / 500.0;
+	const double boundZ =  -cBB[2] / 500.0;
+	cropping[0] *= boundX;
+	cropping[1] *= boundX;
+	cropping[2] *= boundY;
+	cropping[3] *= boundY;
+	cropping[4] *= boundZ;
+	cropping[5] *= boundZ;
+	BOOST_FOREACH( ComponentsMapType::reference component, m_VTKImageComponentsMap ) {
+		component.second.setCropping( cropping );
+	}
+	update();
+}
+
 
 void VTKImageWidgetImplementation::addImage ( const boost::shared_ptr< ImageHolder > image )
 {
-	VTKImageComponents component = m_VTKImageComponentsMap[image];
+	
+	VTKImageComponents component( image->getImageProperties().imageType == ImageHolder::structural_image );
+	m_VTKImageComponentsMap.insert( std::make_pair<ImageHolder::Pointer, VTKImageComponents>( image, component ) );
 	m_Renderer->AddVolume( component.volume );
 	component.setVTKImageData( VolumeHandler::getVTKImageData( image, image->getImageProperties().voxelCoords[3] ) );
 
@@ -301,7 +321,17 @@ void VTKImageWidgetImplementation::setInterpolationType ( InterpolationType inte
 			break;
 		}
 	}
+	update();
 }
+
+void VTKImageWidgetImplementation::setShade ( bool shade )
+{
+	BOOST_FOREACH( ComponentsMapType::reference component, m_VTKImageComponentsMap ) {
+		component.second.property->SetShade(shade);
+	}
+	update();
+}
+
 
 void VTKImageWidgetImplementation::setMouseCursorIcon ( QIcon )
 {
@@ -376,6 +406,12 @@ isis::util::dvector4 VTKImageWidgetImplementation::getCenterOfBoundingBox()
 		return ret;
 	}
 	return util::dvector4();
+}
+
+void VTKImageWidgetImplementation::resetCamera()
+{
+	m_Renderer->ResetCamera();
+	update();
 }
 
 

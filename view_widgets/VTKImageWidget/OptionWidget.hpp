@@ -49,6 +49,7 @@ public:
 
 public Q_SLOTS:
 	void opacityGradientChanged(int);
+	void croppingChanged();
 
 private:
 	Ui::vtkOptionWidget m_Interface;

@@ -83,7 +83,6 @@ void WidgetEnsemble::insertComponent ( WidgetEnsembleComponent::Pointer componen
 	emitAddImage.connect( boost::bind( &widget::WidgetInterface::addImage, component->getWidgetInterface(), _1 ) );
 	emitRemoveImage.connect( boost::bind( &widget::WidgetInterface::removeImage, component->getWidgetInterface(), _1 ) );
 	emitCheckIfNeeded.connect( boost::bind( &WidgetEnsembleComponent::checkIfNeeded, component.get() ) );
-	component->getDockWidget()->setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Minimum );
 	m_layout->addWidget( component->getDockWidget() );
 }
 

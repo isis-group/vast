@@ -264,15 +264,6 @@ bool ImageHolder::setImage( const data::Image &image, const ImageType &_imageTyp
 
 		getImageProperties().lut = std::string( "standard_grey_values" );
 	}
-
-	getImageProperties().voxelSize = image.getPropertyAs<util::fvector4>( "voxelSize" );
-
-	if( image.hasProperty( "voxelGap" ) ) {
-		getImageProperties().voxelSize += image.getPropertyAs<util::fvector4>( "voxelGap" );
-	}
-
-
-
 	getImageProperties().isVisible = true;
 	getImageProperties().opacity = 1.0;
 	getImageProperties().scaling = 1.0;
@@ -363,8 +354,10 @@ void ImageHolder::updateOrientation()
 	getImageProperties().rowVec = getISISImage()->getPropertyAs<util::fvector4>( "rowVec" );
 	getImageProperties().columnVec = getISISImage()->getPropertyAs<util::fvector4>( "columnVec" );
 	getImageProperties().sliceVec = getISISImage()->getPropertyAs<util::fvector4>( "sliceVec" );
-	getImageProperties().voxelSize = getISISImage()->getPropertyAs<util::fvector4>( "voxelSize" ) + ( getISISImage()->hasProperty( "voxelGap" ) ? getISISImage()->getPropertyAs<util::fvector4>( "voxelGap" ) : util::fvector4() );
-
+	getImageProperties().voxelSize = getISISImage()->getPropertyAs<util::fvector4>( "voxelSize" );
+	if( getISISImage()->hasProperty( "voxelGap ") ) {
+		getImageProperties().voxelSize += getISISImage()->getPropertyAs<util::fvector4>("voxelGap");
+	}
 }
 
 void ImageHolder::checkVoxelCoords( util::ivector4 &vc )

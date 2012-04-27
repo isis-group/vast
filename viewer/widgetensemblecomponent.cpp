@@ -39,7 +39,9 @@ WidgetEnsembleComponent::WidgetEnsembleComponent ( QFrame *frame, QDockWidget *d
 	  m_placeHolder( placeHolder ),
 	  m_widgetImplementation( widgetImplementation ),
 	  m_needed( true )
-{}
+{
+	dockWidget->setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Minimum );
+}
 
 bool WidgetEnsembleComponent::checkIfNeeded()
 {

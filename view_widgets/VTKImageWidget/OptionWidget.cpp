@@ -51,12 +51,32 @@ void OptionWidget::setWidget ( VTKImageWidgetImplementation* widget)
 	connect( m_Interface.right, SIGNAL( pressed()), m_Widget, SLOT( showRight() ) );
 	connect( m_Interface.left, SIGNAL( pressed()), m_Widget, SLOT( showLeft() ) );
 	connect( m_Interface.opacityGradient, SIGNAL( valueChanged(int)), this, SLOT( opacityGradientChanged(int)));
+	connect( m_Interface.resetCamera, SIGNAL( pressed()), m_Widget, SLOT( resetCamera() ) );
+	connect( m_Interface.croppingX1, SIGNAL( valueChanged(int)), this, SLOT( croppingChanged()));
+	connect( m_Interface.croppingX2, SIGNAL( valueChanged(int)), this, SLOT( croppingChanged()));
+	connect( m_Interface.croppingY1, SIGNAL( valueChanged(int)), this, SLOT( croppingChanged()));
+	connect( m_Interface.croppingY2, SIGNAL( valueChanged(int)), this, SLOT( croppingChanged()));
+	connect( m_Interface.croppingZ1, SIGNAL( valueChanged(int)), this, SLOT( croppingChanged()));
+	connect( m_Interface.croppingZ2, SIGNAL( valueChanged(int)), this, SLOT( croppingChanged()));
+	connect( m_Interface.shade, SIGNAL( clicked(bool)), m_Widget, SLOT( setShade( bool )) );
 }
 
 void OptionWidget::opacityGradientChanged ( int value )
 {
 	m_Widget->setOpacityGradientFactor( value / (double)m_Interface.opacityGradient->maximum());
 	m_Widget->updateScene();
+}
+
+void OptionWidget::croppingChanged()
+{
+	double cropping[6];
+	cropping[1] = m_Interface.croppingX1->value();
+	cropping[0] = m_Interface.croppingX2->value();
+	cropping[2] = m_Interface.croppingY1->value();
+	cropping[3] = m_Interface.croppingY2->value();
+	cropping[5] = m_Interface.croppingZ1->value();
+	cropping[4] = m_Interface.croppingZ2->value();
+	m_Widget->setCropping( cropping );
 }
 
 
