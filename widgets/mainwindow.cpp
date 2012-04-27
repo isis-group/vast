@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * Author: Erik Türke, tuerke@cbs.mpg.de
+ * Author: Erik Tuerke, tuerke@cbs.mpg.de
  *
  * mainwindow.cpp
  *
@@ -122,7 +122,8 @@ MainWindow::MainWindow( QViewerCore *core ) :
 	//toolbar stuff
 	m_Toolbar->setOrientation( Qt::Horizontal );
 	m_Toolbar->setMinimumHeight( 20 );
-	m_Toolbar->setMaximumHeight( 30 );
+	m_Toolbar->setMaximumHeight( 40 );
+	m_Toolbar->adjustSize();
 	addToolBar( Qt::TopToolBarArea, m_Toolbar );
 	m_Toolbar->addAction( m_Interface.actionOpen_image );
 	m_Toolbar->addAction( m_Interface.action_Save_Image );
