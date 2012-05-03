@@ -58,13 +58,10 @@ vtkImageData *VolumeHandler::getVTKImageData( const ImageHolder::Pointer image, 
 		for ( uint8_t j = 0; j < 3; j++ ) {
 			orientationMatrix->SetElement( i, j, image->getImageProperties().orientation.elem( i, j ) / image->getImageProperties().voxelSize[i] );
 		}
-		orientationMatrix->SetElement( i, 3, fabs(mio[i]) );
+		orientationMatrix->SetElement( i, 3, -1 * mio[i] / image->getImageProperties().voxelSize[i] );
 	}
-	
 	transform->SetMatrix( orientationMatrix );
-
 	reslicer->SetInput( importer->GetOutput() );
-
 	reslicer->SetOutputExtent( bb[0].first, bb[0].second, bb[1].first, bb[1].second, bb[2].first, bb[2].second );
 	reslicer->SetInterpolationModeToNearestNeighbor();
 	reslicer->SetResliceTransform( transform );

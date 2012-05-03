@@ -117,6 +117,8 @@ private:
 	QVBoxLayout *m_Layout;
 
 	void commonInit();
+	void updatePhysicalBounds();
+	void currentImageChanged( const ImageHolder::Pointer image );
 
 	//vtk stuff
 	vtkRenderWindow *m_RenderWindow;
@@ -126,6 +128,7 @@ private:
 	vtkCursor3D *m_Cursor;
 
 	ComponentsMapType m_VTKImageComponentsMap;
+	geometrical::BoundingBoxType m_PhysicalBounds;
 
 	double m_OpacityGradientFactor;
 	int m_CameraDistance;

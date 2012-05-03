@@ -108,6 +108,7 @@ void VTKImageWidgetImplementation::disconnectSignals()
 	disconnect( m_ViewerCore, SIGNAL( emitZoomChanged( float ) ), this, SLOT( setZoom( float ) ) );
 	disconnect( m_ViewerCore, SIGNAL( emitSetEnableCrosshair( bool ) ), this, SLOT( setEnableCrosshair( bool ) ) );
 	m_ViewerCore->emitImageContentChanged.disconnect( boost::bind( &VTKImageWidgetImplementation::reloadImage, this, _1 ) );
+	m_ViewerCore->emitCurrentImageChanged.disconnect( boost::bind( &VTKImageWidgetImplementation::currentImageChanged, this, _1 ) );
 }
 
 void VTKImageWidgetImplementation::connectSignals()
@@ -117,6 +118,7 @@ void VTKImageWidgetImplementation::connectSignals()
 	connect( m_ViewerCore, SIGNAL( emitZoomChanged( float ) ), this, SLOT( setZoom( float ) ) );
 	connect( m_ViewerCore, SIGNAL( emitSetEnableCrosshair( bool ) ), this, SLOT( setEnableCrosshair( bool ) ) );
 	m_ViewerCore->emitImageContentChanged.connect( boost::bind( &VTKImageWidgetImplementation::reloadImage, this, _1 ) );
+	m_ViewerCore->emitCurrentImageChanged.connect( boost::bind( &VTKImageWidgetImplementation::currentImageChanged, this, _1 ) );
 }
 
 void VTKImageWidgetImplementation::commonInit()
@@ -146,6 +148,17 @@ void VTKImageWidgetImplementation::commonInit()
 	m_Actor->SetMapper( m_CursorMapper );
 	m_Renderer->AddActor( m_Actor );
 }
+
+void VTKImageWidgetImplementation::currentImageChanged ( const ImageHolder::Pointer image )
+{
+	m_Renderer->RemoveAllViewProps();
+	BOOST_FOREACH( const ImageHolder::Vector::const_reference image, getWidgetEnsemble()->getImageVector() ) {
+		m_Renderer->AddVolume( m_VTKImageComponentsMap.at( image ).volume );
+	}
+	m_Renderer->AddActor( m_Actor );
+
+}
+
 
 void VTKImageWidgetImplementation::updateScene()
 {
@@ -253,8 +266,8 @@ void VTKImageWidgetImplementation::reloadImage ( const ImageHolder::Pointer imag
 {
 	const ComponentsMapType::iterator iter = m_VTKImageComponentsMap.find( image );
 	if( iter != m_VTKImageComponentsMap.end() ) {
-		const geometrical::BoundingBoxType bb = geometrical::getPhysicalBoundingBox( getWidgetEnsemble()->getImageVector() );
-		iter->second.setVTKImageData( VolumeHandler::getVTKImageData( image, bb, image->getImageProperties().voxelCoords[3] ) );
+		updatePhysicalBounds();
+		iter->second.setVTKImageData( VolumeHandler::getVTKImageData( image, m_PhysicalBounds, image->getImageProperties().voxelCoords[3] ) );
 	}
 }
 
@@ -279,31 +292,24 @@ void VTKImageWidgetImplementation::setCropping ( double *cropping )
 
 void VTKImageWidgetImplementation::addImage ( const ImageHolder::Pointer image )
 {
-	const geometrical::BoundingBoxType bb = geometrical::getPhysicalBoundingBox( getWidgetEnsemble()->getImageVector() );
+	updatePhysicalBounds();
 	VTKImageComponents component( image->getImageProperties().imageType == ImageHolder::structural_image );
 	m_VTKImageComponentsMap.insert( std::make_pair<ImageHolder::Pointer, VTKImageComponents>( image, component ) );
 	m_Renderer->AddVolume( component.volume );
-	component.setVTKImageData( VolumeHandler::getVTKImageData( image, bb, image->getImageProperties().voxelCoords[3] ) );
+	component.setVTKImageData( VolumeHandler::getVTKImageData( image, m_PhysicalBounds, image->getImageProperties().voxelCoords[3] ) );
 
 	if( getWidgetEnsemble()->getImageVector().size() == 1 ) {
 		m_Renderer->GetActiveCamera()->SetPosition( image->getImageProperties().indexOrigin[0] * 2, image->getImageProperties().indexOrigin[1] * 2, image->getImageProperties().indexOrigin[2] );
 		m_Renderer->GetActiveCamera()->Roll( -65 );
 	}
-
-	const util::fvector4 io = image->getImageProperties().indexOrigin;
-
-	const int *extent = component.getVTKImageData()->GetExtent();
-// 	for ( unsigned short i = 0; i < 6; i++ ) {
-// 		std::cout << extent[i] << " | ";
-// 	}
-// 	std::cout << std::endl;
-
-	m_Cursor->SetModelBounds( extent[0], extent[1], extent[2], extent[3], extent[4], extent[5] );
-
-	m_Renderer->ResetCamera();
-
+	resetCamera();
 	lookAtPhysicalCoords( image->getImageProperties().physicalCoords );
+}
 
+void VTKImageWidgetImplementation::updatePhysicalBounds()
+{
+	m_PhysicalBounds = geometrical::getPhysicalBoundingBox( getWidgetEnsemble()->getImageVector() );
+	m_Cursor->SetModelBounds( m_PhysicalBounds[0].first, m_PhysicalBounds[0].second, m_PhysicalBounds[1].first, m_PhysicalBounds[1].second, m_PhysicalBounds[2].first, m_PhysicalBounds[2].second );
 }
 
 
@@ -319,8 +325,16 @@ void VTKImageWidgetImplementation::lookAtPhysicalCoords ( const util::fvector4 &
 	}
 }
 
-bool VTKImageWidgetImplementation::removeImage ( const boost::shared_ptr< ImageHolder > /*image*/ )
+bool VTKImageWidgetImplementation::removeImage ( const ImageHolder::Pointer image )
 {
+	ComponentsMapType::iterator iter = m_VTKImageComponentsMap.find( image );
+	if( iter != m_VTKImageComponentsMap.end() ) {
+		m_Renderer->RemoveVolume( iter->second.volume );
+		m_VTKImageComponentsMap.erase( iter );
+		updatePhysicalBounds();
+		resetCamera();
+	}
+	updateScene();
 	return true;
 }
 void VTKImageWidgetImplementation::setInterpolationType ( InterpolationType interpolation )
@@ -357,7 +371,7 @@ void VTKImageWidgetImplementation::showAnterior()
 	const util::dvector4 center = getCenterOfBoundingBox();
 	m_Renderer->GetActiveCamera()->SetParallelProjection(1);
 	m_Renderer->GetActiveCamera()->SetViewUp(0,0,1);
-	m_Renderer->GetActiveCamera()->SetPosition(-center[0], -m_CameraDistance ,-center[2]);
+	m_Renderer->GetActiveCamera()->SetPosition(center[0], -m_CameraDistance ,center[2]);
 	update();
 }
 
@@ -366,7 +380,7 @@ void VTKImageWidgetImplementation::showInferior()
 	const util::dvector4 center = getCenterOfBoundingBox();
 	m_Renderer->GetActiveCamera()->SetParallelProjection(1);
 	m_Renderer->GetActiveCamera()->SetViewUp(0,-1,0);
-	m_Renderer->GetActiveCamera()->SetPosition(-center[0], -center[1], -m_CameraDistance);
+	m_Renderer->GetActiveCamera()->SetPosition(center[0], center[1], -m_CameraDistance);
 	update();
 }
 
@@ -375,7 +389,7 @@ void VTKImageWidgetImplementation::showLeft()
 	const util::dvector4 center = getCenterOfBoundingBox();
 	m_Renderer->GetActiveCamera()->SetParallelProjection(1);
 	m_Renderer->GetActiveCamera()->SetViewUp(0,0,1);
-	m_Renderer->GetActiveCamera()->SetPosition(m_CameraDistance, -center[1], -center[2]);
+	m_Renderer->GetActiveCamera()->SetPosition(m_CameraDistance, center[1], center[2]);
 	update();
 }
 
@@ -384,7 +398,7 @@ void VTKImageWidgetImplementation::showPosterior()
 	const util::dvector4 center = getCenterOfBoundingBox();
 	m_Renderer->GetActiveCamera()->SetParallelProjection(1);
 	m_Renderer->GetActiveCamera()->SetViewUp(0,0,1);
-	m_Renderer->GetActiveCamera()->SetPosition(-center[0], m_CameraDistance,-center[2]);
+	m_Renderer->GetActiveCamera()->SetPosition(center[0], m_CameraDistance,center[2]);
 	update();
 }
 
@@ -393,7 +407,7 @@ void VTKImageWidgetImplementation::showRight()
 	const util::dvector4 center = getCenterOfBoundingBox();
 	m_Renderer->GetActiveCamera()->SetParallelProjection(1);
 	m_Renderer->GetActiveCamera()->SetViewUp(0,0,1);
-	m_Renderer->GetActiveCamera()->SetPosition(-m_CameraDistance, -center[1], -center[2]);
+	m_Renderer->GetActiveCamera()->SetPosition(-m_CameraDistance, center[1], center[2]);
 	update();
 }
 
@@ -402,7 +416,7 @@ void VTKImageWidgetImplementation::showSuperior()
 	const util::dvector4 center = getCenterOfBoundingBox();
 	m_Renderer->GetActiveCamera()->SetParallelProjection(1);
 	m_Renderer->GetActiveCamera()->SetViewUp(0,-1,0);
-	m_Renderer->GetActiveCamera()->SetPosition(-center[0], -center[1], m_CameraDistance);
+	m_Renderer->GetActiveCamera()->SetPosition(center[0], center[1], m_CameraDistance);
 	update();
 }
 
@@ -410,13 +424,10 @@ void VTKImageWidgetImplementation::showSuperior()
 isis::util::dvector4 VTKImageWidgetImplementation::getCenterOfBoundingBox()
 {
 	if( m_ViewerCore->hasImage() ) {
-		const ImageHolder::Pointer image = m_ViewerCore->getCurrentImage();
-		const util::ivector4 mapping = image->getImageProperties().latchedOrientation.dot(util::ivector4(1,1,1,1));
 		util::dvector4 ret;
-		const double *bounds = m_Actor->GetBounds();
-		ret[0] = (bounds[0] - bounds[1]) / 2.0 * mapping[0];
-		ret[1] = (bounds[2] - bounds[3]) / 2.0 * mapping[1];
-		ret[2] = (bounds[4] - bounds[5]) / 2.0 * mapping[2];
+		ret[0] = (m_PhysicalBounds[0].first + m_PhysicalBounds[0].second) / 2.0;
+		ret[1] = (m_PhysicalBounds[1].first + m_PhysicalBounds[1].second) / 2.0;
+		ret[2] = (m_PhysicalBounds[2].first + m_PhysicalBounds[2].second) / 2.0;
 		return ret;
 	}
 	return util::dvector4();
