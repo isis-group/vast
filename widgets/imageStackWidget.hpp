@@ -20,10 +20,10 @@ public:
 public Q_SLOTS:
 	void contextMenuEvent( QContextMenuEvent * );
 	void mousePressEvent( QMouseEvent * );
-	
+
 private:
 	ImageStackWidget *m_Widget;
-	std::list<QAction*> m_WidgetActions;
+	std::list<QAction *> m_WidgetActions;
 
 };
 

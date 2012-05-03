@@ -41,29 +41,29 @@ OptionWidget::OptionWidget ( QWidget *parent )
 
 }
 
-void OptionWidget::setWidget ( VTKImageWidgetImplementation* widget)
+void OptionWidget::setWidget ( VTKImageWidgetImplementation *widget )
 {
 	m_Widget = widget;
-	connect( m_Interface.anterior, SIGNAL( pressed()), m_Widget, SLOT( showAnterior() ) );
-	connect( m_Interface.inferior, SIGNAL( pressed()), m_Widget, SLOT( showInferior() ) );
-	connect( m_Interface.posterior, SIGNAL( pressed()), m_Widget, SLOT( showPosterior() ) );
-	connect( m_Interface.superior, SIGNAL( pressed()), m_Widget, SLOT( showSuperior() ) );
-	connect( m_Interface.right, SIGNAL( pressed()), m_Widget, SLOT( showRight() ) );
-	connect( m_Interface.left, SIGNAL( pressed()), m_Widget, SLOT( showLeft() ) );
-	connect( m_Interface.opacityGradient, SIGNAL( valueChanged(int)), this, SLOT( opacityGradientChanged(int)));
-	connect( m_Interface.resetCamera, SIGNAL( pressed()), m_Widget, SLOT( resetCamera() ) );
-	connect( m_Interface.croppingX1, SIGNAL( valueChanged(int)), this, SLOT( croppingChanged()));
-	connect( m_Interface.croppingX2, SIGNAL( valueChanged(int)), this, SLOT( croppingChanged()));
-	connect( m_Interface.croppingY1, SIGNAL( valueChanged(int)), this, SLOT( croppingChanged()));
-	connect( m_Interface.croppingY2, SIGNAL( valueChanged(int)), this, SLOT( croppingChanged()));
-	connect( m_Interface.croppingZ1, SIGNAL( valueChanged(int)), this, SLOT( croppingChanged()));
-	connect( m_Interface.croppingZ2, SIGNAL( valueChanged(int)), this, SLOT( croppingChanged()));
-	connect( m_Interface.shade, SIGNAL( clicked(bool)), m_Widget, SLOT( setShade( bool )) );
+	connect( m_Interface.anterior, SIGNAL( pressed() ), m_Widget, SLOT( showAnterior() ) );
+	connect( m_Interface.inferior, SIGNAL( pressed() ), m_Widget, SLOT( showInferior() ) );
+	connect( m_Interface.posterior, SIGNAL( pressed() ), m_Widget, SLOT( showPosterior() ) );
+	connect( m_Interface.superior, SIGNAL( pressed() ), m_Widget, SLOT( showSuperior() ) );
+	connect( m_Interface.right, SIGNAL( pressed() ), m_Widget, SLOT( showRight() ) );
+	connect( m_Interface.left, SIGNAL( pressed() ), m_Widget, SLOT( showLeft() ) );
+	connect( m_Interface.opacityGradient, SIGNAL( valueChanged( int ) ), this, SLOT( opacityGradientChanged( int ) ) );
+	connect( m_Interface.resetCamera, SIGNAL( pressed() ), m_Widget, SLOT( resetCamera() ) );
+	connect( m_Interface.croppingX1, SIGNAL( valueChanged( int ) ), this, SLOT( croppingChanged() ) );
+	connect( m_Interface.croppingX2, SIGNAL( valueChanged( int ) ), this, SLOT( croppingChanged() ) );
+	connect( m_Interface.croppingY1, SIGNAL( valueChanged( int ) ), this, SLOT( croppingChanged() ) );
+	connect( m_Interface.croppingY2, SIGNAL( valueChanged( int ) ), this, SLOT( croppingChanged() ) );
+	connect( m_Interface.croppingZ1, SIGNAL( valueChanged( int ) ), this, SLOT( croppingChanged() ) );
+	connect( m_Interface.croppingZ2, SIGNAL( valueChanged( int ) ), this, SLOT( croppingChanged() ) );
+	connect( m_Interface.shade, SIGNAL( clicked( bool ) ), m_Widget, SLOT( setShade( bool ) ) );
 }
 
 void OptionWidget::opacityGradientChanged ( int value )
 {
-	m_Widget->setOpacityGradientFactor( value / (double)m_Interface.opacityGradient->maximum());
+	m_Widget->setOpacityGradientFactor( value / ( double )m_Interface.opacityGradient->maximum() );
 	m_Widget->updateScene();
 }
 

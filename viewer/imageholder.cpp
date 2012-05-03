@@ -264,6 +264,7 @@ bool ImageHolder::setImage( const data::Image &image, const ImageType &_imageTyp
 
 		getImageProperties().lut = std::string( "standard_grey_values" );
 	}
+
 	getImageProperties().isVisible = true;
 	getImageProperties().opacity = 1.0;
 	getImageProperties().scaling = 1.0;
@@ -271,7 +272,7 @@ bool ImageHolder::setImage( const data::Image &image, const ImageType &_imageTyp
 	getImageProperties().colorMap = util::Singletons::get<color::Color, 10>().getColormapMap().at( getImageProperties().lut );
 
 	if( !getImageProperties().isRGB ) {
-		
+
 		updateHistogram();
 		m_PropMap.setPropertyAs<double>( "scalingMinValue", getImageProperties().minMax.first->as<double>() );
 		m_PropMap.setPropertyAs<double>( "scalingMaxValue", getImageProperties().minMax.second->as<double>() );
@@ -332,6 +333,7 @@ void ImageHolder::updateHistogram()
 #ifdef _OPENMP
 #pragma omp parallel for
 #endif
+
 		for( size_t i = 0; i < volume; i++ ) {
 			getImageProperties().histogramVector[t][dataPtr[i]]++;
 
@@ -355,8 +357,9 @@ void ImageHolder::updateOrientation()
 	getImageProperties().columnVec = getISISImage()->getPropertyAs<util::fvector4>( "columnVec" );
 	getImageProperties().sliceVec = getISISImage()->getPropertyAs<util::fvector4>( "sliceVec" );
 	getImageProperties().voxelSize = getISISImage()->getPropertyAs<util::fvector4>( "voxelSize" );
-	if( getISISImage()->hasProperty( "voxelGap ") ) {
-		getImageProperties().voxelSize += getISISImage()->getPropertyAs<util::fvector4>("voxelGap");
+
+	if( getISISImage()->hasProperty( "voxelGap " ) ) {
+		getImageProperties().voxelSize += getISISImage()->getPropertyAs<util::fvector4>( "voxelGap" );
 	}
 }
 
@@ -492,21 +495,22 @@ void ImageHolder::synchronize ()
 	}
 }
 
-void ImageHolder::phyisicalCoordsChanged ( const util::fvector4& physicalCoords )
+void ImageHolder::phyisicalCoordsChanged ( const util::fvector4 &physicalCoords )
 {
 	getImageProperties().physicalCoords = physicalCoords;
 	getImageProperties().voxelCoords = getISISImage()->getIndexFromPhysicalCoords( physicalCoords, true );
 }
 
-void ImageHolder::voxelCoordsChanged ( const util::ivector4& voxelCoords )
+void ImageHolder::voxelCoordsChanged ( const util::ivector4 &voxelCoords )
 {
 	getImageProperties().voxelCoords = voxelCoords;
 	getImageProperties().physicalCoords = getISISImage()->getPhysicalCoordsFromIndex( voxelCoords );
 }
 
-void ImageHolder::timestepChanged ( const size_t& timestep )
+void ImageHolder::timestepChanged ( const size_t &timestep )
 {
 	getImageProperties().timestep = timestep;
+
 	if( getImageProperties().timestep >= getISISImage()->getSizeAsVector()[3] ) {
 		getImageProperties().timestep = getISISImage()->getSizeAsVector()[3] - 1;
 	}

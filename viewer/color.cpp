@@ -215,10 +215,14 @@ void Color::adaptColorMapToImage( ImageHolder *image, bool split )
 	const double norm = 256.0 / extent;
 	const unsigned short mid = ( norm * fabs( min ) );
 	short scaledVal;
+
 	for ( unsigned short i = 0; i < 256; i++ ) {
-		scaledVal = scaling * (i - (offset * norm));
+		scaledVal = scaling * ( i - ( offset * norm ) );
+
 		if( scaledVal < 0 ) scaledVal = 0;
+
 		if( scaledVal > 255 ) scaledVal = 255;
+
 		retMap[i] = tmpMap[scaledVal];
 	}
 

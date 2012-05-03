@@ -52,37 +52,39 @@ ImageStack::ImageStack( QWidget *parent, ImageStackWidget *widget )
 	const widget::WidgetLoader::WidgetPropertyMapType &optionsMap = util::Singletons::get<widget::WidgetLoader, 10>().getWidgetPropertyMap();
 	BOOST_FOREACH( WRef w, widgetMap ) {
 		QAction *action = new QAction( this );
-		action->setText( optionsMap.at( w.first )->getPropertyAs<std::string>("widgetName").c_str() );
+		action->setText( optionsMap.at( w.first )->getPropertyAs<std::string>( "widgetName" ).c_str() );
 		m_WidgetActions.push_back( action );
 		signalMapper->setMapping( action, w.first.c_str() );
-		connect( action, SIGNAL( triggered(bool)), signalMapper, SLOT( map()) );
+		connect( action, SIGNAL( triggered( bool ) ), signalMapper, SLOT( map() ) );
 	}
-	connect( signalMapper, SIGNAL( mapped(QString)), m_Widget, SLOT( openImageInWidget(QString)) );
+	connect( signalMapper, SIGNAL( mapped( QString ) ), m_Widget, SLOT( openImageInWidget( QString ) ) );
 }
 
 void ImageStackWidget::openImageInWidget ( QString widget )
 {
 	const std::string imageName = m_ImageStack->currentItem()->data( Qt::UserRole ).toString().toStdString();
+
 	if( m_ViewerCore->getImageMap().find( imageName ) != m_ViewerCore->getImageMap().end() ) {
 		const ImageHolder::Pointer image = m_ViewerCore->getImageMap().at( imageName );
 		std::stringstream ss;
 		ss << "Show \"" << image->getImageProperties().fileName << "\" in new widget...";
 		QMessageBox msgBox;
-		msgBox.setText(ss.str().c_str());
-		msgBox.setInformativeText("Do you want to copy this image?");
-		msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+		msgBox.setText( ss.str().c_str() );
+		msgBox.setInformativeText( "Do you want to copy this image?" );
+		msgBox.setStandardButtons( QMessageBox::Yes | QMessageBox::No );
 		msgBox.setIcon( QMessageBox::Question );
 		const int ret = msgBox.exec();
 
 		switch( ret ) {
-			case QMessageBox::Yes:
-				//TODO actually we do not have to do a copy of the image
-				m_ViewerCore->getUICore()->createViewWidgetEnsemble( widget.toStdString(), m_ViewerCore->addImage( *image->getISISImage().get(), image->getImageProperties().imageType ) );
-				break;
-			case QMessageBox::No:
-				m_ViewerCore->getUICore()->createViewWidgetEnsemble( widget.toStdString(), image );
-				break;
+		case QMessageBox::Yes:
+			//TODO actually we do not have to do a copy of the image
+			m_ViewerCore->getUICore()->createViewWidgetEnsemble( widget.toStdString(), m_ViewerCore->addImage( *image->getISISImage().get(), image->getImageProperties().imageType ) );
+			break;
+		case QMessageBox::No:
+			m_ViewerCore->getUICore()->createViewWidgetEnsemble( widget.toStdString(), image );
+			break;
 		}
+
 		m_ViewerCore->getUICore()->refreshUI();
 	}
 }
@@ -91,7 +93,7 @@ void ImageStack::contextMenuEvent( QContextMenuEvent *event )
 {
 	QMenu menu( this );
 	QMenu *openInWidgetMenu = new QMenu( "Show in new widget...", this );
-	BOOST_FOREACH( const std::list<QAction*>::const_reference action, m_WidgetActions ) {
+	BOOST_FOREACH( const std::list<QAction *>::const_reference action, m_WidgetActions ) {
 		openInWidgetMenu->addAction( action );
 	}
 	menu.addAction( m_Widget->m_Interface.actionClose_image );

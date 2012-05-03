@@ -27,17 +27,22 @@
  ******************************************************************/
 #include "RegistrationDialog.hpp"
 
-namespace isis {
-namespace viewer {
-namespace plugin {
-
-RegistrationDialog::RegistrationDialog ( QWidget* parent, QViewerCore* core )
-	: QDialog ( parent ),
-	m_ViewerCore( core )
+namespace isis
 {
-	m_Interface.setupUi(this);
+namespace viewer
+{
+namespace plugin
+{
+
+RegistrationDialog::RegistrationDialog ( QWidget *parent, QViewerCore *core )
+	: QDialog ( parent ),
+	  m_ViewerCore( core )
+{
+	m_Interface.setupUi( this );
 
 }
 
 
-}}}
+}
+}
+}

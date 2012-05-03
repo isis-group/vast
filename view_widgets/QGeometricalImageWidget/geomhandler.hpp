@@ -62,23 +62,23 @@ void zoomBoundingBox( util::fvector4 &boundingBox, util::FixedVector<float, 2> &
 template< typename TYPE >
 static void extractSliceFromChunk( data::MemChunk<TYPE> &sliceChunk, const ImageHolder::Pointer image, const PlaneOrientation &orientation )
 {
-	const util::ivector4 mappedSize = mapCoordsToOrientation( image->getImageSize(), image->getImageProperties().latchedOrientation, orientation );
-	const util::ivector4 mappedCoords = mapCoordsToOrientation( image->getImageProperties().voxelCoords, image->getImageProperties().latchedOrientation, orientation );
-	const util::ivector4 mapping = mapCoordsToOrientation( util::ivector4( 0, 1, 2, 3 ), image->getImageProperties().latchedOrientation, orientation, true );
-	const data::Chunk &chunk = image->getChunkVector()[image->getImageProperties().voxelCoords[dim_time]];
-	//test for axial
-	const util::Matrix4x4<float> mat = image->getImageProperties().orientation;
-	util::fvector4 v1 = mat.getRow( 0 );
-	util::fvector4 v2 = mat.getRow( 1 );
+    const util::ivector4 mappedSize = mapCoordsToOrientation( image->getImageSize(), image->getImageProperties().latchedOrientation, orientation );
+    const util::ivector4 mappedCoords = mapCoordsToOrientation( image->getImageProperties().voxelCoords, image->getImageProperties().latchedOrientation, orientation );
+    const util::ivector4 mapping = mapCoordsToOrientation( util::ivector4( 0, 1, 2, 3 ), image->getImageProperties().latchedOrientation, orientation, true );
+    const data::Chunk &chunk = image->getChunkVector()[image->getImageProperties().voxelCoords[dim_time]];
+    //test for axial
+    const util::Matrix4x4<float> mat = image->getImageProperties().orientation;
+    util::fvector4 v1 = mat.getRow( 0 );
+    util::fvector4 v2 = mat.getRow( 1 );
 
-	const util::ivector4 voxelCoords = image->getImageProperties().voxelCoords;
+    const util::ivector4 voxelCoords = image->getImageProperties().voxelCoords;
 
-	for ( util::ivector4::value_type y = 0; y < mappedSize[1]; y++ ) {
-		for ( util::ivector4::value_type x = 0; x < mappedSize[0]; x++ ) {
-			const util::ivector4 coords = v1 * x + v2 * y + voxelCoords;
-			static_cast<data::Chunk &>( sliceChunk ).voxel<TYPE>( x, y ) = chunk.voxel<TYPE>( coords[0], coords[1], coords[2] );
-		}
-	}
+    for ( util::ivector4::value_type y = 0; y < mappedSize[1]; y++ ) {
+        for ( util::ivector4::value_type x = 0; x < mappedSize[0]; x++ ) {
+            const util::ivector4 coords = v1 * x + v2 * y + voxelCoords;
+            static_cast<data::Chunk &>( sliceChunk ).voxel<TYPE>( x, y ) = chunk.voxel<TYPE>( coords[0], coords[1], coords[2] );
+        }
+    }
 }*/
 
 

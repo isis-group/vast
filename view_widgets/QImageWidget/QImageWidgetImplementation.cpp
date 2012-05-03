@@ -618,7 +618,7 @@ void QImageWidgetImplementation::dropEvent( QDropEvent *e )
 }
 } //end namespace
 
-const QWidget* loadOptionWidget()
+const QWidget *loadOptionWidget()
 {
 	return new QWidget();
 }
@@ -634,6 +634,6 @@ const isis::util::PropertyMap *getProperties()
 	properties->setPropertyAs<std::string>( "widgetIdent", "qt4_plane_widget" );
 	properties->setPropertyAs<std::string>( "widgetName", "Simple plane widget" );
 	properties->setPropertyAs<uint8_t>( "numberOfEntitiesInEnsemble", 3 );
-	properties->setPropertyAs<bool>("hasOptionWidget", false );
+	properties->setPropertyAs<bool>( "hasOptionWidget", false );
 	return properties;
 }

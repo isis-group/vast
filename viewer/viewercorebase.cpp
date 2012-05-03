@@ -92,6 +92,7 @@ ImageHolder::Vector ViewerCoreBase::addImageList( const std::list< data::Image >
 ImageHolder::Pointer ViewerCoreBase::addImage( const isis::data::Image &image, const isis::viewer::ImageHolder::ImageType &imageType )
 {
 	std::string fileName;
+
 	if( image.hasProperty( "source" ) ) {
 		fileName = image.getPropertyAs<std::string>( "source" );
 	} else {
@@ -153,7 +154,7 @@ ImageHolder::Pointer ViewerCoreBase::addImage( const isis::data::Image &image, c
 	emitGlobalPhysicalCoordsChanged.connect( boost::bind( &ImageHolder::phyisicalCoordsChanged, retImage, _1 ) );
 	emitGlobalVoxelCoordsChanged.connect( boost::bind( &ImageHolder::voxelCoordsChanged, retImage, _1 ) );
 	emitGlobalTimestepChanged.connect( boost::bind( &ImageHolder::timestepChanged, retImage, _1 ) );
-	
+
 	//emit the signal
 	emitAddImage( retImage );
 	return retImage;
@@ -163,6 +164,7 @@ bool ViewerCoreBase::removeImage ( const ImageHolder::Pointer image )
 {
 	const size_t oldNumberImages = getImageVector().size();
 	LOG( Dev, info ) << "Removing image " << image->getImageProperties().fileName;
+
 	//if this image is the current one, we have to set one of the residual images to the current one
 	if( getCurrentImage().get() == image.get() ) {
 		LOG( Dev, info ) << "This was the current image so setting one of the residual images to current image";
@@ -180,7 +182,7 @@ bool ViewerCoreBase::removeImage ( const ImageHolder::Pointer image )
 	getImageMap().erase( image->getImageProperties().filePath );
 
 	emitRefreshAllWidgets();
-	
+
 	if( ( getImageVector().size() == getImageMap().size() ) && ( getImageVector().size() == ( oldNumberImages - 1 ) ) ) {
 		return true;
 	} else {

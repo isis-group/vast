@@ -68,7 +68,9 @@ private:
 	bool isInitialized;
 };
 
-}}}
+}
+}
+}
 
 isis::viewer::plugin::PluginInterface *loadPlugin()
 {

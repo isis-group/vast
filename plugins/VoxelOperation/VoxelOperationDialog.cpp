@@ -28,22 +28,25 @@
 #include "VoxelOperationDialog.hpp"
 #include <uicore.hpp>
 
-namespace isis {
-namespace viewer {
-namespace plugin {
+namespace isis
+{
+namespace viewer
+{
+namespace plugin
+{
 
-VoxelOperationDialog::VoxelOperationDialog ( QWidget* parent, QViewerCore* core )
+VoxelOperationDialog::VoxelOperationDialog ( QWidget *parent, QViewerCore *core )
 	: QDialog( parent ),
-	m_ViewerCore( core )
+	  m_ViewerCore( core )
 {
 	m_Interface.setupUi( this );
-	connect( m_Interface.calcButton, SIGNAL( pressed()), this, SLOT( calculatePressed()));
-	connect( m_Interface.helpButton, SIGNAL( pressed()), this, SLOT( helpPressed()));
+	connect( m_Interface.calcButton, SIGNAL( pressed() ), this, SLOT( calculatePressed() ) );
+	connect( m_Interface.helpButton, SIGNAL( pressed() ), this, SLOT( helpPressed() ) );
 }
 
 void VoxelOperationDialog::helpPressed()
 {
-	QDesktopServices::openUrl( QUrl( "http://muparser.sourceforge.net/mup_features.html"));
+	QDesktopServices::openUrl( QUrl( "http://muparser.sourceforge.net/mup_features.html" ) );
 }
 
 
@@ -55,26 +58,28 @@ void VoxelOperationDialog::calculatePressed()
 		try {
 			_internal::VoxelOp vop( op );
 			const ImageHolder::Pointer image = m_ViewerCore->getCurrentImage();
-			m_Interface.calcButton->setEnabled(false);
-			m_Interface.calcButton->setText("Calculating...");
+			m_Interface.calcButton->setEnabled( false );
+			m_Interface.calcButton->setText( "Calculating..." );
 			std::stringstream ss;
 			ss << "Calculating " << op << "...";
-			m_ViewerCore->getUICore()->getMainWindow()->toggleLoadingIcon(true, ss.str().c_str());
-			image->getISISImage()->foreachVoxel<double>(vop);
-			m_ViewerCore->getUICore()->getMainWindow()->toggleLoadingIcon(false);
-			m_Interface.calcButton->setEnabled(true);
-			m_Interface.calcButton->setText("Calculate");
+			m_ViewerCore->getUICore()->getMainWindow()->toggleLoadingIcon( true, ss.str().c_str() );
+			image->getISISImage()->foreachVoxel<double>( vop );
+			m_ViewerCore->getUICore()->getMainWindow()->toggleLoadingIcon( false );
+			m_Interface.calcButton->setEnabled( true );
+			m_Interface.calcButton->setText( "Calculate" );
 			util::slist voxelOpHistory;
-			if( image->getPropMap().hasProperty("VoxelOperation/opHistory") ) {
-				voxelOpHistory = image->getPropMap().getPropertyAs<util::slist>("VoxelOperation/opHistory");
+
+			if( image->getPropMap().hasProperty( "VoxelOperation/opHistory" ) ) {
+				voxelOpHistory = image->getPropMap().getPropertyAs<util::slist>( "VoxelOperation/opHistory" );
 			}
-			voxelOpHistory.push_back(op);
-			image->getPropMap().setPropertyAs<util::slist>("VoxelOperation/opHistory", voxelOpHistory );
+
+			voxelOpHistory.push_back( op );
+			image->getPropMap().setPropertyAs<util::slist>( "VoxelOperation/opHistory", voxelOpHistory );
 			image->synchronize( );
 			image->updateColorMap();
 			image->updateHistogram();
 			m_ViewerCore->emitImageContentChanged( image );
-			m_ViewerCore->getUICore()->refreshUI(true);			
+			m_ViewerCore->getUICore()->refreshUI( true );
 		} catch( mu::Parser::exception_type &e ) {
 			QMessageBox msgBox;
 			msgBox.setText( e.GetMsg().c_str() );
@@ -84,4 +89,6 @@ void VoxelOperationDialog::calculatePressed()
 }
 
 
-}}}
+}
+}
+}

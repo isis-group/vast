@@ -39,22 +39,22 @@ namespace widget
 {
 
 class VTKImageWidgetImplementation;
-	
+
 class OptionWidget : public QWidget
 {
 	Q_OBJECT
 public:
 	OptionWidget( QWidget *parent = 0 );
-	void setWidget( VTKImageWidgetImplementation* );
+	void setWidget( VTKImageWidgetImplementation * );
 
 public Q_SLOTS:
-	void opacityGradientChanged(int);
+	void opacityGradientChanged( int );
 	void croppingChanged();
 
 private:
 	Ui::vtkOptionWidget m_Interface;
-	VTKImageWidgetImplementation* m_Widget;
-	
+	VTKImageWidgetImplementation *m_Widget;
+
 };
 
 }

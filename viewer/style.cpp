@@ -30,17 +30,20 @@
 #include "common.hpp"
 #include <QFile>
 
-namespace isis {
-namespace viewer {
-namespace style {
+namespace isis
+{
+namespace viewer
+{
+namespace style
+{
 
 Style::Style()
 {
-	addStyleSheet( std::string( ":/style/stylesheets/default" ), std::string( "default") );
-	addStyleSheet( std::string( ":/style/stylesheets/fancy" ), std::string( "fancy") );
+	addStyleSheet( std::string( ":/style/stylesheets/default" ), std::string( "default" ) );
+	addStyleSheet( std::string( ":/style/stylesheets/fancy" ), std::string( "fancy" ) );
 }
 
-bool Style::addStyleSheet ( const std::string &path, const std::string& name )
+bool Style::addStyleSheet ( const std::string &path, const std::string &name )
 {
 	QFile lutFile( path.c_str() );
 	lutFile.open( QIODevice::ReadOnly );
@@ -49,6 +52,7 @@ bool Style::addStyleSheet ( const std::string &path, const std::string& name )
 		LOG( Dev, warning ) << "The QResource \"" << path << "\" is not readable!";
 		return false;
 	}
+
 	QString data( lutFile.readAll() );
 	lutFile.close();
 	m_StyleSheetMap[name] = data;
@@ -56,7 +60,7 @@ bool Style::addStyleSheet ( const std::string &path, const std::string& name )
 }
 
 
-QString Style::getStyleSheet ( const std::string& name )
+QString Style::getStyleSheet ( const std::string &name )
 {
 	if( m_StyleSheetMap.find( name ) != m_StyleSheetMap.end() ) {
 		return m_StyleSheetMap[name];
@@ -68,4 +72,6 @@ QString Style::getStyleSheet ( const std::string& name )
 
 
 
-}}}
+}
+}
+}

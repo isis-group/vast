@@ -113,7 +113,7 @@ int main( int argc, char *argv[] )
 	data::IOFactory::setProgressFeedback( feedback );
 	app.init( argc, argv, false );
 	QViewerCore *core = new QViewerCore;
-	app.getQApplication().setStyleSheet( util::Singletons::get<style::Style,10>().getStyleSheet(core->getSettings()->getPropertyAs<std::string>("styleSheet")) );
+	app.getQApplication().setStyleSheet( util::Singletons::get<style::Style, 10>().getStyleSheet( core->getSettings()->getPropertyAs<std::string>( "styleSheet" ) ) );
 
 	util::_internal::Log<isis::data::Runtime>::setHandler( logging_hanlder_runtime );
 	util::_internal::Log<isis::util::Runtime>::setHandler( logging_hanlder_runtime );

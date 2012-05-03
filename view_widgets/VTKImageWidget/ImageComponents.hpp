@@ -47,7 +47,7 @@ namespace widget
 class VTKImageComponents
 {
 public:
-	VTKImageComponents(bool ray);
+	VTKImageComponents( bool ray );
 
 	void setVTKImageData( vtkImageData *image );
 	vtkImageData *getVTKImageData() const { return imageData; }

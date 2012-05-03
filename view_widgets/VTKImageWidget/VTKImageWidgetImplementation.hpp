@@ -78,19 +78,19 @@ public Q_SLOTS:
 	virtual void addImage( const ImageHolder::Pointer image );
 	virtual bool removeImage( const ImageHolder::Pointer image );
 	virtual std::string getWidgetIdent() const { return std::string( "vtk_rendering_widget" ); }
-	virtual std::string getWidgetName() const { return std::string( "3D Rendering widget (vtk)"); }
+	virtual std::string getWidgetName() const { return std::string( "3D Rendering widget (vtk)" ); }
 	virtual void setInterpolationType( InterpolationType interpolation );
 	virtual void setMouseCursorIcon( QIcon );
 	virtual void lookAtPhysicalCoords( const util::fvector4 &physicalCoords );
 	virtual bool hasOptionWidget() const { return true; }
 	virtual QWidget *getOptionWidget() { return m_OptionWidget; }
-	
+
 	virtual void disconnectSignals();
 	virtual void connectSignals();
-	
-	virtual void mousePressEvent( QMouseEvent *);
-	virtual void mouseReleaseEvent( QMouseEvent *);
-	virtual void mouseMoveEvent( QMouseEvent *);
+
+	virtual void mousePressEvent( QMouseEvent * );
+	virtual void mouseReleaseEvent( QMouseEvent * );
+	virtual void mouseMoveEvent( QMouseEvent * );
 
 	virtual void dragEnterEvent( QDragEnterEvent * );
 	virtual void dropEvent( QDropEvent * );
@@ -140,7 +140,7 @@ private:
 	bool m_LeftButtonPressed;
 
 	std::pair<int, int> m_StartCoordsPair;
-	
+
 private Q_SLOTS:
 	void reloadImage( const ImageHolder::Pointer );
 
