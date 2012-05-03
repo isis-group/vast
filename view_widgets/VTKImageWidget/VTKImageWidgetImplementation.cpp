@@ -149,8 +149,9 @@ void VTKImageWidgetImplementation::commonInit()
 	m_Renderer->AddActor( m_Actor );
 }
 
-void VTKImageWidgetImplementation::currentImageChanged ( const ImageHolder::Pointer image )
+void VTKImageWidgetImplementation::currentImageChanged ( const ImageHolder::Pointer /*image*/ )
 {
+	//readd all images to the renderer so we have the same order as in the ensembles image vector
 	m_Renderer->RemoveAllViewProps();
 	BOOST_FOREACH( const ImageHolder::Vector::const_reference image, getWidgetEnsemble()->getImageVector() ) {
 		m_Renderer->AddVolume( m_VTKImageComponentsMap.at( image ).volume );
