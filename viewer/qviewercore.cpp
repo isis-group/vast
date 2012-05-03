@@ -128,14 +128,17 @@ void QViewerCore::receiveMessage ( std::string message )
 void QViewerCore::onWidgetClicked ( widget::WidgetInterface *origin, util::fvector4 physicalCoords, Qt::MouseButton mouseButton )
 {
 	ImageHolder::ImageType iType;
+
 	if( getMode() == statistical_mode ) {
 		iType = ImageHolder::statistical_image;
 	} else {
 		iType = ImageHolder::structural_image;
 	}
+
 	if( !origin->getWidgetEnsemble()->isCurrent() ) {
 		setCurrentImage( origin->getWidgetEnsemble()->getFirstImageOfType( iType ) );
 	}
+
 	physicalCoordsChanged( physicalCoords );
 	emitOnWidgetClicked( physicalCoords, mouseButton );
 }
@@ -435,13 +438,15 @@ void QViewerCore::closeImage ( ImageHolder::Pointer image, bool refreshUI )
 	}
 
 	const bool ok = removeImage( image );
+
 	if( ok ) {
 		LOG( Dev, info ) << "Successfully removed image.";
 	} else {
 		LOG( Dev, error ) << "Error during removing of image " << image->getImageProperties().fileName;
 	}
+
 	updateScene();
-	
+
 	if( refreshUI ) {
 		getUICore()->refreshUI( false );
 	}

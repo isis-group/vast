@@ -63,6 +63,7 @@ void Settings::save()
 	m_QSettings->setValue ( "useAllAvailablethreads", getPropertyAs<bool> ( "useAllAvailableThreads" ) );
 	m_QSettings->setValue ( "histogramOmitZero", getPropertyAs<bool> ( "histogramOmitZero" ) );
 	m_QSettings->setValue ( "defaultViewWidgetIdentifier", getPropertyAs<std::string>( "defaultViewWidgetIdentifier" ).c_str() );
+	m_QSettings->setValue ( "styleSheet", getPropertyAs<std::string>( "styleSheet" ).c_str() );
 	//screenshot stuff
 	m_QSettings->setValue ( "screenshotWidth", getPropertyAs<uint16_t> ( "screenshotWidth" ) );
 	m_QSettings->setValue ( "screenshotHeight", getPropertyAs<uint16_t> ( "screenshotHeight" ) );
@@ -103,6 +104,7 @@ void Settings::load()
 	setPropertyAs<bool> ( "histogramOmitZero", m_QSettings->value ( "histogramOmitZero" ).toBool() );
 	setPropertyAs<bool>( "visualizeOnlyFirstVista", m_QSettings->value( "visualizeOnlyFirstVista", getPropertyAs<bool>( "visualizeOnlyFirstVista" ) ).toBool() );
 	setPropertyAs<std::string>( "defaultViewWidgetIdentifier", m_QSettings->value( "defaultViewWidgetIdentifier", getPropertyAs<std::string>( "defaultViewWidgetIdentifier" ).c_str() ).toString().toStdString() );
+	setPropertyAs<std::string>( "styleSheet", m_QSettings->value( "styleSheet", getPropertyAs<std::string>( "styleSheet" ).c_str() ).toString().toStdString() );
 	//screenshot stuff
 	setPropertyAs<uint16_t> ( "screenshotWidth", m_QSettings->value ( "screenshotWidth", getPropertyAs<uint16_t> ( "screenshotWidth" ) ).toUInt() );
 	setPropertyAs<uint16_t> ( "screenshotHeight", m_QSettings->value ( "screenshotHeight", getPropertyAs<uint16_t> ( "screenshotHeight" ) ).toUInt() );
@@ -143,6 +145,7 @@ void Settings::initializeWithDefaultSettings()
 	setPropertyAs<uint16_t>( "viewerWidgetMargin", 5 );
 	setPropertyAs<std::string>( "fallbackWidgetIdentifier", "qt4_geometrical_plane_widget" );
 	setPropertyAs<std::string>( "defaultViewWidgetIdentifier", getPropertyAs<std::string>( "fallbackWidgetIdentifier" ) );
+	setPropertyAs<std::string>( "styleSheet", "fancy" );
 	//omp
 	setPropertyAs<uint16_t>( "numberOfThreads", 0 );
 	setPropertyAs<bool>( "ompAvailable", false );

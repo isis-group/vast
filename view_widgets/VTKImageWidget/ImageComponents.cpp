@@ -34,7 +34,7 @@ namespace viewer
 namespace widget
 {
 
-VTKImageComponents::VTKImageComponents(bool ray)
+VTKImageComponents::VTKImageComponents( bool ray )
 	: volume( vtkVolume::New() ),
 	  property( vtkVolumeProperty::New() ),
 	  rayMapper( vtkFixedPointVolumeRayCastMapper::New() ),
@@ -49,6 +49,7 @@ VTKImageComponents::VTKImageComponents(bool ray)
 	} else {
 		volume->SetMapper( textureMapper );
 	}
+
 	volume->SetProperty( property );
 	property->SetColor( colorFunction );
 	property->SetScalarOpacity( opacityFunction );
@@ -59,6 +60,7 @@ VTKImageComponents::VTKImageComponents(bool ray)
 void VTKImageComponents::setVTKImageData ( vtkImageData *image )
 {
 	imageData = image;
+
 	if( rayMapping ) {
 		rayMapper->SetInput( image );
 	} else {
@@ -66,7 +68,7 @@ void VTKImageComponents::setVTKImageData ( vtkImageData *image )
 	}
 }
 
-void VTKImageComponents::setCropping ( double* cropping )
+void VTKImageComponents::setCropping ( double *cropping )
 {
 	if( rayMapping ) {
 		rayMapper->CroppingOn();
@@ -76,7 +78,7 @@ void VTKImageComponents::setCropping ( double* cropping )
 		textureMapper->CroppingOn();
 		textureMapper->SetCroppingRegionFlagsToFence();
 		textureMapper->SetCroppingRegionPlanes( cropping );
-		
+
 	}
 }
 

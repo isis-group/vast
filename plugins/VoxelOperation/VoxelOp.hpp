@@ -31,10 +31,14 @@
 
 #include <DataStorage/image.hpp>
 
-namespace isis {
-namespace viewer {
-namespace plugin {
-namespace _internal {
+namespace isis
+{
+namespace viewer
+{
+namespace plugin
+{
+namespace _internal
+{
 
 class VoxelOp : public data::VoxelOp<double>
 {
@@ -59,6 +63,9 @@ public:
 
 };
 
-}}}}
+}
+}
+}
+}
 
 #endif

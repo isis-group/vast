@@ -65,6 +65,9 @@ public Q_SLOTS:
 	virtual unsigned short getNumberOfInstancesInEnsemble() const { return 3; }
 	virtual void setEnableCrosshair( bool enable ) { m_ShowCrosshair = enable; }
 
+	virtual void disconnectSignals();
+	virtual void connectSignals();
+
 	virtual void setup( QViewerCore *, QWidget *, PlaneOrientation );
 	virtual void setZoom( float zoom );
 	virtual void addImage( const boost::shared_ptr<ImageHolder> image );

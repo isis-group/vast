@@ -71,6 +71,9 @@ public:
 	virtual void setCrossHairColor( QColor ) {}
 	virtual void setCrossHairWidth( int ) {}
 
+	virtual void disconnectSignals() = 0;
+	virtual void connectSignals() = 0;
+	
 	QWidget *getParent( ) const { return m_Parent; }
 	PlaneOrientation getPlaneOrientation() { return m_PlaneOrientation; }
 

@@ -31,12 +31,16 @@
 #include <QString>
 #include <map>
 
-namespace isis {
-namespace viewer {
-namespace style {
+namespace isis
+{
+namespace viewer
+{
+namespace style
+{
 
 
-class Style {
+class Style
+{
 
 public:
 	Style();
@@ -47,9 +51,11 @@ public:
 private:
 	std::map< std::string, QString > m_StyleSheetMap;
 };
-	
 
-}}}
+
+}
+}
+}
 
 
 

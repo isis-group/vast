@@ -69,15 +69,30 @@ void QGeomWidget::setup ( QViewerCore *core, QWidget *parent , PlaneOrientation 
 	m_ShowLabels = false;
 	m_ShowCrosshair = true;
 	m_ShowScalingOffset = false;
+
+
+}
+
+void QGeomWidget::disconnectSignals()
+{
+	disconnect( m_ViewerCore, SIGNAL( emitUpdateScene() ), this, SLOT( updateScene() ) );
+	disconnect( m_ViewerCore, SIGNAL( emitPhysicalCoordsChanged( util::fvector4 ) ), this, SLOT( updateScene() ) );
+	disconnect( m_ViewerCore, SIGNAL( emitZoomChanged( float ) ), this, SLOT( setZoom( float ) ) );
+	disconnect( m_ViewerCore, SIGNAL( emitShowLabels( bool ) ), this, SLOT( setShowLabels( bool ) ) );
+	disconnect( m_ViewerCore, SIGNAL( emitSetEnableCrosshair( bool ) ), this, SLOT( setEnableCrosshair( bool ) ) );
+	m_ViewerCore->emitImageContentChanged.disconnect( boost::bind( &QGeomWidget::updateScene, this ) );
+}
+
+void QGeomWidget::connectSignals()
+{
 	connect( m_ViewerCore, SIGNAL( emitUpdateScene() ), this, SLOT( updateScene() ) );
 	connect( m_ViewerCore, SIGNAL( emitPhysicalCoordsChanged( util::fvector4 ) ), this, SLOT( updateScene() ) );
 	connect( m_ViewerCore, SIGNAL( emitZoomChanged( float ) ), this, SLOT( setZoom( float ) ) );
 	connect( m_ViewerCore, SIGNAL( emitShowLabels( bool ) ), this, SLOT( setShowLabels( bool ) ) );
 	connect( m_ViewerCore, SIGNAL( emitSetEnableCrosshair( bool ) ), this, SLOT( setEnableCrosshair( bool ) ) );
-
 	m_ViewerCore->emitImageContentChanged.connect( boost::bind( &QGeomWidget::updateScene, this ) );
-
 }
+
 
 void QGeomWidget::resizeEvent ( QResizeEvent *event )
 {
@@ -143,10 +158,12 @@ void QGeomWidget::paintEvent ( QPaintEvent* /*event*/ )
 									( m_RightMouseButtonPressed && !m_LeftMouseButtonPressed )
 									|| m_ZoomEvent
 									|| ( !m_RightMouseButtonPressed && !m_LeftMouseButtonPressed  ) );
+
 		if( m_Zoom > 1 ) {
 			m_BoundingBox[0] -= m_Translation[0];
 			m_BoundingBox[1] -= m_Translation[1];
 		}
+
 		m_ZoomEvent = false;
 
 		updateViewPort();
@@ -289,10 +306,10 @@ util::fvector4 QGeomWidget::getPhysicalCoordsFromMouseCoords ( const int &x, con
 {
 	if( m_ViewerCore->hasImage() ) {
 		const ImageHolder::Pointer image =  m_ViewerCore->getCurrentImage();
-		
+
 		util::fvector4 physicalCoords = image->getImageProperties().physicalCoords;
 		const util::ivector4 oldVoxelCoords = image->getImageProperties().voxelCoords;
-		
+
 		switch( m_PlaneOrientation ) {
 		case axial:
 			physicalCoords[0] = ( ( width() - x ) - m_ViewPort[0] ) / m_WindowViewPortScaling + m_BoundingBox[0] / _internal::rasteringFac;
@@ -310,14 +327,15 @@ util::fvector4 QGeomWidget::getPhysicalCoordsFromMouseCoords ( const int &x, con
 			break;
 		}
 
-		const util::ivector4 mappingVec = mapCoordsToOrientation( util::ivector4(0,1,2,3), image->getImageProperties().latchedOrientation, m_PlaneOrientation  );
+		const util::ivector4 mappingVec = mapCoordsToOrientation( util::ivector4( 0, 1, 2, 3 ), image->getImageProperties().latchedOrientation, m_PlaneOrientation  );
+
 		if( m_RasterPhysicalCoords ) {
 			util::ivector4 voxelCoords = image->getISISImage()->getIndexFromPhysicalCoords( physicalCoords );
 			voxelCoords[mappingVec[2]] = oldVoxelCoords[mappingVec[2]];
 			return image->getISISImage()->getPhysicalCoordsFromIndex( voxelCoords );
 		} else {
 			return physicalCoords;
-			
+
 		}
 	}
 
@@ -499,7 +517,7 @@ void QGeomWidget::dropEvent ( QDropEvent *e )
 }
 }// end namespace
 
-const QWidget* loadOptionWidget()
+const QWidget *loadOptionWidget()
 {
 	return new QWidget();
 }
@@ -515,6 +533,6 @@ const isis::util::PropertyMap *getProperties()
 	properties->setPropertyAs<std::string>( "widgetIdent", "qt4_geometrical_plane_widget" );
 	properties->setPropertyAs<std::string>( "widgetName", "Geometrical plane widget" );
 	properties->setPropertyAs<uint8_t>( "numberOfEntitiesInEnsemble", 3 );
-	properties->setPropertyAs<bool>("hasOptionWidget", false );
+	properties->setPropertyAs<bool>( "hasOptionWidget", false );
 	return properties;
 }

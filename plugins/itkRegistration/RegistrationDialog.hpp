@@ -32,9 +32,12 @@
 #include "ui_itkRegistrationDialog.h"
 #include "qviewercore.hpp"
 
-namespace isis {
-namespace viewer {
-namespace plugin {
+namespace isis
+{
+namespace viewer
+{
+namespace plugin
+{
 
 class RegistrationDialog : public QDialog
 {
@@ -43,13 +46,15 @@ public:
 	RegistrationDialog( QWidget *parent, QViewerCore *core );
 
 public Q_SLOTS:
-	
+
 private:
 	QViewerCore *m_ViewerCore;
 	Ui::RegistrationDialog m_Interface;
-	
+
 };
-	
-}}}
+
+}
+}
+}
 
 #endif

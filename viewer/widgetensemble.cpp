@@ -36,7 +36,7 @@ namespace viewer
 {
 
 WidgetEnsemble::WidgetEnsemble()
-	: m_hasOptionWidget(false),
+	: m_hasOptionWidget( false ),
 	  m_frame( new QFrame() ),
 	  m_layout( new QHBoxLayout() ),
 	  m_cols( 0 )
@@ -55,6 +55,7 @@ void WidgetEnsemble::addImage ( const ImageHolder::Pointer image )
 		} else {
 			m_imageVector.push_back( image );
 		}
+
 		emitAddImage( image );
 		emitCheckIfNeeded();
 	} else {
@@ -62,6 +63,25 @@ void WidgetEnsemble::addImage ( const ImageHolder::Pointer image )
 	}
 
 }
+
+void WidgetEnsemble::close()
+{
+	disconnectFromViewer();
+	BOOST_FOREACH( reference component, *this ) {
+		component->getPlaceHolder()->close();
+		component->getFrame()->close();
+		component->getDockWidget()->close();
+	}
+	m_imageVector.clear();
+
+	if( hasOptionWidget() ) {
+		m_optionWidget->close();
+	}
+
+	m_frame->close();
+
+}
+
 
 void WidgetEnsemble::removeImage ( const ImageHolder::Pointer image )
 {
@@ -114,13 +134,28 @@ void WidgetEnsemble::setIsCurrent ( bool current )
 		}
 	}
 }
-void WidgetEnsemble::setOptionWidget ( QWidget* optionWidget )
+void WidgetEnsemble::setOptionWidget ( QWidget *optionWidget )
 {
 	m_optionWidget = optionWidget;
 	m_hasOptionWidget = optionWidget;
-	m_layout->addWidget(m_optionWidget, 0, Qt::AlignLeft );
-	
+	m_layout->addWidget( m_optionWidget, 0, Qt::AlignLeft );
+
 }
+
+void WidgetEnsemble::connectToViewer()
+{
+	BOOST_FOREACH( reference component, *this ) {
+		component->getWidgetInterface()->connectSignals();
+	}
+}
+
+void WidgetEnsemble::disconnectFromViewer()
+{
+	BOOST_FOREACH( reference component, *this ) {
+		component->getWidgetInterface()->disconnectSignals();
+	}
+}
+
 
 void WidgetEnsemble::update( const ViewerCoreBase *core )
 {
@@ -135,9 +170,11 @@ void WidgetEnsemble::update( const ViewerCoreBase *core )
 			}
 		}
 		getFrame()->setVisible( visible );
+
 		if( hasOptionWidget() ) {
 			getOptionWidget()->setVisible( visible );
 		}
+
 		//if this ensemble contains the current image make this the current ensemble either
 		if( visible ) {
 			setIsCurrent( currentImageIterator != m_imageVector.end() );
@@ -161,7 +198,7 @@ void WidgetEnsemble::update( const ViewerCoreBase *core )
 	}
 }
 
-const ImageHolder::Pointer WidgetEnsemble::getFirstImageOfType ( const ImageHolder::ImageType& imageType ) const
+const ImageHolder::Pointer WidgetEnsemble::getFirstImageOfType ( const ImageHolder::ImageType &imageType ) const
 {
 	BOOST_FOREACH( const ImageHolder::Vector::const_reference image, getImageVector() ) {
 		if( image->getImageProperties().imageType == imageType ) {

@@ -101,11 +101,11 @@ unsigned int WidgetLoader::findWidgets( std::list< std::string > paths )
 #ifdef WIN32
 						const util::PropertyMap* ( *loadProperties_func )() = ( const util::PropertyMap * ( * )() )GetProcAddress( handle, "getProperties" );
 						loadWidget_func loadFunc = ( isis::viewer::widget::WidgetInterface * ( * )() )GetProcAddress( handle, "loadWidget" );
-						loadOption_func oLoadFunc = ( QWidget* ( * )() )GetProcAddress( handle, "loadOptionWidget" );
+						loadOption_func oLoadFunc = ( QWidget * ( * )() )GetProcAddress( handle, "loadOptionWidget" );
 #else
 						const util::PropertyMap* ( *loadProperties_func )() = ( const util::PropertyMap * ( * )() )dlsym( handle, "getProperties" );
 						loadWidget_func loadFunc = ( isis::viewer::widget::WidgetInterface * ( * )() )dlsym( handle, "loadWidget" );
-						loadOption_func oLoadFunc = ( QWidget* ( * )() )dlsym( handle, "loadOptionWidget" );
+						loadOption_func oLoadFunc = ( QWidget * ( * )() )dlsym( handle, "loadOptionWidget" );
 #endif
 
 						if ( loadFunc && loadProperties_func ) {

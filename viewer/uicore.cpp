@@ -27,6 +27,7 @@
  ******************************************************************/
 #include "uicore.hpp"
 #include "qviewercore.hpp"
+#include "widgetensemble.hpp"
 #include <DataStorage/io_interface.h>
 
 #include <QSignalMapper>
@@ -121,14 +122,16 @@ WidgetEnsemble::Pointer UICore::createViewWidgetEnsemble( const std::string &wid
 
 	//if this widget has an option widget we are loading it and passing it to the ensemble
 	if( m_ViewerCore->getWidgetProperties( widgetIdentifier )->hasProperty( "hasOptionWidget" ) ) {
-		if( m_ViewerCore->getWidgetProperties( widgetIdentifier )->getPropertyAs<bool>("hasOptionWidget" ) ) {
+		if( m_ViewerCore->getWidgetProperties( widgetIdentifier )->getPropertyAs<bool>( "hasOptionWidget" ) ) {
 			widget::WidgetLoader::OptionDialogMapType optionMap = util::Singletons::get<widget::WidgetLoader, 10>().getOptionWidgetMap();
-			const widget::WidgetLoader::OptionDialogMapType::const_iterator iter = optionMap.find(widgetIdentifier);
+			const widget::WidgetLoader::OptionDialogMapType::const_iterator iter = optionMap.find( widgetIdentifier );
+
 			if( iter != optionMap.end() ) {
 				ensemble->setOptionWidget( iter->second() );  //looks strange since we are calling a funtion pointer
 			}
 		}
 	}
+
 	uint8_t numberWidgets;
 
 	if( m_ViewerCore->getWidgetProperties( widgetIdentifier )->hasProperty( "numberOfEntitiesInEnsemble" ) ) {
@@ -137,6 +140,7 @@ WidgetEnsemble::Pointer UICore::createViewWidgetEnsemble( const std::string &wid
 		LOG( Dev, error ) << "Your widget \"" << widgetIdentifier << "\" has no property \"numberOfEntitiesInEnsemble\" ! Setting it to 1";
 		numberWidgets = 1;
 	}
+
 	if( numberWidgets == 1 ) {
 		ensemble->insertComponent( createEnsembleComponent( widgetIdentifier, not_specified, ensemble ) );
 	} else if ( numberWidgets == 3 ) {
@@ -152,6 +156,7 @@ WidgetEnsemble::Pointer UICore::createViewWidgetEnsemble( const std::string &wid
 	if( show ) {
 		attachWidgetEnsemble( ensemble );
 	}
+
 	m_EnsembleList.push_back( ensemble );
 	return ensemble;
 }
@@ -187,15 +192,11 @@ ImageHolder::Vector UICore::closeWidgetEnsemble( WidgetEnsemble::Pointer ensembl
 
 	if( iter != m_EnsembleList.end() ) {
 		ImageHolder::Vector retList = ensemble->getImageVector();
-		ensemble->getImageVector().clear();
-		ensemble->getFrame()->close();
-		if( ensemble->hasOptionWidget() ) {
-			ensemble->getOptionWidget()->close();
-		}
+		ensemble->close();
 		m_EnsembleList.erase( iter );
 		return retList;
 	} else {
-		LOG( Dev, error ) << "Tried to remove an widget ensemble that is not in the ensemble list!";
+		LOG( Dev, error ) << "Tried to remove a widget ensemble that is not in the ensemble list!";
 		return ImageHolder::Vector();
 	}
 
@@ -216,6 +217,7 @@ void UICore::closeAllWidgetEnsembles()
 void UICore::attachWidgetEnsemble( WidgetEnsemble::Pointer ensemble )
 {
 	m_MainWindow->getInterface().centralGridLayout->addWidget( ensemble->getFrame() );
+	ensemble->connectToViewer();
 }
 
 WidgetEnsembleComponent::Pointer UICore::createEnsembleComponent( const std::string &widgetIdentifier, PlaneOrientation planeOrientation, WidgetEnsemble::Pointer ensemble )

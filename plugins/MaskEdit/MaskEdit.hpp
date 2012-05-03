@@ -94,6 +94,7 @@ private:
 #ifdef _OPENMP
 #pragma omp parallel for
 #endif
+
 				for( short i = start[0] + 1; i < end[0]; i++ ) {
 					int x = voxel[0] - i;
 					int y = voxel[1] - j;

@@ -34,6 +34,7 @@
 #include <vtkMatrix4x4.h>
 #include <vtkImageAppendComponents.h>
 #include "qviewercore.hpp"
+#include "geometrical.hpp"
 
 namespace isis
 {
@@ -48,7 +49,7 @@ class VolumeHandler
 public:
 	VolumeHandler();
 
-	static vtkImageData *getVTKImageData( const ImageHolder::Pointer image, const size_t &timestep = 0 );
+	static vtkImageData *getVTKImageData( const ImageHolder::Pointer image, const geometrical::BoundingBoxType &bb, const size_t &timestep = 0 );
 
 };
 
