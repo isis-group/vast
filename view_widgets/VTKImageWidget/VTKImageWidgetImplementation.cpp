@@ -28,7 +28,8 @@
 #include "VTKImageWidgetImplementation.hpp"
 
 #include "CoreUtils/singletons.hpp"
-
+#include "geometrical.hpp"
+#include <widgetensemble.hpp>
 
 
 namespace isis
@@ -100,21 +101,32 @@ void VTKImageWidgetImplementation::wheelEvent ( QWheelEvent */*e*/ )
 	//     QVTKWidget::wheelEvent ( e );
 }
 
-void VTKImageWidgetImplementation::commonInit()
+void VTKImageWidgetImplementation::disconnectSignals()
 {
-	//  m_OptionWidget = new OptionWidget( this, m_ViewerCore );
-	m_Layout->addWidget( this );
-	m_Layout->setMargin( 0 );
+	disconnect( m_ViewerCore, SIGNAL( emitUpdateScene( ) ), this, SLOT( updateScene( ) ) );
+	disconnect( m_ViewerCore, SIGNAL( emitPhysicalCoordsChanged( util::fvector4 ) ), this, SLOT( lookAtPhysicalCoords( util::fvector4 ) ) );
+	disconnect( m_ViewerCore, SIGNAL( emitZoomChanged( float ) ), this, SLOT( setZoom( float ) ) );
+	disconnect( m_ViewerCore, SIGNAL( emitSetEnableCrosshair( bool ) ), this, SLOT( setEnableCrosshair( bool ) ) );
+	m_ViewerCore->emitImageContentChanged.disconnect( boost::bind( &VTKImageWidgetImplementation::reloadImage, this, _1 ) );
+}
+
+void VTKImageWidgetImplementation::connectSignals()
+{
 	connect( m_ViewerCore, SIGNAL( emitUpdateScene( ) ), this, SLOT( updateScene( ) ) );
 	connect( m_ViewerCore, SIGNAL( emitPhysicalCoordsChanged( util::fvector4 ) ), this, SLOT( lookAtPhysicalCoords( util::fvector4 ) ) );
 	connect( m_ViewerCore, SIGNAL( emitZoomChanged( float ) ), this, SLOT( setZoom( float ) ) );
 	connect( m_ViewerCore, SIGNAL( emitSetEnableCrosshair( bool ) ), this, SLOT( setEnableCrosshair( bool ) ) );
 	m_ViewerCore->emitImageContentChanged.connect( boost::bind( &VTKImageWidgetImplementation::reloadImage, this, _1 ) );
+}
+
+void VTKImageWidgetImplementation::commonInit()
+{
+	//  m_OptionWidget = new OptionWidget( this, m_ViewerCore );
+	m_Layout->addWidget( this );
+	m_Layout->setMargin( 0 );
 	setFocus();
 	SetRenderWindow( m_RenderWindow );
 	setAcceptDrops(true);
-	
-	
 	m_RenderWindow->AddRenderer( m_Renderer );
 	m_Renderer->SetBackground( 0.1, 0.2, 0.4 );
 	m_OpacityGradientFactor = 0;
@@ -241,7 +253,8 @@ void VTKImageWidgetImplementation::reloadImage ( const ImageHolder::Pointer imag
 {
 	const ComponentsMapType::iterator iter = m_VTKImageComponentsMap.find( image );
 	if( iter != m_VTKImageComponentsMap.end() ) {
-		iter->second.setVTKImageData( VolumeHandler::getVTKImageData( image, image->getImageProperties().voxelCoords[3] ) );
+		const geometrical::BoundingBoxType bb = geometrical::getPhysicalBoundingBox( getWidgetEnsemble()->getImageVector() );
+		iter->second.setVTKImageData( VolumeHandler::getVTKImageData( image, bb, image->getImageProperties().voxelCoords[3] ) );
 	}
 }
 
@@ -264,13 +277,13 @@ void VTKImageWidgetImplementation::setCropping ( double *cropping )
 }
 
 
-void VTKImageWidgetImplementation::addImage ( const boost::shared_ptr< ImageHolder > image )
+void VTKImageWidgetImplementation::addImage ( const ImageHolder::Pointer image )
 {
-	
+	const geometrical::BoundingBoxType bb = geometrical::getPhysicalBoundingBox( getWidgetEnsemble()->getImageVector() );
 	VTKImageComponents component( image->getImageProperties().imageType == ImageHolder::structural_image );
 	m_VTKImageComponentsMap.insert( std::make_pair<ImageHolder::Pointer, VTKImageComponents>( image, component ) );
 	m_Renderer->AddVolume( component.volume );
-	component.setVTKImageData( VolumeHandler::getVTKImageData( image, image->getImageProperties().voxelCoords[3] ) );
+	component.setVTKImageData( VolumeHandler::getVTKImageData( image, bb, image->getImageProperties().voxelCoords[3] ) );
 
 	if( getWidgetEnsemble()->getImageVector().size() == 1 ) {
 		m_Renderer->GetActiveCamera()->SetPosition( image->getImageProperties().indexOrigin[0] * 2, image->getImageProperties().indexOrigin[1] * 2, image->getImageProperties().indexOrigin[2] );
@@ -280,8 +293,12 @@ void VTKImageWidgetImplementation::addImage ( const boost::shared_ptr< ImageHold
 	const util::fvector4 io = image->getImageProperties().indexOrigin;
 
 	const int *extent = component.getVTKImageData()->GetExtent();
+// 	for ( unsigned short i = 0; i < 6; i++ ) {
+// 		std::cout << extent[i] << " | ";
+// 	}
+// 	std::cout << std::endl;
 
-	m_Cursor->SetModelBounds( extent[0] + io[0], extent[1] + io[0], extent[2] + io[1], extent[3] + io[1], extent[4] + io[2], extent[5] + io[2] );
+	m_Cursor->SetModelBounds( extent[0], extent[1], extent[2], extent[3], extent[4], extent[5] );
 
 	m_Renderer->ResetCamera();
 
@@ -294,14 +311,11 @@ void VTKImageWidgetImplementation::lookAtPhysicalCoords ( const util::fvector4 &
 {
 	if( m_ViewerCore->hasImage() ) {
 		boost::shared_ptr<ImageHolder> image = m_ViewerCore->getCurrentImage();
-		const util::ivector4 voxelCoords = image->getISISImage()->getIndexFromPhysicalCoords( physicalCoords );
-		const util::fvector4 mappedVoxels = image->getImageProperties().orientation.dot( voxelCoords );
-		const util::fvector4 mappedVoxelSize = image->getImageProperties().orientation.dot( image->getImageProperties().voxelSize );
 
-		m_Cursor->SetFocalPoint( mappedVoxels[0] * fabs( mappedVoxelSize[0] ),
-								 mappedVoxels[1] * fabs( mappedVoxelSize[1] ),
-								 mappedVoxels[2] * fabs( mappedVoxelSize[2] ) );
-		m_RenderWindow->Render();
+		m_Cursor->SetFocalPoint( physicalCoords[0],
+								 physicalCoords[1],
+								 physicalCoords[2] );
+		update();
 	}
 }
 

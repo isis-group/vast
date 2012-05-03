@@ -69,15 +69,30 @@ void QGeomWidget::setup ( QViewerCore *core, QWidget *parent , PlaneOrientation 
 	m_ShowLabels = false;
 	m_ShowCrosshair = true;
 	m_ShowScalingOffset = false;
+
+
+}
+
+void QGeomWidget::disconnectSignals()
+{
+	disconnect( m_ViewerCore, SIGNAL( emitUpdateScene() ), this, SLOT( updateScene() ) );
+	disconnect( m_ViewerCore, SIGNAL( emitPhysicalCoordsChanged( util::fvector4 ) ), this, SLOT( updateScene() ) );
+	disconnect( m_ViewerCore, SIGNAL( emitZoomChanged( float ) ), this, SLOT( setZoom( float ) ) );
+	disconnect( m_ViewerCore, SIGNAL( emitShowLabels( bool ) ), this, SLOT( setShowLabels( bool ) ) );
+	disconnect( m_ViewerCore, SIGNAL( emitSetEnableCrosshair( bool ) ), this, SLOT( setEnableCrosshair( bool ) ) );
+	m_ViewerCore->emitImageContentChanged.disconnect( boost::bind( &QGeomWidget::updateScene, this ) );
+}
+
+void QGeomWidget::connectSignals()
+{
 	connect( m_ViewerCore, SIGNAL( emitUpdateScene() ), this, SLOT( updateScene() ) );
 	connect( m_ViewerCore, SIGNAL( emitPhysicalCoordsChanged( util::fvector4 ) ), this, SLOT( updateScene() ) );
 	connect( m_ViewerCore, SIGNAL( emitZoomChanged( float ) ), this, SLOT( setZoom( float ) ) );
 	connect( m_ViewerCore, SIGNAL( emitShowLabels( bool ) ), this, SLOT( setShowLabels( bool ) ) );
 	connect( m_ViewerCore, SIGNAL( emitSetEnableCrosshair( bool ) ), this, SLOT( setEnableCrosshair( bool ) ) );
-
 	m_ViewerCore->emitImageContentChanged.connect( boost::bind( &QGeomWidget::updateScene, this ) );
-
 }
+
 
 void QGeomWidget::resizeEvent ( QResizeEvent *event )
 {

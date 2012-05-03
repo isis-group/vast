@@ -27,6 +27,7 @@
  ******************************************************************/
 #include "uicore.hpp"
 #include "qviewercore.hpp"
+#include "widgetensemble.hpp"
 #include <DataStorage/io_interface.h>
 
 #include <QSignalMapper>
@@ -187,15 +188,11 @@ ImageHolder::Vector UICore::closeWidgetEnsemble( WidgetEnsemble::Pointer ensembl
 
 	if( iter != m_EnsembleList.end() ) {
 		ImageHolder::Vector retList = ensemble->getImageVector();
-		ensemble->getImageVector().clear();
-		ensemble->getFrame()->close();
-		if( ensemble->hasOptionWidget() ) {
-			ensemble->getOptionWidget()->close();
-		}
+		ensemble->close();
 		m_EnsembleList.erase( iter );
 		return retList;
 	} else {
-		LOG( Dev, error ) << "Tried to remove an widget ensemble that is not in the ensemble list!";
+		LOG( Dev, error ) << "Tried to remove a widget ensemble that is not in the ensemble list!";
 		return ImageHolder::Vector();
 	}
 
@@ -216,6 +213,7 @@ void UICore::closeAllWidgetEnsembles()
 void UICore::attachWidgetEnsemble( WidgetEnsemble::Pointer ensemble )
 {
 	m_MainWindow->getInterface().centralGridLayout->addWidget( ensemble->getFrame() );
+	ensemble->connectToViewer();
 }
 
 WidgetEnsembleComponent::Pointer UICore::createEnsembleComponent( const std::string &widgetIdentifier, PlaneOrientation planeOrientation, WidgetEnsemble::Pointer ensemble )

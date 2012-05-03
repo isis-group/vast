@@ -27,6 +27,7 @@
  ******************************************************************/
 
 #include "widgetensemblecomponent.hpp"
+#include "widgetinterface.h"
 
 namespace isis
 {

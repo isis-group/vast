@@ -63,6 +63,23 @@ void WidgetEnsemble::addImage ( const ImageHolder::Pointer image )
 
 }
 
+void WidgetEnsemble::close()
+{
+	disconnectFromViewer();
+	BOOST_FOREACH( reference component, *this ) {
+		component->getPlaceHolder()->close();
+		component->getFrame()->close();
+		component->getDockWidget()->close();
+	}
+	m_imageVector.clear();
+	if( hasOptionWidget() ) {
+		m_optionWidget->close();
+	}
+	m_frame->close();
+	
+}
+
+
 void WidgetEnsemble::removeImage ( const ImageHolder::Pointer image )
 {
 	const ImageHolder::Vector::iterator iter = std::find( m_imageVector.begin(), m_imageVector.end(), image );
@@ -121,6 +138,21 @@ void WidgetEnsemble::setOptionWidget ( QWidget* optionWidget )
 	m_layout->addWidget(m_optionWidget, 0, Qt::AlignLeft );
 	
 }
+
+void WidgetEnsemble::connectToViewer()
+{
+	BOOST_FOREACH( reference component, *this ) {
+		component->getWidgetInterface()->connectSignals();
+	}
+}
+
+void WidgetEnsemble::disconnectFromViewer()
+{
+	BOOST_FOREACH( reference component, *this ) {
+		component->getWidgetInterface()->disconnectSignals();
+	}
+}
+
 
 void WidgetEnsemble::update( const ViewerCoreBase *core )
 {

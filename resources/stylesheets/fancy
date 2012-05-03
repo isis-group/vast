@@ -196,31 +196,6 @@ QPushButton:default {
 	border-color: navy; /* make the default button prominent */
 }
 
-QScrollBar:horizontal {
-	border: 2px solid grey;
-	background: #32CC99;
-	height: 15px;
-	margin: 0px 20px 0 20px;
-}
-QScrollBar::handle:horizontal {
-	background: white;
-	min-width: 20px;
-}
-QScrollBar::add-line:horizontal {
-	border: 2px solid grey;
-	background: #32CC99;
-	width: 20px;
-	subcontrol-position: right;
-	subcontrol-origin: margin;
-}
-
-QScrollBar::sub-line:horizontal {
-	border: 2px solid grey;
-	background: #32CC99;
-	width: 20px;
-	subcontrol-position: left;
-	subcontrol-origin: margin;
-}
 QSlider::groove:horizontal {
 	border: 1px solid #999999;
 	height: 8px; /* the groove expands to the size of the slider by default. by giving it a height, it has a fixed size */

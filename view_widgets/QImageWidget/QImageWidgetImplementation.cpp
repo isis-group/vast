@@ -64,11 +64,20 @@ void QImageWidgetImplementation::setup ( QViewerCore *core, QWidget *parent, Pla
 	commonInit();
 }
 
-
-void QImageWidgetImplementation::commonInit()
+void QImageWidgetImplementation::disconnectSignals()
 {
-	m_Layout->addWidget( this );
-	m_Layout->setMargin( 0 );
+	disconnect( this, SIGNAL( zoomChanged( float ) ), m_ViewerCore, SLOT( zoomChanged( float ) ) );
+	disconnect( this, SIGNAL( physicalCoordsChanged( util::fvector4 ) ), m_ViewerCore, SLOT( physicalCoordsChanged( util::fvector4 ) ) );
+	disconnect( m_ViewerCore, SIGNAL( emitUpdateScene( ) ), this, SLOT( updateScene( ) ) );
+	m_ViewerCore->emitImageContentChanged.disconnect( boost::bind( &QImageWidgetImplementation::updateScene, this ) );
+	//  connect( m_ViewerCore, SIGNAL( emitPhysicalCoordsChanged( util::fvector4 ) ), this, SLOT( lookAtPhysicalCoords( util::fvector4 ) ) );
+	disconnect( m_ViewerCore, SIGNAL( emitZoomChanged( float ) ), this, SLOT( setZoom( float ) ) );
+	disconnect( m_ViewerCore, SIGNAL( emitShowLabels( bool ) ), this, SLOT( setShowLabels( bool ) ) );
+	disconnect( m_ViewerCore, SIGNAL( emitSetEnableCrosshair( bool ) ), this, SLOT( setEnableCrosshair( bool ) ) );
+}
+
+void QImageWidgetImplementation::connectSignals()
+{
 	connect( this, SIGNAL( zoomChanged( float ) ), m_ViewerCore, SLOT( zoomChanged( float ) ) );
 	connect( this, SIGNAL( physicalCoordsChanged( util::fvector4 ) ), m_ViewerCore, SLOT( physicalCoordsChanged( util::fvector4 ) ) );
 	connect( m_ViewerCore, SIGNAL( emitUpdateScene( ) ), this, SLOT( updateScene( ) ) );
@@ -77,6 +86,14 @@ void QImageWidgetImplementation::commonInit()
 	connect( m_ViewerCore, SIGNAL( emitZoomChanged( float ) ), this, SLOT( setZoom( float ) ) );
 	connect( m_ViewerCore, SIGNAL( emitShowLabels( bool ) ), this, SLOT( setShowLabels( bool ) ) );
 	connect( m_ViewerCore, SIGNAL( emitSetEnableCrosshair( bool ) ), this, SLOT( setEnableCrosshair( bool ) ) );
+}
+
+
+void QImageWidgetImplementation::commonInit()
+{
+	m_Layout->addWidget( this );
+	m_Layout->setMargin( 0 );
+
 	setAutoFillBackground( true );
 	setPalette( QPalette( Qt::black ) );
 	m_LeftMouseButtonPressed = false;

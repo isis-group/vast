@@ -85,6 +85,9 @@ public Q_SLOTS:
 	virtual bool hasOptionWidget() const { return true; }
 	virtual QWidget *getOptionWidget() { return m_OptionWidget; }
 	
+	virtual void disconnectSignals();
+	virtual void connectSignals();
+	
 	virtual void mousePressEvent( QMouseEvent *);
 	virtual void mouseReleaseEvent( QMouseEvent *);
 	virtual void mouseMoveEvent( QMouseEvent *);

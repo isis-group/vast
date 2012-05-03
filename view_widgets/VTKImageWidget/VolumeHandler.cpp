@@ -38,54 +38,37 @@ VolumeHandler::VolumeHandler( )
 {
 }
 
-vtkImageData *VolumeHandler::getVTKImageData( const ImageHolder::Pointer image, const size_t &timestep )
+vtkImageData *VolumeHandler::getVTKImageData( const ImageHolder::Pointer image, const geometrical::BoundingBoxType &bb, const size_t &timestep )
 {
-	using namespace boost::numeric::ublas;
 	const util::ivector4 size = image->getImageSize();
-	vtkImageData *newImage = vtkImageData::New();
 	vtkImageImport *importer = vtkImageImport::New();
 	vtkTransform *transform = vtkTransform::New();
 	vtkImageReslice *reslicer = vtkImageReslice::New();
 	vtkMatrix4x4 *orientationMatrix = vtkMatrix4x4::New();
 	transform->Identity();
-	newImage->SetScalarTypeToUnsignedChar();
 	importer->SetDataScalarTypeToUnsignedChar();
 	importer->SetImportVoidPointer( &image->getChunkVector().operator[]( timestep ).voxel<InternalImageType>( 0 ) );
 	importer->SetWholeExtent( 0, size[0] - 1, 0, size[1] - 1, 0, size[2] - 1 );
 	importer->SetDataExtentToWholeExtent();
-	importer->Update();
-	newImage = importer->GetOutput();
 
 	//transform the image with orientation matrix
-	const util::fvector4 mappedSize = image->getImageProperties().orientation.dot( size );
-	const util::fvector4 mappedSpacing = image->getImageProperties().orientation.dot( image->getImageProperties().voxelSize );
+	const util::fvector4 mio = image->getImageProperties().orientation.transpose().dot( image->getImageProperties().indexOrigin );
 	orientationMatrix->SetElement( 3, 3, 1 );
-
 	for( uint8_t i = 0; i < 3; i++ ) {
 		for ( uint8_t j = 0; j < 3; j++ ) {
-			orientationMatrix->SetElement( i, j, image->getImageProperties().orientation.elem( i, j ) / fabs( mappedSpacing[i] ) );
+			orientationMatrix->SetElement( i, j, image->getImageProperties().orientation.elem( i, j ) / image->getImageProperties().voxelSize[i] );
 		}
+		orientationMatrix->SetElement( i, 3, fabs(mio[i]) );
 	}
+	
 	transform->SetMatrix( orientationMatrix );
 
-	reslicer->SetInput( newImage );
-	util::fvector4 start;
-	util::fvector4 end;
+	reslicer->SetInput( importer->GetOutput() );
 
-	for( uint8_t i = 0; i < 3; i++ ) {
-		if( mappedSize[i] > 0 ) {
-			start[i] = -image->getImageProperties().indexOrigin[i];
-			end[i] = mappedSize[i] * fabs( mappedSpacing[i] ) - image->getImageProperties().indexOrigin[i];
-		} else {
-			start[i] = mappedSize[i] * fabs( mappedSpacing[i] ) - image->getImageProperties().indexOrigin[i];
-			end[i] = -image->getImageProperties().indexOrigin[i];
-		}
-	}
-	reslicer->SetOutputExtent( start[0], end[0], start[1], end[1], start[2] , end[2]  );
-	reslicer->SetOutputOrigin( image->getImageProperties().indexOrigin[0], image->getImageProperties().indexOrigin[1], image->getImageProperties().indexOrigin[2] );
-	reslicer->SetOutputSpacing( 1, 1, 1 );
+	reslicer->SetOutputExtent( bb[0].first, bb[0].second, bb[1].first, bb[1].second, bb[2].first, bb[2].second );
 	reslicer->SetInterpolationModeToNearestNeighbor();
 	reslicer->SetResliceTransform( transform );
+	reslicer->AutoCropOutputOn();
 	reslicer->Update();
 	return reslicer->GetOutput();
 }

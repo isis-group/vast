@@ -77,6 +77,11 @@ public:
 
 	void update( const ViewerCoreBase * );
 
+	void connectToViewer();
+	void disconnectFromViewer();
+
+	void close();
+
 	//signals
 	boost::signals2::signal<void ( ImageHolder::Pointer ) > emitAddImage;
 	boost::signals2::signal<void ( ImageHolder::Pointer ) > emitRemoveImage;

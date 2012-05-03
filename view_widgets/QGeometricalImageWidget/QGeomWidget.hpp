@@ -65,6 +65,9 @@ public Q_SLOTS:
 	virtual void setShowLabels( bool show ) { m_ShowLabels = show; m_Border = show ? 18 : 0; }
 	virtual void setEnableCrosshair( bool enable ) { m_ShowCrosshair = enable; }
 
+	virtual void disconnectSignals();
+	virtual void connectSignals();
+
 	virtual void dragEnterEvent( QDragEnterEvent * );
 	virtual void dropEvent( QDropEvent * );
 protected:
