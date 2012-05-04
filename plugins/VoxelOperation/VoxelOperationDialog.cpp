@@ -84,6 +84,7 @@ void VoxelOperationDialog::calculatePressed()
 			msgBox.exec();
 
 		}
+
 		m_Interface.calcButton->setEnabled( true );
 		m_Interface.calcButton->setText( "Calculate" );
 	}

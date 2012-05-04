@@ -47,13 +47,12 @@ class QGeomWidget : public QWidget, public WidgetInterface
 {
 	Q_OBJECT
 
-	struct ImageComponent
-	{
+	struct ImageComponent {
 		QTransform transform;
 	};
 
 	typedef std::map<ImageHolder::Pointer, ImageComponent> ImageComponentsMapType;
-	
+
 public:
 	QGeomWidget();
 

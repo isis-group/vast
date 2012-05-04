@@ -125,9 +125,9 @@ void QGeomWidget::updateScene()
 
 void QGeomWidget::addImage ( const ImageHolder::Pointer image )
 {
-	if( m_ImageComponentsMap.find(image) == m_ImageComponentsMap.end() ) {
+	if( m_ImageComponentsMap.find( image ) == m_ImageComponentsMap.end() ) {
 		m_ImageComponentsMap.insert( std::make_pair<ImageHolder::Pointer, ImageComponent>( image, ImageComponent() ) );
-		m_ImageComponentsMap.at(image).transform = _internal::getQTransform( image, m_PlaneOrientation, m_LatchOrientation );
+		m_ImageComponentsMap.at( image ).transform = _internal::getQTransform( image, m_PlaneOrientation, m_LatchOrientation );
 	} else {
 		LOG( Dev, warning ) << "Trying to add image " << image->getImageProperties().filePath
 							<< " to widget of type " << getWidgetIdent()
@@ -138,6 +138,7 @@ void QGeomWidget::addImage ( const ImageHolder::Pointer image )
 bool QGeomWidget::removeImage ( const ImageHolder::Pointer image )
 {
 	const ImageComponentsMapType::iterator iter = m_ImageComponentsMap.find( image );
+
 	if( iter != m_ImageComponentsMap.end() ) {
 		m_ImageComponentsMap.erase( iter );
 		return true;
@@ -256,27 +257,45 @@ void QGeomWidget::paintCrossHair() const
 	const int border = -600000;
 
 	const float gap = 15 / m_Zoom;
+
 	const QLine xline1( mappedCoords[0], border, mappedCoords[0], mappedCoords[1] - gap * _internal::rasteringFac );
+
 	const QLine xline2( mappedCoords[0], mappedCoords[1] + gap * _internal::rasteringFac, mappedCoords[0], height() - border  );
 
 	const QLine yline1( border, mappedCoords[1], mappedCoords[0] - gap * _internal::rasteringFac, mappedCoords[1] );
+
 	const QLine yline2( mappedCoords[0] + gap * _internal::rasteringFac, mappedCoords[1],  width() - border, mappedCoords[1]  );
 
 	QPen pen;
+
 	pen.setColor( m_CrosshairColor );
+
 	pen.setWidth( 1 );
+
 	pen.setCosmetic( true );
+
 	m_Painter->resetTransform();
+
 	m_Painter->setWindow( m_BoundingBox[0], m_BoundingBox[1], m_BoundingBox[2], m_BoundingBox[3] );
+
 	m_Painter->setViewport( m_ViewPort[0], m_ViewPort[1], m_ViewPort[2], m_ViewPort[3] );
+
 	m_Painter->setTransform( _internal::getTransform2ISISSpace( m_PlaneOrientation, m_BoundingBox ) );
+
 	m_Painter->setOpacity( 1.0 );
+
 	m_Painter->setPen( pen );
+
 	m_Painter->drawLine( xline1 );
+
 	m_Painter->drawLine( xline2 );
+
 	m_Painter->drawLine( yline1 );
+
 	m_Painter->drawLine( yline2 );
+
 	pen.setWidth( 3 );
+
 	m_Painter->drawPoint( mappedCoords[0], mappedCoords[1] );
 }
 
@@ -325,6 +344,7 @@ util::fvector4 QGeomWidget::getPhysicalCoordsFromMouseCoords ( const int &x, con
 
 		util::fvector4 physicalCoords = image->getImageProperties().physicalCoords;
 		const util::ivector4 oldVoxelCoords = image->getImageProperties().voxelCoords;
+
 		switch( m_PlaneOrientation ) {
 		case axial:
 			physicalCoords[0] = ( ( width() - x ) - m_ViewPort[0] ) / m_WindowViewPortScaling + m_BoundingBox[0] / _internal::rasteringFac;
