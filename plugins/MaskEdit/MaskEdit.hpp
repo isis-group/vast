@@ -76,7 +76,6 @@ private:
 	template<typename TYPE>
 	void manipulateVoxel( const util::fvector4 physCoord, boost::shared_ptr<ImageHolder> image ) {
 		const util::ivector4 voxel = image->getISISImage()->getIndexFromPhysicalCoords( physCoord, true );
-		const util::ivector4 imageSize = image->getImageSize();
 		util::ivector4 start;
 		util::ivector4 end;
 		const bool cut = m_Interface.cut->isChecked();
