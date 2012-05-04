@@ -65,8 +65,6 @@ void VoxelOperationDialog::calculatePressed()
 			m_ViewerCore->getUICore()->getMainWindow()->toggleLoadingIcon( true, ss.str().c_str() );
 			image->getISISImage()->foreachVoxel<double>( vop );
 			m_ViewerCore->getUICore()->getMainWindow()->toggleLoadingIcon( false );
-			m_Interface.calcButton->setEnabled( true );
-			m_Interface.calcButton->setText( "Calculate" );
 			util::slist voxelOpHistory;
 
 			if( image->getPropMap().hasProperty( "VoxelOperation/opHistory" ) ) {
@@ -84,8 +82,12 @@ void VoxelOperationDialog::calculatePressed()
 			QMessageBox msgBox;
 			msgBox.setText( e.GetMsg().c_str() );
 			msgBox.exec();
+
 		}
+		m_Interface.calcButton->setEnabled( true );
+		m_Interface.calcButton->setText( "Calculate" );
 	}
+
 }
 
 

@@ -181,7 +181,14 @@ void MaskEditDialog::editCurrentImage()
 
 void MaskEditDialog::createEmptyMask()
 {
-	m_CreateMaskDialog->show();
+	if( m_ViewerCore->hasImage() ) {
+		m_CreateMaskDialog->show();
+	} else {
+		QMessageBox msgBox;
+		msgBox.setIcon( QMessageBox::Critical );
+		msgBox.setText( "No image loaded. Can not create any image." );
+		msgBox.exec();
+	}
 
 }
 

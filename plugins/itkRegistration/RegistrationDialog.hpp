@@ -46,6 +46,8 @@ public:
 	RegistrationDialog( QWidget *parent, QViewerCore *core );
 
 public Q_SLOTS:
+	void showEvent( QShowEvent * );
+	void startRegistration();
 
 private:
 	QViewerCore *m_ViewerCore;

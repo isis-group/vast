@@ -123,13 +123,29 @@ void QGeomWidget::updateScene()
 	update();
 }
 
-void QGeomWidget::addImage ( const ImageHolder::Pointer /*image*/ )
+void QGeomWidget::addImage ( const ImageHolder::Pointer image )
 {
+	if( m_ImageComponentsMap.find(image) == m_ImageComponentsMap.end() ) {
+		m_ImageComponentsMap.insert( std::make_pair<ImageHolder::Pointer, ImageComponent>( image, ImageComponent() ) );
+		m_ImageComponentsMap.at(image).transform = _internal::getQTransform( image, m_PlaneOrientation, m_LatchOrientation );
+	} else {
+		LOG( Dev, warning ) << "Trying to add image " << image->getImageProperties().filePath
+							<< " to widget of type " << getWidgetIdent()
+							<< ". But this widget already owns this image.";
+	}
 }
 
-bool QGeomWidget::removeImage ( const ImageHolder::Pointer /*image*/ )
+bool QGeomWidget::removeImage ( const ImageHolder::Pointer image )
 {
-	return true;
+	const ImageComponentsMapType::iterator iter = m_ImageComponentsMap.find( image );
+	if( iter != m_ImageComponentsMap.end() ) {
+		m_ImageComponentsMap.erase( iter );
+		return true;
+	} else {
+		LOG( Dev, warning ) << "Trying to remove image " << image->getImageProperties().filePath
+							<< " from widget of type " << getWidgetIdent()
+							<< ". But it seems this image has no such image.";
+	}
 }
 
 
@@ -237,7 +253,7 @@ void QGeomWidget::paintCrossHair() const
 		mappedCoords = mapCoordsToOrientation( image->getImageProperties().voxelCoords, image->getImageProperties().latchedOrientation, m_PlaneOrientation, false, true ) * _internal::rasteringFac;
 	}
 
-	short border = -15000;
+	const int border = -600000;
 
 	const float gap = 15 / m_Zoom;
 	const QLine xline1( mappedCoords[0], border, mappedCoords[0], mappedCoords[1] - gap * _internal::rasteringFac );
@@ -309,7 +325,6 @@ util::fvector4 QGeomWidget::getPhysicalCoordsFromMouseCoords ( const int &x, con
 
 		util::fvector4 physicalCoords = image->getImageProperties().physicalCoords;
 		const util::ivector4 oldVoxelCoords = image->getImageProperties().voxelCoords;
-
 		switch( m_PlaneOrientation ) {
 		case axial:
 			physicalCoords[0] = ( ( width() - x ) - m_ViewPort[0] ) / m_WindowViewPortScaling + m_BoundingBox[0] / _internal::rasteringFac;

@@ -46,6 +46,14 @@ namespace widget
 class QGeomWidget : public QWidget, public WidgetInterface
 {
 	Q_OBJECT
+
+	struct ImageComponent
+	{
+		QTransform transform;
+	};
+
+	typedef std::map<ImageHolder::Pointer, ImageComponent> ImageComponentsMapType;
+	
 public:
 	QGeomWidget();
 
@@ -106,6 +114,8 @@ private:
 	uint16_t m_Border;
 	InterpolationType m_InterpolationType;
 	std::pair<int, int> m_StartCoordsPair;
+
+	ImageComponentsMapType m_ImageComponentsMap;
 };
 
 

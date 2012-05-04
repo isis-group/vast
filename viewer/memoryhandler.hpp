@@ -60,7 +60,25 @@ public:
 			}
 		}
 	}
-
+/*
+	template< typename TYPE>  
+	static void fillSliceChunkOriented( data::MemChunk<TYPE> &sliceChunk, const ImageHolder::Pointer image, const PlaneOrientation &orientation ) {
+		const util::ivector4 mappedSize = mapCoordsToOrientation( image->getImageSize(), image->getImageProperties().latchedOrientation, orientation );
+		const data::Chunk &chunk = image->getChunkVector()[image->getImageProperties().voxelCoords[dim_time]];
+		if( orientation == sagittal ) {
+			const util::fvector4 columnVec = image->getImageProperties().columnVec;
+			const util::fvector4 sliceVec = image->getImageProperties().sliceVec;
+			std::cout << columnVec << std::endl;
+			std::cout << sliceVec << std::endl;
+			for ( util::ivector4::value_type y = 0; y < mappedSize[1]; y++ ) {
+				for ( util::ivector4::value_type x = 0; x < mappedSize[0]; x++ ) {
+					const util::ivector4 coords = columnVec * x + sliceVec * y;
+					static_cast<data::Chunk &>( sliceChunk ).voxel<TYPE>( x, y ) = chunk.voxel<TYPE>( std::abs(coords[0]), std::abs(coords[1]), std::abs(coords[2]) );
+				}
+			}
+			
+		}
+	}*/
 
 
 };
