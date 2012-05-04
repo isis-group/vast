@@ -42,7 +42,7 @@ public:
 	virtual std::string getName() { return std::string( "itk/Registration" ) ; }
 	virtual std::string getDescription() { return std::string( "" ); }
 	virtual std::string getTooltip() { return std::string( "itk Registration plugin" ); }
-	virtual QKeySequence getShortcut() { return QKeySequence( "P, T" ) ;}
+	virtual QKeySequence getShortcut() { return QKeySequence( "I, R" ) ;}
 	virtual QIcon *getToolbarIcon() { return new QIcon( ":/common/itkLogo.jpg" ); }
 	virtual bool isGUI() { return true; }
 	virtual bool call() {

@@ -358,7 +358,7 @@ void ImageHolder::updateOrientation()
 	getImageProperties().sliceVec = getISISImage()->getPropertyAs<util::fvector4>( "sliceVec" );
 	getImageProperties().voxelSize = getISISImage()->getPropertyAs<util::fvector4>( "voxelSize" );
 
-	if( getISISImage()->hasProperty( "voxelGap " ) ) {
+	if( getISISImage()->hasProperty( "voxelGap" ) ) {
 		getImageProperties().voxelSize += getISISImage()->getPropertyAs<util::fvector4>( "voxelGap" );
 	}
 }

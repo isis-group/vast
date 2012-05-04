@@ -276,7 +276,7 @@ WidgetEnsemble::Pointer UICore::getCurrentEnsemble() const
 				return ensemble;
 			}
 		}
-		LOG( Dev, warning ) << "There is no ensemble that things it is the current one!";
+		LOG( Dev, warning ) << "There is no ensemble that thinks it is the current one!";
 		return getEnsembleList().front();
 	} else {
 		LOG( Dev, error ) << "Viewer has no ensemble yet. So can not pick the current one!";

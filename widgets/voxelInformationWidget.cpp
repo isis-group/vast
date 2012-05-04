@@ -278,15 +278,7 @@ void VoxelInformationWidget::synchronize()
 
 		synchronizePos( image->getImageProperties().voxelCoords );
 
-		util::fvector4 voxelSpacing;
-
-		if( image->getISISImage()->hasProperty( "voxelGap" ) ) {
-			voxelSpacing = image->getISISImage()->getPropertyAs<util::fvector4>( "voxelSize" ) + image->getISISImage()->getPropertyAs<util::fvector4>( "voxelGap" );
-		} else {
-			voxelSpacing = image->getISISImage()->getPropertyAs<util::fvector4>( "voxelSize" );
-		}
-
-		const util::fvector4 transformedVec = image->getImageProperties().latchedOrientation.dot( voxelSpacing );
+		const util::fvector4 transformedVec = image->getImageProperties().latchedOrientation.dot( image->getImageProperties().voxelSize );
 
 		m_Interface.xBox->setSingleStep( fabs( transformedVec[0] ) );
 

@@ -69,10 +69,10 @@ private:
 		size[0] /= ( m_Interface.xRes->value() / refVoxelSize[0] );
 		size[1] /= ( m_Interface.yRes->value() / refVoxelSize[1] );
 		size[2] /= ( m_Interface.zRes->value() / refVoxelSize[2] );
-		isis::data::MemChunk<TYPE> ch( size[0], size[1], size[2] );
+		isis::data::MemChunk<TYPE> ch( size[0], size[1], size[2], size[3] );
 		ch.join( static_cast<isis::util::PropertyMap &>( *refImage->getISISImage() ) );
 		isis::data::Image mask ( ch );
-		const util::fvector4 voxelSize = util::fvector4( m_Interface.xRes->value(), m_Interface.yRes->value(), m_Interface.zRes->value() );
+		const util::fvector4 voxelSize = util::fvector4( m_Interface.xRes->value(), m_Interface.yRes->value(), m_Interface.zRes->value(), 1 );
 		mask.setPropertyAs<util::fvector4>( "voxelSize", voxelSize );
 		mask.updateOrientationMatrices();
 
