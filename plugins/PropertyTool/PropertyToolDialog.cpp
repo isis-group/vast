@@ -92,7 +92,6 @@ void PropertyToolDialog::updateProperties()
 		m_Interface.indexOrigin1->setText( QString::number( indexOrigin[1] ) );
 		m_Interface.indexOrigin2->setText( QString::number( indexOrigin[2] ) );
 
-		m_Interface.fileName->setText( m_ViewerCore->getCurrentImage()->getImageProperties().fileName.c_str() );
 		m_Interface.dataType->setText( m_ViewerCore->getCurrentImage()->getImageProperties().majorTypeName.c_str() );
 		m_Interface.imageSize->setText( m_ViewerCore->getCurrentImage()->getISISImage()->getSizeAsString().c_str() );
 		setIfHas( std::string( "sequenceStart" ), m_Interface.L_sequenceStart, m_Interface.sequenceStart, isisImage );
