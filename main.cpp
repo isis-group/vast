@@ -61,6 +61,7 @@ int main( int argc, char *argv[] )
 
 	//make vast showing qmessage if an error log is thrown
 	logging_hanlder_dev->qmessageBelow( isis::warning );
+	logging_hanlder_runtime->qmessageBelow( isis::warning );
 
 	std::string appName = "vast";
 	std::string orgName = "cbs.mpg.de";
@@ -113,6 +114,8 @@ int main( int argc, char *argv[] )
 	data::IOFactory::setProgressFeedback( feedback );
 	app.init( argc, argv, false );
 	QViewerCore *core = new QViewerCore;
+
+	//setting stylesheet
 	app.getQApplication().setStyleSheet( util::Singletons::get<style::Style, 10>().getStyleSheet( core->getSettings()->getPropertyAs<std::string>( "styleSheet" ) ) );
 
 	util::_internal::Log<isis::data::Runtime>::setHandler( logging_hanlder_runtime );

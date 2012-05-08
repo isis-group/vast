@@ -146,6 +146,7 @@ bool QGeomWidget::removeImage ( const ImageHolder::Pointer image )
 		LOG( Dev, warning ) << "Trying to remove image " << image->getImageProperties().filePath
 							<< " from widget of type " << getWidgetIdent()
 							<< ". But it seems this image has no such image.";
+		return false;
 	}
 }
 
