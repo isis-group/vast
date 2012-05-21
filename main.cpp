@@ -173,6 +173,10 @@ int main( int argc, char *argv[] )
 
 	if( !fileInfoList.empty() ) {
 		core->openFileList( fileInfoList );
+	} else {
+		if( core->getSettings()->getPropertyAs<bool>("showStartWidget") ) {
+			core->getUICore()->getMainWindow()->startWidget->show();
+		}
 	}
 
 	core->getUICore()->getMainWindow()->toggleLoadingIcon( false );
