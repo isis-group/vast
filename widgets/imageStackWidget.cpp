@@ -100,12 +100,15 @@ void ImageStack::contextMenuEvent( QContextMenuEvent *event )
 			openInWidgetMenu->addAction( action );
 		}
 		menu.addAction( m_Widget->m_Interface.actionClose_image );
+
 		if( !m_ViewerCore->getImageMap().at( currentItem()->data( Qt::UserRole ).toString().toStdString() )->getImageProperties().zeroIsReserved ) {
 			menu.addAction( m_Widget->m_Interface.actionSet_0_to_black );
 		}
+
 		menu.addMenu( openInWidgetMenu );
 		menu.addSeparator();
 	}
+
 	menu.addAction( m_Widget->m_Interface.actionDistribute_images );
 	menu.addAction( m_Widget->m_Interface.actionClose_all_images );
 	menu.exec( event->globalPos() );

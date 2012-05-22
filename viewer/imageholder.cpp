@@ -424,6 +424,7 @@ void ImageHolder::synchronize ()
 	} else {
 		copyImageToVector<InternalImageType>( *getISISImage(), getImageProperties().zeroIsReserved );
 	}
+
 	if( getImageProperties().zeroIsReserved ) {
 		reserveTrueZero( );
 	}

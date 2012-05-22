@@ -196,11 +196,13 @@ void isis::viewer::ui::FileDialog::setup()
 	m_Interface.widgetTypeframe->setVisible( widgetMap.size() > 1 );
 	QVariant variant(  m_ViewerCore->getSettings()->getPropertyAs<std::string>( "defaultViewWidgetIdentifier" ).c_str() ) ;
 	const int index = m_Interface.widgetTypeComboBox->findData( variant, Qt::UserRole );
+
 	if( index < 0 ) {
 		m_Interface.widgetTypeComboBox->setCurrentIndex( 0 );
 	} else {
 		m_Interface.widgetTypeComboBox->setCurrentIndex( index );
 	}
+
 	adjustSize();
 }
 

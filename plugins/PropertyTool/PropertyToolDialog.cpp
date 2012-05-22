@@ -72,7 +72,7 @@ void PropertyToolDialog::setIfHas( const std::string &name, QLabel *nameLabel, Q
 void PropertyToolDialog::updateProperties()
 {
 	if( m_ViewerCore->hasImage() && isVisible() ) {
-	
+
 		boost::shared_ptr<data::Image> isisImage = m_ViewerCore->getCurrentImage()->getISISImage();
 		//orientation
 		const util::fvector4 rowVec = isisImage->getPropertyAs<util::fvector4>( "rowVec" );
@@ -91,7 +91,7 @@ void PropertyToolDialog::updateProperties()
 		m_Interface.indexOrigin0->setText( QString::number( indexOrigin[0] ) );
 		m_Interface.indexOrigin1->setText( QString::number( indexOrigin[1] ) );
 		m_Interface.indexOrigin2->setText( QString::number( indexOrigin[2] ) );
-	
+
 
 		m_Interface.dataType->setText( m_ViewerCore->getCurrentImage()->getImageProperties().majorTypeName.c_str() );
 		m_Interface.imageSize->setText( m_ViewerCore->getCurrentImage()->getISISImage()->getSizeAsString().c_str() );
@@ -139,6 +139,7 @@ void PropertyToolDialog::selectionChanged( int select )
 	if( m_ViewerCore->hasImage() ) {
 		if( select > 0 ) {
 			const std::vector<data::Chunk>& chunks = m_ViewerCore->getCurrentImage()->getChunkVector();
+
 			if( select < static_cast<int>( chunks.size() ) ) {
 				buildUpTree( chunks[select-1] );
 			}

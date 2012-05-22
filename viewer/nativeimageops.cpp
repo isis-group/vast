@@ -28,7 +28,7 @@
 #include "nativeimageops.hpp"
 #include <mainwindow.hpp>
 
-isis::viewer::QViewerCore* isis::viewer::operation::NativeImageOps::m_ViewerCore;
+isis::viewer::QViewerCore *isis::viewer::operation::NativeImageOps::m_ViewerCore;
 
 isis::util::ivector4 isis::viewer::operation::NativeImageOps::getGlobalMin( const boost::shared_ptr< isis::viewer::ImageHolder > image, const util::ivector4 &startPos, const unsigned short &radius )
 {
@@ -119,7 +119,8 @@ isis::util::ivector4 isis::viewer::operation::NativeImageOps::getGlobalMax( cons
 void isis::viewer::operation::NativeImageOps::setTrueZero ( boost::shared_ptr< isis::viewer::ImageHolder > image )
 {
 	if( !image->getImageProperties().isRGB && !image->getImageProperties().zeroIsReserved ) {
-		m_ViewerCore->getUICore()->getMainWindow()->toggleLoadingIcon(true, "Setting 0 to black...");
+		m_ViewerCore->getUICore()->getMainWindow()->toggleLoadingIcon( true, "Setting 0 to black..." );
+
 		switch ( image->getImageProperties().majorTypeID ) {
 		case data::ValueArray<bool>::staticID:
 			_setTrueZero<bool>( image );
@@ -156,10 +157,11 @@ void isis::viewer::operation::NativeImageOps::setTrueZero ( boost::shared_ptr< i
 			break;
 		}
 	}
-	m_ViewerCore->getUICore()->getMainWindow()->toggleLoadingIcon(false);
+
+	m_ViewerCore->getUICore()->getMainWindow()->toggleLoadingIcon( false );
 }
 
-void isis::viewer::operation::NativeImageOps::setViewerCore ( isis::viewer::QViewerCore* core )
+void isis::viewer::operation::NativeImageOps::setViewerCore ( isis::viewer::QViewerCore *core )
 {
 	m_ViewerCore = core;
 }

@@ -50,15 +50,15 @@ class FillChunkListThread : public QThread
 	boost::shared_ptr<data::Image> image;
 	Ui::propertyToolDialog *interface;
 public:
-	FillChunkListThread ( QObject *parent, Ui::propertyToolDialog * pD )
+	FillChunkListThread ( QObject *parent, Ui::propertyToolDialog *pD )
 		: QThread( parent ), interface( pD ) {}
 	void setISISImage( boost::shared_ptr<data::Image> i ) { image = i; }
 	void run() {
-		const std::vector<data::Chunk> chunks = image->copyChunksToVector(false);
+		const std::vector<data::Chunk> chunks = image->copyChunksToVector( false );
 		interface->L_numberOfChunks->setVisible( chunks.size() > 1 );
 		interface->numberOfChunks->setVisible( chunks.size() > 1 );
 		interface->numberOfChunks->setText( QString::number( chunks.size() ) );
-		
+
 		for ( unsigned short i = 0; i < chunks.size() - 1; i++ ) {
 			std::stringstream entry;
 			entry << "Chunk " << i;

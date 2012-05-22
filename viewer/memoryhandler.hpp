@@ -74,9 +74,10 @@ public:
 			util::fvector4 phys = image->getImageProperties().physicalCoords;
 
 			for ( float i = bb[_mapping[0]].first; i < bb[_mapping[0]].second; i += 0.707 * image->getImageProperties().voxelSize[mapping[0]] ) {
-	#ifdef _OPENMP
-	#pragma omp parallel for
-	#endif
+#ifdef _OPENMP
+#pragma omp parallel for
+#endif
+
 				for ( float j = bb[_mapping[1]].first; j < bb[_mapping[1]].second; j += 0.707 * image->getImageProperties().voxelSize[mapping[1]]  ) {
 					phys[_mapping[0]] = i;
 					phys[_mapping[1]] = j;
