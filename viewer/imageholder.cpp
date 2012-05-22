@@ -326,13 +326,14 @@ void ImageHolder::correctVoxelCoords( util::ivector4 &vc )
 	}
 }
 
-bool ImageHolder::checkVoxelCoords ( const util::ivector4& vc )
+bool ImageHolder::checkVoxelCoords ( const util::ivector4 &vc )
 {
 	for( unsigned short i = 0; i < 4; i++ ) {
 		if( vc[i] < 0 || vc[i] >= static_cast<int>( getImageSize()[i] ) ) {
 			return false;
 		}
 	}
+
 	return true;
 }
 

@@ -50,7 +50,7 @@ class FillChunkListThread : public QThread
 	QComboBox *chunkList;
 	std::vector<data::Chunk> chunks;
 public:
-    FillChunkListThread ( QObject *parent, QComboBox *chList )
+	FillChunkListThread ( QObject *parent, QComboBox *chList )
 		: QThread( parent ), chunkList( chList ) {}
 	void setChunks( const std::vector<data::Chunk> &c ) { chunks = c; }
 	void run() {
@@ -61,7 +61,7 @@ public:
 		}
 	}
 };
-	
+
 template<typename TYPE> struct fromString {
 	TYPE operator()( const std::string &string, bool &ok ) {
 		ok = true;

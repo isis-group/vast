@@ -167,12 +167,12 @@ void QGeomWidget::paintEvent ( QPaintEvent* /*event*/ )
 
 		m_Painter->resetTransform();
 
-		if( m_ViewerCore->getSettings()->getPropertyAs<bool>("latchSingleImage")) {
+		if( m_ViewerCore->getSettings()->getPropertyAs<bool>( "latchSingleImage" ) ) {
 			m_LatchOrientation = getWidgetEnsemble()->getImageVector().size() == 1;
 		} else {
 			m_LatchOrientation = false;
 		}
-		
+
 		//bounding box calculation
 		m_BoundingBox = _internal::getPhysicalBoundingBox( getWidgetEnsemble()->getImageVector(), m_PlaneOrientation );
 		_internal::zoomBoundingBox( m_BoundingBox,
@@ -233,6 +233,7 @@ void QGeomWidget::paintImage( const ImageHolder::Pointer image )
 
 	if ( !image->getImageProperties().isRGB ) {
 		isis::data::MemChunk<InternalImageType> sliceChunk( mappedSizeAligned[0], mappedSizeAligned[1] );
+
 		if( m_LatchOrientation ) {
 			MemoryHandler::fillSliceChunk<InternalImageType>( sliceChunk, image, m_PlaneOrientation );
 		} else {
@@ -246,11 +247,13 @@ void QGeomWidget::paintImage( const ImageHolder::Pointer image )
 		m_Painter->drawImage( 0, 0, qImage );
 	} else {
 		isis::data::MemChunk<InternalImageColorType> sliceChunk( mappedSizeAligned[0], mappedSizeAligned[1] );
+
 		if( m_LatchOrientation ) {
 			MemoryHandler::fillSliceChunk<InternalImageColorType>( sliceChunk, image, m_PlaneOrientation );
 		} else {
 			MemoryHandler::fillSliceChunkOriented<InternalImageColorType>( sliceChunk, image, m_PlaneOrientation );
 		}
+
 		QImage qImage( ( InternalImageType * ) sliceChunk.asValueArray<InternalImageColorType>().getRawAddress().get(),
 					   mappedSizeAligned[0], mappedSizeAligned[1], QImage::Format_RGB888 );
 		m_Painter->drawImage( 0, 0, qImage );

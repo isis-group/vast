@@ -320,6 +320,7 @@ bool OrientatioCorrectionDialog::applyTransform( ) const
 		} else {
 			LOG( Runtime, error ) << "Could not apply transform " << finalMatrix << " to the image " << image->getImageProperties().fileName << " !";
 		}
+
 		image->updateOrientation();
 		m_ViewerCore->emitImageContentChanged( image );
 		m_ViewerCore->physicalCoordsChanged( image->getISISImage()->getPhysicalCoordsFromIndex( image->getImageProperties().voxelCoords ) );

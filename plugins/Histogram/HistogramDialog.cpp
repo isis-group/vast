@@ -66,6 +66,7 @@ void isis::viewer::plugin::HistogramDialog::paintHistogram()
 		double xData[255];
 		BOOST_FOREACH( ImageHolder::Vector::const_reference image, m_ViewerCore->getImageVector() ) {
 			image->updateHistogram();
+
 			if( !image->getImageProperties().isRGB ) {
 				const double scaling = image->getImageProperties().scalingToInternalType.first->as<double>();
 				const double offset = image->getImageProperties().scalingToInternalType.second->as<double>();

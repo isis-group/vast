@@ -83,10 +83,10 @@ QTransform getQTransform ( const ImageHolder::Pointer image, const PlaneOrientat
 	const uint16_t slice = mapCoordsToOrientation( image->getImageProperties().voxelCoords, image->getImageProperties().latchedOrientation, orientation, false, true )[2];
 	const util::ivector4 mappedCoords = mapCoordsToOrientation( util::ivector4( 0, 0, slice ), image->getImageProperties().latchedOrientation, orientation, true, true );
 	const util::fvector4 _io = image->getISISImage()->getPhysicalCoordsFromIndex( mappedCoords ) * rasteringFac ;
-	util::FixedVector<qreal,2> vc;
+	util::FixedVector<qreal, 2> vc;
 	vc[0] = mapped_voxelSize[0] / 2.0;
 	vc[1] = mapped_voxelSize[1] / 2.0;
-	const util::FixedVector<qreal,2> _vc = mat.dot( vc );
+	const util::FixedVector<qreal, 2> _vc = mat.dot( vc );
 
 
 	switch( orientation ) {

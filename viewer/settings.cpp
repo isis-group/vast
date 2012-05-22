@@ -126,8 +126,8 @@ void Settings::load()
 
 void Settings::initializeWithDefaultSettings()
 {
-	setPropertyAs<bool>("checkCACP", false );
-	setPropertyAs<bool>( "latchSingleImage", true);
+	setPropertyAs<bool>( "checkCACP", false );
+	setPropertyAs<bool>( "latchSingleImage", true );
 	setPropertyAs<bool>( "showFullFilePath", true );
 	setPropertyAs<bool>( "zmapGlobal", false );
 	setPropertyAs<bool>( "viewAllImagesInStack", false );

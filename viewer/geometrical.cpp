@@ -54,11 +54,13 @@ BoundingBoxType getPhysicalBoundingBox ( const ImageHolder::Vector images, const
 
 	BOOST_FOREACH( ImageHolder::Vector::const_reference image, images ) {
 		const util::ivector4 imageSize = image->getISISImage()->getSizeAsVector();
+
 		for( unsigned short i = 0; i < 2; i++ ) {
 			for( unsigned short j = 0; j < 2; j++ ) {
 				for( unsigned short k = 0; k < 2; k++ ) {
 					const util::ivector4 currentCorner ( i * ( imageSize[0] + border ), j * ( imageSize[1] + border ), k * ( imageSize[2] + border ) );
 					const util::fvector4 currentPhysicalCorner = image->getISISImage()->getPhysicalCoordsFromIndex( currentCorner );
+
 					for ( unsigned short l = 0; l < 3; l++ ) {
 						if( currentPhysicalCorner[l] < retBox[l].first ) {
 							retBox[l].first = currentPhysicalCorner[l];

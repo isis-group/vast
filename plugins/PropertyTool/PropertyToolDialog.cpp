@@ -129,9 +129,10 @@ void PropertyToolDialog::updateProperties()
 		if( m_fillChunkListThread->isRunning() ) {
 			m_fillChunkListThread->terminate();
 		}
+
 		m_fillChunkListThread->setChunks( chunks );
 		m_fillChunkListThread->start();
-		
+
 		buildUpTree( static_cast<util::PropertyMap &>( *isisImage ) );
 	}
 

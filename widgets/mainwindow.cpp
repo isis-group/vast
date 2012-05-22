@@ -303,7 +303,8 @@ void MainWindow::ignoreOrientation( bool ignore )
 			image->getISISImage()->setPropertyAs<util::fvector4>( "sliceVec", image->getPropMap().getPropertyAs<util::fvector4>( "originalSliceVec" ) );
 			image->getISISImage()->setPropertyAs<util::fvector4>( "indexOrigin", image->getPropMap().getPropertyAs<util::fvector4>( "originalIndexOrigin" ) );
 			image->updateOrientation();
-			if( m_ViewerCore->getSettings()->getPropertyAs<bool>("checkCACP") ) {
+
+			if( m_ViewerCore->getSettings()->getPropertyAs<bool>( "checkCACP" ) ) {
 				checkForCaCp( image );
 			}
 		}

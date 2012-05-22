@@ -136,6 +136,7 @@ int main( int argc, char *argv[] )
 
 	if( widget_name.empty() ) {
 		widget_name = core->getSettings()->getPropertyAs<std::string>( "defaultViewWidgetIdentifier" );
+
 		if( widget_name.empty() ) {
 			widget_name = fallbackWidgetIdentifier;
 		}
@@ -177,7 +178,7 @@ int main( int argc, char *argv[] )
 	if( !fileInfoList.empty() ) {
 		core->openFileList( fileInfoList );
 	} else {
-		if( core->getSettings()->getPropertyAs<bool>("showStartWidget") ) {
+		if( core->getSettings()->getPropertyAs<bool>( "showStartWidget" ) ) {
 			core->getUICore()->getMainWindow()->startWidget->show();
 		}
 	}

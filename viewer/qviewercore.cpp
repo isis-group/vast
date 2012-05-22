@@ -246,6 +246,7 @@ void QViewerCore::settingsChanged()
 			}
 		}
 	}
+
 	BOOST_FOREACH( ImageHolder::Vector::const_reference image, getImageVector() ) {
 		image->updateOrientation();
 	}
