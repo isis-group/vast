@@ -44,9 +44,9 @@ ImageHolder::ImageHolder()
 boost::shared_ptr< const void > ImageHolder::getRawAdress ( size_t timestep ) const
 {
 	if( getImageProperties().isRGB ) {
-		return m_ChunkVector.operator[]( timestep ).getValueArray<InternalImageColorType>().getRawAddress();
+		return m_VolumeVector.operator[]( timestep ).getValueArray<InternalImageColorType>().getRawAddress();
 	} else {
-		return m_ChunkVector.operator[]( timestep ).getValueArray<InternalImageType>().getRawAddress();
+		return m_VolumeVector.operator[]( timestep ).getValueArray<InternalImageType>().getRawAddress();
 	}
 }
 
@@ -192,15 +192,15 @@ bool ImageHolder::setImage( const data::Image &image, const ImageType &_imageTyp
 	//copy the image into continuous memory space and assure consistent data type
 	synchronize( );
 
-	LOG_IF( m_ChunkVector.empty(), Dev, error ) << "Size of chunk vector is 0!";
+	LOG_IF( m_VolumeVector.empty(), Dev, error ) << "Size of chunk vector is 0!";
 
-	if( m_ChunkVector.size() != m_ImageSize[3] ) {
+	if( m_VolumeVector.size() != m_ImageSize[3] ) {
 		LOG( Dev, error ) << "The number of timesteps (" << m_ImageSize[3]
-						  << ") does not coincide with the number of volumes ("  << m_ChunkVector.size() << ").";
+						  << ") does not coincide with the number of volumes ("  << m_VolumeVector.size() << ").";
 		return false;
 	}
 
-	LOG( Dev, verbose_info ) << "Spliced image to " << m_ChunkVector.size() << " volumes.";
+	LOG( Dev, verbose_info ) << "Spliced image to " << m_VolumeVector.size() << " volumes.";
 
 	//image seems to be ok...i guess
 
@@ -366,7 +366,7 @@ void ImageHolder::logImageProps() const
 void ImageHolder::setVoxel ( const size_t &first, const size_t &second, const size_t &third, const size_t &fourth, const double &value, bool sync )
 {
 	data::Chunk chunk = getISISImage()->getChunk( first, second, third, fourth, false );
-	getChunkVector()[fourth].voxel<InternalImageType>( first, second, third )
+	getVolumeVector()[fourth].voxel<InternalImageType>( first, second, third )
 	= getImageProperties().scalingToInternalType.second->as<double>() + value * getImageProperties().scalingToInternalType.first->as<double>();
 
 	if( sync ) {

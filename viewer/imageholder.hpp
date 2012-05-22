@@ -108,6 +108,10 @@ public:
 
 	const std::vector< data::Chunk > &getChunkVector() const { return m_ChunkVector; }
 	std::vector< data::Chunk > &getChunkVector() { return m_ChunkVector; }
+
+	const std::vector< data::Chunk > &getVolumeVector() const { return m_VolumeVector; }
+	std::vector< data::Chunk > &getVolumeVector() { return m_VolumeVector; }
+
 	util::PropertyMap &getPropMap() { return m_PropMap; }
 	const util::PropertyMap &getPropMap() const { return m_PropMap; }
 	const util::FixedVector<size_t, 4> &getImageSize() const { return m_ImageSize; }
@@ -172,6 +176,7 @@ private:
 	std::pair<double, double> m_OptimalScalingPair;
 
 	std::vector< data::Chunk > m_ChunkVector;
+	std::vector< data::Chunk > m_VolumeVector;
 
 	boost::shared_ptr<color::Color> m_ColorHandler;
 
@@ -179,7 +184,8 @@ private:
 
 	template<typename TYPE>
 	void copyImageToVector( const data::Image &image, bool reserveZero ) {
-		m_ChunkVector.clear();
+		m_VolumeVector.clear();
+		m_ChunkVector = image.copyChunksToVector();
 		data::ValueArray<TYPE> imagePtr( ( TYPE * ) calloc( image.getVolume(), sizeof( TYPE ) ), image.getVolume() );
 		getImageProperties().memSizeInternal = image.getVolume() * sizeof( TYPE );
 		LOG( Dev, info ) << "Needed memory: " << getImageProperties().memSizeInternal / ( 1024.0 * 1024.0 ) << " mb.";
@@ -210,10 +216,10 @@ private:
 			std::vector< data::ValueArrayReference > refVec = imagePtr.splice( m_ImageSize[0] * m_ImageSize[1] * m_ImageSize[2] );
 
 			for ( std::vector< data::ValueArrayReference >::const_iterator iter = refVec.begin(); iter != refVec.end(); iter++ ) {
-				m_ChunkVector.push_back( data::Chunk( *iter, m_ImageSize[0], m_ImageSize[1], m_ImageSize[2] ) );
+				m_VolumeVector.push_back( data::Chunk( *iter, m_ImageSize[0], m_ImageSize[1], m_ImageSize[2] ) );
 			}
 		} else {
-			m_ChunkVector.push_back( data::Chunk( imagePtr, m_ImageSize[0], m_ImageSize[1], m_ImageSize[2] ) );
+			m_VolumeVector.push_back( data::Chunk( imagePtr, m_ImageSize[0], m_ImageSize[1], m_ImageSize[2] ) );
 		}
 	}
 

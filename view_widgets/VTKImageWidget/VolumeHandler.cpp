@@ -47,7 +47,7 @@ vtkImageData *VolumeHandler::getVTKImageData( const ImageHolder::Pointer image, 
 	vtkMatrix4x4 *orientationMatrix = vtkMatrix4x4::New();
 	transform->Identity();
 	importer->SetDataScalarTypeToUnsignedChar();
-	importer->SetImportVoidPointer( &image->getChunkVector().operator[]( timestep ).voxel<InternalImageType>( 0 ) );
+	importer->SetImportVoidPointer( &image->getVolumeVector().operator[]( timestep ).voxel<InternalImageType>( 0 ) );
 	importer->SetWholeExtent( 0, size[0] - 1, 0, size[1] - 1, 0, size[2] - 1 );
 	importer->SetDataExtentToWholeExtent();
 

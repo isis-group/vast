@@ -47,7 +47,7 @@ public:
 		const util::ivector4 mappedSize = mapCoordsToOrientation( image->getImageSize(), image->getImageProperties().latchedOrientation, orientation );
 		const util::ivector4 mappedCoords = mapCoordsToOrientation( image->getImageProperties().voxelCoords, image->getImageProperties().latchedOrientation, orientation );
 		const util::ivector4 mapping = mapCoordsToOrientation( util::ivector4( 0, 1, 2, 3 ), image->getImageProperties().latchedOrientation, orientation, true );
-		const data::Chunk &chunk = image->getChunkVector()[image->getImageProperties().voxelCoords[dim_time]];
+		const data::Chunk &chunk = image->getVolumeVector()[image->getImageProperties().voxelCoords[dim_time]];
 
 		for ( util::ivector4::value_type y = 0; y < mappedSize[1]; y++ ) {
 #ifdef _OPENMP
@@ -63,7 +63,7 @@ public:
 
 	template< typename TYPE>
 	static void fillSliceChunkOriented( data::MemChunk<TYPE> &sliceChunk, const ImageHolder::Pointer image, const PlaneOrientation &orientation ) {
-		const data::Chunk &chunk = image->getChunkVector()[image->getImageProperties().voxelCoords[dim_time]];
+		const data::Chunk &chunk = image->getVolumeVector()[image->getImageProperties().voxelCoords[dim_time]];
 		boost::shared_ptr< data::Image > isisImage = image->getISISImage();
 		const geometrical::BoundingBoxType &bb = image->getImageProperties().boundingBox;
 		const util::ivector4 mapping = mapCoordsToOrientation( util::fvector4( 0, 1, 2 ), image->getImageProperties().latchedOrientation, orientation );
@@ -71,6 +71,9 @@ public:
 		util::fvector4 phys = image->getImageProperties().physicalCoords;
 
 		for ( float i = bb[_mapping[0]].first; i < bb[_mapping[0]].second; i += 0.707 * image->getImageProperties().voxelSize[mapping[0]] ) {
+#ifdef _OPENMP
+#pragma omp parallel for
+#endif			
 			for ( float j = bb[_mapping[1]].first; j < bb[_mapping[1]].second; j += 0.707 * image->getImageProperties().voxelSize[mapping[1]]  ) {
 				phys[_mapping[0]] = i;
 				phys[_mapping[1]] = j;

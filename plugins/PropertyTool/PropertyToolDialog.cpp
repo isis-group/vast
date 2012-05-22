@@ -49,7 +49,7 @@ PropertyToolDialog::PropertyToolDialog( QWidget *parent, QViewerCore *core )
 	connect( m_Interface.propertyTree, SIGNAL( itemClicked( QTreeWidgetItem *, int ) ), SLOT( onPropertyTreeClicked() ) );
 	connect( m_Interface.editButton, SIGNAL( clicked( bool ) ), this, SLOT( editRequested() ) );
 	connect( m_Interface.propertyTree, SIGNAL( doubleClicked( QModelIndex ) ), this, SLOT( editRequested() ) );
-	m_fillChunkListThread = new _internal::FillChunkListThread( this, m_Interface.selection );
+	m_fillChunkListThread = new _internal::FillChunkListThread( this, &m_Interface );
 }
 
 void PropertyToolDialog::showEvent( QShowEvent * )
@@ -69,11 +69,10 @@ void PropertyToolDialog::setIfHas( const std::string &name, QLabel *nameLabel, Q
 	}
 }
 
-
-
 void PropertyToolDialog::updateProperties()
 {
 	if( m_ViewerCore->hasImage() && isVisible() ) {
+	
 		boost::shared_ptr<data::Image> isisImage = m_ViewerCore->getCurrentImage()->getISISImage();
 		//orientation
 		const util::fvector4 rowVec = isisImage->getPropertyAs<util::fvector4>( "rowVec" );
@@ -92,6 +91,7 @@ void PropertyToolDialog::updateProperties()
 		m_Interface.indexOrigin0->setText( QString::number( indexOrigin[0] ) );
 		m_Interface.indexOrigin1->setText( QString::number( indexOrigin[1] ) );
 		m_Interface.indexOrigin2->setText( QString::number( indexOrigin[2] ) );
+	
 
 		m_Interface.dataType->setText( m_ViewerCore->getCurrentImage()->getImageProperties().majorTypeName.c_str() );
 		m_Interface.imageSize->setText( m_ViewerCore->getCurrentImage()->getISISImage()->getSizeAsString().c_str() );
@@ -114,23 +114,15 @@ void PropertyToolDialog::updateProperties()
 		setIfHas( std::string( "repetitionTime" ), m_Interface.L_repetitionTime, m_Interface.repetitionTime, isisImage );
 		setIfHas( std::string( "numberOfAverages" ), m_Interface.L_numberOfAverages, m_Interface.numberOfAverages, isisImage );
 		setIfHas( std::string( "echoTime" ), m_Interface.L_echoTime, m_Interface.echoTime, isisImage );
+
 		m_Interface.subjectGroup->setVisible( isisImage->hasProperty( "subjectName" ) || isisImage->hasProperty( "subjectAge" )
 											  || isisImage->hasProperty( "subjectBirth" ) || isisImage->hasProperty( "subjectGender" )
 											  || isisImage->hasProperty( "subjectWeigth" ) );
 		m_Interface.selection->clear();
 		m_Interface.selection->addItem( "Image" );
-		const std::vector<data::Chunk> chunks = isisImage->copyChunksToVector();
-
-		m_Interface.L_numberOfChunks->setVisible( chunks.size() > 1 );
-		m_Interface.numberOfChunks->setVisible( chunks.size() > 1 );
-		m_Interface.numberOfChunks->setText( QString::number( chunks.size() ) );
 
 		//filling the list with all chunks can take a while so we create a thread for that
-		if( m_fillChunkListThread->isRunning() ) {
-			m_fillChunkListThread->terminate();
-		}
-
-		m_fillChunkListThread->setChunks( chunks );
+		m_fillChunkListThread->setISISImage( isisImage );
 		m_fillChunkListThread->start();
 
 		buildUpTree( static_cast<util::PropertyMap &>( *isisImage ) );
@@ -145,10 +137,11 @@ void PropertyToolDialog::updateProperties()
 void PropertyToolDialog::selectionChanged( int select )
 {
 	if( m_ViewerCore->hasImage() ) {
-		const std::vector<data::Chunk> chunks = m_ViewerCore->getCurrentImage()->getISISImage()->copyChunksToVector( true );
-
-		if( select > 0 && select < static_cast<int>( chunks.size() ) ) {
-			buildUpTree( chunks[select - 1] );
+		if( select > 0 ) {
+			const std::vector<data::Chunk>& chunks = m_ViewerCore->getCurrentImage()->getChunkVector();
+			if( select < static_cast<int>( chunks.size() ) ) {
+				buildUpTree( chunks[select-1] );
+			}
 		}
 	}
 }
@@ -158,8 +151,6 @@ void PropertyToolDialog::buildUpTree( const util::PropertyMap &image )
 {
 	TreePropMap propMap = image;
 	propMap.fillTreeWidget( m_Interface.propertyTree );
-
-
 
 }
 
