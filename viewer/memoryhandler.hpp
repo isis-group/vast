@@ -63,29 +63,33 @@ public:
 
 	template< typename TYPE>
 	static void fillSliceChunkOriented( data::MemChunk<TYPE> &sliceChunk, const ImageHolder::Pointer image, const PlaneOrientation &orientation ) {
-		const data::Chunk &chunk = image->getVolumeVector()[image->getImageProperties().voxelCoords[dim_time]];
-		boost::shared_ptr< data::Image > isisImage = image->getISISImage();
-		const geometrical::BoundingBoxType &bb = image->getImageProperties().boundingBox;
-		const util::ivector4 mapping = mapCoordsToOrientation( util::fvector4( 0, 1, 2 ), image->getImageProperties().latchedOrientation, orientation );
-		const util::ivector4 _mapping = mapCoordsToOrientation( util::fvector4( 0, 1, 2 ), util::IdentityMatrix<float, 4>(), orientation );
-		util::fvector4 phys = image->getImageProperties().physicalCoords;
+		if( image->getImageProperties().latchedOrientation == image->getImageProperties().orientation ) {
+			fillSliceChunk<TYPE>( sliceChunk, image, orientation );
+		} else {
+			const data::Chunk &chunk = image->getVolumeVector()[image->getImageProperties().voxelCoords[dim_time]];
+			boost::shared_ptr< data::Image > isisImage = image->getISISImage();
+			const geometrical::BoundingBoxType &bb = image->getImageProperties().boundingBox;
+			const util::ivector4 mapping = mapCoordsToOrientation( util::fvector4( 0, 1, 2 ), image->getImageProperties().latchedOrientation, orientation );
+			const util::ivector4 _mapping = mapCoordsToOrientation( util::fvector4( 0, 1, 2 ), util::IdentityMatrix<float, 4>(), orientation );
+			util::fvector4 phys = image->getImageProperties().physicalCoords;
 
-		for ( float i = bb[_mapping[0]].first; i < bb[_mapping[0]].second; i += 0.707 * image->getImageProperties().voxelSize[mapping[0]] ) {
-#ifdef _OPENMP
-#pragma omp parallel for
-#endif			
-			for ( float j = bb[_mapping[1]].first; j < bb[_mapping[1]].second; j += 0.707 * image->getImageProperties().voxelSize[mapping[1]]  ) {
-				phys[_mapping[0]] = i;
-				phys[_mapping[1]] = j;
-				const util::ivector4 voxCoords = isisImage->getIndexFromPhysicalCoords( phys, false );
+			for ( float i = bb[_mapping[0]].first; i < bb[_mapping[0]].second; i += 0.707 * image->getImageProperties().voxelSize[mapping[0]] ) {
+	#ifdef _OPENMP
+	#pragma omp parallel for
+	#endif
+				for ( float j = bb[_mapping[1]].first; j < bb[_mapping[1]].second; j += 0.707 * image->getImageProperties().voxelSize[mapping[1]]  ) {
+					phys[_mapping[0]] = i;
+					phys[_mapping[1]] = j;
+					const util::ivector4 voxCoords = isisImage->getIndexFromPhysicalCoords( phys, false );
 
-				if( image->checkVoxelCoords( voxCoords ) ) {
-					static_cast<data::Chunk & >( sliceChunk ).voxel<TYPE>( voxCoords[mapping[0]], voxCoords[mapping[1]] ) =
-						chunk.voxel<TYPE>( voxCoords[0], voxCoords[1], voxCoords[2] );
+					if( image->checkVoxelCoords( voxCoords ) ) {
+						static_cast<data::Chunk & >( sliceChunk ).voxel<TYPE>( voxCoords[mapping[0]], voxCoords[mapping[1]] ) =
+							chunk.voxel<TYPE>( voxCoords[0], voxCoords[1], voxCoords[2] );
+					}
 				}
 			}
-		}
 
+		}
 	}
 
 
