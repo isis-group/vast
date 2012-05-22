@@ -48,6 +48,8 @@ struct ViewerDev {static const char *name() { return "ViewerDev";}; enum {use = 
 namespace viewer
 {
 
+const std::string fallbackWidgetIdentifier = "qt4_geometrical_plane_widget";
+
 class ImageHolder;
 typedef uint8_t InternalImageType;
 typedef isis::util::color24 InternalImageColorType;

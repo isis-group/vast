@@ -66,7 +66,7 @@ VoxelInformationWidget::VoxelInformationWidget( QWidget *parent, QViewerCore *co
 	m_Interface.sliceBox->setMinimum( 0 );
 	m_UpperHalfColormapLabel->setMaximumHeight( 20 );
 	m_Interface.playButton->setIcon( QIcon( ":/common/play.png" ) );
-	m_tThread = new TimePlayThread( m_ViewerCore, &m_Interface );
+	m_tThread = new TimePlayThread( this, m_ViewerCore, &m_Interface );
 	QVBoxLayout *layout = new QVBoxLayout( );
 	layout->setContentsMargins( 5, 0, 5, 0 );
 	layout->addWidget( m_UpperHalfColormapLabel );

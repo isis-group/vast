@@ -43,6 +43,8 @@ PreferencesDialog::PreferencesDialog( QWidget *parent, QViewerCore *core ):
 	connect( m_Interface.lutStructural, SIGNAL( activated( int ) ), this, SLOT( apply( int ) ) );
 	connect( m_Interface.lutZmap, SIGNAL( activated( int ) ), this, SLOT( apply( int ) ) );
 	connect( m_Interface.comboInterpolation, SIGNAL( activated( int ) ), this, SLOT( apply( int ) ) );
+	connect( m_Interface.checkLatchOrientation, SIGNAL( toggled(bool)), this, SLOT( apply()));
+	connect( m_Interface.checkCACP, SIGNAL( toggled(bool)), this, SLOT( apply()));
 	connect( m_Interface.enableMultithreading, SIGNAL( clicked( bool ) ), this, SLOT( toggleMultithreading( bool ) ) );
 	connect( m_Interface.useAllThreads, SIGNAL( clicked( bool ) ), this, SLOT( toggleUseAllThreads( bool ) ) );
 	connect( m_Interface.numberOfThreads, SIGNAL( valueChanged( int ) ), this, SLOT( numberOfThreadsChanged( int ) ) );
@@ -52,6 +54,11 @@ PreferencesDialog::PreferencesDialog( QWidget *parent, QViewerCore *core ):
 	m_Interface.lutStructural->setIconSize( size );
 	m_Interface.lutZmap->setIconSize( size );
 }
+
+void PreferencesDialog::showEvent ( QShowEvent* )
+{
+	loadSettings();
+}		
 
 void PreferencesDialog::screenshotXChanged( int val )
 {
@@ -153,6 +160,8 @@ void PreferencesDialog::loadSettings()
 	m_Interface.checkStartUpScreen->setChecked( m_ViewerCore->getSettings()->getPropertyAs<bool>( "showStartWidget" ) );
 	m_Interface.checkCrashMessage->setChecked( m_ViewerCore->getSettings()->getPropertyAs<bool>( "showCrashMessage" ) );
 	m_Interface.checkOnlyFirst->setChecked( m_ViewerCore->getSettings()->getPropertyAs<bool>( "visualizeOnlyFirstVista" ) );
+	m_Interface.checkCACP->setChecked( m_ViewerCore->getSettings()->getPropertyAs<bool>( "checkCACP" ) );
+	m_Interface.checkLatchOrientation->setChecked( m_ViewerCore->getSettings()->getPropertyAs<bool>( "latchSingleImage" ) );
 	m_Interface.enableMultithreading->setVisible( m_ViewerCore->getSettings()->getPropertyAs<bool>( "ompAvailable" ) );
 	m_Interface.multithreadingFrame->setVisible( m_ViewerCore->getSettings()->getPropertyAs<bool>( "ompAvailable" ) );
 
@@ -193,7 +202,10 @@ void PreferencesDialog::saveSettings()
 	m_ViewerCore->getSettings()->setPropertyAs<uint16_t>( "interpolationType", m_Interface.comboInterpolation->currentIndex() );
 	m_ViewerCore->getSettings()->setPropertyAs<bool>( "showStartWidget", m_Interface.checkStartUpScreen->isChecked() );
 	m_ViewerCore->getSettings()->setPropertyAs<bool>( "showCrashMessage", m_Interface.checkCrashMessage->isChecked() );
+	m_ViewerCore->getSettings()->setPropertyAs<bool>( "latchSingleImage", m_Interface.checkLatchOrientation->isChecked() );
+	
 	m_ViewerCore->getSettings()->setPropertyAs<bool>( "visualizeOnlyFirstVista", m_Interface.checkOnlyFirst->isChecked() );
+	m_ViewerCore->getSettings()->setPropertyAs<bool>( "checkCACP", m_Interface.checkCACP->isChecked() );
 	//screenshot
 	m_ViewerCore->getSettings()->setPropertyAs<bool>( "screenshotKeepAspectRatio", m_Interface.keepRatio->isChecked() );
 	m_ViewerCore->getSettings()->setPropertyAs<uint16_t>( "screenshotQuality", m_Interface.screenshotQuality->value() );

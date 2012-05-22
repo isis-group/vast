@@ -43,45 +43,19 @@ namespace _internal
 
 const uint8_t rasteringFac = 50;
 
-geometrical::BoundingBoxType getVoxelBoundingBox( const ImageHolder::Vector &images );
+util::fvector4 getPhysicalBoundingBox( const ImageHolder::Vector &images, const PlaneOrientation &orientation );
 
-util::fvector4 getPhysicalBoundingBox( const ImageHolder::Vector &images, const PlaneOrientation &orientation, const bool &latched );
-
-QTransform getQTransform( const ImageHolder::Pointer image, const PlaneOrientation &orientation, bool latched );
+QTransform getQTransform( const ImageHolder::Pointer image, const PlaneOrientation &orientation, const bool &latched );
 
 QTransform getTransform2ISISSpace( const PlaneOrientation &orientation, const util::fvector4 & );
 
-util::Matrix4x4<qreal> getOrderedMatrix(  const boost::shared_ptr<ImageHolder> image, bool latched, bool inverse );
+util::Matrix4x4<qreal> getOrderedMatrix(  const boost::shared_ptr<ImageHolder> image, bool inverse, const bool &latched );
 
-util::FixedMatrix<qreal, 2, 2> extract2DMatrix( const boost::shared_ptr<ImageHolder> image, const PlaneOrientation &orientation, bool latched, bool inverse );
+util::FixedMatrix<qreal, 2, 2> extract2DMatrix( const boost::shared_ptr<ImageHolder> image, const PlaneOrientation &orientation, bool inverse, const bool &latched );
 
 util::fvector4 mapPhysicalCoords2Orientation( const util::fvector4 &coords, const PlaneOrientation &orientation );
 
 void zoomBoundingBox( util::fvector4 &boundingBox, util::FixedVector<float, 2> &translation, const util::fvector4 &physCoord, const float &zoom, const PlaneOrientation &orientation, const bool &translate );
-/*
-template< typename TYPE >
-static void extractSliceFromChunk( data::MemChunk<TYPE> &sliceChunk, const ImageHolder::Pointer image, const PlaneOrientation &orientation )
-{
-    const util::ivector4 mappedSize = mapCoordsToOrientation( image->getImageSize(), image->getImageProperties().latchedOrientation, orientation );
-    const util::ivector4 mappedCoords = mapCoordsToOrientation( image->getImageProperties().voxelCoords, image->getImageProperties().latchedOrientation, orientation );
-    const util::ivector4 mapping = mapCoordsToOrientation( util::ivector4( 0, 1, 2, 3 ), image->getImageProperties().latchedOrientation, orientation, true );
-    const data::Chunk &chunk = image->getChunkVector()[image->getImageProperties().voxelCoords[dim_time]];
-    //test for axial
-    const util::Matrix4x4<float> mat = image->getImageProperties().orientation;
-    util::fvector4 v1 = mat.getRow( 0 );
-    util::fvector4 v2 = mat.getRow( 1 );
-
-    const util::ivector4 voxelCoords = image->getImageProperties().voxelCoords;
-
-    for ( util::ivector4::value_type y = 0; y < mappedSize[1]; y++ ) {
-        for ( util::ivector4::value_type x = 0; x < mappedSize[0]; x++ ) {
-            const util::ivector4 coords = v1 * x + v2 * y + voxelCoords;
-            static_cast<data::Chunk &>( sliceChunk ).voxel<TYPE>( x, y ) = chunk.voxel<TYPE>( coords[0], coords[1], coords[2] );
-        }
-    }
-}*/
-
-
 
 }
 }

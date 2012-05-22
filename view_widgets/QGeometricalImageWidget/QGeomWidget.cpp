@@ -167,8 +167,14 @@ void QGeomWidget::paintEvent ( QPaintEvent* /*event*/ )
 
 		m_Painter->resetTransform();
 
+		if( m_ViewerCore->getSettings()->getPropertyAs<bool>("latchSingleImage")) {
+			m_LatchOrientation = getWidgetEnsemble()->getImageVector().size() == 1;
+		} else {
+			m_LatchOrientation = false;
+		}
+		
 		//bounding box calculation
-		m_BoundingBox = _internal::getPhysicalBoundingBox( getWidgetEnsemble()->getImageVector(), m_PlaneOrientation, m_LatchOrientation );
+		m_BoundingBox = _internal::getPhysicalBoundingBox( getWidgetEnsemble()->getImageVector(), m_PlaneOrientation );
 		_internal::zoomBoundingBox( m_BoundingBox,
 									m_Translation,
 									m_ViewerCore->getCurrentImage()->getImageProperties().physicalCoords,
@@ -227,7 +233,11 @@ void QGeomWidget::paintImage( const ImageHolder::Pointer image )
 
 	if ( !image->getImageProperties().isRGB ) {
 		isis::data::MemChunk<InternalImageType> sliceChunk( mappedSizeAligned[0], mappedSizeAligned[1] );
-		MemoryHandler::fillSliceChunk<InternalImageType>( sliceChunk, image, m_PlaneOrientation );
+		if( m_LatchOrientation ) {
+			MemoryHandler::fillSliceChunk<InternalImageType>( sliceChunk, image, m_PlaneOrientation );
+		} else {
+			MemoryHandler::fillSliceChunkOriented<InternalImageType>( sliceChunk, image, m_PlaneOrientation );
+		}
 
 		QImage qImage( ( InternalImageType * ) sliceChunk.asValueArray<InternalImageType>().getRawAddress().get(),
 					   mappedSizeAligned[0], mappedSizeAligned[1], QImage::Format_Indexed8 );
@@ -236,7 +246,11 @@ void QGeomWidget::paintImage( const ImageHolder::Pointer image )
 		m_Painter->drawImage( 0, 0, qImage );
 	} else {
 		isis::data::MemChunk<InternalImageColorType> sliceChunk( mappedSizeAligned[0], mappedSizeAligned[1] );
-		MemoryHandler::fillSliceChunk<InternalImageColorType>( sliceChunk, image, m_PlaneOrientation );
+		if( m_LatchOrientation ) {
+			MemoryHandler::fillSliceChunk<InternalImageColorType>( sliceChunk, image, m_PlaneOrientation );
+		} else {
+			MemoryHandler::fillSliceChunkOriented<InternalImageColorType>( sliceChunk, image, m_PlaneOrientation );
+		}
 		QImage qImage( ( InternalImageType * ) sliceChunk.asValueArray<InternalImageColorType>().getRawAddress().get(),
 					   mappedSizeAligned[0], mappedSizeAligned[1], QImage::Format_RGB888 );
 		m_Painter->drawImage( 0, 0, qImage );
@@ -247,13 +261,7 @@ void QGeomWidget::paintCrossHair() const
 {
 	const ImageHolder::Pointer image = m_ViewerCore->getCurrentImage();
 
-	util::fvector4 mappedCoords;
-
-	if( !m_LatchOrientation ) {
-		mappedCoords = ( _internal::mapPhysicalCoords2Orientation( image->getImageProperties().physicalCoords, m_PlaneOrientation ) ) * _internal::rasteringFac;
-	} else {
-		mappedCoords = mapCoordsToOrientation( image->getImageProperties().voxelCoords, image->getImageProperties().latchedOrientation, m_PlaneOrientation, false, true ) * _internal::rasteringFac;
-	}
+	const util::fvector4 mappedCoords = ( _internal::mapPhysicalCoords2Orientation( image->getImageProperties().physicalCoords, m_PlaneOrientation ) ) * _internal::rasteringFac;
 
 	const int border = -600000;
 

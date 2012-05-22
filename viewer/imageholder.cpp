@@ -157,58 +157,12 @@ void ImageHolder::collectImageInfo()
 	getImageProperties().isRGB = ( data::ValueArray<util::color24>::staticID == getImageProperties().majorTypeID || data::ValueArray<util::color48>::staticID == getImageProperties().majorTypeID );
 	getImageProperties().majorTypeName = isis::util::getTypeMap( false, true ).at( getImageProperties().majorTypeID );
 	getImageProperties().majorTypeName = getImageProperties().majorTypeName.substr( 0, getImageProperties().majorTypeName.length() - 1 ).c_str();
-
-	switch( getImageProperties().majorTypeID ) {
-	case data::ValueArray<bool>::staticID:
-		m_TypedImage.reset( new data::Image( data::TypedImage<bool>( *m_Image ) ) );
-		break;
-	case data::ValueArray<uint8_t>::staticID:
-		m_TypedImage.reset( new data::Image( data::TypedImage<uint8_t>( *m_Image ) ) );
-		break;
-	case data::ValueArray<int8_t>::staticID:
-		m_TypedImage.reset( new data::Image( data::TypedImage<int8_t>( *m_Image ) ) );
-		break;
-	case data::ValueArray<uint16_t>::staticID:
-		m_TypedImage.reset( new data::Image( data::TypedImage<uint16_t>( *m_Image ) ) );
-		break;
-	case data::ValueArray<int16_t>::staticID:
-		m_TypedImage.reset( new data::Image( data::TypedImage<int16_t>( *m_Image ) ) );
-		break;
-	case data::ValueArray<uint32_t>::staticID:
-		m_TypedImage.reset( new data::Image( data::TypedImage<uint32_t>( *m_Image ) ) );
-		break;
-	case data::ValueArray<int32_t>::staticID:
-		m_TypedImage.reset( new data::Image( data::TypedImage<int32_t>( *m_Image ) ) );
-		break;
-	case data::ValueArray<uint64_t>::staticID:
-		m_TypedImage.reset( new data::Image( data::TypedImage<uint64_t>( *m_Image ) ) );
-		break;
-	case data::ValueArray<int64_t>::staticID:
-		m_TypedImage.reset( new data::Image( data::TypedImage<int64_t>( *m_Image ) ) );
-		break;
-	case data::ValueArray<float>::staticID:
-		m_TypedImage.reset( new data::Image( data::TypedImage<float>( *m_Image ) ) );
-		break;
-	case data::ValueArray<double>::staticID:
-		m_TypedImage.reset( new data::Image( data::TypedImage<double>( *m_Image ) ) );
-		break;
-	case data::ValueArray<util::color24>::staticID:
-		m_TypedImage.reset( new data::Image( data::TypedImage<util::color24>( *m_Image ) ) );
-		break;
-	case data::ValueArray<util::color48>::staticID:
-		m_TypedImage.reset( new data::Image( data::TypedImage<util::color48>( *m_Image ) ) );
-		break;
-	}
 }
 
 
-boost::shared_ptr< data::Image > ImageHolder::getISISImage ( bool typed ) const
+boost::shared_ptr< data::Image > ImageHolder::getISISImage() const
 {
-	if( typed ) {
-		return m_TypedImage;
-	} else {
-		return m_Image;
-	}
+	return m_Image;
 }
 
 
@@ -272,8 +226,6 @@ bool ImageHolder::setImage( const data::Image &image, const ImageType &_imageTyp
 	getImageProperties().colorMap = util::Singletons::get<color::Color, 10>().getColormapMap().at( getImageProperties().lut );
 
 	if( !getImageProperties().isRGB ) {
-
-		updateHistogram();
 		m_PropMap.setPropertyAs<double>( "scalingMinValue", getImageProperties().minMax.first->as<double>() );
 		m_PropMap.setPropertyAs<double>( "scalingMaxValue", getImageProperties().minMax.second->as<double>() );
 	}
@@ -356,14 +308,16 @@ void ImageHolder::updateOrientation()
 	getImageProperties().rowVec = getISISImage()->getPropertyAs<util::fvector4>( "rowVec" );
 	getImageProperties().columnVec = getISISImage()->getPropertyAs<util::fvector4>( "columnVec" );
 	getImageProperties().sliceVec = getISISImage()->getPropertyAs<util::fvector4>( "sliceVec" );
-	getImageProperties().voxelSize = getISISImage()->getPropertyAs<util::fvector4>( "voxelSize" );
+	m_ImageProperties.voxelSize = getISISImage()->getPropertyAs<util::fvector4>( "voxelSize" );
 
 	if( getISISImage()->hasProperty( "voxelGap" ) ) {
 		getImageProperties().voxelSize += getISISImage()->getPropertyAs<util::fvector4>( "voxelGap" );
 	}
+
+	m_ImageProperties.boundingBox = geometrical::getPhysicalBoundingBox( ImageHolder::Pointer( new ImageHolder( *this ) ) );
 }
 
-void ImageHolder::checkVoxelCoords( util::ivector4 &vc )
+void ImageHolder::correctVoxelCoords( util::ivector4 &vc )
 {
 	for( unsigned short i = 0; i < 4; i++ ) {
 		vc[i] = vc[i] < 0 ? 0 : vc[i];
@@ -371,6 +325,17 @@ void ImageHolder::checkVoxelCoords( util::ivector4 &vc )
 
 	}
 }
+
+bool ImageHolder::checkVoxelCoords ( const util::ivector4& vc )
+{
+	for( unsigned short i = 0; i < 4; i++ ) {
+		if( vc[i] < 0 || vc[i] >= static_cast<int>( getImageSize()[i] ) ) {
+			return false;
+		}
+	}
+	return true;
+}
+
 
 void ImageHolder::updateColorMap()
 {

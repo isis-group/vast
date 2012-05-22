@@ -62,7 +62,7 @@ void checkForCaCp( boost::shared_ptr<ImageHolder> image )
 					newIndexOrigin[0] * rowVec[2] * voxelSize[0] + newIndexOrigin[1] * columnVec[2] * voxelSize[1] + newIndexOrigin[2] * sliceVec[2] * voxelSize[2],
 					newIndexOrigin[3] );
 		image->getISISImage()->setPropertyAs<util::fvector4>( "indexOrigin", transformedOrigin );
-		image->getISISImage()->updateOrientationMatrices();
+		image->updateOrientation();
 		image->getImageProperties().physicalCoords = image->getISISImage()->getPhysicalCoordsFromIndex( image->getImageProperties().voxelCoords );
 	}
 }

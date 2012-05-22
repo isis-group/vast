@@ -111,7 +111,7 @@ public:
 	util::PropertyMap &getPropMap() { return m_PropMap; }
 	const util::PropertyMap &getPropMap() const { return m_PropMap; }
 	const util::FixedVector<size_t, 4> &getImageSize() const { return m_ImageSize; }
-	boost::shared_ptr< data::Image >getISISImage( bool typed = false ) const;
+	boost::shared_ptr< data::Image >getISISImage() const;
 
 	void addChangedAttribute( const std::string &attribute );
 	bool removeChangedAttribute( const std::string &attribute );
@@ -122,7 +122,8 @@ public:
 	boost::shared_ptr<const void>
 	getRawAdress( size_t timestep = 0 ) const;
 
-	void checkVoxelCoords( util::ivector4 &voxelCoords );
+	void correctVoxelCoords( util::ivector4 &voxelCoords );
+	bool checkVoxelCoords( const util::ivector4 &voxelCoords );
 
 	void synchronize( );
 	double getInternalExtent()  const;
@@ -168,7 +169,6 @@ private:
 	bool m_AmbiguousOrientation;
 
 	boost::shared_ptr<data::Image> m_Image;
-	boost::shared_ptr<data::Image> m_TypedImage;
 	std::pair<double, double> m_OptimalScalingPair;
 
 	std::vector< data::Chunk > m_ChunkVector;

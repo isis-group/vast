@@ -245,9 +245,10 @@ void QViewerCore::settingsChanged()
 				image->updateColorMap();
 			}
 		}
-
 	}
-
+	BOOST_FOREACH( ImageHolder::Vector::const_reference image, getImageVector() ) {
+		image->updateOrientation();
+	}
 	updateScene();
 	m_UI->refreshUI();
 }

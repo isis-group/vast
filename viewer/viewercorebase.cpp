@@ -150,6 +150,10 @@ ImageHolder::Pointer ViewerCoreBase::addImage( const isis::data::Image &image, c
 
 	retImage->getImageProperties().boundingBox = geometrical::getPhysicalBoundingBox( retImage );
 
+	if( getSettings()->getPropertyAs<bool>("checkCACP") ) {
+		checkForCaCp( retImage );
+	}
+	
 	//connect signals to image
 	emitGlobalPhysicalCoordsChanged.connect( boost::bind( &ImageHolder::phyisicalCoordsChanged, retImage, _1 ) );
 	emitGlobalVoxelCoordsChanged.connect( boost::bind( &ImageHolder::voxelCoordsChanged, retImage, _1 ) );

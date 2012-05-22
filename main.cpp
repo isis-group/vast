@@ -136,6 +136,9 @@ int main( int argc, char *argv[] )
 
 	if( widget_name.empty() ) {
 		widget_name = core->getSettings()->getPropertyAs<std::string>( "defaultViewWidgetIdentifier" );
+		if( widget_name.empty() ) {
+			widget_name = fallbackWidgetIdentifier;
+		}
 	}
 
 	util::slist fileList = app.parameters["in"];

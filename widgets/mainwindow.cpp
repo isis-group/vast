@@ -296,7 +296,6 @@ void MainWindow::ignoreOrientation( bool ignore )
 	BOOST_FOREACH( ImageHolder::Vector::const_reference image, m_ViewerCore->getImageVector() ) {
 		if( ignore ) {
 			setOrientationToIdentity( *image->getISISImage() );
-			checkForCaCp( image );
 			image->updateOrientation();
 		} else {
 			image->getISISImage()->setPropertyAs<util::fvector4>( "rowVec", image->getPropMap().getPropertyAs<util::fvector4>( "originalRowVec" ) );
@@ -304,7 +303,9 @@ void MainWindow::ignoreOrientation( bool ignore )
 			image->getISISImage()->setPropertyAs<util::fvector4>( "sliceVec", image->getPropMap().getPropertyAs<util::fvector4>( "originalSliceVec" ) );
 			image->getISISImage()->setPropertyAs<util::fvector4>( "indexOrigin", image->getPropMap().getPropertyAs<util::fvector4>( "originalIndexOrigin" ) );
 			image->updateOrientation();
-			checkForCaCp( image );
+			if( m_ViewerCore->getSettings()->getPropertyAs<bool>("checkCACP") ) {
+				checkForCaCp( image );
+			}
 		}
 
 		image->getImageProperties().physicalCoords = image->getISISImage()->getPhysicalCoordsFromIndex( image->getImageProperties().voxelCoords );

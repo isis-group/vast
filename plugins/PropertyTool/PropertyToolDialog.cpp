@@ -49,6 +49,7 @@ PropertyToolDialog::PropertyToolDialog( QWidget *parent, QViewerCore *core )
 	connect( m_Interface.propertyTree, SIGNAL( itemClicked( QTreeWidgetItem *, int ) ), SLOT( onPropertyTreeClicked() ) );
 	connect( m_Interface.editButton, SIGNAL( clicked( bool ) ), this, SLOT( editRequested() ) );
 	connect( m_Interface.propertyTree, SIGNAL( doubleClicked( QModelIndex ) ), this, SLOT( editRequested() ) );
+	m_fillChunkListThread = new _internal::FillChunkListThread( this, m_Interface.selection );
 }
 
 void PropertyToolDialog::showEvent( QShowEvent * )
@@ -123,15 +124,14 @@ void PropertyToolDialog::updateProperties()
 		m_Interface.L_numberOfChunks->setVisible( chunks.size() > 1 );
 		m_Interface.numberOfChunks->setVisible( chunks.size() > 1 );
 		m_Interface.numberOfChunks->setText( QString::number( chunks.size() ) );
-		unsigned short chIndex = 0;
 
-		for ( unsigned short i = 0; i < chunks.size() - 1; i++ ) {
-			std::stringstream entry;
-			entry << "Chunk " << chIndex++;
-			m_Interface.selection->addItem( entry.str().c_str() );
-
+		//filling the list with all chunks can take a while so we create a thread for that
+		if( m_fillChunkListThread->isRunning() ) {
+			m_fillChunkListThread->terminate();
 		}
-
+		m_fillChunkListThread->setChunks( chunks );
+		m_fillChunkListThread->start();
+		
 		buildUpTree( static_cast<util::PropertyMap &>( *isisImage ) );
 	}
 

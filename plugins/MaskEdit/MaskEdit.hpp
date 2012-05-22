@@ -101,7 +101,7 @@ private:
 
 					if( x *x + y *y + z *z <= radSquare ) {
 						util::ivector4 finalVoxel( i, j, k );
-						image->checkVoxelCoords( finalVoxel );
+						image->correctVoxelCoords( finalVoxel );
 
 						if ( !cut ) {
 							image->setTypedVoxel<TYPE>( finalVoxel[0], finalVoxel[1], finalVoxel[2], 0, image->getImageProperties().minMax.second->as<TYPE>() );
