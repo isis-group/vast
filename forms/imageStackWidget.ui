@@ -173,6 +173,11 @@
     <string>Close all images</string>
    </property>
   </action>
+  <action name="actionSet_0_to_black">
+   <property name="text">
+    <string>Set 0 to black</string>
+   </property>
+  </action>
  </widget>
  <resources>
   <include location="../resources/viewer.qrc"/>

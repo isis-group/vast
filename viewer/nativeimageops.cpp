@@ -26,8 +26,9 @@
  *      Author: tuerke
  ******************************************************************/
 #include "nativeimageops.hpp"
+#include <mainwindow.hpp>
 
-boost::shared_ptr< isis::viewer::QProgressFeedback > isis::viewer::operation::NativeImageOps::m_ProgressFeedback;
+isis::viewer::QViewerCore* isis::viewer::operation::NativeImageOps::m_ViewerCore;
 
 isis::util::ivector4 isis::viewer::operation::NativeImageOps::getGlobalMin( const boost::shared_ptr< isis::viewer::ImageHolder > image, const util::ivector4 &startPos, const unsigned short &radius )
 {
@@ -114,7 +115,52 @@ isis::util::ivector4 isis::viewer::operation::NativeImageOps::getGlobalMax( cons
 		break;
 	}
 }
-void isis::viewer::operation::NativeImageOps::setProgressFeedBack( boost::shared_ptr< isis::viewer::QProgressFeedback > progressFeedback )
+
+void isis::viewer::operation::NativeImageOps::setTrueZero ( boost::shared_ptr< isis::viewer::ImageHolder > image )
 {
-	m_ProgressFeedback = progressFeedback;
+	if( !image->getImageProperties().isRGB && !image->getImageProperties().zeroIsReserved ) {
+		m_ViewerCore->getUICore()->getMainWindow()->toggleLoadingIcon(true, "Setting 0 to black...");
+		switch ( image->getImageProperties().majorTypeID ) {
+		case data::ValueArray<bool>::staticID:
+			_setTrueZero<bool>( image );
+			break;
+		case data::ValueArray<int8_t>::staticID:
+			_setTrueZero<int8_t>( image );
+			break;
+		case data::ValueArray<uint8_t>::staticID:
+			_setTrueZero<uint8_t>( image );
+			break;
+		case data::ValueArray<int16_t>::staticID:
+			_setTrueZero<int16_t>( image );
+			break;
+		case data::ValueArray<uint16_t>::staticID:
+			_setTrueZero<uint16_t>( image );
+			break;
+		case data::ValueArray<int32_t>::staticID:
+			_setTrueZero<int32_t>( image );
+			break;
+		case data::ValueArray<uint32_t>::staticID:
+			_setTrueZero<uint32_t>( image );
+			break;
+		case data::ValueArray<int64_t>::staticID:
+			_setTrueZero<int64_t>( image );
+			break;
+		case data::ValueArray<uint64_t>::staticID:
+			_setTrueZero<uint64_t>( image );
+			break;
+		case data::ValueArray<float>::staticID:
+			_setTrueZero<float>( image );
+			break;
+		case data::ValueArray<double>::staticID:
+			_setTrueZero<double>( image );
+			break;
+		}
+	}
+	m_ViewerCore->getUICore()->getMainWindow()->toggleLoadingIcon(false);
 }
+
+void isis::viewer::operation::NativeImageOps::setViewerCore ( isis::viewer::QViewerCore* core )
+{
+	m_ViewerCore = core;
+}
+

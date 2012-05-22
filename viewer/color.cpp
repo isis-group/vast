@@ -268,7 +268,7 @@ void Color::adaptColorMapToImage( ImageHolder *image, bool split )
 		}
 	}
 
-	if( image->zeroIsReserved() ) {
+	if( image->getImageProperties().zeroIsReserved ) {
 		ColormapType zrLUT;
 		AlphamapType tmpAM;
 		zrLUT.resize( 256 );

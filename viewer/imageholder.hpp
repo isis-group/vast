@@ -33,6 +33,7 @@
 #include "geometrical.hpp"
 #include <boost/foreach.hpp>
 #include <vector>
+#include <qapplication.h>
 #include <CoreUtils/propmap.hpp>
 #include <DataStorage/image.hpp>
 #include <CoreUtils/matrix.hpp>
@@ -67,6 +68,7 @@ private:
 		util::fvector4 voxelSize;
 		bool isVisible;
 		bool isRGB;
+		bool zeroIsReserved;
 		float opacity;
 		util::ivector4 alignedSize32;
 		double offset;
@@ -134,12 +136,12 @@ public:
 
 	void updateColorMap();
 
+	void reserveTrueZero();
+
 	bool hasAmbiguousOrientation() const { return m_AmbiguousOrientation; }
 
 	void updateOrientation();
 	void updateHistogram();
-
-	bool zeroIsReserved() const { return m_ZeroIsReserved; }
 
 	void setVoxel( const size_t &first, const size_t &second, const size_t &third, const size_t &fourth, const double &value, bool sync = true );
 
@@ -166,9 +168,6 @@ private:
 
 	util::FixedVector<size_t, 4> m_ImageSize;
 	util::PropertyMap m_PropMap;
-
-	bool m_ZeroIsReserved;
-	InternalImageType m_ReservedValue;
 
 	bool m_AmbiguousOrientation;
 
@@ -223,34 +222,10 @@ private:
 		}
 	}
 
-	template<typename TYPE>
-	void _setTrueZero( const data::Image &image ) {
-		LOG( Dev, info ) << "Setting true zero for " << getImageProperties().fileName;
-		// first make shure the images datatype is consistent
-		data::TypedImage<TYPE> tImage ( image );
-		//now set all voxels to the m_ReservedValue that are 0 in the origin image
 
-		for( size_t t = 0; t < getImageSize()[3]; t++ ) {
-			for( size_t z = 0; z < getImageSize()[2]; z++ ) {
-				for( size_t y = 0; y < getImageSize()[1]; y++ ) {
-#ifdef _OPENMP
-#pragma omp parallel for
-#endif
-
-					for( size_t x = 0; x < getImageSize()[0]; x++ ) {
-						if( static_cast<data::Image &>( tImage ).voxel<TYPE>( x, y, z, t ) == static_cast<TYPE>( 0 ) ) {
-							m_ChunkVector[t].voxel<InternalImageType>( x, y, z ) = m_ReservedValue;
-						}
-					}
-				}
-			}
-		}
-
-	}
 };
 
 }
 } //end namespace
-
 
 #endif

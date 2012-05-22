@@ -36,9 +36,7 @@ namespace viewer
 {
 
 ImageHolder::ImageHolder()
-	: m_ZeroIsReserved( true ),
-	  m_ReservedValue( 0 ),
-	  m_AmbiguousOrientation( false )
+	:  m_AmbiguousOrientation( false )
 {}
 
 boost::shared_ptr< const void > ImageHolder::getRawAdress ( size_t timestep ) const
@@ -181,7 +179,7 @@ bool ImageHolder::setImage( const data::Image &image, const ImageType &_imageTyp
 	getImageProperties().filePath = filename;
 	boost::filesystem::path p( filename );
 	getImageProperties().fileName = p.filename();
-
+	getImageProperties().zeroIsReserved = false;
 	// get some image information
 	//add some more properties
 	getImageProperties().imageType = _imageType;
@@ -349,7 +347,7 @@ void ImageHolder::updateColorMap()
 
 double ImageHolder::getInternalExtent() const
 {
-	if( m_ZeroIsReserved ) {
+	if( getImageProperties().zeroIsReserved ) {
 		return std::numeric_limits<InternalImageType>::max() - std::numeric_limits<InternalImageType>::min();
 	} else {
 		return std::numeric_limits<InternalImageType>::max() - std::numeric_limits<InternalImageType>::min() + 1;
@@ -410,54 +408,24 @@ void ImageHolder::setVoxel ( const size_t &first, const size_t &second, const si
 		}
 	}
 }
+void ImageHolder::reserveTrueZero()
+{
+
+}
+
 
 void ImageHolder::synchronize ()
 {
 	collectImageInfo();
-	m_ZeroIsReserved = !getImageProperties().isRGB && getImageProperties().imageType == statistical_image;
+	getImageProperties().zeroIsReserved = !getImageProperties().isRGB && getImageProperties().imageType == statistical_image;
 
 	if( getImageProperties().isRGB ) {
-		copyImageToVector<InternalImageColorType>( *getISISImage(), m_ZeroIsReserved );
+		copyImageToVector<InternalImageColorType>( *getISISImage(), getImageProperties().zeroIsReserved );
 	} else {
-		copyImageToVector<InternalImageType>( *getISISImage(), m_ZeroIsReserved );
+		copyImageToVector<InternalImageType>( *getISISImage(), getImageProperties().zeroIsReserved );
 	}
-
-	if( m_ZeroIsReserved ) {
-		switch ( getImageProperties().majorTypeID ) {
-		case data::ValueArray<bool>::staticID:
-			_setTrueZero<bool>( *getISISImage() );
-			break;
-		case data::ValueArray<int8_t>::staticID:
-			_setTrueZero<int8_t>( *getISISImage() );
-			break;
-		case data::ValueArray<uint8_t>::staticID:
-			_setTrueZero<uint8_t>( *getISISImage() );
-			break;
-		case data::ValueArray<int16_t>::staticID:
-			_setTrueZero<int16_t>( *getISISImage() );
-			break;
-		case data::ValueArray<uint16_t>::staticID:
-			_setTrueZero<uint16_t>( *getISISImage() );
-			break;
-		case data::ValueArray<int32_t>::staticID:
-			_setTrueZero<int32_t>( *getISISImage() );
-			break;
-		case data::ValueArray<uint32_t>::staticID:
-			_setTrueZero<uint32_t>( *getISISImage() );
-			break;
-		case data::ValueArray<int64_t>::staticID:
-			_setTrueZero<int64_t>( *getISISImage() );
-			break;
-		case data::ValueArray<uint64_t>::staticID:
-			_setTrueZero<uint64_t>( *getISISImage() );
-			break;
-		case data::ValueArray<float>::staticID:
-			_setTrueZero<float>( *getISISImage() );
-			break;
-		case data::ValueArray<double>::staticID:
-			_setTrueZero<double>( *getISISImage() );
-			break;
-		}
+	if( getImageProperties().zeroIsReserved ) {
+		reserveTrueZero( );
 	}
 }
 

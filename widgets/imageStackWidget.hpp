@@ -16,7 +16,7 @@ class ImageStack : public QListWidget
 {
 	Q_OBJECT
 public:
-	ImageStack( QWidget *parent, ImageStackWidget *widget );
+	ImageStack( QWidget *parent, ImageStackWidget *widget, QViewerCore *core );
 public Q_SLOTS:
 	void contextMenuEvent( QContextMenuEvent * );
 	void mousePressEvent( QMouseEvent * );
@@ -24,6 +24,7 @@ public Q_SLOTS:
 private:
 	ImageStackWidget *m_Widget;
 	std::list<QAction *> m_WidgetActions;
+	QViewerCore *m_ViewerCore;
 
 };
 
@@ -52,6 +53,7 @@ public Q_SLOTS:
 	void moveDown();
 	void viewAllImagesClicked();
 	void openImageInWidget( QString );
+	void setZeroToBlack();
 
 private:
 	QViewerCore *m_ViewerCore;

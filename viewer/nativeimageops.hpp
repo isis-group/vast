@@ -33,6 +33,7 @@
 #include <boost/concept_check.hpp>
 #include <numeric>
 #include "qprogressfeedback.hpp"
+#include "qviewercore.hpp"
 #include "imageholder.hpp"
 #include <DataStorage/image.hpp>
 
@@ -45,18 +46,19 @@ namespace operation
 
 class NativeImageOps
 {
-	static boost::shared_ptr< QProgressFeedback > m_ProgressFeedback;
+	static isis::viewer::QViewerCore *m_ViewerCore;
 public:
 
-	static util::ivector4 getGlobalMin( const boost::shared_ptr<ImageHolder> image, const util::ivector4 &startPos, const unsigned short &radius );
-	static util::ivector4 getGlobalMax( const boost::shared_ptr<ImageHolder> image, const util::ivector4 &startPos, const unsigned short &radius );
+	static util::ivector4 getGlobalMin( const ImageHolder::Pointer image, const util::ivector4 &startPos, const unsigned short &radius );
+	static util::ivector4 getGlobalMax( const ImageHolder::Pointer image, const util::ivector4 &startPos, const unsigned short &radius );
+	static void setTrueZero( ImageHolder::Pointer image );
 
-	static void setProgressFeedBack( boost::shared_ptr< QProgressFeedback > progressFeedback );
+	static void setViewerCore( QViewerCore *core );
 
 private:
 
 	template<typename TYPE>
-	static util::ivector4 internGetMin( const boost::shared_ptr<ImageHolder> image, const util::ivector4 &startPos, const unsigned short &radius ) {
+	static util::ivector4 internGetMin( const ImageHolder::Pointer image, const util::ivector4 &startPos, const unsigned short &radius ) {
 		const util::ivector4 size = image->getImageSize();
 		util::ivector4 start;
 		util::ivector4 end;
@@ -96,7 +98,7 @@ private:
 	}
 
 	template<typename TYPE>
-	static util::ivector4 internGetMax( const boost::shared_ptr<ImageHolder> image, const util::ivector4 &startPos, const unsigned short &radius ) {
+	static util::ivector4 internGetMax( const ImageHolder::Pointer image, const util::ivector4 &startPos, const unsigned short &radius ) {
 		const util::ivector4 size = image->getImageSize();
 		util::ivector4 start;
 		util::ivector4 end;
@@ -133,6 +135,33 @@ private:
 		}
 
 		return currentPos;
+	}
+
+
+	template<typename TYPE>
+	static void _setTrueZero( ImageHolder::Pointer image ) {
+		LOG( Dev, info ) << "Setting true zero for " << image->getImageProperties().fileName;
+		image->getImageProperties().zeroIsReserved = true;
+		// first make shure the images datatype is consistent
+		data::TypedImage<TYPE> tImage ( *image->getISISImage() );
+		//now set all voxels to the m_ReservedValue that are 0 in the origin image
+		m_ViewerCore->getProgressFeedback()->show(image->getImageSize()[2] * image->getImageSize()[3]);
+		for( size_t t = 0; t < image->getImageSize()[3]; t++ ) {
+			for( size_t z = 0; z < image->getImageSize()[2]; z++ ) {
+				m_ViewerCore->getProgressFeedback()->progress();
+				for( size_t y = 0; y < image->getImageSize()[1]; y++ ) {
+#ifdef _OPENMP
+#pragma omp parallel for
+#endif
+					for( size_t x = 0; x < image->getImageSize()[0]; x++ ) {
+						if( static_cast<data::Image &>( tImage ).voxel<TYPE>( x, y, z, t ) == static_cast<TYPE>( 0 ) ) {
+							image->getVolumeVector()[t].voxel<InternalImageType>( x, y, z ) = 0;
+						}
+					}
+				}
+			}
+		}
+
 	}
 };
 

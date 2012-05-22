@@ -49,7 +49,7 @@ QViewerCore::QViewerCore ()
 
 	setParentWidget ( m_UI->getMainWindow() );
 	data::IOFactory::setProgressFeedback ( m_ProgressFeedback );
-	operation::NativeImageOps::setProgressFeedBack ( m_ProgressFeedback );
+	operation::NativeImageOps::setViewerCore( this );
 	m_Settings->load();
 	getUICore()->refreshUI();
 

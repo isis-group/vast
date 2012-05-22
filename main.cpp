@@ -110,8 +110,6 @@ int main( int argc, char *argv[] )
 	app.parameters["widget"] = std::string();
 	app.parameters["widget"].needed() = false;
 	app.parameters["widget"].setDescription( "Use specific widget" );
-	boost::shared_ptr< util::ProgressFeedback > feedback = boost::shared_ptr<util::ProgressFeedback>( new util::ConsoleFeedback );
-	data::IOFactory::setProgressFeedback( feedback );
 	app.init( argc, argv, false );
 	QViewerCore *core = new QViewerCore;
 
