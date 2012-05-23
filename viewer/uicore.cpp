@@ -352,9 +352,9 @@ QImage UICore::getScreenshot()
 			if( m_ViewerCore->getCurrentImage()->getImageProperties().minMax.first->as<double>() < 0 ) {
 				const double lT = roundNumber<double>( m_ViewerCore->getCurrentImage()->getImageProperties().lowerThreshold, 4 );
 				const double min = roundNumber<double>( m_ViewerCore->getCurrentImage()->getImageProperties().minMax.first->as<double>(), 4 );
-				painter.drawPixmap( 100, widgetHeight * eIndex + 50, util::Singletons::get<color::Color, 10>().getIcon( m_ViewerCore->getCurrentImage()->getImageProperties().lut, 150, 15, color::Color::lower_half ).pixmap( 150, 15 ) );
+				painter.drawPixmap( 100, widgetHeight * eIndex + 50, util::Singletons::get<color::Color, 10>().getIcon( m_ViewerCore->getCurrentImage()->getImageProperties().lut, 150, 15, color::Color::lower_half, true ).pixmap( 150, 15 ) );
 				painter.drawText( 20 + ( lT < 0 ? offset : 0 ), widgetHeight * eIndex + 65, QString::number( lT  ) );
-				painter.drawText( 28.0 + ( min < 0 ? offset : 0 ), widgetHeight * eIndex + 65, QString::number( roundNumber<double>( m_ViewerCore->getCurrentImage()->getImageProperties().minMax.first->as<double>(), 4 )  ) );
+				painter.drawText( 280 + ( min < 0 ? offset : 0 ), widgetHeight * eIndex + 65, QString::number( roundNumber<double>( m_ViewerCore->getCurrentImage()->getImageProperties().minMax.first->as<double>(), 4 )  ) );
 			}
 
 			if ( m_ViewerCore->getCurrentImage()->getImageProperties().minMax.second->as<double>() > 0  ) {
@@ -414,6 +414,25 @@ void UICore::refreshEnsembles()
 	}
 }
 
+void UICore::toggleLoadingIcon ( bool start, const QString& text )
+{
+	if( text.length() ) {
+		m_ViewerCore->receiveMessage( text.toStdString() );
+	}
+
+	getMainWindow()->m_StatusMovieLabel->setVisible( start );
+	getMainWindow()->m_Interface.statusbar->setVisible( start );
+
+	if( start ) {
+		getMainWindow()->m_StatusMovie->start();
+		getMainWindow()->m_StatusTextLabel->setText( text );
+	} else {
+		getMainWindow()->m_StatusMovie->stop();
+		m_ViewerCore->getProgressFeedback()->close();
+	}
+
+	QApplication::processEvents();
+}
 
 }
 }

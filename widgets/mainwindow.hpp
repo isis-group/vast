@@ -31,16 +31,11 @@
 #include <QMainWindow>
 #include "ui_mainwindow.h"
 #include "qviewercore.hpp"
-#include "preferenceDialog.hpp"
-#include "nativeimageops.hpp"
+
+
 #include <CoreUtils/progressfeedback.hpp>
-#include "scalingWidget.hpp"
-#include "loggingDialog.hpp"
-#include "filedialog.hpp"
-#include "startwidget.hpp"
-#include "keycommandsdialog.hpp"
-#include "aboutDialog.hpp"
-#include "helpdialog.hpp"
+
+
 
 namespace isis
 {
@@ -55,13 +50,19 @@ class FileDialog;
 class StartWidget;
 class KeyCommandsDialog;
 class AboutDialog;
+class HelpDialog;
 
+}
+
+namespace operation {
+class NativeImageOps;
 }
 
 class MainWindow : public QMainWindow
 {
 	Q_OBJECT
 public:
+	friend class UICore;
 	MainWindow( QViewerCore *core );
 
 	virtual ~MainWindow() {};
@@ -107,7 +108,7 @@ public Q_SLOTS:
 	void toggleCoronalView( bool );
 	void updateRecentOpenList();
 	void openRecentPath( QString );
-	void toggleLoadingIcon( bool start, const QString &text = QString() );
+
 
 private:
 
@@ -133,9 +134,15 @@ private:
 
 }
 }
-
-
-
+#include "preferenceDialog.hpp"
+#include "scalingWidget.hpp"
+#include "nativeimageops.hpp"
+#include "loggingDialog.hpp"
+#include "filedialog.hpp"
+#include "startwidget.hpp"
+#include "keycommandsdialog.hpp"
+#include "aboutDialog.hpp"
+#include "helpdialog.hpp"
 
 
 #endif

@@ -159,24 +159,7 @@ MainWindow::MainWindow( QViewerCore *core ) :
 
 }
 
-void MainWindow::toggleLoadingIcon ( bool start, const QString &text )
-{
-	if( text.length() ) {
-		m_ViewerCore->receiveMessage( text.toStdString() );
-	}
 
-	m_StatusMovieLabel->setVisible( start );
-	m_Interface.statusbar->setVisible( start );
-
-	if( start ) {
-		m_StatusMovie->start();
-		m_StatusTextLabel->setText( text );
-	} else {
-		m_StatusMovie->stop();
-	}
-
-	QApplication::processEvents();
-}
 
 void MainWindow::createScreenshot()
 {
@@ -187,12 +170,11 @@ void MainWindow::createScreenshot()
 						   tr( "Images (*.png *.xpm *.jpg)" ) );
 
 		if( fileName.size() ) {
-			toggleLoadingIcon( true, QString( "Creating and saving screenshot to " ) + fileName );
+			m_ViewerCore->getUICore()->toggleLoadingIcon( true, QString( "Creating and saving screenshot to " ) + fileName );
 			m_ViewerCore->getUICore()->getScreenshot().save( fileName, 0, m_ViewerCore->getSettings()->getPropertyAs<uint16_t>( "screenshotQuality" ) );
 			m_ViewerCore->setCurrentPath( fileName.toStdString() );
 		}
-
-		toggleLoadingIcon( false );
+		m_ViewerCore->getUICore()->toggleLoadingIcon( false );
 	}
 
 
@@ -230,14 +212,12 @@ void MainWindow::loadSettings()
 
 void MainWindow::saveSettings()
 {
-	toggleLoadingIcon( true );
 	m_ViewerCore->getSettings()->getQSettings()->beginGroup( "MainWindow" );
 	m_ViewerCore->getSettings()->getQSettings()->setValue( "size", size() );
 	m_ViewerCore->getSettings()->getQSettings()->setValue( "maximized", isMaximized() );
 	m_ViewerCore->getSettings()->getQSettings()->setValue( "pos", pos() );
 	m_ViewerCore->getSettings()->getQSettings()->endGroup();
 	m_ViewerCore->getSettings()->getQSettings()->sync();
-	toggleLoadingIcon( false );
 }
 
 
@@ -365,9 +345,9 @@ void MainWindow::saveImage()
 				return;
 				break;
 			case QMessageBox::Yes:
-				toggleLoadingIcon( true, QString( "Saving image to " ) + m_ViewerCore->getCurrentImage()->getImageProperties().fileName.c_str() );
+				m_ViewerCore->getUICore()->toggleLoadingIcon( true, QString( "Saving image to " ) + m_ViewerCore->getCurrentImage()->getImageProperties().fileName.c_str() );
 				isis::data::IOFactory::write( *m_ViewerCore->getCurrentImage()->getISISImage(), m_ViewerCore->getCurrentImage()->getImageProperties().filePath, "", "" );
-				toggleLoadingIcon( false );
+				m_ViewerCore->getUICore()->toggleLoadingIcon( false );
 				break;
 			}
 		}
@@ -417,10 +397,10 @@ void MainWindow::saveAllImages()
 				break;
 			case QMessageBox::Yes:
 				BOOST_FOREACH( ImageHolder::Vector::const_reference image, m_ViewerCore->getImageVector() ) {
-					toggleLoadingIcon( true, QString( "Saving image to " ) + image->getImageProperties().fileName.c_str() );
+					m_ViewerCore->getUICore()->toggleLoadingIcon( true, QString( "Saving image to " ) + image->getImageProperties().fileName.c_str() );
 					isis::data::IOFactory::write( *image->getISISImage(), image->getImageProperties().fileName, "", "" );
 				}
-				toggleLoadingIcon( false );
+				m_ViewerCore->getUICore()->toggleLoadingIcon( false );
 				break;
 			}
 
@@ -445,10 +425,10 @@ void MainWindow::saveImageAs()
 						   tr( fileFormats.str().c_str() ) );
 
 		if( filename.size() ) {
-			toggleLoadingIcon( true, QString( "Saving image to " ) + filename );
+			m_ViewerCore->getUICore()->toggleLoadingIcon( true, QString( "Saving image to " ) + filename );
 			isis::data::IOFactory::write( *m_ViewerCore->getCurrentImage()->getISISImage(), filename.toStdString(), "", "" );
 			m_ViewerCore->setCurrentPath( filename.toStdString() );
-			toggleLoadingIcon( false );
+			m_ViewerCore->getUICore()->toggleLoadingIcon( false );
 		}
 	}
 
@@ -586,18 +566,10 @@ void MainWindow::findGlobalMin()
 {
 	if( m_ViewerCore->hasImage() ) {
 		const int radius = m_RadiusSpin->value();
-
-		if( m_ViewerCore->getCurrentImage()->getISISImage()->getVolume() >= 1e6 && radius == 0 ) {
-			toggleLoadingIcon( true, QString( "Searching for global min of " ) + m_ViewerCore->getCurrentImage()->getImageProperties().fileName.c_str() );
-		}
-
 		const util::ivector4 minVoxel = operation::NativeImageOps::getGlobalMin( m_ViewerCore->getCurrentImage(),
 										m_ViewerCore->getCurrentImage()->getImageProperties().voxelCoords,
 										radius );
-
 		m_ViewerCore->physicalCoordsChanged( m_ViewerCore->getCurrentImage()->getISISImage()->getPhysicalCoordsFromIndex( minVoxel ) );
-
-		toggleLoadingIcon( false );
 	}
 }
 
@@ -606,17 +578,12 @@ void MainWindow::findGlobalMax()
 	if( m_ViewerCore->hasImage() ) {
 		const int radius = m_RadiusSpin->value();
 
-		if( m_ViewerCore->getCurrentImage()->getISISImage()->getVolume() >= 1e6 && radius == 0  ) {
-			toggleLoadingIcon( true, QString( "Searching for global max of " ) + m_ViewerCore->getCurrentImage()->getImageProperties().fileName.c_str() );
-		}
 
 		const util::ivector4 maxVoxel = operation::NativeImageOps::getGlobalMax( m_ViewerCore->getCurrentImage(),
 										m_ViewerCore->getCurrentImage()->getImageProperties().voxelCoords,
 										radius );
 
 		m_ViewerCore->physicalCoordsChanged( m_ViewerCore->getCurrentImage()->getISISImage()->getPhysicalCoordsFromIndex( maxVoxel ) );
-
-		toggleLoadingIcon( false );
 	}
 }
 

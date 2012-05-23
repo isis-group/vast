@@ -62,9 +62,9 @@ void VoxelOperationDialog::calculatePressed()
 			m_Interface.calcButton->setText( "Calculating..." );
 			std::stringstream ss;
 			ss << "Calculating " << op << "...";
-			m_ViewerCore->getUICore()->getMainWindow()->toggleLoadingIcon( true, ss.str().c_str() );
+			m_ViewerCore->getUICore()->toggleLoadingIcon( true, ss.str().c_str() );
 			image->getISISImage()->foreachVoxel<double>( vop );
-			m_ViewerCore->getUICore()->getMainWindow()->toggleLoadingIcon( false );
+			m_ViewerCore->getUICore()->toggleLoadingIcon( false );
 			util::slist voxelOpHistory;
 
 			if( image->getPropMap().hasProperty( "VoxelOperation/opHistory" ) ) {

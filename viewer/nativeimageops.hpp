@@ -35,6 +35,7 @@
 #include "qprogressfeedback.hpp"
 #include "qviewercore.hpp"
 #include "imageholder.hpp"
+#include "uicore.hpp"
 #include <DataStorage/image.hpp>
 
 namespace isis
@@ -78,10 +79,9 @@ private:
 		TYPE currentValue;
 		data::TypedImage<TYPE> typedImage = *image->getISISImage();
 		TYPE currentMin = std::numeric_limits<TYPE>::max();
-
-
-		// #pragma omp parallel for
+		m_ViewerCore->getProgressFeedback()->show( (end[2] - start[2]) );
 		for( int32_t z = start[2] + 1; z < end[2]; z++ ) {
+			m_ViewerCore->getProgressFeedback()->progress();
 			for( int32_t y = start[1] + 1; y < end[1]; y++ ) {
 				for( int32_t x = start[0] + 1; x < end[0]; x++ ) {
 					currentValue = static_cast<data::Image &>( typedImage ).voxel<TYPE>( x, y, z, timestep );
@@ -93,7 +93,7 @@ private:
 				}
 			}
 		}
-
+		m_ViewerCore->getUICore()->toggleLoadingIcon(false);
 		return currentPos;
 	}
 
@@ -117,11 +117,11 @@ private:
 		util::ivector4 currentPos;
 		TYPE currentValue;
 		data::TypedImage<TYPE> typedImage = *image->getISISImage();
-		TYPE currentMax = std::numeric_limits<TYPE>::min();
+		TYPE currentMax = -std::numeric_limits<TYPE>::max();
 
-
-		// #pragma omp parallel for
+		m_ViewerCore->getProgressFeedback()->show( (end[2] - start[2] ));
 		for( int32_t z = start[2] + 1; z < end[2]; z++ ) {
+				m_ViewerCore->getProgressFeedback()->progress();
 			for( int32_t y = start[1] + 1; y < end[1]; y++ ) {
 				for( int32_t x = start[0] + 1; x < end[0]; x++ ) {
 					currentValue = static_cast<data::Image &>( typedImage ).voxel<TYPE>( x, y, z, timestep );
@@ -133,7 +133,7 @@ private:
 				}
 			}
 		}
-
+		m_ViewerCore->getUICore()->toggleLoadingIcon(false);
 		return currentPos;
 	}
 

@@ -28,6 +28,7 @@
 #include "viewercorebase.hpp"
 #include "common.hpp"
 #include "geometrical.hpp"
+#include "nativeimageops.hpp"
 
 #define STR(s) _xstr_(s)
 #define _xstr_(s) std::string(#s)
@@ -153,6 +154,14 @@ ImageHolder::Pointer ViewerCoreBase::addImage( const isis::data::Image &image, c
 	if( getSettings()->getPropertyAs<bool>( "checkCACP" ) ) {
 		checkForCaCp( retImage );
 	}
+
+	if( getSettings()->getPropertyAs<bool>("setZeroToBlackStructural") && retImage->getImageProperties().imageType == ImageHolder::structural_image ) {
+		operation::NativeImageOps::setTrueZero(retImage);
+	}
+	if( getSettings()->getPropertyAs<bool>("setZeroToBlackStatistical") && retImage->getImageProperties().imageType == ImageHolder::statistical_image ) {
+		operation::NativeImageOps::setTrueZero(retImage);
+	}
+	
 
 	//connect signals to image
 	emitGlobalPhysicalCoordsChanged.connect( boost::bind( &ImageHolder::phyisicalCoordsChanged, retImage, _1 ) );

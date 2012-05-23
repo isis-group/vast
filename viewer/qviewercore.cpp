@@ -314,7 +314,7 @@ ImageHolder::Vector QViewerCore::openFile ( const FileInformation &fileInfo, boo
 		LOG( Dev, info ) << "Opening path " << fileInfo.getFileName() << " with rdialect: "
 						 << fileInfo.getDialect() << ", rf: " << fileInfo.getReadFormat()
 						 << ", widget: " << fileInfo.getWidgetIdentifier();
-		getUICore()->getMainWindow()->toggleLoadingIcon( true, QString( "Opening image " ) + fileInfo.getFileName().c_str() + QString( "..." ) );
+		getUICore()->toggleLoadingIcon( true, QString( "Opening image " ) + fileInfo.getFileName().c_str() + QString( "..." ) );
 		QDir dir;
 		setCurrentPath ( dir.absoluteFilePath ( fileInfo.getFileName().c_str() ).toStdString() );
 		//add this file to the recent opened files
@@ -356,7 +356,7 @@ ImageHolder::Vector QViewerCore::openFile ( const FileInformation &fileInfo, boo
 			}
 		}
 
-		getUICore()->getMainWindow()->toggleLoadingIcon( false );
+		getUICore()->toggleLoadingIcon( false );
 		return imgList;
 	} else {
 		LOG( Dev, warning ) << "Tried to open path without any given filename!";

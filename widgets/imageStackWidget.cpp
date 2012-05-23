@@ -169,7 +169,6 @@ void ImageStackWidget::setZeroToBlack()
 {
 	if(  m_ImageStack->currentItem() ) {
 		boost::shared_ptr<ImageHolder> image = m_ViewerCore->getImageMap().at( m_ImageStack->currentItem()->data( Qt::UserRole ).toString().toStdString() );
-		image->reserveTrueZero(  );
 		operation::NativeImageOps::setTrueZero( image );
 		m_ViewerCore->updateScene();
 	}

@@ -181,7 +181,7 @@ int main( int argc, char *argv[] )
 		}
 	}
 
-	core->getUICore()->getMainWindow()->toggleLoadingIcon( false );
+	core->getUICore()->toggleLoadingIcon( false );
 	core->getUICore()->showMainWindow();
 
 	core->settingsChanged();

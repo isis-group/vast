@@ -62,6 +62,8 @@ public Q_SLOTS:
 
 private:
 	QViewerCore *m_ViewerCore;
+	void connectSignals();
+	void disconnectSignals();
 
 };
 

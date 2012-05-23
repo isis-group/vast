@@ -31,7 +31,7 @@
 #include <list>
 #include "widgetensemble.hpp"
 #include "widgetinterface.h"
-#include "mainwindow.hpp"
+
 #include <map>
 
 namespace isis
@@ -96,6 +96,7 @@ public Q_SLOTS:
 	virtual void refreshUI( const bool &mainwindow = true );
 	virtual void refreshEnsembles();
 	void showInformationAreas( bool );
+	void toggleLoadingIcon( bool start, const QString &text = QString() );
 
 
 protected:
@@ -128,5 +129,5 @@ private:
 #include "voxelInformationWidget.hpp"
 #include "imageStackWidget.hpp"
 #include "sliderwidget.hpp"
-
+#include "mainwindow.hpp"
 #endif

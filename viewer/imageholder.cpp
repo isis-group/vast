@@ -28,6 +28,7 @@
 #include "imageholder.hpp"
 #include "common.hpp"
 #include "memoryhandler.hpp"
+#include "nativeimageops.hpp"
 #include <numeric>
 
 namespace isis
@@ -177,9 +178,9 @@ bool ImageHolder::setImage( const data::Image &image, const ImageType &_imageTyp
 
 	m_Image.reset( new data::Image( image ) );
 	getImageProperties().filePath = filename;
+	getImageProperties().zeroIsReserved = false;
 	boost::filesystem::path p( filename );
 	getImageProperties().fileName = p.filename();
-	getImageProperties().zeroIsReserved = false;
 	// get some image information
 	//add some more properties
 	getImageProperties().imageType = _imageType;
@@ -187,6 +188,7 @@ bool ImageHolder::setImage( const data::Image &image, const ImageType &_imageTyp
 	m_ImageSize = image.getSizeAsVector();
 	LOG( Dev, verbose_info )  << "Fetched image of size " << m_ImageSize << " and type "
 							  << image.getMajorTypeName() << ".";
+							  
 	//copy the image into continuous memory space and assure consistent data type
 	synchronize( );
 
@@ -408,25 +410,16 @@ void ImageHolder::setVoxel ( const size_t &first, const size_t &second, const si
 		}
 	}
 }
-void ImageHolder::reserveTrueZero()
-{
-
-}
 
 
 void ImageHolder::synchronize ()
 {
 	collectImageInfo();
-	getImageProperties().zeroIsReserved = !getImageProperties().isRGB && getImageProperties().imageType == statistical_image;
-
+	
 	if( getImageProperties().isRGB ) {
-		copyImageToVector<InternalImageColorType>( *getISISImage(), getImageProperties().zeroIsReserved );
+		copyImageToVector<InternalImageColorType>( *getISISImage() );
 	} else {
-		copyImageToVector<InternalImageType>( *getISISImage(), getImageProperties().zeroIsReserved );
-	}
-
-	if( getImageProperties().zeroIsReserved ) {
-		reserveTrueZero( );
+		copyImageToVector<InternalImageType>( *getISISImage() );
 	}
 }
 

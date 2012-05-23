@@ -48,6 +48,8 @@ void Settings::save()
 	m_QSettings->setValue( "visualizeOnlyFirstVista", getPropertyAs<bool>( "visualizeOnlyFirstVista" ) );
 	m_QSettings->setValue ( "interpolationType", getPropertyAs<uint16_t> ( "interpolationType" ) );
 	m_QSettings->setValue ( "checkCACP", getPropertyAs<bool> ( "checkCACP" ) );
+	m_QSettings->setValue ( "setZeroToBlackStatistical", getPropertyAs<bool> ( "setZeroToBlackStatistical" ) );
+	m_QSettings->setValue ( "setZeroToBlackStructural", getPropertyAs<bool> ( "setZeroToBlackStructural" ) );
 	m_QSettings->setValue ( "propagateZooming", getPropertyAs<bool> ( "propagateZooming" ) );
 	m_QSettings->setValue ( "latchSingleImage", getPropertyAs<bool> ( "latchSingleImage" ) );
 	m_QSettings->setValue ( "showFullFilePath", getPropertyAs<bool> ( "showFullFilePath" ) );
@@ -88,6 +90,8 @@ void Settings::load()
 	m_QSettings->beginGroup ( "ViewerCore" );
 
 	setPropertyAs<std::string> ( "lutZMap", m_QSettings->value ( "lutZMap", getPropertyAs<std::string> ( "lutZMap" ).c_str() ).toString().toStdString() );
+	setPropertyAs<bool> ( "setZeroToBlackStatistical", m_QSettings->value ( "setZeroToBlackStatistical", getPropertyAs<bool>( "setZeroToBlackStatistical" ) ).toBool() );
+	setPropertyAs<bool> ( "setZeroToBlackStructural", m_QSettings->value ( "setZeroToBlackStructural", getPropertyAs<bool>( "setZeroToBlackStructural" ) ).toBool() );
 	setPropertyAs<bool> ( "latchSingleImage", m_QSettings->value ( "latchSingleImage", getPropertyAs<bool>( "latchSingleImage" ) ).toBool() );
 	setPropertyAs<bool> ( "showFullFilePath", m_QSettings->value ( "showFullFilePath", getPropertyAs<bool>( "showFullFilePath" ) ).toBool() );
 	setPropertyAs<bool> ( "checkCACP", m_QSettings->value ( "checkCACP", getPropertyAs<bool>( "checkCACP" ) ).toBool() );
@@ -127,6 +131,8 @@ void Settings::load()
 void Settings::initializeWithDefaultSettings()
 {
 	setPropertyAs<bool>( "checkCACP", false );
+	setPropertyAs<bool>( "setZeroToBlackStatistical", true );
+	setPropertyAs<bool>( "setZeroToBlackStructural", false );
 	setPropertyAs<bool>( "latchSingleImage", true );
 	setPropertyAs<bool>( "showFullFilePath", true );
 	setPropertyAs<bool>( "zmapGlobal", false );
