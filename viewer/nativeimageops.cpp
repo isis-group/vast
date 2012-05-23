@@ -126,7 +126,7 @@ isis::util::ivector4 isis::viewer::operation::NativeImageOps::getGlobalMax( cons
 
 void isis::viewer::operation::NativeImageOps::setTrueZero ( boost::shared_ptr< isis::viewer::ImageHolder > image )
 {
-	if( !image->getImageProperties().isRGB  ) {
+	if( !image->getImageProperties().isRGB && image->getImageProperties().minMax.first->as<double>() < 0 ) {
 		std::stringstream text;
 		text << "Setting 0 to black for " << image->getImageProperties().fileName << "...";
 		m_ViewerCore->getUICore()->toggleLoadingIcon( true, text.str().c_str() );

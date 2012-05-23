@@ -100,8 +100,8 @@ void ImageStack::contextMenuEvent( QContextMenuEvent *event )
 			openInWidgetMenu->addAction( action );
 		}
 		menu.addAction( m_Widget->m_Interface.actionClose_image );
-
-		if( !m_ViewerCore->getImageMap().at( currentItem()->data( Qt::UserRole ).toString().toStdString() )->getImageProperties().zeroIsReserved ) {
+		const ImageHolder::Pointer image = m_ViewerCore->getImageMap().at( currentItem()->data( Qt::UserRole ).toString().toStdString() );
+		if( !image->getImageProperties().zeroIsReserved && !image->getImageProperties().isRGB && image->getImageProperties().minMax.first->as<double>() < 0 ) {
 			menu.addAction( m_Widget->m_Interface.actionSet_0_to_black );
 		}
 
