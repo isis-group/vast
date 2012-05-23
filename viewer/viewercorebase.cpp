@@ -155,13 +155,14 @@ ImageHolder::Pointer ViewerCoreBase::addImage( const isis::data::Image &image, c
 		checkForCaCp( retImage );
 	}
 
-	if( getSettings()->getPropertyAs<bool>("setZeroToBlackStructural") && retImage->getImageProperties().imageType == ImageHolder::structural_image ) {
-		operation::NativeImageOps::setTrueZero(retImage);
+	if( getSettings()->getPropertyAs<bool>( "setZeroToBlackStructural" ) && retImage->getImageProperties().imageType == ImageHolder::structural_image ) {
+		operation::NativeImageOps::setTrueZero( retImage );
 	}
-	if( getSettings()->getPropertyAs<bool>("setZeroToBlackStatistical") && retImage->getImageProperties().imageType == ImageHolder::statistical_image ) {
-		operation::NativeImageOps::setTrueZero(retImage);
+
+	if( getSettings()->getPropertyAs<bool>( "setZeroToBlackStatistical" ) && retImage->getImageProperties().imageType == ImageHolder::statistical_image ) {
+		operation::NativeImageOps::setTrueZero( retImage );
 	}
-	
+
 
 	//connect signals to image
 	emitGlobalPhysicalCoordsChanged.connect( boost::bind( &ImageHolder::phyisicalCoordsChanged, retImage, _1 ) );

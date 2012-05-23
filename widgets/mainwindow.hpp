@@ -54,7 +54,8 @@ class HelpDialog;
 
 }
 
-namespace operation {
+namespace operation
+{
 class NativeImageOps;
 }
 

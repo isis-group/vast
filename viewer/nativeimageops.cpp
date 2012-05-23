@@ -74,7 +74,7 @@ isis::util::ivector4 isis::viewer::operation::NativeImageOps::getGlobalMin( cons
 		return isis::util::ivector4();
 		break;
 	}
-	
+
 }
 
 isis::util::ivector4 isis::viewer::operation::NativeImageOps::getGlobalMax( const boost::shared_ptr< isis::viewer::ImageHolder > image, const util::ivector4 &startPos, const unsigned short &radius )
@@ -82,7 +82,7 @@ isis::util::ivector4 isis::viewer::operation::NativeImageOps::getGlobalMax( cons
 	if( image->getISISImage()->getVolume() >= 1e6 ) {
 		m_ViewerCore->getUICore()->toggleLoadingIcon( true, QString( "Searching for global max of " ) + m_ViewerCore->getCurrentImage()->getImageProperties().fileName.c_str() );
 	}
-	
+
 	switch ( image->getISISImage()->getMajorTypeID() ) {
 	case data::ValueArray<bool>::staticID:
 		return internGetMax<bool>( image, startPos, radius );
@@ -130,7 +130,7 @@ void isis::viewer::operation::NativeImageOps::setTrueZero ( boost::shared_ptr< i
 		std::stringstream text;
 		text << "Setting 0 to black for " << image->getImageProperties().fileName << "...";
 		m_ViewerCore->getUICore()->toggleLoadingIcon( true, text.str().c_str() );
-		
+
 		switch ( image->getImageProperties().majorTypeID ) {
 		case data::ValueArray<bool>::staticID:
 			_setTrueZero<bool>( image );

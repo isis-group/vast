@@ -187,19 +187,19 @@ private:
 		getImageProperties().memSizeInternal = image.getVolume() * sizeof( TYPE );
 		LOG( Dev, info ) << "Needed memory: " << getImageProperties().memSizeInternal / ( 1024.0 * 1024.0 ) << " mb.";
 
-// 		if( reserveZero ) {
-// 			LOG( Dev, info ) << "0 is reserved";
-// 			// calculate new scaling
-// 			data::scaling_pair scalingPair = image.getScalingTo( data::ValueArray<TYPE>::staticID, data::upscale );
-// 			double scaling = scalingPair.first->as<double>();
-// 			double offset = scalingPair.second->as<double>();
-// 			scaling /= static_cast<double>( getInternalExtent() + 1 ) / getInternalExtent();
-// 			offset += 1;
-// 			const data::scaling_pair newScaling( std::make_pair< util::ValueReference, util::ValueReference>( util::Value<double>( scaling ), util::Value<double>( offset ) ) ) ;
-// 			getImageProperties().scalingToInternalType = newScaling;
-// 		} else {
-// 			LOG( Dev, info ) << "0 is not reserved";
-// 		}
+		//      if( reserveZero ) {
+		//          LOG( Dev, info ) << "0 is reserved";
+		//          // calculate new scaling
+		//          data::scaling_pair scalingPair = image.getScalingTo( data::ValueArray<TYPE>::staticID, data::upscale );
+		//          double scaling = scalingPair.first->as<double>();
+		//          double offset = scalingPair.second->as<double>();
+		//          scaling /= static_cast<double>( getInternalExtent() + 1 ) / getInternalExtent();
+		//          offset += 1;
+		//          const data::scaling_pair newScaling( std::make_pair< util::ValueReference, util::ValueReference>( util::Value<double>( scaling ), util::Value<double>( offset ) ) ) ;
+		//          getImageProperties().scalingToInternalType = newScaling;
+		//      } else {
+		//          LOG( Dev, info ) << "0 is not reserved";
+		//      }
 		getImageProperties().scalingToInternalType = image.getScalingTo( data::ValueArray<TYPE>::staticID, data::upscale );
 
 		LOG( Dev, info ) << "scalingToInternalType: " << getImageProperties().scalingToInternalType.first->as<double>() << " : " << getImageProperties().scalingToInternalType.second->as<double>();

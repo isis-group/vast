@@ -414,7 +414,7 @@ void UICore::refreshEnsembles()
 	}
 }
 
-void UICore::toggleLoadingIcon ( bool start, const QString& text )
+void UICore::toggleLoadingIcon ( bool start, const QString &text )
 {
 	if( text.length() ) {
 		m_ViewerCore->receiveMessage( text.toStdString() );

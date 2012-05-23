@@ -188,7 +188,7 @@ bool ImageHolder::setImage( const data::Image &image, const ImageType &_imageTyp
 	m_ImageSize = image.getSizeAsVector();
 	LOG( Dev, verbose_info )  << "Fetched image of size " << m_ImageSize << " and type "
 							  << image.getMajorTypeName() << ".";
-							  
+
 	//copy the image into continuous memory space and assure consistent data type
 	synchronize( );
 
@@ -415,7 +415,7 @@ void ImageHolder::setVoxel ( const size_t &first, const size_t &second, const si
 void ImageHolder::synchronize ()
 {
 	collectImageInfo();
-	
+
 	if( getImageProperties().isRGB ) {
 		copyImageToVector<InternalImageColorType>( *getISISImage() );
 	} else {

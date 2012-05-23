@@ -44,7 +44,7 @@ PreferencesDialog::PreferencesDialog( QWidget *parent, QViewerCore *core ):
 	connect( m_Interface.useAllThreads, SIGNAL( clicked( bool ) ), this, SLOT( toggleUseAllThreads( bool ) ) );
 	connect( m_Interface.numberOfThreads, SIGNAL( valueChanged( int ) ), this, SLOT( numberOfThreadsChanged( int ) ) );
 	connect( m_Interface.sizeX, SIGNAL( valueChanged( int ) ), this, SLOT( screenshotXChanged( int ) ) );
-	
+
 	QSize size( QSize( m_Interface.lutStructural->size().width() / 4, m_Interface.lutStructural->height() - 10 ) );
 	m_Interface.lutStructural->setIconSize( size );
 	m_Interface.lutZmap->setIconSize( size );
@@ -183,8 +183,8 @@ void PreferencesDialog::loadSettings()
 
 	//view tab
 	m_Interface.checkLatchOrientation->setChecked( m_ViewerCore->getSettings()->getPropertyAs<bool>( "latchSingleImage" ) );
-	m_Interface.checkSetZeroStatistical->setChecked( m_ViewerCore->getSettings()->getPropertyAs<bool>("setZeroToBlackStatistical") );
-	m_Interface.checkSetZeroStructural->setChecked( m_ViewerCore->getSettings()->getPropertyAs<bool>("setZeroToBlackStructural") );
+	m_Interface.checkSetZeroStatistical->setChecked( m_ViewerCore->getSettings()->getPropertyAs<bool>( "setZeroToBlackStatistical" ) );
+	m_Interface.checkSetZeroStructural->setChecked( m_ViewerCore->getSettings()->getPropertyAs<bool>( "setZeroToBlackStructural" ) );
 
 	//screenshot
 	m_Interface.screenshotQuality->setValue( m_ViewerCore->getSettings()->getPropertyAs<uint16_t>( "screenshotQuality" ) );
@@ -230,10 +230,10 @@ void PreferencesDialog::saveSettings()
 	m_ViewerCore->getSettings()->setPropertyAs<bool>( "setZeroToBlackStructural", m_Interface.checkSetZeroStructural->isChecked() );
 
 	//file formats
-	//vista	
+	//vista
 	m_ViewerCore->getSettings()->setPropertyAs<bool>( "visualizeOnlyFirstVista", m_Interface.checkOnlyFirst->isChecked() );
 	m_ViewerCore->getSettings()->setPropertyAs<bool>( "checkCACP", m_Interface.checkCACP->isChecked() );
-	
+
 	//screenshot
 	m_ViewerCore->getSettings()->setPropertyAs<bool>( "screenshotKeepAspectRatio", m_Interface.keepRatio->isChecked() );
 	m_ViewerCore->getSettings()->setPropertyAs<uint16_t>( "screenshotQuality", m_Interface.screenshotQuality->value() );

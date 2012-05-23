@@ -174,6 +174,7 @@ void MainWindow::createScreenshot()
 			m_ViewerCore->getUICore()->getScreenshot().save( fileName, 0, m_ViewerCore->getSettings()->getPropertyAs<uint16_t>( "screenshotQuality" ) );
 			m_ViewerCore->setCurrentPath( fileName.toStdString() );
 		}
+
 		m_ViewerCore->getUICore()->toggleLoadingIcon( false );
 	}
 
