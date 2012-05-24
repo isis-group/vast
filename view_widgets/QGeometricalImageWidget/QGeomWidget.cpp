@@ -383,8 +383,10 @@ util::fvector4 QGeomWidget::getPhysicalCoordsFromMouseCoords ( const int &x, con
 			voxelCoords[mappingVec[2]] = oldVoxelCoords[mappingVec[2]];
 			physicalCoords = image->getISISImage()->getPhysicalCoordsFromIndex( voxelCoords );
 		}
+
 		return physicalCoords;
 	}
+
 	return util::fvector4();
 }
 

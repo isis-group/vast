@@ -54,6 +54,7 @@ isis::viewer::plugin::HistogramDialog::HistogramDialog( QWidget *parent, isis::v
 void isis::viewer::plugin::HistogramDialog::paintHistogram()
 {
 	m_Plotter->clear();
+
 	if( m_ViewerCore->hasImage() && isVisible() ) {
 		std::stringstream title;
 		title << "Histogram of " << boost::filesystem::path( m_ViewerCore->getCurrentImage()->getImageProperties().fileName ).leaf();
@@ -65,7 +66,7 @@ void isis::viewer::plugin::HistogramDialog::paintHistogram()
 		m_Plotter->setTitle( title.str().c_str() );
 		double xData[255];
 		BOOST_FOREACH( ImageHolder::Vector::const_reference image, m_ViewerCore->getImageVector() ) {
-			
+
 
 			if( !image->getImageProperties().isRGB ) {
 				const std::vector<double> histogram = operation::NativeImageOps::getHistogramFromImage( image );
@@ -91,6 +92,7 @@ void isis::viewer::plugin::HistogramDialog::paintHistogram()
 					pen.setBrush( QBrush( Qt::gray, Qt::Dense1Pattern ) );
 					curve->setPen( pen );
 				}
+
 				curve->setData( xData, &histogram[0], 255 );
 			}
 		}
