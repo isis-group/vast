@@ -50,10 +50,6 @@ public:
 		const data::Chunk &chunk = image->getVolumeVector()[image->getImageProperties().voxelCoords[dim_time]];
 
 		for ( util::ivector4::value_type y = 0; y < mappedSize[1]; y++ ) {
-#ifdef _OPENMP
-#pragma omp parallel for
-#endif
-
 			for ( util::ivector4::value_type x = 0; x < mappedSize[0]; x++ ) {
 				const util::ivector4::value_type coords[3] = {x, y, mappedCoords[2] };
 				static_cast<data::Chunk &>( sliceChunk ).voxel<TYPE>( x, y ) = chunk.voxel<TYPE>( coords[mapping[0]], coords[mapping[1]], coords[mapping[2]] );
@@ -74,10 +70,6 @@ public:
 			util::fvector4 phys = image->getImageProperties().physicalCoords;
 
 			for ( float i = bb[_mapping[0]].first; i < bb[_mapping[0]].second; i += 0.707 * image->getImageProperties().voxelSize[mapping[0]] ) {
-#ifdef _OPENMP
-#pragma omp parallel for
-#endif
-
 				for ( float j = bb[_mapping[1]].first; j < bb[_mapping[1]].second; j += 0.707 * image->getImageProperties().voxelSize[mapping[1]]  ) {
 					phys[_mapping[0]] = i;
 					phys[_mapping[1]] = j;

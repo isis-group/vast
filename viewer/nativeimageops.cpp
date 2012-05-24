@@ -126,7 +126,7 @@ isis::util::ivector4 isis::viewer::operation::NativeImageOps::getGlobalMax( cons
 
 void isis::viewer::operation::NativeImageOps::setTrueZero ( boost::shared_ptr< isis::viewer::ImageHolder > image )
 {
-	if( !image->getImageProperties().isRGB && image->getImageProperties().minMax.first->as<double>() < 0 ) {
+	if( !image->getImageProperties().isRGB ) {
 		std::stringstream text;
 		text << "Setting 0 to black for " << image->getImageProperties().fileName << "...";
 		m_ViewerCore->getUICore()->toggleLoadingIcon( true, text.str().c_str() );
@@ -170,6 +170,35 @@ void isis::viewer::operation::NativeImageOps::setTrueZero ( boost::shared_ptr< i
 
 	m_ViewerCore->getUICore()->toggleLoadingIcon( false );
 }
+
+std::vector<double> isis::viewer::operation::NativeImageOps::getHistogramFromImage ( const isis::viewer::ImageHolder::Pointer image )
+{
+	std::vector<double> histogram;
+	const size_t volume = image->getImageSize()[0] * image->getImageSize()[1] * image->getImageSize()[2];
+	const double extent = image->getInternalExtent();
+	
+	const int32_t timestep = image->getImageProperties().voxelCoords[dim_time];
+
+	histogram.resize( extent );
+
+	const InternalImageType *dataPtr = boost::shared_static_cast<const InternalImageType>( image->getRawAdress( timestep ) ).get();
+	if( extent > 1e6) {
+		m_ViewerCore->getUICore()->toggleLoadingIcon(true, QString("Calculating histogram for image ") + image->getImageProperties().fileName.c_str() );
+	}
+	//create the histogram
+#ifdef _OPENMP
+#pragma omp parallel for
+#endif
+	for( size_t i = 0; i < volume; i++ ) {
+		if( dataPtr[i] > 0) {
+			histogram[dataPtr[i]-1]++;
+		}
+	}
+	m_ViewerCore->getUICore()->toggleLoadingIcon(false);
+	return histogram;
+}
+
+
 
 void isis::viewer::operation::NativeImageOps::setViewerCore ( isis::viewer::QViewerCore *core )
 {

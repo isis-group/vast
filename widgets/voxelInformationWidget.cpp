@@ -334,10 +334,11 @@ void VoxelInformationWidget::synchronizePos( util::fvector4 physicalCoords )
 void VoxelInformationWidget::synchronizePos( util::ivector4 voxelCoords )
 {
 	boost::shared_ptr<ImageHolder> image = m_ViewerCore->getCurrentImage();
-	const std::string typeName = image->getISISImage()->getChunk( voxelCoords[0], voxelCoords[1], voxelCoords[2], voxelCoords[3], false ).getTypeName();
+// 	std::cout << image->getImageProperties().fileName << ": " <<  voxelCoords << std::endl;
+	const isis::data::Chunk &chunk = image->getISISImage()->getChunk( voxelCoords[0], voxelCoords[1], voxelCoords[2], voxelCoords[3], false );
+	const std::string typeName = chunk.getTypeName();
 	m_Interface.intensityValue->setToolTip( typeName.substr( 0, typeName.length() - 1 ).c_str() );
-
-	switch( image->getISISImage()->getChunk( voxelCoords[0], voxelCoords[1], voxelCoords[2], voxelCoords[3], false ).getTypeID() ) {
+	switch( chunk.getTypeID() ) {
 	case isis::data::ValueArray<bool>::staticID:
 		displayIntensity<bool>( voxelCoords );
 		break;

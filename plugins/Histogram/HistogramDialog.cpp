@@ -26,6 +26,7 @@
  *      Author: tuerke
  ******************************************************************/
 #include "HistogramDialog.hpp"
+#include <nativeimageops.hpp>
 #include <DataStorage/valuearray.hpp>
 
 
@@ -53,7 +54,6 @@ isis::viewer::plugin::HistogramDialog::HistogramDialog( QWidget *parent, isis::v
 void isis::viewer::plugin::HistogramDialog::paintHistogram()
 {
 	m_Plotter->clear();
-
 	if( m_ViewerCore->hasImage() && isVisible() ) {
 		std::stringstream title;
 		title << "Histogram of " << boost::filesystem::path( m_ViewerCore->getCurrentImage()->getImageProperties().fileName ).leaf();
@@ -65,9 +65,10 @@ void isis::viewer::plugin::HistogramDialog::paintHistogram()
 		m_Plotter->setTitle( title.str().c_str() );
 		double xData[255];
 		BOOST_FOREACH( ImageHolder::Vector::const_reference image, m_ViewerCore->getImageVector() ) {
-			image->updateHistogram();
+			
 
 			if( !image->getImageProperties().isRGB ) {
+				const std::vector<double> histogram = operation::NativeImageOps::getHistogramFromImage( image );
 				const double scaling = image->getImageProperties().scalingToInternalType.first->as<double>();
 				const double offset = image->getImageProperties().scalingToInternalType.second->as<double>();
 
@@ -90,10 +91,7 @@ void isis::viewer::plugin::HistogramDialog::paintHistogram()
 					pen.setBrush( QBrush( Qt::gray, Qt::Dense1Pattern ) );
 					curve->setPen( pen );
 				}
-
-				const uint16_t timestep = image->getImageSize()[3] > 1 ? image->getImageProperties().voxelCoords[3] : 0;
-
-				curve->setData( xData, image->getImageProperties().histogramVectorWOZero[timestep], 255 );
+				curve->setData( xData, &histogram[0], 255 );
 			}
 		}
 		m_Zoomer->setZoomBase( true );

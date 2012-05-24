@@ -133,7 +133,7 @@ void Settings::initializeWithDefaultSettings()
 	setPropertyAs<bool>( "checkCACP", false );
 	setPropertyAs<bool>( "setZeroToBlackStatistical", true );
 	setPropertyAs<bool>( "setZeroToBlackStructural", false );
-	setPropertyAs<bool>( "latchSingleImage", true );
+	setPropertyAs<bool>( "latchSingleImage", false );
 	setPropertyAs<bool>( "showFullFilePath", true );
 	setPropertyAs<bool>( "zmapGlobal", false );
 	setPropertyAs<bool>( "viewAllImagesInStack", false );

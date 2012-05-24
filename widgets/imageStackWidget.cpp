@@ -82,6 +82,11 @@ void ImageStackWidget::openImageInWidget ( QString widget )
 			m_ViewerCore->getUICore()->createViewWidgetEnsemble( widget.toStdString(), m_ViewerCore->addImage( *image->getISISImage().get(), image->getImageProperties().imageType ) );
 			break;
 		case QMessageBox::No:
+			const WidgetEnsemble::Pointer ensemble = m_ViewerCore->getUICore()->getEnsembleFromImage( image );
+			ensemble->removeImage( image );
+			if( !ensemble->getImageVector().size() )  {
+				m_ViewerCore->getUICore()->closeWidgetEnsemble( ensemble );
+			}
 			m_ViewerCore->getUICore()->createViewWidgetEnsemble( widget.toStdString(), image );
 			break;
 		}

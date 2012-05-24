@@ -75,7 +75,6 @@ void VoxelOperationDialog::calculatePressed()
 			image->getPropMap().setPropertyAs<util::slist>( "VoxelOperation/opHistory", voxelOpHistory );
 			image->synchronize( );
 			image->updateColorMap();
-			image->updateHistogram();
 			m_ViewerCore->emitImageContentChanged( image );
 			m_ViewerCore->getUICore()->refreshUI( true );
 		} catch( mu::Parser::exception_type &e ) {

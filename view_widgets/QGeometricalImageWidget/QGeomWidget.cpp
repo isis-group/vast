@@ -226,8 +226,10 @@ void QGeomWidget::paintEvent ( QPaintEvent* /*event*/ )
 void QGeomWidget::paintImage( const ImageHolder::Pointer image )
 {
 	m_Painter->setTransform( _internal::getTransform2ISISSpace( m_PlaneOrientation, m_BoundingBox ) );
+	QTransform transform = _internal::getQTransform( image, m_PlaneOrientation, false );
 
-	m_Painter->setTransform( _internal::getQTransform( image, m_PlaneOrientation, m_LatchOrientation ), true );
+	m_Painter->setTransform( transform, true );
+
 	m_Painter->setOpacity( image->getImageProperties().opacity );
 	const util::ivector4 mappedSizeAligned = mapCoordsToOrientation( image->getImageProperties().alignedSize32, image->getImageProperties().latchedOrientation, m_PlaneOrientation );
 
@@ -379,13 +381,10 @@ util::fvector4 QGeomWidget::getPhysicalCoordsFromMouseCoords ( const int &x, con
 		if( m_RasterPhysicalCoords ) {
 			util::ivector4 voxelCoords = image->getISISImage()->getIndexFromPhysicalCoords( physicalCoords );
 			voxelCoords[mappingVec[2]] = oldVoxelCoords[mappingVec[2]];
-			return image->getISISImage()->getPhysicalCoordsFromIndex( voxelCoords );
-		} else {
-			return physicalCoords;
-
+			physicalCoords = image->getISISImage()->getPhysicalCoordsFromIndex( voxelCoords );
 		}
+		return physicalCoords;
 	}
-
 	return util::fvector4();
 }
 

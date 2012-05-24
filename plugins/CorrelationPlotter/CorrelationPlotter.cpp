@@ -236,8 +236,6 @@ void isis::viewer::plugin::CorrelationPlotterDialog::calculateCorrelation( bool 
 				}
 			}
 		}
-
-		m_CurrentCorrelationMap->updateHistogram();;
 	}
 
 

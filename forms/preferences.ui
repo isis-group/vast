@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>502</width>
-    <height>305</height>
+    <height>344</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -53,7 +53,7 @@
          </sizepolicy>
         </property>
         <property name="currentIndex">
-         <number>0</number>
+         <number>2</number>
         </property>
         <widget class="QWidget" name="commonTab">
          <attribute name="title">
@@ -194,7 +194,7 @@
                <x>0</x>
                <y>0</y>
                <width>458</width>
-               <height>231</height>
+               <height>270</height>
               </rect>
              </property>
              <layout class="QGridLayout" name="gridLayout_4">
@@ -354,6 +354,9 @@ Be careful using this option.</string>
             <layout class="QGridLayout" name="gridLayout_9">
              <item row="0" column="0">
               <widget class="QCheckBox" name="checkLatchOrientation">
+               <property name="enabled">
+                <bool>false</bool>
+               </property>
                <property name="toolTip">
                 <string>If only one image is visualized in an image widget its orientation will be latched to achieve an optimal viewing result.</string>
                </property>
@@ -377,6 +380,9 @@ Be careful using this option.</string>
              </item>
              <item row="1" column="0">
               <widget class="QCheckBox" name="checkSetZeroStatistical">
+               <property name="toolTip">
+                <string>If you load an image as a statistical image vast will set 0 to black if the minimum value of this image is below 0. Alternativley you can do this manually over the imagelists context menu.</string>
+               </property>
                <property name="text">
                 <string>Automatically set 0 to black for statistical images</string>
                </property>
@@ -387,6 +393,9 @@ Be careful using this option.</string>
              </item>
              <item row="2" column="0">
               <widget class="QCheckBox" name="checkSetZeroStructural">
+               <property name="toolTip">
+                <string>If you load an image as a structural image vast will set 0 to black if the minimum value of this image is below 0. Alternativley you can do this manually over the imagelists context menu.</string>
+               </property>
                <property name="text">
                 <string>Automatically set 0 to black for structural images</string>
                </property>

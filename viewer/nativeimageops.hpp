@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * Author: Erik Türke, tuerke@cbs.mpg.de
+ * Author: Erik Tuerke, tuerke@cbs.mpg.de
  *
  * nativeimageops.hpp
  *
@@ -53,6 +53,7 @@ public:
 	static util::ivector4 getGlobalMin( const ImageHolder::Pointer image, const util::ivector4 &startPos, const unsigned short &radius );
 	static util::ivector4 getGlobalMax( const ImageHolder::Pointer image, const util::ivector4 &startPos, const unsigned short &radius );
 	static void setTrueZero( ImageHolder::Pointer image );
+	static std::vector<double> getHistogramFromImage( const ImageHolder::Pointer image );
 
 	static void setViewerCore( QViewerCore *core );
 

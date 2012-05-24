@@ -267,36 +267,6 @@ bool ImageHolder::removeChangedAttribute( const std::string &attribute )
 	}
 }
 
-void ImageHolder::updateHistogram()
-{
-	const size_t volume = getImageSize()[0] * getImageSize()[1] * getImageSize()[2];
-	const double extent = getInternalExtent();
-
-	boost::scoped_array<double> nHistogram ( new double[( size_t )extent + 1] );
-
-	getImageProperties().histogramVector.resize( getImageSize()[3] );
-	getImageProperties().histogramVectorWOZero.resize( getImageSize()[3] );
-
-	for( unsigned short t = 0; t < getImageSize()[3]; t++ ) {
-		getImageProperties().histogramVector[t] = ( double * ) calloc( extent + 1, sizeof( double ) ) ;
-		getImageProperties().histogramVectorWOZero[t] = ( double * ) calloc( extent, sizeof( double ) );
-		const InternalImageType *dataPtr = boost::shared_static_cast<const InternalImageType>( getRawAdress( t ) ).get();
-		//create the histogram
-#ifdef _OPENMP
-#pragma omp parallel for
-#endif
-
-		for( size_t i = 0; i < volume; i++ ) {
-			getImageProperties().histogramVector[t][dataPtr[i]]++;
-
-			if( dataPtr[i] > 0 ) {
-				getImageProperties().histogramVectorWOZero[t][dataPtr[i] - 1]++;
-			}
-		}
-	}
-}
-
-
 
 ///calls isis::data::Image::updateOrientationMatrices() and sets latchedOrientation and orientation of the isis::viewer::ImageHolder
 void ImageHolder::updateOrientation()
