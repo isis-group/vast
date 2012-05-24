@@ -193,7 +193,6 @@ Color::ColormapType Color::getFallbackColormap() const
 	for ( unsigned short i = 0; i < 256; i++ ) {
 		retColormap.push_back( QColor( i, i, i, 255 ).rgba() );
 	}
-
 	return retColormap;
 }
 

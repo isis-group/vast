@@ -76,7 +76,7 @@ private:
 
 		for ( size_t i = 0; i < image->getImageSize()[axis]; i++ ) {
 			_coords[axis] = i;
-			iv.push_back( static_cast<isis::data::Image> ( tImage ).voxel<TYPE>( _coords[0], _coords[1], _coords[2], _coords[3] ) );
+			iv.push_back( static_cast<isis::data::Image&> ( tImage ).voxel<TYPE>( _coords[0], _coords[1], _coords[2], _coords[3] ) );
 		}
 	}
 
