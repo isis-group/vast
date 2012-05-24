@@ -53,7 +53,7 @@
          </sizepolicy>
         </property>
         <property name="currentIndex">
-         <number>2</number>
+         <number>0</number>
         </property>
         <widget class="QWidget" name="commonTab">
          <attribute name="title">
@@ -530,7 +530,7 @@ Be careful using this option.</string>
              <item row="3" column="0" colspan="4">
               <widget class="QFrame" name="scalingFrame">
                <property name="frameShape">
-                <enum>QFrame::StyledPanel</enum>
+                <enum>QFrame::NoFrame</enum>
                </property>
                <property name="frameShadow">
                 <enum>QFrame::Raised</enum>
