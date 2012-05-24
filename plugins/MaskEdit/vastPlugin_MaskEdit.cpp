@@ -45,7 +45,7 @@ public:
 	virtual QKeySequence getShortcut() { return QKeySequence( "M, E" ) ;}
 	virtual bool isGUI() { return true; }
 	virtual QIcon *getToolbarIcon() { return new QIcon( ":/common/maskEdit.png" ); }
-	MaskEdit() : m_Visible( false ), m_MaskEditSet( false ) {}
+	MaskEdit() :  m_MaskEditSet( false ) {}
 
 	virtual bool call() {
 		if( !m_MaskEditSet ) {
@@ -53,21 +53,13 @@ public:
 			viewerCore->getUICore()->getMainWindow()->getInterface().topGridLayout->addWidget( m_MaskEdit );
 			m_MaskEditSet = true;
 		}
-
-		if( m_Visible ) {
-			m_MaskEdit->close();
-		} else {
-			m_MaskEdit->show();
-		}
-
-		m_Visible = !m_Visible;
+		m_MaskEdit->show();
 		return true;
 	};
 
 	virtual ~MaskEdit() {};
 private:
 	MaskEditDialog *m_MaskEdit;
-	bool m_Visible;
 	bool m_MaskEditSet;
 
 };

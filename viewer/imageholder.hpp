@@ -94,6 +94,7 @@ private:
 		std::string majorTypeName;
 		std::pair<util::ValueReference, util::ValueReference> scalingToInternalType;
 		geometrical::BoundingBoxType boundingBox;
+		double voxelValue;
 	};
 
 public:
@@ -142,11 +143,16 @@ public:
 
 	template<typename TYPE>
 	void setTypedVoxel(  const size_t &first, const size_t &second, const size_t &third, const size_t &fourth, const TYPE &value, bool sync = true ) {
-		getChunkVector()[fourth].voxel<InternalImageType>( first, second, third )
+		m_VolumeVector[fourth].voxel<InternalImageType>( first, second, third )
 		= static_cast<double>( value ) * getImageProperties().scalingToInternalType.first->as<double>() + getImageProperties().scalingToInternalType.second->as<double>();
 
 		if( sync ) {
-			getISISImage()->getChunk( first, second, third, fourth, false ).voxel<TYPE>( first, second, third, fourth ) = value;
+			getISISImage()->voxel<TYPE>( first, second, third, fourth ) = value;
+			if( value > getImageProperties().minMax.second->as<TYPE>() || value < getImageProperties().minMax.first->as<TYPE>()) {
+				getImageProperties().minMax = getISISImage()->getMinMax();
+				getImageProperties().extent = fabs( getImageProperties().minMax.second->as<double>() - getImageProperties().minMax.first->as<double>() );
+				updateColorMap();
+			}
 		}
 	}
 

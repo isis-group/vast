@@ -31,9 +31,11 @@
 #include "ui_maskEdit.h"
 #include "qviewercore.hpp"
 #include "widgetensemble.hpp"
+#include </buildfarm/resources/src/isis/lib/Core/CoreUtils/value.hpp>
 #include <DataStorage/chunk.hpp>
 #include <CoreUtils/value_base.hpp>
 #include <boost/assign/list_of.hpp>
+#include <boost/variant/recursive_variant.hpp>
 
 
 namespace isis
@@ -56,14 +58,15 @@ public:
 public Q_SLOTS:
 	void physicalCoordChanged( util::fvector4 physCoord, Qt::MouseButton );
 	void radiusChange( int );
-	void paintClicked();
-	void cutClicked();
+	void paintToggled();
+	void pickColorClicked();
 	void createEmptyMask();
 	void editCurrentImage();
 	virtual void closeEvent( QCloseEvent * );
 	virtual void showEvent( QShowEvent * );
 
 private:
+
 	Ui::maskEditDialog m_Interface;
 	QViewerCore *m_ViewerCore;
 	boost::shared_ptr<ImageHolder> m_CurrentMask;
@@ -73,21 +76,22 @@ private:
 
 	WidgetEnsemble::Pointer m_CurrentWidgetEnsemble;
 
+
 	template<typename TYPE>
 	void manipulateVoxel( const util::fvector4 physCoord, boost::shared_ptr<ImageHolder> image ) {
 		const util::ivector4 voxel = image->getISISImage()->getIndexFromPhysicalCoords( physCoord, true );
 		util::ivector4 start;
 		util::ivector4 end;
-		const bool cut = m_Interface.cut->isChecked();
+		const size_t timestep = image->getImageProperties().voxelCoords[dim_time];
 
 		for( unsigned short i = 0; i < 3; i++ ) {
 			start[i] =  voxel[i] - m_Radius;
 			end[i] =  voxel[i] + m_Radius;
 		}
-
+		
 		unsigned short radSquare = m_Radius * m_Radius;
-
-
+		
+		const util::Value<TYPE> colorValue = m_Interface.colorEdit->value();
 		for( short k = start[2] + 1; k < end[2]; k++ ) {
 			for( short j = start[1] + 1; j < end[1]; j++ ) {
 #ifdef _OPENMP
@@ -102,17 +106,12 @@ private:
 					if( x *x + y *y + z *z <= radSquare ) {
 						util::ivector4 finalVoxel( i, j, k );
 						image->correctVoxelCoords( finalVoxel );
-
-						if ( !cut ) {
-							image->setTypedVoxel<TYPE>( finalVoxel[0], finalVoxel[1], finalVoxel[2], 0, image->getImageProperties().minMax.second->as<TYPE>() );
-						} else {
-							image->setTypedVoxel<TYPE>( finalVoxel[0], finalVoxel[1], finalVoxel[2], 0, image->getImageProperties().minMax.first->as<TYPE>() );
-						}
+						image->setTypedVoxel<TYPE>( finalVoxel[0], finalVoxel[1], finalVoxel[2], timestep, colorValue );
 					}
 				}
 			}
 		}
-
+		m_ViewerCore->getUICore()->refreshUI();
 	}
 
 
