@@ -196,7 +196,9 @@ private:
 		image.copyToMem<TYPE>( &imagePtr[0], image.getVolume(), getImageProperties().scalingToInternalType );
 		LOG( Dev, verbose_info ) << "Copied image to continuous memory space.";
 		getImageProperties().internMinMax = imagePtr.getMinMax();
-		LOG( Dev, info ) << "internMinMax: " << getImageProperties().internMinMax.first->as<double>() << " : " << getImageProperties().internMinMax.second->as<double>();
+		if( !getImageProperties().isRGB ) {
+			LOG( Dev, info ) << "internMinMax: " << getImageProperties().internMinMax.first->as<double>() << " : " << getImageProperties().internMinMax.second->as<double>();
+		}
 
 		//splice the image in its volumes -> we get a vector of t volumes
 		if( m_ImageSize[3] > 1 ) { //splicing is only necessary if we got more than 1 timestep

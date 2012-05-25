@@ -151,9 +151,12 @@ short unsigned int ImageHolder::getMajorTypeID() const
 void ImageHolder::collectImageInfo()
 {
 	getImageProperties().minMax = getISISImage()->getMinMax();
-	getImageProperties().extent = fabs( getImageProperties().minMax.second->as<double>() - getImageProperties().minMax.first->as<double>() );
 	getImageProperties().majorTypeID = getMajorTypeID();
 	getImageProperties().isRGB = ( data::ValueArray<util::color24>::staticID == getImageProperties().majorTypeID || data::ValueArray<util::color48>::staticID == getImageProperties().majorTypeID );
+	if( !getImageProperties().isRGB ) {
+		getImageProperties().extent = fabs( getImageProperties().minMax.second->as<double>() - getImageProperties().minMax.first->as<double>() );
+
+	}
 	getImageProperties().majorTypeName = isis::util::getTypeMap( false, true ).at( getImageProperties().majorTypeID );
 	getImageProperties().majorTypeName = getImageProperties().majorTypeName.substr( 0, getImageProperties().majorTypeName.length() - 1 ).c_str();
 }
