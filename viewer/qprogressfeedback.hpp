@@ -43,6 +43,7 @@ public:
 	virtual size_t progress( const std::string message = "", size_t step = 1 );
 	virtual void close();
 	virtual size_t getMax();
+	virtual size_t extend( size_t by );
 
 	QProgressFeedback();
 
