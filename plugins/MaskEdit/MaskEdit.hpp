@@ -31,12 +31,7 @@
 #include "ui_maskEdit.h"
 #include "qviewercore.hpp"
 #include "widgetensemble.hpp"
-#include </buildfarm/resources/src/isis/lib/Core/CoreUtils/value.hpp>
 #include <DataStorage/chunk.hpp>
-#include <CoreUtils/value_base.hpp>
-#include <boost/assign/list_of.hpp>
-#include <boost/variant/recursive_variant.hpp>
-
 
 namespace isis
 {
