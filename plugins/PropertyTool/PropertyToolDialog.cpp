@@ -43,7 +43,7 @@ PropertyToolDialog::PropertyToolDialog( QWidget *parent, QViewerCore *core )
 	m_Interface.setupUi( this );
 	m_Interface.tabWidget->setCurrentIndex( 0 );
 	setSizePolicy( QSizePolicy::MinimumExpanding, QSizePolicy::Maximum );
-	connect( m_ViewerCore, SIGNAL( emitUpdateScene() ), this, SLOT( updateProperties() ) );
+	
 	connect( m_Interface.selection, SIGNAL( currentIndexChanged( int ) ), this, SLOT( selectionChanged( int ) ) );
 	connect( m_Interface.propertyTree, SIGNAL( itemSelectionChanged() ) , this, SLOT( onPropertyTreeClicked() ) );
 	connect( m_Interface.propertyTree, SIGNAL( itemClicked( QTreeWidgetItem *, int ) ), SLOT( onPropertyTreeClicked() ) );
@@ -52,10 +52,22 @@ PropertyToolDialog::PropertyToolDialog( QWidget *parent, QViewerCore *core )
 	m_fillChunkListThread = new _internal::FillChunkListThread( this, &m_Interface );
 }
 
-void PropertyToolDialog::showEvent( QShowEvent * )
+void PropertyToolDialog::showEvent( QShowEvent *e )
 {
 	updateProperties();
+	connect( m_ViewerCore, SIGNAL( emitUpdateScene() ), this, SLOT( updateProperties() ) );
+	m_ViewerCore->emitImageContentChanged.connect( boost::bind( &PropertyToolDialog::updateProperties, this ) );
+	QDialog::showEvent(e);
 }
+
+void PropertyToolDialog::closeEvent ( QCloseEvent *e)
+{
+	disconnect( m_ViewerCore, SIGNAL( emitUpdateScene() ), this, SLOT( updateProperties() ) );
+	m_ViewerCore->emitImageContentChanged.disconnect( boost::bind( &PropertyToolDialog::updateProperties, this ) );
+	QDialog::closeEvent(e);
+	
+}
+
 
 void PropertyToolDialog::setIfHas( const std::string &name, QLabel *nameLabel, QLabel *propLabel, const boost::shared_ptr<data::Image> image )
 {
@@ -73,7 +85,7 @@ void PropertyToolDialog::updateProperties()
 {
 	if( m_ViewerCore->hasImage() && isVisible() ) {
 
-		boost::shared_ptr<data::Image> isisImage = m_ViewerCore->getCurrentImage()->getISISImage();
+		const boost::shared_ptr<data::Image> isisImage = m_ViewerCore->getCurrentImage()->getISISImage();
 		//orientation
 		const util::fvector4 rowVec = isisImage->getPropertyAs<util::fvector4>( "rowVec" );
 		const util::fvector4 columnVec = isisImage->getPropertyAs<util::fvector4>( "columnVec" );

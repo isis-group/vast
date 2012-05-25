@@ -132,6 +132,7 @@ public Q_SLOTS:
 	void editRequested();
 	QString getItemName( QTreeWidgetItem *item );
 	virtual void showEvent( QShowEvent * );
+	virtual void closeEvent( QCloseEvent *);
 
 private:
 	Ui::propertyToolDialog m_Interface;
