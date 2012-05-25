@@ -120,7 +120,7 @@ util::Matrix4x4<float> ImageHolder::calculateLatchedImageOrientation( bool trans
 	retMatrix.elem( 0, rB ) = rowVec[rB] < 0 ? -1 : 1;
 	retMatrix.elem( 1, cB ) =  columnVec[cB] < 0 ? -1 : 1;
 	retMatrix.elem( 2, sB ) = sliceVec[sB] < 0 ? -1 : 1;
-
+	retMatrix.elem( 3, 3 ) = 1;
 	if( transposed ) {
 		return retMatrix.transpose();
 	}
