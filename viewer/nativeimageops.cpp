@@ -29,6 +29,30 @@
 
 isis::viewer::QViewerCore *isis::viewer::operation::NativeImageOps::m_ViewerCore;
 
+std::pair< double, double > isis::viewer::operation::NativeImageOps::getMinMaxFromScalingOffset ( const std::pair< double, double >& scalingOffset, const isis::viewer::ImageHolder::Pointer image )
+{
+	std::pair<double, double> retMinMax;
+	const double min = image->getImageProperties().minMax.first->as<double>();
+	const double extent = image->getImageProperties().extent;
+	const double offset = scalingOffset.second;
+	const double scaling = scalingOffset.first;
+	retMinMax.first = min + offset;
+	retMinMax.second = ( min + offset ) + extent / scaling;
+	return retMinMax;
+}
+
+std::pair< double, double > isis::viewer::operation::NativeImageOps::getScalingOffsetFromMinMax ( const std::pair< double, double >& minMax, const isis::viewer::ImageHolder::Pointer image )
+{
+	std::pair<double, double> retScalingOffset;
+	const double extent = image->getImageProperties().extent;
+	const double _extent = minMax.second - minMax.first;
+	const double min = image->getImageProperties().minMax.first->as<double>();
+	retScalingOffset.first = extent / _extent;
+	retScalingOffset.second = minMax.first - min ;
+	return retScalingOffset;
+}
+
+
 isis::util::ivector4 isis::viewer::operation::NativeImageOps::getGlobalMin( const boost::shared_ptr< isis::viewer::ImageHolder > image, const util::ivector4 &startPos, const unsigned short &radius )
 {
 	if( image->getISISImage()->getVolume() >= 1e6 ) {

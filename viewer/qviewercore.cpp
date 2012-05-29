@@ -310,16 +310,22 @@ bool QViewerCore::callPlugin ( QString name )
 ImageHolder::Vector QViewerCore::openFile ( const FileInformation &fileInfo, bool show )
 {
 	if ( !fileInfo.getFileName().empty() ) {
-		util::istring dialect = fileInfo.getDialect();
-		LOG( Dev, info ) << "Opening path " << fileInfo.getFileName() << " with rdialect: "
-						 << fileInfo.getDialect() << ", rf: " << fileInfo.getReadFormat()
-						 << ", widget: " << fileInfo.getWidgetIdentifier();
-		getUICore()->toggleLoadingIcon( true, QString( "Opening image " ) + fileInfo.getFileName().c_str() + QString( "..." ) );
-		QDir dir;
-		setCurrentPath ( dir.absoluteFilePath ( fileInfo.getFileName().c_str() ).toStdString() );
-		//add this file to the recent opened files
+		FileInformation _fileInfo = fileInfo;
+		util::istring dialect = _fileInfo.getDialect();
+		LOG( Dev, info ) << "Opening path " << fileInfo.getCompletePath() << " with rdialect: "
+						 << _fileInfo.getDialect() << ", rf: " << _fileInfo.getReadFormat()
+						 << ", widget: " << _fileInfo.getWidgetIdentifier();
+		getUICore()->toggleLoadingIcon( true, QString( "Opening image " ) + _fileInfo.getCompletePath().c_str() + QString( "..." ) );
 
-		boost::filesystem::path p ( fileInfo.getFileName() );
+		QDir dir( _fileInfo.getFileName().c_str() );
+
+		if( _fileInfo.getCompletePath().empty() ) {
+			_fileInfo.setCompletePath( dir.absolutePath().toStdString() );
+		}
+		
+		boost::filesystem::path p ( _fileInfo.getCompletePath() );
+
+		setCurrentPath ( p.parent_path().string() );
 
 		//this is a vista thing. if we load a vista image and the option "visualizeOnlyFirstVista" is enabled we should do so
 		if( boost::filesystem::extension( p ) == std::string( "v" ) && getSettings()->getPropertyAs<bool>( "visualizeOnlyFirstVista" ) && !dialect.size() ) {
@@ -327,25 +333,26 @@ ImageHolder::Vector QViewerCore::openFile ( const FileInformation &fileInfo, boo
 		}
 
 		//load the file into an isis image
-		std::list<data::Image> tempImgList = isis::data::IOFactory::load ( fileInfo.getFileName() , fileInfo.getReadFormat(), dialect );
+		std::list<data::Image> tempImgList = isis::data::IOFactory::load ( _fileInfo.getCompletePath() , _fileInfo.getReadFormat(), dialect );
 
 		if( !tempImgList.empty() ) {
-			m_Settings->getRecentFiles().insertSave( fileInfo );
-			LOG( Dev, info ) << "Loaded " << tempImgList.size() << " images from path " << fileInfo.getFileName();
+			//add this file to the recent opened files
+			m_Settings->getRecentFiles().insertSave( _fileInfo );
+			LOG( Dev, info ) << "Loaded " << tempImgList.size() << " images from path " << _fileInfo.getCompletePath();
 		} else {
-			LOG( Dev, error ) << "Tried to load " << fileInfo.getFileName() << ", but image list is empty.";
+			LOG( Dev, error ) << "Tried to load " << _fileInfo.getCompletePath() << ", but image list is empty.";
 		}
 
 		//creating the viewer image objects
-		ImageHolder::Vector imgList = addImageList( tempImgList, fileInfo.getImageType() );
+		ImageHolder::Vector imgList = addImageList( tempImgList, _fileInfo.getImageType() );
 
 		if( show ) {
 			BOOST_FOREACH( ImageHolder::Vector::const_reference image, imgList ) {
-				if( fileInfo.isNewEnsemble() ) {
-					getUICore()->createViewWidgetEnsemble( fileInfo.getWidgetIdentifier(), image, true );
+				if( _fileInfo.isNewEnsemble() ) {
+					getUICore()->createViewWidgetEnsemble( _fileInfo.getWidgetIdentifier(), image, true );
 				} else {
 					if( !getUICore()->getEnsembleList().size() ) {
-						getUICore()->createViewWidgetEnsemble( fileInfo.getWidgetIdentifier(), image, true );
+						getUICore()->createViewWidgetEnsemble( _fileInfo.getWidgetIdentifier(), image, true );
 					} else {
 						getUICore()->getCurrentEnsemble()->addImage( image );
 					}

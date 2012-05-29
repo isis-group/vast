@@ -20,6 +20,7 @@ public:
 public Q_SLOTS:
 	void contextMenuEvent( QContextMenuEvent * );
 	void mousePressEvent( QMouseEvent * );
+	void dropEvent( QDropEvent *e );
 
 private:
 	ImageStackWidget *m_Widget;
@@ -54,6 +55,7 @@ public Q_SLOTS:
 	void viewAllImagesClicked();
 	void openImageInWidget( QString );
 	void setZeroToBlack();
+
 
 private:
 	QViewerCore *m_ViewerCore;

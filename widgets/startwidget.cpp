@@ -79,7 +79,7 @@ void StartWidget::openFavPath()
 void StartWidget::openRecentPath()
 {
 	close();
-	m_ViewerCore->openFile( m_ViewerCore->getSettings()->getFavoriteFiles().at( m_Interface.recentList->currentItem()->text().toStdString() ) );
+	m_ViewerCore->openFile( m_ViewerCore->getSettings()->getRecentFiles().at( m_Interface.recentList->currentItem()->text().toStdString() ) );
 }
 
 void StartWidget::showEvent( QShowEvent * )
@@ -120,7 +120,7 @@ bool StartWidget::fillList ( const FileInformationMap &fileInfoList, QListWidget
 			unsigned short validFiles;
 			QListWidgetItem *item = new QListWidgetItem( fileInfo.first.c_str() );
 
-			if( FileDialog::checkIfPathIsValid( fileInfo.first.c_str(), validFiles, "" ) ) {
+			if( FileDialog::checkIfPathIsValid( fileInfo.second.getCompletePath().c_str(), validFiles, "" ) ) {
 				item->setTextColor( QColor( 34, 139, 34 ) );
 			} else {
 				item->setTextColor( Qt::red );

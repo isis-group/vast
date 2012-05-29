@@ -434,5 +434,21 @@ void UICore::toggleLoadingIcon ( bool start, const QString &text )
 	QApplication::processEvents();
 }
 
+void UICore::openFromDropEvent ( QDropEvent *e )
+{
+	const QMimeData* mimeData = e->mimeData();
+	if (mimeData->hasUrls()) {
+		QStringList pathList;
+        QList<QUrl> urlList = mimeData->urls();
+
+        // extract the local paths of the files
+        for (int i = 0; i < urlList.size(); i++ )
+        {
+            std::cout << urlList.at(i).toLocalFile().toStdString() << std::endl;
+        }
+	}
+}
+
+
 }
 }

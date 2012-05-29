@@ -32,6 +32,7 @@
 #include <Adapter/qmatrixconversion.hpp>
 
 #include "memoryhandler.hpp"
+#include <uicore.hpp>
 
 namespace isis
 {
@@ -433,6 +434,7 @@ void QGeomWidget::mouseMoveEvent ( QMouseEvent *e )
 				const double scaling = 1.0 - ( m_StartCoordsPair.first - e->x() ) / ( float )width() * 5;
 				image->getImageProperties().offset = offset;
 				image->getImageProperties().scaling = scaling < 0.0 ? 0.0 : scaling;
+				image->getImageProperties().scalingMinMax = operation::NativeImageOps::getMinMaxFromScalingOffset(std::make_pair<double,double>(scaling, offset), image );
 				image->updateColorMap();
 			}
 		} else {
@@ -441,11 +443,13 @@ void QGeomWidget::mouseMoveEvent ( QMouseEvent *e )
 			const double scaling = 1.0 - ( m_StartCoordsPair.first - e->x() ) / ( float )width() * 5;
 			image->getImageProperties().offset = offset;
 			image->getImageProperties().scaling = scaling < 0.0 ? 0.0 : scaling;
+			image->getImageProperties().scalingMinMax = operation::NativeImageOps::getMinMaxFromScalingOffset(std::make_pair<double,double>(scaling, offset), image );
 			image->updateColorMap();
 		}
 
 		m_ShowScalingOffset = true;
 		m_ViewerCore->updateScene();
+		m_ViewerCore->getUICore()->refreshUI();
 
 	} else {
 		const util::fvector4 physicalCoords = getPhysicalCoordsFromMouseCoords(  e->x(), e->y() );
@@ -538,25 +542,30 @@ void QGeomWidget::dragEnterEvent ( QDragEnterEvent *e )
 
 void QGeomWidget::dropEvent ( QDropEvent *e )
 {
-	const ImageHolder::Pointer image = m_ViewerCore->getImageMap().at( e->mimeData()->text().toStdString() );
-	WidgetEnsemble::Pointer myEnsemble;
-	BOOST_FOREACH( WidgetEnsemble::Vector::reference ensemble, m_ViewerCore->getUICore()->getEnsembleList() ) {
-		BOOST_FOREACH( WidgetEnsemble::reference ensembleComponent, *ensemble ) {
-			if( ensembleComponent->getWidgetInterface() == this ) {
-				myEnsemble = ensemble;
+	const std::string& text = e->mimeData()->text().toStdString();
+	if( m_ViewerCore->getImageMap().find(text) != m_ViewerCore->getImageMap().end() ) {
+		const ImageHolder::Pointer image = m_ViewerCore->getImageMap()[text];
+		WidgetEnsemble::Pointer myEnsemble;
+		BOOST_FOREACH( WidgetEnsemble::Vector::reference ensemble, m_ViewerCore->getUICore()->getEnsembleList() ) {
+			BOOST_FOREACH( WidgetEnsemble::reference ensembleComponent, *ensemble ) {
+				if( ensembleComponent->getWidgetInterface() == this ) {
+					myEnsemble = ensemble;
+				}
 			}
 		}
-	}
-	myEnsemble->addImage( image  );
-	BOOST_FOREACH( WidgetEnsemble::Vector::reference ensemble, m_ViewerCore->getUICore()->getEnsembleList() ) {
-		if( ensemble != myEnsemble ) {
-			ensemble->removeImage( image );
+		myEnsemble->addImage( image  );
+		BOOST_FOREACH( WidgetEnsemble::Vector::reference ensemble, m_ViewerCore->getUICore()->getEnsembleList() ) {
+			if( ensemble != myEnsemble ) {
+				ensemble->removeImage( image );
+			}
 		}
-	}
 
-	m_ViewerCore->setCurrentImage( image );
-	m_ViewerCore->updateScene();
-	m_ViewerCore->getUICore()->refreshUI();
+		m_ViewerCore->setCurrentImage( image );
+		m_ViewerCore->updateScene();
+		m_ViewerCore->getUICore()->refreshUI();
+	} else {
+		m_ViewerCore->getUICore()->openFromDropEvent(e);
+	}
 }
 
 

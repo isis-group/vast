@@ -366,6 +366,7 @@ void QImageWidgetImplementation::mouseMoveEvent( QMouseEvent *e )
 				const double scaling = 1.0 - ( m_StartCoordsPair.first - e->x() ) / ( float )width() * 5;
 				image->getImageProperties().offset = offset;
 				image->getImageProperties().scaling = scaling < 0.0 ? 0.0 : scaling;
+				image->getImageProperties().scalingMinMax = operation::NativeImageOps::getMinMaxFromScalingOffset(std::make_pair<double,double>(scaling, offset), image );
 				image->updateColorMap();
 			}
 		} else {
@@ -374,6 +375,7 @@ void QImageWidgetImplementation::mouseMoveEvent( QMouseEvent *e )
 			const double scaling = 1.0 - ( m_StartCoordsPair.first - e->x() ) / ( float )width() * 5;
 			image->getImageProperties().offset = offset;
 			image->getImageProperties().scaling = scaling < 0.0 ? 0.0 : scaling;
+			image->getImageProperties().scalingMinMax = operation::NativeImageOps::getMinMaxFromScalingOffset(std::make_pair<double,double>(scaling, offset), image );
 			image->updateColorMap();
 		}
 

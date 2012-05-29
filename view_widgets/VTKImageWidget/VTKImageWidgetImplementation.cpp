@@ -30,6 +30,7 @@
 #include "CoreUtils/singletons.hpp"
 #include "geometrical.hpp"
 #include <widgetensemble.hpp>
+#include <uicore.hpp>
 
 
 namespace isis
@@ -235,25 +236,30 @@ void VTKImageWidgetImplementation::dragEnterEvent ( QDragEnterEvent *e )
 
 void VTKImageWidgetImplementation::dropEvent ( QDropEvent *e )
 {
-	const ImageHolder::Pointer image = m_ViewerCore->getImageMap().at( e->mimeData()->text().toStdString() );
-	WidgetEnsemble::Pointer myEnsemble;
-	BOOST_FOREACH( WidgetEnsemble::Vector::reference ensemble, m_ViewerCore->getUICore()->getEnsembleList() ) {
-		BOOST_FOREACH( WidgetEnsemble::reference ensembleComponent, *ensemble ) {
-			if( ensembleComponent->getWidgetInterface() == this ) {
-				myEnsemble = ensemble;
+	const std::string text = e->mimeData()->text().toStdString() ;
+	if( m_ViewerCore->getImageMap().find(text) != m_ViewerCore->getImageMap().end() ) {
+		const ImageHolder::Pointer image = m_ViewerCore->getImageMap()[text];
+		WidgetEnsemble::Pointer myEnsemble;
+		BOOST_FOREACH( WidgetEnsemble::Vector::reference ensemble, m_ViewerCore->getUICore()->getEnsembleList() ) {
+			BOOST_FOREACH( WidgetEnsemble::reference ensembleComponent, *ensemble ) {
+				if( ensembleComponent->getWidgetInterface() == this ) {
+					myEnsemble = ensemble;
+				}
 			}
 		}
-	}
-	myEnsemble->addImage( image  );
-	BOOST_FOREACH( WidgetEnsemble::Vector::reference ensemble, m_ViewerCore->getUICore()->getEnsembleList() ) {
-		if( ensemble != myEnsemble ) {
-			ensemble->removeImage( image );
+		myEnsemble->addImage( image  );
+		BOOST_FOREACH( WidgetEnsemble::Vector::reference ensemble, m_ViewerCore->getUICore()->getEnsembleList() ) {
+			if( ensemble != myEnsemble ) {
+				ensemble->removeImage( image );
+			}
 		}
-	}
 
-	m_ViewerCore->setCurrentImage( image );
-	m_ViewerCore->updateScene();
-	m_ViewerCore->getUICore()->refreshUI();
+		m_ViewerCore->setCurrentImage( image );
+		m_ViewerCore->updateScene();
+		m_ViewerCore->getUICore()->refreshUI();
+	} else {
+		m_ViewerCore->getUICore()->openFromDropEvent(e);
+	}
 }
 
 

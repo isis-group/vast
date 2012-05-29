@@ -59,6 +59,7 @@ ImageStack::ImageStack( QWidget *parent, ImageStackWidget *widget, QViewerCore *
 		connect( action, SIGNAL( triggered( bool ) ), signalMapper, SLOT( map() ) );
 	}
 	connect( signalMapper, SIGNAL( mapped( QString ) ), m_Widget, SLOT( openImageInWidget( QString ) ) );
+	setAcceptDrops(true);
 }
 
 void ImageStackWidget::openImageInWidget ( QString widget )
@@ -396,6 +397,12 @@ const WidgetEnsemble::Pointer ImageStackWidget::getEnsembleFromItem ( const QLis
 {
 	const ImageHolder::Pointer image = m_ViewerCore->getImageMap().at( item->data( Qt::UserRole ).toString().toStdString() );
 	return m_ViewerCore->getUICore()->getEnsembleFromImage( image );
+}
+
+void ImageStack::dropEvent ( QDropEvent* e )
+{
+	std::cout << "drop" << std::endl;
+	m_ViewerCore->getUICore()->openFromDropEvent(e);
 }
 
 

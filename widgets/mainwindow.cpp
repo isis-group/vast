@@ -150,7 +150,7 @@ MainWindow::MainWindow( QViewerCore *core ) :
 	m_StatusMovieLabel->setVisible( false );
 	m_Interface.statusbar->setVisible( false );
 
-
+	setAcceptDrops(true);
 
 	scalingWidget->setVisible( false );
 	loadSettings();
@@ -545,6 +545,8 @@ void MainWindow::refreshUI()
 	} else  if ( m_ViewerCore->getMode() == ViewerCoreBase::default_mode ) {
 		setWindowTitle( QString(  m_ViewerCore->getSettings()->getPropertyAs<std::string>( "signature" ).c_str() ) );
 	}
+
+	scalingWidget->synchronize();
 }
 
 
@@ -581,6 +583,17 @@ void MainWindow::findGlobalMax()
 	}
 }
 
+void MainWindow::dropEvent ( QDropEvent *e )
+{
+	std::cout << "drop" << std::endl;
+    const QMimeData* mimeData = e->mimeData();
+	if( mimeData->hasUrls() ) {
+		QList<QUrl> urlList;
+		for ( int i = 0; i < urlList.size(); i++ ) {
+			std::cout << urlList.at(i).toString().toStdString() << std::endl;
+		}
+	}
+}
 
 
 }

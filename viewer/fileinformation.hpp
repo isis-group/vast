@@ -51,17 +51,21 @@ public:
 					 bool newensemble = true );
 
 	std::string getFileName() const  { return m_filename; }
+	std::string getCompletePath() const { return m_completePath; }
 	util::istring getDialect() const { return m_dialect; }
 	util::istring getReadFormat() const  { return m_readformat; }
 	std::string getWidgetIdentifier() const { return m_widgetIdentifier; }
 	bool isNewEnsemble() const { return m_newensemble; }
 	ImageHolder::ImageType getImageType() const { return m_imagetype; }
 
+	void setCompletePath( const std::string &cP ) { m_completePath = cP; }
+
 
 
 private:
 	FileInformation() {};
 	std::string m_filename;
+	std::string m_completePath;
 	util::istring m_dialect;
 	util::istring m_readformat;
 	std::string m_widgetIdentifier;

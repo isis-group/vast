@@ -91,6 +91,8 @@ public:
 	///Closes the widget ensemble and returns its images
 	ImageHolder::Vector closeWidgetEnsemble( WidgetEnsemble::Pointer ensemble );
 
+	void openFromDropEvent( QDropEvent * );
+
 public Q_SLOTS:
 	virtual void reloadPluginsToGUI();
 	virtual void refreshUI( const bool &mainwindow = true );
