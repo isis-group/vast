@@ -155,6 +155,8 @@ void ImageHolder::collectImageInfo()
 	getImageProperties().isRGB = ( data::ValueArray<util::color24>::staticID == getImageProperties().majorTypeID || data::ValueArray<util::color48>::staticID == getImageProperties().majorTypeID );
 	if( !getImageProperties().isRGB ) {
 		getImageProperties().extent = fabs( getImageProperties().minMax.second->as<double>() - getImageProperties().minMax.first->as<double>() );
+		getImageProperties().scalingMinMax.first = getImageProperties().minMax.first->as<double>();
+		getImageProperties().scalingMinMax.second = getImageProperties().minMax.second->as<double>();
 
 	}
 	getImageProperties().majorTypeName = isis::util::getTypeMap( false, true ).at( getImageProperties().majorTypeID );
@@ -227,11 +229,6 @@ bool ImageHolder::setImage( const data::Image &image, const ImageType &_imageTyp
 	getImageProperties().scaling = 1.0;
 	getImageProperties().offset = 0.0;
 	getImageProperties().colorMap = util::Singletons::get<color::Color, 10>().getColormapMap().at( getImageProperties().lut );
-
-	if( !getImageProperties().isRGB ) {
-		m_PropMap.setPropertyAs<double>( "scalingMinValue", getImageProperties().minMax.first->as<double>() );
-		m_PropMap.setPropertyAs<double>( "scalingMaxValue", getImageProperties().minMax.second->as<double>() );
-	}
 
 	getImageProperties().alphaMap.resize( 256 );
 	getImageProperties().alignedSize32 = MemoryHandler::get32BitAlignedSize( m_ImageSize );

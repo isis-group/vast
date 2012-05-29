@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * Author: Erik Türke, tuerke@cbs.mpg.de
+ * Author: Erik Tuerke, tuerke@cbs.mpg.de
  *
  * imageholder.hpp
  *
@@ -86,7 +86,7 @@ private:
 		ImageType imageType;
 		InterpolationType interpolationType;
 		std::pair<util::ValueReference, util::ValueReference> minMax;
-		std::pair<util::ValueReference, util::ValueReference> internMinMax;
+		std::pair<double, double> scalingMinMax;
 		util::fvector4 indexOrigin;
 		util::Matrix4x4<float> orientation;
 		util::Matrix4x4<float> latchedOrientation;
@@ -195,10 +195,6 @@ private:
 		LOG( Dev, info ) << "scalingToInternalType: " << getImageProperties().scalingToInternalType.first->as<double>() << " : " << getImageProperties().scalingToInternalType.second->as<double>();
 		image.copyToMem<TYPE>( &imagePtr[0], image.getVolume(), getImageProperties().scalingToInternalType );
 		LOG( Dev, verbose_info ) << "Copied image to continuous memory space.";
-		getImageProperties().internMinMax = imagePtr.getMinMax();
-		if( !getImageProperties().isRGB ) {
-			LOG( Dev, info ) << "internMinMax: " << getImageProperties().internMinMax.first->as<double>() << " : " << getImageProperties().internMinMax.second->as<double>();
-		}
 
 		//splice the image in its volumes -> we get a vector of t volumes
 		if( m_ImageSize[3] > 1 ) { //splicing is only necessary if we got more than 1 timestep

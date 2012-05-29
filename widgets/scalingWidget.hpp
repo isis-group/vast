@@ -53,7 +53,6 @@ public Q_SLOTS:
 	void scalingChanged( double );
 	void offsetChanged( double );
 	void reset();
-	void autoScale();
 	void applyScalingOffset( const double &scaling, const double &offset, bool global );
 
 

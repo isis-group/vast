@@ -105,7 +105,6 @@ MainWindow::MainWindow( QViewerCore *core ) :
 	connect( m_Interface.action_Exit, SIGNAL( triggered() ), this, SLOT( close() ) );
 	connect( m_Interface.actionPropagate_Zooming, SIGNAL( triggered( bool ) ), this, SLOT( propagateZooming( bool ) ) );
 	connect( m_ActionReset_Scaling, SIGNAL( triggered() ), this, SLOT( resetScaling() ) );
-	connect( m_ActionAuto_Scaling, SIGNAL( triggered() ), this, SLOT( autoScaling() ) );
 	connect( m_Interface.actionShow_Crosshair, SIGNAL( triggered( bool ) ), m_ViewerCore, SLOT( setShowCrosshair( bool ) ) );
 	connect( m_Interface.actionSave_all_Images, SIGNAL( triggered() ), this, SLOT( saveAllImages() ) );
 	connect( m_Interface.actionToggle_Zmap_Mode, SIGNAL( triggered( bool ) ), this, SLOT( toggleZMapMode( bool ) ) );
@@ -219,12 +218,6 @@ void MainWindow::saveSettings()
 	m_ViewerCore->getSettings()->getQSettings()->setValue( "pos", pos() );
 	m_ViewerCore->getSettings()->getQSettings()->endGroup();
 	m_ViewerCore->getSettings()->getQSettings()->sync();
-}
-
-
-void MainWindow::autoScaling()
-{
-	scalingWidget->autoScale();
 }
 
 

@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * Author: Erik Türke, tuerke@cbs.mpg.de
+ * Author: Erik Tuerke, tuerke@cbs.mpg.de
  *
  * CorrelationPlotter.cpp
  *
@@ -150,8 +150,6 @@ bool isis::viewer::plugin::CorrelationPlotterDialog::createCorrelationMap()
 			m_CurrentCorrelationMap->getImageProperties().lut = std::string( "standard_zmap" );
 			m_CurrentCorrelationMap->getImageProperties().minMax.first = util::Value<MapImageType>( -1 );
 			m_CurrentCorrelationMap->getImageProperties().minMax.second = util::Value<MapImageType>( 1 );
-			m_CurrentCorrelationMap->getImageProperties().internMinMax.first = util::Value<MapImageType>( 0 );
-			m_CurrentCorrelationMap->getImageProperties().internMinMax.second = util::Value<MapImageType>( 255 );
 			m_CurrentCorrelationMap->getImageProperties().scalingToInternalType.first = util::Value<MapImageType>( 128 );
 			m_CurrentCorrelationMap->getImageProperties().scalingToInternalType.second = util::Value<MapImageType>( 127 );
 			m_CurrentCorrelationMap->getImageProperties().extent = m_CurrentCorrelationMap->getImageProperties().minMax.second->as<double>() -  m_CurrentCorrelationMap->getImageProperties().minMax.first->as<double>();
