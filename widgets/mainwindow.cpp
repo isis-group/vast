@@ -244,10 +244,11 @@ void MainWindow::resetScaling()
 	BOOST_FOREACH( ImageHolder::Vector::const_reference image, m_ViewerCore->getImageVector() ) {
 		image->getImageProperties().scaling = 1.0;
 		image->getImageProperties().offset = 0.0;
+		image->getImageProperties().scalingMinMax = operation::NativeImageOps::getMinMaxFromScalingOffset( std::make_pair<double, double>( 1.0, 0.0 ), image );
 		image->updateColorMap();
 	}
 	m_ViewerCore->updateScene();
-	scalingWidget->synchronize();
+	m_ViewerCore->getUICore()->refreshUI();
 }
 
 
