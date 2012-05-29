@@ -53,6 +53,7 @@ public:
 			viewerCore->getUICore()->getMainWindow()->getInterface().topGridLayout->addWidget( m_MaskEdit );
 			m_MaskEditSet = true;
 		}
+
 		m_MaskEdit->show();
 		return true;
 	};

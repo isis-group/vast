@@ -175,7 +175,8 @@ void ScalingWidget::applyScalingOffset( const double &scaling, const double &off
 			m_ViewerCore->updateScene();
 		}
 	}
-	m_ViewerCore->getUICore()->refreshUI(false);
+
+	m_ViewerCore->getUICore()->refreshUI( false );
 }
 
 

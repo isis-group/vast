@@ -148,7 +148,8 @@ public:
 
 		if( sync ) {
 			getISISImage()->voxel<TYPE>( first, second, third, fourth ) = value;
-			if( value > getImageProperties().minMax.second->as<TYPE>() || value < getImageProperties().minMax.first->as<TYPE>()) {
+
+			if( value > getImageProperties().minMax.second->as<TYPE>() || value < getImageProperties().minMax.first->as<TYPE>() ) {
 				getImageProperties().minMax = getISISImage()->getMinMax();
 				getImageProperties().extent = fabs( getImageProperties().minMax.second->as<double>() - getImageProperties().minMax.first->as<double>() );
 				updateColorMap();

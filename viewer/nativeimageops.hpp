@@ -171,6 +171,7 @@ private:
 				}
 			}
 		}
+
 		m_ViewerCore->emitImageContentChanged( image );
 
 	}

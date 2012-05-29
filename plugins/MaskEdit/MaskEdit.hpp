@@ -83,10 +83,11 @@ private:
 			start[i] =  voxel[i] - m_Radius;
 			end[i] =  voxel[i] + m_Radius;
 		}
-		
+
 		unsigned short radSquare = m_Radius * m_Radius;
-		
+
 		const util::Value<TYPE> colorValue = m_Interface.colorEdit->value();
+
 		for( short k = start[2] + 1; k < end[2]; k++ ) {
 			for( short j = start[1] + 1; j < end[1]; j++ ) {
 #ifdef _OPENMP
@@ -106,6 +107,7 @@ private:
 				}
 			}
 		}
+
 		m_ViewerCore->getUICore()->refreshUI();
 	}
 

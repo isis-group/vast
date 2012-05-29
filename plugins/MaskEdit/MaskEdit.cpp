@@ -51,15 +51,15 @@ MaskEditDialog::MaskEditDialog( QWidget *parent, QViewerCore *core )
 	m_Interface.radius->setMaximum( 500 );
 	m_Interface.radius->setValue( m_Radius );
 
-	m_Interface.colorEdit->setMinimum(-std::numeric_limits<double>::max());
-	m_Interface.colorEdit->setMaximum(std::numeric_limits<double>::max());
+	m_Interface.colorEdit->setMinimum( -std::numeric_limits<double>::max() );
+	m_Interface.colorEdit->setMaximum( std::numeric_limits<double>::max() );
 
 	util::Singletons::get<color::Color, 10>().addColormap( ":/common/maskeditLUT" );
 	connect( m_Interface.newMask, SIGNAL( clicked() ), this, SLOT( createEmptyMask() ) ) ;
 	connect( m_Interface.radius, SIGNAL( valueChanged( int ) ), SLOT( radiusChange( int ) ) );
 	connect( m_Interface.editCurrentImage, SIGNAL( clicked() ), this, SLOT( editCurrentImage() ) );
-	connect( m_Interface.pickColor, SIGNAL( clicked(bool)), this, SLOT( pickColorClicked()));
-	connect( m_Interface.closeButton, SIGNAL( clicked(bool)), this, SLOT( close()));
+	connect( m_Interface.pickColor, SIGNAL( clicked( bool ) ), this, SLOT( pickColorClicked() ) );
+	connect( m_Interface.closeButton, SIGNAL( clicked( bool ) ), this, SLOT( close() ) );
 
 }
 
@@ -112,7 +112,7 @@ void MaskEditDialog::showEvent( QShowEvent * )
 
 void MaskEditDialog::physicalCoordChanged( util::fvector4 physCoord, Qt::MouseButton mouseButton )
 {
-	if( mouseButton == Qt::LeftButton && m_ViewerCore->hasImage()) {
+	if( mouseButton == Qt::LeftButton && m_ViewerCore->hasImage() ) {
 		if( !m_Interface.pickColor->isChecked() ) {
 			if( m_CurrentMask ) {
 				switch( m_CurrentMask->getImageProperties().majorTypeID ) {
@@ -153,6 +153,7 @@ void MaskEditDialog::physicalCoordChanged( util::fvector4 physCoord, Qt::MouseBu
 					LOG( Runtime, error ) << "Unknown type ID " << m_CurrentMask->getImageProperties().majorTypeID << " when trying to paint mask";
 					break;
 				}
+
 				m_ViewerCore->emitImageContentChanged( m_CurrentMask );
 				m_ViewerCore->updateScene();
 			}
@@ -166,7 +167,7 @@ void MaskEditDialog::physicalCoordChanged( util::fvector4 physCoord, Qt::MouseBu
 void MaskEditDialog::editCurrentImage()
 {
 	if( m_ViewerCore->hasImage() ) {
-		m_Interface.pickColor->setEnabled(true);
+		m_Interface.pickColor->setEnabled( true );
 		m_CurrentMask = m_ViewerCore->getCurrentImage();
 		m_Interface.radius->setEnabled( true );
 		BOOST_FOREACH( WidgetEnsemble::Vector::reference ensemble, m_ViewerCore->getUICore()->getEnsembleList() ) {
@@ -188,7 +189,7 @@ void MaskEditDialog::createEmptyMask()
 {
 	if( m_ViewerCore->hasImage() ) {
 		m_CreateMaskDialog->show();
-		m_Interface.pickColor->setEnabled(true);
+		m_Interface.pickColor->setEnabled( true );
 	} else {
 		QMessageBox msgBox;
 		msgBox.setIcon( QMessageBox::Critical );

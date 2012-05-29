@@ -367,6 +367,7 @@ void VoxelInformationWidget::synchronizePos( util::ivector4 voxelCoords )
 		displayIntensityColor<util::color48> ( voxelCoords );
 		break;
 	}
+
 	image->getImageProperties().voxelValue = m_Interface.intensityValue->text().toDouble();
 	disconnectSignals();
 	m_Interface.rowBox->setValue( voxelCoords[0] );

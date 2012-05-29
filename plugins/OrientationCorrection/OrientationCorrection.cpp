@@ -110,7 +110,7 @@ void OrientatioCorrectionDialog::showEvent ( QShowEvent *e )
 
 void OrientatioCorrectionDialog::closeEvent ( QCloseEvent *e )
 {
-	
+
 	QDialog::closeEvent( e );
 }
 

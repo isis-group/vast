@@ -165,7 +165,7 @@ bool isis::viewer::plugin::CorrelationPlotterDialog::createCorrelationMap()
 			m_CurrentCorrelationMap->getImageProperties().voxelCoords = voxelCoords;
 			m_CurrentCorrelationMap->getImageProperties().physicalCoords = physicalCoords;
 			m_CurrentVoxelPos = voxelCoords;
-			m_ViewerCore->setCurrentImage(m_CurrentCorrelationMap);
+			m_ViewerCore->setCurrentImage( m_CurrentCorrelationMap );
 			return true;
 		}
 	}
