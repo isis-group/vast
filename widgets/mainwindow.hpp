@@ -108,6 +108,8 @@ public Q_SLOTS:
 	void toggleCoronalView( bool );
 	void updateRecentOpenList();
 	void openRecentPath( QString );
+	
+protected:
 	void dropEvent( QDropEvent * );
 
 

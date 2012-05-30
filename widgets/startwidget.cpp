@@ -85,7 +85,6 @@ void StartWidget::openRecentPath()
 void StartWidget::showEvent( QShowEvent * )
 {
 	uint16_t width = m_ViewerCore->getSettings()->getPropertyAs<uint16_t>( "startWidgetWidth" );
-	uint16_t height = m_ViewerCore->getSettings()->getPropertyAs<uint16_t>( "startWidgetHeight" );
 	const QRect screen = QApplication::desktop()->screenGeometry();
 
 	const float scale = 0.9;

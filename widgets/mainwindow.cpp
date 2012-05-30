@@ -150,12 +150,9 @@ MainWindow::MainWindow( QViewerCore *core ) :
 	m_StatusMovieLabel->setVisible( false );
 	m_Interface.statusbar->setVisible( false );
 
-	setAcceptDrops(true);
-
 	scalingWidget->setVisible( false );
 	loadSettings();
 	m_Interface.actionOpen_recent->setMenu( new QMenu() );
-
 }
 
 
@@ -586,14 +583,7 @@ void MainWindow::findGlobalMax()
 
 void MainWindow::dropEvent ( QDropEvent *e )
 {
-	std::cout << "drop" << std::endl;
-    const QMimeData* mimeData = e->mimeData();
-	if( mimeData->hasUrls() ) {
-		QList<QUrl> urlList;
-		for ( int i = 0; i < urlList.size(); i++ ) {
-			std::cout << urlList.at(i).toString().toStdString() << std::endl;
-		}
-	}
+	m_ViewerCore->getUICore()->openFromDropEvent(e);
 }
 
 

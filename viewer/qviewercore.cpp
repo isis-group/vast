@@ -340,7 +340,8 @@ ImageHolder::Vector QViewerCore::openFile ( const FileInformation &fileInfo, boo
 			m_Settings->getRecentFiles().insertSave( _fileInfo );
 			LOG( Dev, info ) << "Loaded " << tempImgList.size() << " images from path " << _fileInfo.getCompletePath();
 		} else {
-			LOG( Dev, error ) << "Tried to load " << _fileInfo.getCompletePath() << ", but image list is empty.";
+			LOG( Dev, warning ) << "Tried to load " << _fileInfo.getCompletePath() << ", but image list is empty.";
+			return ImageHolder::Vector();
 		}
 
 		//creating the viewer image objects
@@ -431,8 +432,10 @@ void QViewerCore::openFileList( const std::list< FileInformation > fileInfoList 
 		} else {
 			getUICore()->createViewWidgetEnsembleList( fileInfoList.front().getWidgetIdentifier(), structuralImageList, true );
 		}
-
-		setCurrentImage( structuralImageList.front() );
+		if( !structuralImageList.empty() ) {
+			setCurrentImage( structuralImageList.front() );
+		}
+		
 	}
 
 	if( hasImage() ) {

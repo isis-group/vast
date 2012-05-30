@@ -26,10 +26,10 @@
  *      Author: tuerke
  ******************************************************************/
 #include "imageStackWidget.hpp"
-#include <viewercorebase.hpp>
-#include <qviewercore.hpp>
-#include <uicore.hpp>
-#include <color.hpp>
+#include "viewercorebase.hpp"
+#include "qviewercore.hpp"
+#include "uicore.hpp"
+#include "color.hpp"
 
 namespace isis
 {
