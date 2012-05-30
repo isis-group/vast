@@ -57,7 +57,7 @@ public:
 
 	static std::pair<double, double> getMinMaxFromScalingOffset( const std::pair<double, double> &scalingOffset, const ImageHolder::Pointer image );
 	static std::pair<double, double> getScalingOffsetFromMinMax( const std::pair<double, double> &minMax, const ImageHolder::Pointer image );
-	
+
 	static void setViewerCore( QViewerCore *core );
 
 private:

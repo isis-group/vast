@@ -237,7 +237,8 @@ void VTKImageWidgetImplementation::dragEnterEvent ( QDragEnterEvent *e )
 void VTKImageWidgetImplementation::dropEvent ( QDropEvent *e )
 {
 	const std::string text = e->mimeData()->text().toStdString() ;
-	if( m_ViewerCore->getImageMap().find(text) != m_ViewerCore->getImageMap().end() ) {
+
+	if( m_ViewerCore->getImageMap().find( text ) != m_ViewerCore->getImageMap().end() ) {
 		const ImageHolder::Pointer image = m_ViewerCore->getImageMap()[text];
 		WidgetEnsemble::Pointer myEnsemble;
 		BOOST_FOREACH( WidgetEnsemble::Vector::reference ensemble, m_ViewerCore->getUICore()->getEnsembleList() ) {
@@ -258,7 +259,7 @@ void VTKImageWidgetImplementation::dropEvent ( QDropEvent *e )
 		m_ViewerCore->updateScene();
 		m_ViewerCore->getUICore()->refreshUI();
 	} else {
-		m_ViewerCore->getUICore()->openFromDropEvent(e);
+		m_ViewerCore->getUICore()->openFromDropEvent( e );
 	}
 }
 

@@ -434,7 +434,7 @@ void QGeomWidget::mouseMoveEvent ( QMouseEvent *e )
 				const double scaling = 1.0 - ( m_StartCoordsPair.first - e->x() ) / ( float )width() * 5;
 				image->getImageProperties().offset = offset;
 				image->getImageProperties().scaling = scaling < 0.0 ? 0.0 : scaling;
-				image->getImageProperties().scalingMinMax = operation::NativeImageOps::getMinMaxFromScalingOffset(std::make_pair<double,double>(scaling, offset), image );
+				image->getImageProperties().scalingMinMax = operation::NativeImageOps::getMinMaxFromScalingOffset( std::make_pair<double, double>( scaling, offset ), image );
 				image->updateColorMap();
 			}
 		} else {
@@ -443,7 +443,7 @@ void QGeomWidget::mouseMoveEvent ( QMouseEvent *e )
 			const double scaling = 1.0 - ( m_StartCoordsPair.first - e->x() ) / ( float )width() * 5;
 			image->getImageProperties().offset = offset;
 			image->getImageProperties().scaling = scaling < 0.0 ? 0.0 : scaling;
-			image->getImageProperties().scalingMinMax = operation::NativeImageOps::getMinMaxFromScalingOffset(std::make_pair<double,double>(scaling, offset), image );
+			image->getImageProperties().scalingMinMax = operation::NativeImageOps::getMinMaxFromScalingOffset( std::make_pair<double, double>( scaling, offset ), image );
 			image->updateColorMap();
 		}
 
@@ -542,8 +542,9 @@ void QGeomWidget::dragEnterEvent ( QDragEnterEvent *e )
 
 void QGeomWidget::dropEvent ( QDropEvent *e )
 {
-	const std::string& text = e->mimeData()->text().toStdString();
-	if( m_ViewerCore->getImageMap().find(text) != m_ViewerCore->getImageMap().end() ) {
+	const std::string &text = e->mimeData()->text().toStdString();
+
+	if( m_ViewerCore->getImageMap().find( text ) != m_ViewerCore->getImageMap().end() ) {
 		const ImageHolder::Pointer image = m_ViewerCore->getImageMap()[text];
 		WidgetEnsemble::Pointer myEnsemble;
 		BOOST_FOREACH( WidgetEnsemble::Vector::reference ensemble, m_ViewerCore->getUICore()->getEnsembleList() ) {
@@ -564,7 +565,7 @@ void QGeomWidget::dropEvent ( QDropEvent *e )
 		m_ViewerCore->updateScene();
 		m_ViewerCore->getUICore()->refreshUI();
 	} else {
-		m_ViewerCore->getUICore()->openFromDropEvent(e);
+		m_ViewerCore->getUICore()->openFromDropEvent( e );
 	}
 }
 

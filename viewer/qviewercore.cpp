@@ -322,7 +322,7 @@ ImageHolder::Vector QViewerCore::openFile ( const FileInformation &fileInfo, boo
 		if( _fileInfo.getCompletePath().empty() ) {
 			_fileInfo.setCompletePath( dir.absolutePath().toStdString() );
 		}
-		
+
 		boost::filesystem::path p ( _fileInfo.getCompletePath() );
 
 		setCurrentPath ( p.parent_path().string() );
@@ -432,10 +432,11 @@ void QViewerCore::openFileList( const std::list< FileInformation > fileInfoList 
 		} else {
 			getUICore()->createViewWidgetEnsembleList( fileInfoList.front().getWidgetIdentifier(), structuralImageList, true );
 		}
+
 		if( !structuralImageList.empty() ) {
 			setCurrentImage( structuralImageList.front() );
 		}
-		
+
 	}
 
 	if( hasImage() ) {

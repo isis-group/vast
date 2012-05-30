@@ -86,7 +86,7 @@ void isis::viewer::FileInformationMap::readFileInfortmationMap ( QSettings *sett
 	while( fileNameIter != fileNames.end() ) {
 		isis::viewer::FileInformation fInfo( ( *fileNameIter ).toStdString(), ( *dialectsIter ).toStdString().c_str(), ( *readFormatsIter ).toStdString().c_str(), ( *widgetIdentifierIter ).toStdString(), static_cast<ImageHolder::ImageType>( ( *imageTypesIter ).toUInt() ), true );
 		fInfo.setCompletePath( ( *completePathIter ).toStdString() );
-		insertSave(fInfo);
+		insertSave( fInfo );
 		fileNameIter++;
 		completePathIter++;
 		readFormatsIter++;

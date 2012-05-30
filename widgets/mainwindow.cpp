@@ -583,7 +583,7 @@ void MainWindow::findGlobalMax()
 
 void MainWindow::dropEvent ( QDropEvent *e )
 {
-	m_ViewerCore->getUICore()->openFromDropEvent(e);
+	m_ViewerCore->getUICore()->openFromDropEvent( e );
 }
 
 
