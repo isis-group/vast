@@ -462,9 +462,6 @@ void QViewerCore::closeImage ( ImageHolder::Pointer image, bool refreshUI )
 	if( refreshUI ) {
 		getUICore()->refreshUI( false );
 	}
-
-
-
 }
 
 
@@ -474,7 +471,6 @@ void QViewerCore::close ()
 	getSettings()->getQSettings()->setValue( "vastExitedSuccessfully", true );
 	getSettings()->getQSettings()->sync();
 	getSettings()->getQSettings()->endGroup();
-
 }
 
 

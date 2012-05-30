@@ -73,6 +73,9 @@ void VoxelOperationDialog::calculatePressed()
 
 			voxelOpHistory.push_back( op );
 			image->getPropMap().setPropertyAs<util::slist>( "VoxelOperation/opHistory", voxelOpHistory );
+			std::stringstream ss1;
+			ss1 << "VoxelOperation: " << op;
+			image->addChangedAttribute(ss1.str());
 			image->synchronize( );
 			image->updateColorMap();
 			m_ViewerCore->emitImageContentChanged( image );
