@@ -68,8 +68,9 @@ size_t QProgressFeedback::getMax()
 
 size_t QProgressFeedback::extend ( size_t by )
 {
-	m_ProgressBar->setMaximum( m_ProgressBar->maximum() + by );
-
+	const size_t newLen = m_ProgressBar->maximum() + by;
+	m_ProgressBar->setMaximum( newLen );
+	return newLen;
 }
 
 

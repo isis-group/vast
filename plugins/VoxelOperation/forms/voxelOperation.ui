@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>441</width>
-    <height>85</height>
+    <height>88</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -45,16 +45,25 @@
       <item row="0" column="1">
        <widget class="QLineEdit" name="operationInput">
         <property name="toolTip">
-         <string>Available variables:
-vox
-pos_x
-pos_y
-pos_z
-pos_t
+         <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Sans Serif'; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;
+Available variables:
+&lt;ul&gt;
+&lt;li&gt;vox
+&lt;li&gt;pos_x
+&lt;li&gt;pos_y
+&lt;li&gt;pos_z
+&lt;li&gt;pos_t
+&lt;/ul&gt;
 Examples:
-sin(vox)
-vox * vox
-sum(vox,pos_y)</string>
+&lt;ul&gt;
+&lt;li&gt;sin(vox)
+&lt;li&gt;vox * vox
+&lt;li&gt;sum(vox,pos_y)
+&lt;/ul&gt;</string>
         </property>
        </widget>
       </item>

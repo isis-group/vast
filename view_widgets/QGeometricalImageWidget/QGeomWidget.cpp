@@ -243,9 +243,8 @@ void QGeomWidget::paintImage( const ImageHolder::Pointer image )
 			MemoryHandler::fillSliceChunkOriented<InternalImageType>( sliceChunk, image, m_PlaneOrientation );
 		}
 
-		QImage qImage( ( InternalImageType * ) sliceChunk.asValueArray<InternalImageType>().getRawAddress().get(),
-					   mappedSizeAligned[0], mappedSizeAligned[1], QImage::Format_Indexed8 );
-
+		QImage qImage( &sliceChunk.voxel<InternalImageType>(0), mappedSizeAligned[0], mappedSizeAligned[1], QImage::Format_Indexed8 );
+				
 		qImage.setColorTable( image->getImageProperties().colorMap );
 		m_Painter->drawImage( 0, 0, qImage );
 	} else {
@@ -257,8 +256,7 @@ void QGeomWidget::paintImage( const ImageHolder::Pointer image )
 			MemoryHandler::fillSliceChunkOriented<InternalImageColorType>( sliceChunk, image, m_PlaneOrientation );
 		}
 
-		QImage qImage( ( InternalImageType * ) sliceChunk.asValueArray<InternalImageColorType>().getRawAddress().get(),
-					   mappedSizeAligned[0], mappedSizeAligned[1], QImage::Format_RGB888 );
+		QImage qImage( ( InternalImageType * ) &sliceChunk.voxel<InternalImageColorType>(0), mappedSizeAligned[0], mappedSizeAligned[1], QImage::Format_RGB888 );
 		m_Painter->drawImage( 0, 0, qImage );
 	}
 }

@@ -233,12 +233,12 @@ void isis::viewer::ui::FileDialog::parsePath()
 		m_Interface.openSaveButton->setEnabled( false );
 		m_Interface.addToListButton->setEnabled( false );
 	} else {
-		m_Interface.dialectComboBox->clear();
-		m_Interface.dialectComboBox->addItem( "" );
 		util::istring extension = boost::filesystem::extension( boost::filesystem::path( m_Interface.fileDirEdit->currentText().toStdString() ) ).c_str();
 		extension.erase( 0, 1 );
 
-		if( !extension.empty() ) {
+		if( !extension.empty() && m_Suffix.empty() ) {
+			m_Interface.dialectComboBox->clear();
+			m_Interface.dialectComboBox->addItem( "" );
 			std::list<util::istring > dialects = getDialectsAsMap( isis::image_io::FileFormat::read_only ).at( extension.c_str() );
 			BOOST_FOREACH( std::list<util::istring>::const_reference dialect, dialects ) {
 				m_Interface.dialectComboBox->addItem( dialect.c_str() );

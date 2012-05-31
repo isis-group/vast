@@ -149,7 +149,7 @@ void Settings::initializeWithDefaultSettings()
 	setPropertyAs<bool>( "showFavoriteFileList", false );
 	setPropertyAs<uint16_t>( "maxWidgetHeight", 200 );
 	setPropertyAs<uint16_t>( "maxWidgetWidth", 200 );
-	setPropertyAs<uint16_t>( "maxOptionWidgetHeight", 90 );
+	setPropertyAs<uint16_t>( "maxOptionWidgetHeight", 120 );
 	setPropertyAs<uint16_t>( "minOptionWidgetHeight", 90 );
 	setPropertyAs<bool>( "showStartWidget", true );
 	setPropertyAs<bool>( "showCrashMessage", true );

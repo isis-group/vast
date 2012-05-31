@@ -434,7 +434,7 @@ void UICore::toggleLoadingIcon ( bool start, const QString &text )
 	QApplication::processEvents();
 }
 
-void UICore::openFromDropEvent ( QDropEvent *e )
+void UICore::openFromDropEvent ( QDropEvent */*e*/ )
 {
 	//  const QMimeData* mimeData = e->mimeData();
 	//  if (mimeData->hasUrls()) {

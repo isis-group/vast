@@ -69,8 +69,11 @@ public:
 			const util::ivector4 _mapping = mapCoordsToOrientation( util::fvector4( 0, 1, 2 ), util::IdentityMatrix<float, 4>(), orientation );
 			util::fvector4 phys = image->getImageProperties().physicalCoords;
 
-			for ( float i = bb[_mapping[0]].first; i < bb[_mapping[0]].second; i += 0.707 * image->getImageProperties().voxelSize[mapping[0]] ) {
-				for ( float j = bb[_mapping[1]].first; j < bb[_mapping[1]].second; j += 0.707 * image->getImageProperties().voxelSize[mapping[1]]  ) {
+			const float stepI = 0.707 * image->getImageProperties().voxelSize[mapping[0]];
+			const float stepJ = 0.707 * image->getImageProperties().voxelSize[mapping[1]];
+			
+			for ( float i = bb[_mapping[0]].first; i < bb[_mapping[0]].second; i += stepI ) {
+				for ( float j = bb[_mapping[1]].first; j < bb[_mapping[1]].second; j += stepJ  ) {
 					phys[_mapping[0]] = i;
 					phys[_mapping[1]] = j;
 					const util::ivector4 voxCoords = isisImage->getIndexFromPhysicalCoords( phys, false );

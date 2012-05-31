@@ -76,7 +76,6 @@ VoxelInformationWidget::VoxelInformationWidget( QWidget *parent, QViewerCore *co
 	m_Interface.colormapButton->setSizePolicy( QSizePolicy::Minimum, QSizePolicy::Minimum );
 	m_Interface.colormapButton->setMinimumHeight( 10 );
 
-
 }
 
 void VoxelInformationWidget::disconnectSignals()
