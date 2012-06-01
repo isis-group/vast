@@ -56,7 +56,7 @@ std::pair< double, double > isis::viewer::operation::NativeImageOps::getScalingO
 isis::util::ivector4 isis::viewer::operation::NativeImageOps::getGlobalMin( const boost::shared_ptr< isis::viewer::ImageHolder > image, const util::ivector4 &startPos, const unsigned short &radius )
 {
 	if( image->getISISImage()->getVolume() >= 1e6 ) {
-		m_ViewerCore->getUICore()->toggleLoadingIcon( true, QString( "Searching for global min of " ) + m_ViewerCore->getCurrentImage()->getImageProperties().fileName.c_str() );
+		m_ViewerCore->getUICore()->toggleLoadingIcon( true );
 	}
 
 	switch ( image->getISISImage()->getMajorTypeID() ) {
@@ -104,7 +104,7 @@ isis::util::ivector4 isis::viewer::operation::NativeImageOps::getGlobalMin( cons
 isis::util::ivector4 isis::viewer::operation::NativeImageOps::getGlobalMax( const boost::shared_ptr< isis::viewer::ImageHolder > image, const util::ivector4 &startPos, const unsigned short &radius )
 {
 	if( image->getISISImage()->getVolume() >= 1e6 ) {
-		m_ViewerCore->getUICore()->toggleLoadingIcon( true, QString( "Searching for global max of " ) + m_ViewerCore->getCurrentImage()->getImageProperties().fileName.c_str() );
+		m_ViewerCore->getUICore()->toggleLoadingIcon( true );
 	}
 
 	switch ( image->getISISImage()->getMajorTypeID() ) {
@@ -151,9 +151,7 @@ isis::util::ivector4 isis::viewer::operation::NativeImageOps::getGlobalMax( cons
 void isis::viewer::operation::NativeImageOps::setTrueZero ( boost::shared_ptr< isis::viewer::ImageHolder > image )
 {
 	if( !image->getImageProperties().isRGB ) {
-		std::stringstream text;
-		text << "Setting 0 to black for " << image->getImageProperties().fileName << "...";
-		m_ViewerCore->getUICore()->toggleLoadingIcon( true, text.str().c_str() );
+		m_ViewerCore->getUICore()->toggleLoadingIcon( true );
 
 		switch ( image->getImageProperties().majorTypeID ) {
 		case data::ValueArray<bool>::staticID:

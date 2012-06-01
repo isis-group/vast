@@ -322,9 +322,9 @@ ImageHolder::Vector QViewerCore::openFile ( const FileInformation &fileInfo, boo
 			_fileInfo.setCompletePath( dir.absolutePath().toStdString() );
 		}
 
-		getUICore()->toggleLoadingIcon( true, QString( "Opening image " ) + QString( _fileInfo.getCompletePath().c_str() ) + QString( "..." ) );
-
 		boost::filesystem::path p ( _fileInfo.getCompletePath() );
+
+		getUICore()->toggleLoadingIcon( true, QString( "Opening image \"" ) + QString(p.filename().c_str() ) + QString( "\"..." ) );
 
 		setCurrentPath ( p.parent_path().string() );
 

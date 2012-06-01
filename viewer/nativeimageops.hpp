@@ -83,7 +83,7 @@ private:
 		TYPE currentValue;
 		data::TypedImage<TYPE> typedImage = *image->getISISImage();
 		TYPE currentMin = std::numeric_limits<TYPE>::max();
-		m_ViewerCore->getProgressFeedback()->show( ( end[2] - start[2] ) );
+		m_ViewerCore->getProgressFeedback()->show( ( end[2] - start[2] ), "Searching minimum..." );
 
 		for( int32_t z = start[2] + 1; z < end[2]; z++ ) {
 			m_ViewerCore->getProgressFeedback()->progress();
@@ -126,7 +126,7 @@ private:
 		data::TypedImage<TYPE> typedImage = *image->getISISImage();
 		TYPE currentMax = -std::numeric_limits<TYPE>::max();
 
-		m_ViewerCore->getProgressFeedback()->show( ( end[2] - start[2] ) );
+		m_ViewerCore->getProgressFeedback()->show( ( end[2] - start[2] ), "Searching maximum..." );
 
 		for( int32_t z = start[2] + 1; z < end[2]; z++ ) {
 			m_ViewerCore->getProgressFeedback()->progress();
@@ -155,7 +155,7 @@ private:
 		// first make shure the images datatype is consistent
 		data::TypedImage<TYPE> tImage ( *image->getISISImage() );
 		//now set all voxels to the m_ReservedValue that are 0 in the origin image
-		m_ViewerCore->getProgressFeedback()->show( image->getImageSize()[2] * image->getImageSize()[3] );
+		m_ViewerCore->getProgressFeedback()->show( image->getImageSize()[2] * image->getImageSize()[3], "Setting 0 to black..." );
 
 		for( size_t t = 0; t < image->getImageSize()[3]; t++ ) {
 			for( size_t z = 0; z < image->getImageSize()[2]; z++ ) {
@@ -165,7 +165,6 @@ private:
 #ifdef _OPENMP
 #pragma omp parallel for
 #endif
-
 					for( size_t x = 0; x < image->getImageSize()[0]; x++ ) {
 						if( static_cast<data::Image &>( tImage ).voxel<TYPE>( x, y, z, t ) == static_cast<TYPE>( 0 ) ) {
 							image->getVolumeVector()[t].voxel<InternalImageType>( x, y, z ) = 0;
