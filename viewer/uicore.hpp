@@ -60,7 +60,7 @@ public:
 	const WidgetEnsembleComponent::Map &getWidgets() const { return m_WidgetMap; }
 	WidgetEnsembleComponent::Map &getWidgets() { return m_WidgetMap; }
 
-	void showMainWindow();
+	void showMainWindow( const std::list<FileInformation> &fileList = std::list<FileInformation>() );
 	const MainWindow *getMainWindow() const  { return m_MainWindow; }
 	MainWindow *getMainWindow() { return m_MainWindow; }
 

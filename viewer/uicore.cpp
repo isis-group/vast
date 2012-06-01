@@ -87,11 +87,16 @@ void UICore::setOptionPosition( UICore::OptionPosition pos )
 	}
 }
 
-void UICore::showMainWindow()
+void UICore::showMainWindow(const std::list<FileInformation> &fileList)
 {
 	m_MainWindow->getInterface().rightGridLayout->addWidget( m_SliderWidget );
 	m_MainWindow->show();
-
+	if( fileList.empty() && m_ViewerCore->getSettings()->getPropertyAs<bool>( "showStartWidget" ) ) {
+		getMainWindow()->startWidget->show();
+	} else {
+		m_ViewerCore->openFileList( fileList );
+	}
+	m_ViewerCore->settingsChanged();
 }
 
 QDockWidget *UICore::createDockingEnsemble( QWidget *widget )

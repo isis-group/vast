@@ -173,17 +173,6 @@ int main( int argc, char *argv[] )
 								app.parameters["split"].as<bool>() ) );
 	}
 
-	if( !fileInfoList.empty() ) {
-		core->openFileList( fileInfoList );
-	} else {
-		if( core->getSettings()->getPropertyAs<bool>( "showStartWidget" ) ) {
-			core->getUICore()->getMainWindow()->startWidget->show();
-		}
-	}
-
-	core->getUICore()->toggleLoadingIcon( false );
-	core->getUICore()->showMainWindow();
-
-	core->settingsChanged();
+	core->getUICore()->showMainWindow( fileInfoList );
 	return app.getQApplication().exec();
 }

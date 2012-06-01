@@ -198,7 +198,7 @@ private:
 		LOG( Dev, verbose_info ) << "Copied image to continuous memory space.";
 
 		//splice the image in its volumes -> we get a vector of t volumes
-		if( m_ImageSize[3] > 1 ) { //splicing is only necessary if we got more than 1 timestep
+		if( m_ImageSize[dim_time] > 1 ) { //splicing is only necessary if we got more than 1 timestep
 			std::vector< data::ValueArrayReference > refVec = imagePtr.splice( m_ImageSize[0] * m_ImageSize[1] * m_ImageSize[2] );
 
 			for ( std::vector< data::ValueArrayReference >::const_iterator iter = refVec.begin(); iter != refVec.end(); iter++ ) {

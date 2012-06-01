@@ -315,13 +315,13 @@ ImageHolder::Vector QViewerCore::openFile ( const FileInformation &fileInfo, boo
 		LOG( Dev, info ) << "Opening path " << fileInfo.getCompletePath() << " with rdialect: "
 						 << _fileInfo.getDialect() << ", rf: " << _fileInfo.getReadFormat()
 						 << ", widget: " << _fileInfo.getWidgetIdentifier();
-		getUICore()->toggleLoadingIcon( true, QString( "Opening image " ) + _fileInfo.getCompletePath().c_str() + QString( "..." ) );
 
 		QDir dir( _fileInfo.getFileName().c_str() );
 
 		if( _fileInfo.getCompletePath().empty() ) {
 			_fileInfo.setCompletePath( dir.absolutePath().toStdString() );
 		}
+		getUICore()->toggleLoadingIcon( true, QString( "Opening image " ) + QString(_fileInfo.getCompletePath().c_str() ) + QString( "..." ) );
 
 		boost::filesystem::path p ( _fileInfo.getCompletePath() );
 
@@ -345,7 +345,9 @@ ImageHolder::Vector QViewerCore::openFile ( const FileInformation &fileInfo, boo
 		}
 
 		//creating the viewer image objects
+		getUICore()->toggleLoadingIcon(true, "Preparing image(s) for visualization..." );
 		ImageHolder::Vector imgList = addImageList( tempImgList, _fileInfo.getImageType() );
+		getUICore()->toggleLoadingIcon(false);
 
 		if( show ) {
 			BOOST_FOREACH( ImageHolder::Vector::const_reference image, imgList ) {
