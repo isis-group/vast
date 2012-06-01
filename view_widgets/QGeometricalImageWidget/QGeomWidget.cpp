@@ -233,7 +233,6 @@ void QGeomWidget::paintImage( const ImageHolder::Pointer image )
 
 	m_Painter->setOpacity( image->getImageProperties().opacity );
 	const util::ivector4 mappedSizeAligned = mapCoordsToOrientation( image->getImageProperties().alignedSize32, image->getImageProperties().latchedOrientation, m_PlaneOrientation );
-
 	if ( !image->getImageProperties().isRGB ) {
 		isis::data::MemChunk<InternalImageType> sliceChunk( mappedSizeAligned[0], mappedSizeAligned[1] );
 
@@ -247,7 +246,7 @@ void QGeomWidget::paintImage( const ImageHolder::Pointer image )
 				
 		qImage.setColorTable( image->getImageProperties().colorMap );
 		m_Painter->drawImage( 0, 0, qImage );
-	} else {
+	} /*else {
 		isis::data::MemChunk<InternalImageColorType> sliceChunk( mappedSizeAligned[0], mappedSizeAligned[1] );
 
 		if( m_LatchOrientation ) {
@@ -258,7 +257,7 @@ void QGeomWidget::paintImage( const ImageHolder::Pointer image )
 
 		QImage qImage( ( InternalImageType * ) &sliceChunk.voxel<InternalImageColorType>(0), mappedSizeAligned[0], mappedSizeAligned[1], QImage::Format_RGB888 );
 		m_Painter->drawImage( 0, 0, qImage );
-	}
+	}*/
 }
 
 void QGeomWidget::paintCrossHair() const

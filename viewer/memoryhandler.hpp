@@ -69,8 +69,7 @@ public:
 			const util::ivector4 _mapping = mapCoordsToOrientation( util::fvector4( 0, 1, 2 ), util::IdentityMatrix<float, 4>(), orientation );
 			const util::fvector4 vS = image->getImageProperties().orientation.dot(image->getImageProperties().voxelSize);
 			util::fvector4 phys = image->getImageProperties().physicalCoords;
-			float factor = 1./sqrt(2);
-
+			float factor = 1. / sqrt(2);
 			const float stepI = factor * image->getImageProperties().voxelSize[mapping[0]];
 			const float stepJ = factor * image->getImageProperties().voxelSize[mapping[1]];
 			for ( float j = bb[_mapping[1]].first; j < bb[_mapping[1]].second; j += stepJ  ) {

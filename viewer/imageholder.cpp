@@ -86,8 +86,8 @@ util::Matrix4x4<float> ImageHolder::calculateLatchedImageOrientation( bool trans
 			rB = 2;
 			cB = 0;
 		} else if ( sB == 2 ) {
-			rB = 1;
 			rB = 0;
+			cB = 1;
 		}
 	}
 
