@@ -388,6 +388,7 @@ void ImageHolder::setVoxel ( const size_t &first, const size_t &second, const si
 void ImageHolder::synchronize ()
 {
 	collectImageInfo();
+
 	if( getImageProperties().isRGB ) {
 		copyImageToVector<InternalImageColorType>( *getISISImage() );
 	} else {

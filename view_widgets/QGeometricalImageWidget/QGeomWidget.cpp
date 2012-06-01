@@ -233,6 +233,7 @@ void QGeomWidget::paintImage( const ImageHolder::Pointer image )
 
 	m_Painter->setOpacity( image->getImageProperties().opacity );
 	const util::ivector4 mappedSizeAligned = mapCoordsToOrientation( image->getImageProperties().alignedSize32, image->getImageProperties().latchedOrientation, m_PlaneOrientation );
+
 	if ( !image->getImageProperties().isRGB ) {
 		isis::data::MemChunk<InternalImageType> sliceChunk( mappedSizeAligned[0], mappedSizeAligned[1] );
 
@@ -242,22 +243,23 @@ void QGeomWidget::paintImage( const ImageHolder::Pointer image )
 			MemoryHandler::fillSliceChunkOriented<InternalImageType>( sliceChunk, image, m_PlaneOrientation );
 		}
 
-		QImage qImage( &sliceChunk.voxel<InternalImageType>(0), mappedSizeAligned[0], mappedSizeAligned[1], QImage::Format_Indexed8 );
-				
+		QImage qImage( &sliceChunk.voxel<InternalImageType>( 0 ), mappedSizeAligned[0], mappedSizeAligned[1], QImage::Format_Indexed8 );
+
 		qImage.setColorTable( image->getImageProperties().colorMap );
 		m_Painter->drawImage( 0, 0, qImage );
 	} /*else {
-		isis::data::MemChunk<InternalImageColorType> sliceChunk( mappedSizeAligned[0], mappedSizeAligned[1] );
 
-		if( m_LatchOrientation ) {
-			MemoryHandler::fillSliceChunk<InternalImageColorType>( sliceChunk, image, m_PlaneOrientation );
-		} else {
-			MemoryHandler::fillSliceChunkOriented<InternalImageColorType>( sliceChunk, image, m_PlaneOrientation );
-		}
+        isis::data::MemChunk<InternalImageColorType> sliceChunk( mappedSizeAligned[0], mappedSizeAligned[1] );
 
-		QImage qImage( ( InternalImageType * ) &sliceChunk.voxel<InternalImageColorType>(0), mappedSizeAligned[0], mappedSizeAligned[1], QImage::Format_RGB888 );
-		m_Painter->drawImage( 0, 0, qImage );
-	}*/
+        if( m_LatchOrientation ) {
+            MemoryHandler::fillSliceChunk<InternalImageColorType>( sliceChunk, image, m_PlaneOrientation );
+        } else {
+            MemoryHandler::fillSliceChunkOriented<InternalImageColorType>( sliceChunk, image, m_PlaneOrientation );
+        }
+
+        QImage qImage( ( InternalImageType * ) &sliceChunk.voxel<InternalImageColorType>(0), mappedSizeAligned[0], mappedSizeAligned[1], QImage::Format_RGB888 );
+        m_Painter->drawImage( 0, 0, qImage );
+    }*/
 }
 
 void QGeomWidget::paintCrossHair() const

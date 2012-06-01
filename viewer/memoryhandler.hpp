@@ -67,16 +67,19 @@ public:
 			const geometrical::BoundingBoxType &bb = image->getImageProperties().boundingBox;
 			const util::ivector4 mapping = mapCoordsToOrientation( util::fvector4( 0, 1, 2 ), image->getImageProperties().latchedOrientation, orientation );
 			const util::ivector4 _mapping = mapCoordsToOrientation( util::fvector4( 0, 1, 2 ), util::IdentityMatrix<float, 4>(), orientation );
-			const util::fvector4 vS = image->getImageProperties().orientation.dot(image->getImageProperties().voxelSize);
+			const util::fvector4 vS = image->getImageProperties().orientation.dot( image->getImageProperties().voxelSize );
 			util::fvector4 phys = image->getImageProperties().physicalCoords;
-			float factor = 1. / sqrt(2);
+			float factor = 1. / sqrt( 2 );
 			const float stepI = factor * image->getImageProperties().voxelSize[mapping[0]];
 			const float stepJ = factor * image->getImageProperties().voxelSize[mapping[1]];
+
 			for ( float j = bb[_mapping[1]].first; j < bb[_mapping[1]].second; j += stepJ  ) {
 				phys[_mapping[1]] = j;
+
 				for ( float i = bb[_mapping[0]].first; i < bb[_mapping[0]].second; i += stepI ) {
 					phys[_mapping[0]] = i;
 					const util::ivector4 voxCoords = isisImage->getIndexFromPhysicalCoords( phys, false );
+
 					if( image->checkVoxelCoords( voxCoords ) ) {
 						static_cast<data::Chunk & >( sliceChunk ).voxel<TYPE>( voxCoords[mapping[0]], voxCoords[mapping[1]] ) =
 							chunk.voxel<TYPE>( voxCoords[0], voxCoords[1], voxCoords[2] );

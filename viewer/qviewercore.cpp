@@ -321,7 +321,8 @@ ImageHolder::Vector QViewerCore::openFile ( const FileInformation &fileInfo, boo
 		if( _fileInfo.getCompletePath().empty() ) {
 			_fileInfo.setCompletePath( dir.absolutePath().toStdString() );
 		}
-		getUICore()->toggleLoadingIcon( true, QString( "Opening image " ) + QString(_fileInfo.getCompletePath().c_str() ) + QString( "..." ) );
+
+		getUICore()->toggleLoadingIcon( true, QString( "Opening image " ) + QString( _fileInfo.getCompletePath().c_str() ) + QString( "..." ) );
 
 		boost::filesystem::path p ( _fileInfo.getCompletePath() );
 
@@ -345,9 +346,9 @@ ImageHolder::Vector QViewerCore::openFile ( const FileInformation &fileInfo, boo
 		}
 
 		//creating the viewer image objects
-		getUICore()->toggleLoadingIcon(true, "Preparing image(s) for visualization..." );
+		getUICore()->toggleLoadingIcon( true, "Preparing image(s) for visualization..." );
 		ImageHolder::Vector imgList = addImageList( tempImgList, _fileInfo.getImageType() );
-		getUICore()->toggleLoadingIcon(false);
+		getUICore()->toggleLoadingIcon( false );
 
 		if( show ) {
 			BOOST_FOREACH( ImageHolder::Vector::const_reference image, imgList ) {
