@@ -41,7 +41,7 @@ namespace widget
 namespace _internal
 {
 
-const uint8_t rasteringFac = 50;
+const uint8_t rasteringFac = 100;
 
 util::fvector4 getPhysicalBoundingBox( const ImageHolder::Vector &images, const PlaneOrientation &orientation );
 
