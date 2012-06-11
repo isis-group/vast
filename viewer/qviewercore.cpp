@@ -256,8 +256,7 @@ void QViewerCore::settingsChanged()
 void QViewerCore::physicalCoordsChanged ( util::fvector4 physicalCoords )
 {
 	BOOST_FOREACH( ImageHolder::Vector::const_reference image, getImageVector() ) {
-		image->getImageProperties().physicalCoords = physicalCoords;
-		image->getImageProperties().voxelCoords = image->getISISImage()->getIndexFromPhysicalCoords( physicalCoords, true );
+		image->phyisicalCoordsChanged( physicalCoords );
 	}
 	emitPhysicalCoordsChanged( physicalCoords );
 }

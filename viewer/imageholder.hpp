@@ -63,6 +63,7 @@ private:
 		std::string fileName;
 		std::string filePath;
 		util::ivector4 voxelCoords;
+		util::ivector4 trueVoxelCoords;
 		util::fvector4 physicalCoords;
 		size_t timestep;
 		util::fvector4 voxelSize;

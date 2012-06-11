@@ -67,13 +67,14 @@ private:
 		const util::ivector4 size = image->getImageSize();
 		util::ivector4 start;
 		util::ivector4 end;
-		const size_t timestep = image->getImageProperties().voxelCoords[3];
 
 		if( radius ) {
 			for( size_t i = 0; i < 3; i++ ) {
 				start[i] = ( startPos[i] - radius ) < 0 ? 0 : startPos[i] - radius;
 				end[i] = ( startPos[i] + radius ) > size[i] ? size[i] : startPos[i] + radius;
 			}
+			end[3] = size[3];
+			start[3] = 0;	
 		} else {
 			start = util::ivector4( 0, 0, 0, 0 );
 			end = size;
@@ -83,18 +84,19 @@ private:
 		TYPE currentValue;
 		data::TypedImage<TYPE> typedImage = *image->getISISImage();
 		TYPE currentMin = std::numeric_limits<TYPE>::max();
-		m_ViewerCore->getProgressFeedback()->show( ( end[2] - start[2] ), "Searching minimum..." );
+		m_ViewerCore->getProgressFeedback()->show( ( end[2] - start[2] ) * ( end[3] - start[3] ), "Searching minimum..." );
+		for( int32_t t = start[3]; t < end[3]; t++ ) {
+			for( int32_t z = start[2]; z < end[2]; z++ ) {
+				m_ViewerCore->getProgressFeedback()->progress();
 
-		for( int32_t z = start[2] + 1; z < end[2]; z++ ) {
-			m_ViewerCore->getProgressFeedback()->progress();
+				for( int32_t y = start[1]; y < end[1]; y++ ) {
+					for( int32_t x = start[0]; x < end[0]; x++ ) {
+						currentValue = static_cast<data::Image &>( typedImage ).voxel<TYPE>( x, y, z, t );
 
-			for( int32_t y = start[1] + 1; y < end[1]; y++ ) {
-				for( int32_t x = start[0] + 1; x < end[0]; x++ ) {
-					currentValue = static_cast<data::Image &>( typedImage ).voxel<TYPE>( x, y, z, timestep );
-
-					if( currentValue < currentMin ) {
-						currentPos = util::ivector4( x, y, z, timestep );
-						currentMin = currentValue;
+						if( currentValue < currentMin ) {
+							currentPos = util::ivector4( x, y, z, t );
+							currentMin = currentValue;
+						}
 					}
 				}
 			}
@@ -109,13 +111,14 @@ private:
 		const util::ivector4 size = image->getImageSize();
 		util::ivector4 start;
 		util::ivector4 end;
-		const size_t timestep = image->getImageProperties().voxelCoords[3];
 
 		if( radius ) {
 			for( size_t i = 0; i < 3; i++ ) {
 				start[i] = ( startPos[i] - radius ) < 0 ? 0 : startPos[i] - radius;
 				end[i] = ( startPos[i] + radius ) > size[i] ? size[i] : startPos[i] + radius;
 			}
+			end[3] = size[3];
+			start[3] = 0;
 		} else {
 			start = util::ivector4( 0, 0, 0, 0 );
 			end = size;
@@ -126,18 +129,19 @@ private:
 		data::TypedImage<TYPE> typedImage = *image->getISISImage();
 		TYPE currentMax = -std::numeric_limits<TYPE>::max();
 
-		m_ViewerCore->getProgressFeedback()->show( ( end[2] - start[2] ), "Searching maximum..." );
+		m_ViewerCore->getProgressFeedback()->show( ( end[2] - start[2] ) * ( end[3] - start[3] ), "Searching maximum..." );
+		for( int32_t t = start[3]; t < end[3]; t++ ) {
+			for( int32_t z = start[2]; z < end[2]; z++ ) {
+				m_ViewerCore->getProgressFeedback()->progress();
 
-		for( int32_t z = start[2] + 1; z < end[2]; z++ ) {
-			m_ViewerCore->getProgressFeedback()->progress();
+				for( int32_t y = start[1]; y < end[1]; y++ ) {
+					for( int32_t x = start[0]; x < end[0]; x++ ) {
+						currentValue = static_cast<data::Image &>( typedImage ).voxel<TYPE>( x, y, z, t );
 
-			for( int32_t y = start[1] + 1; y < end[1]; y++ ) {
-				for( int32_t x = start[0] + 1; x < end[0]; x++ ) {
-					currentValue = static_cast<data::Image &>( typedImage ).voxel<TYPE>( x, y, z, timestep );
-
-					if( currentValue > currentMax ) {
-						currentPos = util::ivector4( x, y, z, timestep );
-						currentMax = currentValue;
+						if( currentValue > currentMax ) {
+							currentPos = util::ivector4( x, y, z, t );
+							currentMax = currentValue;
+						}
 					}
 				}
 			}

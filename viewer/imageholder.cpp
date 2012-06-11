@@ -399,7 +399,10 @@ void ImageHolder::synchronize ()
 void ImageHolder::phyisicalCoordsChanged ( const util::fvector4 &physicalCoords )
 {
 	getImageProperties().physicalCoords = physicalCoords;
-	getImageProperties().voxelCoords = getISISImage()->getIndexFromPhysicalCoords( physicalCoords, true );
+	getImageProperties().trueVoxelCoords = getISISImage()->getIndexFromPhysicalCoords( physicalCoords );
+	util::ivector4 correctedVoxelCoords =  getImageProperties().trueVoxelCoords;
+	correctVoxelCoords( correctedVoxelCoords );
+	getImageProperties().voxelCoords = correctedVoxelCoords;
 }
 
 void ImageHolder::voxelCoordsChanged ( const util::ivector4 &voxelCoords )
