@@ -73,8 +73,9 @@ private:
 				start[i] = ( startPos[i] - radius ) < 0 ? 0 : startPos[i] - radius;
 				end[i] = ( startPos[i] + radius ) > size[i] ? size[i] : startPos[i] + radius;
 			}
+
 			end[3] = size[3];
-			start[3] = 0;	
+			start[3] = 0;
 		} else {
 			start = util::ivector4( 0, 0, 0, 0 );
 			end = size;
@@ -85,6 +86,7 @@ private:
 		data::TypedImage<TYPE> typedImage = *image->getISISImage();
 		TYPE currentMin = std::numeric_limits<TYPE>::max();
 		m_ViewerCore->getProgressFeedback()->show( ( end[2] - start[2] ) * ( end[3] - start[3] ), "Searching minimum..." );
+
 		for( int32_t t = start[3]; t < end[3]; t++ ) {
 			for( int32_t z = start[2]; z < end[2]; z++ ) {
 				m_ViewerCore->getProgressFeedback()->progress();
@@ -117,6 +119,7 @@ private:
 				start[i] = ( startPos[i] - radius ) < 0 ? 0 : startPos[i] - radius;
 				end[i] = ( startPos[i] + radius ) > size[i] ? size[i] : startPos[i] + radius;
 			}
+
 			end[3] = size[3];
 			start[3] = 0;
 		} else {
@@ -130,6 +133,7 @@ private:
 		TYPE currentMax = -std::numeric_limits<TYPE>::max();
 
 		m_ViewerCore->getProgressFeedback()->show( ( end[2] - start[2] ) * ( end[3] - start[3] ), "Searching maximum..." );
+
 		for( int32_t t = start[3]; t < end[3]; t++ ) {
 			for( int32_t z = start[2]; z < end[2]; z++ ) {
 				m_ViewerCore->getProgressFeedback()->progress();
@@ -169,6 +173,7 @@ private:
 #ifdef _OPENMP
 #pragma omp parallel for
 #endif
+
 					for( size_t x = 0; x < image->getImageSize()[0]; x++ ) {
 						if( static_cast<data::Image &>( tImage ).voxel<TYPE>( x, y, z, t ) == static_cast<TYPE>( 0 ) ) {
 							image->getVolumeVector()[t].voxel<InternalImageType>( x, y, z ) = 0;

@@ -55,6 +55,7 @@ BoundingBoxType getPhysicalBoundingBox ( const ImageHolder::Vector images, const
 	BOOST_FOREACH( ImageHolder::Vector::const_reference image, images ) {
 		const util::ivector4 imageSize = image->getISISImage()->getSizeAsVector();
 		const util::fvector4 mappedVoxelSize = image->getImageProperties().latchedOrientation.dot( image->getImageProperties().voxelSize );
+
 		for( unsigned short i = 0; i < 2; i++ ) {
 			for( unsigned short j = 0; j < 2; j++ ) {
 				for( unsigned short k = 0; k < 2; k++ ) {

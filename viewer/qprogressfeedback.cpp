@@ -45,8 +45,9 @@ QProgressFeedback::QProgressFeedback()
 void QProgressFeedback::show( size_t max, std::string header )
 {
 	if( !header.empty() ) {
-		m_ProgressBar->setFormat(header.c_str());
+		m_ProgressBar->setFormat( header.c_str() );
 	}
+
 	m_ProgressBar->setMaximum( max );
 	m_ProgressBar->setMinimum( 0 );
 	m_ProgressBar->show();

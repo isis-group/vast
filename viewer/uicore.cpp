@@ -426,7 +426,7 @@ void UICore::toggleLoadingIcon ( bool start, const QString &text )
 	if( text.length() ) {
 		m_ViewerCore->receiveMessage( text.toStdString() );
 	}
-	
+
 	getMainWindow()->m_StatusMovieLabel->setVisible( start );
 	getMainWindow()->m_Interface.statusbar->setVisible( start );
 	getMainWindow()->m_StatusTextLabel->setVisible( text.length() );

@@ -249,17 +249,17 @@ void QGeomWidget::paintImage( const ImageHolder::Pointer image )
 		m_Painter->drawImage( 0, 0, qImage );
 	} else {
 
-        isis::data::MemChunk<InternalImageColorType> sliceChunk( mappedSizeAligned[0], mappedSizeAligned[1] );
+		isis::data::MemChunk<InternalImageColorType> sliceChunk( mappedSizeAligned[0], mappedSizeAligned[1] );
 
-        if( m_LatchOrientation ) {
-            MemoryHandler::fillSliceChunk<InternalImageColorType>( sliceChunk, image, m_PlaneOrientation );
-        } else {
-            MemoryHandler::fillSliceChunkOriented<InternalImageColorType>( sliceChunk, image, m_PlaneOrientation );
-        }
+		if( m_LatchOrientation ) {
+			MemoryHandler::fillSliceChunk<InternalImageColorType>( sliceChunk, image, m_PlaneOrientation );
+		} else {
+			MemoryHandler::fillSliceChunkOriented<InternalImageColorType>( sliceChunk, image, m_PlaneOrientation );
+		}
 
-        QImage qImage( ( InternalImageType * ) &sliceChunk.voxel<InternalImageColorType>(0), mappedSizeAligned[0], mappedSizeAligned[1], QImage::Format_RGB888 );
-        m_Painter->drawImage( 0, 0, qImage );
-    }
+		QImage qImage( ( InternalImageType * ) &sliceChunk.voxel<InternalImageColorType>( 0 ), mappedSizeAligned[0], mappedSizeAligned[1], QImage::Format_RGB888 );
+		m_Painter->drawImage( 0, 0, qImage );
+	}
 }
 
 void QGeomWidget::paintCrossHair() const
@@ -270,9 +270,9 @@ void QGeomWidget::paintCrossHair() const
 
 	const int border = std::numeric_limits<int>::min() / 4;
 
-	const float gapx = m_BoundingBox[2] / 32 * sqrt(m_Zoom) ;
-	const float gapy = m_BoundingBox[3] / 32 * sqrt(m_Zoom) ;
-	
+	const float gapx = m_BoundingBox[2] / 32 * sqrt( m_Zoom ) ;
+	const float gapy = m_BoundingBox[3] / 32 * sqrt( m_Zoom ) ;
+
 	const QLine xline1( mappedCoords[0], border, mappedCoords[0], mappedCoords[1] - gapx );
 
 	const QLine xline2( mappedCoords[0], mappedCoords[1] + gapx, mappedCoords[0], height() - border  );
