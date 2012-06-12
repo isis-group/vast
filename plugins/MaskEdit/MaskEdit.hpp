@@ -86,7 +86,7 @@ private:
 		}
 
 		unsigned short radSquare = m_Radius * m_Radius;
-		
+
 		util::Value<double> colorValue( m_Interface.colorEdit->value() );
 
 		for( short k = start[2] + 1; k < end[2]; k++ ) {

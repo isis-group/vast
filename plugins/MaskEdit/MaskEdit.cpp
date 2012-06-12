@@ -60,9 +60,9 @@ MaskEditDialog::MaskEditDialog( QWidget *parent, QViewerCore *core )
 	connect( m_Interface.editCurrentImage, SIGNAL( clicked() ), this, SLOT( editCurrentImage() ) );
 	connect( m_Interface.pickColor, SIGNAL( clicked( bool ) ), this, SLOT( pickColorClicked() ) );
 	connect( m_Interface.closeButton, SIGNAL( clicked( bool ) ), this, SLOT( close() ) );
-	connect( m_Interface.paint, SIGNAL( clicked(bool)), this, SLOT( paintClicked()) );
-	connect( m_Interface.cut, SIGNAL( clicked(bool)), this, SLOT( cutClicked()));
-	
+	connect( m_Interface.paint, SIGNAL( clicked( bool ) ), this, SLOT( paintClicked() ) );
+	connect( m_Interface.cut, SIGNAL( clicked( bool ) ), this, SLOT( cutClicked() ) );
+
 }
 
 void MaskEditDialog::cutClicked()

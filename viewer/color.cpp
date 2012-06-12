@@ -214,10 +214,13 @@ void Color::adaptColorMapToImage( ImageHolder *image, bool split )
 	const double scaling = image->getImageProperties().scaling;
 	const double norm = 256.0 / extent;
 	unsigned short mid = 0;
+
 	if( min < 0 ) {
 		mid  = ( norm * fabs( min ) );
 	}
+
 	short scaledVal;
+
 	for ( unsigned short i = 0; i < 256; i++ ) {
 		scaledVal = scaling * ( i - ( offset * norm ) );
 
@@ -269,6 +272,7 @@ void Color::adaptColorMapToImage( ImageHolder *image, bool split )
 
 		}
 	}
+
 	retMap[0] = QColor( 0, 0, 0, 0 ).rgba();
 	image->getImageProperties().alphaMap[0] = 0;
 	image->getImageProperties().colorMap = retMap;

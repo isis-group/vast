@@ -32,7 +32,7 @@
 #include <Adapter/qmatrixconversion.hpp>
 
 #include "memoryhandler.hpp"
-#include <uicore.hpp>
+#include "uicore.hpp"
 
 namespace isis
 {
@@ -44,9 +44,7 @@ namespace widget
 QGeomWidget::QGeomWidget()
 	: QWidget(),
 	  m_Painter( new QPainter( ) )
-{
-
-}
+{}
 
 void QGeomWidget::setup ( QViewerCore *core, QWidget *parent , PlaneOrientation planeOrienation )
 {

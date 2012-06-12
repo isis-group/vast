@@ -103,7 +103,7 @@ private:
 		retImage->getImageProperties().minMax.second = isis::util::Value<TYPE>( std::numeric_limits<TYPE>::max() );
 		retImage->getImageProperties().scalingMinMax.first = retImage->getImageProperties().minMax.first->as<double>();
 		retImage->getImageProperties().scalingMinMax.second = retImage->getImageProperties().minMax.second->as<double>();
-		
+
 		return retImage;
 	}
 
