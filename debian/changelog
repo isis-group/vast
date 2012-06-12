@@ -1,3 +1,10 @@
+vast (0.6.0-1) UNRELEASED; urgency=low
+
+  * a lot of bug fixes
+  * improved performance in geometrical widget
+
+ -- ISIS Group (The friendly isis team) <gr_isis@cbs.mpg.de>  Tue, 12 Jun 2012 14:42:15 +0200
+ 
 vast (0.5.8-1) UNRELEASED; urgency=low
 
   * fixed bug in geometrical widget
