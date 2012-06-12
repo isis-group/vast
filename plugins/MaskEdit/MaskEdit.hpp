@@ -59,6 +59,8 @@ public Q_SLOTS:
 	void editCurrentImage();
 	virtual void closeEvent( QCloseEvent * );
 	virtual void showEvent( QShowEvent * );
+	void paintClicked();
+	void cutClicked();
 
 private:
 
@@ -70,7 +72,6 @@ private:
 	CreateMaskDialog *m_CreateMaskDialog;
 
 	WidgetEnsemble::Pointer m_CurrentWidgetEnsemble;
-
 
 	template<typename TYPE>
 	void manipulateVoxel( const util::fvector4 physCoord, boost::shared_ptr<ImageHolder> image ) {
@@ -85,15 +86,11 @@ private:
 		}
 
 		unsigned short radSquare = m_Radius * m_Radius;
-
-		const util::Value<TYPE> colorValue = m_Interface.colorEdit->value();
+		
+		util::Value<double> colorValue( m_Interface.colorEdit->value() );
 
 		for( short k = start[2] + 1; k < end[2]; k++ ) {
 			for( short j = start[1] + 1; j < end[1]; j++ ) {
-#ifdef _OPENMP
-#pragma omp parallel for
-#endif
-
 				for( short i = start[0] + 1; i < end[0]; i++ ) {
 					int x = voxel[0] - i;
 					int y = voxel[1] - j;
@@ -102,7 +99,7 @@ private:
 					if( x *x + y *y + z *z <= radSquare ) {
 						util::ivector4 finalVoxel( i, j, k );
 						image->correctVoxelCoords( finalVoxel );
-						image->setTypedVoxel<TYPE>( finalVoxel[0], finalVoxel[1], finalVoxel[2], timestep, colorValue );
+						image->setTypedVoxel<TYPE>( finalVoxel[0], finalVoxel[1], finalVoxel[2], timestep, colorValue.as<TYPE>() );
 					}
 				}
 			}

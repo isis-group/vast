@@ -60,7 +60,19 @@ MaskEditDialog::MaskEditDialog( QWidget *parent, QViewerCore *core )
 	connect( m_Interface.editCurrentImage, SIGNAL( clicked() ), this, SLOT( editCurrentImage() ) );
 	connect( m_Interface.pickColor, SIGNAL( clicked( bool ) ), this, SLOT( pickColorClicked() ) );
 	connect( m_Interface.closeButton, SIGNAL( clicked( bool ) ), this, SLOT( close() ) );
+	connect( m_Interface.paint, SIGNAL( clicked(bool)), this, SLOT( paintClicked()) );
+	connect( m_Interface.cut, SIGNAL( clicked(bool)), this, SLOT( cutClicked()));
+	
+}
 
+void MaskEditDialog::cutClicked()
+{
+	m_Interface.colorEdit->setValue( m_CurrentMask->getImageProperties().minMax.first->as<double>() );
+}
+
+void MaskEditDialog::paintClicked()
+{
+	m_Interface.colorEdit->setValue( m_CurrentMask->getImageProperties().minMax.second->as<double>() );
 }
 
 
@@ -190,6 +202,7 @@ void MaskEditDialog::createEmptyMask()
 	if( m_ViewerCore->hasImage() ) {
 		m_CreateMaskDialog->show();
 		m_Interface.pickColor->setEnabled( true );
+		m_ViewerCore->getUICore()->refreshUI();
 	} else {
 		QMessageBox msgBox;
 		msgBox.setIcon( QMessageBox::Critical );

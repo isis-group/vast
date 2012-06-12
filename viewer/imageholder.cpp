@@ -154,14 +154,13 @@ void ImageHolder::collectImageInfo()
 	getImageProperties().minMax = getISISImage()->getMinMax();
 	getImageProperties().majorTypeID = getMajorTypeID();
 	getImageProperties().isRGB = ( data::ValueArray<util::color24>::staticID == getImageProperties().majorTypeID || data::ValueArray<util::color48>::staticID == getImageProperties().majorTypeID );
-
+	getImageProperties().zeroIsReserved = getImageProperties().zeroIsReserved || (
+		getImageProperties().imageType == statistical_image && getImageProperties().minMax.first->as<double>() < 0 && !getImageProperties().isRGB );
 	if( !getImageProperties().isRGB ) {
 		getImageProperties().extent = fabs( getImageProperties().minMax.second->as<double>() - getImageProperties().minMax.first->as<double>() );
 		getImageProperties().scalingMinMax.first = getImageProperties().minMax.first->as<double>();
 		getImageProperties().scalingMinMax.second = getImageProperties().minMax.second->as<double>();
-
 	}
-
 	getImageProperties().majorTypeName = isis::util::getTypeMap( false, true ).at( getImageProperties().majorTypeID );
 	getImageProperties().majorTypeName = getImageProperties().majorTypeName.substr( 0, getImageProperties().majorTypeName.length() - 1 ).c_str();
 }

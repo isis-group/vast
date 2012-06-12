@@ -192,8 +192,18 @@ private:
 		getImageProperties().memSizeInternal = image.getVolume() * sizeof( TYPE );
 		LOG( Dev, info ) << "Needed memory: " << getImageProperties().memSizeInternal / ( 1024.0 * 1024.0 ) << " mb.";
 
-		getImageProperties().scalingToInternalType = image.getScalingTo( data::ValueArray<TYPE>::staticID, data::upscale );
-
+		if( getImageProperties().zeroIsReserved ) {
+			data::scaling_pair scalingPair = image.getScalingTo( data::ValueArray<TYPE>::staticID, data::upscale );
+			double scaling = scalingPair.first->as<double>();
+			double offset = scalingPair.second->as<double>();
+			scaling /= static_cast<double>( getInternalExtent() + 1 ) / getInternalExtent();
+			offset += 1;
+			const data::scaling_pair newScaling( std::make_pair< util::ValueReference, util::ValueReference>( util::Value<double>( scaling ), util::Value<double>( offset ) ) ) ;
+			getImageProperties().scalingToInternalType = newScaling;
+		} else {
+			getImageProperties().scalingToInternalType = image.getScalingTo( data::ValueArray<TYPE>::staticID, data::upscale );
+		}
+		
 		LOG( Dev, info ) << "scalingToInternalType: " << getImageProperties().scalingToInternalType.first->as<double>() << " : " << getImageProperties().scalingToInternalType.second->as<double>();
 		image.copyToMem<TYPE>( &imagePtr[0], image.getVolume(), getImageProperties().scalingToInternalType );
 		LOG( Dev, verbose_info ) << "Copied image to continuous memory space.";
