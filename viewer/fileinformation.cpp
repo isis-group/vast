@@ -31,6 +31,7 @@
 
 isis::viewer::FileInformation::FileInformation ( const std::string &filename, const util::istring &dialect, const util::istring &readformat, const std::string &widgetidentifier, const isis::viewer::ImageHolder::ImageType &imagetype, bool newEnsemble )
 	: m_filename( filename ),
+	  m_completePath( std::string() ),
 	  m_dialect( dialect ),
 	  m_readformat( readformat ),
 	  m_widgetIdentifier( widgetidentifier ),
@@ -41,12 +42,14 @@ isis::viewer::FileInformation::FileInformation ( const std::string &filename, co
 void isis::viewer::FileInformationMap::writeFileInformationMap ( QSettings *settings, const std::string &section )
 {
 	QStringList fileNames;
+	QStringList completePaths;
 	QStringList dialects;
 	QStringList widgetidentifierList;
 	QStringList readFormats;
 	QList<QVariant> imageTypes;
 	BOOST_FOREACH( const_reference elem, *this ) {
 		fileNames.push_back( elem.second.getFileName().c_str() );
+		completePaths.push_back( elem.second.getCompletePath().c_str() );
 		widgetidentifierList.push_back( elem.second.getWidgetIdentifier().c_str() );
 		dialects.push_back( elem.second.getDialect().c_str() );
 		readFormats.push_back( elem.second.getReadFormat().c_str() );
@@ -54,6 +57,7 @@ void isis::viewer::FileInformationMap::writeFileInformationMap ( QSettings *sett
 	}
 	settings->beginGroup( section.c_str() );
 	settings->setValue( "fileNames", fileNames );
+	settings->setValue( "completePaths", completePaths );
 	settings->setValue( "readFormats", readFormats );
 	settings->setValue( "dialects", dialects );
 	settings->setValue( "widgetidentifierList", widgetidentifierList );
@@ -66,20 +70,25 @@ void isis::viewer::FileInformationMap::readFileInfortmationMap ( QSettings *sett
 {
 	settings->beginGroup( section.c_str() );
 	QStringList fileNames = settings->value( "fileNames" ).toStringList();
+	QStringList completePaths = settings->value( "completePaths", fileNames ).toStringList();
 	QStringList dialects = settings->value( "dialects" ).toStringList();
 	QStringList readFormats = settings->value( "readFormats" ).toStringList();
 	QStringList widgetidentifierList = settings->value( "widgetidentifierList" ).toStringList();
 	QList<QVariant> imageTypes = settings->value( "imageTypes" ).toList();
 
 	QStringList::iterator fileNameIter = fileNames.begin();
+	QStringList::iterator completePathIter = completePaths.begin();
 	QStringList::iterator dialectsIter = dialects.begin();
 	QStringList::iterator readFormatsIter = readFormats.begin();
 	QStringList::iterator widgetIdentifierIter = widgetidentifierList.begin();
 	QList<QVariant>::iterator imageTypesIter = imageTypes.begin();
 
 	while( fileNameIter != fileNames.end() ) {
-		insertSave(  isis::viewer::FileInformation( ( *fileNameIter ).toStdString(), ( *dialectsIter ).toStdString().c_str(), ( *readFormatsIter ).toStdString().c_str(), ( *widgetIdentifierIter ).toStdString(), static_cast<ImageHolder::ImageType>( ( *imageTypesIter ).toUInt() ), true ) );
+		isis::viewer::FileInformation fInfo( ( *fileNameIter ).toStdString(), ( *dialectsIter ).toStdString().c_str(), ( *readFormatsIter ).toStdString().c_str(), ( *widgetIdentifierIter ).toStdString(), static_cast<ImageHolder::ImageType>( ( *imageTypesIter ).toUInt() ), true );
+		fInfo.setCompletePath( ( *completePathIter ).toStdString() );
+		insertSave( fInfo );
 		fileNameIter++;
+		completePathIter++;
 		readFormatsIter++;
 		widgetIdentifierIter++;
 		dialectsIter++;
@@ -97,8 +106,8 @@ isis::viewer::FileInformationMap::FileInformationMap()
 
 void isis::viewer::FileInformationMap::insertSave ( const isis::viewer::FileInformation &fileInfo )
 {
-	insert( std::make_pair<std::string, isis::viewer::FileInformation>( fileInfo.getFileName(), fileInfo ) );
-	m_lookup.push_back( fileInfo.getFileName() );
+	insert( std::make_pair<std::string, isis::viewer::FileInformation>( fileInfo.getCompletePath(), fileInfo ) );
+	m_lookup.push_back( fileInfo.getCompletePath() );
 
 	if( size() > m_limit ) {
 		const std::string front = m_lookup.front();

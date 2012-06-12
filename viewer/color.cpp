@@ -213,7 +213,12 @@ void Color::adaptColorMapToImage( ImageHolder *image, bool split )
 	const double offset = image->getImageProperties().offset;
 	const double scaling = image->getImageProperties().scaling;
 	const double norm = 256.0 / extent;
-	const unsigned short mid = ( norm * fabs( min ) );
+	unsigned short mid = 0;
+
+	if( min < 0 ) {
+		mid  = ( norm * fabs( min ) );
+	}
+
 	short scaledVal;
 
 	for ( unsigned short i = 0; i < 256; i++ ) {
@@ -268,27 +273,9 @@ void Color::adaptColorMapToImage( ImageHolder *image, bool split )
 		}
 	}
 
-	if( image->zeroIsReserved() ) {
-		ColormapType zrLUT;
-		AlphamapType tmpAM;
-		zrLUT.resize( 256 );
-		tmpAM.resize( 256 );
-
-		for( unsigned short i = 0; i < 255; i++ ) {
-			zrLUT[i + 1] = retMap[i * ( 256.0 / 255.0 )];
-			tmpAM[i + 1] = image->getImageProperties().alphaMap[i * ( 256.0 / 255.0 )];
-		}
-
-		//kill the zero value
-		zrLUT[0] = QColor( 0, 0, 0, 0 ).rgba();
-		tmpAM[0] = 0;
-		image->getImageProperties().colorMap = zrLUT;
-		image->getImageProperties().alphaMap = tmpAM;
-	} else {
-		retMap[0] = QColor( 0, 0, 0, 0 ).rgba();
-		image->getImageProperties().alphaMap[0] = 0;
-		image->getImageProperties().colorMap = retMap;
-	}
+	retMap[0] = QColor( 0, 0, 0, 0 ).rgba();
+	image->getImageProperties().alphaMap[0] = 0;
+	image->getImageProperties().colorMap = retMap;
 
 }
 

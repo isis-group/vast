@@ -49,7 +49,7 @@ QViewerCore::QViewerCore ()
 
 	setParentWidget ( m_UI->getMainWindow() );
 	data::IOFactory::setProgressFeedback ( m_ProgressFeedback );
-	operation::NativeImageOps::setProgressFeedBack ( m_ProgressFeedback );
+	operation::NativeImageOps::setViewerCore( this );
 	m_Settings->load();
 	getUICore()->refreshUI();
 
@@ -245,17 +245,18 @@ void QViewerCore::settingsChanged()
 				image->updateColorMap();
 			}
 		}
-
 	}
 
+	BOOST_FOREACH( ImageHolder::Vector::const_reference image, getImageVector() ) {
+		image->updateOrientation();
+	}
 	updateScene();
 	m_UI->refreshUI();
 }
 void QViewerCore::physicalCoordsChanged ( util::fvector4 physicalCoords )
 {
 	BOOST_FOREACH( ImageHolder::Vector::const_reference image, getImageVector() ) {
-		image->getImageProperties().physicalCoords = physicalCoords;
-		image->getImageProperties().voxelCoords = image->getISISImage()->getIndexFromPhysicalCoords( physicalCoords, true );
+		image->phyisicalCoordsChanged( physicalCoords );
 	}
 	emitPhysicalCoordsChanged( physicalCoords );
 }
@@ -308,16 +309,23 @@ bool QViewerCore::callPlugin ( QString name )
 ImageHolder::Vector QViewerCore::openFile ( const FileInformation &fileInfo, bool show )
 {
 	if ( !fileInfo.getFileName().empty() ) {
-		util::istring dialect = fileInfo.getDialect();
-		LOG( Dev, info ) << "Opening path " << fileInfo.getFileName() << " with rdialect: "
-						 << fileInfo.getDialect() << ", rf: " << fileInfo.getReadFormat()
-						 << ", widget: " << fileInfo.getWidgetIdentifier();
-		getUICore()->getMainWindow()->toggleLoadingIcon( true, QString( "Opening image " ) + fileInfo.getFileName().c_str() + QString( "..." ) );
-		QDir dir;
-		setCurrentPath ( dir.absoluteFilePath ( fileInfo.getFileName().c_str() ).toStdString() );
-		//add this file to the recent opened files
+		FileInformation _fileInfo = fileInfo;
+		util::istring dialect = _fileInfo.getDialect();
+		LOG( Dev, info ) << "Opening path " << fileInfo.getCompletePath() << " with rdialect: "
+						 << _fileInfo.getDialect() << ", rf: " << _fileInfo.getReadFormat()
+						 << ", widget: " << _fileInfo.getWidgetIdentifier();
 
-		boost::filesystem::path p ( fileInfo.getFileName() );
+		QDir dir( _fileInfo.getFileName().c_str() );
+
+		if( _fileInfo.getCompletePath().empty() ) {
+			_fileInfo.setCompletePath( dir.absolutePath().toStdString() );
+		}
+
+		boost::filesystem::path p ( _fileInfo.getCompletePath() );
+
+		getUICore()->toggleLoadingIcon( true, QString( "Opening image \"" ) + QString( p.filename().c_str() ) + QString( "\"..." ) );
+
+		setCurrentPath ( p.parent_path().string() );
 
 		//this is a vista thing. if we load a vista image and the option "visualizeOnlyFirstVista" is enabled we should do so
 		if( boost::filesystem::extension( p ) == std::string( "v" ) && getSettings()->getPropertyAs<bool>( "visualizeOnlyFirstVista" ) && !dialect.size() ) {
@@ -325,25 +333,29 @@ ImageHolder::Vector QViewerCore::openFile ( const FileInformation &fileInfo, boo
 		}
 
 		//load the file into an isis image
-		std::list<data::Image> tempImgList = isis::data::IOFactory::load ( fileInfo.getFileName() , fileInfo.getReadFormat(), dialect );
+		std::list<data::Image> tempImgList = isis::data::IOFactory::load ( _fileInfo.getCompletePath() , _fileInfo.getReadFormat(), dialect );
 
 		if( !tempImgList.empty() ) {
-			m_Settings->getRecentFiles().insertSave( fileInfo );
-			LOG( Dev, info ) << "Loaded " << tempImgList.size() << " images from path " << fileInfo.getFileName();
+			//add this file to the recent opened files
+			m_Settings->getRecentFiles().insertSave( _fileInfo );
+			LOG( Dev, info ) << "Loaded " << tempImgList.size() << " images from path " << _fileInfo.getCompletePath();
 		} else {
-			LOG( Dev, error ) << "Tried to load " << fileInfo.getFileName() << ", but image list is empty.";
+			LOG( Dev, warning ) << "Tried to load " << _fileInfo.getCompletePath() << ", but image list is empty.";
+			return ImageHolder::Vector();
 		}
 
 		//creating the viewer image objects
-		ImageHolder::Vector imgList = addImageList( tempImgList, fileInfo.getImageType() );
+		getUICore()->toggleLoadingIcon( true, "Preparing image(s) for visualization..." );
+		ImageHolder::Vector imgList = addImageList( tempImgList, _fileInfo.getImageType() );
+		getUICore()->toggleLoadingIcon( false );
 
 		if( show ) {
 			BOOST_FOREACH( ImageHolder::Vector::const_reference image, imgList ) {
-				if( fileInfo.isNewEnsemble() ) {
-					getUICore()->createViewWidgetEnsemble( fileInfo.getWidgetIdentifier(), image, true );
+				if( _fileInfo.isNewEnsemble() ) {
+					getUICore()->createViewWidgetEnsemble( _fileInfo.getWidgetIdentifier(), image, true );
 				} else {
 					if( !getUICore()->getEnsembleList().size() ) {
-						getUICore()->createViewWidgetEnsemble( fileInfo.getWidgetIdentifier(), image, true );
+						getUICore()->createViewWidgetEnsemble( _fileInfo.getWidgetIdentifier(), image, true );
 					} else {
 						getUICore()->getCurrentEnsemble()->addImage( image );
 					}
@@ -354,7 +366,7 @@ ImageHolder::Vector QViewerCore::openFile ( const FileInformation &fileInfo, boo
 			}
 		}
 
-		getUICore()->getMainWindow()->toggleLoadingIcon( false );
+		getUICore()->toggleLoadingIcon( false );
 		return imgList;
 	} else {
 		LOG( Dev, warning ) << "Tried to open path without any given filename!";
@@ -423,7 +435,10 @@ void QViewerCore::openFileList( const std::list< FileInformation > fileInfoList 
 			getUICore()->createViewWidgetEnsembleList( fileInfoList.front().getWidgetIdentifier(), structuralImageList, true );
 		}
 
-		setCurrentImage( structuralImageList.front() );
+		if( !structuralImageList.empty() ) {
+			setCurrentImage( structuralImageList.front() );
+		}
+
 	}
 
 	if( hasImage() ) {
@@ -450,9 +465,6 @@ void QViewerCore::closeImage ( ImageHolder::Pointer image, bool refreshUI )
 	if( refreshUI ) {
 		getUICore()->refreshUI( false );
 	}
-
-
-
 }
 
 
@@ -462,7 +474,6 @@ void QViewerCore::close ()
 	getSettings()->getQSettings()->setValue( "vastExitedSuccessfully", true );
 	getSettings()->getQSettings()->sync();
 	getSettings()->getQSettings()->endGroup();
-
 }
 
 

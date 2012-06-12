@@ -190,10 +190,19 @@ void isis::viewer::ui::FileDialog::setup()
 	const widget::WidgetLoader::WidgetMapType &widgetMap = util::Singletons::get<widget::WidgetLoader, 10>().getWidgetMap();
 	const widget::WidgetLoader::WidgetPropertyMapType &optionsMap = util::Singletons::get<widget::WidgetLoader, 10>().getWidgetPropertyMap();
 	BOOST_FOREACH( WRef w, widgetMap ) {
-		m_Interface.widgetTypeComboBox->addItem( optionsMap.at( w.first )->getPropertyAs<std::string>( "widgetName" ).c_str(), QVariant( w.first.c_str() ) );
+		QVariant variant ( w.first.c_str() );
+		m_Interface.widgetTypeComboBox->addItem( optionsMap.at( w.first )->getPropertyAs<std::string>( "widgetName" ).c_str(), variant );
 	}
 	m_Interface.widgetTypeframe->setVisible( widgetMap.size() > 1 );
-	m_Interface.widgetTypeComboBox->setCurrentIndex( m_Interface.widgetTypeComboBox->findData( QVariant( m_ViewerCore->getSettings()->getPropertyAs<std::string>( "defaultViewWidgetIdentifier" ).c_str() ) ) );
+	QVariant variant(  m_ViewerCore->getSettings()->getPropertyAs<std::string>( "defaultViewWidgetIdentifier" ).c_str() ) ;
+	const int index = m_Interface.widgetTypeComboBox->findData( variant, Qt::UserRole );
+
+	if( index < 0 ) {
+		m_Interface.widgetTypeComboBox->setCurrentIndex( 0 );
+	} else {
+		m_Interface.widgetTypeComboBox->setCurrentIndex( index );
+	}
+
 	adjustSize();
 }
 
@@ -224,12 +233,12 @@ void isis::viewer::ui::FileDialog::parsePath()
 		m_Interface.openSaveButton->setEnabled( false );
 		m_Interface.addToListButton->setEnabled( false );
 	} else {
-		m_Interface.dialectComboBox->clear();
-		m_Interface.dialectComboBox->addItem( "" );
 		util::istring extension = boost::filesystem::extension( boost::filesystem::path( m_Interface.fileDirEdit->currentText().toStdString() ) ).c_str();
 		extension.erase( 0, 1 );
 
-		if( !extension.empty() ) {
+		if( !extension.empty() && m_Suffix.empty() ) {
+			m_Interface.dialectComboBox->clear();
+			m_Interface.dialectComboBox->addItem( "" );
 			std::list<util::istring > dialects = getDialectsAsMap( isis::image_io::FileFormat::read_only ).at( extension.c_str() );
 			BOOST_FOREACH( std::list<util::istring>::const_reference dialect, dialects ) {
 				m_Interface.dialectComboBox->addItem( dialect.c_str() );

@@ -47,7 +47,11 @@ void Settings::save()
 	m_QSettings->setValue ( "lutZMap", getPropertyAs<std::string> ( "lutZMap" ).c_str() );
 	m_QSettings->setValue( "visualizeOnlyFirstVista", getPropertyAs<bool>( "visualizeOnlyFirstVista" ) );
 	m_QSettings->setValue ( "interpolationType", getPropertyAs<uint16_t> ( "interpolationType" ) );
+	m_QSettings->setValue ( "checkCACP", getPropertyAs<bool> ( "checkCACP" ) );
+	m_QSettings->setValue ( "setZeroToBlackStatistical", getPropertyAs<bool> ( "setZeroToBlackStatistical" ) );
+	m_QSettings->setValue ( "setZeroToBlackStructural", getPropertyAs<bool> ( "setZeroToBlackStructural" ) );
 	m_QSettings->setValue ( "propagateZooming", getPropertyAs<bool> ( "propagateZooming" ) );
+	m_QSettings->setValue ( "latchSingleImage", getPropertyAs<bool> ( "latchSingleImage" ) );
 	m_QSettings->setValue ( "showFullFilePath", getPropertyAs<bool> ( "showFullFilePath" ) );
 	m_QSettings->setValue ( "viewAllImagesInStack", getPropertyAs<bool> ( "viewAllImagesInStack" ) );
 	m_QSettings->setValue ( "propagateTimestepChange", getPropertyAs<bool> ( "propagateTimestepChange" ) );
@@ -84,9 +88,14 @@ void Settings::load()
 {
 	LOG( Dev, info ) << "Loading settings from " << m_QSettings->fileName().toStdString();
 	m_QSettings->beginGroup ( "ViewerCore" );
+
 	setPropertyAs<std::string> ( "lutZMap", m_QSettings->value ( "lutZMap", getPropertyAs<std::string> ( "lutZMap" ).c_str() ).toString().toStdString() );
+	setPropertyAs<bool> ( "setZeroToBlackStatistical", m_QSettings->value ( "setZeroToBlackStatistical", getPropertyAs<bool>( "setZeroToBlackStatistical" ) ).toBool() );
+	setPropertyAs<bool> ( "setZeroToBlackStructural", m_QSettings->value ( "setZeroToBlackStructural", getPropertyAs<bool>( "setZeroToBlackStructural" ) ).toBool() );
+	setPropertyAs<bool> ( "latchSingleImage", m_QSettings->value ( "latchSingleImage", getPropertyAs<bool>( "latchSingleImage" ) ).toBool() );
 	setPropertyAs<bool> ( "showFullFilePath", m_QSettings->value ( "showFullFilePath", getPropertyAs<bool>( "showFullFilePath" ) ).toBool() );
-	setPropertyAs<bool> ( "propagateZooming", m_QSettings->value ( "propagateZooming", false ).toBool() );
+	setPropertyAs<bool> ( "checkCACP", m_QSettings->value ( "checkCACP", getPropertyAs<bool>( "checkCACP" ) ).toBool() );
+	setPropertyAs<bool> ( "propagateZooming", m_QSettings->value ( "propagateZooming", getPropertyAs<bool>( "propagateZooming" ) ).toBool() );
 	setPropertyAs<bool> ( "viewAllImagesInStack", m_QSettings->value ( "viewAllImagesInStack", false ).toBool() );
 	setPropertyAs<bool> ( "propagateTimestepChange", m_QSettings->value ( "propagateTimestepChange", false ).toBool() );
 	setPropertyAs<uint16_t> ( "interpolationType", m_QSettings->value ( "interpolationType", getPropertyAs<uint16_t> ( "interpolationType" ) ).toUInt() );
@@ -121,6 +130,10 @@ void Settings::load()
 
 void Settings::initializeWithDefaultSettings()
 {
+	setPropertyAs<bool>( "checkCACP", false );
+	setPropertyAs<bool>( "setZeroToBlackStatistical", true );
+	setPropertyAs<bool>( "setZeroToBlackStructural", false );
+	setPropertyAs<bool>( "latchSingleImage", false );
 	setPropertyAs<bool>( "showFullFilePath", true );
 	setPropertyAs<bool>( "zmapGlobal", false );
 	setPropertyAs<bool>( "viewAllImagesInStack", false );
@@ -136,7 +149,7 @@ void Settings::initializeWithDefaultSettings()
 	setPropertyAs<bool>( "showFavoriteFileList", false );
 	setPropertyAs<uint16_t>( "maxWidgetHeight", 200 );
 	setPropertyAs<uint16_t>( "maxWidgetWidth", 200 );
-	setPropertyAs<uint16_t>( "maxOptionWidgetHeight", 90 );
+	setPropertyAs<uint16_t>( "maxOptionWidgetHeight", 120 );
 	setPropertyAs<uint16_t>( "minOptionWidgetHeight", 90 );
 	setPropertyAs<bool>( "showStartWidget", true );
 	setPropertyAs<bool>( "showCrashMessage", true );
@@ -176,6 +189,7 @@ void Settings::initializeWithDefaultSettings()
 	setPropertyAs<std::string>( "signature", signature.str() );
 	setPropertyAs<std::string>( "copyright", "2012 Max Planck Institute for Human and Brain Science Leipzig" );
 }
+
 
 
 

@@ -62,9 +62,9 @@ void VoxelOperationDialog::calculatePressed()
 			m_Interface.calcButton->setText( "Calculating..." );
 			std::stringstream ss;
 			ss << "Calculating " << op << "...";
-			m_ViewerCore->getUICore()->getMainWindow()->toggleLoadingIcon( true, ss.str().c_str() );
+			m_ViewerCore->getUICore()->toggleLoadingIcon( true, ss.str().c_str() );
 			image->getISISImage()->foreachVoxel<double>( vop );
-			m_ViewerCore->getUICore()->getMainWindow()->toggleLoadingIcon( false );
+			m_ViewerCore->getUICore()->toggleLoadingIcon( false );
 			util::slist voxelOpHistory;
 
 			if( image->getPropMap().hasProperty( "VoxelOperation/opHistory" ) ) {
@@ -73,9 +73,11 @@ void VoxelOperationDialog::calculatePressed()
 
 			voxelOpHistory.push_back( op );
 			image->getPropMap().setPropertyAs<util::slist>( "VoxelOperation/opHistory", voxelOpHistory );
+			std::stringstream ss1;
+			ss1 << "VoxelOperation: " << op;
+			image->addChangedAttribute( ss1.str() );
 			image->synchronize( );
 			image->updateColorMap();
-			image->updateHistogram();
 			m_ViewerCore->emitImageContentChanged( image );
 			m_ViewerCore->getUICore()->refreshUI( true );
 		} catch( mu::Parser::exception_type &e ) {

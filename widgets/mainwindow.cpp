@@ -105,7 +105,6 @@ MainWindow::MainWindow( QViewerCore *core ) :
 	connect( m_Interface.action_Exit, SIGNAL( triggered() ), this, SLOT( close() ) );
 	connect( m_Interface.actionPropagate_Zooming, SIGNAL( triggered( bool ) ), this, SLOT( propagateZooming( bool ) ) );
 	connect( m_ActionReset_Scaling, SIGNAL( triggered() ), this, SLOT( resetScaling() ) );
-	connect( m_ActionAuto_Scaling, SIGNAL( triggered() ), this, SLOT( autoScaling() ) );
 	connect( m_Interface.actionShow_Crosshair, SIGNAL( triggered( bool ) ), m_ViewerCore, SLOT( setShowCrosshair( bool ) ) );
 	connect( m_Interface.actionSave_all_Images, SIGNAL( triggered() ), this, SLOT( saveAllImages() ) );
 	connect( m_Interface.actionToggle_Zmap_Mode, SIGNAL( triggered( bool ) ), this, SLOT( toggleZMapMode( bool ) ) );
@@ -151,32 +150,12 @@ MainWindow::MainWindow( QViewerCore *core ) :
 	m_StatusMovieLabel->setVisible( false );
 	m_Interface.statusbar->setVisible( false );
 
-
-
 	scalingWidget->setVisible( false );
 	loadSettings();
 	m_Interface.actionOpen_recent->setMenu( new QMenu() );
-
 }
 
-void MainWindow::toggleLoadingIcon ( bool start, const QString &text )
-{
-	if( text.length() ) {
-		m_ViewerCore->receiveMessage( text.toStdString() );
-	}
 
-	m_StatusMovieLabel->setVisible( start );
-	m_Interface.statusbar->setVisible( start );
-
-	if( start ) {
-		m_StatusMovie->start();
-		m_StatusTextLabel->setText( text );
-	} else {
-		m_StatusMovie->stop();
-	}
-
-	QApplication::processEvents();
-}
 
 void MainWindow::createScreenshot()
 {
@@ -187,12 +166,12 @@ void MainWindow::createScreenshot()
 						   tr( "Images (*.png *.xpm *.jpg)" ) );
 
 		if( fileName.size() ) {
-			toggleLoadingIcon( true, QString( "Creating and saving screenshot to " ) + fileName );
+			m_ViewerCore->getUICore()->toggleLoadingIcon( true, QString( "Creating and saving screenshot to " ) + fileName );
 			m_ViewerCore->getUICore()->getScreenshot().save( fileName, 0, m_ViewerCore->getSettings()->getPropertyAs<uint16_t>( "screenshotQuality" ) );
 			m_ViewerCore->setCurrentPath( fileName.toStdString() );
 		}
 
-		toggleLoadingIcon( false );
+		m_ViewerCore->getUICore()->toggleLoadingIcon( false );
 	}
 
 
@@ -230,20 +209,12 @@ void MainWindow::loadSettings()
 
 void MainWindow::saveSettings()
 {
-	toggleLoadingIcon( true );
 	m_ViewerCore->getSettings()->getQSettings()->beginGroup( "MainWindow" );
 	m_ViewerCore->getSettings()->getQSettings()->setValue( "size", size() );
 	m_ViewerCore->getSettings()->getQSettings()->setValue( "maximized", isMaximized() );
 	m_ViewerCore->getSettings()->getQSettings()->setValue( "pos", pos() );
 	m_ViewerCore->getSettings()->getQSettings()->endGroup();
 	m_ViewerCore->getSettings()->getQSettings()->sync();
-	toggleLoadingIcon( false );
-}
-
-
-void MainWindow::autoScaling()
-{
-	scalingWidget->autoScale();
 }
 
 
@@ -270,10 +241,11 @@ void MainWindow::resetScaling()
 	BOOST_FOREACH( ImageHolder::Vector::const_reference image, m_ViewerCore->getImageVector() ) {
 		image->getImageProperties().scaling = 1.0;
 		image->getImageProperties().offset = 0.0;
+		image->getImageProperties().scalingMinMax = operation::NativeImageOps::getMinMaxFromScalingOffset( std::make_pair<double, double>( 1.0, 0.0 ), image );
 		image->updateColorMap();
 	}
 	m_ViewerCore->updateScene();
-	scalingWidget->synchronize();
+	m_ViewerCore->getUICore()->refreshUI();
 }
 
 
@@ -296,7 +268,6 @@ void MainWindow::ignoreOrientation( bool ignore )
 	BOOST_FOREACH( ImageHolder::Vector::const_reference image, m_ViewerCore->getImageVector() ) {
 		if( ignore ) {
 			setOrientationToIdentity( *image->getISISImage() );
-			checkForCaCp( image );
 			image->updateOrientation();
 		} else {
 			image->getISISImage()->setPropertyAs<util::fvector4>( "rowVec", image->getPropMap().getPropertyAs<util::fvector4>( "originalRowVec" ) );
@@ -304,7 +275,10 @@ void MainWindow::ignoreOrientation( bool ignore )
 			image->getISISImage()->setPropertyAs<util::fvector4>( "sliceVec", image->getPropMap().getPropertyAs<util::fvector4>( "originalSliceVec" ) );
 			image->getISISImage()->setPropertyAs<util::fvector4>( "indexOrigin", image->getPropMap().getPropertyAs<util::fvector4>( "originalIndexOrigin" ) );
 			image->updateOrientation();
-			checkForCaCp( image );
+
+			if( m_ViewerCore->getSettings()->getPropertyAs<bool>( "checkCACP" ) ) {
+				checkForCaCp( image );
+			}
 		}
 
 		image->getImageProperties().physicalCoords = image->getISISImage()->getPhysicalCoordsFromIndex( image->getImageProperties().voxelCoords );
@@ -363,9 +337,9 @@ void MainWindow::saveImage()
 				return;
 				break;
 			case QMessageBox::Yes:
-				toggleLoadingIcon( true, QString( "Saving image to " ) + m_ViewerCore->getCurrentImage()->getImageProperties().fileName.c_str() );
+				m_ViewerCore->getUICore()->toggleLoadingIcon( true, QString( "Saving image to " ) + m_ViewerCore->getCurrentImage()->getImageProperties().fileName.c_str() );
 				isis::data::IOFactory::write( *m_ViewerCore->getCurrentImage()->getISISImage(), m_ViewerCore->getCurrentImage()->getImageProperties().filePath, "", "" );
-				toggleLoadingIcon( false );
+				m_ViewerCore->getUICore()->toggleLoadingIcon( false );
 				break;
 			}
 		}
@@ -415,10 +389,10 @@ void MainWindow::saveAllImages()
 				break;
 			case QMessageBox::Yes:
 				BOOST_FOREACH( ImageHolder::Vector::const_reference image, m_ViewerCore->getImageVector() ) {
-					toggleLoadingIcon( true, QString( "Saving image to " ) + image->getImageProperties().fileName.c_str() );
+					m_ViewerCore->getUICore()->toggleLoadingIcon( true, QString( "Saving image to " ) + image->getImageProperties().fileName.c_str() );
 					isis::data::IOFactory::write( *image->getISISImage(), image->getImageProperties().fileName, "", "" );
 				}
-				toggleLoadingIcon( false );
+				m_ViewerCore->getUICore()->toggleLoadingIcon( false );
 				break;
 			}
 
@@ -443,10 +417,10 @@ void MainWindow::saveImageAs()
 						   tr( fileFormats.str().c_str() ) );
 
 		if( filename.size() ) {
-			toggleLoadingIcon( true, QString( "Saving image to " ) + filename );
+			m_ViewerCore->getUICore()->toggleLoadingIcon( true, QString( "Saving image to " ) + filename );
 			isis::data::IOFactory::write( *m_ViewerCore->getCurrentImage()->getISISImage(), filename.toStdString(), "", "" );
 			m_ViewerCore->setCurrentPath( filename.toStdString() );
-			toggleLoadingIcon( false );
+			m_ViewerCore->getUICore()->toggleLoadingIcon( false );
 		}
 	}
 
@@ -569,6 +543,8 @@ void MainWindow::refreshUI()
 	} else  if ( m_ViewerCore->getMode() == ViewerCoreBase::default_mode ) {
 		setWindowTitle( QString(  m_ViewerCore->getSettings()->getPropertyAs<std::string>( "signature" ).c_str() ) );
 	}
+
+	scalingWidget->synchronize();
 }
 
 
@@ -584,18 +560,10 @@ void MainWindow::findGlobalMin()
 {
 	if( m_ViewerCore->hasImage() ) {
 		const int radius = m_RadiusSpin->value();
-
-		if( m_ViewerCore->getCurrentImage()->getISISImage()->getVolume() >= 1e6 && radius == 0 ) {
-			toggleLoadingIcon( true, QString( "Searching for global min of " ) + m_ViewerCore->getCurrentImage()->getImageProperties().fileName.c_str() );
-		}
-
 		const util::ivector4 minVoxel = operation::NativeImageOps::getGlobalMin( m_ViewerCore->getCurrentImage(),
 										m_ViewerCore->getCurrentImage()->getImageProperties().voxelCoords,
 										radius );
-
 		m_ViewerCore->physicalCoordsChanged( m_ViewerCore->getCurrentImage()->getISISImage()->getPhysicalCoordsFromIndex( minVoxel ) );
-
-		toggleLoadingIcon( false );
 	}
 }
 
@@ -604,20 +572,19 @@ void MainWindow::findGlobalMax()
 	if( m_ViewerCore->hasImage() ) {
 		const int radius = m_RadiusSpin->value();
 
-		if( m_ViewerCore->getCurrentImage()->getISISImage()->getVolume() >= 1e6 && radius == 0  ) {
-			toggleLoadingIcon( true, QString( "Searching for global max of " ) + m_ViewerCore->getCurrentImage()->getImageProperties().fileName.c_str() );
-		}
 
 		const util::ivector4 maxVoxel = operation::NativeImageOps::getGlobalMax( m_ViewerCore->getCurrentImage(),
 										m_ViewerCore->getCurrentImage()->getImageProperties().voxelCoords,
 										radius );
 
 		m_ViewerCore->physicalCoordsChanged( m_ViewerCore->getCurrentImage()->getISISImage()->getPhysicalCoordsFromIndex( maxVoxel ) );
-
-		toggleLoadingIcon( false );
 	}
 }
 
+void MainWindow::dropEvent ( QDropEvent *e )
+{
+	m_ViewerCore->getUICore()->openFromDropEvent( e );
+}
 
 
 }

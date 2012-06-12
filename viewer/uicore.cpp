@@ -87,11 +87,18 @@ void UICore::setOptionPosition( UICore::OptionPosition pos )
 	}
 }
 
-void UICore::showMainWindow()
+void UICore::showMainWindow( const std::list<FileInformation> &fileList )
 {
 	m_MainWindow->getInterface().rightGridLayout->addWidget( m_SliderWidget );
 	m_MainWindow->show();
 
+	if( fileList.empty() && m_ViewerCore->getSettings()->getPropertyAs<bool>( "showStartWidget" ) ) {
+		getMainWindow()->startWidget->show();
+	} else {
+		m_ViewerCore->openFileList( fileList );
+	}
+
+	m_ViewerCore->settingsChanged();
 }
 
 QDockWidget *UICore::createDockingEnsemble( QWidget *widget )
@@ -352,9 +359,9 @@ QImage UICore::getScreenshot()
 			if( m_ViewerCore->getCurrentImage()->getImageProperties().minMax.first->as<double>() < 0 ) {
 				const double lT = roundNumber<double>( m_ViewerCore->getCurrentImage()->getImageProperties().lowerThreshold, 4 );
 				const double min = roundNumber<double>( m_ViewerCore->getCurrentImage()->getImageProperties().minMax.first->as<double>(), 4 );
-				painter.drawPixmap( 100, widgetHeight * eIndex + 50, util::Singletons::get<color::Color, 10>().getIcon( m_ViewerCore->getCurrentImage()->getImageProperties().lut, 150, 15, color::Color::lower_half ).pixmap( 150, 15 ) );
+				painter.drawPixmap( 100, widgetHeight * eIndex + 50, util::Singletons::get<color::Color, 10>().getIcon( m_ViewerCore->getCurrentImage()->getImageProperties().lut, 150, 15, color::Color::lower_half, true ).pixmap( 150, 15 ) );
 				painter.drawText( 20 + ( lT < 0 ? offset : 0 ), widgetHeight * eIndex + 65, QString::number( lT  ) );
-				painter.drawText( 28.0 + ( min < 0 ? offset : 0 ), widgetHeight * eIndex + 65, QString::number( roundNumber<double>( m_ViewerCore->getCurrentImage()->getImageProperties().minMax.first->as<double>(), 4 )  ) );
+				painter.drawText( 280 + ( min < 0 ? offset : 0 ), widgetHeight * eIndex + 65, QString::number( roundNumber<double>( m_ViewerCore->getCurrentImage()->getImageProperties().minMax.first->as<double>(), 4 )  ) );
 			}
 
 			if ( m_ViewerCore->getCurrentImage()->getImageProperties().minMax.second->as<double>() > 0  ) {
@@ -412,6 +419,42 @@ void UICore::refreshEnsembles()
 	BOOST_FOREACH( WidgetEnsemble::Vector::const_reference ensemble, m_EnsembleList ) {
 		getMainWindow()->getInterface().centralGridLayout->addWidget( ensemble->getFrame(), row++, 0 );
 	}
+}
+
+void UICore::toggleLoadingIcon ( bool start, const QString &text )
+{
+	if( text.length() ) {
+		m_ViewerCore->receiveMessage( text.toStdString() );
+	}
+
+	getMainWindow()->m_StatusMovieLabel->setVisible( start );
+	getMainWindow()->m_Interface.statusbar->setVisible( start );
+	getMainWindow()->m_StatusTextLabel->setVisible( text.length() );
+
+	if( start ) {
+		getMainWindow()->m_StatusMovie->start();
+		getMainWindow()->m_StatusTextLabel->setText( text );
+	} else {
+		getMainWindow()->m_StatusMovie->stop();
+		m_ViewerCore->getProgressFeedback()->close();
+	}
+
+	QApplication::processEvents();
+}
+
+void UICore::openFromDropEvent ( QDropEvent */*e*/ )
+{
+	//  const QMimeData* mimeData = e->mimeData();
+	//  if (mimeData->hasUrls()) {
+	//      QStringList pathList;
+	//         QList<QUrl> urlList = mimeData->urls();
+	//
+	//         // extract the local paths of the files
+	//         for (int i = 0; i < urlList.size(); i++ )
+	//         {
+	//             std::cout << urlList.at(i).toLocalFile().toStdString() << std::endl;
+	//         }
+	//  }
 }
 
 

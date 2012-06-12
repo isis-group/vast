@@ -44,6 +44,29 @@ namespace plugin
 namespace _internal
 {
 
+
+class FillChunkListThread : public QThread
+{
+	boost::shared_ptr<data::Image> image;
+	Ui::propertyToolDialog *interface;
+public:
+	FillChunkListThread ( QObject *parent, Ui::propertyToolDialog *pD )
+		: QThread( parent ), interface( pD ) {}
+	void setISISImage( boost::shared_ptr<data::Image> i ) { image = i; }
+	void run() {
+		const std::vector<data::Chunk> chunks = image->copyChunksToVector( false );
+		interface->L_numberOfChunks->setVisible( chunks.size() > 1 );
+		interface->numberOfChunks->setVisible( chunks.size() > 1 );
+		interface->numberOfChunks->setText( QString::number( chunks.size() ) );
+
+		for ( unsigned short i = 0; i < chunks.size() - 1; i++ ) {
+			std::stringstream entry;
+			entry << "Chunk " << i;
+			interface->selection->addItem( entry.str().c_str() );
+		}
+	}
+};
+
 template<typename TYPE> struct fromString {
 	TYPE operator()( const std::string &string, bool &ok ) {
 		ok = true;
@@ -109,10 +132,12 @@ public Q_SLOTS:
 	void editRequested();
 	QString getItemName( QTreeWidgetItem *item );
 	virtual void showEvent( QShowEvent * );
+	virtual void closeEvent( QCloseEvent * );
 
 private:
 	Ui::propertyToolDialog m_Interface;
 	QViewerCore *m_ViewerCore;
+	_internal::FillChunkListThread *m_fillChunkListThread;
 
 	void setIfHas( const std::string &name, QLabel *nameLabel, QLabel *propLabel, const boost::shared_ptr<data::Image> image );
 

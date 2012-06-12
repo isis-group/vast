@@ -42,39 +42,9 @@ namespace widget
 namespace _internal
 {
 
-geometrical::BoundingBoxType getVoxelBoundingBox ( const ImageHolder::Vector &images )
+util::fvector4 getPhysicalBoundingBox ( const ImageHolder::Vector &images, const PlaneOrientation &orientation )
 {
-	geometrical::BoundingBoxType retBox;
-
-	for( unsigned short i = 0; i < 3; i++ ) {
-		retBox[i].first = 0;
-		retBox[i].second = -std::numeric_limits<float>::max();
-	}
-
-	BOOST_FOREACH( const ImageHolder::Vector::const_reference image, images ) {
-		const util::ivector4 size = mapCoordsToOrientation( image->getISISImage()->getSizeAsVector(), image->getImageProperties().latchedOrientation, axial, false, true );
-		const util::ivector4 vsize = mapCoordsToOrientation( image->getImageProperties().voxelSize, image->getImageProperties().latchedOrientation, axial, false, true );
-
-		for( unsigned short i = 0; i < 3; i++ ) {
-			if( size[i] > retBox[i].second ) {
-				retBox[i].second = size[i] * vsize[i];
-			}
-		}
-	}
-	return retBox;
-}
-
-
-util::fvector4 getPhysicalBoundingBox ( const ImageHolder::Vector &images, const PlaneOrientation &orientation, const bool &latched )
-{
-	geometrical::BoundingBoxType currentBoundingBox;
-
-	if( latched ) {
-		currentBoundingBox = getVoxelBoundingBox( images );
-	} else {
-		currentBoundingBox = geometrical::getPhysicalBoundingBox( images );
-	}
-
+	const geometrical::BoundingBoxType currentBoundingBox = geometrical::getPhysicalBoundingBox( images );
 	util::fvector4 ret;
 
 	switch( orientation ) {
@@ -103,27 +73,21 @@ util::fvector4 getPhysicalBoundingBox ( const ImageHolder::Vector &images, const
 	return ret * rasteringFac;
 }
 
-QTransform getQTransform ( const ImageHolder::Pointer image, const PlaneOrientation &orientation, bool latched )
+QTransform getQTransform ( const ImageHolder::Pointer image, const PlaneOrientation &orientation, const bool &latched )
 {
 
-	const util::FixedMatrix<qreal, 2, 2> mat = extract2DMatrix( image, orientation, latched, false );
+	const util::FixedMatrix<qreal, 2, 2> mat = extract2DMatrix( image, orientation, false, latched );
 
-	util::FixedVector<qreal, 2> vc;
 	util::fvector4 mapped_voxelSize = mapCoordsToOrientation( image->getImageProperties().voxelSize, image->getImageProperties().latchedOrientation, orientation, false, true ) * rasteringFac;
-	util::FixedVector<qreal, 2> _vc;
-	util::fvector4 _io;
 
-	if( latched ) {
-		_io.fill( 0 );
-		_vc.fill( 0 );
-	} else {
-		const uint16_t slice = mapCoordsToOrientation( image->getImageProperties().voxelCoords, image->getImageProperties().latchedOrientation, orientation, false, true )[2];
-		const util::ivector4 mappedCoords = mapCoordsToOrientation( util::ivector4( 0, 0, slice ), image->getImageProperties().latchedOrientation, orientation, true, true );
-		_io = image->getISISImage()->getPhysicalCoordsFromIndex( mappedCoords ) * rasteringFac ;
-		vc[0] = mapped_voxelSize[0] / 2.0;
-		vc[1] = mapped_voxelSize[1] / 2.0;
-		_vc = mat.dot( vc );
-	}
+	const uint16_t slice = mapCoordsToOrientation( image->getImageProperties().voxelCoords, image->getImageProperties().latchedOrientation, orientation, false, true )[2];
+	const util::ivector4 mappedCoords = mapCoordsToOrientation( util::ivector4( 0, 0, slice ), image->getImageProperties().latchedOrientation, orientation, true, true );
+	const util::fvector4 _io = image->getISISImage()->getPhysicalCoordsFromIndex( mappedCoords ) * rasteringFac ;
+	util::FixedVector<qreal, 2> vc;
+	vc[0] = mapped_voxelSize[0] / 2.0;
+	vc[1] = mapped_voxelSize[1] / 2.0;
+	const util::FixedVector<qreal, 2> _vc = mat.dot( vc );
+
 
 	switch( orientation ) {
 	case axial: {
@@ -172,7 +136,7 @@ QTransform getTransform2ISISSpace ( const PlaneOrientation &orientation, const u
 	return retTransform;
 }
 
-util::Matrix4x4< qreal > getOrderedMatrix ( const boost::shared_ptr< ImageHolder > image, bool latched, bool inverse )
+util::Matrix4x4< qreal > getOrderedMatrix ( const boost::shared_ptr< ImageHolder > image, bool inverse, const bool &latched )
 {
 	util::Matrix4x4<qreal> latchedOrientation_abs;
 
@@ -189,7 +153,7 @@ util::Matrix4x4< qreal > getOrderedMatrix ( const boost::shared_ptr< ImageHolder
 		invLatchedOrientation = latchedOrientation_abs.inverse( invOk );
 
 		if( !invOk ) {
-			LOG( Dev, warning ) << "Failed to usee inverse to extract 2D matrix for image " << image->getImageProperties().filePath
+			LOG( Dev, warning ) << "Failed to use inverse to extract 2D matrix for image " << image->getImageProperties().filePath
 								<< "! Falling back to transposed.";
 		}
 	}
@@ -204,9 +168,9 @@ util::Matrix4x4< qreal > getOrderedMatrix ( const boost::shared_ptr< ImageHolder
 }
 
 
-util::FixedMatrix<qreal, 2, 2> extract2DMatrix ( const boost::shared_ptr<ImageHolder> image, const PlaneOrientation &orientation, bool latched, bool inverse )
+util::FixedMatrix<qreal, 2, 2> extract2DMatrix ( const boost::shared_ptr<ImageHolder> image, const PlaneOrientation &orientation, bool inverse, const bool &latched )
 {
-	const util::Matrix4x4<qreal> mat = getOrderedMatrix( image, latched, inverse );
+	const util::Matrix4x4<qreal> mat = getOrderedMatrix( image, inverse, latched );
 	util::FixedMatrix<qreal, 2, 2> retMatrix;
 
 	switch( orientation ) {

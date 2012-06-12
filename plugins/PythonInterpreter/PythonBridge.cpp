@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * Author: Erik Türke, tuerke@cbs.mpg.de
+ * Author: Erik Tuerke, tuerke@cbs.mpg.de
  *
  * PythonBridge.cpp
  *
@@ -41,8 +41,8 @@ void PythonBridge::exposeEnums()
 {
 	try {
 		( *main_namespace )["image_type"] = enum_<isis::viewer::ImageHolder::ImageType>( "image_type" )
-											.value( "ZMAP", isis::viewer::ImageHolder::statistical_image )
-											.value( "ANATOMICAL", isis::viewer::ImageHolder::structural_image );
+											.value( "STATISTICAL", isis::viewer::ImageHolder::statistical_image )
+											.value( "STRUCTURAL", isis::viewer::ImageHolder::structural_image );
 	} catch ( error_already_set ) {
 		PyErr_Print();
 	}
@@ -53,9 +53,11 @@ void PythonBridge::exposeViewerCore()
 {
 	( *main_namespace )["Core"] = class_<isis::viewer::QViewerCore, boost::noncopyable >( "Core" )
 								  .def( "getVersion", &isis::viewer::QViewerCore::getVersion )
+								  .staticmethod( "getVersion" )
 								  .def( "addImage", &isis::viewer::ViewerCoreBase::addImage )
 								  .def( "updateScene", &isis::viewer::QViewerCore::updateScene )
 								  ;
+
 }
 
 void PythonBridge::exposeImageHolder()
@@ -70,7 +72,7 @@ void PythonBridge::initializePython()
 	Py_Initialize();
 	main_module.reset( new object(  handle<> ( borrowed( PyImport_AddModule( "__main__" ) ) ) ) );
 	main_namespace.reset( new object ( main_module->attr( "__dict__" ) ) );
-	handle<> ignored( ( PyRun_String( "from isis import core; from isis import data", Py_file_input, main_namespace->ptr(), main_namespace->ptr() ) ) );
+	handle<> ignored( ( PyRun_String( "from isis import util; from isis import data", Py_file_input, main_namespace->ptr(), main_namespace->ptr() ) ) );
 
 	//redirect stdio
 	( *main_namespace )["PythonStdIoRedirect"] = class_<PythonStdIoRedirect>( "PythonStdIoRedirect", init<>() )
@@ -87,6 +89,7 @@ std::string PythonBridge::run( const std::string &code ) const
 	if( m_ViewerCore->hasImage() ) {
 		( *main_namespace )["ci"] = m_ViewerCore->getCurrentImage()->getISISImage().get();
 	}
+
 
 	try {
 		handle<> ignored( ( PyRun_String( code.c_str(), Py_file_input, main_namespace->ptr(), main_namespace->ptr() ) ) );

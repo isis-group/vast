@@ -79,19 +79,14 @@ void StartWidget::openFavPath()
 void StartWidget::openRecentPath()
 {
 	close();
-	m_ViewerCore->openFile( m_ViewerCore->getSettings()->getFavoriteFiles().at( m_Interface.recentList->currentItem()->text().toStdString() ) );
+	m_ViewerCore->openFile( m_ViewerCore->getSettings()->getRecentFiles().at( m_Interface.recentList->currentItem()->text().toStdString() ) );
 }
 
 void StartWidget::showEvent( QShowEvent * )
 {
 	uint16_t width = m_ViewerCore->getSettings()->getPropertyAs<uint16_t>( "startWidgetWidth" );
-	uint16_t height = m_ViewerCore->getSettings()->getPropertyAs<uint16_t>( "startWidgetHeight" );
 	const QRect screen = QApplication::desktop()->screenGeometry();
 
-	setMaximumHeight( height  );
-	setMaximumWidth( width );
-	setMinimumHeight( height );
-	setMinimumWidth( width );
 	const float scale = 0.9;
 	QPixmap pixMap( m_ViewerCore->getSettings()->getPropertyAs<std::string>( "vastSymbol" ).c_str() );
 	float ratio = pixMap.height() / ( float )pixMap.width() * scale;
@@ -109,6 +104,7 @@ void StartWidget::showEvent( QShowEvent * )
 
 	m_Interface.favoritesLabel->setVisible( fillList( m_ViewerCore->getSettings()->getFavoriteFiles(), m_Interface.favList ) );
 	m_Interface.recentLabel->setVisible( fillList( m_ViewerCore->getSettings()->getRecentFiles(), m_Interface.recentList ) );
+	adjustSize();
 }
 
 bool StartWidget::fillList ( const FileInformationMap &fileInfoList, QListWidget *list )
@@ -120,7 +116,7 @@ bool StartWidget::fillList ( const FileInformationMap &fileInfoList, QListWidget
 			unsigned short validFiles;
 			QListWidgetItem *item = new QListWidgetItem( fileInfo.first.c_str() );
 
-			if( FileDialog::checkIfPathIsValid( fileInfo.first.c_str(), validFiles, "" ) ) {
+			if( FileDialog::checkIfPathIsValid( fileInfo.second.getCompletePath().c_str(), validFiles, "" ) ) {
 				item->setTextColor( QColor( 34, 139, 34 ) );
 			} else {
 				item->setTextColor( Qt::red );

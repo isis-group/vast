@@ -61,6 +61,7 @@ int main( int argc, char *argv[] )
 
 	//make vast showing qmessage if an error log is thrown
 	logging_hanlder_dev->qmessageBelow( isis::warning );
+	logging_hanlder_runtime->qmessageBelow( isis::warning );
 
 	std::string appName = "vast";
 	std::string orgName = "cbs.mpg.de";
@@ -109,10 +110,10 @@ int main( int argc, char *argv[] )
 	app.parameters["widget"] = std::string();
 	app.parameters["widget"].needed() = false;
 	app.parameters["widget"].setDescription( "Use specific widget" );
-	boost::shared_ptr< util::ProgressFeedback > feedback = boost::shared_ptr<util::ProgressFeedback>( new util::ConsoleFeedback );
-	data::IOFactory::setProgressFeedback( feedback );
 	app.init( argc, argv, false );
 	QViewerCore *core = new QViewerCore;
+
+	//setting stylesheet
 	app.getQApplication().setStyleSheet( util::Singletons::get<style::Style, 10>().getStyleSheet( core->getSettings()->getPropertyAs<std::string>( "styleSheet" ) ) );
 
 	util::_internal::Log<isis::data::Runtime>::setHandler( logging_hanlder_runtime );
@@ -133,6 +134,10 @@ int main( int argc, char *argv[] )
 
 	if( widget_name.empty() ) {
 		widget_name = core->getSettings()->getPropertyAs<std::string>( "defaultViewWidgetIdentifier" );
+
+		if( widget_name.empty() ) {
+			widget_name = fallbackWidgetIdentifier;
+		}
 	}
 
 	util::slist fileList = app.parameters["in"];
@@ -168,13 +173,6 @@ int main( int argc, char *argv[] )
 								app.parameters["split"].as<bool>() ) );
 	}
 
-	if( !fileInfoList.empty() ) {
-		core->openFileList( fileInfoList );
-	}
-
-	core->getUICore()->getMainWindow()->toggleLoadingIcon( false );
-	core->getUICore()->showMainWindow();
-
-	core->settingsChanged();
+	core->getUICore()->showMainWindow( fileInfoList );
 	return app.getQApplication().exec();
 }

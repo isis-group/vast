@@ -57,11 +57,13 @@ public Q_SLOTS:
 	void toggleUseAllThreads( bool );
 	void numberOfThreadsChanged( int );
 	void screenshotXChanged( int );
-	virtual void showEvent( QShowEvent * ) { loadSettings(); }
+	virtual void showEvent( QShowEvent * );
 	Ui::preferencesDialog &getUI() { return m_Interface; }
 
 private:
 	QViewerCore *m_ViewerCore;
+	void connectSignals();
+	void disconnectSignals();
 
 };
 

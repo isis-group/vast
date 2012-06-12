@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * Author: Erik Türke, tuerke@cbs.mpg.de
+ * Author: Erik Tuerke, tuerke@cbs.mpg.de
  *
  * imageholder.hpp
  *
@@ -33,6 +33,7 @@
 #include "geometrical.hpp"
 #include <boost/foreach.hpp>
 #include <vector>
+#include <qapplication.h>
 #include <CoreUtils/propmap.hpp>
 #include <DataStorage/image.hpp>
 #include <CoreUtils/matrix.hpp>
@@ -62,11 +63,13 @@ private:
 		std::string fileName;
 		std::string filePath;
 		util::ivector4 voxelCoords;
+		util::ivector4 trueVoxelCoords;
 		util::fvector4 physicalCoords;
 		size_t timestep;
 		util::fvector4 voxelSize;
 		bool isVisible;
 		bool isRGB;
+		bool zeroIsReserved;
 		float opacity;
 		util::ivector4 alignedSize32;
 		double offset;
@@ -84,16 +87,15 @@ private:
 		ImageType imageType;
 		InterpolationType interpolationType;
 		std::pair<util::ValueReference, util::ValueReference> minMax;
-		std::pair<util::ValueReference, util::ValueReference> internMinMax;
+		std::pair<double, double> scalingMinMax;
 		util::fvector4 indexOrigin;
 		util::Matrix4x4<float> orientation;
 		util::Matrix4x4<float> latchedOrientation;
 		unsigned short majorTypeID;
 		std::string majorTypeName;
-		std::vector< double *> histogramVector;
-		std::vector< double *> histogramVectorWOZero;
 		std::pair<util::ValueReference, util::ValueReference> scalingToInternalType;
 		geometrical::BoundingBoxType boundingBox;
+		double voxelValue;
 	};
 
 public:
@@ -108,10 +110,14 @@ public:
 
 	const std::vector< data::Chunk > &getChunkVector() const { return m_ChunkVector; }
 	std::vector< data::Chunk > &getChunkVector() { return m_ChunkVector; }
+
+	const std::vector< data::Chunk > &getVolumeVector() const { return m_VolumeVector; }
+	std::vector< data::Chunk > &getVolumeVector() { return m_VolumeVector; }
+
 	util::PropertyMap &getPropMap() { return m_PropMap; }
 	const util::PropertyMap &getPropMap() const { return m_PropMap; }
 	const util::FixedVector<size_t, 4> &getImageSize() const { return m_ImageSize; }
-	boost::shared_ptr< data::Image >getISISImage( bool typed = false ) const;
+	boost::shared_ptr< data::Image >getISISImage() const;
 
 	void addChangedAttribute( const std::string &attribute );
 	bool removeChangedAttribute( const std::string &attribute );
@@ -122,7 +128,8 @@ public:
 	boost::shared_ptr<const void>
 	getRawAdress( size_t timestep = 0 ) const;
 
-	void checkVoxelCoords( util::ivector4 &voxelCoords );
+	void correctVoxelCoords( util::ivector4 &voxelCoords );
+	bool checkVoxelCoords( const util::ivector4 &voxelCoords );
 
 	void synchronize( );
 	double getInternalExtent()  const;
@@ -132,19 +139,22 @@ public:
 	bool hasAmbiguousOrientation() const { return m_AmbiguousOrientation; }
 
 	void updateOrientation();
-	void updateHistogram();
-
-	bool zeroIsReserved() const { return m_ZeroIsReserved; }
 
 	void setVoxel( const size_t &first, const size_t &second, const size_t &third, const size_t &fourth, const double &value, bool sync = true );
 
 	template<typename TYPE>
 	void setTypedVoxel(  const size_t &first, const size_t &second, const size_t &third, const size_t &fourth, const TYPE &value, bool sync = true ) {
-		getChunkVector()[fourth].voxel<InternalImageType>( first, second, third )
+		m_VolumeVector[fourth].voxel<InternalImageType>( first, second, third )
 		= static_cast<double>( value ) * getImageProperties().scalingToInternalType.first->as<double>() + getImageProperties().scalingToInternalType.second->as<double>();
 
 		if( sync ) {
-			getISISImage()->getChunk( first, second, third, fourth, false ).voxel<TYPE>( first, second, third, fourth ) = value;
+			getISISImage()->voxel<TYPE>( first, second, third, fourth ) = value;
+
+			if( value > getImageProperties().minMax.second->as<TYPE>() || value < getImageProperties().minMax.first->as<TYPE>() ) {
+				getImageProperties().minMax = getISISImage()->getMinMax();
+				getImageProperties().extent = fabs( getImageProperties().minMax.second->as<double>() - getImageProperties().minMax.first->as<double>() );
+				updateColorMap();
+			}
 		}
 	}
 
@@ -162,31 +172,27 @@ private:
 	util::FixedVector<size_t, 4> m_ImageSize;
 	util::PropertyMap m_PropMap;
 
-	bool m_ZeroIsReserved;
-	InternalImageType m_ReservedValue;
-
 	bool m_AmbiguousOrientation;
 
 	boost::shared_ptr<data::Image> m_Image;
-	boost::shared_ptr<data::Image> m_TypedImage;
 	std::pair<double, double> m_OptimalScalingPair;
 
 	std::vector< data::Chunk > m_ChunkVector;
+	std::vector< data::Chunk > m_VolumeVector;
 
 	boost::shared_ptr<color::Color> m_ColorHandler;
 
 	ImageProperties m_ImageProperties;
 
 	template<typename TYPE>
-	void copyImageToVector( const data::Image &image, bool reserveZero ) {
-		m_ChunkVector.clear();
+	void copyImageToVector( const data::Image &image ) {
+		m_VolumeVector.clear();
+		m_ChunkVector = image.copyChunksToVector();
 		data::ValueArray<TYPE> imagePtr( ( TYPE * ) calloc( image.getVolume(), sizeof( TYPE ) ), image.getVolume() );
 		getImageProperties().memSizeInternal = image.getVolume() * sizeof( TYPE );
 		LOG( Dev, info ) << "Needed memory: " << getImageProperties().memSizeInternal / ( 1024.0 * 1024.0 ) << " mb.";
 
-		if( reserveZero ) {
-			LOG( Dev, info ) << "0 is reserved";
-			// calculate new scaling
+		if( getImageProperties().zeroIsReserved ) {
 			data::scaling_pair scalingPair = image.getScalingTo( data::ValueArray<TYPE>::staticID, data::upscale );
 			double scaling = scalingPair.first->as<double>();
 			double offset = scalingPair.second->as<double>();
@@ -195,56 +201,29 @@ private:
 			const data::scaling_pair newScaling( std::make_pair< util::ValueReference, util::ValueReference>( util::Value<double>( scaling ), util::Value<double>( offset ) ) ) ;
 			getImageProperties().scalingToInternalType = newScaling;
 		} else {
-			LOG( Dev, info ) << "0 is not reserved";
 			getImageProperties().scalingToInternalType = image.getScalingTo( data::ValueArray<TYPE>::staticID, data::upscale );
 		}
 
 		LOG( Dev, info ) << "scalingToInternalType: " << getImageProperties().scalingToInternalType.first->as<double>() << " : " << getImageProperties().scalingToInternalType.second->as<double>();
 		image.copyToMem<TYPE>( &imagePtr[0], image.getVolume(), getImageProperties().scalingToInternalType );
 		LOG( Dev, verbose_info ) << "Copied image to continuous memory space.";
-		getImageProperties().internMinMax = imagePtr.getMinMax();
-		LOG( Dev, info ) << "internMinMax: " << getImageProperties().internMinMax.first->as<double>() << " : " << getImageProperties().internMinMax.second->as<double>();
 
 		//splice the image in its volumes -> we get a vector of t volumes
-		if( m_ImageSize[3] > 1 ) { //splicing is only necessary if we got more than 1 timestep
+		if( m_ImageSize[dim_time] > 1 ) { //splicing is only necessary if we got more than 1 timestep
 			std::vector< data::ValueArrayReference > refVec = imagePtr.splice( m_ImageSize[0] * m_ImageSize[1] * m_ImageSize[2] );
 
 			for ( std::vector< data::ValueArrayReference >::const_iterator iter = refVec.begin(); iter != refVec.end(); iter++ ) {
-				m_ChunkVector.push_back( data::Chunk( *iter, m_ImageSize[0], m_ImageSize[1], m_ImageSize[2] ) );
+				m_VolumeVector.push_back( data::Chunk( *iter, m_ImageSize[0], m_ImageSize[1], m_ImageSize[2] ) );
 			}
 		} else {
-			m_ChunkVector.push_back( data::Chunk( imagePtr, m_ImageSize[0], m_ImageSize[1], m_ImageSize[2] ) );
+			m_VolumeVector.push_back( data::Chunk( imagePtr, m_ImageSize[0], m_ImageSize[1], m_ImageSize[2] ) );
 		}
 	}
 
-	template<typename TYPE>
-	void _setTrueZero( const data::Image &image ) {
-		LOG( Dev, info ) << "Setting true zero for " << getImageProperties().fileName;
-		// first make shure the images datatype is consistent
-		data::TypedImage<TYPE> tImage ( image );
-		//now set all voxels to the m_ReservedValue that are 0 in the origin image
 
-		for( size_t t = 0; t < getImageSize()[3]; t++ ) {
-			for( size_t z = 0; z < getImageSize()[2]; z++ ) {
-				for( size_t y = 0; y < getImageSize()[1]; y++ ) {
-#ifdef _OPENMP
-#pragma omp parallel for
-#endif
-
-					for( size_t x = 0; x < getImageSize()[0]; x++ ) {
-						if( static_cast<data::Image &>( tImage ).voxel<TYPE>( x, y, z, t ) == static_cast<TYPE>( 0 ) ) {
-							m_ChunkVector[t].voxel<InternalImageType>( x, y, z ) = m_ReservedValue;
-						}
-					}
-				}
-			}
-		}
-
-	}
 };
 
 }
 } //end namespace
-
 
 #endif

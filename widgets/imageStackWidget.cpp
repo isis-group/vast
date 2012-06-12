@@ -26,10 +26,10 @@
  *      Author: tuerke
  ******************************************************************/
 #include "imageStackWidget.hpp"
-#include <viewercorebase.hpp>
-#include <qviewercore.hpp>
-#include <uicore.hpp>
-#include <color.hpp>
+#include "viewercorebase.hpp"
+#include "qviewercore.hpp"
+#include "uicore.hpp"
+#include "color.hpp"
 
 namespace isis
 {
@@ -38,9 +38,10 @@ namespace viewer
 namespace ui
 {
 
-ImageStack::ImageStack( QWidget *parent, ImageStackWidget *widget )
+ImageStack::ImageStack( QWidget *parent, ImageStackWidget *widget, QViewerCore *core )
 	: QListWidget( parent ),
-	  m_Widget( widget )
+	  m_Widget( widget ),
+	  m_ViewerCore( core )
 {
 	setHorizontalScrollBarPolicy( Qt::ScrollBarAsNeeded );
 	setVerticalScrollMode( ScrollPerItem );
@@ -58,6 +59,7 @@ ImageStack::ImageStack( QWidget *parent, ImageStackWidget *widget )
 		connect( action, SIGNAL( triggered( bool ) ), signalMapper, SLOT( map() ) );
 	}
 	connect( signalMapper, SIGNAL( mapped( QString ) ), m_Widget, SLOT( openImageInWidget( QString ) ) );
+	setAcceptDrops( true );
 }
 
 void ImageStackWidget::openImageInWidget ( QString widget )
@@ -81,6 +83,13 @@ void ImageStackWidget::openImageInWidget ( QString widget )
 			m_ViewerCore->getUICore()->createViewWidgetEnsemble( widget.toStdString(), m_ViewerCore->addImage( *image->getISISImage().get(), image->getImageProperties().imageType ) );
 			break;
 		case QMessageBox::No:
+			const WidgetEnsemble::Pointer ensemble = m_ViewerCore->getUICore()->getEnsembleFromImage( image );
+			ensemble->removeImage( image );
+
+			if( !ensemble->getImageVector().size() )  {
+				m_ViewerCore->getUICore()->closeWidgetEnsemble( ensemble );
+			}
+
 			m_ViewerCore->getUICore()->createViewWidgetEnsemble( widget.toStdString(), image );
 			break;
 		}
@@ -92,17 +101,27 @@ void ImageStackWidget::openImageInWidget ( QString widget )
 void ImageStack::contextMenuEvent( QContextMenuEvent *event )
 {
 	QMenu menu( this );
-	QMenu *openInWidgetMenu = new QMenu( "Show in new widget...", this );
-	BOOST_FOREACH( const std::list<QAction *>::const_reference action, m_WidgetActions ) {
-		openInWidgetMenu->addAction( action );
+
+	if(  currentItem() ) {
+		QMenu *openInWidgetMenu = new QMenu( "Show in new widget...", this );
+		BOOST_FOREACH( const std::list<QAction *>::const_reference action, m_WidgetActions ) {
+			openInWidgetMenu->addAction( action );
+		}
+		menu.addAction( m_Widget->m_Interface.actionClose_image );
+		const ImageHolder::Pointer image = m_ViewerCore->getImageMap().at( currentItem()->data( Qt::UserRole ).toString().toStdString() );
+
+		if( !image->getImageProperties().zeroIsReserved && !image->getImageProperties().isRGB && image->getImageProperties().minMax.first->as<double>() < 0 ) {
+			menu.addAction( m_Widget->m_Interface.actionSet_0_to_black );
+		}
+
+		menu.addMenu( openInWidgetMenu );
+		menu.addSeparator();
 	}
-	menu.addAction( m_Widget->m_Interface.actionClose_image );
-	menu.addMenu( openInWidgetMenu );
-	menu.addSeparator();
+
 	menu.addAction( m_Widget->m_Interface.actionDistribute_images );
 	menu.addAction( m_Widget->m_Interface.actionClose_all_images );
-
 	menu.exec( event->globalPos() );
+
 }
 
 void ImageStack::mousePressEvent( QMouseEvent *e )
@@ -131,7 +150,7 @@ ImageStackWidget::ImageStackWidget( QWidget *parent, QViewerCore *core )
 	m_Interface.actionClose_image->setIconVisibleInMenu( true );
 	m_Interface.actionDistribute_images->setIconVisibleInMenu( true );
 	m_Interface.actionClose_all_images->setIconVisibleInMenu( true );
-	m_ImageStack = new ImageStack( this, this );
+	m_ImageStack = new ImageStack( this, this, core );
 	m_Interface.stackLayout->addWidget( m_ImageStack );
 	//  m_ImageStack->setSizePolicy( QSizePolicy::Preferred, QSizePolicy::Preferred );
 
@@ -140,6 +159,7 @@ ImageStackWidget::ImageStackWidget( QWidget *parent, QViewerCore *core )
 	connect( m_ImageStack, SIGNAL( itemChanged( QListWidgetItem * ) ), this, SLOT( itemChanged( QListWidgetItem * ) ) );
 	connect( m_ImageStack, SIGNAL( itemPressed( QListWidgetItem * ) ), this, SLOT( itemClicked( QListWidgetItem * ) ) );
 	connect( m_Interface.actionClose_image, SIGNAL( triggered() ), this, SLOT( closeImage() ) );
+	connect( m_Interface.actionSet_0_to_black, SIGNAL( triggered() ), this, SLOT( setZeroToBlack() ) );
 	connect( m_Interface.actionDistribute_images, SIGNAL( triggered() ), this, SLOT( distributeImages() ) );
 	connect( m_Interface.actionClose_all_images, SIGNAL( triggered() ), this, SLOT( closeAllImages() ) );
 	connect( m_Interface.checkViewAllImages, SIGNAL( clicked( bool ) ), this, SLOT( viewAllImagesClicked() ) );
@@ -154,6 +174,14 @@ void ImageStackWidget::viewAllImagesClicked()
 	synchronize();
 }
 
+void ImageStackWidget::setZeroToBlack()
+{
+	if(  m_ImageStack->currentItem() ) {
+		boost::shared_ptr<ImageHolder> image = m_ViewerCore->getImageMap().at( m_ImageStack->currentItem()->data( Qt::UserRole ).toString().toStdString() );
+		operation::NativeImageOps::setTrueZero( image );
+		m_ViewerCore->updateScene();
+	}
+}
 
 
 void ImageStackWidget::synchronize()
@@ -369,6 +397,12 @@ const WidgetEnsemble::Pointer ImageStackWidget::getEnsembleFromItem ( const QLis
 {
 	const ImageHolder::Pointer image = m_ViewerCore->getImageMap().at( item->data( Qt::UserRole ).toString().toStdString() );
 	return m_ViewerCore->getUICore()->getEnsembleFromImage( image );
+}
+
+void ImageStack::dropEvent ( QDropEvent *e )
+{
+	std::cout << "drop" << std::endl;
+	m_ViewerCore->getUICore()->openFromDropEvent( e );
 }
 
 

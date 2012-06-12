@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * Author: Erik Türke, tuerke@cbs.mpg.de
+ * Author: Erik Tuerke, tuerke@cbs.mpg.de
  *
  * CreateMaskDialog.cpp
  *
@@ -141,10 +141,8 @@ void CreateMaskDialog::createMask()
 		m_MaskEditDialog->m_ViewerCore->setShowCrosshair( false );
 		m_MaskEditDialog->m_ViewerCore->updateScene();
 		m_MaskEditDialog->m_ViewerCore->getUICore()->refreshUI();
-		m_MaskEditDialog->m_Interface.cut->setEnabled( true );
-		m_MaskEditDialog->m_Interface.paint->setEnabled( true );
 		m_MaskEditDialog->m_Interface.radius->setEnabled( true );
-		m_MaskEditDialog->m_Interface.paint->setChecked( true );
+		m_MaskEditDialog->m_Interface.colorEdit->setValue( m_MaskEditDialog->m_CurrentMask->getImageProperties().minMax.second->as<double>()  );
 	}
 
 	close();

@@ -32,6 +32,7 @@
 #include <Adapter/qmatrixconversion.hpp>
 
 #include "memoryhandler.hpp"
+#include "uicore.hpp"
 
 namespace isis
 {
@@ -43,9 +44,7 @@ namespace widget
 QGeomWidget::QGeomWidget()
 	: QWidget(),
 	  m_Painter( new QPainter( ) )
-{
-
-}
+{}
 
 void QGeomWidget::setup ( QViewerCore *core, QWidget *parent , PlaneOrientation planeOrienation )
 {
@@ -146,6 +145,7 @@ bool QGeomWidget::removeImage ( const ImageHolder::Pointer image )
 		LOG( Dev, warning ) << "Trying to remove image " << image->getImageProperties().filePath
 							<< " from widget of type " << getWidgetIdent()
 							<< ". But it seems this image has no such image.";
+		return false;
 	}
 }
 
@@ -166,8 +166,14 @@ void QGeomWidget::paintEvent ( QPaintEvent* /*event*/ )
 
 		m_Painter->resetTransform();
 
+		if( m_ViewerCore->getSettings()->getPropertyAs<bool>( "latchSingleImage" ) ) {
+			m_LatchOrientation = getWidgetEnsemble()->getImageVector().size() == 1;
+		} else {
+			m_LatchOrientation = false;
+		}
+
 		//bounding box calculation
-		m_BoundingBox = _internal::getPhysicalBoundingBox( getWidgetEnsemble()->getImageVector(), m_PlaneOrientation, m_LatchOrientation );
+		m_BoundingBox = _internal::getPhysicalBoundingBox( getWidgetEnsemble()->getImageVector(), m_PlaneOrientation );
 		_internal::zoomBoundingBox( m_BoundingBox,
 									m_Translation,
 									m_ViewerCore->getCurrentImage()->getImageProperties().physicalCoords,
@@ -219,25 +225,37 @@ void QGeomWidget::paintEvent ( QPaintEvent* /*event*/ )
 void QGeomWidget::paintImage( const ImageHolder::Pointer image )
 {
 	m_Painter->setTransform( _internal::getTransform2ISISSpace( m_PlaneOrientation, m_BoundingBox ) );
+	QTransform transform = _internal::getQTransform( image, m_PlaneOrientation, false );
 
-	m_Painter->setTransform( _internal::getQTransform( image, m_PlaneOrientation, m_LatchOrientation ), true );
+	m_Painter->setTransform( transform, true );
+
 	m_Painter->setOpacity( image->getImageProperties().opacity );
 	const util::ivector4 mappedSizeAligned = mapCoordsToOrientation( image->getImageProperties().alignedSize32, image->getImageProperties().latchedOrientation, m_PlaneOrientation );
 
 	if ( !image->getImageProperties().isRGB ) {
 		isis::data::MemChunk<InternalImageType> sliceChunk( mappedSizeAligned[0], mappedSizeAligned[1] );
-		MemoryHandler::fillSliceChunk<InternalImageType>( sliceChunk, image, m_PlaneOrientation );
 
-		QImage qImage( ( InternalImageType * ) sliceChunk.asValueArray<InternalImageType>().getRawAddress().get(),
-					   mappedSizeAligned[0], mappedSizeAligned[1], QImage::Format_Indexed8 );
+		if( m_LatchOrientation ) {
+			MemoryHandler::fillSliceChunk<InternalImageType>( sliceChunk, image, m_PlaneOrientation );
+		} else {
+			MemoryHandler::fillSliceChunkOriented<InternalImageType>( sliceChunk, image, m_PlaneOrientation );
+		}
+
+		QImage qImage( &sliceChunk.voxel<InternalImageType>( 0 ), mappedSizeAligned[0], mappedSizeAligned[1], QImage::Format_Indexed8 );
 
 		qImage.setColorTable( image->getImageProperties().colorMap );
 		m_Painter->drawImage( 0, 0, qImage );
 	} else {
+
 		isis::data::MemChunk<InternalImageColorType> sliceChunk( mappedSizeAligned[0], mappedSizeAligned[1] );
-		MemoryHandler::fillSliceChunk<InternalImageColorType>( sliceChunk, image, m_PlaneOrientation );
-		QImage qImage( ( InternalImageType * ) sliceChunk.asValueArray<InternalImageColorType>().getRawAddress().get(),
-					   mappedSizeAligned[0], mappedSizeAligned[1], QImage::Format_RGB888 );
+
+		if( m_LatchOrientation ) {
+			MemoryHandler::fillSliceChunk<InternalImageColorType>( sliceChunk, image, m_PlaneOrientation );
+		} else {
+			MemoryHandler::fillSliceChunkOriented<InternalImageColorType>( sliceChunk, image, m_PlaneOrientation );
+		}
+
+		QImage qImage( ( InternalImageType * ) &sliceChunk.voxel<InternalImageColorType>( 0 ), mappedSizeAligned[0], mappedSizeAligned[1], QImage::Format_RGB888 );
 		m_Painter->drawImage( 0, 0, qImage );
 	}
 }
@@ -246,25 +264,20 @@ void QGeomWidget::paintCrossHair() const
 {
 	const ImageHolder::Pointer image = m_ViewerCore->getCurrentImage();
 
-	util::fvector4 mappedCoords;
+	const util::fvector4 mappedCoords = ( _internal::mapPhysicalCoords2Orientation( image->getImageProperties().physicalCoords, m_PlaneOrientation ) ) * _internal::rasteringFac;
 
-	if( !m_LatchOrientation ) {
-		mappedCoords = ( _internal::mapPhysicalCoords2Orientation( image->getImageProperties().physicalCoords, m_PlaneOrientation ) ) * _internal::rasteringFac;
-	} else {
-		mappedCoords = mapCoordsToOrientation( image->getImageProperties().voxelCoords, image->getImageProperties().latchedOrientation, m_PlaneOrientation, false, true ) * _internal::rasteringFac;
-	}
+	const int border = std::numeric_limits<int>::min() / 4;
 
-	const int border = -600000;
+	const float gapx = m_BoundingBox[2] / 32 * sqrt( m_Zoom ) ;
+	const float gapy = m_BoundingBox[3] / 32 * sqrt( m_Zoom ) ;
 
-	const float gap = 15 / m_Zoom;
+	const QLine xline1( mappedCoords[0], border, mappedCoords[0], mappedCoords[1] - gapx );
 
-	const QLine xline1( mappedCoords[0], border, mappedCoords[0], mappedCoords[1] - gap * _internal::rasteringFac );
+	const QLine xline2( mappedCoords[0], mappedCoords[1] + gapx, mappedCoords[0], height() - border  );
 
-	const QLine xline2( mappedCoords[0], mappedCoords[1] + gap * _internal::rasteringFac, mappedCoords[0], height() - border  );
+	const QLine yline1( border, mappedCoords[1], mappedCoords[0] - gapy, mappedCoords[1] );
 
-	const QLine yline1( border, mappedCoords[1], mappedCoords[0] - gap * _internal::rasteringFac, mappedCoords[1] );
-
-	const QLine yline2( mappedCoords[0] + gap * _internal::rasteringFac, mappedCoords[1],  width() - border, mappedCoords[1]  );
+	const QLine yline2( mappedCoords[0] + gapy, mappedCoords[1],  width() - border, mappedCoords[1]  );
 
 	QPen pen;
 
@@ -294,7 +307,7 @@ void QGeomWidget::paintCrossHair() const
 
 	m_Painter->drawLine( yline2 );
 
-	pen.setWidth( 3 );
+	pen.setWidth( 5 );
 
 	m_Painter->drawPoint( mappedCoords[0], mappedCoords[1] );
 }
@@ -367,11 +380,10 @@ util::fvector4 QGeomWidget::getPhysicalCoordsFromMouseCoords ( const int &x, con
 		if( m_RasterPhysicalCoords ) {
 			util::ivector4 voxelCoords = image->getISISImage()->getIndexFromPhysicalCoords( physicalCoords );
 			voxelCoords[mappingVec[2]] = oldVoxelCoords[mappingVec[2]];
-			return image->getISISImage()->getPhysicalCoordsFromIndex( voxelCoords );
-		} else {
-			return physicalCoords;
-
+			physicalCoords = image->getISISImage()->getPhysicalCoordsFromIndex( voxelCoords );
 		}
+
+		return physicalCoords;
 	}
 
 	return util::fvector4();
@@ -420,6 +432,7 @@ void QGeomWidget::mouseMoveEvent ( QMouseEvent *e )
 				const double scaling = 1.0 - ( m_StartCoordsPair.first - e->x() ) / ( float )width() * 5;
 				image->getImageProperties().offset = offset;
 				image->getImageProperties().scaling = scaling < 0.0 ? 0.0 : scaling;
+				image->getImageProperties().scalingMinMax = operation::NativeImageOps::getMinMaxFromScalingOffset( std::make_pair<double, double>( scaling, offset ), image );
 				image->updateColorMap();
 			}
 		} else {
@@ -428,11 +441,13 @@ void QGeomWidget::mouseMoveEvent ( QMouseEvent *e )
 			const double scaling = 1.0 - ( m_StartCoordsPair.first - e->x() ) / ( float )width() * 5;
 			image->getImageProperties().offset = offset;
 			image->getImageProperties().scaling = scaling < 0.0 ? 0.0 : scaling;
+			image->getImageProperties().scalingMinMax = operation::NativeImageOps::getMinMaxFromScalingOffset( std::make_pair<double, double>( scaling, offset ), image );
 			image->updateColorMap();
 		}
 
 		m_ShowScalingOffset = true;
 		m_ViewerCore->updateScene();
+		m_ViewerCore->getUICore()->refreshUI();
 
 	} else {
 		const util::fvector4 physicalCoords = getPhysicalCoordsFromMouseCoords(  e->x(), e->y() );
@@ -525,25 +540,31 @@ void QGeomWidget::dragEnterEvent ( QDragEnterEvent *e )
 
 void QGeomWidget::dropEvent ( QDropEvent *e )
 {
-	const ImageHolder::Pointer image = m_ViewerCore->getImageMap().at( e->mimeData()->text().toStdString() );
-	WidgetEnsemble::Pointer myEnsemble;
-	BOOST_FOREACH( WidgetEnsemble::Vector::reference ensemble, m_ViewerCore->getUICore()->getEnsembleList() ) {
-		BOOST_FOREACH( WidgetEnsemble::reference ensembleComponent, *ensemble ) {
-			if( ensembleComponent->getWidgetInterface() == this ) {
-				myEnsemble = ensemble;
+	const std::string &text = e->mimeData()->text().toStdString();
+
+	if( m_ViewerCore->getImageMap().find( text ) != m_ViewerCore->getImageMap().end() ) {
+		const ImageHolder::Pointer image = m_ViewerCore->getImageMap()[text];
+		WidgetEnsemble::Pointer myEnsemble;
+		BOOST_FOREACH( WidgetEnsemble::Vector::reference ensemble, m_ViewerCore->getUICore()->getEnsembleList() ) {
+			BOOST_FOREACH( WidgetEnsemble::reference ensembleComponent, *ensemble ) {
+				if( ensembleComponent->getWidgetInterface() == this ) {
+					myEnsemble = ensemble;
+				}
 			}
 		}
-	}
-	myEnsemble->addImage( image  );
-	BOOST_FOREACH( WidgetEnsemble::Vector::reference ensemble, m_ViewerCore->getUICore()->getEnsembleList() ) {
-		if( ensemble != myEnsemble ) {
-			ensemble->removeImage( image );
+		myEnsemble->addImage( image  );
+		BOOST_FOREACH( WidgetEnsemble::Vector::reference ensemble, m_ViewerCore->getUICore()->getEnsembleList() ) {
+			if( ensemble != myEnsemble ) {
+				ensemble->removeImage( image );
+			}
 		}
-	}
 
-	m_ViewerCore->setCurrentImage( image );
-	m_ViewerCore->updateScene();
-	m_ViewerCore->getUICore()->refreshUI();
+		m_ViewerCore->setCurrentImage( image );
+		m_ViewerCore->updateScene();
+		m_ViewerCore->getUICore()->refreshUI();
+	} else {
+		m_ViewerCore->getUICore()->openFromDropEvent( e );
+	}
 }
 
 

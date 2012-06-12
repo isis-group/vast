@@ -44,8 +44,8 @@ set(VIEWER_FILES_HPP
 # set viewer version number
 ##########################################################
 set(VAST_VERSION_MAJOR "0")
-set(VAST_VERSION_MINOR "5")
-set(VAST_VERSION_PATCH "8")
+set(VAST_VERSION_MINOR "6")
+set(VAST_VERSION_PATCH "0")
 
 add_definitions(-D_VAST_VERSION_MAJOR=${VAST_VERSION_MAJOR})
 add_definitions(-D_VAST_VERSION_MINOR=${VAST_VERSION_MINOR})
@@ -57,9 +57,9 @@ add_definitions(-D_VAST_VERSION_PATCH=${VAST_VERSION_PATCH})
 ###########################################################
 option(${CMAKE_PROJECT_NAME}_DOCUMENTATION "Build the documentation for vast" OFF)
 
-IF(VAST_DOCUMENTATION)
+IF(${CMAKE_PROJECT_NAME}_DOCUMENTATION)
 	add_subdirectory(documentation)	
-ENDIF(VAST_DOCUMENTATION)
+ENDIF(${CMAKE_PROJECT_NAME}_DOCUMENTATION)
 
 set_source_files_properties( "${CMAKE_CURRENT_SOURCE_DIR}/widgets/helpdialog.cpp" PROPERTIES COMPILE_FLAGS
 		"-DVAST_DOC_PATH=\\\"${CMAKE_INSTALL_PREFIX}/${VAST_DOC_INFIX}\\\"")
@@ -225,11 +225,6 @@ add_subdirectory(view_widgets)
 target_link_libraries(vast ${NEEDED_LIBS})
 
 install(TARGETS vast RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin )
-
-# install header files
-# install(FILES ${VIEWER_DEV_FILES} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/vast COMPONENT Development)
-
-#install(FILES ${WIDGET_DEV_FILES} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/vast COMPONENT Development)
 
 #install pixmap
 install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/resources/vast.xpm DESTINATION ${CMAKE_INSTALL_PREFIX}/share/pixmaps)

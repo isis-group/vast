@@ -37,12 +37,17 @@ QProgressFeedback::QProgressFeedback()
 	  m_CurrentVal( 0 )
 {
 	m_ProgressBar->setMaximumHeight( 20 );
+	m_ProgressBar->setMaximumWidth( 300 );
 	m_ProgressBar->setVisible( false );
 }
 
 
-void QProgressFeedback::show( size_t max, std::string /*header*/ )
+void QProgressFeedback::show( size_t max, std::string header )
 {
+	if( !header.empty() ) {
+		m_ProgressBar->setFormat( header.c_str() );
+	}
+
 	m_ProgressBar->setMaximum( max );
 	m_ProgressBar->setMinimum( 0 );
 	m_ProgressBar->show();
@@ -64,6 +69,13 @@ void QProgressFeedback::close()
 size_t QProgressFeedback::getMax()
 {
 	return m_ProgressBar->maximum();
+}
+
+size_t QProgressFeedback::extend ( size_t by )
+{
+	const size_t newLen = m_ProgressBar->maximum() + by;
+	m_ProgressBar->setMaximum( newLen );
+	return newLen;
 }
 
 

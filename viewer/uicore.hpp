@@ -31,7 +31,7 @@
 #include <list>
 #include "widgetensemble.hpp"
 #include "widgetinterface.h"
-#include "mainwindow.hpp"
+
 #include <map>
 
 namespace isis
@@ -60,7 +60,7 @@ public:
 	const WidgetEnsembleComponent::Map &getWidgets() const { return m_WidgetMap; }
 	WidgetEnsembleComponent::Map &getWidgets() { return m_WidgetMap; }
 
-	void showMainWindow();
+	void showMainWindow( const std::list<FileInformation> &fileList = std::list<FileInformation>() );
 	const MainWindow *getMainWindow() const  { return m_MainWindow; }
 	MainWindow *getMainWindow() { return m_MainWindow; }
 
@@ -91,11 +91,14 @@ public:
 	///Closes the widget ensemble and returns its images
 	ImageHolder::Vector closeWidgetEnsemble( WidgetEnsemble::Pointer ensemble );
 
+	void openFromDropEvent( QDropEvent * );
+
 public Q_SLOTS:
 	virtual void reloadPluginsToGUI();
 	virtual void refreshUI( const bool &mainwindow = true );
 	virtual void refreshEnsembles();
 	void showInformationAreas( bool );
+	void toggleLoadingIcon( bool start, const QString &text = QString() );
 
 
 protected:
@@ -128,5 +131,5 @@ private:
 #include "voxelInformationWidget.hpp"
 #include "imageStackWidget.hpp"
 #include "sliderwidget.hpp"
-
+#include "mainwindow.hpp"
 #endif

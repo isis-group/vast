@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * Author: Erik Türke, tuerke@cbs.mpg.de
+ * Author: Erik Tuerke, tuerke@cbs.mpg.de
  *
  * preferenceDialog.cpp
  *
@@ -40,9 +40,6 @@ PreferencesDialog::PreferencesDialog( QWidget *parent, QViewerCore *core ):
 	m_ViewerCore( core )
 {
 	m_Interface.setupUi( this );
-	connect( m_Interface.lutStructural, SIGNAL( activated( int ) ), this, SLOT( apply( int ) ) );
-	connect( m_Interface.lutZmap, SIGNAL( activated( int ) ), this, SLOT( apply( int ) ) );
-	connect( m_Interface.comboInterpolation, SIGNAL( activated( int ) ), this, SLOT( apply( int ) ) );
 	connect( m_Interface.enableMultithreading, SIGNAL( clicked( bool ) ), this, SLOT( toggleMultithreading( bool ) ) );
 	connect( m_Interface.useAllThreads, SIGNAL( clicked( bool ) ), this, SLOT( toggleUseAllThreads( bool ) ) );
 	connect( m_Interface.numberOfThreads, SIGNAL( valueChanged( int ) ), this, SLOT( numberOfThreadsChanged( int ) ) );
@@ -52,6 +49,33 @@ PreferencesDialog::PreferencesDialog( QWidget *parent, QViewerCore *core ):
 	m_Interface.lutStructural->setIconSize( size );
 	m_Interface.lutZmap->setIconSize( size );
 }
+
+void PreferencesDialog::showEvent ( QShowEvent * )
+{
+	disconnectSignals();
+	loadSettings();
+	connectSignals();
+}
+
+void PreferencesDialog::connectSignals()
+{
+	connect( m_Interface.lutStructural, SIGNAL( activated( int ) ), this, SLOT( apply( int ) ) );
+	connect( m_Interface.lutZmap, SIGNAL( activated( int ) ), this, SLOT( apply( int ) ) );
+	connect( m_Interface.comboInterpolation, SIGNAL( activated( int ) ), this, SLOT( apply( int ) ) );
+	connect( m_Interface.checkLatchOrientation, SIGNAL( toggled( bool ) ), this, SLOT( apply() ) );
+	connect( m_Interface.checkCACP, SIGNAL( toggled( bool ) ), this, SLOT( apply() ) );
+
+}
+
+void PreferencesDialog::disconnectSignals()
+{
+	disconnect( m_Interface.lutStructural, SIGNAL( activated( int ) ), this, SLOT( apply( int ) ) );
+	disconnect( m_Interface.lutZmap, SIGNAL( activated( int ) ), this, SLOT( apply( int ) ) );
+	disconnect( m_Interface.comboInterpolation, SIGNAL( activated( int ) ), this, SLOT( apply( int ) ) );
+	disconnect( m_Interface.checkLatchOrientation, SIGNAL( toggled( bool ) ), this, SLOT( apply() ) );
+	disconnect( m_Interface.checkCACP, SIGNAL( toggled( bool ) ), this, SLOT( apply() ) );
+}
+
 
 void PreferencesDialog::screenshotXChanged( int val )
 {
@@ -123,6 +147,7 @@ void PreferencesDialog::apply( int /*dummy*/ )
 void PreferencesDialog::closeEvent( QCloseEvent * )
 {
 	apply();
+	m_ViewerCore->getSettings()->save();
 }
 
 void PreferencesDialog::loadSettings()
@@ -153,8 +178,14 @@ void PreferencesDialog::loadSettings()
 	m_Interface.checkStartUpScreen->setChecked( m_ViewerCore->getSettings()->getPropertyAs<bool>( "showStartWidget" ) );
 	m_Interface.checkCrashMessage->setChecked( m_ViewerCore->getSettings()->getPropertyAs<bool>( "showCrashMessage" ) );
 	m_Interface.checkOnlyFirst->setChecked( m_ViewerCore->getSettings()->getPropertyAs<bool>( "visualizeOnlyFirstVista" ) );
+	m_Interface.checkCACP->setChecked( m_ViewerCore->getSettings()->getPropertyAs<bool>( "checkCACP" ) );
 	m_Interface.enableMultithreading->setVisible( m_ViewerCore->getSettings()->getPropertyAs<bool>( "ompAvailable" ) );
 	m_Interface.multithreadingFrame->setVisible( m_ViewerCore->getSettings()->getPropertyAs<bool>( "ompAvailable" ) );
+
+	//view tab
+	m_Interface.checkLatchOrientation->setChecked( m_ViewerCore->getSettings()->getPropertyAs<bool>( "latchSingleImage" ) );
+	m_Interface.checkSetZeroStatistical->setChecked( m_ViewerCore->getSettings()->getPropertyAs<bool>( "setZeroToBlackStatistical" ) );
+	m_Interface.checkSetZeroStructural->setChecked( m_ViewerCore->getSettings()->getPropertyAs<bool>( "setZeroToBlackStructural" ) );
 
 	//screenshot
 	m_Interface.screenshotQuality->setValue( m_ViewerCore->getSettings()->getPropertyAs<uint16_t>( "screenshotQuality" ) );
@@ -193,7 +224,17 @@ void PreferencesDialog::saveSettings()
 	m_ViewerCore->getSettings()->setPropertyAs<uint16_t>( "interpolationType", m_Interface.comboInterpolation->currentIndex() );
 	m_ViewerCore->getSettings()->setPropertyAs<bool>( "showStartWidget", m_Interface.checkStartUpScreen->isChecked() );
 	m_ViewerCore->getSettings()->setPropertyAs<bool>( "showCrashMessage", m_Interface.checkCrashMessage->isChecked() );
+
+	//view
+	m_ViewerCore->getSettings()->setPropertyAs<bool>( "latchSingleImage", m_Interface.checkLatchOrientation->isChecked() );
+	m_ViewerCore->getSettings()->setPropertyAs<bool>( "setZeroToBlackStatistical", m_Interface.checkSetZeroStatistical->isChecked() );
+	m_ViewerCore->getSettings()->setPropertyAs<bool>( "setZeroToBlackStructural", m_Interface.checkSetZeroStructural->isChecked() );
+
+	//file formats
+	//vista
 	m_ViewerCore->getSettings()->setPropertyAs<bool>( "visualizeOnlyFirstVista", m_Interface.checkOnlyFirst->isChecked() );
+	m_ViewerCore->getSettings()->setPropertyAs<bool>( "checkCACP", m_Interface.checkCACP->isChecked() );
+
 	//screenshot
 	m_ViewerCore->getSettings()->setPropertyAs<bool>( "screenshotKeepAspectRatio", m_Interface.keepRatio->isChecked() );
 	m_ViewerCore->getSettings()->setPropertyAs<uint16_t>( "screenshotQuality", m_Interface.screenshotQuality->value() );

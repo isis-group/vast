@@ -66,7 +66,7 @@ VoxelInformationWidget::VoxelInformationWidget( QWidget *parent, QViewerCore *co
 	m_Interface.sliceBox->setMinimum( 0 );
 	m_UpperHalfColormapLabel->setMaximumHeight( 20 );
 	m_Interface.playButton->setIcon( QIcon( ":/common/play.png" ) );
-	m_tThread = new TimePlayThread( m_ViewerCore, &m_Interface );
+	m_tThread = new TimePlayThread( this, m_ViewerCore, &m_Interface );
 	QVBoxLayout *layout = new QVBoxLayout( );
 	layout->setContentsMargins( 5, 0, 5, 0 );
 	layout->addWidget( m_UpperHalfColormapLabel );
@@ -75,7 +75,6 @@ VoxelInformationWidget::VoxelInformationWidget( QWidget *parent, QViewerCore *co
 	m_Interface.colormapButton->setLayout( layout );
 	m_Interface.colormapButton->setSizePolicy( QSizePolicy::Minimum, QSizePolicy::Minimum );
 	m_Interface.colormapButton->setMinimumHeight( 10 );
-
 
 }
 
@@ -240,8 +239,8 @@ void VoxelInformationWidget::synchronize()
 		}
 
 		if( !image->getImageProperties().isRGB ) {
-			m_LabelMin->setText( QString::number( image->getImageProperties().minMax.first->as<double>(), 'g', 4 ) );
-			m_LabelMax->setText( QString::number( image->getImageProperties().minMax.second->as<double>(), 'g', 4 ) );
+			m_LabelMin->setText( QString::number( image->getImageProperties().scalingMinMax.first, 'g', 4 ) );
+			m_LabelMax->setText( QString::number( image->getImageProperties().scalingMinMax.second, 'g', 4 ) );
 		}
 
 		const util::ivector4 outerCorner = util::ivector4( image->getImageSize()[0] - 1, image->getImageSize()[1] - 1, image->getImageSize()[2] - 1 );
@@ -251,18 +250,6 @@ void VoxelInformationWidget::synchronize()
 		m_Interface.columnBox->setMaximum( outerCorner[1] );
 
 		m_Interface.sliceBox->setMaximum( outerCorner[2] );
-
-		//      m_Interface.xBox->setMinimum( image->getImageProperties().boundingBox[0].first );
-		//
-		//      m_Interface.xBox->setMaximum( image->getImageProperties().boundingBox[0].second );
-		//
-		//      m_Interface.yBox->setMinimum( image->getImageProperties().boundingBox[1].first );
-		//
-		//      m_Interface.yBox->setMaximum( image->getImageProperties().boundingBox[1].second );
-		//
-		//      m_Interface.zBox->setMinimum( image->getImageProperties().boundingBox[2].first );
-		//
-		//      m_Interface.zBox->setMaximum( image->getImageProperties().boundingBox[2].second );
 
 		m_Interface.xBox->setMinimum( -1000 );
 
@@ -334,10 +321,11 @@ void VoxelInformationWidget::synchronizePos( util::fvector4 physicalCoords )
 void VoxelInformationWidget::synchronizePos( util::ivector4 voxelCoords )
 {
 	boost::shared_ptr<ImageHolder> image = m_ViewerCore->getCurrentImage();
-	const std::string typeName = image->getISISImage()->getChunk( voxelCoords[0], voxelCoords[1], voxelCoords[2], voxelCoords[3], false ).getTypeName();
+	const isis::data::Chunk &chunk = image->getISISImage()->getChunk( voxelCoords[0], voxelCoords[1], voxelCoords[2], voxelCoords[3], false );
+	const std::string typeName = chunk.getTypeName();
 	m_Interface.intensityValue->setToolTip( typeName.substr( 0, typeName.length() - 1 ).c_str() );
 
-	switch( image->getISISImage()->getChunk( voxelCoords[0], voxelCoords[1], voxelCoords[2], voxelCoords[3], false ).getTypeID() ) {
+	switch( chunk.getTypeID() ) {
 	case isis::data::ValueArray<bool>::staticID:
 		displayIntensity<bool>( voxelCoords );
 		break;
@@ -379,6 +367,8 @@ void VoxelInformationWidget::synchronizePos( util::ivector4 voxelCoords )
 		break;
 	}
 
+	m_Interface.timestepSpinBox->setValue( voxelCoords[dim_time] );
+	image->getImageProperties().voxelValue = m_Interface.intensityValue->text().toDouble();
 	disconnectSignals();
 	m_Interface.rowBox->setValue( voxelCoords[0] );
 	m_Interface.columnBox->setValue( voxelCoords[1] );

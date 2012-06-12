@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * Author: Erik Türke, tuerke@cbs.mpg.de
+ * Author: Erik Tuerke, tuerke@cbs.mpg.de
  *
  * HistogramDialog.cpp
  *
@@ -26,6 +26,7 @@
  *      Author: tuerke
  ******************************************************************/
 #include "HistogramDialog.hpp"
+#include <nativeimageops.hpp>
 #include <DataStorage/valuearray.hpp>
 
 
@@ -65,7 +66,10 @@ void isis::viewer::plugin::HistogramDialog::paintHistogram()
 		m_Plotter->setTitle( title.str().c_str() );
 		double xData[255];
 		BOOST_FOREACH( ImageHolder::Vector::const_reference image, m_ViewerCore->getImageVector() ) {
+
+
 			if( !image->getImageProperties().isRGB ) {
+				const std::vector<double> histogram = operation::NativeImageOps::getHistogramFromImage( image );
 				const double scaling = image->getImageProperties().scalingToInternalType.first->as<double>();
 				const double offset = image->getImageProperties().scalingToInternalType.second->as<double>();
 
@@ -89,9 +93,7 @@ void isis::viewer::plugin::HistogramDialog::paintHistogram()
 					curve->setPen( pen );
 				}
 
-				const uint16_t timestep = image->getImageSize()[3] > 1 ? image->getImageProperties().voxelCoords[3] : 0;
-
-				curve->setData( xData, image->getImageProperties().histogramVectorWOZero[timestep], 255 );
+				curve->setData( xData, &histogram[0], 255 );
 			}
 		}
 		m_Zoomer->setZoomBase( true );

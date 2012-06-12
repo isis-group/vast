@@ -1,5 +1,6 @@
 <RCC>
   <qresource prefix="common">
+    <file>colorpicker.png</file>
     <file>brain.jpg</file>
     <file>newMask.png</file>
     <file>cut.png</file>

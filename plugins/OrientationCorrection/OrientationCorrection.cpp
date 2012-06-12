@@ -110,7 +110,7 @@ void OrientatioCorrectionDialog::showEvent ( QShowEvent *e )
 
 void OrientatioCorrectionDialog::closeEvent ( QCloseEvent *e )
 {
-	//  m_ViewerCore->emitCurrentImageChanged.disconnect( boost::bind( &OrientatioCorrectionDialog::updateValues, this, _1 ) );
+
 	QDialog::closeEvent( e );
 }
 
