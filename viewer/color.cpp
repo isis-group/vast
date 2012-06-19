@@ -214,8 +214,8 @@ void Color::adaptColorMapToImage( ImageHolder *image, bool split )
 	const double scaling = image->getImageProperties().scaling;
 	const double norm = 256.0 / extent;
 	unsigned short mid = 0;
-
-	if( min < 0 ) {
+	
+	if( min < 0 && max > 0 ) {
 		mid  = ( norm * fabs( min ) );
 	}
 

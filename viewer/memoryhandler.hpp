@@ -72,7 +72,6 @@ public:
 			const geometrical::BoundingBoxType &bb = image->getImageProperties().boundingBox;
 			const util::ivector4 mapping = mapCoordsToOrientation( util::fvector4( 0, 1, 2 ), image->getImageProperties().latchedOrientation, orientation );
 			const util::ivector4 _mapping = mapCoordsToOrientation( util::fvector4( 0, 1, 2 ), util::IdentityMatrix<float, 4>(), orientation );
-			const util::fvector4 vS = image->getImageProperties().orientation.dot( image->getImageProperties().voxelSize );
 			util::fvector4 phys = image->getImageProperties().physicalCoords;
 			float factor = 1. / sqrt( 2 );
 			const float stepI = factor * image->getImageProperties().voxelSize[mapping[0]];
