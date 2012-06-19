@@ -1,3 +1,9 @@
+vast (0.6.1-1) UNRELEASED; urgency=low
+
+  * fixed bug when visualizing images with min < 0 and max < 0
+
+ -- ISIS Group (The friendly isis team) <gr_isis@cbs.mpg.de>  Tue, 19 Jun 2012 16:10:15 +0200
+ 
 vast (0.6.0-1) UNRELEASED; urgency=low
 
   * a lot of bug fixes
