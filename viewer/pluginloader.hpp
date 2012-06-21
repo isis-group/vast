@@ -36,6 +36,7 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/foreach.hpp>
 #include <list>
+#include <CoreUtils/singletons.hpp>
 
 namespace isis
 {
@@ -46,6 +47,7 @@ namespace plugin
 
 class PluginLoader
 {
+friend class util::Singletons;
 public:
 	typedef boost::shared_ptr< PluginInterface > PluginInterfacePointer;
 	typedef std::list< PluginInterfacePointer > PluginListType;
