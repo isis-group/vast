@@ -37,7 +37,7 @@ isis::viewer::ui::KeyCommandsDialog::KeyCommandsDialog( QWidget *parent )
 	m_KeyCommands.push_back( std::make_pair<std::string, std::string>( "Center crosshair", "Space" ) );
 	m_KeyCommands.push_back( std::make_pair<std::string, std::string>( "Propagate zooming", "P, Z" ) );
 	m_KeyCommands.push_back( std::make_pair<std::string, std::string>( "Ignore orientation", "I, O" ) );
-	m_KeyCommands.push_back( std::make_pair<std::string, std::string>( "Toggle zmap mode", "T, Z, M" ) );
+	m_KeyCommands.push_back( std::make_pair<std::string, std::string>( "Geometrical view", "G, V" ) );
 	m_KeyCommands.push_back( std::make_pair<std::string, std::string>( "Show preferences", "S, P" ) );
 	m_KeyCommands.push_back( std::make_pair<std::string, std::string>( "Show labels", "S, L" ) );
 	m_KeyCommands.push_back( std::make_pair<std::string, std::string>( "Show crosshair", "S, C" ) );

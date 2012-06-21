@@ -93,6 +93,7 @@ MainWindow::MainWindow( QViewerCore *core ) :
 	m_Interface.actionPropagate_Zooming->setShortcut( QKeySequence( tr( "P, Z" ) ) );
 	m_Interface.actionShow_Labels->setShortcut( QKeySequence( tr( "S, L" ) ) );
 	m_Interface.actionShow_Crosshair->setShortcut( QKeySequence( tr( "S, C" ) ) );
+	m_Interface.actionGeometrical_View->setShortcut( QKeySequence( tr( "G, V" ) ) );
 
 	connect( m_Interface.action_Save_Image, SIGNAL( triggered() ), this, SLOT( saveImage() ) );
 	connect( m_Interface.actionSave_Image, SIGNAL( triggered() ), this, SLOT( saveImageAs() ) );
@@ -321,36 +322,34 @@ void MainWindow::openImage()
 void MainWindow::saveImage()
 {
 	if( m_ViewerCore->hasImage() ) {
-		if( !m_ViewerCore->getCurrentImage()->getPropMap().getPropertyAs<util::slist>( "changedAttributes" ).size() ) {
-			QMessageBox msgBox;
-			msgBox.setText( "The image that is currently selected has no changes! Will not save anything." );
-			msgBox.exec();
-		} else {
-			QMessageBox msgBox;
-			msgBox.setIcon( QMessageBox::Information );
-			std::stringstream text;
-			text << "This will overwrite " << m_ViewerCore->getCurrentImage()->getImageProperties().fileName << " !";
-			msgBox.setText( text.str().c_str() );
-			msgBox.setInformativeText( "Do you want to proceed?" );
+		QMessageBox msgBox;
+		msgBox.setIcon( QMessageBox::Information );
+		std::stringstream text;
+		text << "This will overwrite " << m_ViewerCore->getCurrentImage()->getImageProperties().filePath << " !";
+		msgBox.setText( text.str().c_str() );
+		const util::slist changedAttributes = m_ViewerCore->getCurrentImage()->getPropMap().getPropertyAs<util::slist>( "changedAttributes" );
+
+		if( changedAttributes.size() ) {
 			std::stringstream detailedText;
 			detailedText << "Changed attributes: " << std::endl;
 			BOOST_FOREACH( util::slist::const_reference attrChanged, m_ViewerCore->getCurrentImage()->getPropMap().getPropertyAs<util::slist>( "changedAttributes" ) ) {
 				detailedText << " >> " << attrChanged << std::endl;
 			}
 			msgBox.setDetailedText( detailedText.str().c_str() );
-			msgBox.setStandardButtons( QMessageBox::Yes | QMessageBox::No );
-			msgBox.setDefaultButton( QMessageBox::No );
+		}
+		msgBox.setInformativeText( "Do you want to proceed?" );
+		msgBox.setStandardButtons( QMessageBox::Yes | QMessageBox::No );
+		msgBox.setDefaultButton( QMessageBox::No );
 
-			switch ( msgBox.exec() ) {
-			case QMessageBox::No:
-				return;
-				break;
-			case QMessageBox::Yes:
-				m_ViewerCore->getUICore()->toggleLoadingIcon( true, QString( "Saving image to " ) + m_ViewerCore->getCurrentImage()->getImageProperties().fileName.c_str() );
-				isis::data::IOFactory::write( *m_ViewerCore->getCurrentImage()->getISISImage(), m_ViewerCore->getCurrentImage()->getImageProperties().filePath, "", "" );
-				m_ViewerCore->getUICore()->toggleLoadingIcon( false );
-				break;
-			}
+		switch ( msgBox.exec() ) {
+		case QMessageBox::No:
+			return;
+			break;
+		case QMessageBox::Yes:
+			m_ViewerCore->getUICore()->toggleLoadingIcon( true, QString( "Saving image to " ) + m_ViewerCore->getCurrentImage()->getImageProperties().fileName.c_str() );
+			isis::data::IOFactory::write( *m_ViewerCore->getCurrentImage()->getISISImage(), m_ViewerCore->getCurrentImage()->getImageProperties().filePath, "", "" );
+			m_ViewerCore->getUICore()->toggleLoadingIcon( false );
+			break;
 		}
 	}
 }
@@ -525,18 +524,6 @@ void MainWindow::refreshUI()
 													&& m_ViewerCore->hasWidget( m_ViewerCore->getSettings()->getPropertyAs<std::string>("widgetGeometrical") )
 	);
 
-	if( m_ViewerCore->getMode() == ViewerCoreBase::statistical_mode ) {
-		m_Interface.actionToggle_Zmap_Mode->setChecked( true );
-		m_Interface.actionFind_Global_Max->setVisible( true );
-		m_Interface.actionFind_Global_Min->setVisible( true );
-		m_RadiusSpinAction->setVisible( true );
-	} else {
-		m_Interface.actionToggle_Zmap_Mode->setChecked( false );
-		m_Interface.actionFind_Global_Max->setVisible( false );
-		m_Interface.actionFind_Global_Min->setVisible( false );
-		m_RadiusSpinAction->setVisible( false );
-
-	}
 
 	m_Interface.action_Save_Image->setEnabled( m_ViewerCore->hasImage() );
 	m_Interface.actionSave_all_Images->setEnabled( m_ViewerCore->hasImage() );
@@ -545,7 +532,6 @@ void MainWindow::refreshUI()
 	m_Interface.actionFind_Global_Max->setEnabled( m_ViewerCore->hasImage() );
 	m_Interface.actionFind_Global_Min->setEnabled( m_ViewerCore->hasImage() );
 	m_Interface.actionCenter_to_ca->setEnabled( m_ViewerCore->hasImage() );
-	m_Interface.actionToggle_Zmap_Mode->setEnabled( m_ViewerCore->hasImage() );
 	m_Interface.actionShow_Crosshair->setEnabled( m_ViewerCore->hasImage() );
 	m_Interface.actionShow_scaling_option->setEnabled( m_ViewerCore->hasImage() );
 	m_Interface.actionShow_Labels->setEnabled( m_ViewerCore->hasImage() );

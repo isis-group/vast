@@ -360,20 +360,6 @@
     <string>Ctrl+Alt+Shift+S</string>
    </property>
   </action>
-  <action name="actionToggle_Zmap_Mode">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>ZMap Mode</string>
-   </property>
-   <property name="toolTip">
-    <string>ZMap Mode</string>
-   </property>
-   <property name="shortcut">
-    <string>T, Z, M</string>
-   </property>
-  </action>
   <action name="actionKey_Commands">
    <property name="text">
     <string>Key Commands</string>
@@ -463,6 +449,12 @@
    </property>
    <property name="text">
     <string>Geometrical View</string>
+   </property>
+   <property name="toolTip">
+    <string>This option toggles the view mode of vast so that each image are shown in physical space. </string>
+   </property>
+   <property name="shortcut">
+    <string>G, V</string>
    </property>
   </action>
  </widget>
