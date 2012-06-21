@@ -498,20 +498,19 @@ void QImageWidgetImplementation::wheelEvent( QWheelEvent *e )
 	float oldZoom = currentZoom;
 
 	if ( e->delta() < 0 ) {
-		oldZoom /= m_WidgetProperties.getPropertyAs<float>( "zoomFactorOut" );
+		oldZoom /= 1.5;
 	} else {
-		oldZoom *= m_WidgetProperties.getPropertyAs<float>( "zoomFactorIn" );
+		oldZoom *= 1.5;
 
 	}
 
 	if( m_ViewerCore->getSettings()->getPropertyAs<bool>( "propagateZooming" ) ) {
-		zoomChanged( oldZoom );
+		m_ViewerCore->zoomChanged( oldZoom );
 	} else {
 		setZoom( oldZoom );
 	}
 
 }
-
 void QImageWidgetImplementation::updateScene()
 {
 	update();

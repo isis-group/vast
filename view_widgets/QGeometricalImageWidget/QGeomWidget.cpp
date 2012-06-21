@@ -238,7 +238,7 @@ void QGeomWidget::paintImage( const ImageHolder::Pointer image )
 		if( m_LatchOrientation ) {
 			MemoryHandler::fillSliceChunk<InternalImageType>( sliceChunk, image, m_PlaneOrientation );
 		} else {
-			MemoryHandler::fillSliceChunk<InternalImageType>( sliceChunk, image, m_PlaneOrientation ); //TODO ORIENTED!!!!!!!
+			MemoryHandler::fillSliceChunkOriented<InternalImageType>( sliceChunk, image, m_PlaneOrientation );
 		}
 
 		QImage qImage( &sliceChunk.voxel<InternalImageType>( 0 ), mappedSizeAligned[0], mappedSizeAligned[1], QImage::Format_Indexed8 );

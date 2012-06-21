@@ -133,11 +133,17 @@ int main( int argc, char *argv[] )
 	std::string widget_name = app.parameters["widget"];
 
 	if( widget_name.empty() ) {
-		widget_name = core->getSettings()->getPropertyAs<std::string>( "defaultViewWidgetIdentifier" );
-
-		if( widget_name.empty() ) {
-			widget_name = fallbackWidgetIdentifier;
+		if( core->getSettings()->getPropertyAs<bool>("showImagesGeometricalView") && core->hasWidget( core->getSettings()->getPropertyAs<std::string>("widgetGeometrical") ) ) {
+			widget_name = core->getSettings()->getPropertyAs<std::string>("widgetGeometrical");
+		} else if ( !core->getSettings()->getPropertyAs<bool>("showImagesGeometricalView") && core->hasWidget( core->getSettings()->getPropertyAs<std::string>("widgetLatched") ) ) {
+			widget_name = core->getSettings()->getPropertyAs<std::string>("widgetLatched");
+		} else {		
+			widget_name = core->getSettings()->getPropertyAs<std::string>( "defaultViewWidgetIdentifier" );
 		}
+	}
+
+	if( !core->hasWidget( widget_name ) ) {
+		std::cerr << "Error loading widget!" << std::endl;
 	}
 
 	util::slist fileList = app.parameters["in"];

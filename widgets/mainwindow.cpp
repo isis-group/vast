@@ -70,6 +70,8 @@ MainWindow::MainWindow( QViewerCore *core ) :
 	m_Interface.actionSagittal_View->setChecked( true );
 	m_Interface.actionCoronal_View->setChecked( true );
 
+
+
 	m_Interface.action_Save_Image->setShortcut( QKeySequence::Save );
 	m_Interface.action_Save_Image->setIconVisibleInMenu( true );
 	m_Interface.actionSave_Image->setIconVisibleInMenu( true );
@@ -116,6 +118,7 @@ MainWindow::MainWindow( QViewerCore *core ) :
 	connect( m_Interface.actionAxial_View, SIGNAL( triggered( bool ) ), this, SLOT( toggleAxialView( bool ) ) );
 	connect( m_Interface.actionSagittal_View, SIGNAL( triggered( bool ) ), this, SLOT( toggleSagittalView( bool ) ) );
 	connect( m_Interface.actionCoronal_View, SIGNAL( triggered( bool ) ), this, SLOT( toggleCoronalView( bool ) ) );
+	connect( m_Interface.actionGeometrical_View, SIGNAL( toggled(bool)), this, SLOT( toggleGeometrical(bool)));
 
 
 	//toolbar stuff
@@ -155,6 +158,25 @@ MainWindow::MainWindow( QViewerCore *core ) :
 	m_Interface.actionOpen_recent->setMenu( new QMenu() );
 }
 
+
+void MainWindow::toggleGeometrical ( bool geometrical )
+{
+	m_ViewerCore->getSettings()->setPropertyAs<bool>("showImagesGeometricalView", geometrical);
+	BOOST_FOREACH( WidgetEnsemble::Vector::const_reference ensemble,  m_ViewerCore->getUICore()->getEnsembleList() )
+	{
+		const ImageHolder::Vector images = ensemble->getImageVector();
+		BOOST_FOREACH( ImageHolder::Vector::const_reference image, images ) {
+			ensemble->removeImage( image );
+		}
+		m_ViewerCore->getUICore()->closeWidgetEnsemble( ensemble );
+		if( geometrical ) {
+			m_ViewerCore->getUICore()->createViewWidgetEnsemble( m_ViewerCore->getSettings()->getPropertyAs<std::string>("widgetGeometrical"), images, true );
+		} else {
+			m_ViewerCore->getUICore()->createViewWidgetEnsemble( m_ViewerCore->getSettings()->getPropertyAs<std::string>("widgetLatched"), images, true );
+		}
+	}
+	m_ViewerCore->getUICore()->refreshUI();
+}
 
 
 void MainWindow::createScreenshot()
@@ -511,6 +533,10 @@ void MainWindow::refreshUI()
 	m_ViewerCore->setShowLabels( m_Interface.actionShow_Labels->isChecked() );
 	m_Interface.actionPropagate_Zooming->setChecked( m_ViewerCore->getSettings()->getPropertyAs<bool>( "propagateZooming" ) );
 	m_RadiusSpin->setValue( m_ViewerCore->getSettings()->getPropertyAs<uint16_t>( "minMaxSearchRadius" ) );
+	m_Interface.actionGeometrical_View->setChecked( m_ViewerCore->getSettings()->getPropertyAs<bool>("showImagesGeometricalView" ) );
+	m_Interface.actionGeometrical_View->setVisible( m_ViewerCore->hasWidget( m_ViewerCore->getSettings()->getPropertyAs<std::string>("widgetLatched"))
+													&& m_ViewerCore->hasWidget( m_ViewerCore->getSettings()->getPropertyAs<std::string>("widgetGeometrical") )
+	);
 
 	if( m_ViewerCore->getMode() == ViewerCoreBase::statistical_mode ) {
 		m_Interface.actionToggle_Zmap_Mode->setChecked( true );

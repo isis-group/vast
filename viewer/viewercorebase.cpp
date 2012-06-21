@@ -163,7 +163,6 @@ ImageHolder::Pointer ViewerCoreBase::addImage( const isis::data::Image &image, c
 		operation::NativeImageOps::setTrueZero( retImage );
 	}
 
-
 	//connect signals to image
 	emitGlobalPhysicalCoordsChanged.connect( boost::bind( &ImageHolder::phyisicalCoordsChanged, retImage, _1 ) );
 	emitGlobalVoxelCoordsChanged.connect( boost::bind( &ImageHolder::voxelCoordsChanged, retImage, _1 ) );
@@ -226,9 +225,16 @@ std::string ViewerCoreBase::getVersion()
 #endif
 }
 
+bool ViewerCoreBase::hasWidget ( const std::string& identifier )
+{
+	const widget::WidgetLoader::WidgetMapType widgetMap = util::Singletons::get<widget::WidgetLoader, 10>().getWidgetMap();
+	return widgetMap.find(identifier) != widgetMap.end();
+}
+
+
 widget::WidgetInterface *ViewerCoreBase::getWidget ( const std::string &identifier ) throw( std::runtime_error & )
 {
-	widget::WidgetLoader::WidgetMapType widgetMap = util::Singletons::get<widget::WidgetLoader, 10>().getWidgetMap();
+	const widget::WidgetLoader::WidgetMapType widgetMap = util::Singletons::get<widget::WidgetLoader, 10>().getWidgetMap();
 
 	if( widgetMap.empty() ) {
 		LOG( Dev, error ) << "Could not find any widget!" ;

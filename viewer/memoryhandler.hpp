@@ -31,6 +31,8 @@
 #include <CoreUtils/vector.hpp>
 #include <DataStorage/chunk.hpp>
 #include <common.hpp>
+#include "imageholder.hpp"
+#include <boost/timer.hpp>
 
 namespace isis
 {
@@ -73,7 +75,6 @@ public:
 		
 		for ( util::ivector4::value_type y = 0; y < mappedSize[1]; y++ ) {
 			for ( util::ivector4::value_type x = 0; x < mappedSize[0]; x++ ) {
-
 				if( sliceIsInside ) {
 					std::memcpy( dest + x + sizeAligned[0] * y,
 								 src + x * linx + y * liny,
@@ -83,12 +84,12 @@ public:
 		}
 	}
 
-
 	template< typename TYPE>
 	static void fillSliceChunkOriented( data::MemChunk<TYPE> &sliceChunk, const ImageHolder::Pointer image, const PlaneOrientation &orientation ) {
 		if( image->getImageProperties().latchedOrientation == image->getImageProperties().orientation ) {
 			fillSliceChunk<TYPE>( sliceChunk, image, orientation );
 		} else {
+			boost::timer timer;
 			const data::Chunk &chunk = image->getVolumeVector()[image->getImageProperties().voxelCoords[dim_time]];
 			boost::shared_ptr< data::Image > isisImage = image->getISISImage();
 			const geometrical::BoundingBoxType &bb = image->getImageProperties().boundingBox;
@@ -105,14 +106,12 @@ public:
 				for ( float i = bb[_mapping[0]].first; i < bb[_mapping[0]].second; i += stepI ) {
 					phys[_mapping[0]] = i;
 					const util::ivector4 voxCoords = isisImage->getIndexFromPhysicalCoords( phys, false );
-
 					if( image->checkVoxelCoords( voxCoords ) ) {
 						static_cast<data::Chunk & >( sliceChunk ).voxel<TYPE>( voxCoords[mapping[0]], voxCoords[mapping[1]] ) =
 							chunk.voxel<TYPE>( voxCoords[0], voxCoords[1], voxCoords[2] );
 					}
 				}
 			}
-
 		}
 	}
 

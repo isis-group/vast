@@ -54,6 +54,7 @@ void Settings::save()
 	m_QSettings->setValue ( "latchSingleImage", getPropertyAs<bool> ( "latchSingleImage" ) );
 	m_QSettings->setValue ( "showFullFilePath", getPropertyAs<bool> ( "showFullFilePath" ) );
 	m_QSettings->setValue ( "viewAllImagesInStack", getPropertyAs<bool> ( "viewAllImagesInStack" ) );
+	m_QSettings->setValue ( "showImagesGeometricalView", getPropertyAs<bool> ( "showImagesGeometricalView" ) );
 	m_QSettings->setValue ( "propagateTimestepChange", getPropertyAs<bool> ( "propagateTimestepChange" ) );
 	m_QSettings->setValue ( "minMaxSearchRadius", getPropertyAs<uint16_t> ( "minMaxSearchRadius" ) );
 	m_QSettings->setValue ( "showLabels", getPropertyAs<bool> ( "showLabels" ) );
@@ -101,6 +102,7 @@ void Settings::load()
 	setPropertyAs<uint16_t> ( "interpolationType", m_QSettings->value ( "interpolationType", getPropertyAs<uint16_t> ( "interpolationType" ) ).toUInt() );
 	setPropertyAs<bool> ( "showLabels", m_QSettings->value ( "showLabels", false ).toBool() );
 	setPropertyAs<bool> ( "showCrosshair", m_QSettings->value ( "showCrosshair", true ).toBool() );
+	setPropertyAs<bool> ( "showImagesGeometricalView", m_QSettings->value ( "showImagesGeometricalView", getPropertyAs<bool>("showImagesGeometricalView") ).toBool() );
 	setPropertyAs<uint16_t> ( "minMaxSearchRadius",
 							  m_QSettings->value ( "minMaxSearchRadius", getPropertyAs<uint16_t> ( "minMaxSearchRadius" ) ).toUInt() );
 	setPropertyAs<bool> ( "showAdvancedFileDialogOptions", m_QSettings->value ( "showAdvancedFileDialogOptions", false ).toBool() );
@@ -158,6 +160,10 @@ void Settings::initializeWithDefaultSettings()
 	setPropertyAs<uint16_t>( "viewerWidgetMargin", 5 );
 	setPropertyAs<std::string>( "fallbackWidgetIdentifier", "qt4_plane_widget" );
 	setPropertyAs<std::string>( "defaultViewWidgetIdentifier", "qt4_geometrical_plane_widget" );
+	setPropertyAs<std::string>( "widgetLatched", "qt4_plane_widget" );
+	setPropertyAs<std::string>( "widgetGeometrical", "qt4_geometrical_plane_widget" );
+	setPropertyAs<bool>( "showImagesGeometricalView", false );
+	
 	setPropertyAs<std::string>( "styleSheet", "fancy" );
 	//omp
 	setPropertyAs<uint16_t>( "numberOfThreads", 0 );

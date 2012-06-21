@@ -158,7 +158,7 @@
     <addaction name="actionIgnore_Orientation"/>
     <addaction name="actionPropagate_Zooming"/>
     <addaction name="separator"/>
-    <addaction name="actionToggle_Zmap_Mode"/>
+    <addaction name="actionGeometrical_View"/>
    </widget>
    <widget class="QMenu" name="menu_Tools">
     <property name="title">
@@ -455,6 +455,14 @@
   <action name="actionOpen_recent">
    <property name="text">
     <string>Open recent...</string>
+   </property>
+  </action>
+  <action name="actionGeometrical_View">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Geometrical View</string>
    </property>
   </action>
  </widget>

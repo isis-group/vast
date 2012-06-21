@@ -75,6 +75,8 @@ public:
 	widget::WidgetInterface *getWidget( const std::string &identifier ) throw( std::runtime_error & );
 	const util::PropertyMap *getWidgetProperties( const std::string &identifier ) ;
 
+	bool hasWidget( const std::string &identifier );
+
 	virtual void setMode( const Mode &mode ) { m_Mode = mode; }
 	virtual Mode getMode() const { return m_Mode; }
 
