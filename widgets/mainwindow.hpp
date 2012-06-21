@@ -98,7 +98,6 @@ public Q_SLOTS:
 	void showLoggingDialog();
 	void refreshUI();
 	void resetScaling();
-	void toggleZMapMode( bool );
 	void showKeyCommandDialog();
 	void loadSettings();
 	void saveSettings();

@@ -109,7 +109,6 @@ MainWindow::MainWindow( QViewerCore *core ) :
 	connect( m_ActionReset_Scaling, SIGNAL( triggered() ), this, SLOT( resetScaling() ) );
 	connect( m_Interface.actionShow_Crosshair, SIGNAL( triggered( bool ) ), m_ViewerCore, SLOT( setShowCrosshair( bool ) ) );
 	connect( m_Interface.actionSave_all_Images, SIGNAL( triggered() ), this, SLOT( saveAllImages() ) );
-	connect( m_Interface.actionToggle_Zmap_Mode, SIGNAL( triggered( bool ) ), this, SLOT( toggleZMapMode( bool ) ) );
 	connect( m_Interface.actionKey_Commands, SIGNAL( triggered() ), this, SLOT( showKeyCommandDialog() ) );
 	connect( m_Interface.actionCreate_Screenshot, SIGNAL( triggered() ), this, SLOT( createScreenshot() ) );
 	connect( m_Interface.actionHelp, SIGNAL( triggered() ), helpDialog, SLOT( show() ) );
@@ -243,18 +242,6 @@ void MainWindow::saveSettings()
 void MainWindow::showKeyCommandDialog()
 {
 	keyCommandsdialog->show();
-}
-
-void MainWindow::toggleZMapMode( bool zmap )
-{
-	if( zmap ) {
-		m_ViewerCore->setMode( ViewerCoreBase::statistical_mode );
-	} else {
-		m_ViewerCore->setMode( ViewerCoreBase::default_mode );
-	}
-
-	m_ViewerCore->getUICore()->refreshUI();
-	m_ViewerCore->updateScene();
 }
 
 
