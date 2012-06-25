@@ -161,19 +161,20 @@ MainWindow::MainWindow( QViewerCore *core ) :
 
 void MainWindow::toggleGeometrical ( bool geometrical )
 {
+	std::vector<ImageHolder::Vector> images;
 	m_ViewerCore->getSettings()->setPropertyAs<bool>( "showImagesGeometricalView", geometrical );
-	BOOST_FOREACH( WidgetEnsemble::Vector::const_reference ensemble,  m_ViewerCore->getUICore()->getEnsembleList() ) {
-		const ImageHolder::Vector images = ensemble->getImageVector();
-		BOOST_FOREACH( ImageHolder::Vector::const_reference image, images ) {
-			ensemble->removeImage( image );
-		}
-		m_ViewerCore->getUICore()->closeWidgetEnsemble( ensemble );
-
-		if( geometrical ) {
-			m_ViewerCore->getUICore()->createViewWidgetEnsemble( m_ViewerCore->getSettings()->getPropertyAs<std::string>( "widgetGeometrical" ), images, true );
-		} else {
-			m_ViewerCore->getUICore()->createViewWidgetEnsemble( m_ViewerCore->getSettings()->getPropertyAs<std::string>( "widgetLatched" ), images, true );
-		}
+	std::string widgetIdentifier;
+	if( geometrical ) {
+		widgetIdentifier = m_ViewerCore->getSettings()->getPropertyAs<std::string>( "widgetGeometrical" );
+	} else {
+		widgetIdentifier = m_ViewerCore->getSettings()->getPropertyAs<std::string>( "widgetLatched" );
+	}
+	WidgetEnsemble::Vector eVec = m_ViewerCore->getUICore()->getEnsembleList();
+	BOOST_FOREACH( WidgetEnsemble::Vector::const_reference ensemble,  eVec ) {
+		images.push_back( m_ViewerCore->getUICore()->closeWidgetEnsemble( ensemble ) );
+	}
+	BOOST_FOREACH( std::vector<ImageHolder::Vector>::const_reference imVec, images ) {
+		m_ViewerCore->getUICore()->createViewWidgetEnsemble( widgetIdentifier, imVec, true );
 	}
 	m_ViewerCore->getUICore()->refreshUI();
 }

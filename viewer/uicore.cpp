@@ -210,11 +210,10 @@ ImageHolder::Vector UICore::closeWidgetEnsemble( WidgetEnsemble::Pointer ensembl
 	return ImageHolder::Vector();
 }
 
-
 void UICore::closeAllWidgetEnsembles()
 {
 	WidgetEnsemble::Vector cp = m_EnsembleList; //make a copy of the list to iterate on
-	BOOST_FOREACH( WidgetEnsemble::Vector::reference ensemble, cp ) {
+	BOOST_FOREACH( WidgetEnsemble::Vector::reference ensemble, m_EnsembleList ) {
 		closeWidgetEnsemble( ensemble );
 	}
 	LOG_IF( !m_EnsembleList.empty(), Dev, error ) << "Removed all widget ensembles, but ensemble list still contains "

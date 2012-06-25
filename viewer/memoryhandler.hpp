@@ -103,6 +103,12 @@ public:
 			const float stepI = factor * image->getImageProperties().voxelSize[mapping[0]];
 			const float stepJ = factor * image->getImageProperties().voxelSize[mapping[1]];
 
+			const util::ivector4 sizeSliceChunk = static_cast<data::Chunk&>( sliceChunk ).getSizeAsVector();
+			const util::ivector4 sizeChunk = chunk.getSizeAsVector();
+
+			const TYPE *src = &chunk.voxel<TYPE>(0);
+			TYPE *dest = &static_cast<data::Chunk&>(sliceChunk).voxel<TYPE>(0);
+
 			for ( float j = bb[_mapping[1]].first; j < bb[_mapping[1]].second; j += stepJ  ) {
 				phys[_mapping[1]] = j;
 
@@ -111,14 +117,15 @@ public:
 					const util::ivector4 voxCoords = isisImage->getIndexFromPhysicalCoords( phys, false );
 
 					if( image->checkVoxelCoords( voxCoords ) ) {
-						static_cast<data::Chunk & >( sliceChunk ).voxel<TYPE>( voxCoords[mapping[0]], voxCoords[mapping[1]] ) =
-							chunk.voxel<TYPE>( voxCoords[0], voxCoords[1], voxCoords[2] );
+						const size_t sliceCoords[] = { voxCoords[mapping[0]], voxCoords[mapping[1]] };
+						const size_t chunkCoords[] = { voxCoords[0], voxCoords[1], voxCoords[2] };
+						dest[ sliceCoords[0] + sizeSliceChunk[0] * sliceCoords[1] ]
+							= src[ chunkCoords[0] + sizeChunk[0] * chunkCoords[1] + sizeChunk[0] * sizeChunk[1] * chunkCoords[2] ];
 					}
 				}
 			}
 		}
 	}
-
 
 };
 
