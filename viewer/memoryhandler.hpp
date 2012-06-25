@@ -47,12 +47,15 @@ public:
 	template< typename TYPE>
 	static void fillSliceChunk( data::MemChunk<TYPE> &sliceChunk, const ImageHolder::Pointer image, const PlaneOrientation &orientation ) {
 
+		const util::ivector4 trueVoxelCoords = image->getImageProperties().trueVoxelCoords;
+		
 		const util::ivector4 mappedSize = mapCoordsToOrientation( image->getImageSize(), image->getImageProperties().latchedOrientation, orientation );
-		const util::ivector4 mappedCoords = mapCoordsToOrientation( image->getImageProperties().trueVoxelCoords, image->getImageProperties().latchedOrientation, orientation );
+		const util::ivector4 mappedCoords = mapCoordsToOrientation( trueVoxelCoords, image->getImageProperties().latchedOrientation, orientation );
 		const util::ivector4 mapping = mapCoordsToOrientation( util::ivector4( 0, 1, 2, 3 ), image->getImageProperties().latchedOrientation, orientation, true );
+		const util::ivector4 _mapping = mapCoordsToOrientation( util::ivector4( 0, 1, 2, 3 ), image->getImageProperties().latchedOrientation, orientation, false );
 		const data::Chunk &chunk = image->getVolumeVector()[image->getImageProperties().voxelCoords[dim_time]];
 
-		const bool sliceIsInside = image->getImageProperties().trueVoxelCoords[mapping[2]] >= 0 && image->getImageProperties().trueVoxelCoords[mapping[2]] < mappedSize[2];
+		const bool sliceIsInside = trueVoxelCoords[_mapping[2]] >= 0 && trueVoxelCoords[_mapping[2]] < mappedSize[2];
 
 		TYPE *dest = &static_cast<data::Chunk &>( sliceChunk ).voxel<TYPE>( 0 );
 
