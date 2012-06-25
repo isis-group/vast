@@ -46,7 +46,7 @@ namespace widget
 
 class WidgetLoader
 {
-friend class util::Singletons;
+	friend class util::Singletons;
 public:
 	typedef boost::shared_ptr< WidgetInterface > WidgetInterfacePointer;
 

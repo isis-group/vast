@@ -196,18 +196,19 @@ void isis::viewer::ui::FileDialog::setup()
 	m_Interface.widgetTypeframe->setVisible( widgetMap.size() > 1 );
 	int index;
 
-	if( m_ViewerCore->getSettings()->getPropertyAs<bool>("showImagesGeometricalView")
-		&& m_ViewerCore->hasWidget( m_ViewerCore->getSettings()->getPropertyAs<std::string>("widgetGeometrical") ) ) {
+	if( m_ViewerCore->getSettings()->getPropertyAs<bool>( "showImagesGeometricalView" )
+		&& m_ViewerCore->hasWidget( m_ViewerCore->getSettings()->getPropertyAs<std::string>( "widgetGeometrical" ) ) ) {
 		QVariant variant(  m_ViewerCore->getSettings()->getPropertyAs<std::string>( "widgetGeometrical" ).c_str() ) ;
 		index = m_Interface.widgetTypeComboBox->findData( variant, Qt::UserRole );
-	} else if ( !m_ViewerCore->getSettings()->getPropertyAs<bool>("showImagesGeometricalView")
-		&& m_ViewerCore->hasWidget( m_ViewerCore->getSettings()->getPropertyAs<std::string>("widgetLatched") ) ) {
+	} else if ( !m_ViewerCore->getSettings()->getPropertyAs<bool>( "showImagesGeometricalView" )
+				&& m_ViewerCore->hasWidget( m_ViewerCore->getSettings()->getPropertyAs<std::string>( "widgetLatched" ) ) ) {
 		QVariant variant(  m_ViewerCore->getSettings()->getPropertyAs<std::string>( "widgetLatched" ).c_str() ) ;
 		index = m_Interface.widgetTypeComboBox->findData( variant, Qt::UserRole );
 	} else {
 		QVariant variant(  m_ViewerCore->getSettings()->getPropertyAs<std::string>( "fallbackWidgetIdentifier" ).c_str() ) ;
 		index = m_Interface.widgetTypeComboBox->findData( variant, Qt::UserRole );
 	}
+
 	if( index < 0 ) {
 		m_Interface.widgetTypeComboBox->setCurrentIndex( 0 );
 	} else {

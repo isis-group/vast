@@ -225,10 +225,10 @@ std::string ViewerCoreBase::getVersion()
 #endif
 }
 
-bool ViewerCoreBase::hasWidget ( const std::string& identifier )
+bool ViewerCoreBase::hasWidget ( const std::string &identifier )
 {
 	const widget::WidgetLoader::WidgetMapType widgetMap = util::Singletons::get<widget::WidgetLoader, 10>().getWidgetMap();
-	return widgetMap.find(identifier) != widgetMap.end();
+	return widgetMap.find( identifier ) != widgetMap.end();
 }
 
 
