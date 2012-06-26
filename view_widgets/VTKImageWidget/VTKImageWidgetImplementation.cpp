@@ -289,17 +289,33 @@ void VTKImageWidgetImplementation::reloadImage ( const ImageHolder::Pointer imag
 void VTKImageWidgetImplementation::setCropping ( double *cropping )
 {
 	const util::dvector4 cBB = getCenterOfBoundingBox();
-	const double boundX =  -cBB[0] / 500.0;
-	const double boundY =  -cBB[1] / 500.0;
-	const double boundZ =  -cBB[2] / 500.0;
-	cropping[0] *= boundX;
-	cropping[1] *= boundX;
-	cropping[2] *= boundY;
-	cropping[3] *= boundY;
-	cropping[4] *= boundZ;
-	cropping[5] *= boundZ;
+
+	const float extent[] = { m_PhysicalBounds[0].second - m_PhysicalBounds[0].first,
+							m_PhysicalBounds[1].second - m_PhysicalBounds[1].first,
+							m_PhysicalBounds[2].second - m_PhysicalBounds[2].first };
+	double fCropping[6];
+							
+	cropping[0] = m_PhysicalBounds[0].first + extent[0] / 1000 * cropping[0];
+	cropping[1] = m_PhysicalBounds[0].first + extent[0] / 1000 * cropping[1];
+
+	cropping[2] = m_PhysicalBounds[1].first + extent[1] / 1000 * cropping[2];
+	cropping[3] = m_PhysicalBounds[1].first + extent[1] / 1000 * cropping[3];
+	
+	cropping[4] = m_PhysicalBounds[2].first + extent[2] / 1000 * cropping[4];
+	cropping[5] = m_PhysicalBounds[2].first + extent[2] / 1000 * cropping[5];
+
+	fCropping[0] = std::min( cropping[0], cropping[1] );
+	fCropping[1] = std::max( cropping[0], cropping[1] );
+
+	fCropping[2] = std::min( cropping[2], cropping[3] );
+	fCropping[3] = std::max( cropping[2], cropping[3] );
+
+	fCropping[4] = std::min( cropping[4], cropping[5] );
+	fCropping[5] = std::max( cropping[4], cropping[5] );
+	
+	
 	BOOST_FOREACH( ComponentsMapType::reference component, m_VTKImageComponentsMap ) {
-		component.second.setCropping( cropping );
+		component.second.setCropping( fCropping );
 	}
 	update();
 }

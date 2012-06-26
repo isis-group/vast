@@ -64,11 +64,11 @@ BoundingBoxType getPhysicalBoundingBox ( const ImageHolder::Vector images, const
 
 					for ( unsigned short l = 0; l < 3; l++ ) {
 						if( currentPhysicalCorner[l] < retBox[l].first ) {
-							retBox[l].first = currentPhysicalCorner[l] - mappedVoxelSize[l];
+							retBox[l].first = currentPhysicalCorner[l] - (mappedVoxelSize[l] / 2.);
 						}
 
 						if( currentPhysicalCorner[l] > retBox[l].second ) {
-							retBox[l].second = currentPhysicalCorner[l] + mappedVoxelSize[l];
+							retBox[l].second = currentPhysicalCorner[l] + (mappedVoxelSize[l] / 2.);
 						}
 					}
 				}
