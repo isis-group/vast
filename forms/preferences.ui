@@ -53,7 +53,7 @@
          </sizepolicy>
         </property>
         <property name="currentIndex">
-         <number>0</number>
+         <number>1</number>
         </property>
         <widget class="QWidget" name="commonTab">
          <attribute name="title">
@@ -231,18 +231,6 @@
                   </widget>
                  </item>
                  <item>
-                  <widget class="QCheckBox" name="enableMultithreading">
-                   <property name="toolTip">
-                    <string>This option toggles the multithreading support of vast.
-If switched on a frame with further options will appear.
-Vast uses multithreading for visualization and all image operations (including the plugins).</string>
-                   </property>
-                   <property name="text">
-                    <string>Enable multithreading</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
                   <widget class="QFrame" name="multithreadingFrame">
                    <property name="frameShape">
                     <enum>QFrame::NoFrame</enum>
@@ -257,34 +245,6 @@ Vast uses multithreading for visualization and all image operations (including t
                     <property name="margin">
                      <number>2</number>
                     </property>
-                    <item>
-                     <widget class="QLabel" name="label">
-                      <property name="toolTip">
-                       <string>This determines the number of threads you want vast to use. </string>
-                      </property>
-                      <property name="text">
-                       <string>Number of threads:</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item>
-                     <widget class="QSpinBox" name="numberOfThreads">
-                      <property name="toolTip">
-                       <string>This determines the number of threads you want vast to use. </string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item>
-                     <widget class="QCheckBox" name="useAllThreads">
-                      <property name="toolTip">
-                       <string>If this option is switched on vast will use all available threads on the computer on which it is running currently.
-Be careful using this option.</string>
-                      </property>
-                      <property name="text">
-                       <string>Use all available threads</string>
-                      </property>
-                     </widget>
-                    </item>
                    </layout>
                   </widget>
                  </item>

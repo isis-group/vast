@@ -143,7 +143,26 @@ public:
 	boost::shared_ptr<const void>
 	getRawAdress( size_t timestep = 0 ) const;
 
-	void correctVoxelCoords( util::ivector4 &voxelCoords );
+	template<unsigned short DIMS>
+	void correctVoxelCoords( util::ivector4 &vc )
+	{
+		for( unsigned short i = 0; i < DIMS; i++ ) {
+			if( vc[i] < 0 ) vc[i] = 0;
+			else if( vc[i] >= static_cast<int32_t>(getImageSize()[i] ) ) vc[i] = static_cast<int32_t>(getImageSize()[i] - 1);
+		}
+	}
+
+	template<unsigned short DIMS>
+	bool checkVoxelCoords ( const util::ivector4 &vc )
+	{
+		for( unsigned short i = 0; i < DIMS; i++ ) {
+			if( vc[i] < 0 || vc[i] >= static_cast<int>( getImageSize()[i] ) ) {
+				return false;
+			}
+		}
+		return true;
+	}
+	
 	bool checkVoxelCoords( const util::ivector4 &voxelCoords );
 
 	void synchronize( );

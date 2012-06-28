@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>121</width>
-    <height>597</height>
+    <width>124</width>
+    <height>627</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -214,7 +214,7 @@
          <property name="bottomMargin">
           <number>9</number>
          </property>
-         <item row="1" column="0">
+         <item row="2" column="0">
           <widget class="QLabel" name="label">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
@@ -227,7 +227,7 @@
            </property>
           </widget>
          </item>
-         <item row="2" column="0">
+         <item row="3" column="0">
           <widget class="QSlider" name="opacityGradient">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
@@ -246,12 +246,15 @@
            </property>
           </widget>
          </item>
-         <item row="0" column="0">
+         <item row="1" column="0">
           <widget class="QCheckBox" name="shade">
            <property name="text">
             <string>Shade</string>
            </property>
           </widget>
+         </item>
+         <item row="0" column="0">
+          <widget class="QComboBox" name="mapperType"/>
          </item>
         </layout>
        </widget>
@@ -298,7 +301,7 @@
          <item>
           <widget class="QSlider" name="croppingX1">
            <property name="maximum">
-            <number>1000</number>
+            <number>999</number>
            </property>
            <property name="orientation">
             <enum>Qt::Horizontal</enum>
@@ -308,10 +311,10 @@
          <item>
           <widget class="QSlider" name="croppingX2">
            <property name="maximum">
-            <number>1000</number>
+            <number>999</number>
            </property>
            <property name="value">
-            <number>1000</number>
+            <number>999</number>
            </property>
            <property name="orientation">
             <enum>Qt::Horizontal</enum>
@@ -342,7 +345,7 @@
          <item>
           <widget class="QSlider" name="croppingY1">
            <property name="maximum">
-            <number>1000</number>
+            <number>999</number>
            </property>
            <property name="orientation">
             <enum>Qt::Horizontal</enum>
@@ -352,10 +355,10 @@
          <item>
           <widget class="QSlider" name="croppingY2">
            <property name="maximum">
-            <number>1000</number>
+            <number>999</number>
            </property>
            <property name="value">
-            <number>1000</number>
+            <number>999</number>
            </property>
            <property name="orientation">
             <enum>Qt::Horizontal</enum>
@@ -386,7 +389,7 @@
          <item>
           <widget class="QSlider" name="croppingZ1">
            <property name="maximum">
-            <number>1000</number>
+            <number>999</number>
            </property>
            <property name="orientation">
             <enum>Qt::Horizontal</enum>

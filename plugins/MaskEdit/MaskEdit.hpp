@@ -75,7 +75,8 @@ private:
 
 	template<typename TYPE>
 	void manipulateVoxel( const util::fvector4 physCoord, boost::shared_ptr<ImageHolder> image ) {
-		const util::ivector4 voxel = image->getISISImage()->getIndexFromPhysicalCoords( physCoord, true );
+		util::ivector4 voxel = image->getISISImage()->getIndexFromPhysicalCoords( physCoord);
+		image->correctVoxelCoords<3>(voxel);
 		util::ivector4 start;
 		util::ivector4 end;
 		const size_t timestep = image->getImageProperties().voxelCoords[dim_time];
@@ -98,7 +99,7 @@ private:
 
 					if( x *x + y *y + z *z <= radSquare ) {
 						util::ivector4 finalVoxel( i, j, k );
-						image->correctVoxelCoords( finalVoxel );
+						image->correctVoxelCoords<3>( finalVoxel );
 						image->setTypedVoxel<TYPE>( finalVoxel[0], finalVoxel[1], finalVoxel[2], timestep, colorValue.as<TYPE>() );
 					}
 				}

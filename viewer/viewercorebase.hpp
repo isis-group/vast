@@ -36,10 +36,6 @@
 #include <map>
 #include <boost/signals2.hpp>
 
-#ifdef _OPENMP
-#include <omp.h>
-#endif /*_OPENMP*/
-
 namespace isis
 {
 namespace viewer
@@ -101,7 +97,6 @@ private:
 	//this map associates all the images with their filenames
 	ImageHolder::Map m_ImageMap;
 	ImageHolder::Pointer  m_CurrentImage;
-	void initOMP();
 
 protected:
 	boost::shared_ptr<Settings> m_Settings;

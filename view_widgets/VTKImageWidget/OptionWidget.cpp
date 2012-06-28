@@ -26,6 +26,8 @@
  ******************************************************************/
 
 #include "OptionWidget.hpp"
+#include "VTKImageWidgetImplementation.hpp"
+
 
 namespace isis
 {
@@ -38,7 +40,9 @@ OptionWidget::OptionWidget ( QWidget *parent )
 	: QWidget ( parent )
 {
 	m_Interface.setupUi( this );
-
+	m_Interface.mapperType->addItem( "Texture" );
+	m_Interface.mapperType->addItem( "Fixed Ray Cast" );
+	m_Interface.mapperType->addItem( "GPU Volume" );
 }
 
 void OptionWidget::setWidget ( VTKImageWidgetImplementation *widget )
@@ -59,6 +63,8 @@ void OptionWidget::setWidget ( VTKImageWidgetImplementation *widget )
 	connect( m_Interface.croppingZ1, SIGNAL( valueChanged( int ) ), this, SLOT( croppingChanged() ) );
 	connect( m_Interface.croppingZ2, SIGNAL( valueChanged( int ) ), this, SLOT( croppingChanged() ) );
 	connect( m_Interface.shade, SIGNAL( clicked( bool ) ), m_Widget, SLOT( setShade( bool ) ) );
+	connect( m_Interface.mapperType, SIGNAL( activated(int)), this, SLOT( mapperChanged(int)));
+	m_Interface.mapperType->setCurrentIndex( m_Widget->getMapper() );
 }
 
 void OptionWidget::opacityGradientChanged ( int value )
@@ -77,6 +83,11 @@ void OptionWidget::croppingChanged()
 	cropping[5] = m_Interface.croppingZ1->value();
 	cropping[4] = m_Interface.croppingZ2->value();
 	m_Widget->setCropping( cropping );
+}
+
+void OptionWidget::mapperChanged ( int mapper )
+{
+	m_Widget->setMapper( mapper );
 }
 
 

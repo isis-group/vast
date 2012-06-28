@@ -210,10 +210,6 @@ std::vector<double> isis::viewer::operation::NativeImageOps::getHistogramFromIma
 	}
 
 	//create the histogram
-#ifdef _OPENMP
-#pragma omp parallel for
-#endif
-
 	for( size_t i = 0; i < volume; i++ ) {
 		if( dataPtr[i] > 0 ) {
 			histogram[dataPtr[i] - 1]++;

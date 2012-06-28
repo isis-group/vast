@@ -108,6 +108,8 @@ public Q_SLOTS:
 	void resetCamera();
 
 	void setCropping( double *cropping );
+	void setMapper( int mapper, bool global = true );
+	VTKImageComponents::VTKMapperType getMapper() const { return m_MapperType; }
 
 protected:
 	void paintEvent( QPaintEvent *event );
@@ -140,6 +142,8 @@ private:
 	bool m_LeftButtonPressed;
 
 	std::pair<int, int> m_StartCoordsPair;
+
+	VTKImageComponents::VTKMapperType m_MapperType;
 
 private Q_SLOTS:
 	void reloadImage( const ImageHolder::Pointer );

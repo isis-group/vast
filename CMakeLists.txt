@@ -186,17 +186,6 @@ SET(CPACK_PACKAGE_FILE_NAME ${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION_MAJOR}
 INCLUDE(CPack)
 
 ###########################################################
-# OpenMP config
-###########################################################
-option(${CMAKE_PROJECT_NAME}_OPENMP "Toggles the omp support for vast." OFF)
-
-IF(${CMAKE_PROJECT_NAME}_OPENMP)
-	SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fopenmp ")
-	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fopenmp ")
-ENDIF(${CMAKE_PROJECT_NAME}_OPENMP)
-
-
-###########################################################
 # Build stuff
 ###########################################################
 

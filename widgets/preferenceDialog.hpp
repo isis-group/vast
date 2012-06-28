@@ -53,9 +53,6 @@ public Q_SLOTS:
 	void loadSettings();
 	void saveSettings();
 	void apply( int dummy = 0 );
-	void toggleMultithreading( bool );
-	void toggleUseAllThreads( bool );
-	void numberOfThreadsChanged( int );
 	void screenshotXChanged( int );
 	virtual void showEvent( QShowEvent * );
 	Ui::preferencesDialog &getUI() { return m_Interface; }

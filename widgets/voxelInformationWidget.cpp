@@ -315,12 +315,13 @@ void VoxelInformationWidget::synchronize()
 
 void VoxelInformationWidget::synchronizePos( util::fvector4 physicalCoords )
 {
-	synchronizePos( m_ViewerCore->getCurrentImage()->getISISImage()->getIndexFromPhysicalCoords( physicalCoords, true ) );
+	synchronizePos( m_ViewerCore->getCurrentImage()->getISISImage()->getIndexFromPhysicalCoords( physicalCoords) );
 }
 
 void VoxelInformationWidget::synchronizePos( util::ivector4 voxelCoords )
 {
 	boost::shared_ptr<ImageHolder> image = m_ViewerCore->getCurrentImage();
+	image->correctVoxelCoords<3>( voxelCoords );
 	const isis::data::Chunk &chunk = image->getISISImage()->getChunk( voxelCoords[0], voxelCoords[1], voxelCoords[2], voxelCoords[3], false );
 	const std::string typeName = chunk.getTypeName();
 	m_Interface.intensityValue->setToolTip( typeName.substr( 0, typeName.length() - 1 ).c_str() );

@@ -165,13 +165,6 @@ void Settings::initializeWithDefaultSettings()
 	setPropertyAs<bool>( "showImagesGeometricalView", false );
 
 	setPropertyAs<std::string>( "styleSheet", "fancy" );
-	//omp
-	setPropertyAs<uint16_t>( "numberOfThreads", 0 );
-	setPropertyAs<bool>( "ompAvailable", false );
-	setPropertyAs<bool>( "enableMultithreading", false );
-	setPropertyAs<uint16_t>( "initialMaxNumberThreads", 4 );
-	setPropertyAs<bool>( "useAllAvailableThreads", false );
-	setPropertyAs<uint16_t>( "maxNumberOfThreads", 1 );
 	//screenshot
 	setPropertyAs<uint16_t>( "screenshotQuality", 70 );
 	setPropertyAs<uint16_t>( "screenshotWidth", 700 );

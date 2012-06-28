@@ -372,7 +372,7 @@ ImageHolder::Vector QViewerCore::openFile ( const FileInformation &fileInfo, boo
 		LOG( Dev, warning ) << "Tried to open path without any given filename!";
 		return ImageHolder::Vector();
 	}
-
+// 	getUICore()->refreshUI();
 
 }
 void QViewerCore::openFileList( const std::list< FileInformation > fileInfoList )

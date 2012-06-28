@@ -102,7 +102,8 @@ void isis::viewer::plugin::PlotterDialog::refresh ( isis::util::fvector4 physica
 				QwtPlotCurve *curve = new QwtPlotCurve();
 				curve->detach();
 
-				const util::ivector4 voxCoords = image->getISISImage()->getIndexFromPhysicalCoords( physicalCoords, true );
+				util::ivector4 voxCoords = image->getISISImage()->getIndexFromPhysicalCoords( physicalCoords );
+				image->correctVoxelCoords<3>(voxCoords);
 
 				if( ui.timeCourseRadio->isChecked() ) {
 					fillProfile( image, voxCoords, curve, axis );

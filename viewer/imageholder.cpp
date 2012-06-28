@@ -310,26 +310,6 @@ void ImageHolder::updateOrientation()
 	m_ImageProperties.boundingBox = geometrical::getPhysicalBoundingBox( ImageHolder::Pointer( new ImageHolder( *this ) ) );
 }
 
-void ImageHolder::correctVoxelCoords( util::ivector4 &vc )
-{
-	for( unsigned short i = 0; i < 4; i++ ) {
-		vc[i] = vc[i] < 0 ? 0 : vc[i];
-		vc[i] = vc[i] >= static_cast<int>( getImageSize()[i] ) ? static_cast<int>( getImageSize()[i] ) - 1 : vc[i]; //cast to avoid warning
-
-	}
-}
-
-bool ImageHolder::checkVoxelCoords ( const util::ivector4 &vc )
-{
-	for( unsigned short i = 0; i < 3; i++ ) {
-		if( vc[i] < 0 || vc[i] >= static_cast<int>( getImageSize()[i] ) ) {
-			return false;
-		}
-	}
-
-	return true;
-}
-
 
 void ImageHolder::updateColorMap()
 {
@@ -421,7 +401,7 @@ void ImageHolder::phyisicalCoordsChanged ( const util::fvector4 &physicalCoords 
 	getImageProperties().physicalCoords = physicalCoords;
 	getImageProperties().trueVoxelCoords = getISISImage()->getIndexFromPhysicalCoords( physicalCoords );
 	util::ivector4 correctedVoxelCoords =  getImageProperties().trueVoxelCoords;
-	correctVoxelCoords( correctedVoxelCoords );
+	correctVoxelCoords<4>( correctedVoxelCoords );
 	getImageProperties().voxelCoords = correctedVoxelCoords;
 }
 

@@ -40,9 +40,6 @@ PreferencesDialog::PreferencesDialog( QWidget *parent, QViewerCore *core ):
 	m_ViewerCore( core )
 {
 	m_Interface.setupUi( this );
-	connect( m_Interface.enableMultithreading, SIGNAL( clicked( bool ) ), this, SLOT( toggleMultithreading( bool ) ) );
-	connect( m_Interface.useAllThreads, SIGNAL( clicked( bool ) ), this, SLOT( toggleUseAllThreads( bool ) ) );
-	connect( m_Interface.numberOfThreads, SIGNAL( valueChanged( int ) ), this, SLOT( numberOfThreadsChanged( int ) ) );
 	connect( m_Interface.sizeX, SIGNAL( valueChanged( int ) ), this, SLOT( screenshotXChanged( int ) ) );
 
 	QSize size( QSize( m_Interface.lutStructural->size().width() / 4, m_Interface.lutStructural->height() - 10 ) );
@@ -95,52 +92,12 @@ void PreferencesDialog::screenshotXChanged( int val )
 }
 
 
-void PreferencesDialog::numberOfThreadsChanged( int threads )
-{
-	m_ViewerCore->getSettings()->setPropertyAs<uint16_t>( "numberOfThreads", threads );
-}
-
-
-void PreferencesDialog::toggleMultithreading( bool toggle )
-{
-	m_ViewerCore->getSettings()->setPropertyAs<bool>( "enableMultithreading", toggle );
-	m_Interface.multithreadingFrame->setVisible( toggle );
-
-	if( !toggle ) {
-		m_ViewerCore->getSettings()->setPropertyAs<uint16_t>( "numberOfThreads", 1 );
-	} else {
-		m_ViewerCore->getSettings()->setPropertyAs<uint16_t>( "numberOfThreads", m_Interface.numberOfThreads->value() );
-
-		if( m_Interface.useAllThreads->isChecked() ) {
-			m_Interface.numberOfThreads->setValue( m_ViewerCore->getSettings()->getPropertyAs<uint16_t>( "maxNumberOfThreads" ) );
-		} else {
-			m_Interface.numberOfThreads->setValue( m_ViewerCore->getSettings()->getPropertyAs<uint16_t>( "numberOfThreads" ) );
-		}
-	}
-}
-
-void PreferencesDialog::toggleUseAllThreads( bool toggle )
-{
-	m_Interface.numberOfThreads->setEnabled( !toggle );
-	m_ViewerCore->getSettings()->setPropertyAs<bool>( "useAllAvailableThreads", toggle );
-
-	if( toggle ) {
-		m_Interface.numberOfThreads->setValue( m_ViewerCore->getSettings()->getPropertyAs<uint16_t>( "maxNumberOfThreads" ) );
-	} else {
-		m_Interface.numberOfThreads->setValue( m_ViewerCore->getSettings()->getPropertyAs<uint16_t>( "numberOfThreads" ) );
-	}
-}
-
-
 void PreferencesDialog::apply( int /*dummy*/ )
 {
 	saveSettings();
 	m_ViewerCore->getUICore()->refreshUI();
 	m_ViewerCore->settingsChanged();
 	m_ViewerCore->updateScene();
-#ifdef _OPENMP
-	omp_set_num_threads( m_ViewerCore->getSettings()->getPropertyAs<uint16_t>( "numberOfThreads" ) );
-#endif
 }
 
 
@@ -179,8 +136,6 @@ void PreferencesDialog::loadSettings()
 	m_Interface.checkCrashMessage->setChecked( m_ViewerCore->getSettings()->getPropertyAs<bool>( "showCrashMessage" ) );
 	m_Interface.checkOnlyFirst->setChecked( m_ViewerCore->getSettings()->getPropertyAs<bool>( "visualizeOnlyFirstVista" ) );
 	m_Interface.checkCACP->setChecked( m_ViewerCore->getSettings()->getPropertyAs<bool>( "checkCACP" ) );
-	m_Interface.enableMultithreading->setVisible( m_ViewerCore->getSettings()->getPropertyAs<bool>( "ompAvailable" ) );
-	m_Interface.multithreadingFrame->setVisible( m_ViewerCore->getSettings()->getPropertyAs<bool>( "ompAvailable" ) );
 
 	//view tab
 	m_Interface.checkLatchOrientation->setChecked( m_ViewerCore->getSettings()->getPropertyAs<bool>( "latchSingleImage" ) );
@@ -196,16 +151,6 @@ void PreferencesDialog::loadSettings()
 	m_Interface.keepRatio->setChecked( m_ViewerCore->getSettings()->getPropertyAs<bool>( "screenshotKeepAspectRatio" ) );
 	m_Interface.manualScaling->setChecked( m_ViewerCore->getSettings()->getPropertyAs<bool>( "screenshotManualScaling" ) );
 	m_Interface.scalingFrame->setVisible( m_ViewerCore->getSettings()->getPropertyAs<bool>( "screenshotManualScaling" ) );
-
-	if( m_ViewerCore->getSettings()->getPropertyAs<bool>( "ompAvailable" ) ) {
-		m_Interface.enableMultithreading->setChecked( m_ViewerCore->getSettings()->getPropertyAs<bool>( "enableMultithreading" ) );
-		m_Interface.numberOfThreads->setValue( m_ViewerCore->getSettings()->getPropertyAs<uint16_t>( "numberOfThreads" ) );
-		m_Interface.useAllThreads->setChecked( m_ViewerCore->getSettings()->getPropertyAs<bool>( "useAllAvailablethreads" ) );
-		m_Interface.multithreadingFrame->setVisible( m_ViewerCore->getSettings()->getPropertyAs<bool>( "enableMultithreading" ) );
-		m_Interface.numberOfThreads->setEnabled( !m_ViewerCore->getSettings()->getPropertyAs<bool>( "useAllAvailableThreads" ) );
-		m_Interface.numberOfThreads->setMinimum( 1 );
-		m_Interface.numberOfThreads->setMaximum( m_ViewerCore->getSettings()->getPropertyAs<uint16_t>( "maxNumberOfThreads" ) );
-	}
 
 	screenshotXChanged( m_Interface.sizeX->value() );
 

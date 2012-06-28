@@ -337,10 +337,10 @@ QImage UICore::getScreenshot()
 		BOOST_FOREACH( WidgetEnsemble::Vector::reference ensemble, ensembleList ) {
 			unsigned short index = 0;
 			BOOST_FOREACH( WidgetEnsemble::reference ensembleComponent, *ensemble ) {
-				QWidget *placeHolder = ensembleComponent->getPlaceHolder();
-				ensembleComponent->getWidgetInterface()->setCrossHairColor( Qt::white );
-				ensembleComponent->getWidgetInterface()->updateScene();
-				painter.drawPixmap( index++ * placeHolder->width(), eIndex * placeHolder->height(), QPixmap::grabWidget( placeHolder ) );
+				if( ensembleComponent->isNeeded() ) {
+					QWidget *placeHolder = ensembleComponent->getPlaceHolder();
+					painter.drawPixmap( index++ * placeHolder->width(), eIndex * placeHolder->height(), QPixmap::grabWidget( placeHolder ) );
+				}
 			}
 
 			eIndex++;

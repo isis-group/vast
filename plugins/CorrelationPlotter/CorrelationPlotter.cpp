@@ -192,29 +192,17 @@ void isis::viewer::plugin::CorrelationPlotterDialog::calculateCorrelation( bool 
 	const double s_x = std::sqrt( ( 1 / float( n - 1 ) ) * ( sum_quad_x - n * _x * _x ) );
 
 	if( !all ) {
-#ifdef _OPENMP
-#pragma omp parallel for
-#endif
-
 		for( unsigned int z = 0; z < m_CurrentFunctionalImage->getImageSize()[2]; z++ ) {
 			for( unsigned int y = 0; y < m_CurrentFunctionalImage->getImageSize()[1]; y++ ) {
 				_internCalculateCorrelation( util::ivector4( m_CurrentVoxelPos[0], y, z ), s_x, _x, vx, n, vol );
 			}
 		}
 
-#ifdef _OPENMP
-#pragma omp parallel for
-#endif
-
 		for( unsigned int y = 0; y < m_CurrentFunctionalImage->getImageSize()[1]; y++ ) {
 			for( unsigned int x = 0; x < m_CurrentFunctionalImage->getImageSize()[0]; x++ ) {
 				_internCalculateCorrelation( util::ivector4( x, y, m_CurrentVoxelPos[2] ), s_x, _x, vx, n, vol );
 			}
 		}
-
-#ifdef _OPENMP
-#pragma omp parallel for
-#endif
 
 		for( unsigned int z = 0; z < m_CurrentFunctionalImage->getImageSize()[2]; z++ ) {
 			for( unsigned int x = 0; x < m_CurrentFunctionalImage->getImageSize()[0]; x++ ) {
@@ -226,10 +214,6 @@ void isis::viewer::plugin::CorrelationPlotterDialog::calculateCorrelation( bool 
 
 		for( unsigned int z = 0; z < m_CurrentFunctionalImage->getImageSize()[2]; z++ ) {
 			for( unsigned int y = 0; y < m_CurrentFunctionalImage->getImageSize()[1]; y++ ) {
-#ifdef _OPENMP
-#pragma omp parallel for
-#endif
-
 				for( unsigned int x = 0; x < m_CurrentFunctionalImage->getImageSize()[0]; x++ ) {
 					_internCalculateCorrelation( util::ivector4( x, y, z ), s_x, _x, vx, n, vol );
 				}

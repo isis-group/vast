@@ -29,11 +29,15 @@
 #define IMAGE_COMPONENTS_HPP
 
 #include <vtkFixedPointVolumeRayCastMapper.h>
+#include <vtkGPUVolumeRayCastMapper.h>
+#include <vtkVolumeRayCastMapper.h>
 #include <vtkVolumeTextureMapper3D.h>
+
 #include <vtkImageData.h>
 #include <vtkVolumeProperty.h>
 #include <vtkPiecewiseFunction.h>
 #include <vtkColorTransferFunction.h>
+#include <vtkImageAppendComponents.h>
 #include <vtkVolume.h>
 
 namespace isis
@@ -47,22 +51,39 @@ namespace widget
 class VTKImageComponents
 {
 public:
-	VTKImageComponents( bool ray );
+	enum VTKMapperType { Texture, CPU_FixedPointRayCast, GPU_VolumeRayCast };
+	
+	VTKImageComponents( VTKMapperType = CPU_FixedPointRayCast );
 
 	void setVTKImageData( vtkImageData *image );
 	vtkImageData *getVTKImageData() const { return imageData; }
+
+	void mergeImage( vtkImageData *image );
+
+	void setMapperType( VTKMapperType mapper );
 
 	void setCropping( double *cropping );
 
 	vtkVolume *volume;
 	vtkVolumeProperty *property;
-	vtkFixedPointVolumeRayCastMapper *rayMapper;
+
+	vtkFixedPointVolumeRayCastMapper *fixedRayMapper;
+	vtkGPUVolumeRayCastMapper * gpuVolumeRayMapper;
 	vtkVolumeTextureMapper3D *textureMapper;
+	
 	vtkColorTransferFunction *colorFunction;
 	vtkPiecewiseFunction *opacityFunction;
+
 private:
 	vtkImageData *imageData;
-	bool rayMapping;
+
+	double *currentCropping;
+	bool croppingSet;
+
+	vtkVolumeMapper *currentVolumeMapper;
+	
+	VTKMapperType currentMapperType;
+	
 };
 
 }

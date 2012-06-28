@@ -474,7 +474,9 @@ void QImageWidgetImplementation::lookAtPhysicalCoords( const isis::util::fvector
 	BOOST_FOREACH( ImageHolder::Vector::const_reference image, m_ViewerCore->getImageVector() ) {
 		image->getImageProperties().physicalCoords = physicalCoords;
 		const size_t timestep = image->getImageProperties().voxelCoords[3];
-		image->getImageProperties().voxelCoords = image->getISISImage()->getIndexFromPhysicalCoords( physicalCoords, true );
+		util::ivector4 voxelCoords = image->getISISImage()->getIndexFromPhysicalCoords( physicalCoords );
+		image->correctVoxelCoords<3>( voxelCoords );
+		image->getImageProperties().voxelCoords = voxelCoords;
 		image->getImageProperties().voxelCoords[3] = timestep;
 	}
 	update();

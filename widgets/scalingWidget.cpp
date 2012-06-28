@@ -56,7 +56,7 @@ void ScalingWidget::synchronize()
 	m_Interface.offset->setMaximum( std::numeric_limits<double>::max() );
 	m_Interface.offset->setMinimum( -std::numeric_limits<double>::max() );
 	m_Interface.scaling->setMinimum( 0.0 );
-	m_Interface.scaling->setMaximum( 100 );
+	m_Interface.scaling->setMaximum( 99999 );
 	m_Interface.min->setMinimum( -std::numeric_limits<double>::max() );
 	m_Interface.min->setMaximum( std::numeric_limits<double>::max() );
 	m_Interface.max->setMinimum( -std::numeric_limits<double>::max() );

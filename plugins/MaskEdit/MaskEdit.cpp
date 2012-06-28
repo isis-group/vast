@@ -67,11 +67,13 @@ MaskEditDialog::MaskEditDialog( QWidget *parent, QViewerCore *core )
 
 void MaskEditDialog::cutClicked()
 {
+	if( m_CurrentMask ) 
 	m_Interface.colorEdit->setValue( m_CurrentMask->getImageProperties().minMax.first->as<double>() );
 }
 
 void MaskEditDialog::paintClicked()
 {
+	if( m_CurrentMask )
 	m_Interface.colorEdit->setValue( m_CurrentMask->getImageProperties().minMax.second->as<double>() );
 }
 
