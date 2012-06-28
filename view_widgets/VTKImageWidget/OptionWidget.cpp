@@ -63,7 +63,7 @@ void OptionWidget::setWidget ( VTKImageWidgetImplementation *widget )
 	connect( m_Interface.croppingZ1, SIGNAL( valueChanged( int ) ), this, SLOT( croppingChanged() ) );
 	connect( m_Interface.croppingZ2, SIGNAL( valueChanged( int ) ), this, SLOT( croppingChanged() ) );
 	connect( m_Interface.shade, SIGNAL( clicked( bool ) ), m_Widget, SLOT( setShade( bool ) ) );
-	connect( m_Interface.mapperType, SIGNAL( activated(int)), this, SLOT( mapperChanged(int)));
+	connect( m_Interface.mapperType, SIGNAL( activated( int ) ), this, SLOT( mapperChanged( int ) ) );
 	m_Interface.mapperType->setCurrentIndex( m_Widget->getMapper() );
 }
 

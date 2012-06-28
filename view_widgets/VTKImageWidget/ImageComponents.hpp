@@ -52,7 +52,7 @@ class VTKImageComponents
 {
 public:
 	enum VTKMapperType { Texture, CPU_FixedPointRayCast, GPU_VolumeRayCast };
-	
+
 	VTKImageComponents( VTKMapperType = CPU_FixedPointRayCast );
 
 	void setVTKImageData( vtkImageData *image );
@@ -68,9 +68,9 @@ public:
 	vtkVolumeProperty *property;
 
 	vtkFixedPointVolumeRayCastMapper *fixedRayMapper;
-	vtkGPUVolumeRayCastMapper * gpuVolumeRayMapper;
+	vtkGPUVolumeRayCastMapper *gpuVolumeRayMapper;
 	vtkVolumeTextureMapper3D *textureMapper;
-	
+
 	vtkColorTransferFunction *colorFunction;
 	vtkPiecewiseFunction *opacityFunction;
 
@@ -81,9 +81,9 @@ private:
 	bool croppingSet;
 
 	vtkVolumeMapper *currentVolumeMapper;
-	
+
 	VTKMapperType currentMapperType;
-	
+
 };
 
 }

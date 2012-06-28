@@ -164,11 +164,13 @@ void MainWindow::toggleGeometrical ( bool geometrical )
 	std::vector<ImageHolder::Vector> images;
 	m_ViewerCore->getSettings()->setPropertyAs<bool>( "showImagesGeometricalView", geometrical );
 	std::string widgetIdentifier;
+
 	if( geometrical ) {
 		widgetIdentifier = m_ViewerCore->getSettings()->getPropertyAs<std::string>( "widgetGeometrical" );
 	} else {
 		widgetIdentifier = m_ViewerCore->getSettings()->getPropertyAs<std::string>( "widgetLatched" );
 	}
+
 	WidgetEnsemble::Vector eVec = m_ViewerCore->getUICore()->getEnsembleList();
 	BOOST_FOREACH( WidgetEnsemble::Vector::const_reference ensemble,  eVec ) {
 		images.push_back( m_ViewerCore->getUICore()->closeWidgetEnsemble( ensemble ) );

@@ -315,7 +315,7 @@ void VoxelInformationWidget::synchronize()
 
 void VoxelInformationWidget::synchronizePos( util::fvector4 physicalCoords )
 {
-	synchronizePos( m_ViewerCore->getCurrentImage()->getISISImage()->getIndexFromPhysicalCoords( physicalCoords) );
+	synchronizePos( m_ViewerCore->getCurrentImage()->getISISImage()->getIndexFromPhysicalCoords( physicalCoords ) );
 }
 
 void VoxelInformationWidget::synchronizePos( util::ivector4 voxelCoords )

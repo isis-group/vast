@@ -75,8 +75,8 @@ private:
 
 	template<typename TYPE>
 	void manipulateVoxel( const util::fvector4 physCoord, boost::shared_ptr<ImageHolder> image ) {
-		util::ivector4 voxel = image->getISISImage()->getIndexFromPhysicalCoords( physCoord);
-		image->correctVoxelCoords<3>(voxel);
+		util::ivector4 voxel = image->getISISImage()->getIndexFromPhysicalCoords( physCoord );
+		image->correctVoxelCoords<3>( voxel );
 		util::ivector4 start;
 		util::ivector4 end;
 		const size_t timestep = image->getImageProperties().voxelCoords[dim_time];

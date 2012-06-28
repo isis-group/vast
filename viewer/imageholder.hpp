@@ -44,21 +44,22 @@ namespace isis
 namespace viewer
 {
 
-namespace _internal {
+namespace _internal
+{
 class __Image : public data::Image
 {
 public:
-    __Image( const data::Image &image):data::Image( image ) {
+	__Image( const data::Image &image ): data::Image( image ) {
 		imageSize = getSizeAsVector();
 	};
 
-	void mapPhysicalToIndex( const float* physicalCoords, int32_t* index );
+	void mapPhysicalToIndex( const float *physicalCoords, int32_t *index );
 	bool checkVoxel( const int32_t *coords );
 private:
 	util::ivector4 imageSize;
 };
 }
-	
+
 namespace widget
 {
 class WidgetInterface;
@@ -144,25 +145,24 @@ public:
 	getRawAdress( size_t timestep = 0 ) const;
 
 	template<unsigned short DIMS>
-	void correctVoxelCoords( util::ivector4 &vc )
-	{
+	void correctVoxelCoords( util::ivector4 &vc ) {
 		for( unsigned short i = 0; i < DIMS; i++ ) {
 			if( vc[i] < 0 ) vc[i] = 0;
-			else if( vc[i] >= static_cast<int32_t>(getImageSize()[i] ) ) vc[i] = static_cast<int32_t>(getImageSize()[i] - 1);
+			else if( vc[i] >= static_cast<int32_t>( getImageSize()[i] ) ) vc[i] = static_cast<int32_t>( getImageSize()[i] - 1 );
 		}
 	}
 
 	template<unsigned short DIMS>
-	bool checkVoxelCoords ( const util::ivector4 &vc )
-	{
+	bool checkVoxelCoords ( const util::ivector4 &vc ) {
 		for( unsigned short i = 0; i < DIMS; i++ ) {
 			if( vc[i] < 0 || vc[i] >= static_cast<int>( getImageSize()[i] ) ) {
 				return false;
 			}
 		}
+
 		return true;
 	}
-	
+
 	bool checkVoxelCoords( const util::ivector4 &voxelCoords );
 
 	void synchronize( );

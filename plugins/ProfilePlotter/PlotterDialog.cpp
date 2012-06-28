@@ -103,7 +103,7 @@ void isis::viewer::plugin::PlotterDialog::refresh ( isis::util::fvector4 physica
 				curve->detach();
 
 				util::ivector4 voxCoords = image->getISISImage()->getIndexFromPhysicalCoords( physicalCoords );
-				image->correctVoxelCoords<3>(voxCoords);
+				image->correctVoxelCoords<3>( voxCoords );
 
 				if( ui.timeCourseRadio->isChecked() ) {
 					fillProfile( image, voxCoords, curve, axis );
