@@ -113,8 +113,9 @@ int main( int argc, char *argv[] )
 	//make vast showing qmessage if an error log is thrown
 	logging_hanlder_dev->qmessageBelow( isis::warning );
 	logging_hanlder_runtime->qmessageBelow( isis::warning );
+
 	//setting stylesheet
-	if ( core->getSettings()->getPropertyAs<bool>("useStyleSheet") ) {
+	if ( core->getSettings()->getPropertyAs<bool>( "useStyleSheet" ) ) {
 		app.getQApplication().setStyleSheet( util::Singletons::get<style::Style, 10>().getStyleSheet( core->getSettings()->getPropertyAs<std::string>( "styleSheet" ) ) );
 	}
 

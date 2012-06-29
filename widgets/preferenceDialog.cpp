@@ -132,7 +132,7 @@ void PreferencesDialog::loadSettings()
 		}
 	}
 
-	m_Interface.fancyStyle->setChecked( m_ViewerCore->getSettings()->getPropertyAs<bool>("useStyleSheet") );
+	m_Interface.fancyStyle->setChecked( m_ViewerCore->getSettings()->getPropertyAs<bool>( "useStyleSheet" ) );
 	m_Interface.checkStartUpScreen->setChecked( m_ViewerCore->getSettings()->getPropertyAs<bool>( "showStartWidget" ) );
 	m_Interface.checkCrashMessage->setChecked( m_ViewerCore->getSettings()->getPropertyAs<bool>( "showCrashMessage" ) );
 	m_Interface.checkOnlyFirst->setChecked( m_ViewerCore->getSettings()->getPropertyAs<bool>( "visualizeOnlyFirstVista" ) );
