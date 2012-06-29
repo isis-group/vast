@@ -54,14 +54,7 @@ int main( int argc, char *argv[] )
 	using namespace viewer;
 	signal( SIGSEGV, error::sigsegv );
 
-	boost::shared_ptr<qt4::QDefaultMessagePrint> logging_hanlder_runtime ( new qt4::QDefaultMessagePrint( verbose_info ) );
-	boost::shared_ptr<qt4::QDefaultMessagePrint> logging_hanlder_dev ( new qt4::QDefaultMessagePrint( verbose_info ) );
-	util::_internal::Log<viewer::Dev>::setHandler( logging_hanlder_dev );
-	util::_internal::Log<viewer::Runtime>::setHandler( logging_hanlder_runtime );
 
-	//make vast showing qmessage if an error log is thrown
-	logging_hanlder_dev->qmessageBelow( isis::warning );
-	logging_hanlder_runtime->qmessageBelow( isis::warning );
 
 	std::string appName = "vast";
 	std::string orgName = "cbs.mpg.de";
@@ -112,7 +105,14 @@ int main( int argc, char *argv[] )
 	app.parameters["widget"].setDescription( "Use specific widget" );
 	app.init( argc, argv, false );
 	QViewerCore *core = new QViewerCore;
+	boost::shared_ptr<qt4::QDefaultMessagePrint> logging_hanlder_runtime ( new qt4::QDefaultMessagePrint( verbose_info ) );
+	boost::shared_ptr<qt4::QDefaultMessagePrint> logging_hanlder_dev ( new qt4::QDefaultMessagePrint( verbose_info ) );
+	util::_internal::Log<viewer::Dev>::setHandler( logging_hanlder_dev );
+	util::_internal::Log<viewer::Runtime>::setHandler( logging_hanlder_runtime );
 
+	//make vast showing qmessage if an error log is thrown
+	logging_hanlder_dev->qmessageBelow( isis::warning );
+	logging_hanlder_runtime->qmessageBelow( isis::warning );
 	//setting stylesheet
 	app.getQApplication().setStyleSheet( util::Singletons::get<style::Style, 10>().getStyleSheet( core->getSettings()->getPropertyAs<std::string>( "styleSheet" ) ) );
 
