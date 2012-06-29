@@ -132,6 +132,7 @@ void PreferencesDialog::loadSettings()
 		}
 	}
 
+	m_Interface.fancyStyle->setChecked( m_ViewerCore->getSettings()->getPropertyAs<bool>("useStyleSheet") );
 	m_Interface.checkStartUpScreen->setChecked( m_ViewerCore->getSettings()->getPropertyAs<bool>( "showStartWidget" ) );
 	m_Interface.checkCrashMessage->setChecked( m_ViewerCore->getSettings()->getPropertyAs<bool>( "showCrashMessage" ) );
 	m_Interface.checkOnlyFirst->setChecked( m_ViewerCore->getSettings()->getPropertyAs<bool>( "visualizeOnlyFirstVista" ) );
@@ -169,6 +170,7 @@ void PreferencesDialog::saveSettings()
 	m_ViewerCore->getSettings()->setPropertyAs<uint16_t>( "interpolationType", m_Interface.comboInterpolation->currentIndex() );
 	m_ViewerCore->getSettings()->setPropertyAs<bool>( "showStartWidget", m_Interface.checkStartUpScreen->isChecked() );
 	m_ViewerCore->getSettings()->setPropertyAs<bool>( "showCrashMessage", m_Interface.checkCrashMessage->isChecked() );
+	m_ViewerCore->getSettings()->setPropertyAs<bool>( "useStyleSheet", m_Interface.fancyStyle->isChecked() );
 
 	//view
 	m_ViewerCore->getSettings()->setPropertyAs<bool>( "latchSingleImage", m_Interface.checkLatchOrientation->isChecked() );

@@ -399,10 +399,10 @@
          <item>
           <widget class="QSlider" name="croppingZ2">
            <property name="maximum">
-            <number>1000</number>
+            <number>999</number>
            </property>
            <property name="value">
-            <number>1000</number>
+            <number>999</number>
            </property>
            <property name="orientation">
             <enum>Qt::Horizontal</enum>

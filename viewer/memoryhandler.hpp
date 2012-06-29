@@ -92,7 +92,6 @@ public:
 		if( image->getImageProperties().latchedOrientation == image->getImageProperties().orientation ) {
 			fillSliceChunk<TYPE>( sliceChunk, image, orientation );
 		} else {
-			boost::timer timer;
 			const data::Chunk &chunk = image->getVolumeVector()[image->getImageProperties().voxelCoords[dim_time]];
 			boost::shared_ptr< _internal::__Image > isisImage = image->getISISImage();
 			const geometrical::BoundingBoxType &bb = image->getImageProperties().boundingBox;

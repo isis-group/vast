@@ -119,7 +119,7 @@ QT4_WRAP_UI(vast_UIS_H ${UI_FILES})
 # boost and common stuff
 ###########################################################
 
-FIND_PACKAGE(Boost REQUIRED)
+FIND_PACKAGE(Boost REQUIRED COMPONENTS thread)
 
 INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIR})
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/QImageWidget)

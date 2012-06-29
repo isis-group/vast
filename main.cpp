@@ -114,7 +114,9 @@ int main( int argc, char *argv[] )
 	logging_hanlder_dev->qmessageBelow( isis::warning );
 	logging_hanlder_runtime->qmessageBelow( isis::warning );
 	//setting stylesheet
-	app.getQApplication().setStyleSheet( util::Singletons::get<style::Style, 10>().getStyleSheet( core->getSettings()->getPropertyAs<std::string>( "styleSheet" ) ) );
+	if ( core->getSettings()->getPropertyAs<bool>("useStyleSheet") ) {
+		app.getQApplication().setStyleSheet( util::Singletons::get<style::Style, 10>().getStyleSheet( core->getSettings()->getPropertyAs<std::string>( "styleSheet" ) ) );
+	}
 
 	util::_internal::Log<isis::data::Runtime>::setHandler( logging_hanlder_runtime );
 	util::_internal::Log<isis::util::Runtime>::setHandler( logging_hanlder_runtime );
