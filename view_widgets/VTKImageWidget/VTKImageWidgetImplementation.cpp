@@ -31,6 +31,7 @@
 #include "geometrical.hpp"
 #include <widgetensemble.hpp>
 #include <uicore.hpp>
+#include <sys/stat.h>
 
 
 namespace isis
@@ -148,14 +149,15 @@ void VTKImageWidgetImplementation::commonInit()
 	m_CursorMapper->SetInputConnection( m_Cursor->GetOutputPort() );
 	m_Actor->SetMapper( m_CursorMapper );
 	m_Renderer->AddActor( m_Actor );
+	m_MapperType = VTKImageComponents::CPU_FixedPointRayCast;
 }
 
 void VTKImageWidgetImplementation::currentImageChanged ( const ImageHolder::Pointer /*image*/ )
 {
 	//readd all images to the renderer so we have the same order as in the ensembles image vector
 	m_Renderer->RemoveAllViewProps();
-	BOOST_FOREACH( const ImageHolder::Vector::const_reference image, getWidgetEnsemble()->getImageVector() ) {
-		m_Renderer->AddVolume( m_VTKImageComponentsMap.at( image ).volume );
+	BOOST_FOREACH( const ComponentsMapType::const_reference component, m_VTKImageComponentsMap ) {
+		m_Renderer->AddVolume( component.second.volume );
 	}
 	m_Renderer->AddActor( m_Actor );
 
@@ -289,18 +291,49 @@ void VTKImageWidgetImplementation::reloadImage ( const ImageHolder::Pointer imag
 void VTKImageWidgetImplementation::setCropping ( double *cropping )
 {
 	const util::dvector4 cBB = getCenterOfBoundingBox();
-	const double boundX =  -cBB[0] / 500.0;
-	const double boundY =  -cBB[1] / 500.0;
-	const double boundZ =  -cBB[2] / 500.0;
-	cropping[0] *= boundX;
-	cropping[1] *= boundX;
-	cropping[2] *= boundY;
-	cropping[3] *= boundY;
-	cropping[4] *= boundZ;
-	cropping[5] *= boundZ;
+
+	const float extent[] = { m_PhysicalBounds[0].second - m_PhysicalBounds[0].first,
+							 m_PhysicalBounds[1].second - m_PhysicalBounds[1].first,
+							 m_PhysicalBounds[2].second - m_PhysicalBounds[2].first
+						   };
+	double fCropping[6];
+
+	cropping[0] = m_PhysicalBounds[0].first + extent[0] / 1000 * cropping[0];
+	cropping[1] = m_PhysicalBounds[0].first + extent[0] / 1000 * cropping[1];
+
+	cropping[2] = m_PhysicalBounds[1].first + extent[1] / 1000 * cropping[2];
+	cropping[3] = m_PhysicalBounds[1].first + extent[1] / 1000 * cropping[3];
+
+	cropping[4] = m_PhysicalBounds[2].first + extent[2] / 1000 * cropping[4];
+	cropping[5] = m_PhysicalBounds[2].first + extent[2] / 1000 * cropping[5];
+
+	fCropping[0] = std::min( cropping[0], cropping[1] );
+	fCropping[1] = std::max( cropping[0], cropping[1] );
+
+	fCropping[2] = std::min( cropping[2], cropping[3] );
+	fCropping[3] = std::max( cropping[2], cropping[3] );
+
+	fCropping[4] = std::min( cropping[4], cropping[5] );
+	fCropping[5] = std::max( cropping[4], cropping[5] );
+
+
 	BOOST_FOREACH( ComponentsMapType::reference component, m_VTKImageComponentsMap ) {
-		component.second.setCropping( cropping );
+		component.second.setCropping( fCropping );
 	}
+	update();
+}
+
+void VTKImageWidgetImplementation::setMapper ( int mapper, bool global )
+{
+	m_MapperType = static_cast<VTKImageComponents::VTKMapperType>( mapper );
+
+	if( global ) {
+		BOOST_FOREACH( ComponentsMapType::reference component, m_VTKImageComponentsMap ) {
+			component.second.setMapperType( m_MapperType );
+			reloadImage( component.first );
+		}
+	}
+
 	update();
 }
 
@@ -308,10 +341,17 @@ void VTKImageWidgetImplementation::setCropping ( double *cropping )
 void VTKImageWidgetImplementation::addImage ( const ImageHolder::Pointer image )
 {
 	updatePhysicalBounds();
-	VTKImageComponents component( image->getImageProperties().imageType == ImageHolder::structural_image );
-	m_VTKImageComponentsMap.insert( std::make_pair<ImageHolder::Pointer, VTKImageComponents>( image, component ) );
-	m_Renderer->AddVolume( component.volume );
-	component.setVTKImageData( VolumeHandler::getVTKImageData( image, m_PhysicalBounds, image->getImageProperties().voxelCoords[3] ) );
+	vtkImageData *vtkImage = VolumeHandler::getVTKImageData( image, m_PhysicalBounds, image->getImageProperties().voxelCoords[3] ) ;
+
+	if( /*m_ViewerCore->getMode() == ViewerCoreBase::default_mode || */m_VTKImageComponentsMap.empty() ) {
+		VTKImageComponents component( m_MapperType );
+		m_VTKImageComponentsMap.insert( std::make_pair( image, component ) );
+		m_Renderer->AddVolume( component.volume );
+		component.setVTKImageData( vtkImage );
+	} else {
+		VTKImageComponents &component = m_VTKImageComponentsMap.begin()->second;
+		component.mergeImage( vtkImage );
+	}
 
 	if( getWidgetEnsemble()->getImageVector().size() == 1 ) {
 		m_Renderer->GetActiveCamera()->SetPosition( image->getImageProperties().indexOrigin[0] * 2, image->getImageProperties().indexOrigin[1] * 2, image->getImageProperties().indexOrigin[2] );
@@ -320,6 +360,7 @@ void VTKImageWidgetImplementation::addImage ( const ImageHolder::Pointer image )
 
 	resetCamera();
 	lookAtPhysicalCoords( image->getImageProperties().physicalCoords );
+	update();
 }
 
 void VTKImageWidgetImplementation::updatePhysicalBounds()

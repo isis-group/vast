@@ -36,10 +36,6 @@
 #include <map>
 #include <boost/signals2.hpp>
 
-#ifdef _OPENMP
-#include <omp.h>
-#endif /*_OPENMP*/
-
 namespace isis
 {
 namespace viewer
@@ -75,6 +71,8 @@ public:
 	widget::WidgetInterface *getWidget( const std::string &identifier ) throw( std::runtime_error & );
 	const util::PropertyMap *getWidgetProperties( const std::string &identifier ) ;
 
+	bool hasWidget( const std::string &identifier );
+
 	virtual void setMode( const Mode &mode ) { m_Mode = mode; }
 	virtual Mode getMode() const { return m_Mode; }
 
@@ -99,7 +97,6 @@ private:
 	//this map associates all the images with their filenames
 	ImageHolder::Map m_ImageMap;
 	ImageHolder::Pointer  m_CurrentImage;
-	void initOMP();
 
 protected:
 	boost::shared_ptr<Settings> m_Settings;

@@ -70,6 +70,8 @@ MainWindow::MainWindow( QViewerCore *core ) :
 	m_Interface.actionSagittal_View->setChecked( true );
 	m_Interface.actionCoronal_View->setChecked( true );
 
+
+
 	m_Interface.action_Save_Image->setShortcut( QKeySequence::Save );
 	m_Interface.action_Save_Image->setIconVisibleInMenu( true );
 	m_Interface.actionSave_Image->setIconVisibleInMenu( true );
@@ -91,6 +93,7 @@ MainWindow::MainWindow( QViewerCore *core ) :
 	m_Interface.actionPropagate_Zooming->setShortcut( QKeySequence( tr( "P, Z" ) ) );
 	m_Interface.actionShow_Labels->setShortcut( QKeySequence( tr( "S, L" ) ) );
 	m_Interface.actionShow_Crosshair->setShortcut( QKeySequence( tr( "S, C" ) ) );
+	m_Interface.actionGeometrical_View->setShortcut( QKeySequence( tr( "G, V" ) ) );
 
 	connect( m_Interface.action_Save_Image, SIGNAL( triggered() ), this, SLOT( saveImage() ) );
 	connect( m_Interface.actionSave_Image, SIGNAL( triggered() ), this, SLOT( saveImageAs() ) );
@@ -107,7 +110,6 @@ MainWindow::MainWindow( QViewerCore *core ) :
 	connect( m_ActionReset_Scaling, SIGNAL( triggered() ), this, SLOT( resetScaling() ) );
 	connect( m_Interface.actionShow_Crosshair, SIGNAL( triggered( bool ) ), m_ViewerCore, SLOT( setShowCrosshair( bool ) ) );
 	connect( m_Interface.actionSave_all_Images, SIGNAL( triggered() ), this, SLOT( saveAllImages() ) );
-	connect( m_Interface.actionToggle_Zmap_Mode, SIGNAL( triggered( bool ) ), this, SLOT( toggleZMapMode( bool ) ) );
 	connect( m_Interface.actionKey_Commands, SIGNAL( triggered() ), this, SLOT( showKeyCommandDialog() ) );
 	connect( m_Interface.actionCreate_Screenshot, SIGNAL( triggered() ), this, SLOT( createScreenshot() ) );
 	connect( m_Interface.actionHelp, SIGNAL( triggered() ), helpDialog, SLOT( show() ) );
@@ -116,6 +118,7 @@ MainWindow::MainWindow( QViewerCore *core ) :
 	connect( m_Interface.actionAxial_View, SIGNAL( triggered( bool ) ), this, SLOT( toggleAxialView( bool ) ) );
 	connect( m_Interface.actionSagittal_View, SIGNAL( triggered( bool ) ), this, SLOT( toggleSagittalView( bool ) ) );
 	connect( m_Interface.actionCoronal_View, SIGNAL( triggered( bool ) ), this, SLOT( toggleCoronalView( bool ) ) );
+	connect( m_Interface.actionGeometrical_View, SIGNAL( toggled( bool ) ), this, SLOT( toggleGeometrical( bool ) ) );
 
 
 	//toolbar stuff
@@ -155,6 +158,28 @@ MainWindow::MainWindow( QViewerCore *core ) :
 	m_Interface.actionOpen_recent->setMenu( new QMenu() );
 }
 
+
+void MainWindow::toggleGeometrical ( bool geometrical )
+{
+	std::vector<ImageHolder::Vector> images;
+	m_ViewerCore->getSettings()->setPropertyAs<bool>( "showImagesGeometricalView", geometrical );
+	std::string widgetIdentifier;
+
+	if( geometrical ) {
+		widgetIdentifier = m_ViewerCore->getSettings()->getPropertyAs<std::string>( "widgetGeometrical" );
+	} else {
+		widgetIdentifier = m_ViewerCore->getSettings()->getPropertyAs<std::string>( "widgetLatched" );
+	}
+
+	WidgetEnsemble::Vector eVec = m_ViewerCore->getUICore()->getEnsembleList();
+	BOOST_FOREACH( WidgetEnsemble::Vector::const_reference ensemble,  eVec ) {
+		images.push_back( m_ViewerCore->getUICore()->closeWidgetEnsemble( ensemble ) );
+	}
+	BOOST_FOREACH( std::vector<ImageHolder::Vector>::const_reference imVec, images ) {
+		m_ViewerCore->getUICore()->createViewWidgetEnsemble( widgetIdentifier, imVec, true );
+	}
+	m_ViewerCore->getUICore()->refreshUI();
+}
 
 
 void MainWindow::createScreenshot()
@@ -221,18 +246,6 @@ void MainWindow::saveSettings()
 void MainWindow::showKeyCommandDialog()
 {
 	keyCommandsdialog->show();
-}
-
-void MainWindow::toggleZMapMode( bool zmap )
-{
-	if( zmap ) {
-		m_ViewerCore->setMode( ViewerCoreBase::statistical_mode );
-	} else {
-		m_ViewerCore->setMode( ViewerCoreBase::default_mode );
-	}
-
-	m_ViewerCore->getUICore()->refreshUI();
-	m_ViewerCore->updateScene();
 }
 
 
@@ -312,36 +325,35 @@ void MainWindow::openImage()
 void MainWindow::saveImage()
 {
 	if( m_ViewerCore->hasImage() ) {
-		if( !m_ViewerCore->getCurrentImage()->getPropMap().getPropertyAs<util::slist>( "changedAttributes" ).size() ) {
-			QMessageBox msgBox;
-			msgBox.setText( "The image that is currently selected has no changes! Will not save anything." );
-			msgBox.exec();
-		} else {
-			QMessageBox msgBox;
-			msgBox.setIcon( QMessageBox::Information );
-			std::stringstream text;
-			text << "This will overwrite " << m_ViewerCore->getCurrentImage()->getImageProperties().fileName << " !";
-			msgBox.setText( text.str().c_str() );
-			msgBox.setInformativeText( "Do you want to proceed?" );
+		QMessageBox msgBox;
+		msgBox.setIcon( QMessageBox::Information );
+		std::stringstream text;
+		text << "This will overwrite " << m_ViewerCore->getCurrentImage()->getImageProperties().filePath << " !";
+		msgBox.setText( text.str().c_str() );
+		const util::slist changedAttributes = m_ViewerCore->getCurrentImage()->getPropMap().getPropertyAs<util::slist>( "changedAttributes" );
+
+		if( changedAttributes.size() ) {
 			std::stringstream detailedText;
 			detailedText << "Changed attributes: " << std::endl;
 			BOOST_FOREACH( util::slist::const_reference attrChanged, m_ViewerCore->getCurrentImage()->getPropMap().getPropertyAs<util::slist>( "changedAttributes" ) ) {
 				detailedText << " >> " << attrChanged << std::endl;
 			}
 			msgBox.setDetailedText( detailedText.str().c_str() );
-			msgBox.setStandardButtons( QMessageBox::Yes | QMessageBox::No );
-			msgBox.setDefaultButton( QMessageBox::No );
+		}
 
-			switch ( msgBox.exec() ) {
-			case QMessageBox::No:
-				return;
-				break;
-			case QMessageBox::Yes:
-				m_ViewerCore->getUICore()->toggleLoadingIcon( true, QString( "Saving image to " ) + m_ViewerCore->getCurrentImage()->getImageProperties().fileName.c_str() );
-				isis::data::IOFactory::write( *m_ViewerCore->getCurrentImage()->getISISImage(), m_ViewerCore->getCurrentImage()->getImageProperties().filePath, "", "" );
-				m_ViewerCore->getUICore()->toggleLoadingIcon( false );
-				break;
-			}
+		msgBox.setInformativeText( "Do you want to proceed?" );
+		msgBox.setStandardButtons( QMessageBox::Yes | QMessageBox::No );
+		msgBox.setDefaultButton( QMessageBox::No );
+
+		switch ( msgBox.exec() ) {
+		case QMessageBox::No:
+			return;
+			break;
+		case QMessageBox::Yes:
+			m_ViewerCore->getUICore()->toggleLoadingIcon( true, QString( "Saving image to " ) + m_ViewerCore->getCurrentImage()->getImageProperties().fileName.c_str() );
+			isis::data::IOFactory::write( *m_ViewerCore->getCurrentImage()->getISISImage(), m_ViewerCore->getCurrentImage()->getImageProperties().filePath, "", "" );
+			m_ViewerCore->getUICore()->toggleLoadingIcon( false );
+			break;
 		}
 	}
 }
@@ -511,19 +523,11 @@ void MainWindow::refreshUI()
 	m_ViewerCore->setShowLabels( m_Interface.actionShow_Labels->isChecked() );
 	m_Interface.actionPropagate_Zooming->setChecked( m_ViewerCore->getSettings()->getPropertyAs<bool>( "propagateZooming" ) );
 	m_RadiusSpin->setValue( m_ViewerCore->getSettings()->getPropertyAs<uint16_t>( "minMaxSearchRadius" ) );
+	m_Interface.actionGeometrical_View->setChecked( m_ViewerCore->getSettings()->getPropertyAs<bool>( "showImagesGeometricalView" ) );
+	m_Interface.actionGeometrical_View->setVisible( m_ViewerCore->hasWidget( m_ViewerCore->getSettings()->getPropertyAs<std::string>( "widgetLatched" ) )
+			&& m_ViewerCore->hasWidget( m_ViewerCore->getSettings()->getPropertyAs<std::string>( "widgetGeometrical" ) )
+												  );
 
-	if( m_ViewerCore->getMode() == ViewerCoreBase::statistical_mode ) {
-		m_Interface.actionToggle_Zmap_Mode->setChecked( true );
-		m_Interface.actionFind_Global_Max->setVisible( true );
-		m_Interface.actionFind_Global_Min->setVisible( true );
-		m_RadiusSpinAction->setVisible( true );
-	} else {
-		m_Interface.actionToggle_Zmap_Mode->setChecked( false );
-		m_Interface.actionFind_Global_Max->setVisible( false );
-		m_Interface.actionFind_Global_Min->setVisible( false );
-		m_RadiusSpinAction->setVisible( false );
-
-	}
 
 	m_Interface.action_Save_Image->setEnabled( m_ViewerCore->hasImage() );
 	m_Interface.actionSave_all_Images->setEnabled( m_ViewerCore->hasImage() );
@@ -532,7 +536,6 @@ void MainWindow::refreshUI()
 	m_Interface.actionFind_Global_Max->setEnabled( m_ViewerCore->hasImage() );
 	m_Interface.actionFind_Global_Min->setEnabled( m_ViewerCore->hasImage() );
 	m_Interface.actionCenter_to_ca->setEnabled( m_ViewerCore->hasImage() );
-	m_Interface.actionToggle_Zmap_Mode->setEnabled( m_ViewerCore->hasImage() );
 	m_Interface.actionShow_Crosshair->setEnabled( m_ViewerCore->hasImage() );
 	m_Interface.actionShow_scaling_option->setEnabled( m_ViewerCore->hasImage() );
 	m_Interface.actionShow_Labels->setEnabled( m_ViewerCore->hasImage() );

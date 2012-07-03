@@ -36,6 +36,29 @@ namespace isis
 namespace viewer
 {
 
+namespace _internal
+{
+void __Image::mapPhysicalToIndex ( const float *physicalCoords, int32_t *index )
+{
+	float vec[3] = { physicalCoords[0] - m_Offset[0], physicalCoords[1] - m_Offset[1], physicalCoords[2] - m_Offset[2] };
+	index[0] = ( vec[0] * m_RowVecInv[0] + vec[1] * m_ColumnVecInv[0] + vec[2] * m_SliceVecInv[0] + 0.5 );
+	index[1] = ( vec[0] * m_RowVecInv[1] + vec[1] * m_ColumnVecInv[1] + vec[2] * m_SliceVecInv[1] + 0.5 );
+	index[2] = ( vec[0] * m_RowVecInv[2] + vec[1] * m_ColumnVecInv[2] + vec[2] * m_SliceVecInv[2] + 0.5 );
+
+}
+bool __Image::checkVoxel ( const int32_t *coords )
+{
+	if( ( coords[0] < 0 ) || ( coords[0] >= imageSize[0] ) ) return false;
+
+	if( ( coords[1] < 0 ) || ( coords[1] >= imageSize[1] ) ) return false;
+
+	if( ( coords[2] < 0 ) || ( coords[2] >= imageSize[2] ) ) return false;
+
+	return true;
+}
+
+}
+
 ImageHolder::ImageHolder()
 	:  m_AmbiguousOrientation( false )
 {}
@@ -168,7 +191,7 @@ void ImageHolder::collectImageInfo()
 }
 
 
-boost::shared_ptr< data::Image > ImageHolder::getISISImage() const
+boost::shared_ptr< _internal::__Image > ImageHolder::getISISImage() const
 {
 	return m_Image;
 }
@@ -185,7 +208,7 @@ bool ImageHolder::setImage( const data::Image &image, const ImageType &_imageTyp
 		return false;
 	}
 
-	m_Image.reset( new data::Image( image ) );
+	m_Image.reset( new _internal::__Image( image ) );
 	getImageProperties().filePath = filename;
 	getImageProperties().zeroIsReserved = false;
 	boost::filesystem::path p( filename );
@@ -291,26 +314,6 @@ void ImageHolder::updateOrientation()
 	m_ImageProperties.boundingBox = geometrical::getPhysicalBoundingBox( ImageHolder::Pointer( new ImageHolder( *this ) ) );
 }
 
-void ImageHolder::correctVoxelCoords( util::ivector4 &vc )
-{
-	for( unsigned short i = 0; i < 4; i++ ) {
-		vc[i] = vc[i] < 0 ? 0 : vc[i];
-		vc[i] = vc[i] >= static_cast<int>( getImageSize()[i] ) ? static_cast<int>( getImageSize()[i] ) - 1 : vc[i]; //cast to avoid warning
-
-	}
-}
-
-bool ImageHolder::checkVoxelCoords ( const util::ivector4 &vc )
-{
-	for( unsigned short i = 0; i < 4; i++ ) {
-		if( vc[i] < 0 || vc[i] >= static_cast<int>( getImageSize()[i] ) ) {
-			return false;
-		}
-	}
-
-	return true;
-}
-
 
 void ImageHolder::updateColorMap()
 {
@@ -402,7 +405,7 @@ void ImageHolder::phyisicalCoordsChanged ( const util::fvector4 &physicalCoords 
 	getImageProperties().physicalCoords = physicalCoords;
 	getImageProperties().trueVoxelCoords = getISISImage()->getIndexFromPhysicalCoords( physicalCoords );
 	util::ivector4 correctedVoxelCoords =  getImageProperties().trueVoxelCoords;
-	correctVoxelCoords( correctedVoxelCoords );
+	correctVoxelCoords<4>( correctedVoxelCoords );
 	getImageProperties().voxelCoords = correctedVoxelCoords;
 }
 

@@ -98,7 +98,6 @@ public Q_SLOTS:
 	void showLoggingDialog();
 	void refreshUI();
 	void resetScaling();
-	void toggleZMapMode( bool );
 	void showKeyCommandDialog();
 	void loadSettings();
 	void saveSettings();
@@ -108,6 +107,7 @@ public Q_SLOTS:
 	void toggleCoronalView( bool );
 	void updateRecentOpenList();
 	void openRecentPath( QString );
+	void toggleGeometrical( bool );
 
 protected:
 	void dropEvent( QDropEvent * );

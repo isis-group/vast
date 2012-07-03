@@ -44,8 +44,8 @@ set(VIEWER_FILES_HPP
 # set viewer version number
 ##########################################################
 set(VAST_VERSION_MAJOR "0")
-set(VAST_VERSION_MINOR "6")
-set(VAST_VERSION_PATCH "2")
+set(VAST_VERSION_MINOR "7")
+set(VAST_VERSION_PATCH "0")
 
 add_definitions(-D_VAST_VERSION_MAJOR=${VAST_VERSION_MAJOR})
 add_definitions(-D_VAST_VERSION_MINOR=${VAST_VERSION_MINOR})
@@ -119,7 +119,7 @@ QT4_WRAP_UI(vast_UIS_H ${UI_FILES})
 # boost and common stuff
 ###########################################################
 
-FIND_PACKAGE(Boost REQUIRED)
+FIND_PACKAGE(Boost REQUIRED COMPONENTS thread)
 
 INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIR})
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/QImageWidget)
@@ -184,17 +184,6 @@ SET(CPACK_PACKAGE_VERSION_PATCH ${VAST_VERSION_PATCH})
 SET(CPACK_PACKAGE_FILE_NAME ${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH}-${CMAKE_SYSTEM_NAME}-${CMAKE_SYSTEM_PROCESSOR}-${CMAKE_BUILD_TYPE})
 #SET(CPACK_PACKAGE_INSTALL_DIRECTORY "CMake ${${CMAKE_PROJECT_NAME}_VERSION_MAJOR}.${${CMAKE_PROJECT_NAME}_VERSION_MINOR}")
 INCLUDE(CPack)
-
-###########################################################
-# OpenMP config
-###########################################################
-option(${CMAKE_PROJECT_NAME}_OPENMP "Toggles the omp support for vast." OFF)
-
-IF(${CMAKE_PROJECT_NAME}_OPENMP)
-	SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fopenmp ")
-	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fopenmp ")
-ENDIF(${CMAKE_PROJECT_NAME}_OPENMP)
-
 
 ###########################################################
 # Build stuff

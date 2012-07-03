@@ -43,36 +43,7 @@ ViewerCoreBase::ViewerCoreBase( )
 	  m_CurrentAnatomicalReference( boost::shared_ptr<ImageHolder>() ),
 	  m_Mode( default_mode )
 {
-	initOMP();
 	util::Singletons::get<color::Color, 10>().initStandardColormaps();
-}
-
-void ViewerCoreBase::initOMP()
-{
-#ifdef _OPENMP
-	const uint16_t nMaxThreads = omp_get_num_procs();
-	getSettings()->setPropertyAs<uint16_t>( "maxNumberOfThreads", nMaxThreads );
-
-	if( getSettings()->getPropertyAs<uint16_t> ( "numberOfThreads" ) == 0 ) {
-		if( nMaxThreads <= getSettings()->getPropertyAs<uint16_t>( "initialMaxNumberThreads" ) ) {
-			getSettings()->setPropertyAs<uint16_t> ( "numberOfThreads", nMaxThreads );
-			getSettings()->setPropertyAs<bool> ( "useAllAvailableThreads", true );
-		} else {
-			getSettings()->setPropertyAs<uint16_t> ( "numberOfThreads", getSettings()->getPropertyAs<uint16_t>( "initialMaxNumberThreads" ) );
-		}
-
-		getSettings()->setPropertyAs<bool> ( "enableMultithreading", true );
-	}
-
-	if( getSettings()->getPropertyAs<bool>( "useAllAvailableThreads" ) ) {
-		getSettings()->setPropertyAs<uint16_t> ( "numberOfThreads", nMaxThreads );
-	}
-
-	omp_set_num_threads ( getSettings()->getPropertyAs<uint16_t> ( "numberOfThreads" ) );
-	getSettings()->setPropertyAs<bool> ( "ompAvailable", true );
-#else
-	getSettings()->setPropertyAs<bool> ( "ompAvailable", false );
-#endif
 }
 
 ImageHolder::Vector ViewerCoreBase::addImageList( const std::list< data::Image > imageList, const ImageHolder::ImageType &imageType )
@@ -163,7 +134,6 @@ ImageHolder::Pointer ViewerCoreBase::addImage( const isis::data::Image &image, c
 		operation::NativeImageOps::setTrueZero( retImage );
 	}
 
-
 	//connect signals to image
 	emitGlobalPhysicalCoordsChanged.connect( boost::bind( &ImageHolder::phyisicalCoordsChanged, retImage, _1 ) );
 	emitGlobalVoxelCoordsChanged.connect( boost::bind( &ImageHolder::voxelCoordsChanged, retImage, _1 ) );
@@ -226,9 +196,16 @@ std::string ViewerCoreBase::getVersion()
 #endif
 }
 
+bool ViewerCoreBase::hasWidget ( const std::string &identifier )
+{
+	const widget::WidgetLoader::WidgetMapType widgetMap = util::Singletons::get<widget::WidgetLoader, 10>().getWidgetMap();
+	return widgetMap.find( identifier ) != widgetMap.end();
+}
+
+
 widget::WidgetInterface *ViewerCoreBase::getWidget ( const std::string &identifier ) throw( std::runtime_error & )
 {
-	widget::WidgetLoader::WidgetMapType widgetMap = util::Singletons::get<widget::WidgetLoader, 10>().getWidgetMap();
+	const widget::WidgetLoader::WidgetMapType widgetMap = util::Singletons::get<widget::WidgetLoader, 10>().getWidgetMap();
 
 	if( widgetMap.empty() ) {
 		LOG( Dev, error ) << "Could not find any widget!" ;

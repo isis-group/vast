@@ -35,6 +35,7 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/foreach.hpp>
 #include <list>
+#include <CoreUtils/singletons.hpp>
 
 namespace isis
 {
@@ -45,6 +46,7 @@ namespace widget
 
 class WidgetLoader
 {
+	friend class util::Singletons;
 public:
 	typedef boost::shared_ptr< WidgetInterface > WidgetInterfacePointer;
 

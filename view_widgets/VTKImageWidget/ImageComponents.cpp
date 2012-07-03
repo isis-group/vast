@@ -34,25 +34,80 @@ namespace viewer
 namespace widget
 {
 
-VTKImageComponents::VTKImageComponents( bool ray )
+VTKImageComponents::VTKImageComponents( VTKImageComponents::VTKMapperType mapper )
 	: volume( vtkVolume::New() ),
 	  property( vtkVolumeProperty::New() ),
-	  rayMapper( vtkFixedPointVolumeRayCastMapper::New() ),
-	  textureMapper( vtkVolumeTextureMapper3D::New() ),
 	  colorFunction( vtkColorTransferFunction::New() ),
 	  opacityFunction( vtkPiecewiseFunction::New() ),
 	  imageData( vtkImageData::New() ),
-	  rayMapping( ray )
+	  currentCropping( new double[6] ),
+	  croppingSet( false ),
+	  currentMapperType( mapper )
 {
-	if( ray ) {
-		volume->SetMapper( rayMapper );
-	} else {
+	switch( currentMapperType ) {
+	case Texture:
+		textureMapper = vtkVolumeTextureMapper3D::New();
+		currentVolumeMapper = textureMapper;
 		volume->SetMapper( textureMapper );
+		break;
+	case GPU_VolumeRayCast:
+		gpuVolumeRayMapper = vtkGPUVolumeRayCastMapper::New();
+		currentVolumeMapper = gpuVolumeRayMapper;
+		volume->SetMapper( gpuVolumeRayMapper );
+		break;
+	case CPU_FixedPointRayCast:
+		fixedRayMapper = vtkFixedPointVolumeRayCastMapper::New();
+		currentVolumeMapper = fixedRayMapper;
+		volume->SetMapper( fixedRayMapper );
+		break;
 	}
 
+
 	volume->SetProperty( property );
-	property->SetColor( colorFunction );
-	property->SetScalarOpacity( opacityFunction );
+	property->SetColor( 0, colorFunction );
+	property->SetScalarOpacity( 0, opacityFunction );
+}
+
+void VTKImageComponents::mergeImage ( vtkImageData *image )
+{
+	vtkImageAppendComponents *merger = vtkImageAppendComponents::New();
+	merger->AddInput( 0, imageData );
+	merger->AddInput( 0, image );
+	merger->Update();
+	setVTKImageData( image );
+	//  property->SetScalarOpacity(1, opacityFunction );
+	//  property->SetColor(1, colorFunction );
+	//  volume->SetProperty( property );
+}
+
+
+void VTKImageComponents::setMapperType ( VTKImageComponents::VTKMapperType mapper )
+{
+	currentMapperType = mapper;
+
+	switch( mapper ) {
+	case Texture:
+		textureMapper = vtkVolumeTextureMapper3D::New();
+		currentVolumeMapper = textureMapper;
+		volume->SetMapper( textureMapper );
+		break;
+	case GPU_VolumeRayCast:
+		gpuVolumeRayMapper = vtkGPUVolumeRayCastMapper::New();
+		currentVolumeMapper = gpuVolumeRayMapper;
+		volume->SetMapper( gpuVolumeRayMapper );
+		break;
+	case CPU_FixedPointRayCast:
+		fixedRayMapper = vtkFixedPointVolumeRayCastMapper::New();
+		currentVolumeMapper = fixedRayMapper;
+		volume->SetMapper( fixedRayMapper );
+		break;
+	}
+
+	setVTKImageData( imageData );
+
+	if( croppingSet ) {
+		setCropping( currentCropping );
+	}
 
 }
 
@@ -60,25 +115,18 @@ VTKImageComponents::VTKImageComponents( bool ray )
 void VTKImageComponents::setVTKImageData ( vtkImageData *image )
 {
 	imageData = image;
+	currentVolumeMapper->SetInput( image );
 
-	if( rayMapping ) {
-		rayMapper->SetInput( image );
-	} else {
-		textureMapper->SetInput( image );
-	}
 }
-
 void VTKImageComponents::setCropping ( double *cropping )
 {
-	if( rayMapping ) {
-		rayMapper->CroppingOn();
-		rayMapper->SetCroppingRegionFlagsToFence();
-		rayMapper->SetCroppingRegionPlanes( cropping );
-	} else {
-		textureMapper->CroppingOn();
-		textureMapper->SetCroppingRegionFlagsToFence();
-		textureMapper->SetCroppingRegionPlanes( cropping );
+	croppingSet = true;
+	currentVolumeMapper->CroppingOn();
+	currentVolumeMapper->SetCroppingRegionFlagsToFence();
+	currentVolumeMapper->SetCroppingRegionPlanes( cropping );
 
+	for( unsigned short i = 0; i < 6; i++ ) {
+		currentCropping[i] = cropping[i];
 	}
 }
 

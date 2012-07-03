@@ -170,10 +170,6 @@ private:
 				m_ViewerCore->getProgressFeedback()->progress();
 
 				for( size_t y = 0; y < image->getImageSize()[1]; y++ ) {
-#ifdef _OPENMP
-#pragma omp parallel for
-#endif
-
 					for( size_t x = 0; x < image->getImageSize()[0]; x++ ) {
 						if( static_cast<data::Image &>( tImage ).voxel<TYPE>( x, y, z, t ) == static_cast<TYPE>( 0 ) ) {
 							image->getVolumeVector()[t].voxel<InternalImageType>( x, y, z ) = 0;

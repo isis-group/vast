@@ -44,6 +44,22 @@ namespace isis
 namespace viewer
 {
 
+namespace _internal
+{
+class __Image : public data::Image
+{
+public:
+	__Image( const data::Image &image ): data::Image( image ) {
+		imageSize = getSizeAsVector();
+	};
+
+	void mapPhysicalToIndex( const float *physicalCoords, int32_t *index );
+	bool checkVoxel( const int32_t *coords );
+private:
+	util::ivector4 imageSize;
+};
+}
+
 namespace widget
 {
 class WidgetInterface;
@@ -117,7 +133,7 @@ public:
 	util::PropertyMap &getPropMap() { return m_PropMap; }
 	const util::PropertyMap &getPropMap() const { return m_PropMap; }
 	const util::FixedVector<size_t, 4> &getImageSize() const { return m_ImageSize; }
-	boost::shared_ptr< data::Image >getISISImage() const;
+	boost::shared_ptr< _internal::__Image >getISISImage() const;
 
 	void addChangedAttribute( const std::string &attribute );
 	bool removeChangedAttribute( const std::string &attribute );
@@ -128,7 +144,25 @@ public:
 	boost::shared_ptr<const void>
 	getRawAdress( size_t timestep = 0 ) const;
 
-	void correctVoxelCoords( util::ivector4 &voxelCoords );
+	template<unsigned short DIMS>
+	void correctVoxelCoords( util::ivector4 &vc ) {
+		for( unsigned short i = 0; i < DIMS; i++ ) {
+			if( vc[i] < 0 ) vc[i] = 0;
+			else if( vc[i] >= static_cast<int32_t>( getImageSize()[i] ) ) vc[i] = static_cast<int32_t>( getImageSize()[i] - 1 );
+		}
+	}
+
+	template<unsigned short DIMS>
+	bool checkVoxelCoords ( const util::ivector4 &vc ) {
+		for( unsigned short i = 0; i < DIMS; i++ ) {
+			if( vc[i] < 0 || vc[i] >= static_cast<int>( getImageSize()[i] ) ) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
 	bool checkVoxelCoords( const util::ivector4 &voxelCoords );
 
 	void synchronize( );
@@ -174,7 +208,7 @@ private:
 
 	bool m_AmbiguousOrientation;
 
-	boost::shared_ptr<data::Image> m_Image;
+	boost::shared_ptr<_internal::__Image> m_Image;
 	std::pair<double, double> m_OptimalScalingPair;
 
 	std::vector< data::Chunk > m_ChunkVector;

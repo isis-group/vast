@@ -474,7 +474,9 @@ void QImageWidgetImplementation::lookAtPhysicalCoords( const isis::util::fvector
 	BOOST_FOREACH( ImageHolder::Vector::const_reference image, m_ViewerCore->getImageVector() ) {
 		image->getImageProperties().physicalCoords = physicalCoords;
 		const size_t timestep = image->getImageProperties().voxelCoords[3];
-		image->getImageProperties().voxelCoords = image->getISISImage()->getIndexFromPhysicalCoords( physicalCoords, true );
+		util::ivector4 voxelCoords = image->getISISImage()->getIndexFromPhysicalCoords( physicalCoords );
+		image->correctVoxelCoords<3>( voxelCoords );
+		image->getImageProperties().voxelCoords = voxelCoords;
 		image->getImageProperties().voxelCoords[3] = timestep;
 	}
 	update();
@@ -498,20 +500,19 @@ void QImageWidgetImplementation::wheelEvent( QWheelEvent *e )
 	float oldZoom = currentZoom;
 
 	if ( e->delta() < 0 ) {
-		oldZoom /= m_WidgetProperties.getPropertyAs<float>( "zoomFactorOut" );
+		oldZoom /= 1.5;
 	} else {
-		oldZoom *= m_WidgetProperties.getPropertyAs<float>( "zoomFactorIn" );
+		oldZoom *= 1.5;
 
 	}
 
 	if( m_ViewerCore->getSettings()->getPropertyAs<bool>( "propagateZooming" ) ) {
-		zoomChanged( oldZoom );
+		m_ViewerCore->zoomChanged( oldZoom );
 	} else {
 		setZoom( oldZoom );
 	}
 
 }
-
 void QImageWidgetImplementation::updateScene()
 {
 	update();
@@ -538,37 +539,37 @@ void QImageWidgetImplementation::keyPressEvent( QKeyEvent *e )
 	if( m_ViewerCore->hasImage() ) {
 		if( e->key() == Qt::Key_Up ) {
 			m_ViewerCore->getCurrentImage()->getImageProperties().voxelCoords[1]++;
-			m_ViewerCore->getCurrentImage()->checkVoxelCoords( m_ViewerCore->getCurrentImage()->getImageProperties().voxelCoords );
+			m_ViewerCore->getCurrentImage()->checkVoxelCoords<3>( m_ViewerCore->getCurrentImage()->getImageProperties().voxelCoords );
 			m_ViewerCore->physicalCoordsChanged( m_ViewerCore->getCurrentImage()->getISISImage()->getPhysicalCoordsFromIndex( m_ViewerCore->getCurrentImage()->getImageProperties().voxelCoords ) );
 		}
 
 		if( e->key() == Qt::Key_Down ) {
 			m_ViewerCore->getCurrentImage()->getImageProperties().voxelCoords[1]--;
-			m_ViewerCore->getCurrentImage()->checkVoxelCoords( m_ViewerCore->getCurrentImage()->getImageProperties().voxelCoords );
+			m_ViewerCore->getCurrentImage()->checkVoxelCoords<3>( m_ViewerCore->getCurrentImage()->getImageProperties().voxelCoords );
 			m_ViewerCore->physicalCoordsChanged( m_ViewerCore->getCurrentImage()->getISISImage()->getPhysicalCoordsFromIndex( m_ViewerCore->getCurrentImage()->getImageProperties().voxelCoords ) );
 		}
 
 		if( e->key() == Qt::Key_Left ) {
 			m_ViewerCore->getCurrentImage()->getImageProperties().voxelCoords[0]--;
-			m_ViewerCore->getCurrentImage()->checkVoxelCoords( m_ViewerCore->getCurrentImage()->getImageProperties().voxelCoords );
+			m_ViewerCore->getCurrentImage()->checkVoxelCoords<3>( m_ViewerCore->getCurrentImage()->getImageProperties().voxelCoords );
 			m_ViewerCore->physicalCoordsChanged( m_ViewerCore->getCurrentImage()->getISISImage()->getPhysicalCoordsFromIndex( m_ViewerCore->getCurrentImage()->getImageProperties().voxelCoords ) );
 		}
 
 		if( e->key() == Qt::Key_Right ) {
 			m_ViewerCore->getCurrentImage()->getImageProperties().voxelCoords[0]++;
-			m_ViewerCore->getCurrentImage()->checkVoxelCoords( m_ViewerCore->getCurrentImage()->getImageProperties().voxelCoords );
+			m_ViewerCore->getCurrentImage()->checkVoxelCoords<3>( m_ViewerCore->getCurrentImage()->getImageProperties().voxelCoords );
 			m_ViewerCore->physicalCoordsChanged( m_ViewerCore->getCurrentImage()->getISISImage()->getPhysicalCoordsFromIndex( m_ViewerCore->getCurrentImage()->getImageProperties().voxelCoords ) );
 		}
 
 		if( e->key() == Qt::Key_PageUp ) {
 			m_ViewerCore->getCurrentImage()->getImageProperties().voxelCoords[2]++;
-			m_ViewerCore->getCurrentImage()->checkVoxelCoords( m_ViewerCore->getCurrentImage()->getImageProperties().voxelCoords );
+			m_ViewerCore->getCurrentImage()->checkVoxelCoords<3>( m_ViewerCore->getCurrentImage()->getImageProperties().voxelCoords );
 			m_ViewerCore->physicalCoordsChanged( m_ViewerCore->getCurrentImage()->getISISImage()->getPhysicalCoordsFromIndex( m_ViewerCore->getCurrentImage()->getImageProperties().voxelCoords ) );
 		}
 
 		if( e->key() == Qt::Key_PageDown ) {
 			m_ViewerCore->getCurrentImage()->getImageProperties().voxelCoords[2]--;
-			m_ViewerCore->getCurrentImage()->checkVoxelCoords( m_ViewerCore->getCurrentImage()->getImageProperties().voxelCoords );
+			m_ViewerCore->getCurrentImage()->checkVoxelCoords<3>( m_ViewerCore->getCurrentImage()->getImageProperties().voxelCoords );
 			m_ViewerCore->physicalCoordsChanged( m_ViewerCore->getCurrentImage()->getISISImage()->getPhysicalCoordsFromIndex( m_ViewerCore->getCurrentImage()->getImageProperties().voxelCoords ) );
 		}
 	}
