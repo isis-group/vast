@@ -341,6 +341,7 @@ ImageHolder::Vector QViewerCore::openFile ( const FileInformation &fileInfo, boo
 			LOG( Dev, info ) << "Loaded " << tempImgList.size() << " images from path " << _fileInfo.getCompletePath();
 		} else {
 			LOG( Dev, warning ) << "Tried to load " << _fileInfo.getCompletePath() << ", but image list is empty.";
+			getUICore()->toggleLoadingIcon( false );
 			return ImageHolder::Vector();
 		}
 
