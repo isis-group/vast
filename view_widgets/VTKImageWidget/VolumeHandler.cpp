@@ -52,7 +52,7 @@ vtkImageData *VolumeHandler::getVTKImageData( const ImageHolder::Pointer image, 
 	importer->SetDataExtentToWholeExtent();
 
 	//transform the image with orientation matrix
-	const util::fvector4 mio = image->getImageProperties().orientation.transpose().dot( image->getImageProperties().indexOrigin );
+	const util::fvector3 mio = image->getImageProperties().orientation.transpose().dot( image->getImageProperties().indexOrigin );
 	orientationMatrix->SetElement( 3, 3, 1 );
 
 	for( uint8_t i = 0; i < 3; i++ ) {

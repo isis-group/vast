@@ -51,7 +51,7 @@ public:
 	MaskEditDialog( QWidget *parent, QViewerCore *core );
 
 public Q_SLOTS:
-	void physicalCoordChanged( util::fvector4 physCoord, Qt::MouseButton );
+	void physicalCoordChanged( util::fvector3 physCoord, Qt::MouseButton );
 	void radiusChange( int );
 	void paintToggled();
 	void pickColorClicked();
@@ -74,7 +74,7 @@ private:
 	WidgetEnsemble::Pointer m_CurrentWidgetEnsemble;
 
 	template<typename TYPE>
-	void manipulateVoxel( const util::fvector4 physCoord, boost::shared_ptr<ImageHolder> image ) {
+	void manipulateVoxel( const util::fvector3 physCoord, boost::shared_ptr<ImageHolder> image ) {
 		util::ivector4 voxel = image->getISISImage()->getIndexFromPhysicalCoords( physCoord );
 		image->correctVoxelCoords<3>( voxel );
 		util::ivector4 start;

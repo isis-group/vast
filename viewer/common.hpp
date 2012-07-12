@@ -76,7 +76,9 @@ std::list<std::string> getSupportedTypeList() ;
 typedef ViewerLog Runtime;
 typedef ViewerDev Dev;
 
-util::fvector4 mapCoordsToOrientation( const util::fvector4 &coords, const util::Matrix4x4<float> &orientationMatrix, PlaneOrientation orientation, bool back = false, bool absolute = true );
+util::fvector4 mapCoordsToOrientation( const util::fvector4 &coords, const util::Matrix3x3<float> &orientationMatrix, PlaneOrientation orientation, bool back = false, bool absolute = true );
+
+util::fvector3 mapCoordsToOrientation( const util::fvector3 &coords, const util::Matrix3x3<float> &orientationMatrix, PlaneOrientation orientation, bool back = false, bool absolute = true );
 
 std::string getCrashLogFilePath();
 

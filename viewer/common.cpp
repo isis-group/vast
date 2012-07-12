@@ -117,11 +117,17 @@ std::string getCrashLogFilePath()
 	logFilePath << homePath << "/vastCrashLog.log";
 	return logFilePath.str();
 }
-
-util::fvector4 mapCoordsToOrientation( const util::fvector4 &coords, const util::Matrix4x4<float> &orientationMatrix, PlaneOrientation orientation, bool back, bool absolute )
+util::fvector4 mapCoordsToOrientation ( const util::fvector4& coords, const isis::util::Matrix3x3< float >& orientationMatrix, PlaneOrientation orientation, bool back, bool absolute )
 {
-	util::Matrix4x4<float> transformMatrix = util::IdentityMatrix<float, 4>();
-	util::fvector4 retVec;
+	util::fvector3 ret = mapCoordsToOrientation( util::fvector3( coords[0], coords[1], coords[2] ), orientationMatrix, orientation, back, absolute );
+	return util::fvector4( ret[0], ret[1], ret[2] );
+}
+
+
+util::fvector3 mapCoordsToOrientation( const util::fvector3 &coords, const util::Matrix3x3<float> &orientationMatrix, PlaneOrientation orientation, bool back, bool absolute )
+{
+	util::Matrix3x3<float> transformMatrix = util::IdentityMatrix<float, 3>();
+	util::fvector3 retVec;
 
 	switch ( orientation ) {
 	case axial:
@@ -171,7 +177,7 @@ util::fvector4 mapCoordsToOrientation( const util::fvector4 &coords, const util:
 	}
 
 	if( absolute ) {
-		return util::fvector4( fabs( retVec[0] ), fabs( retVec[1] ), fabs( retVec[2] ) , fabs( retVec[3] ) );
+		return util::fvector3( fabs( retVec[0] ), fabs( retVec[1] ), fabs( retVec[2] )  );
 	} else {
 		return retVec;
 	}

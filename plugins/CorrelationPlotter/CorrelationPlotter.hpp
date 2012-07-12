@@ -51,7 +51,7 @@ public:
 public Q_SLOTS:
 	virtual void showEvent( QShowEvent * );
 	virtual void closeEvent( QCloseEvent * );
-	void physicalCoordsChanged( util::fvector4 );
+	void physicalCoordsChanged( util::fvector3 );
 	bool createCorrelationMap();
 	void calculateCorrelation( bool all = false );
 	void lockClicked();

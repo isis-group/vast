@@ -35,7 +35,7 @@ isis::viewer::plugin::PlotterDialog::PlotterDialog ( QWidget *parent, isis::view
 {
 	ui.setupUi( this );
 	ui.timeCourseRadio->setChecked( true );
-	plot = new QwtPlot( tr( "Timecourse" ), ui.widget );
+	plot = new Plot( tr( "Timecourse" ), ui.widget );
 	grid = new QwtPlotGrid();
 	plotMarker = new QwtPlotMarker();
 	plotMarker->setLineStyle( QwtPlotMarker::VLine );
@@ -90,7 +90,7 @@ void isis::viewer::plugin::PlotterDialog::updateScene()
 	}
 }
 
-void isis::viewer::plugin::PlotterDialog::refresh ( isis::util::fvector4 physicalCoords )
+void isis::viewer::plugin::PlotterDialog::refresh ( isis::util::fvector3 physicalCoords )
 {
 	if( !ui.checkLock->isChecked() && isVisible() ) {
 		m_CurrentPhysicalCoords = physicalCoords;
@@ -113,6 +113,7 @@ void isis::viewer::plugin::PlotterDialog::refresh ( isis::util::fvector4 physica
 
 				if( image.get() == m_ViewerCore->getCurrentImage().get() || m_ViewerCore->getMode() == ViewerCoreBase::statistical_mode ) {
 					curve->attach( plot );
+					plotMarker->setSpacing(11);
 					plotMarker->attach( plot );
 					curve->setPen( QPen( Qt::red ) );
 				} else {
@@ -222,6 +223,7 @@ void isis::viewer::plugin::PlotterDialog::fillProfile ( boost::shared_ptr< isis:
 	}
 
 	curve->setData( xValues, intensityValues );
+	
 
 }
 

@@ -80,9 +80,9 @@ private:
 		std::string filePath;
 		util::ivector4 voxelCoords;
 		util::ivector4 trueVoxelCoords;
-		util::fvector4 physicalCoords;
+		util::fvector3 physicalCoords;
 		size_t timestep;
-		util::fvector4 voxelSize;
+		util::fvector3 voxelSize;
 		bool isVisible;
 		bool isRGB;
 		bool zeroIsReserved;
@@ -96,17 +96,17 @@ private:
 		double upperThreshold;
 		color::Color::ColormapType colorMap;
 		color::Color::AlphamapType alphaMap;
-		util::fvector4 rowVec;
-		util::fvector4 columnVec;
-		util::fvector4 sliceVec;
+		util::fvector3 rowVec;
+		util::fvector3 columnVec;
+		util::fvector3 sliceVec;
 		std::string lut;
 		ImageType imageType;
 		InterpolationType interpolationType;
 		std::pair<util::ValueReference, util::ValueReference> minMax;
 		std::pair<double, double> scalingMinMax;
-		util::fvector4 indexOrigin;
-		util::Matrix4x4<float> orientation;
-		util::Matrix4x4<float> latchedOrientation;
+		util::fvector3 indexOrigin;
+		util::Matrix3x3<float> orientation;
+		util::Matrix3x3<float> latchedOrientation;
 		unsigned short majorTypeID;
 		std::string majorTypeName;
 		std::pair<util::ValueReference, util::ValueReference> scalingToInternalType;
@@ -192,13 +192,13 @@ public:
 		}
 	}
 
-	void phyisicalCoordsChanged( const util::fvector4 &physicalCoords );
+	void phyisicalCoordsChanged( const util::fvector3 &physicalCoords );
 	void voxelCoordsChanged( const util::ivector4 &voxelCoords );
 	void timestepChanged( const size_t &timestep );
 
 private:
-	util::Matrix4x4<float> calculateLatchedImageOrientation( bool transposed = false );
-	util::Matrix4x4<float> calculateImageOrientation( bool transposed = false ) const;
+	util::Matrix3x3<float> calculateLatchedImageOrientation( bool transposed = false );
+	util::Matrix3x3<float> calculateImageOrientation( bool transposed = false ) const;
 	void logImageProps() const;
 	unsigned short getMajorTypeID() const;
 	void collectImageInfo();

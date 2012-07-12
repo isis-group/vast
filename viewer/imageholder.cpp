@@ -72,12 +72,12 @@ boost::shared_ptr< const void > ImageHolder::getRawAdress ( size_t timestep ) co
 	}
 }
 
-util::Matrix4x4<float> ImageHolder::calculateImageOrientation( bool transposed ) const
+util::Matrix3x3<float> ImageHolder::calculateImageOrientation( bool transposed ) const
 {
 
-	util::Matrix4x4<float> retMatrix (  m_Image->getPropertyAs<util::fvector4>( "rowVec" ),
-										m_Image->getPropertyAs<util::fvector4>( "columnVec" ),
-										m_Image->getPropertyAs<util::fvector4>( "sliceVec" ) );
+	util::Matrix3x3<float> retMatrix (  m_Image->getPropertyAs<util::fvector3>( "rowVec" ),
+										m_Image->getPropertyAs<util::fvector3>( "columnVec" ),
+										m_Image->getPropertyAs<util::fvector3>( "sliceVec" ) );
 
 	if( transposed ) {
 		return retMatrix;
@@ -86,13 +86,13 @@ util::Matrix4x4<float> ImageHolder::calculateImageOrientation( bool transposed )
 	return retMatrix.transpose(); // has to be transposed!!!!!!!!!!
 }
 
-util::Matrix4x4<float> ImageHolder::calculateLatchedImageOrientation( bool transposed )
+util::Matrix3x3<float> ImageHolder::calculateLatchedImageOrientation( bool transposed )
 {
-	util::Matrix4x4<float> retMatrix;
+	util::Matrix3x3<float> retMatrix;
 	retMatrix.fill( 0 );
-	const util::fvector4 &rowVec = m_Image->getPropertyAs<util::fvector4>( "rowVec" );
-	const util::fvector4 &columnVec = m_Image->getPropertyAs<util::fvector4>( "columnVec" );
-	const util::fvector4 &sliceVec = m_Image->getPropertyAs<util::fvector4>( "sliceVec" );
+	const util::fvector3 &rowVec = m_Image->getPropertyAs<util::fvector3>( "rowVec" );
+	const util::fvector3 &columnVec = m_Image->getPropertyAs<util::fvector3>( "columnVec" );
+	const util::fvector3 &sliceVec = m_Image->getPropertyAs<util::fvector3>( "sliceVec" );
 
 	size_t rB = rowVec.getBiggestVecElemAbs();
 	size_t cB = columnVec.getBiggestVecElemAbs();
@@ -143,7 +143,6 @@ util::Matrix4x4<float> ImageHolder::calculateLatchedImageOrientation( bool trans
 	retMatrix.elem( 0, rB ) = rowVec[rB] < 0 ? -1 : 1;
 	retMatrix.elem( 1, cB ) =  columnVec[cB] < 0 ? -1 : 1;
 	retMatrix.elem( 2, sB ) = sliceVec[sB] < 0 ? -1 : 1;
-	retMatrix.elem( 3, 3 ) = 1;
 
 	if( transposed ) {
 		return retMatrix.transpose();
@@ -301,14 +300,14 @@ void ImageHolder::updateOrientation()
 	m_Image->updateOrientationMatrices();
 	getImageProperties().latchedOrientation = calculateLatchedImageOrientation();
 	getImageProperties().orientation = calculateImageOrientation();
-	getImageProperties().indexOrigin = getISISImage()->getPropertyAs<util::fvector4>( "indexOrigin" );
-	getImageProperties().rowVec = getISISImage()->getPropertyAs<util::fvector4>( "rowVec" );
-	getImageProperties().columnVec = getISISImage()->getPropertyAs<util::fvector4>( "columnVec" );
-	getImageProperties().sliceVec = getISISImage()->getPropertyAs<util::fvector4>( "sliceVec" );
-	m_ImageProperties.voxelSize = getISISImage()->getPropertyAs<util::fvector4>( "voxelSize" );
+	getImageProperties().indexOrigin = getISISImage()->getPropertyAs<util::fvector3>( "indexOrigin" );
+	getImageProperties().rowVec = getISISImage()->getPropertyAs<util::fvector3>( "rowVec" );
+	getImageProperties().columnVec = getISISImage()->getPropertyAs<util::fvector3>( "columnVec" );
+	getImageProperties().sliceVec = getISISImage()->getPropertyAs<util::fvector3>( "sliceVec" );
+	m_ImageProperties.voxelSize = getISISImage()->getPropertyAs<util::fvector3>( "voxelSize" );
 
 	if( getISISImage()->hasProperty( "voxelGap" ) ) {
-		getImageProperties().voxelSize += getISISImage()->getPropertyAs<util::fvector4>( "voxelGap" );
+		getImageProperties().voxelSize += getISISImage()->getPropertyAs<util::fvector3>( "voxelGap" );
 	}
 
 	m_ImageProperties.boundingBox = geometrical::getPhysicalBoundingBox( ImageHolder::Pointer( new ImageHolder( *this ) ) );
@@ -400,7 +399,7 @@ void ImageHolder::synchronize ()
 	}
 }
 
-void ImageHolder::phyisicalCoordsChanged ( const util::fvector4 &physicalCoords )
+void ImageHolder::phyisicalCoordsChanged ( const util::fvector3 &physicalCoords )
 {
 	getImageProperties().physicalCoords = physicalCoords;
 	getImageProperties().trueVoxelCoords = getISISImage()->getIndexFromPhysicalCoords( physicalCoords );

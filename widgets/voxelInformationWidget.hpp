@@ -61,10 +61,9 @@ class VoxelInformationWidget : public QWidget
 
 			while( true ) {
 				t = t == m_end ? 0 : t;
-				msleep( deleyTime );
-				m_interface->timestepSlider->setValue( t );
 				m_interface->timestepSpinBox->setValue( t );
-				QApplication::processEvents();
+				msleep( deleyTime );
+				QApplication::processEvents(QEventLoop::AllEvents);
 				t++;
 
 			}
@@ -79,7 +78,7 @@ public:
 public Q_SLOTS:
 	void synchronize();
 	void synchronizePos( util::ivector4 voxelCoords );
-	void synchronizePos( util::fvector4 physicalCoords );
+	void synchronizePos( util::fvector3 physicalCoords );
 	void voxPosChanged();
 	void physPosChanged();
 	void updateLowerUpperThreshold(  );

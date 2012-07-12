@@ -370,7 +370,7 @@ void VTKImageWidgetImplementation::updatePhysicalBounds()
 }
 
 
-void VTKImageWidgetImplementation::lookAtPhysicalCoords ( const util::fvector4 &physicalCoords )
+void VTKImageWidgetImplementation::lookAtPhysicalCoords ( const util::fvector3 &physicalCoords )
 {
 	if( m_ViewerCore->hasImage() ) {
 		boost::shared_ptr<ImageHolder> image = m_ViewerCore->getCurrentImage();

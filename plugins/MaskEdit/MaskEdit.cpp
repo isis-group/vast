@@ -124,7 +124,7 @@ void MaskEditDialog::showEvent( QShowEvent * )
 }
 
 
-void MaskEditDialog::physicalCoordChanged( util::fvector4 physCoord, Qt::MouseButton mouseButton )
+void MaskEditDialog::physicalCoordChanged( util::fvector3 physCoord, Qt::MouseButton mouseButton )
 {
 	if( mouseButton == Qt::LeftButton && m_ViewerCore->hasImage() ) {
 		if( !m_Interface.pickColor->isChecked() ) {

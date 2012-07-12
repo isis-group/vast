@@ -75,9 +75,9 @@ public Q_SLOTS:
 	virtual void settingsChanged();
 	virtual void close( );
 	virtual void zoomChanged( float zoomFactor );
-	virtual void physicalCoordsChanged( util::fvector4 );
-	virtual void onWidgetClicked( widget::WidgetInterface *, util::fvector4, Qt::MouseButton );
-	virtual void onWidgetMoved( widget::WidgetInterface *, util::fvector4, Qt::MouseButton );
+	virtual void physicalCoordsChanged( util::fvector3 );
+	virtual void onWidgetClicked( widget::WidgetInterface *, util::fvector3, Qt::MouseButton );
+	virtual void onWidgetMoved( widget::WidgetInterface *, util::fvector3, Qt::MouseButton );
 	virtual void timestepChanged( int );
 	virtual void setShowLabels( bool );
 	virtual void setShowCrosshair( bool );
@@ -94,9 +94,9 @@ public Q_SLOTS:
 Q_SIGNALS:
 	void emitZoomChanged( float zoom );
 	void emitVoxelCoordChanged( util::ivector4 );
-	void emitOnWidgetClicked( util::fvector4, Qt::MouseButton );
-	void emitOnWidgetMoved( util::fvector4, Qt::MouseButton );
-	void emitPhysicalCoordsChanged( util::fvector4 );
+	void emitOnWidgetClicked( util::fvector3, Qt::MouseButton );
+	void emitOnWidgetMoved( util::fvector3, Qt::MouseButton );
+	void emitPhysicalCoordsChanged( util::fvector3 );
 	void emitTimeStepChange( unsigned int );
 	void emitShowLabels( bool );
 	void emitUpdateScene( );

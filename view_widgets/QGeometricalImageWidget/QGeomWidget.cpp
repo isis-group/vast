@@ -350,12 +350,12 @@ void QGeomWidget::paintLabels() const
 }
 
 
-util::fvector4 QGeomWidget::getPhysicalCoordsFromMouseCoords ( const int &x, const int &y ) const
+util::fvector3 QGeomWidget::getPhysicalCoordsFromMouseCoords ( const int &x, const int &y ) const
 {
 	if( m_ViewerCore->hasImage() ) {
 		const ImageHolder::Pointer image =  m_ViewerCore->getCurrentImage();
 
-		util::fvector4 physicalCoords = image->getImageProperties().physicalCoords;
+		util::fvector3 physicalCoords = image->getImageProperties().physicalCoords;
 		const util::ivector4 oldVoxelCoords = image->getImageProperties().voxelCoords;
 
 		switch( m_PlaneOrientation ) {
@@ -386,7 +386,7 @@ util::fvector4 QGeomWidget::getPhysicalCoordsFromMouseCoords ( const int &x, con
 		return physicalCoords;
 	}
 
-	return util::fvector4();
+	return util::fvector3();
 }
 
 
@@ -402,7 +402,7 @@ void QGeomWidget::mousePressEvent ( QMouseEvent *e )
 		return;
 	}
 
-	const util::fvector4 physicalCoords = getPhysicalCoordsFromMouseCoords( e->x(), e->y() );
+	const util::fvector3 physicalCoords = getPhysicalCoordsFromMouseCoords( e->x(), e->y() );
 
 	if( e->button() == Qt::LeftButton ) {
 		m_LeftMouseButtonPressed = true;
@@ -450,7 +450,7 @@ void QGeomWidget::mouseMoveEvent ( QMouseEvent *e )
 		m_ViewerCore->getUICore()->refreshUI();
 
 	} else {
-		const util::fvector4 physicalCoords = getPhysicalCoordsFromMouseCoords(  e->x(), e->y() );
+		const util::fvector3 physicalCoords = getPhysicalCoordsFromMouseCoords(  e->x(), e->y() );
 
 		if( m_LeftMouseButtonPressed ) {
 			m_ViewerCore->onWidgetMoved( this, physicalCoords, Qt::LeftButton );

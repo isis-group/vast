@@ -30,7 +30,7 @@ QT4_WRAP_UI(profileplotter_ui_h ${FILES_UI})
 # look for fftw3
 FIND_PACKAGE(FFTW3 REQUIRED)
 
-add_library(vastPlugin_ProfilePlotter SHARED vastPlugin_ProfilePlotter.cpp PlotterDialog.cpp ${profileplotter_ui_h} ${plugin_moc_files} ${profileplotter_rcc_files})
+add_library(vastPlugin_ProfilePlotter SHARED vastPlugin_ProfilePlotter.cpp PlotterDialog.cpp Plot.cpp ${profileplotter_ui_h} ${plugin_moc_files} ${profileplotter_rcc_files})
 target_link_libraries(vastPlugin_ProfilePlotter ${ISIS_LIB}  ${ISIS_LIB_DEPENDS} ${QWT5_library} ${QT_LIBRARIES} ${FFTW3_FFTW3_LIBRARY})
 
 install(TARGETS vastPlugin_ProfilePlotter DESTINATION ${VAST_PLUGIN_INFIX} COMPONENT "vast plugins" )

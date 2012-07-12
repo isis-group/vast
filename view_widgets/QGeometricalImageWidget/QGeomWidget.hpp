@@ -102,7 +102,7 @@ private:
 	util::FixedVector<float, 2> m_Translation;
 	float m_WindowViewPortScaling;
 
-	util::fvector4 getPhysicalCoordsFromMouseCoords( const int &x, const int &y ) const;
+	util::fvector3 getPhysicalCoordsFromMouseCoords( const int &x, const int &y ) const;
 
 	QPainter *m_Painter;
 	QVBoxLayout *m_Layout;

@@ -390,7 +390,7 @@ void QImageWidgetImplementation::mouseMoveEvent( QMouseEvent *e )
 }
 
 
-util::fvector4 QImageWidgetImplementation::mouseCoords2PhysCoords ( const int &x, const int &y )
+util::fvector3 QImageWidgetImplementation::mouseCoords2PhysCoords ( const int &x, const int &y )
 {
 	const boost::shared_ptr<ImageHolder> image = getWidgetSpecCurrentImage();
 	const ImageProperties &imgProps = m_ImageProperties.at( image );
@@ -469,7 +469,7 @@ void QImageWidgetImplementation::paintCrosshair() const
 
 }
 
-void QImageWidgetImplementation::lookAtPhysicalCoords( const isis::util::fvector4 &physicalCoords )
+void QImageWidgetImplementation::lookAtPhysicalCoords( const isis::util::fvector3 &physicalCoords )
 {
 	BOOST_FOREACH( ImageHolder::Vector::const_reference image, m_ViewerCore->getImageVector() ) {
 		image->getImageProperties().physicalCoords = physicalCoords;
