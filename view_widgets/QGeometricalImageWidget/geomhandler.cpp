@@ -200,9 +200,9 @@ util::FixedMatrix<qreal, 2, 2> extract2DMatrix ( const boost::shared_ptr<ImageHo
 
 }
 
-util::fvector4 mapPhysicalCoords2Orientation ( const util::fvector4 &coords, const PlaneOrientation &orientation )
+util::fvector3 mapPhysicalCoords2Orientation ( const util::fvector3 &coords, const PlaneOrientation &orientation )
 {
-	util::fvector4 retCoords = coords;
+	util::fvector3 retCoords = coords;
 
 	switch( orientation ) {
 	case axial:
@@ -224,7 +224,7 @@ util::fvector4 mapPhysicalCoords2Orientation ( const util::fvector4 &coords, con
 	return retCoords;
 }
 
-void zoomBoundingBox ( util::fvector4 &boundingBox, util::FixedVector<float, 2> &translation, const util::fvector4 &physCoord, const float &zoom, const PlaneOrientation &orientation, const bool &translate )
+void zoomBoundingBox ( util::fvector4 &boundingBox, util::FixedVector<float, 2> &translation, const util::fvector3 &physCoord, const float &zoom, const PlaneOrientation &orientation, const bool &translate )
 {
 	const util::fvector4 oldBoundingBox = boundingBox;
 
@@ -232,7 +232,7 @@ void zoomBoundingBox ( util::fvector4 &boundingBox, util::FixedVector<float, 2> 
 		const float centerX = boundingBox[0] + ( boundingBox[2] / 2. );
 		const float centerY = boundingBox[1] + ( boundingBox[3] / 2. );
 
-		const util::fvector4 mappedPhysicalCoords = mapPhysicalCoords2Orientation( physCoord, orientation ) * rasteringFac;
+		const util::fvector3 mappedPhysicalCoords = mapPhysicalCoords2Orientation( physCoord, orientation ) * rasteringFac;
 		const float diffX = ( ( centerX - mappedPhysicalCoords[0] ) / ( boundingBox[2] / 2. ) );
 		const float diffY = ( ( centerY - mappedPhysicalCoords[1] ) / ( boundingBox[3] / 2. ) );
 		translation[0] = diffX * ( ( boundingBox[2] - ( boundingBox[2] / zoom * 0.9 ) ) / 2. );

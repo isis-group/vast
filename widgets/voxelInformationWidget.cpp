@@ -103,7 +103,7 @@ void VoxelInformationWidget::reconnectSignals()
 void VoxelInformationWidget::connectSignals()
 {
 	connect( m_ViewerCore, SIGNAL( emitVoxelCoordChanged( util::ivector4 ) ), this, SLOT( synchronizePos( util::ivector4 ) ) );
-	connect( m_ViewerCore, SIGNAL( emitPhysicalCoordsChanged( util::fvector4 ) ), this, SLOT( synchronizePos( util::fvector4 ) ) );
+	connect( m_ViewerCore, SIGNAL( emitPhysicalCoordsChanged( util::fvector3 ) ), this, SLOT( synchronizePos( util::fvector3 ) ) );
 	connect( m_ViewerCore, SIGNAL( emitUpdateScene() ), this, SLOT( updateLowerUpperThreshold() ) );
 	connect( m_Interface.rowBox, SIGNAL( valueChanged( int ) ), this, SLOT( voxPosChanged() ) );
 	connect( m_Interface.columnBox, SIGNAL( valueChanged( int ) ), this, SLOT( voxPosChanged() ) );

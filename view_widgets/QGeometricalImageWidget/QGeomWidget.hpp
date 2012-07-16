@@ -62,7 +62,7 @@ public:
 	virtual std::string getWidgetName() const { return std::string( "Geometrical widget" ); }
 public Q_SLOTS:
 	virtual void updateScene();
-	virtual void lookAtPhysicalCoords ( const util::fvector4 &physicalCoords );
+	virtual void lookAtPhysicalCoords ( const util::fvector3 &physicalCoords );
 	virtual void addImage( const ImageHolder::Pointer image );
 	virtual bool removeImage( const ImageHolder::Pointer image );
 	virtual void setInterpolationType ( InterpolationType interpolation );

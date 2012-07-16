@@ -101,7 +101,7 @@ protected:
 
 Q_SIGNALS:
 	void redraw();
-	void physicalCoordsChanged( util::fvector4 );
+	void physicalCoordsChanged( util::fvector3 );
 	void zoomChanged( float zoomFactor );
 
 

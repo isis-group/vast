@@ -98,7 +98,7 @@ void isis::viewer::plugin::CorrelationPlotterDialog::showEvent( QShowEvent * )
 		}
 
 		if( !hasFunctionalImage ) {
-			disconnect( m_ViewerCore, SIGNAL( emitPhysicalCoordsChanged( util::fvector4 ) ), this, SLOT( physicalCoordsChanged( util::fvector4 ) ) );
+			disconnect( m_ViewerCore, SIGNAL( emitPhysicalCoordsChanged( util::fvector3 ) ), this, SLOT( physicalCoordsChanged( util::fvector3 ) ) );
 			LOG( Runtime, warning ) << "Can not find any functional dataset. Will not calculate correlation map";
 			QMessageBox msgBox;
 			msgBox.setText( "Can not find any functional dataset. Will not calculate correlation map!" );
@@ -115,7 +115,7 @@ void isis::viewer::plugin::CorrelationPlotterDialog::showEvent( QShowEvent * )
 				}
 			}
 
-			connect( m_ViewerCore, SIGNAL( emitPhysicalCoordsChanged( util::fvector4 ) ), this, SLOT( physicalCoordsChanged( util::fvector4 ) ) );
+			connect( m_ViewerCore, SIGNAL( emitPhysicalCoordsChanged( util::fvector3 ) ), this, SLOT( physicalCoordsChanged( util::fvector3 ) ) );
 
 			if( m_ViewerCore->getMode() != ViewerCoreBase::statistical_mode ) {
 				m_ViewerCore->setMode( ViewerCoreBase::statistical_mode );

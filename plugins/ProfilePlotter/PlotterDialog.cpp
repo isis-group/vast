@@ -44,7 +44,7 @@ isis::viewer::plugin::PlotterDialog::PlotterDialog ( QWidget *parent, isis::view
 	plot->setAxisTitle( 0, tr( "Intensity" ) );
 	plot->setBackgroundRole( QPalette::Light );
 	plot->setFont( QFont( "", 2 ) );
-	connect( m_ViewerCore, SIGNAL( emitPhysicalCoordsChanged( util::fvector4 ) ), this, ( SLOT( refresh( util::fvector4 ) ) ) );
+	connect( m_ViewerCore, SIGNAL( emitPhysicalCoordsChanged( util::fvector3 ) ), this, ( SLOT( refresh( util::fvector3 ) ) ) );
 	connect( m_ViewerCore, SIGNAL( emitUpdateScene() ), this, SLOT( updateScene() ) );
 	connect( ui.comboAxis, SIGNAL( currentIndexChanged( int ) ), this, SLOT( updateScene() ) );
 	connect( ui.timeCourseRadio, SIGNAL( clicked( bool ) ), this, SLOT( updateScene() ) );

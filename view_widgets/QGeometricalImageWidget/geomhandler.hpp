@@ -53,7 +53,7 @@ util::Matrix3x3<qreal> getOrderedMatrix(  const boost::shared_ptr<ImageHolder> i
 
 util::FixedMatrix<qreal, 2, 2> extract2DMatrix( const boost::shared_ptr<ImageHolder> image, const PlaneOrientation &orientation, bool inverse, const bool &latched );
 
-util::fvector4 mapPhysicalCoords2Orientation( const util::fvector3 &coords, const PlaneOrientation &orientation );
+util::fvector3 mapPhysicalCoords2Orientation( const util::fvector3 &coords, const PlaneOrientation &orientation );
 
 void zoomBoundingBox( util::fvector4 &boundingBox, util::FixedVector<float, 2> &translation, const util::fvector3 &physCoord, const float &zoom, const PlaneOrientation &orientation, const bool &translate );
 
