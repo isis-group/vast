@@ -1,3 +1,11 @@
+vast (0.7.0-1) UNRELEASED; urgency=low
+
+  * adaptions libisis-core3
+  * optimized visualization performance
+  * fixed minor bugs
+
+ -- ISIS Group (The friendly isis team) <gr_isis@cbs.mpg.de>  Tue, 18 Jul 2012 11:00:23 +0200
+ 
 vast (0.6.1-1) UNRELEASED; urgency=low
 
   * fixed bug when visualizing images with min < 0 and max < 0
