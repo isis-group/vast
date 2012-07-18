@@ -263,10 +263,10 @@ bool ImageHolder::setImage( const data::Image &image, const ImageType &_imageTyp
 	updateOrientation();
 	getImageProperties().voxelCoords = util::ivector4( m_ImageSize[0] / 2, m_ImageSize[1] / 2, m_ImageSize[2] / 2, 0 );
 	getImageProperties().physicalCoords = m_Image->getPhysicalCoordsFromIndex( getImageProperties().voxelCoords );
-	m_PropMap.setPropertyAs<util::fvector4>( "originalColumnVec", image.getPropertyAs<util::fvector4>( "columnVec" ) );
-	m_PropMap.setPropertyAs<util::fvector4>( "originalRowVec", image.getPropertyAs<util::fvector4>( "rowVec" ) );
-	m_PropMap.setPropertyAs<util::fvector4>( "originalSliceVec", image.getPropertyAs<util::fvector4>( "sliceVec" ) );
-	m_PropMap.setPropertyAs<util::fvector4>( "originalIndexOrigin", image.getPropertyAs<util::fvector4>( "indexOrigin" ) );
+	m_PropMap.setPropertyAs<util::fvector3>( "originalColumnVec", image.getPropertyAs<util::fvector3>( "columnVec" ) );
+	m_PropMap.setPropertyAs<util::fvector3>( "originalRowVec", image.getPropertyAs<util::fvector3>( "rowVec" ) );
+	m_PropMap.setPropertyAs<util::fvector3>( "originalSliceVec", image.getPropertyAs<util::fvector3>( "sliceVec" ) );
+	m_PropMap.setPropertyAs<util::fvector3>( "originalIndexOrigin", image.getPropertyAs<util::fvector3>( "indexOrigin" ) );
 	updateColorMap();
 	logImageProps();
 	return true;

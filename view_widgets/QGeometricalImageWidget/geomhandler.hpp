@@ -47,7 +47,7 @@ util::fvector4 getPhysicalBoundingBox( const ImageHolder::Vector &images, const 
 
 QTransform getQTransform( const ImageHolder::Pointer image, const PlaneOrientation &orientation, const bool &latched );
 
-QTransform getTransform2ISISSpace( const PlaneOrientation &orientation, const util::fvector4 & );
+QTransform getTransform2ISISSpace( const PlaneOrientation &orientation, const util::fvector4 &bb );
 
 util::Matrix3x3<qreal> getOrderedMatrix(  const boost::shared_ptr<ImageHolder> image, bool inverse, const bool &latched );
 

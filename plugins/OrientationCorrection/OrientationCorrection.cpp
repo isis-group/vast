@@ -125,14 +125,14 @@ void OrientatioCorrectionDialog::updateValues( ImageHolder::Pointer image )
 	setValuesToZero();
 
 	if( !image->getPropMap().hasProperty( "OrientationCorrection/origRowVec" ) ) {
-		image->getPropMap().setPropertyAs<util::fvector4>( "OrientationCorrection/origRowVec",
-				image->getISISImage()->getPropertyAs<util::fvector4>( "rowVec" ) );
-		image->getPropMap().setPropertyAs<util::fvector4>( "OrientationCorrection/origColumnVec",
-				image->getISISImage()->getPropertyAs<util::fvector4>( "columnVec" ) );
-		image->getPropMap().setPropertyAs<util::fvector4>( "OrientationCorrection/origSliceVec",
-				image->getISISImage()->getPropertyAs<util::fvector4>( "sliceVec" ) );
-		image->getPropMap().setPropertyAs<util::fvector4>( "OrientationCorrection/origIndexOrigin",
-				image->getISISImage()->getPropertyAs<util::fvector4>( "indexOrigin" ) );
+		image->getPropMap().setPropertyAs<util::fvector3>( "OrientationCorrection/origRowVec",
+				image->getISISImage()->getPropertyAs<util::fvector3>( "rowVec" ) );
+		image->getPropMap().setPropertyAs<util::fvector3>( "OrientationCorrection/origColumnVec",
+				image->getISISImage()->getPropertyAs<util::fvector3>( "columnVec" ) );
+		image->getPropMap().setPropertyAs<util::fvector3>( "OrientationCorrection/origSliceVec",
+				image->getISISImage()->getPropertyAs<util::fvector3>( "sliceVec" ) );
+		image->getPropMap().setPropertyAs<util::fvector3>( "OrientationCorrection/origIndexOrigin",
+				image->getISISImage()->getPropertyAs<util::fvector3>( "indexOrigin" ) );
 	}
 
 	if( image->getPropMap().hasProperty( "OrientationCorrection/translateX" ) ) {
@@ -191,9 +191,9 @@ void OrientatioCorrectionDialog::applyPressed()
 		bool ret = image->getISISImage()->transformCoords( transform, false );
 
 		if( ret ) {
-			image->getPropMap().setPropertyAs<util::fvector4>( "originalRowVec", image->getISISImage()->getPropertyAs<util::fvector4>( "rowVec" ) );
-			image->getPropMap().setPropertyAs<util::fvector4>( "originalColumnVec", image->getISISImage()->getPropertyAs<util::fvector4>( "columnVec" ) );
-			image->getPropMap().setPropertyAs<util::fvector4>( "originalSliceVec", image->getISISImage()->getPropertyAs<util::fvector4>( "sliceVec" ) );
+			image->getPropMap().setPropertyAs<util::fvector3>( "originalRowVec", image->getISISImage()->getPropertyAs<util::fvector3>( "rowVec" ) );
+			image->getPropMap().setPropertyAs<util::fvector3>( "originalColumnVec", image->getISISImage()->getPropertyAs<util::fvector3>( "columnVec" ) );
+			image->getPropMap().setPropertyAs<util::fvector3>( "originalSliceVec", image->getISISImage()->getPropertyAs<util::fvector3>( "sliceVec" ) );
 			image->addChangedAttribute( desc.str() );
 		} else {
 			LOG( Runtime, error ) << "Could not apply transform " << transform << " to the image " << image->getImageProperties().fileName << " !";
@@ -231,10 +231,10 @@ bool OrientatioCorrectionDialog::applyTransform( ) const
 {
 	if( m_ViewerCore->hasImage() ) {
 		ImageHolder::Pointer image = m_ViewerCore->getImageMap().at( ui.imageBox->currentText().toStdString() );
-		image->getISISImage()->setPropertyAs<util::fvector4>( "rowVec", image->getPropMap().getPropertyAs<util::fvector4>( "OrientationCorrection/origRowVec" ) );
-		image->getISISImage()->setPropertyAs<util::fvector4>( "columnVec", image->getPropMap().getPropertyAs<util::fvector4>( "OrientationCorrection/origColumnVec" ) );
-		image->getISISImage()->setPropertyAs<util::fvector4>( "sliceVec", image->getPropMap().getPropertyAs<util::fvector4>( "OrientationCorrection/origSliceVec" ) );
-		image->getISISImage()->setPropertyAs<util::fvector4>( "indexOrigin", image->getPropMap().getPropertyAs<util::fvector4>( "OrientationCorrection/origIndexOrigin" ) );
+		image->getISISImage()->setPropertyAs<util::fvector3>( "rowVec", image->getPropMap().getPropertyAs<util::fvector3>( "OrientationCorrection/origRowVec" ) );
+		image->getISISImage()->setPropertyAs<util::fvector3>( "columnVec", image->getPropMap().getPropertyAs<util::fvector3>( "OrientationCorrection/origColumnVec" ) );
+		image->getISISImage()->setPropertyAs<util::fvector3>( "sliceVec", image->getPropMap().getPropertyAs<util::fvector3>( "OrientationCorrection/origSliceVec" ) );
+		image->getISISImage()->setPropertyAs<util::fvector3>( "indexOrigin", image->getPropMap().getPropertyAs<util::fvector3>( "OrientationCorrection/origIndexOrigin" ) );
 		boost::numeric::ublas::matrix<float> ftransform = boost::numeric::ublas::identity_matrix<float>( 3, 3 );
 		std::stringstream desc;
 
@@ -288,7 +288,7 @@ bool OrientatioCorrectionDialog::applyTransform( ) const
 
 
 		//translation
-		const util::fvector4 translation( ui.translateX->text().toFloat(), ui.translateY->text().toFloat(), ui.translateZ->text().toFloat() );
+		const util::fvector3 translation( ui.translateX->text().toFloat(), ui.translateY->text().toFloat(), ui.translateZ->text().toFloat() );
 
 		if( translation[0] != 0 ) {
 			desc << "X Translation: " << translation[0] << std::endl;
@@ -305,17 +305,17 @@ bool OrientatioCorrectionDialog::applyTransform( ) const
 			image->getPropMap().setPropertyAs<float>( "OrientationCorrection/translateZ", translation[2] );
 		}
 
-		const util::fvector4 oldIO = image->getISISImage()->getPropertyAs<util::fvector4>( "indexOrigin" );
+		const util::fvector3 oldIO = image->getISISImage()->getPropertyAs<util::fvector3>( "indexOrigin" );
 
-		image->getISISImage()->setPropertyAs<util::fvector4>( "indexOrigin", oldIO + translation );
+		image->getISISImage()->setPropertyAs<util::fvector3>( "indexOrigin", oldIO + translation );
 
 
 		bool ret = image->getISISImage()->transformCoords( finalMatrix, false );
 
 		if( ret ) {
-			image->getPropMap().setPropertyAs<util::fvector4>( "originalRowVec", image->getISISImage()->getPropertyAs<util::fvector4>( "rowVec" ) );
-			image->getPropMap().setPropertyAs<util::fvector4>( "originalColumnVec", image->getISISImage()->getPropertyAs<util::fvector4>( "columnVec" ) );
-			image->getPropMap().setPropertyAs<util::fvector4>( "originalSliceVec", image->getISISImage()->getPropertyAs<util::fvector4>( "sliceVec" ) );
+			image->getPropMap().setPropertyAs<util::fvector3>( "originalRowVec", image->getISISImage()->getPropertyAs<util::fvector3>( "rowVec" ) );
+			image->getPropMap().setPropertyAs<util::fvector3>( "originalColumnVec", image->getISISImage()->getPropertyAs<util::fvector3>( "columnVec" ) );
+			image->getPropMap().setPropertyAs<util::fvector3>( "originalSliceVec", image->getISISImage()->getPropertyAs<util::fvector3>( "sliceVec" ) );
 			image->addChangedAttribute( desc.str() );
 		} else {
 			LOG( Runtime, error ) << "Could not apply transform " << finalMatrix << " to the image " << image->getImageProperties().fileName << " !";

@@ -112,8 +112,8 @@ void MaskEditDialog::radiusChange( int r )
 
 void MaskEditDialog::showEvent( QShowEvent * )
 {
-	connect( m_ViewerCore, SIGNAL ( emitOnWidgetMoved( util::fvector4, Qt::MouseButton ) ), this, SLOT( physicalCoordChanged( util::fvector4, Qt::MouseButton ) ) );
-	connect( m_ViewerCore, SIGNAL ( emitOnWidgetClicked( util::fvector4, Qt::MouseButton ) ), this, SLOT( physicalCoordChanged( util::fvector4, Qt::MouseButton ) ) );
+	connect( m_ViewerCore, SIGNAL ( emitOnWidgetMoved( util::fvector3, Qt::MouseButton ) ), this, SLOT( physicalCoordChanged( util::fvector3, Qt::MouseButton ) ) );
+	connect( m_ViewerCore, SIGNAL ( emitOnWidgetClicked( util::fvector3, Qt::MouseButton ) ), this, SLOT( physicalCoordChanged( util::fvector3, Qt::MouseButton ) ) );
 
 	if( !m_CurrentMask ) {
 		m_Interface.radius->setEnabled( false );
@@ -216,8 +216,8 @@ void MaskEditDialog::createEmptyMask()
 
 void MaskEditDialog::closeEvent( QCloseEvent * )
 {
-	disconnect( m_ViewerCore, SIGNAL ( emitOnWidgetMoved( util::fvector4, Qt::MouseButton ) ), this, SLOT( physicalCoordChanged( util::fvector4, Qt::MouseButton ) ) );
-	disconnect( m_ViewerCore, SIGNAL ( emitOnWidgetClicked( util::fvector4, Qt::MouseButton ) ), this, SLOT( physicalCoordChanged( util::fvector4, Qt::MouseButton ) ) );
+	disconnect( m_ViewerCore, SIGNAL ( emitOnWidgetMoved( util::fvector3, Qt::MouseButton ) ), this, SLOT( physicalCoordChanged( util::fvector3, Qt::MouseButton ) ) );
+	disconnect( m_ViewerCore, SIGNAL ( emitOnWidgetClicked( util::fvector3, Qt::MouseButton ) ), this, SLOT( physicalCoordChanged( util::fvector3, Qt::MouseButton ) ) );
 	BOOST_FOREACH( WidgetEnsemble::Vector::reference ensemble, m_ViewerCore->getUICore()->getEnsembleList() ) {
 		BOOST_FOREACH( WidgetEnsemble::reference ensembleComponent, *ensemble ) {
 			ensembleComponent->getWidgetInterface()->setMouseCursorIcon( QIcon() );
