@@ -81,7 +81,7 @@ public Q_SLOTS:
 	virtual std::string getWidgetName() const { return std::string( "3D Rendering widget (vtk)" ); }
 	virtual void setInterpolationType( InterpolationType interpolation );
 	virtual void setMouseCursorIcon( QIcon );
-	virtual void lookAtPhysicalCoords( const util::fvector4 &physicalCoords );
+	virtual void lookAtPhysicalCoords( const util::fvector3 &physicalCoords );
 	virtual bool hasOptionWidget() const { return true; }
 	virtual QWidget *getOptionWidget() { return m_OptionWidget; }
 

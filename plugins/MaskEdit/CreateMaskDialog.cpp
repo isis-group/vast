@@ -59,7 +59,7 @@ void CreateMaskDialog::showEvent( QShowEvent * )
 		}
 
 		if( m_MaskEditDialog->m_ViewerCore->hasImage() ) {
-			const util::fvector4 &voxelSize = m_MaskEditDialog->m_ViewerCore->getCurrentImage()->getISISImage()->getPropertyAs<util::fvector4>( "voxelSize" ) ;
+			const util::fvector3 &voxelSize = m_MaskEditDialog->m_ViewerCore->getCurrentImage()->getISISImage()->getPropertyAs<util::fvector3>( "voxelSize" ) ;
 			m_Interface.xRes->setValue( voxelSize[0] );
 			m_Interface.yRes->setValue( voxelSize[1] );
 			m_Interface.zRes->setValue( voxelSize[2] );

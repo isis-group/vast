@@ -125,7 +125,7 @@ void QViewerCore::receiveMessage ( std::string message )
 }
 
 
-void QViewerCore::onWidgetClicked ( widget::WidgetInterface *origin, util::fvector4 physicalCoords, Qt::MouseButton mouseButton )
+void QViewerCore::onWidgetClicked ( widget::WidgetInterface *origin, util::fvector3 physicalCoords, Qt::MouseButton mouseButton )
 {
 	ImageHolder::ImageType iType;
 
@@ -143,7 +143,7 @@ void QViewerCore::onWidgetClicked ( widget::WidgetInterface *origin, util::fvect
 	emitOnWidgetClicked( physicalCoords, mouseButton );
 }
 
-void QViewerCore::onWidgetMoved ( widget::WidgetInterface* /*origin*/, util::fvector4 physicalCoords, Qt::MouseButton mouseButton )
+void QViewerCore::onWidgetMoved ( widget::WidgetInterface* /*origin*/, util::fvector3 physicalCoords, Qt::MouseButton mouseButton )
 {
 	physicalCoordsChanged( physicalCoords );
 	emitOnWidgetMoved( physicalCoords, mouseButton );
@@ -160,7 +160,6 @@ void QViewerCore::timestepChanged ( int timestep )
 		BOOST_FOREACH ( ImageHolder::Vector::const_reference image, getImageVector() ) {
 			if ( static_cast<size_t> ( timestep ) < image->getImageSize() [3] ) {
 				image->getImageProperties().voxelCoords[3] = timestep;
-				image->getImageProperties().physicalCoords[3] = timestep;
 			}
 		}
 		emitPhysicalCoordsChanged( getCurrentImage()->getImageProperties().physicalCoords );
@@ -183,7 +182,7 @@ void QViewerCore::centerImages ( bool ca )
 										  getCurrentImage()->getImageProperties().voxelCoords[3] );
 			getCurrentImage()->getImageProperties().voxelCoords = center;
 		} else {
-			getCurrentImage()->getImageProperties().physicalCoords = util::fvector4();
+			getCurrentImage()->getImageProperties().physicalCoords = util::fvector3();
 		}
 
 		updateScene();
@@ -253,7 +252,7 @@ void QViewerCore::settingsChanged()
 	updateScene();
 	m_UI->refreshUI();
 }
-void QViewerCore::physicalCoordsChanged ( util::fvector4 physicalCoords )
+void QViewerCore::physicalCoordsChanged ( util::fvector3 physicalCoords )
 {
 	BOOST_FOREACH( ImageHolder::Vector::const_reference image, getImageVector() ) {
 		image->phyisicalCoordsChanged( physicalCoords );

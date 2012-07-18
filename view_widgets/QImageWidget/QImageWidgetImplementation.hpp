@@ -75,7 +75,7 @@ public Q_SLOTS:
 	virtual void paintImage( boost::shared_ptr< ImageHolder > image );
 	virtual void paintCrosshair() const;
 
-	virtual void lookAtPhysicalCoords( const util::fvector4 &physicalCoords );
+	virtual void lookAtPhysicalCoords( const util::fvector3 &physicalCoords );
 	virtual void updateScene();
 	virtual void setInterpolationType( InterpolationType interType ) { m_InterpolationType = interType; }
 	virtual void setShowLabels( bool show ) { m_ShowLabels = show; m_Border = show ? 18 : 0; }
@@ -101,7 +101,7 @@ protected:
 
 Q_SIGNALS:
 	void redraw();
-	void physicalCoordsChanged( util::fvector4 );
+	void physicalCoordsChanged( util::fvector3 );
 	void zoomChanged( float zoomFactor );
 
 
@@ -132,7 +132,7 @@ private:
 	float currentZoom;
 	int m_CrosshairWidth;
 
-	util::fvector4 mouseCoords2PhysCoords( const int &x, const int &y );
+	util::fvector3 mouseCoords2PhysCoords( const int &x, const int &y );
 
 	std::pair<int, int> m_StartCoordsPair;
 

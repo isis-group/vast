@@ -118,8 +118,9 @@ void ImageStack::contextMenuEvent( QContextMenuEvent *event )
 		menu.addMenu( openInWidgetMenu );
 		menu.addSeparator();
 	}
-
-	menu.addAction( m_Widget->m_Interface.actionDistribute_images );
+	if( m_ViewerCore->getMode() != ViewerCoreBase::statistical_mode ) {
+		menu.addAction( m_Widget->m_Interface.actionDistribute_images );
+	}
 	menu.addAction( m_Widget->m_Interface.actionClose_all_images );
 	menu.exec( event->globalPos() );
 

@@ -77,7 +77,7 @@ public:
 	QWidget *getParent( ) const { return m_Parent; }
 	PlaneOrientation getPlaneOrientation() { return m_PlaneOrientation; }
 
-	virtual void lookAtPhysicalCoords( const util::fvector4 &physicalCoords ) = 0;
+	virtual void lookAtPhysicalCoords( const util::fvector3 &physicalCoords ) = 0;
 
 	void setWidgetEnsemble( boost::shared_ptr<WidgetEnsemble> ensemble ) { m_WidgetEnsemble = ensemble; }
 	const boost::shared_ptr<WidgetEnsemble> getWidgetEnsemble() const { return m_WidgetEnsemble; }

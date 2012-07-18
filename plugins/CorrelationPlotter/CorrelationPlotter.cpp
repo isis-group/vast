@@ -51,7 +51,7 @@ void isis::viewer::plugin::CorrelationPlotterDialog::lockClicked()
 }
 
 
-void isis::viewer::plugin::CorrelationPlotterDialog::physicalCoordsChanged( isis::util::fvector4 /*physicalCoords*/ )
+void isis::viewer::plugin::CorrelationPlotterDialog::physicalCoordsChanged( isis::util::fvector3 /*physicalCoords*/ )
 {
 	if( !m_Interface.lock->isChecked() ) {
 		m_CurrentVoxelPos = m_CurrentFunctionalImage->getImageProperties().voxelCoords;
@@ -64,7 +64,7 @@ void isis::viewer::plugin::CorrelationPlotterDialog::physicalCoordsChanged( isis
 
 void isis::viewer::plugin::CorrelationPlotterDialog::closeEvent( QCloseEvent * )
 {
-	disconnect( m_ViewerCore, SIGNAL( emitPhysicalCoordsChanged( util::fvector4 ) ), this, SLOT( physicalCoordsChanged( util::fvector4 ) ) );
+	disconnect( m_ViewerCore, SIGNAL( emitPhysicalCoordsChanged( util::fvector3 ) ), this, SLOT( physicalCoordsChanged( util::fvector3 ) ) );
 
 	if( m_CurrentFunctionalImage ) {
 		calculateCorrelation( true );
@@ -98,7 +98,7 @@ void isis::viewer::plugin::CorrelationPlotterDialog::showEvent( QShowEvent * )
 		}
 
 		if( !hasFunctionalImage ) {
-			disconnect( m_ViewerCore, SIGNAL( emitPhysicalCoordsChanged( util::fvector4 ) ), this, SLOT( physicalCoordsChanged( util::fvector4 ) ) );
+			disconnect( m_ViewerCore, SIGNAL( emitPhysicalCoordsChanged( util::fvector3 ) ), this, SLOT( physicalCoordsChanged( util::fvector3 ) ) );
 			LOG( Runtime, warning ) << "Can not find any functional dataset. Will not calculate correlation map";
 			QMessageBox msgBox;
 			msgBox.setText( "Can not find any functional dataset. Will not calculate correlation map!" );
@@ -115,7 +115,7 @@ void isis::viewer::plugin::CorrelationPlotterDialog::showEvent( QShowEvent * )
 				}
 			}
 
-			connect( m_ViewerCore, SIGNAL( emitPhysicalCoordsChanged( util::fvector4 ) ), this, SLOT( physicalCoordsChanged( util::fvector4 ) ) );
+			connect( m_ViewerCore, SIGNAL( emitPhysicalCoordsChanged( util::fvector3 ) ), this, SLOT( physicalCoordsChanged( util::fvector3 ) ) );
 
 			if( m_ViewerCore->getMode() != ViewerCoreBase::statistical_mode ) {
 				m_ViewerCore->setMode( ViewerCoreBase::statistical_mode );
@@ -159,9 +159,8 @@ bool isis::viewer::plugin::CorrelationPlotterDialog::createCorrelationMap()
 			m_InternalChunk.reset( new isis::data::Chunk( imagePtr, size[0], size[1], size[2], size[3] ) );
 			m_CurrentCorrelationMap->updateColorMap();
 			util::ivector4 voxelCoords = m_CurrentFunctionalImage->getImageProperties().voxelCoords;
-			util::fvector4 physicalCoords = m_CurrentFunctionalImage->getImageProperties().physicalCoords;
+			util::fvector3 physicalCoords = m_CurrentFunctionalImage->getImageProperties().physicalCoords;
 			voxelCoords[3] = 0;
-			physicalCoords[3] = 0;
 			m_CurrentCorrelationMap->getImageProperties().voxelCoords = voxelCoords;
 			m_CurrentCorrelationMap->getImageProperties().physicalCoords = physicalCoords;
 			m_CurrentVoxelPos = voxelCoords;

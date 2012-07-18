@@ -69,7 +69,7 @@ void QImageWidgetImplementation::disconnectSignals()
 	//  disconnect( this, SIGNAL( zoomChanged( float ) ), m_ViewerCore, SLOT( zoomChanged( float ) ) );
 	//  disconnect( this, SIGNAL( physicalCoordsChanged( util::fvector4 ) ), m_ViewerCore, SLOT( physicalCoordsChanged( util::fvector4 ) ) );
 	disconnect( m_ViewerCore, SIGNAL( emitUpdateScene( ) ), this, SLOT( updateScene( ) ) );
-	disconnect( m_ViewerCore, SIGNAL( emitPhysicalCoordsChanged( util::fvector4 ) ), this, SLOT( lookAtPhysicalCoords( util::fvector4 ) ) );
+	disconnect( m_ViewerCore, SIGNAL( emitPhysicalCoordsChanged( util::fvector3 ) ), this, SLOT( lookAtPhysicalCoords( util::fvector3 ) ) );
 	disconnect( m_ViewerCore, SIGNAL( emitZoomChanged( float ) ), this, SLOT( setZoom( float ) ) );
 	disconnect( m_ViewerCore, SIGNAL( emitShowLabels( bool ) ), this, SLOT( setShowLabels( bool ) ) );
 	disconnect( m_ViewerCore, SIGNAL( emitSetEnableCrosshair( bool ) ), this, SLOT( setEnableCrosshair( bool ) ) );
@@ -81,7 +81,7 @@ void QImageWidgetImplementation::connectSignals()
 	//  connect( this, SIGNAL( zoomChanged( float ) ), m_ViewerCore, SLOT( zoomChanged( float ) ) );
 	//  connect( this, SIGNAL( physicalCoordsChanged( util::fvector4 ) ), m_ViewerCore, SLOT( physicalCoordsChanged( util::fvector4 ) ) );
 	connect( m_ViewerCore, SIGNAL( emitUpdateScene( ) ), this, SLOT( updateScene( ) ) );
-	connect( m_ViewerCore, SIGNAL( emitPhysicalCoordsChanged( util::fvector4 ) ), this, SLOT( lookAtPhysicalCoords( util::fvector4 ) ) );
+	connect( m_ViewerCore, SIGNAL( emitPhysicalCoordsChanged( util::fvector3 ) ), this, SLOT( lookAtPhysicalCoords( util::fvector3 ) ) );
 	connect( m_ViewerCore, SIGNAL( emitZoomChanged( float ) ), this, SLOT( setZoom( float ) ) );
 	connect( m_ViewerCore, SIGNAL( emitShowLabels( bool ) ), this, SLOT( setShowLabels( bool ) ) );
 	connect( m_ViewerCore, SIGNAL( emitSetEnableCrosshair( bool ) ), this, SLOT( setEnableCrosshair( bool ) ) );
@@ -390,7 +390,7 @@ void QImageWidgetImplementation::mouseMoveEvent( QMouseEvent *e )
 }
 
 
-util::fvector4 QImageWidgetImplementation::mouseCoords2PhysCoords ( const int &x, const int &y )
+util::fvector3 QImageWidgetImplementation::mouseCoords2PhysCoords ( const int &x, const int &y )
 {
 	const boost::shared_ptr<ImageHolder> image = getWidgetSpecCurrentImage();
 	const ImageProperties &imgProps = m_ImageProperties.at( image );
@@ -469,7 +469,7 @@ void QImageWidgetImplementation::paintCrosshair() const
 
 }
 
-void QImageWidgetImplementation::lookAtPhysicalCoords( const isis::util::fvector4 &physicalCoords )
+void QImageWidgetImplementation::lookAtPhysicalCoords( const isis::util::fvector3 &physicalCoords )
 {
 	BOOST_FOREACH( ImageHolder::Vector::const_reference image, m_ViewerCore->getImageVector() ) {
 		image->getImageProperties().physicalCoords = physicalCoords;

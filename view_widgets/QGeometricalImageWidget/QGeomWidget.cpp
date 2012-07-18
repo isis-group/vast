@@ -75,7 +75,7 @@ void QGeomWidget::setup ( QViewerCore *core, QWidget *parent , PlaneOrientation 
 void QGeomWidget::disconnectSignals()
 {
 	disconnect( m_ViewerCore, SIGNAL( emitUpdateScene() ), this, SLOT( updateScene() ) );
-	disconnect( m_ViewerCore, SIGNAL( emitPhysicalCoordsChanged( util::fvector4 ) ), this, SLOT( updateScene() ) );
+	disconnect( m_ViewerCore, SIGNAL( emitPhysicalCoordsChanged( util::fvector3 ) ), this, SLOT( updateScene() ) );
 	disconnect( m_ViewerCore, SIGNAL( emitZoomChanged( float ) ), this, SLOT( setZoom( float ) ) );
 	disconnect( m_ViewerCore, SIGNAL( emitShowLabels( bool ) ), this, SLOT( setShowLabels( bool ) ) );
 	disconnect( m_ViewerCore, SIGNAL( emitSetEnableCrosshair( bool ) ), this, SLOT( setEnableCrosshair( bool ) ) );
@@ -85,7 +85,7 @@ void QGeomWidget::disconnectSignals()
 void QGeomWidget::connectSignals()
 {
 	connect( m_ViewerCore, SIGNAL( emitUpdateScene() ), this, SLOT( updateScene() ) );
-	connect( m_ViewerCore, SIGNAL( emitPhysicalCoordsChanged( util::fvector4 ) ), this, SLOT( updateScene() ) );
+	connect( m_ViewerCore, SIGNAL( emitPhysicalCoordsChanged( util::fvector3 ) ), this, SLOT( updateScene() ) );
 	connect( m_ViewerCore, SIGNAL( emitZoomChanged( float ) ), this, SLOT( setZoom( float ) ) );
 	connect( m_ViewerCore, SIGNAL( emitShowLabels( bool ) ), this, SLOT( setShowLabels( bool ) ) );
 	connect( m_ViewerCore, SIGNAL( emitSetEnableCrosshair( bool ) ), this, SLOT( setEnableCrosshair( bool ) ) );
@@ -264,7 +264,7 @@ void QGeomWidget::paintCrossHair() const
 {
 	const ImageHolder::Pointer image = m_ViewerCore->getCurrentImage();
 
-	const util::fvector4 mappedCoords = ( _internal::mapPhysicalCoords2Orientation( image->getImageProperties().physicalCoords, m_PlaneOrientation ) ) * _internal::rasteringFac;
+	const util::fvector3 mappedCoords = ( _internal::mapPhysicalCoords2Orientation( image->getImageProperties().physicalCoords, m_PlaneOrientation ) ) * _internal::rasteringFac;
 
 	const int border = std::numeric_limits<int>::min() / 4;
 
@@ -350,12 +350,12 @@ void QGeomWidget::paintLabels() const
 }
 
 
-util::fvector4 QGeomWidget::getPhysicalCoordsFromMouseCoords ( const int &x, const int &y ) const
+util::fvector3 QGeomWidget::getPhysicalCoordsFromMouseCoords ( const int &x, const int &y ) const
 {
 	if( m_ViewerCore->hasImage() ) {
 		const ImageHolder::Pointer image =  m_ViewerCore->getCurrentImage();
 
-		util::fvector4 physicalCoords = image->getImageProperties().physicalCoords;
+		util::fvector3 physicalCoords = image->getImageProperties().physicalCoords;
 		const util::ivector4 oldVoxelCoords = image->getImageProperties().voxelCoords;
 
 		switch( m_PlaneOrientation ) {
@@ -386,7 +386,7 @@ util::fvector4 QGeomWidget::getPhysicalCoordsFromMouseCoords ( const int &x, con
 		return physicalCoords;
 	}
 
-	return util::fvector4();
+	return util::fvector3();
 }
 
 
@@ -402,7 +402,7 @@ void QGeomWidget::mousePressEvent ( QMouseEvent *e )
 		return;
 	}
 
-	const util::fvector4 physicalCoords = getPhysicalCoordsFromMouseCoords( e->x(), e->y() );
+	const util::fvector3 physicalCoords = getPhysicalCoordsFromMouseCoords( e->x(), e->y() );
 
 	if( e->button() == Qt::LeftButton ) {
 		m_LeftMouseButtonPressed = true;
@@ -450,7 +450,7 @@ void QGeomWidget::mouseMoveEvent ( QMouseEvent *e )
 		m_ViewerCore->getUICore()->refreshUI();
 
 	} else {
-		const util::fvector4 physicalCoords = getPhysicalCoordsFromMouseCoords(  e->x(), e->y() );
+		const util::fvector3 physicalCoords = getPhysicalCoordsFromMouseCoords(  e->x(), e->y() );
 
 		if( m_LeftMouseButtonPressed ) {
 			m_ViewerCore->onWidgetMoved( this, physicalCoords, Qt::LeftButton );
@@ -493,7 +493,7 @@ void QGeomWidget::wheelEvent ( QWheelEvent *e )
 }
 
 
-void QGeomWidget::lookAtPhysicalCoords ( const util::fvector4& /*physicalCoords*/ )
+void QGeomWidget::lookAtPhysicalCoords ( const util::fvector3& /*physicalCoords*/ )
 {
 
 }

@@ -96,7 +96,7 @@ public:
 			boost::shared_ptr< _internal::__Image > isisImage = image->getISISImage();
 			const geometrical::BoundingBoxType &bb = image->getImageProperties().boundingBox;
 			const util::ivector4 mapping = mapCoordsToOrientation( util::fvector4( 0, 1, 2 ), image->getImageProperties().latchedOrientation, orientation );
-			const util::ivector4 _mapping = mapCoordsToOrientation( util::fvector4( 0, 1, 2 ), util::IdentityMatrix<float, 4>(), orientation );
+			const util::ivector4 _mapping = mapCoordsToOrientation( util::fvector4( 0, 1, 2 ), util::IdentityMatrix<float, 3>(), orientation );
 			float phys[] = { image->getImageProperties().physicalCoords[0], image->getImageProperties().physicalCoords[1], image->getImageProperties().physicalCoords[2] };
 			float factor = 1. / sqrt( 2 );
 			const float stepI = factor * image->getImageProperties().voxelSize[mapping[0]];
@@ -119,9 +119,11 @@ public:
 					if( isisImage->checkVoxel( voxCoords ) ) {
 						const int32_t sliceCoords[] = { voxCoords[mapping[0]], voxCoords[mapping[1]] };
 						const int32_t chunkCoords[] = { voxCoords[0], voxCoords[1], voxCoords[2] };
-						std::memcpy( dest + sliceCoords[0] + sizeSliceChunk[0] * sliceCoords[1],
-									 src + chunkCoords[0] + sizeChunk[0] * chunkCoords[1] + sizeChunk[0] * sizeChunk[1] * chunkCoords[2],
-									 sizeof( TYPE ) );
+// 						memcpy( dest + sliceCoords[0] + sizeSliceChunk[0] * sliceCoords[1],
+// 									 src + chunkCoords[0] + sizeChunk[0] * chunkCoords[1] + sizeChunk[0] * sizeChunk[1] * chunkCoords[2],
+// 									 sizeof( TYPE ) );
+						dest[sliceCoords[0] + sizeSliceChunk[0] * sliceCoords[1]]
+							= src[chunkCoords[0] + sizeChunk[0] * chunkCoords[1] + sizeChunk[0] * sizeChunk[1] * chunkCoords[2]];
 					}
 				}
 			}

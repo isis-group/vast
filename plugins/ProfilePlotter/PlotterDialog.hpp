@@ -30,10 +30,11 @@
 
 #include <QtGui>
 #include <QWidget>
-#include <qwt_plot.h>
+#include "Plot.hpp"
 #include <qwt_plot_curve.h>
 #include <qwt_plot_grid.h>
 #include <qwt_plot_marker.h>
+#include <qwt_plot_scaleitem.h>
 #include <qwt_symbol.h>
 #include "ui_plotting.h"
 #include <iostream>
@@ -56,15 +57,15 @@ public Q_SLOTS:
 	void showEvent( QShowEvent * );
 	void updateScene();
 
-	virtual void refresh( util::fvector4 physicalCoords );
+	virtual void refresh( util::fvector3 physicalCoords );
 
 private:
 	Ui::plottingDialog ui;
-	QwtPlot *plot;
+	Plot *plot;
 	QwtPlotGrid *grid;
 	QwtPlotMarker *plotMarker;
 	QViewerCore *m_ViewerCore;
-	util::fvector4 m_CurrentPhysicalCoords;
+	util::fvector3 m_CurrentPhysicalCoords;
 
 	void fillProfile( boost::shared_ptr<ImageHolder> image, const util::ivector4 &voxCoords, QwtPlotCurve *curve, const unsigned short &axis );
 	void fillSpectrum(  boost::shared_ptr<ImageHolder> image, const util::ivector4 &voxCoords, QwtPlotCurve *curve, const unsigned short &axis );

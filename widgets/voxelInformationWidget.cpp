@@ -103,7 +103,7 @@ void VoxelInformationWidget::reconnectSignals()
 void VoxelInformationWidget::connectSignals()
 {
 	connect( m_ViewerCore, SIGNAL( emitVoxelCoordChanged( util::ivector4 ) ), this, SLOT( synchronizePos( util::ivector4 ) ) );
-	connect( m_ViewerCore, SIGNAL( emitPhysicalCoordsChanged( util::fvector4 ) ), this, SLOT( synchronizePos( util::fvector4 ) ) );
+	connect( m_ViewerCore, SIGNAL( emitPhysicalCoordsChanged( util::fvector3 ) ), this, SLOT( synchronizePos( util::fvector3 ) ) );
 	connect( m_ViewerCore, SIGNAL( emitUpdateScene() ), this, SLOT( updateLowerUpperThreshold() ) );
 	connect( m_Interface.rowBox, SIGNAL( valueChanged( int ) ), this, SLOT( voxPosChanged() ) );
 	connect( m_Interface.columnBox, SIGNAL( valueChanged( int ) ), this, SLOT( voxPosChanged() ) );
@@ -155,7 +155,7 @@ void VoxelInformationWidget::timePlayFinished()
 
 void VoxelInformationWidget::physPosChanged()
 {
-	util::fvector4 physicalCoord ( m_Interface.xBox->text().toFloat(),
+	util::fvector3 physicalCoord ( m_Interface.xBox->text().toFloat(),
 								   m_Interface.yBox->text().toFloat(),
 								   m_Interface.zBox->text().toFloat() );
 	m_ViewerCore->physicalCoordsChanged( physicalCoord );
@@ -265,7 +265,7 @@ void VoxelInformationWidget::synchronize()
 
 		synchronizePos( image->getImageProperties().voxelCoords );
 
-		const util::fvector4 transformedVec = image->getImageProperties().latchedOrientation.dot( image->getImageProperties().voxelSize );
+		const util::fvector3 transformedVec = image->getImageProperties().latchedOrientation.dot( image->getImageProperties().voxelSize );
 
 		m_Interface.xBox->setSingleStep( fabs( transformedVec[0] ) );
 
@@ -313,7 +313,7 @@ void VoxelInformationWidget::synchronize()
 	}
 }
 
-void VoxelInformationWidget::synchronizePos( util::fvector4 physicalCoords )
+void VoxelInformationWidget::synchronizePos( util::fvector3 physicalCoords )
 {
 	synchronizePos( m_ViewerCore->getCurrentImage()->getISISImage()->getIndexFromPhysicalCoords( physicalCoords ) );
 }
@@ -374,7 +374,7 @@ void VoxelInformationWidget::synchronizePos( util::ivector4 voxelCoords )
 	m_Interface.rowBox->setValue( voxelCoords[0] );
 	m_Interface.columnBox->setValue( voxelCoords[1] );
 	m_Interface.sliceBox->setValue( voxelCoords[2] );
-	const util::fvector4 physCoords = image->getISISImage()->getPhysicalCoordsFromIndex( voxelCoords );
+	const util::fvector3 physCoords = image->getISISImage()->getPhysicalCoordsFromIndex( voxelCoords );
 	m_Interface.xBox->setValue( physCoords[0] );
 	m_Interface.yBox->setValue( physCoords[1] );
 	m_Interface.zBox->setValue( physCoords[2] );

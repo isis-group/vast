@@ -106,7 +106,7 @@ void VTKImageWidgetImplementation::wheelEvent ( QWheelEvent */*e*/ )
 void VTKImageWidgetImplementation::disconnectSignals()
 {
 	disconnect( m_ViewerCore, SIGNAL( emitUpdateScene( ) ), this, SLOT( updateScene( ) ) );
-	disconnect( m_ViewerCore, SIGNAL( emitPhysicalCoordsChanged( util::fvector4 ) ), this, SLOT( lookAtPhysicalCoords( util::fvector4 ) ) );
+	disconnect( m_ViewerCore, SIGNAL( emitPhysicalCoordsChanged( util::fvector3 ) ), this, SLOT( lookAtPhysicalCoords( util::fvector3 ) ) );
 	disconnect( m_ViewerCore, SIGNAL( emitZoomChanged( float ) ), this, SLOT( setZoom( float ) ) );
 	disconnect( m_ViewerCore, SIGNAL( emitSetEnableCrosshair( bool ) ), this, SLOT( setEnableCrosshair( bool ) ) );
 	m_ViewerCore->emitImageContentChanged.disconnect( boost::bind( &VTKImageWidgetImplementation::reloadImage, this, _1 ) );
@@ -116,7 +116,7 @@ void VTKImageWidgetImplementation::disconnectSignals()
 void VTKImageWidgetImplementation::connectSignals()
 {
 	connect( m_ViewerCore, SIGNAL( emitUpdateScene( ) ), this, SLOT( updateScene( ) ) );
-	connect( m_ViewerCore, SIGNAL( emitPhysicalCoordsChanged( util::fvector4 ) ), this, SLOT( lookAtPhysicalCoords( util::fvector4 ) ) );
+	connect( m_ViewerCore, SIGNAL( emitPhysicalCoordsChanged( util::fvector3 ) ), this, SLOT( lookAtPhysicalCoords( util::fvector3 ) ) );
 	connect( m_ViewerCore, SIGNAL( emitZoomChanged( float ) ), this, SLOT( setZoom( float ) ) );
 	connect( m_ViewerCore, SIGNAL( emitSetEnableCrosshair( bool ) ), this, SLOT( setEnableCrosshair( bool ) ) );
 	m_ViewerCore->emitImageContentChanged.connect( boost::bind( &VTKImageWidgetImplementation::reloadImage, this, _1 ) );
@@ -370,7 +370,7 @@ void VTKImageWidgetImplementation::updatePhysicalBounds()
 }
 
 
-void VTKImageWidgetImplementation::lookAtPhysicalCoords ( const util::fvector4 &physicalCoords )
+void VTKImageWidgetImplementation::lookAtPhysicalCoords ( const util::fvector3 &physicalCoords )
 {
 	if( m_ViewerCore->hasImage() ) {
 		boost::shared_ptr<ImageHolder> image = m_ViewerCore->getCurrentImage();

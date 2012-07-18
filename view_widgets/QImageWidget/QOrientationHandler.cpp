@@ -38,9 +38,10 @@ namespace widget
 QOrientationHandler::ViewPortType QOrientationHandler::getViewPort(  const float &zoom, const boost::shared_ptr< ImageHolder > image, const size_t &w, const size_t &h, PlaneOrientation orientation, unsigned short border )
 {
 	ViewPortType viewPort;
-	const util::ivector4 mappedSize = mapCoordsToOrientation( image->getImageSize(), image->getImageProperties().latchedOrientation, orientation );
-	const util::fvector4 mappedScaling = mapCoordsToOrientation( image->getImageProperties().voxelSize, image->getImageProperties().latchedOrientation, orientation );
-	const util::fvector4 physSize = mappedScaling * mappedSize;
+	const util::ivector4 size = image->getImageSize();
+	const util::fvector3 mappedSize = mapCoordsToOrientation( util::fvector3(size[0], size[1], size[2]), image->getImageProperties().latchedOrientation, orientation );
+	const util::fvector3 mappedScaling = mapCoordsToOrientation( image->getImageProperties().voxelSize, image->getImageProperties().latchedOrientation, orientation );
+	const util::fvector3 physSize = mappedScaling * mappedSize;
 	const float scalew = ( w - border * 2 ) / float( physSize[0] );
 	const  float scaleh = ( h - border * 2 ) / float( physSize[1] );
 

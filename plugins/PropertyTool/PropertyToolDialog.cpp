@@ -87,10 +87,10 @@ void PropertyToolDialog::updateProperties()
 
 		const boost::shared_ptr<data::Image> isisImage = m_ViewerCore->getCurrentImage()->getISISImage();
 		//orientation
-		const util::fvector4 rowVec = isisImage->getPropertyAs<util::fvector4>( "rowVec" );
-		const util::fvector4 columnVec = isisImage->getPropertyAs<util::fvector4>( "columnVec" );
-		const util::fvector4 sliceVec = isisImage->getPropertyAs<util::fvector4>( "sliceVec" );
-		const util::fvector4 indexOrigin = isisImage->getPropertyAs<util::fvector4>( "indexOrigin" );
+		const util::fvector3 rowVec = isisImage->getPropertyAs<util::fvector3>( "rowVec" );
+		const util::fvector3 columnVec = isisImage->getPropertyAs<util::fvector3>( "columnVec" );
+		const util::fvector3 sliceVec = isisImage->getPropertyAs<util::fvector3>( "sliceVec" );
+		const util::fvector3 indexOrigin = isisImage->getPropertyAs<util::fvector3>( "indexOrigin" );
 		m_Interface.rowVec0->setText( QString::number( rowVec[0] ) );
 		m_Interface.rowVec1->setText( QString::number( rowVec[1] ) );
 		m_Interface.rowVec2->setText( QString::number( rowVec[2] ) );
@@ -279,9 +279,15 @@ void PropertyToolDialog::editRequested()
 			case util::Value<double>::staticID:
 				checkAndSet<double>( propMap, propNameStr, text );
 				break;
+			case util::Value<util::fvector3>::staticID:
+				checkAndSet<util::fvector3>( propMap, propNameStr, text );
+				break;
 			case util::Value<util::fvector4>::staticID:
 				checkAndSet<util::fvector4>( propMap, propNameStr, text );
 				break;
+			case util::Value<util::dvector3>::staticID:
+				checkAndSet<util::dvector3>( propMap, propNameStr, text );
+				break;	
 			case util::Value<util::dvector4>::staticID:
 				checkAndSet<util::dvector4>( propMap, propNameStr, text );
 				break;

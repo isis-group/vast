@@ -62,7 +62,7 @@ public:
 	virtual std::string getWidgetName() const { return std::string( "Geometrical widget" ); }
 public Q_SLOTS:
 	virtual void updateScene();
-	virtual void lookAtPhysicalCoords ( const util::fvector4 &physicalCoords );
+	virtual void lookAtPhysicalCoords ( const util::fvector3 &physicalCoords );
 	virtual void addImage( const ImageHolder::Pointer image );
 	virtual bool removeImage( const ImageHolder::Pointer image );
 	virtual void setInterpolationType ( InterpolationType interpolation );
@@ -102,7 +102,7 @@ private:
 	util::FixedVector<float, 2> m_Translation;
 	float m_WindowViewPortScaling;
 
-	util::fvector4 getPhysicalCoordsFromMouseCoords( const int &x, const int &y ) const;
+	util::fvector3 getPhysicalCoordsFromMouseCoords( const int &x, const int &y ) const;
 
 	QPainter *m_Painter;
 	QVBoxLayout *m_Layout;

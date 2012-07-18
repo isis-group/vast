@@ -74,35 +74,6 @@ template<typename TYPE> struct fromString {
 	}
 };
 
-
-template<typename TYPE> struct fromString<util::vector4<TYPE> > {
-	util::vector4<TYPE> operator()( const std::string &string, bool &ok ) {
-		util::vector4<TYPE> ret;
-		const std::list<std::string> elems = util::stringToList<std::string>( string, boost::regex( "[^\\.\\-0-9]" ) );
-
-		if( elems.size() == 4 ) {
-			ok = true;
-			unsigned short index = 0;
-
-			for( std::list<std::string>::const_iterator iter = elems.begin(); iter != elems.end(); iter++, index++ ) {
-				boost::regex e( "^\\-?[[:digit:]]+\\.?[[:digit:]]*" );
-
-				if( !iter->length() || !boost::regex_match( iter->c_str(),  e ) ) {
-					ok = false;
-				}
-
-				ret[index] = util::Value<std::string>( *iter ).as<TYPE>();
-			}
-		} else {
-			ok = false;
-		}
-
-		return ret;
-
-	}
-};
-
-
 }
 
 class TreePropMap : public util::PropertyMap

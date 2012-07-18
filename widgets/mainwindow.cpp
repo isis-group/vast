@@ -283,10 +283,10 @@ void MainWindow::ignoreOrientation( bool ignore )
 			setOrientationToIdentity( *image->getISISImage() );
 			image->updateOrientation();
 		} else {
-			image->getISISImage()->setPropertyAs<util::fvector4>( "rowVec", image->getPropMap().getPropertyAs<util::fvector4>( "originalRowVec" ) );
-			image->getISISImage()->setPropertyAs<util::fvector4>( "columnVec", image->getPropMap().getPropertyAs<util::fvector4>( "originalColumnVec" ) );
-			image->getISISImage()->setPropertyAs<util::fvector4>( "sliceVec", image->getPropMap().getPropertyAs<util::fvector4>( "originalSliceVec" ) );
-			image->getISISImage()->setPropertyAs<util::fvector4>( "indexOrigin", image->getPropMap().getPropertyAs<util::fvector4>( "originalIndexOrigin" ) );
+			image->getISISImage()->setPropertyAs<util::fvector3>( "rowVec", image->getPropMap().getPropertyAs<util::fvector3>( "originalRowVec" ) );
+			image->getISISImage()->setPropertyAs<util::fvector3>( "columnVec", image->getPropMap().getPropertyAs<util::fvector3>( "originalColumnVec" ) );
+			image->getISISImage()->setPropertyAs<util::fvector3>( "sliceVec", image->getPropMap().getPropertyAs<util::fvector3>( "originalSliceVec" ) );
+			image->getISISImage()->setPropertyAs<util::fvector3>( "indexOrigin", image->getPropMap().getPropertyAs<util::fvector3>( "originalIndexOrigin" ) );
 			image->updateOrientation();
 
 			if( m_ViewerCore->getSettings()->getPropertyAs<bool>( "checkCACP" ) ) {
