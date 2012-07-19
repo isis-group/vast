@@ -111,15 +111,32 @@ void VoxelInformationWidget::connectSignals()
 	connect( m_Interface.xBox, SIGNAL( valueChanged( double ) ), this, SLOT( physPosChanged() ) );
 	connect( m_Interface.yBox, SIGNAL( valueChanged( double ) ), this, SLOT( physPosChanged() ) );
 	connect( m_Interface.zBox, SIGNAL( valueChanged( double ) ), this, SLOT( physPosChanged() ) );
-	connect( m_Interface.timestepSlider, SIGNAL( sliderMoved( int ) ), m_ViewerCore, SLOT( timestepChanged( int ) ) );
-	connect( m_Interface.timestepSpinBox, SIGNAL( valueChanged( int ) ), m_ViewerCore, SLOT( timestepChanged( int ) ) );
-	connect( m_Interface.timestepSlider, SIGNAL( sliderMoved( int ) ), m_Interface.timestepSpinBox, SLOT( setValue( int ) ) );
-	connect( m_Interface.timestepSpinBox, SIGNAL( valueChanged( int ) ), m_Interface.timestepSlider, SLOT( setValue( int ) ) );
+	connect( m_Interface.timestepSlider, SIGNAL( sliderMoved( int ) ), this, SLOT( timeStepChanged(int) ) );
+	connect( m_Interface.timestepSpinBox, SIGNAL( valueChanged( int ) ), this, SLOT( timeStepChanged(int) ) );
+	connect( m_Interface.timestepSlider, SIGNAL( sliderMoved( int ) ), this, SLOT( timeStepChanged(int) ) );
+	connect( m_Interface.timestepSpinBox, SIGNAL( valueChanged( int ) ), this, SLOT( timeStepChanged(int) ) );
 	connect( m_tThread, SIGNAL( finished() ), this, SLOT( timePlayFinished() ) );
 	connect( m_Interface.playButton, SIGNAL( clicked() ), this, SLOT( playTimecourse() ) );
 	connect( m_Interface.colormapButton, SIGNAL( clicked() ), this, SLOT( onLUTMenuClicked() ) );
 	isConnected = true;
 }
+
+void VoxelInformationWidget::timeStepChanged ( int ts )
+{
+	disconnect( m_Interface.timestepSlider, SIGNAL( sliderMoved( int ) ), this, SLOT( timeStepChanged(int) ) );
+	disconnect( m_Interface.timestepSpinBox, SIGNAL( valueChanged( int ) ), this, SLOT( timeStepChanged(int) ) );
+	disconnect( m_Interface.timestepSlider, SIGNAL( sliderMoved( int ) ), this, SLOT( timeStepChanged(int) ) );
+	disconnect( m_Interface.timestepSpinBox, SIGNAL( valueChanged( int ) ), this, SLOT( timeStepChanged(int) ) );
+	m_ViewerCore->timestepChanged(ts);
+	m_Interface.timestepSlider->setValue(ts);
+	m_Interface.timestepSpinBox->setValue(ts);
+	connect( m_Interface.timestepSlider, SIGNAL( sliderMoved( int ) ), this, SLOT( timeStepChanged(int) ) );
+	connect( m_Interface.timestepSpinBox, SIGNAL( valueChanged( int ) ), this, SLOT( timeStepChanged(int) ) );
+	connect( m_Interface.timestepSlider, SIGNAL( sliderMoved( int ) ), this, SLOT( timeStepChanged(int) ) );
+	connect( m_Interface.timestepSpinBox, SIGNAL( valueChanged( int ) ), this, SLOT( timeStepChanged(int) ) );
+
+}
+
 
 void VoxelInformationWidget::updateLowerUpperThreshold()
 {
@@ -166,7 +183,7 @@ void VoxelInformationWidget::voxPosChanged()
 	util::ivector4 voxelCoords( m_Interface.rowBox->text().toInt(),
 								m_Interface.columnBox->text().toInt(),
 								m_Interface.sliceBox->text().toInt(),
-								m_ViewerCore->getCurrentImage()->getImageProperties().voxelCoords[3] );
+								m_ViewerCore->getCurrentImage()->getImageProperties().timestep );
 	m_ViewerCore->physicalCoordsChanged( m_ViewerCore->getCurrentImage()->getISISImage()->getPhysicalCoordsFromIndex( voxelCoords ) ) ;
 
 }
@@ -368,7 +385,7 @@ void VoxelInformationWidget::synchronizePos( util::ivector4 voxelCoords )
 		break;
 	}
 
-	m_Interface.timestepSpinBox->setValue( voxelCoords[dim_time] );
+	m_Interface.timestepSpinBox->setValue( image->getImageProperties().timestep );
 	image->getImageProperties().voxelValue = m_Interface.intensityValue->text().toDouble();
 	disconnectSignals();
 	m_Interface.rowBox->setValue( voxelCoords[0] );

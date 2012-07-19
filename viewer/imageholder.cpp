@@ -206,7 +206,7 @@ bool ImageHolder::setImage( const data::Image &image, const ImageType &_imageTyp
 		LOG( Dev, error ) << "Image " << filename << " is empty";
 		return false;
 	}
-
+	getImageProperties().timestep = 0;
 	m_Image.reset( new _internal::__Image( image ) );
 	getImageProperties().filePath = filename;
 	getImageProperties().zeroIsReserved = false;

@@ -85,6 +85,7 @@ public Q_SLOTS:
 	void playTimecourse();
 	void timePlayFinished();
 	void onLUTMenuClicked();
+	void timeStepChanged(int);
 
 private:
 	isis::viewer::QViewerCore *m_ViewerCore;
