@@ -1,3 +1,9 @@
+vast (0.7.0-3) UNRELEASED; urgency=low
+
+  * removed voxel operation plugin as a separate plugin
+
+ -- ISIS Group (The friendly isis team) <gr_isis@cbs.mpg.de>  Thu, 20 Jul 2012 13:50:59 +0200
+ 
 vast (0.7.0-1) UNRELEASED; urgency=low
 
   * adaptions libisis-core3
