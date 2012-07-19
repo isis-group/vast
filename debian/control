@@ -49,11 +49,3 @@ Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: Widget for vast
  The qt widget for vast allows you to visualize images
  latched to the plane view. 
-
-Package: vast-plugin-voxelop
-Section: science
-Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}
-Description: Plugin for vast
- The voxelop plugin is based on the muparser. 
- It allows you interactive voxel manipulation.
