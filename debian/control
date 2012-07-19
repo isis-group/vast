@@ -12,7 +12,7 @@ Vcs-Browser: http://github.com/isis-group/vast
 Package: vast
 Section: science
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, vast-widget-qt, vast-widget-qtdeom
+Depends: ${shlibs:Depends}, ${misc:Depends}, vast-widget-qt, vast-widget-qtgeom
 Conflicts: vast-correlationplotter, vast-histogram, vast-maskedit, vast-orientationcorrection, vast-propertytool, vast-timeplotter
 Recommends: libisis-ioplugins-common, libisis-ioplugins-dicom, libjs-jquery, libjs-underscore, vast-widget-vtk, vast-plugin-voxelop
 Description: Viewer for medical image data
