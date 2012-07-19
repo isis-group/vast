@@ -159,7 +159,7 @@ void QViewerCore::timestepChanged ( int timestep )
 
 		BOOST_FOREACH ( ImageHolder::Vector::const_reference image, getImageVector() ) {
 			if ( static_cast<size_t> ( timestep ) < image->getImageSize() [3] ) {
-				image->getImageProperties().voxelCoords[3] = timestep;
+				image->getImageProperties().timestep = timestep;
 			}
 		}
 		emitPhysicalCoordsChanged( getCurrentImage()->getImageProperties().physicalCoords );
@@ -179,7 +179,7 @@ void QViewerCore::centerImages ( bool ca )
 		if ( !ca ) {
 			const util::ivector4 size = getCurrentImage()->getImageSize();
 			const util::ivector4 center ( size[0] / 2, size[1] / 2, size[2] / 2,
-										  getCurrentImage()->getImageProperties().voxelCoords[3] );
+										  getCurrentImage()->getImageProperties().timestep );
 			getCurrentImage()->getImageProperties().voxelCoords = center;
 		} else {
 			getCurrentImage()->getImageProperties().physicalCoords = util::fvector3();

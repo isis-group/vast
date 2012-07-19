@@ -60,7 +60,7 @@ void isis::viewer::plugin::HistogramDialog::paintHistogram()
 		title << "Histogram of " << boost::filesystem::path( m_ViewerCore->getCurrentImage()->getImageProperties().fileName ).leaf();
 
 		if( m_ViewerCore->getCurrentImage()->getImageSize()[3] > 1 ) {
-			title << " (volume " << m_ViewerCore->getCurrentImage()->getImageProperties().voxelCoords[3] << ")";
+			title << " (volume " << m_ViewerCore->getCurrentImage()->getImageProperties().timestep << ")";
 		}
 
 		m_Plotter->setTitle( title.str().c_str() );

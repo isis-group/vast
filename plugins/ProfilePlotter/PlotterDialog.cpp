@@ -246,7 +246,7 @@ void isis::viewer::plugin::PlotterDialog::fillSpectrum ( boost::shared_ptr< isis
 
 	for( size_t i = 0; i < n; i++ ) {
 		_coords[axis] = i;
-		in[i] = image->getISISImage()->voxel<int16_t>( _coords[0], _coords[1], _coords[2], _coords[3] );
+		in[i] = image->getISISImage()->voxel<int16_t>( _coords[0], _coords[1], _coords[2], image->getImageProperties().timestep );
 	}
 
 	fftw_execute( plan );
