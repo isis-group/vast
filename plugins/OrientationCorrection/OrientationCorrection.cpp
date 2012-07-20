@@ -41,7 +41,8 @@ namespace plugin
 OrientatioCorrectionDialog::OrientatioCorrectionDialog( QWidget *parent, QViewerCore *core )
 	: QDialog( parent ),
 	  m_ViewerCore( core ),
-	  m_MatrixItems( 3, 3 )
+	  m_MatrixItems( 3, 3 ),
+	  askedGeometricalView_(false)
 {
 	ui.setupUi( this );
 #if QT_VERSION >= 0x040500
@@ -227,9 +228,22 @@ void OrientatioCorrectionDialog::setValuesToZero()
 }
 
 
-bool OrientatioCorrectionDialog::applyTransform( ) const
-{
+bool OrientatioCorrectionDialog::applyTransform( ) {
 	if( m_ViewerCore->hasImage() ) {
+		if( !m_ViewerCore->getUICore()->getMainWindow()->getInterface().actionGeometrical_View->isChecked() && !askedGeometricalView_) {
+			askedGeometricalView_ = true;
+			QMessageBox msgBox;
+			msgBox.setIcon(QMessageBox::Warning);
+			msgBox.setWindowTitle("\"Geometrical View\" is disabled!");
+			msgBox.setText("To validate your changes on the orientation you have to turn on \"Geometrical View\".");
+			msgBox.setInformativeText("Do you wish to enable it?");
+			msgBox.setStandardButtons( QMessageBox::No | QMessageBox::Yes );
+			msgBox.setDefaultButton(QMessageBox::Yes);
+			const int answer = msgBox.exec();
+			if( answer == QMessageBox::Yes ) {
+				m_ViewerCore->getUICore()->getMainWindow()->toggleGeometrical(true);
+			}
+		}
 		ImageHolder::Pointer image = m_ViewerCore->getImageMap().at( ui.imageBox->currentText().toStdString() );
 		image->getISISImage()->setPropertyAs<util::fvector3>( "rowVec", image->getPropMap().getPropertyAs<util::fvector3>( "OrientationCorrection/origRowVec" ) );
 		image->getISISImage()->setPropertyAs<util::fvector3>( "columnVec", image->getPropMap().getPropertyAs<util::fvector3>( "OrientationCorrection/origColumnVec" ) );

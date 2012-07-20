@@ -137,6 +137,7 @@ void PreferencesDialog::loadSettings()
 	m_Interface.checkCrashMessage->setChecked( m_ViewerCore->getSettings()->getPropertyAs<bool>( "showCrashMessage" ) );
 	m_Interface.checkOnlyFirst->setChecked( m_ViewerCore->getSettings()->getPropertyAs<bool>( "visualizeOnlyFirstVista" ) );
 	m_Interface.checkCACP->setChecked( m_ViewerCore->getSettings()->getPropertyAs<bool>( "checkCACP" ) );
+	m_Interface.checkVoxelSpace->setChecked( m_ViewerCore->getSettings()->getPropertyAs<bool>("ignoreOrientationAlways") );
 
 	//view tab
 	m_Interface.checkLatchOrientation->setChecked( m_ViewerCore->getSettings()->getPropertyAs<bool>( "latchSingleImage" ) );
@@ -171,6 +172,7 @@ void PreferencesDialog::saveSettings()
 	m_ViewerCore->getSettings()->setPropertyAs<bool>( "showStartWidget", m_Interface.checkStartUpScreen->isChecked() );
 	m_ViewerCore->getSettings()->setPropertyAs<bool>( "showCrashMessage", m_Interface.checkCrashMessage->isChecked() );
 	m_ViewerCore->getSettings()->setPropertyAs<bool>( "useStyleSheet", m_Interface.fancyStyle->isChecked() );
+	m_ViewerCore->getSettings()->setPropertyAs<bool>( "ignoreOrientationAlways", m_Interface.checkVoxelSpace->isChecked() );
 
 	//view
 	m_ViewerCore->getSettings()->setPropertyAs<bool>( "latchSingleImage", m_Interface.checkLatchOrientation->isChecked() );

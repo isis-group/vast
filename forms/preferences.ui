@@ -238,6 +238,16 @@
                   </widget>
                  </item>
                  <item>
+                  <widget class="QCheckBox" name="checkVoxelSpace">
+                   <property name="toolTip">
+                    <string>This causes vast to always ignore the orientation of images and so work in voxel space.</string>
+                   </property>
+                   <property name="text">
+                    <string>Use voxelspace</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
                   <widget class="QFrame" name="multithreadingFrame">
                    <property name="frameShape">
                     <enum>QFrame::NoFrame</enum>

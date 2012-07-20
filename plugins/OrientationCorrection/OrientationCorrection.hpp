@@ -58,8 +58,9 @@ private:
 	Ui::OrientationCorrection ui;
 	boost::numeric::ublas::matrix<QTableWidgetItem *> m_MatrixItems;
 	void setValuesToZero();
+	bool askedGeometricalView_;
 private Q_SLOTS:
-	bool applyTransform ( ) const ;
+	bool applyTransform ( )  ;
 
 
 };
