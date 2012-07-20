@@ -230,6 +230,19 @@ void OrientatioCorrectionDialog::setValuesToZero()
 bool OrientatioCorrectionDialog::applyTransform( ) const
 {
 	if( m_ViewerCore->hasImage() ) {
+		if( !m_ViewerCore->getUICore()->getMainWindow()->getInterface().actionGeometrical_View->isChecked() ) {
+			QMessageBox msgBox;
+			msgBox.setIcon(QMessageBox::Warning);
+			msgBox.setWindowTitle("\"Geometrical View\" is disabled!");
+			msgBox.setText("To validate your changes on the orientation you have to turn on \"Geometrical View\".");
+			msgBox.setInformativeText("Do you wish to enable it?");
+			msgBox.setStandardButtons( QMessageBox::No | QMessageBox::Yes );
+			msgBox.setDefaultButton(QMessageBox::Yes);
+			const int answer = msgBox.exec();
+			if( answer == QMessageBox::Yes ) {
+				m_ViewerCore->getUICore()->getMainWindow()->toggleGeometrical(true);
+			}
+		}
 		ImageHolder::Pointer image = m_ViewerCore->getImageMap().at( ui.imageBox->currentText().toStdString() );
 		image->getISISImage()->setPropertyAs<util::fvector3>( "rowVec", image->getPropMap().getPropertyAs<util::fvector3>( "OrientationCorrection/origRowVec" ) );
 		image->getISISImage()->setPropertyAs<util::fvector3>( "columnVec", image->getPropMap().getPropertyAs<util::fvector3>( "OrientationCorrection/origColumnVec" ) );

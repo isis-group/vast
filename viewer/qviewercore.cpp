@@ -345,7 +345,7 @@ ImageHolder::Vector QViewerCore::openFile ( const FileInformation &fileInfo, boo
 		}
 
 		//creating the viewer image objects
-		getUICore()->toggleLoadingIcon( true, "Preparing image(s) for visualization..." );
+		getUICore()->toggleLoadingIcon( true, "Preparing image for visualization..." );
 		ImageHolder::Vector imgList = addImageList( tempImgList, _fileInfo.getImageType() );
 		getUICore()->toggleLoadingIcon( false );
 
