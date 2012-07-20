@@ -296,9 +296,10 @@ void MainWindow::ignoreOrientation( bool ignore )
 
 		image->getImageProperties().physicalCoords = image->getISISImage()->getPhysicalCoordsFromIndex( image->getImageProperties().voxelCoords );
 	}
-
+	m_ViewerCore->getUICore()->getMainWindow()->getInterface().actionIgnore_Orientation->setChecked(ignore);
 	m_ViewerCore->getUICore()->refreshUI();
 	m_ViewerCore->centerImages();
+	m_ViewerCore->updateScene();
 
 }
 

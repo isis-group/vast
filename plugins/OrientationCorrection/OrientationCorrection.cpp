@@ -41,7 +41,8 @@ namespace plugin
 OrientatioCorrectionDialog::OrientatioCorrectionDialog( QWidget *parent, QViewerCore *core )
 	: QDialog( parent ),
 	  m_ViewerCore( core ),
-	  m_MatrixItems( 3, 3 )
+	  m_MatrixItems( 3, 3 ),
+	  askedGeometricalView_(false)
 {
 	ui.setupUi( this );
 #if QT_VERSION >= 0x040500
@@ -227,10 +228,10 @@ void OrientatioCorrectionDialog::setValuesToZero()
 }
 
 
-bool OrientatioCorrectionDialog::applyTransform( ) const
-{
+bool OrientatioCorrectionDialog::applyTransform( ) {
 	if( m_ViewerCore->hasImage() ) {
-		if( !m_ViewerCore->getUICore()->getMainWindow()->getInterface().actionGeometrical_View->isChecked() ) {
+		if( !m_ViewerCore->getUICore()->getMainWindow()->getInterface().actionGeometrical_View->isChecked() && !askedGeometricalView_) {
+			askedGeometricalView_ = true;
 			QMessageBox msgBox;
 			msgBox.setIcon(QMessageBox::Warning);
 			msgBox.setWindowTitle("\"Geometrical View\" is disabled!");

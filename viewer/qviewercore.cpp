@@ -249,6 +249,9 @@ void QViewerCore::settingsChanged()
 	BOOST_FOREACH( ImageHolder::Vector::const_reference image, getImageVector() ) {
 		image->updateOrientation();
 	}
+	if( m_Settings->getPropertyAs<bool>("ignoreOrientationAlways") ) {
+		getUICore()->getMainWindow()->ignoreOrientation(true);
+	}
 	updateScene();
 	m_UI->refreshUI();
 }

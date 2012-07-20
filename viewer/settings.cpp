@@ -46,6 +46,7 @@ void Settings::save()
 	m_QSettings->beginGroup ( "ViewerCore" );
 	m_QSettings->setValue ( "lutZMap", getPropertyAs<std::string> ( "lutZMap" ).c_str() );
 	m_QSettings->setValue( "visualizeOnlyFirstVista", getPropertyAs<bool>( "visualizeOnlyFirstVista" ) );
+	m_QSettings->setValue( "ignoreOrientationAlways", getPropertyAs<bool>( "ignoreOrientationAlways" ) );
 	m_QSettings->setValue ( "interpolationType", getPropertyAs<uint16_t> ( "interpolationType" ) );
 	m_QSettings->setValue ( "checkCACP", getPropertyAs<bool> ( "checkCACP" ) );
 	m_QSettings->setValue ( "useStyleSheet", getPropertyAs<bool> ( "useStyleSheet" ) );
@@ -101,6 +102,7 @@ void Settings::load()
 	setPropertyAs<bool> ( "viewAllImagesInStack", m_QSettings->value ( "viewAllImagesInStack", false ).toBool() );
 	setPropertyAs<bool> ( "propagateTimestepChange", m_QSettings->value ( "propagateTimestepChange", false ).toBool() );
 	setPropertyAs<bool> ( "useStyleSheet", m_QSettings->value ( "useStyleSheet", getPropertyAs<bool>( "useStyleSheet" ) ).toBool() );
+	setPropertyAs<bool> ( "ignoreOrientationAlways", m_QSettings->value ( "ignoreOrientationAlways", getPropertyAs<bool>( "ignoreOrientationAlways" ) ).toBool() );
 	setPropertyAs<uint16_t> ( "interpolationType", m_QSettings->value ( "interpolationType", getPropertyAs<uint16_t> ( "interpolationType" ) ).toUInt() );
 	setPropertyAs<bool> ( "showLabels", m_QSettings->value ( "showLabels", false ).toBool() );
 	setPropertyAs<bool> ( "showCrosshair", m_QSettings->value ( "showCrosshair", true ).toBool() );
@@ -165,6 +167,7 @@ void Settings::initializeWithDefaultSettings()
 	setPropertyAs<std::string>( "widgetLatched", "qt4_plane_widget" );
 	setPropertyAs<std::string>( "widgetGeometrical", "qt4_geometrical_plane_widget" );
 	setPropertyAs<bool>( "showImagesGeometricalView", false );
+	setPropertyAs<bool>("ignoreOrientationAlways", false );
 
 	setPropertyAs<bool>( "useStyleSheet", false );
 	setPropertyAs<std::string>( "styleSheet", "fancy" );
