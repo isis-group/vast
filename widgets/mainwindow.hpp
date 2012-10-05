@@ -145,7 +145,9 @@ private:
 #include "startwidget.hpp"
 #include "keycommandsdialog.hpp"
 #include "aboutDialog.hpp"
+#ifdef HAVE_WEBKIT
 #include "helpdialog.hpp"
+#endif //HAVE_WEBKIT
 
 
 #endif

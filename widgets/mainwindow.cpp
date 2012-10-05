@@ -47,7 +47,9 @@ MainWindow::MainWindow( QViewerCore *core ) :
 	startWidget( new ui::StartWidget( this, core ) ),
 	scalingWidget( new ui::ScalingWidget( this, core ) ),
 	keyCommandsdialog( new ui::KeyCommandsDialog( this ) ),
+#ifdef HAVE_WEBKIT
 	helpDialog( new ui::HelpDialog( this ) ),
+#endif //HAVE_WEBKIT
 	aboutDialog( new ui::AboutDialog( this, core ) ),
 	m_ViewerCore( core ),
 	m_Toolbar( new QToolBar( this ) ),
@@ -112,7 +114,9 @@ MainWindow::MainWindow( QViewerCore *core ) :
 	connect( m_Interface.actionSave_all_Images, SIGNAL( triggered() ), this, SLOT( saveAllImages() ) );
 	connect( m_Interface.actionKey_Commands, SIGNAL( triggered() ), this, SLOT( showKeyCommandDialog() ) );
 	connect( m_Interface.actionCreate_Screenshot, SIGNAL( triggered() ), this, SLOT( createScreenshot() ) );
+#ifdef HAVE_WEBKIT
 	connect( m_Interface.actionHelp, SIGNAL( triggered() ), helpDialog, SLOT( show() ) );
+#endif //HAVE_WEBKIT
 	connect( m_Interface.actionAbout_Dialog, SIGNAL( triggered() ), aboutDialog, SLOT( show() ) );
 	connect( m_Interface.actionLogging, SIGNAL( triggered() ), this, SLOT( showLoggingDialog() ) );
 	connect( m_Interface.actionAxial_View, SIGNAL( triggered( bool ) ), this, SLOT( toggleAxialView( bool ) ) );
