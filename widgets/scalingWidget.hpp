@@ -30,7 +30,7 @@
 
 #include <QDialog>
 #include "ui_scalingDialog.h"
-#include "qviewercore.hpp"
+#include "../viewer/qviewercore.hpp"
 
 namespace isis
 {

@@ -29,8 +29,8 @@
 #define VOXELINFORMATIONWIDGET_HPP
 
 #include "ui_voxelInformationWidget.h"
-#include "common.hpp"
-#include "qviewercore.hpp"
+#include "../viewer/common.hpp"
+#include "../viewer/qviewercore.hpp"
 #include <QThread>
 
 namespace isis

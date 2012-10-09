@@ -2,7 +2,7 @@
 #define IMAGESTACKWIDGET_HPP
 
 #include "ui_imageStackWidget.h"
-#include "qviewercore.hpp"
+#include "../viewer/qviewercore.hpp"
 
 namespace isis
 {

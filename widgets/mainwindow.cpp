@@ -28,11 +28,11 @@
 #include "mainwindow.hpp"
 #include <iostream>
 #include <QGridLayout>
-#include "DataStorage/io_factory.hpp"
-#include "uicore.hpp"
-#include <qviewercore.hpp>
-#include "fileinformation.hpp"
-#include "scalingWidget.hpp"
+#include <DataStorage/io_factory.hpp>
+#include "../viewer/uicore.hpp"
+#include "../viewer/qviewercore.hpp"
+#include "../viewer/fileinformation.hpp"
+#include "../widgets/scalingWidget.hpp"
 
 
 namespace isis

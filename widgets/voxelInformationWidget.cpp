@@ -26,8 +26,8 @@
  *      Author: tuerke
  ******************************************************************/
 #include "voxelInformationWidget.hpp"
-#include <imageholder.hpp>
-#include <qviewercore.hpp>
+#include "../viewer/imageholder.hpp"
+#include "../viewer/qviewercore.hpp"
 
 namespace isis
 {

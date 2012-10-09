@@ -30,7 +30,7 @@
 
 #include <CoreUtils/vector.hpp>
 #include <DataStorage/chunk.hpp>
-#include <common.hpp>
+#include "../viewer/common.hpp"
 #include "imageholder.hpp"
 #include <boost/timer.hpp>
 

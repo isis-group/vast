@@ -26,10 +26,10 @@
  *      Author: tuerke
  ******************************************************************/
 #include "startwidget.hpp"
-#include "uicore.hpp"
-#include "qviewercore.hpp"
-#include "filedialog.hpp"
-#include "fileinformation.hpp"
+#include "../viewer/uicore.hpp"
+#include "../viewer/qviewercore.hpp"
+#include "../widgets/filedialog.hpp"
+#include "../viewer/fileinformation.hpp"
 
 namespace isis
 {

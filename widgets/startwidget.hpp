@@ -30,7 +30,7 @@
 
 
 #include "ui_start.h"
-#include "qviewercore.hpp"
+#include "../viewer/qviewercore.hpp"
 
 namespace isis
 {

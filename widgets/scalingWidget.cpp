@@ -26,9 +26,9 @@
  *      Author: tuerke
  ******************************************************************/
 #include "scalingWidget.hpp"
-#include "common.hpp"
-#include "qviewercore.hpp"
-#include "nativeimageops.hpp"
+#include "../viewer/common.hpp"
+#include "../viewer/qviewercore.hpp"
+#include "../viewer/nativeimageops.hpp"
 
 namespace isis
 {

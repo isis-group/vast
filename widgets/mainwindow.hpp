@@ -30,7 +30,7 @@
 
 #include <QMainWindow>
 #include "ui_mainwindow.h"
-#include "qviewercore.hpp"
+#include "../viewer/qviewercore.hpp"
 
 
 #include <CoreUtils/progressfeedback.hpp>
@@ -139,7 +139,7 @@ private:
 }
 #include "preferenceDialog.hpp"
 #include "scalingWidget.hpp"
-#include "nativeimageops.hpp"
+#include "../viewer/nativeimageops.hpp"
 #include "loggingDialog.hpp"
 #include "filedialog.hpp"
 #include "startwidget.hpp"

@@ -35,16 +35,16 @@
 #include "CoreUtils/singletons.hpp"
 #include <DataStorage/image.hpp>
 
-#include "pluginloader.hpp"
-#include "qviewercore.hpp"
-#include "color.hpp"
-#include "uicore.hpp"
-#include "widgetensemble.hpp"
-#include "fileinformation.hpp"
-#include "common.hpp"
-#include "error.hpp"
-#include "mainwindow.hpp"
-#include "style.hpp"
+#include "viewer/pluginloader.hpp"
+#include "viewer/qviewercore.hpp"
+#include "viewer/color.hpp"
+#include "viewer/uicore.hpp"
+#include "viewer/widgetensemble.hpp"
+#include "viewer/fileinformation.hpp"
+#include "viewer/common.hpp"
+#include "viewer/error.hpp"
+#include "widgets/mainwindow.hpp"
+#include "viewer/style.hpp"
 
 
 int main( int argc, char *argv[] )

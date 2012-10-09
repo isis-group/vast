@@ -30,7 +30,7 @@
 
 
 #include "ui_fileOpenWidget.h"
-#include "qviewercore.hpp"
+#include "../viewer/qviewercore.hpp"
 #include <QFileDialog>
 #include <QCompleter>
 #include <boost/filesystem.hpp>
