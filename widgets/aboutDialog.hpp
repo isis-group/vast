@@ -32,7 +32,7 @@
 
 #include "ui_aboutDialog.h"
 
-#include "../viewer/qviewercore.hpp"
+#include "viewer/qviewercore.hpp"
 
 namespace isis
 {
