@@ -213,7 +213,7 @@ widget::WidgetInterface *ViewerCoreBase::getWidget ( const std::string &identifi
 
 	if( widgetMap.find( identifier ) != widgetMap.end() ) {
 		LOG( Dev, info ) << "Loading widget of identifier \"" << identifier << "\".";
-		return widgetMap.at( identifier )();
+		return widgetMap.at( identifier );
 	} else {
 		LOG( Dev, error ) << "Can not find any widget with identifier \"" << identifier
 						  << "\"! Returning first widget i can find.";
@@ -225,7 +225,7 @@ widget::WidgetInterface *ViewerCoreBase::getWidget ( const std::string &identifi
 }
 
 
-const util::PropertyMap *ViewerCoreBase::getWidgetProperties ( const std::string &identifier )
+util::PropertyMap ViewerCoreBase::getWidgetProperties ( const std::string &identifier )
 {
 	widget::WidgetLoader::WidgetPropertyMapType widgetPropertyMap = util::Singletons::get<widget::WidgetLoader, 10>().getWidgetPropertyMap();
 

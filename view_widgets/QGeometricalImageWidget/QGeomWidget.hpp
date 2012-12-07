@@ -32,9 +32,9 @@
 #include <QWidget>
 #include <QPainter>
 #include <QtGui>
-#include "widgetinterface.h"
-#include "qviewercore.hpp"
-#include "color.hpp"
+#include "viewer/widgetinterface.h"
+#include "viewer/qviewercore.hpp"
+#include "viewer/color.hpp"
 
 namespace isis
 {
@@ -46,7 +46,7 @@ namespace widget
 class QGeomWidget : public QWidget, public WidgetInterface
 {
 	Q_OBJECT
-
+	Q_INTERFACES(isis::viewer::widget::WidgetInterface)
 	struct ImageComponent {
 		QTransform transform;
 	};
@@ -60,6 +60,8 @@ public:
 
 	virtual std::string getWidgetIdent() const { return std::string( "qt4_geometrical_plane_widget" ); }
 	virtual std::string getWidgetName() const { return std::string( "Geometrical widget" ); }
+
+	virtual isis::util::PropertyMap getProperties()const;
 public Q_SLOTS:
 	virtual void updateScene();
 	virtual void lookAtPhysicalCoords ( const util::fvector3 &physicalCoords );

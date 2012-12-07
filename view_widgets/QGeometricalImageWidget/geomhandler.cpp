@@ -27,8 +27,8 @@
  ******************************************************************/
 
 #include "geomhandler.hpp"
-#include "geometrical.hpp"
-#include <imageholder.hpp>
+#include "viewer/geometrical.hpp"
+#include "viewer/imageholder.hpp"
 #include <boost/numeric/ublas/vector.hpp>
 #include <Adapter/qmatrixconversion.hpp>
 #include <DataStorage/common.hpp>

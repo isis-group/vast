@@ -28,8 +28,8 @@
 #ifndef VAST_GEOMHANDLER_HPP
 #define VAST_GEOMHANDLER_HPP
 
-#include "common.hpp"
-#include "geometrical.hpp"
+#include "viewer/common.hpp"
+#include "viewer/geometrical.hpp"
 #include <QTransform>
 
 namespace isis

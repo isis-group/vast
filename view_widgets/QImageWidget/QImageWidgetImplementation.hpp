@@ -32,10 +32,10 @@
 #include <QWidget>
 #include <QPainter>
 #include <QtGui>
-#include "widgetinterface.h"
-#include "qviewercore.hpp"
+#include "viewer/widgetinterface.h"
+#include "viewer/qviewercore.hpp"
 #include "QOrientationHandler.hpp"
-#include "color.hpp"
+#include "viewer/color.hpp"
 
 namespace isis
 {
@@ -47,6 +47,7 @@ namespace widget
 class QImageWidgetImplementation : public QWidget, public WidgetInterface
 {
 	Q_OBJECT
+	Q_INTERFACES(isis::viewer::widget::WidgetInterface)
 	struct ImageProperties {
 		/**scaling, offset, size**/
 		QOrientationHandler::ViewPortType viewPort;
@@ -57,7 +58,8 @@ public:
 
 	QImageWidgetImplementation( QViewerCore *core, QWidget *parent = 0, PlaneOrientation orientation = axial );
 	QImageWidgetImplementation();
-
+	virtual isis::util::PropertyMap getProperties()const;
+	
 public Q_SLOTS:
 	virtual bool hasOptionWidget() const { return false; };
 	virtual QWidget *getOptionWidget() { return new QWidget(); }
@@ -97,7 +99,6 @@ protected:
 	virtual void mousePressEvent( QMouseEvent *e );
 	virtual void mouseReleaseEvent( QMouseEvent *e );
 	virtual void mouseMoveEvent( QMouseEvent *e );
-
 
 Q_SIGNALS:
 	void redraw();

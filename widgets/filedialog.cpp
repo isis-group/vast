@@ -191,7 +191,7 @@ void isis::viewer::ui::FileDialog::setup()
 	const widget::WidgetLoader::WidgetPropertyMapType &optionsMap = util::Singletons::get<widget::WidgetLoader, 10>().getWidgetPropertyMap();
 	BOOST_FOREACH( WRef w, widgetMap ) {
 		QVariant variant ( w.first.c_str() );
-		m_Interface.widgetTypeComboBox->addItem( optionsMap.at( w.first )->getPropertyAs<std::string>( "widgetName" ).c_str(), variant );
+		m_Interface.widgetTypeComboBox->addItem( optionsMap.at( w.first ).getPropertyAs<std::string>( "widgetName" ).c_str(), variant );
 	}
 	m_Interface.widgetTypeframe->setVisible( widgetMap.size() > 1 );
 	int index;

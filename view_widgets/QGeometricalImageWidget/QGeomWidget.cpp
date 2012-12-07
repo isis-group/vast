@@ -28,11 +28,11 @@
 
 #include "QGeomWidget.hpp"
 #include "geomhandler.hpp"
-#include "geometrical.hpp"
+#include "viewer/geometrical.hpp"
 #include <Adapter/qmatrixconversion.hpp>
 
-#include "memoryhandler.hpp"
-#include "uicore.hpp"
+#include "viewer/memoryhandler.hpp"
+#include "viewer/uicore.hpp"
 
 namespace isis
 {
@@ -567,28 +567,21 @@ void QGeomWidget::dropEvent ( QDropEvent *e )
 	}
 }
 
+util::PropertyMap QGeomWidget::getProperties() const
+{
+	isis::util::PropertyMap properties;
+	properties.setPropertyAs<std::string>( "widgetIdent", "qt4_geometrical_plane_widget" );
+	properties.setPropertyAs<std::string>( "widgetName", "Geometrical plane widget" );
+	properties.setPropertyAs<uint8_t>( "numberOfEntitiesInEnsemble", 3 );
+	properties.setPropertyAs<bool>( "hasOptionWidget", false );
+	return properties;
+}
 
 
 }
 }
 }// end namespace
 
-const QWidget *loadOptionWidget()
-{
-	return new QWidget();
-}
-
-isis::viewer::widget::WidgetInterface *loadWidget()
-{
-	return new isis::viewer::widget::QGeomWidget();
-}
-
-const isis::util::PropertyMap *getProperties()
-{
-	isis::util::PropertyMap *properties = new isis::util::PropertyMap();
-	properties->setPropertyAs<std::string>( "widgetIdent", "qt4_geometrical_plane_widget" );
-	properties->setPropertyAs<std::string>( "widgetName", "Geometrical plane widget" );
-	properties->setPropertyAs<uint8_t>( "numberOfEntitiesInEnsemble", 3 );
-	properties->setPropertyAs<bool>( "hasOptionWidget", false );
-	return properties;
-}
+QT_BEGIN_NAMESPACE
+Q_EXPORT_PLUGIN2(QGeomWidget, isis::viewer::widget::QGeomWidget)
+QT_END_NAMESPACE

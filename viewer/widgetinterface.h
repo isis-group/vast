@@ -28,7 +28,6 @@
 #ifndef QWIDGETIMPLEMENTATIONBASE_HPP
 #define QWIDGETIMPLEMENTATIONBASE_HPP
 
-#ifdef __cplusplus
 #include "common.hpp"
 #include "imageholder.hpp"
 #include <CoreUtils/propmap.hpp>
@@ -52,6 +51,7 @@ class WidgetInterface
 public:
 	enum MouseButton { right_button, left_button, middle_button, left_and_right_button };
 	
+	virtual isis::util::PropertyMap getProperties()const =0;
 	virtual void setup( QViewerCore *core, QWidget *parent, PlaneOrientation orientation ){
 		m_ViewerCore = core;
 		m_Parent = parent;
@@ -105,42 +105,13 @@ private:
 }
 } //end namespace
 
-#else
-typedef struct WidgetInterface WidgetInterface;
-#endif
 
 #include "widgetensemble.hpp"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+QT_BEGIN_NAMESPACE
 
-#if defined(__STDC__) || defined(__cplusplus)
-#ifdef WIN32
-	extern __declspec( dllexport ) isis::viewer::widget::WidgetInterface *loadWidget();
-	extern __declspec( dllexport ) const isis::util::PropertyMap* getProperties();
-	extern __declspec( dllexport ) const QWidget* loadOptionWidget();
-#else
-	extern isis::viewer::widget::WidgetInterface *loadWidget();
-	extern const isis::util::PropertyMap* getProperties();
-	extern const QWidget* loadOptionWidget();
-#endif
-#else
-#ifdef WIN32
-	extern __declspec( dllexport ) WidgetInterface *loadWidget();
-	extern __declspec( dllexport ) const isis::util::PropertyMap* getProperties();
-	extern __declspec( dllexport ) const QWidget* loadOptionWidget();
-#else
-	extern WidgetInterface *loadWidget();
-	extern const QWdiget* loadOptionWidget();
-	extern const isis::util::PropertyMap* getProperties();
-#endif
-#endif
+Q_DECLARE_INTERFACE(isis::viewer::widget::WidgetInterface,"org.isis-group.vast.VisualizationWidget/1.0")
 
-#ifdef __cplusplus
-}
-#endif
+QT_END_NAMESPACE
 
-
-
-#endif
+#endif //QWIDGETIMPLEMENTATIONBASE_HPP

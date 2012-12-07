@@ -52,16 +52,15 @@ public:
 
 	typedef isis::viewer::widget::WidgetInterface* ( *loadWidget_func )() ;
 	typedef QWidget* (  *loadOption_func )() ;
-	typedef std::map<std::string, loadWidget_func > WidgetMapType;
+	typedef std::map<std::string, WidgetInterface* > WidgetMapType;
 	typedef std::map<std::string, loadOption_func > OptionDialogMapType;
-	typedef std::map<std::string, const util::PropertyMap *> WidgetPropertyMapType;
+	typedef std::map<std::string, util::PropertyMap> WidgetPropertyMapType;
 
-	typedef std::list<std::string> PathsType;
+	typedef std::list<QDir> PathsType;
 
-	void addWidgetSearchPath( const std::string &path ) { m_WidgetSearchPaths.push_back( path ); }
-	PathsType getWidgetSearchPaths() const { return m_WidgetSearchPaths; }
+	void addWidgetSearchPath( QDir path ) { m_WidgetSearchPaths.push_back( path ); }
 
-	WidgetMapType getWidgetMap() const { return widgetMap; }
+	WidgetMapType getWidgetMap();
 	WidgetPropertyMapType getWidgetPropertyMap() const { return widgetPropertyMap; }
 	OptionDialogMapType getOptionWidgetMap() const { return optionDialogMap; }
 
@@ -70,7 +69,7 @@ public:
 protected:
 	WidgetLoader();
 
-	unsigned int findWidgets( std::list<std::string> paths );
+	unsigned int findWidgets( QDir path );
 	WidgetPropertyMapType widgetPropertyMap;
 	OptionDialogMapType optionDialogMap;
 	WidgetMapType widgetMap;

@@ -49,7 +49,10 @@
 
 int main( int argc, char *argv[] )
 {
-
+	ENABLE_LOG( isis::viewer::Dev, isis::util::DefaultMsgPrint, isis::verbose_info );
+	ENABLE_LOG( isis::viewer::Runtime, isis::util::DefaultMsgPrint, isis::verbose_info );
+	//
+	
 	using namespace isis;
 	using namespace viewer;
 	signal( SIGSEGV, error::sigsegv );
@@ -104,31 +107,33 @@ int main( int argc, char *argv[] )
 	app.parameters["widget"].needed() = false;
 	app.parameters["widget"].setDescription( "Use specific widget" );
 	app.init( argc, argv, false );
+	QDir tPath=app.getQApplication().applicationDirPath();tPath.cd("plugins");
+	util::Singletons::get<widget::WidgetLoader, 10>().addWidgetSearchPath( tPath );
 	QViewerCore *core = new QViewerCore;
-	boost::shared_ptr<qt4::QDefaultMessagePrint> logging_hanlder_runtime ( new qt4::QDefaultMessagePrint( verbose_info ) );
-	boost::shared_ptr<qt4::QDefaultMessagePrint> logging_hanlder_dev ( new qt4::QDefaultMessagePrint( verbose_info ) );
-	util::_internal::Log<viewer::Dev>::setHandler( logging_hanlder_dev );
-	util::_internal::Log<viewer::Runtime>::setHandler( logging_hanlder_runtime );
+// 	boost::shared_ptr<qt4::QDefaultMessagePrint> logging_hanlder_runtime ( new qt4::QDefaultMessagePrint( verbose_info ) );
+// 	boost::shared_ptr<qt4::QDefaultMessagePrint> logging_hanlder_dev ( new qt4::QDefaultMessagePrint( verbose_info ) );
+// 	util::_internal::Log<viewer::Dev>::setHandler( logging_hanlder_dev );
+// 	util::_internal::Log<viewer::Runtime>::setHandler( logging_hanlder_runtime );
 
-	//make vast showing qmessage if an error log is thrown
-	logging_hanlder_dev->qmessageBelow( isis::warning );
-	logging_hanlder_runtime->qmessageBelow( isis::warning );
+// 	//make vast showing qmessage if an error log is thrown
+// 	logging_hanlder_dev->qmessageBelow( isis::warning );
+// 	logging_hanlder_runtime->qmessageBelow( isis::warning );
 
 	//setting stylesheet
 	if ( core->getSettings()->getPropertyAs<bool>( "useStyleSheet" ) ) {
 		app.getQApplication().setStyleSheet( util::Singletons::get<style::Style, 10>().getStyleSheet( core->getSettings()->getPropertyAs<std::string>( "styleSheet" ) ) );
 	}
 
-	util::_internal::Log<isis::data::Runtime>::setHandler( logging_hanlder_runtime );
-	util::_internal::Log<isis::util::Runtime>::setHandler( logging_hanlder_runtime );
-	util::_internal::Log<isis::util::Debug>::setHandler( logging_hanlder_runtime );
-	util::_internal::Log<isis::data::Debug>::setHandler( logging_hanlder_runtime );
-	util::_internal::Log<isis::image_io::Runtime>::setHandler( logging_hanlder_runtime );
-	util::_internal::Log<isis::image_io::Debug>::setHandler( logging_hanlder_runtime );
+// 	util::_internal::Log<isis::data::Runtime>::setHandler( logging_hanlder_runtime );
+// 	util::_internal::Log<isis::util::Runtime>::setHandler( logging_hanlder_runtime );
+// 	util::_internal::Log<isis::util::Debug>::setHandler( logging_hanlder_runtime );
+// 	util::_internal::Log<isis::data::Debug>::setHandler( logging_hanlder_runtime );
+// 	util::_internal::Log<isis::image_io::Runtime>::setHandler( logging_hanlder_runtime );
+// 	util::_internal::Log<isis::image_io::Debug>::setHandler( logging_hanlder_runtime );
 
 
-	core->addMessageHandler( logging_hanlder_runtime.get() );
-	core->addMessageHandlerDev( logging_hanlder_dev.get() );
+/*	core->addMessageHandler( logging_hanlder_runtime.get() );
+	core->addMessageHandlerDev( logging_hanlder_dev.get() );*/
 	//scan for plugins and hand them to the core
 	core->addPlugins( plugin::PluginLoader::get().getPlugins() );
 	core->getUICore()->reloadPluginsToGUI();

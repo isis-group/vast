@@ -62,116 +62,76 @@ struct widgetDeleter {
 };
 }
 
-unsigned int WidgetLoader::findWidgets( std::list< std::string > paths )
+unsigned int WidgetLoader::findWidgets( QDir path )
 {
 	unsigned int ret = 0;
-	bool pathOk;
-	BOOST_FOREACH( PathsType::const_reference pathRef, paths ) {
-		pathOk = true;
-		boost::filesystem::path p( pathRef );
 
-		if( !boost::filesystem::exists( p ) ) {
-			LOG( Dev, warning ) << "Widgetpath " << util::MSubject( p.native_file_string() ) << " not found!";
-			pathOk = false;
-		}
+	if( !path.exists() ) {
+		LOG( Dev, warning ) << "Widgetpath " << util::MSubject( path.canonicalPath().toStdString() ) << " not found!";
+		return 0;
+	}
 
-		if( !boost::filesystem::is_directory( p ) ) {
-			LOG( Dev, warning ) << util::MSubject( p.native_file_string() ) << " is not a directory!";
-			pathOk = false;
-		}
+	if( !path.isReadable() ) {
+		LOG( Dev, warning ) << util::MSubject( path.canonicalPath().toStdString() ) << " is not readable!";
+		return 0;
+	}
 
-		LOG( Dev, info ) << "Scanning " << util::MSubject( p ) << " for widgets...";
-		LOG( Dev, info ) << "Scanning " << util::MSubject( p ) << " for widgets...";
+	LOG( viewer::Dev, info ) << "Scanning " << util::MSubject( path.canonicalPath().toStdString() ) << " for widgets... (" << DL_PREFIX << "*" << DL_SUFFIX << ")";
 
-		boost::regex widgetFilter( std::string( "^" ) + DL_PREFIX + "vastImageWidget" + "[[:word:]]+" + DL_SUFFIX + "$" );
+	foreach (QString fileName, path.entryList(QStringList(QString(DL_PREFIX)+"*"+DL_SUFFIX), QDir::Files)) {
+		QPluginLoader loader(path.absoluteFilePath(fileName));
+		QObject *plugin = loader.instance();
+		WidgetInterface *widget;
+		if(plugin && (widget = qobject_cast<WidgetInterface*>(plugin))){
+			const util::PropertyMap props=widget->getProperties();
 
-		if( pathOk ) {
-			for ( boost::filesystem::directory_iterator itr( p ); itr != boost::filesystem::directory_iterator(); ++itr ) {
-				if ( boost::filesystem::is_directory( *itr ) )continue;
-
-				if ( boost::regex_match( itr->path().leaf(), widgetFilter ) ) {
-					const std::string widgetName = itr->path().file_string();
-#ifdef WIN32
-					HINSTANCE handle = LoadLibrary( widgetName.c_str() );
-#else
-					void *handle = dlopen( widgetName.c_str(), RTLD_NOW );
-#endif
-
-					if ( handle ) {
-#ifdef WIN32
-						const util::PropertyMap* ( *loadProperties_func )() = ( const util::PropertyMap * ( * )() )GetProcAddress( handle, "getProperties" );
-						loadWidget_func loadFunc = ( isis::viewer::widget::WidgetInterface * ( * )() )GetProcAddress( handle, "loadWidget" );
-						loadOption_func oLoadFunc = ( QWidget * ( * )() )GetProcAddress( handle, "loadOptionWidget" );
-#else
-						const util::PropertyMap* ( *loadProperties_func )() = ( const util::PropertyMap * ( * )() )dlsym( handle, "getProperties" );
-						loadWidget_func loadFunc = ( isis::viewer::widget::WidgetInterface * ( * )() )dlsym( handle, "loadWidget" );
-						loadOption_func oLoadFunc = ( QWidget * ( * )() )dlsym( handle, "loadOptionWidget" );
-#endif
-
-						if ( loadFunc && loadProperties_func ) {
-							if( loadProperties_func()->hasProperty( "widgetIdent" ) ) {
-								const std::string widgetIdent = loadProperties_func()->getPropertyAs<std::string>( "widgetIdent" );
-								widgetMap[widgetIdent] = loadFunc;
-								widgetPropertyMap[widgetIdent] = loadProperties_func();
-								optionDialogMap[widgetIdent] = oLoadFunc;
-								ret++;
-								LOG( Dev, info ) << "Added widget " << widgetIdent;
-							} else {
-								LOG( Dev, error ) << "The widget " << widgetName << " has no property \"widgetIdent\" ! Will not load it.";
-							}
-						} else {
-#ifdef WIN32
-							LOG( Dev, warning )
-									<< "could not get format factory function from " << util::MSubject( widgetName );
-							FreeLibrary( handle );
-#else
-							LOG( Dev, warning )
-									<< "could not get format factory function from " << util::MSubject( widgetName ) << ":" << util::MSubject( dlerror() );
-							dlclose( handle );
-#endif
-						}
-					} else
-#ifdef WIN32
-						LOG( Runtime, warning ) << "Could not load library " << util::MSubject( widgetName );
-
-#else
-						LOG( Dev, warning ) << "Could not load library " << util::MSubject( widgetName ) << ":" <<  util::MSubject( dlerror() );
-#endif
-				} else {
-					LOG( Dev, verbose_info )
-							<< "Ignoring " << util::MSubject( itr->path() )
-							<< " because it doesn't match " << widgetFilter.str();
-				}
+			if( props.hasProperty( "widgetIdent" ) ) {
+				const std::string widgetIdent = props.getPropertyAs<std::string>( "widgetIdent" );
+				widgetMap[widgetIdent] = widget;
+				widgetPropertyMap[widgetIdent] = props;
+// 						optionDialogMap[widgetIdent] = oLoadFunc;
+				ret++;
+				LOG( Dev, info ) << "Added widget " << widgetIdent;
+			} else {
+				LOG( Dev, error ) << "The widget " << fileName.toStdString() << " has no property \"widgetIdent\" ! Will not load it.";
 			}
+		} else {
+			LOG( Dev, warning ) << "Could not load widget plugin " << util::MSubject( fileName.toStdString() ) << ":" <<  loader.errorString().toStdString();
 		}
-
 	}
 	return ret;
+}
+
+WidgetLoader::WidgetMapType WidgetLoader::getWidgetMap()
+{
+	if(widgetMap.empty()){ // search for widgets if none are found yet 
+		BOOST_FOREACH(PathsType::const_reference path, m_WidgetSearchPaths){
+			findWidgets( path );
+		}
+	}
+	return widgetMap;
 }
 
 WidgetLoader::WidgetLoader()
 {
 	const char *env_path = getenv( "VAST_WIDGET_PATH" );
 	const char *env_home = getenv( "HOME" );
-
+	
 	if( env_path ) {
-		addWidgetSearchPath( boost::filesystem::path( env_path ).directory_string() );
+		addWidgetSearchPath( QString(env_path) );
 	}
-
+	
 	if( env_home ) {
 		const boost::filesystem::path home = boost::filesystem::path( env_home ) / "vast" / "widgets";
-
+		
 		if( boost::filesystem::exists( home ) ) {
-			addWidgetSearchPath( home.directory_string() );
+			addWidgetSearchPath( QString::fromStdString (home.directory_string()) );
 		}
 	}
-
+	
 	if( std::string( _VAST_WIDGET_PATH ).size() ) {
-		addWidgetSearchPath( std::string ( _VAST_WIDGET_PATH ) );
+		addWidgetSearchPath( QString(_VAST_WIDGET_PATH ) );
 	}
-
-	findWidgets( m_WidgetSearchPaths );
-
 }
 
 WidgetLoader &WidgetLoader::get()

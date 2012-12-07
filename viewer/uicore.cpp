@@ -128,8 +128,8 @@ WidgetEnsemble::Pointer UICore::createViewWidgetEnsemble( const std::string &wid
 	WidgetEnsemble::Pointer ensemble( new WidgetEnsemble );
 
 	//if this widget has an option widget we are loading it and passing it to the ensemble
-	if( m_ViewerCore->getWidgetProperties( widgetIdentifier )->hasProperty( "hasOptionWidget" ) ) {
-		if( m_ViewerCore->getWidgetProperties( widgetIdentifier )->getPropertyAs<bool>( "hasOptionWidget" ) ) {
+	if( m_ViewerCore->getWidgetProperties( widgetIdentifier ).hasProperty( "hasOptionWidget" ) ) {
+		if( m_ViewerCore->getWidgetProperties( widgetIdentifier ).getPropertyAs<bool>( "hasOptionWidget" ) ) {
 			widget::WidgetLoader::OptionDialogMapType optionMap = util::Singletons::get<widget::WidgetLoader, 10>().getOptionWidgetMap();
 			const widget::WidgetLoader::OptionDialogMapType::const_iterator iter = optionMap.find( widgetIdentifier );
 
@@ -141,8 +141,8 @@ WidgetEnsemble::Pointer UICore::createViewWidgetEnsemble( const std::string &wid
 
 	uint8_t numberWidgets;
 
-	if( m_ViewerCore->getWidgetProperties( widgetIdentifier )->hasProperty( "numberOfEntitiesInEnsemble" ) ) {
-		numberWidgets = m_ViewerCore->getWidgetProperties( widgetIdentifier )->getPropertyAs<uint8_t>( "numberOfEntitiesInEnsemble" );
+	if( m_ViewerCore->getWidgetProperties( widgetIdentifier ).hasProperty( "numberOfEntitiesInEnsemble" ) ) {
+		numberWidgets = m_ViewerCore->getWidgetProperties( widgetIdentifier ).getPropertyAs<uint8_t>( "numberOfEntitiesInEnsemble" );
 	} else {
 		LOG( Dev, error ) << "Your widget \"" << widgetIdentifier << "\" has no property \"numberOfEntitiesInEnsemble\" ! Setting it to 1";
 		numberWidgets = 1;

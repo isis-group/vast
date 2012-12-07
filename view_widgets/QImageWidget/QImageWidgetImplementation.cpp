@@ -28,8 +28,8 @@
 #include "QImageWidgetImplementation.hpp"
 #include <QWidget>
 #include "QOrientationHandler.hpp"
-#include "uicore.hpp"
-#include "memoryhandler.hpp"
+#include "viewer/uicore.hpp"
+#include "viewer/memoryhandler.hpp"
 
 namespace isis
 {
@@ -590,6 +590,15 @@ void QImageWidgetImplementation::dragEnterEvent( QDragEnterEvent *e )
 	}
 }
 
+isis::util::PropertyMap QImageWidgetImplementation::getProperties()const
+{
+	isis::util::PropertyMap properties;
+	properties.setPropertyAs<std::string>( "widgetIdent", "qt4_plane_widget" );
+	properties.setPropertyAs<std::string>( "widgetName", "Simple plane widget" );
+	properties.setPropertyAs<uint8_t>( "numberOfEntitiesInEnsemble", 3 );
+	properties.setPropertyAs<bool>( "hasOptionWidget", false );
+	return properties;
+}
 
 void QImageWidgetImplementation::dropEvent( QDropEvent *e )
 {
@@ -618,22 +627,18 @@ void QImageWidgetImplementation::dropEvent( QDropEvent *e )
 }
 } //end namespace
 
-const QWidget *loadOptionWidget()
-{
-	return new QWidget();
-}
+// const QWidget *loadOptionWidget()
+// {
+// 	return new QWidget();
+// }
+// 
+// isis::viewer::widget::WidgetInterface *loadWidget()
+// {
+// 	return new isis::viewer::widget::QImageWidgetImplementation();
+// }
 
-isis::viewer::widget::WidgetInterface *loadWidget()
-{
-	return new isis::viewer::widget::QImageWidgetImplementation();
-}
 
-const isis::util::PropertyMap *getProperties()
-{
-	isis::util::PropertyMap *properties = new isis::util::PropertyMap();
-	properties->setPropertyAs<std::string>( "widgetIdent", "qt4_plane_widget" );
-	properties->setPropertyAs<std::string>( "widgetName", "Simple plane widget" );
-	properties->setPropertyAs<uint8_t>( "numberOfEntitiesInEnsemble", 3 );
-	properties->setPropertyAs<bool>( "hasOptionWidget", false );
-	return properties;
-}
+
+QT_BEGIN_NAMESPACE
+Q_EXPORT_PLUGIN2(QImageWidget, isis::viewer::widget::QImageWidgetImplementation)
+QT_END_NAMESPACE
