@@ -105,7 +105,7 @@ protected:
 	UICore( QViewerCore *core );
 
 private:
-	WidgetEnsembleComponent::Pointer createEnsembleComponent( const std::string &widgetIdentifier, PlaneOrientation planeOrientation, WidgetEnsemble::Pointer );
+	WidgetEnsembleComponent::Pointer createEnsembleComponent( widget::WidgetInterface* widgetImpl, PlaneOrientation planeOrientation, WidgetEnsemble::Pointer );
 
 	QDockWidget *createDockingEnsemble( QWidget *widget );
 

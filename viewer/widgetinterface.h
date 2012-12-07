@@ -58,6 +58,8 @@ public:
 		m_IsSetup = true;
 	};
 
+	virtual WidgetInterface* clone()=0;
+
 	virtual void setEnableCrosshair( bool enable ) = 0;
 	virtual void updateScene() = 0;
 	virtual void setZoom( float zoom ) = 0;

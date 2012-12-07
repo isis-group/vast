@@ -46,16 +46,6 @@ QImageWidgetImplementation::QImageWidgetImplementation()
 }
 
 
-QImageWidgetImplementation::QImageWidgetImplementation( QViewerCore *core, QWidget *parent, PlaneOrientation orientation )
-	: QWidget( parent ),
-	  m_Layout( new QVBoxLayout( parent ) ),
-	  m_Painter( new QPainter() ),
-	  m_ShowLabels( false )
-{
-	setup( core, parent, orientation );
-	commonInit();
-}
-
 void QImageWidgetImplementation::setup ( QViewerCore *core, QWidget *parent, PlaneOrientation orientation )
 {
 	WidgetInterface::setup( core, parent, orientation );
@@ -63,6 +53,14 @@ void QImageWidgetImplementation::setup ( QViewerCore *core, QWidget *parent, Pla
 	m_Layout = new QVBoxLayout( parent );
 	commonInit();
 }
+
+WidgetInterface* QImageWidgetImplementation::clone()
+{
+	QImageWidgetImplementation *ret=new QImageWidgetImplementation;
+	ret->setParent(this);
+	return ret;
+}
+
 
 void QImageWidgetImplementation::disconnectSignals()
 {

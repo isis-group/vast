@@ -29,11 +29,6 @@
 #include "widgetloader.hpp"
 #include <CoreUtils/message.hpp>
 #include "common.hpp"
-#ifdef WIN32
-#include <windows.h>
-#else
-#include <dlfcn.h>
-#endif
 
 namespace isis
 {
@@ -41,26 +36,6 @@ namespace viewer
 {
 namespace widget
 {
-namespace _internal
-{
-struct widgetDeleter {
-	void *m_dlHandle;
-	std::string m_widgetName;
-	widgetDeleter( void *dlHandle, std::string widgetName ): m_dlHandle( dlHandle ), m_widgetName( widgetName ) {}
-	void operator()( WidgetInterface *format ) {
-		delete format;
-#ifdef WIN32
-
-		if( !FreeLibrary( ( HINSTANCE )m_dlHandle ) )
-#else
-		if ( dlclose( m_dlHandle ) != 0 )
-#endif
-			std::cerr << "Failed to release widget " << m_widgetName << " (was loaded at " << m_dlHandle << ")";
-
-		//we cannot use LOG here, because the loggers are gone allready
-	}
-};
-}
 
 unsigned int WidgetLoader::findWidgets( QDir path )
 {

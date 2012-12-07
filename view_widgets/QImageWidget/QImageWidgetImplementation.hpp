@@ -55,9 +55,8 @@ class QImageWidgetImplementation : public QWidget, public WidgetInterface
 	typedef std::map<boost::shared_ptr<ImageHolder>, ImageProperties> ImagePropertiesMapType;
 
 public:
-
-	QImageWidgetImplementation( QViewerCore *core, QWidget *parent = 0, PlaneOrientation orientation = axial );
 	QImageWidgetImplementation();
+	virtual WidgetInterface* clone();
 	
 public Q_SLOTS:
 	virtual bool hasOptionWidget() const { return false; };

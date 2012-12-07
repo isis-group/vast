@@ -54,7 +54,6 @@ public:
 	typedef QWidget* (  *loadOption_func )() ;
 	typedef std::map<std::string, WidgetInterface* > WidgetMapType;
 	typedef std::map<std::string, loadOption_func > OptionDialogMapType;
-	typedef std::map<std::string, util::PropertyMap> WidgetPropertyMapType;
 
 	typedef std::list<QDir> PathsType;
 

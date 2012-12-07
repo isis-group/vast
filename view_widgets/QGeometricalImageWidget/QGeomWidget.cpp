@@ -41,14 +41,13 @@ namespace viewer
 namespace widget
 {
 
-QGeomWidget::QGeomWidget()
-	: QWidget(),
+QGeomWidget::QGeomWidget():QWidget(),
 	  m_Painter( new QPainter( ) )
 {}
 
 void QGeomWidget::setup ( QViewerCore *core, QWidget *parent , PlaneOrientation planeOrienation )
 {
-	isis::viewer::widget::WidgetInterface::setup ( core , parent , planeOrienation );
+	WidgetInterface::setup ( core , parent , planeOrienation );
 	setParent( parent );
 	m_Layout = new QVBoxLayout( parent );
 	m_Layout->addWidget( this );
@@ -68,9 +67,15 @@ void QGeomWidget::setup ( QViewerCore *core, QWidget *parent , PlaneOrientation 
 	m_ShowLabels = false;
 	m_ShowCrosshair = true;
 	m_ShowScalingOffset = false;
-
-
 }
+
+WidgetInterface* QGeomWidget::clone()
+{
+	QGeomWidget *ret=new QGeomWidget;
+	ret->setParent(this);
+	return ret;
+}
+
 
 void QGeomWidget::disconnectSignals()
 {

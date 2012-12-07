@@ -57,6 +57,7 @@ public:
 	QGeomWidget();
 
 	virtual void setup( QViewerCore *, QWidget *, PlaneOrientation );
+	virtual WidgetInterface* clone();
 
 	virtual std::string getWidgetIdent() const { return std::string( "qt4_geometrical_plane_widget" ); }
 	virtual std::string getWidgetName() const { return std::string( "Geometrical widget" ); }
