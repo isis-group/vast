@@ -128,25 +128,20 @@ WidgetEnsemble::Pointer UICore::createViewWidgetEnsemble( const std::string &wid
 	WidgetEnsemble::Pointer ensemble( new WidgetEnsemble );
 
 	//if this widget has an option widget we are loading it and passing it to the ensemble
-	if( m_ViewerCore->getWidgetProperties( widgetIdentifier ).hasProperty( "hasOptionWidget" ) ) {
+	qWarning("Implement me pleeeeaaase!!");
+	/*	if( m_ViewerCore->getWidgetProperties( widgetIdentifier ).hasProperty( "hasOptionWidget" ) ) {
 		if( m_ViewerCore->getWidgetProperties( widgetIdentifier ).getPropertyAs<bool>( "hasOptionWidget" ) ) {
-			widget::WidgetLoader::OptionDialogMapType optionMap = util::Singletons::get<widget::WidgetLoader, 10>().getOptionWidgetMap();
 			const widget::WidgetLoader::OptionDialogMapType::const_iterator iter = optionMap.find( widgetIdentifier );
 
 			if( iter != optionMap.end() ) {
 				ensemble->setOptionWidget( iter->second() );  //looks strange since we are calling a funtion pointer
 			}
-		}
 	}
-
+}*/
+	
 	uint8_t numberWidgets;
 
-	if( m_ViewerCore->getWidgetProperties( widgetIdentifier ).hasProperty( "numberOfEntitiesInEnsemble" ) ) {
-		numberWidgets = m_ViewerCore->getWidgetProperties( widgetIdentifier ).getPropertyAs<uint8_t>( "numberOfEntitiesInEnsemble" );
-	} else {
-		LOG( Dev, error ) << "Your widget \"" << widgetIdentifier << "\" has no property \"numberOfEntitiesInEnsemble\" ! Setting it to 1";
-		numberWidgets = 1;
-	}
+	numberWidgets = m_ViewerCore->getWidget ( widgetIdentifier )->numberOfEntitiesInEnsemble();
 
 	if( numberWidgets == 1 ) {
 		ensemble->insertComponent( createEnsembleComponent( widgetIdentifier, not_specified, ensemble ) );

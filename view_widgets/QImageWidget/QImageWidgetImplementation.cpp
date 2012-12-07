@@ -590,16 +590,6 @@ void QImageWidgetImplementation::dragEnterEvent( QDragEnterEvent *e )
 	}
 }
 
-isis::util::PropertyMap QImageWidgetImplementation::getProperties()const
-{
-	isis::util::PropertyMap properties;
-	properties.setPropertyAs<std::string>( "widgetIdent", "qt4_plane_widget" );
-	properties.setPropertyAs<std::string>( "widgetName", "Simple plane widget" );
-	properties.setPropertyAs<uint8_t>( "numberOfEntitiesInEnsemble", 3 );
-	properties.setPropertyAs<bool>( "hasOptionWidget", false );
-	return properties;
-}
-
 void QImageWidgetImplementation::dropEvent( QDropEvent *e )
 {
 	const ImageHolder::Pointer image = m_ViewerCore->getImageMap().at( e->mimeData()->text().toStdString() );

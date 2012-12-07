@@ -83,18 +83,11 @@ unsigned int WidgetLoader::findWidgets( QDir path )
 		QObject *plugin = loader.instance();
 		WidgetInterface *widget;
 		if(plugin && (widget = qobject_cast<WidgetInterface*>(plugin))){
-			const util::PropertyMap props=widget->getProperties();
 
-			if( props.hasProperty( "widgetIdent" ) ) {
-				const std::string widgetIdent = props.getPropertyAs<std::string>( "widgetIdent" );
-				widgetMap[widgetIdent] = widget;
-				widgetPropertyMap[widgetIdent] = props;
-// 						optionDialogMap[widgetIdent] = oLoadFunc;
-				ret++;
-				LOG( Dev, info ) << "Added widget " << widgetIdent;
-			} else {
-				LOG( Dev, error ) << "The widget " << fileName.toStdString() << " has no property \"widgetIdent\" ! Will not load it.";
-			}
+			const std::string widgetIdent = widget->getWidgetIdent();
+			widgetMap[widgetIdent] = widget;
+			ret++;
+			LOG( Dev, info ) << "Added widget " << widgetIdent;
 		} else {
 			LOG( Dev, warning ) << "Could not load widget plugin " << util::MSubject( fileName.toStdString() ) << ":" <<  loader.errorString().toStdString();
 		}

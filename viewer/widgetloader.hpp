@@ -61,8 +61,6 @@ public:
 	void addWidgetSearchPath( QDir path ) { m_WidgetSearchPaths.push_back( path ); }
 
 	WidgetMapType getWidgetMap();
-	WidgetPropertyMapType getWidgetPropertyMap() const { return widgetPropertyMap; }
-	OptionDialogMapType getOptionWidgetMap() const { return optionDialogMap; }
 
 	static WidgetLoader &get();
 
@@ -70,7 +68,6 @@ protected:
 	WidgetLoader();
 
 	unsigned int findWidgets( QDir path );
-	WidgetPropertyMapType widgetPropertyMap;
 	OptionDialogMapType optionDialogMap;
 	WidgetMapType widgetMap;
 

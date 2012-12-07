@@ -60,6 +60,7 @@ public:
 
 	virtual std::string getWidgetIdent() const { return std::string( "qt4_geometrical_plane_widget" ); }
 	virtual std::string getWidgetName() const { return std::string( "Geometrical widget" ); }
+	virtual unsigned int numberOfEntitiesInEnsemble() const{return 3;}
 
 	virtual isis::util::PropertyMap getProperties()const;
 public Q_SLOTS:

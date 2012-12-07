@@ -50,10 +50,9 @@ ImageStack::ImageStack( QWidget *parent, ImageStackWidget *widget, QViewerCore *
 	typedef widget::WidgetLoader::WidgetMapType::const_reference WRef;
 	QSignalMapper *signalMapper = new QSignalMapper( this );
 	const widget::WidgetLoader::WidgetMapType &widgetMap = util::Singletons::get<widget::WidgetLoader, 10>().getWidgetMap();
-	const widget::WidgetLoader::WidgetPropertyMapType &optionsMap = util::Singletons::get<widget::WidgetLoader, 10>().getWidgetPropertyMap();
 	BOOST_FOREACH( WRef w, widgetMap ) {
 		QAction *action = new QAction( this );
-		action->setText( optionsMap.at( w.first ).getPropertyAs<std::string>( "widgetName" ).c_str() );
+		action->setText( w.second->getWidgetName().c_str() );
 		m_WidgetActions.push_back( action );
 		signalMapper->setMapping( action, w.first.c_str() );
 		connect( action, SIGNAL( triggered( bool ) ), signalMapper, SLOT( map() ) );

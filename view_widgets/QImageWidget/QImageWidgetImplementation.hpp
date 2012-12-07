@@ -58,7 +58,6 @@ public:
 
 	QImageWidgetImplementation( QViewerCore *core, QWidget *parent = 0, PlaneOrientation orientation = axial );
 	QImageWidgetImplementation();
-	virtual isis::util::PropertyMap getProperties()const;
 	
 public Q_SLOTS:
 	virtual bool hasOptionWidget() const { return false; };
@@ -87,6 +86,8 @@ public Q_SLOTS:
 
 	virtual std::string getWidgetIdent() const { return std::string( "qt4_plane_widget" ); }
 	virtual std::string getWidgetName() const { return std::string( "Simple plane widget" ); }
+	virtual unsigned int numberOfEntitiesInEnsemble() const{return 3;}
+	
 	virtual void keyPressEvent( QKeyEvent *e );
 
 	virtual void dragEnterEvent( QDragEnterEvent * );

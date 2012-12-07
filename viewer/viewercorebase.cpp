@@ -225,26 +225,5 @@ widget::WidgetInterface *ViewerCoreBase::getWidget ( const std::string &identifi
 }
 
 
-util::PropertyMap ViewerCoreBase::getWidgetProperties ( const std::string &identifier )
-{
-	widget::WidgetLoader::WidgetPropertyMapType widgetPropertyMap = util::Singletons::get<widget::WidgetLoader, 10>().getWidgetPropertyMap();
-
-	if( widgetPropertyMap.empty() ) {
-		LOG( Dev, error ) << "Could not find any widget!" ;
-	}
-
-	if( widgetPropertyMap.find( identifier ) != widgetPropertyMap.end() ) {
-		LOG( Dev, info ) << "Loading widget properties of identifier \"" << identifier << "\".";
-		return widgetPropertyMap.at( identifier );
-	} else {
-		LOG( Dev, error ) << "Can not find any widget properties with identifier \"" << identifier
-						  << "\"! Returning properties of the first widget i can find.";
-		const std::string fallback = widgetPropertyMap.begin()->first;
-		getSettings()->setPropertyAs<std::string>( "defaultViewWidgetIdentifier", fallback );
-		getSettings()->save();
-		return getWidgetProperties( fallback );
-	}
-}
-
 }
 } // end namespace

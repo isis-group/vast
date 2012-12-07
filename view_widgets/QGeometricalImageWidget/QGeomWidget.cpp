@@ -570,8 +570,6 @@ void QGeomWidget::dropEvent ( QDropEvent *e )
 util::PropertyMap QGeomWidget::getProperties() const
 {
 	isis::util::PropertyMap properties;
-	properties.setPropertyAs<std::string>( "widgetIdent", "qt4_geometrical_plane_widget" );
-	properties.setPropertyAs<std::string>( "widgetName", "Geometrical plane widget" );
 	properties.setPropertyAs<uint8_t>( "numberOfEntitiesInEnsemble", 3 );
 	properties.setPropertyAs<bool>( "hasOptionWidget", false );
 	return properties;

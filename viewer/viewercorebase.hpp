@@ -69,7 +69,6 @@ public:
 	bool hasImage() const { return m_imageVector.size() && m_CurrentImage.get(); }
 
 	widget::WidgetInterface *getWidget( const std::string &identifier ) throw( std::runtime_error & );
-	util::PropertyMap getWidgetProperties( const std::string &identifier ) ;
 
 	bool hasWidget( const std::string &identifier );
 

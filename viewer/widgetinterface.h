@@ -30,7 +30,7 @@
 
 #include "common.hpp"
 #include "imageholder.hpp"
-#include <CoreUtils/propmap.hpp>
+
 #include <QtGui>
 #include <boost/signals2.hpp>
 
@@ -51,7 +51,6 @@ class WidgetInterface
 public:
 	enum MouseButton { right_button, left_button, middle_button, left_and_right_button };
 	
-	virtual isis::util::PropertyMap getProperties()const =0;
 	virtual void setup( QViewerCore *core, QWidget *parent, PlaneOrientation orientation ){
 		m_ViewerCore = core;
 		m_Parent = parent;
@@ -66,6 +65,8 @@ public:
 	virtual bool removeImage( const boost::shared_ptr< ImageHolder >  ) { return true; };
 	virtual std::string getWidgetIdent() const = 0;
 	virtual std::string getWidgetName() const = 0;
+	virtual unsigned int numberOfEntitiesInEnsemble()const = 0;
+	
 	virtual void setInterpolationType( InterpolationType interpolation ) = 0;
 	virtual void setMouseCursorIcon( QIcon ) = 0;
 	virtual void setCrossHairColor( QColor ) {}

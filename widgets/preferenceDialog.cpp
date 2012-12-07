@@ -158,10 +158,9 @@ void PreferencesDialog::loadSettings()
 
 	m_Interface.defaultViewWidgetComboBox->clear();
 	const widget::WidgetLoader::WidgetMapType &widgetMap = util::Singletons::get<widget::WidgetLoader, 10>().getWidgetMap();
-	const widget::WidgetLoader::WidgetPropertyMapType &optionsMap = util::Singletons::get<widget::WidgetLoader, 10>().getWidgetPropertyMap();
 	m_Interface.defaultViewWidgetFrame->setVisible( widgetMap.size() > 1 );
 	BOOST_FOREACH( widget::WidgetLoader::WidgetMapType::const_reference w, widgetMap ) {
-		m_Interface.defaultViewWidgetComboBox->addItem( optionsMap.at( w.first ).getPropertyAs<std::string>( "widgetName" ).c_str(), QVariant( w.first.c_str() ) );
+		m_Interface.defaultViewWidgetComboBox->addItem( w.second->getWidgetName().c_str(), QVariant( w.first.c_str() ) );
 	}
 	m_Interface.defaultViewWidgetComboBox->setCurrentIndex( m_Interface.defaultViewWidgetComboBox->findData( QVariant( m_ViewerCore->getSettings()->getPropertyAs<std::string>( "defaultViewWidgetIdentifier" ).c_str() ) ) );
 }
