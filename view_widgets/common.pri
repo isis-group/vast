@@ -9,3 +9,4 @@ INCLUDEPATH += ../..
 INCLUDEPATH += $$OUT_PWD/../../widgets
 DESTDIR     = ../../plugins
 LIBS += -L../..  -lviewer
+PRE_TARGETDEPS = ../../$$qtLibraryTarget(viewer)
