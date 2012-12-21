@@ -274,8 +274,8 @@ void QViewerCore::zoomChanged ( float zoomFactor )
 		emitZoomChanged( zoomFactor );
 	}
 }
-
-void QViewerCore::addPlugin ( boost::shared_ptr< plugin::PluginInterface > plugin )
+/*
+void QViewerCore::addPlugin ( plugin::PluginLoader::PluginInterfacePointer plugin )
 {
 	if ( !m_Parent && plugin->isGUI() ) {
 		LOG ( Runtime, error )
@@ -286,20 +286,12 @@ void QViewerCore::addPlugin ( boost::shared_ptr< plugin::PluginInterface > plugi
 		m_PluginList.push_back ( plugin );
 	}
 }
-
-void QViewerCore::addPlugins ( isis::viewer::plugin::PluginLoader::PluginListType plugins )
-{
-	BOOST_FOREACH ( plugin::PluginLoader::PluginListType::const_reference plugin, plugins ) {
-		addPlugin ( plugin );
-	}
-}
-
-
+*/
 bool QViewerCore::callPlugin ( QString name )
 {
 	BOOST_FOREACH ( plugin::PluginLoader::PluginListType::const_reference plugin, m_PluginList ) {
 		if ( plugin->getName() == name.toStdString() ) {
-			return plugin->call();
+			return plugin->call(m_Parent,this);
 		}
 	}
 	LOG ( Runtime, error ) << "No such plugin " << name.toStdString() << "!";

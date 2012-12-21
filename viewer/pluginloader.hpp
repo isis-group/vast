@@ -30,13 +30,12 @@
 #define PLUGINLOADER_HPP
 
 #include "plugininterface.h"
-#define BOOST_FILESYSTEM_VERSION 2 //@todo switch to 3 as soon as we drop support for boost < 1.44
-#include <boost/filesystem.hpp>
-#include <boost/regex.h>
-#include <boost/shared_ptr.hpp>
 #include <boost/foreach.hpp>
 #include <list>
-#include <CoreUtils/singletons.hpp>
+#include <QDir>
+#include <CoreUtils/message.hpp>
+#include <QPluginLoader>
+#include "common.hpp"
 
 namespace isis
 {
@@ -45,26 +44,67 @@ namespace viewer
 namespace plugin
 {
 
-class PluginLoader
+template<class INTERFACE> class PluginLoader
 {
-	friend class util::Singletons;
+	std::string mask;
 public:
-	typedef boost::shared_ptr< PluginInterface > PluginInterfacePointer;
+	typedef INTERFACE* PluginInterfacePointer;
 	typedef std::list< PluginInterfacePointer > PluginListType;
-	typedef std::list<std::string> PathsType;
+	typedef std::list<QDir> PathsType;
 
-	void addPluginSearchPath( const std::string &path ) { m_PluginSearchPaths.push_back( path ); }
-	PathsType getPluginSearchPaths() const { return m_PluginSearchPaths; }
+	PluginLoader(std::string pathEnvName,std::string nameMask):mask(nameMask){
+		const char *env_path = getenv( pathEnvName.c_str() );
+		const char *env_home = getenv( "HOME" );
+		
+		if( env_path ) {
+			addPluginSearchPath( QDir( env_path ) );
+		}
+		
+		if( env_home ) {
+			QDir home( env_home );;
+			
+			if( home.cd("vast") && home.cd("plugins") )
+				addPluginSearchPath( home );
+		}
+	}
 
-	PluginListType getPlugins() const { return pluginList; }
+	void addPluginSearchPath( const QString path ) { m_PluginSearchPaths.push_back( path ); }
 
-	static PluginLoader &get();
-
+	PluginListType loadPlugins(){
+		PluginListType ret;
+		BOOST_FOREACH(PathsType::const_reference p,m_PluginSearchPaths){
+			PluginListType loaded=findPlugins(p);
+		}
+	}
 protected:
-	PluginLoader();
-
-	bool registerPlugin( const PluginInterfacePointer plugin );
-	unsigned int findPlugins( std::list<std::string> paths );
+	PluginListType findPlugins( QDir path ){
+		PluginListType ret;
+		
+		if( !path.exists() ) {
+			LOG( Dev, warning ) << "Plugin path " << util::MSubject( path.canonicalPath().toStdString() ) << " not found!";
+			return 0;
+		}
+		
+		if( !path.isReadable() ) {
+			LOG( Dev, warning ) << "Plugin path " << util::MSubject( path.canonicalPath().toStdString() ) << " is not readable!";
+			return 0;
+		}
+		
+		LOG( viewer::Dev, info ) << "Scanning " << path.canonicalPath().toStdString() << " for plugins... (" << mask << ")";
+		
+		foreach (QString fileName, path.entryList(QStringList(mask.c_str()), QDir::Files)) {
+			QPluginLoader loader(path.absoluteFilePath(fileName));
+			QObject *plLoader = loader.instance();
+			PluginInterface *plugin;
+			if(plLoader && (plugin = qobject_cast<PluginInterfacePointer>(plLoader))){
+				ret.push_back(plugin);
+				LOG( Dev, info ) << "Added plugin " << plugin->getName() << " from " << path.canonicalPath().toStdString();
+			} else
+				LOG( Dev, warning ) << "Could not load plugin " << util::MSubject( path.filePath(fileName).toStdString() ) << ":" <<  loader.errorString().toStdString();
+		}
+		return ret;
+			
+	}
 	PluginListType pluginList;
 
 private:

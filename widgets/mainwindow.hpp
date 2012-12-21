@@ -71,7 +71,7 @@ public:
 	const Ui::vastMainWindow &getInterface() const { return m_Interface; }
 	Ui::vastMainWindow &getInterface() { return m_Interface; }
 
-	void reloadPluginsToGUI( );
+	void reloadPluginsToGUI(plugin::PluginLoader<plugin::PluginInterface>::PluginListType plugins);
 
 	ui::PreferencesDialog *preferencesDialog;
 	ui::LoggingDialog *loggingDialog;

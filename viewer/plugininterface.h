@@ -28,7 +28,6 @@
 #ifndef PLUGININTERFACE_H
 #define PLUGININTERFACE_H
 
-#ifdef __cplusplus
 #include <iostream>
 #include <QObject>
 #include <QIcon>
@@ -50,14 +49,12 @@ class PluginInterface
 {
 public:
 	PluginInterface() {};
-	void setViewerCore( isis::viewer::QViewerCore *core ) { viewerCore = core; }
-	void setParentWidget( QWidget *p ) { parentWidget = p; }
 
 	/**
 	 * Calls the plugin. This function should execute the plugin
 	 * (e.g. showing a dialog or directly executing an operation)
 	 */
-	virtual bool call() = 0;
+	virtual bool call(QWidget* parent, isis::viewer::QViewerCore* core) = 0;
 	/**
 	 * This function returns the name of the plugin.
 	 * A name for instance can look like "category/subcategory/pluginname
@@ -77,16 +74,13 @@ public:
 	///returns if the plugin uses a gui
 	virtual bool isGUI() = 0;
 
-	///returns the string pointing to the toolbarIcon. If this string is empty the plugin will not be placed in the toolbar.
+	///returns the toolbarIcon. If this string is empty the plugin will not be placed in the toolbar.
 	virtual QIcon *getToolbarIcon() { return new QIcon(); }
 	virtual ~PluginInterface() {}
 
 	std::string plugin_file;
 protected:
 	QViewerCore *viewerCore;
-	QWidget *parentWidget;
-
-
 };
 
 
@@ -94,32 +88,10 @@ protected:
 }
 }
 
-#else
-typedef struct PluginInterface PluginInterface;
-#endif
+QT_BEGIN_NAMESPACE
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+Q_DECLARE_INTERFACE(isis::viewer::plugin::PluginInterface,"org.isis-group.vast.Plugin/1.0")
 
-#if defined(__STDC__) || defined(__cplusplus)
-#ifdef WIN32
-	extern __declspec( dllexport ) isis::viewer::plugin::PluginInterface *loadPlugin();
-#else
-	extern isis::viewer::plugin::PluginInterface *loadPlugin();
-#endif
-#else
-#ifdef WIN32
-	extern __declspec( dllexport ) PluginInterface *loadPlugin();
-#else
-	extern PluginInterface *loadPlugin();
-#endif
-#endif
-
-#ifdef __cplusplus
-}
-#endif
-
-
+QT_END_NAMESPACE
 
 #endif

@@ -31,7 +31,7 @@
 
 #include <QDialog>
 #include <boost/assign.hpp>
-#include "qviewercore.hpp"
+#include "viewer/qviewercore.hpp"
 #include "ui_propertyToolDialog.h"
 
 namespace isis
@@ -88,14 +88,21 @@ private:
 
 
 
-class PropertyToolDialog : public QDialog
+class PropertyToolDialog : public QDialog, public PluginInterface
 {
 	Q_OBJECT
-
+	Q_INTERFACES(PluginInterface)
 public:
-	PropertyToolDialog( QWidget *parent, QViewerCore *core );
-
-
+	PropertyToolDialog();
+    bool isGUI(){return true;}
+    virtual std::string getName() { return std::string( "Property Tool" ) ; }
+    virtual std::string getDescription() { return std::string( "" ); }
+    virtual std::string getTooltip() { return std::string( "Allows you to show and modify the meta data of the image." ); }
+    virtual QKeySequence getShortcut() { return QKeySequence( "P, T" ) ;}
+    virtual QIcon *getToolbarIcon() { return new QIcon( ":/common/properties.png" ); }
+    virtual bool isGUI() { return true; }
+    virtual bool call(QWidget* parent, isis::viewer::QViewerCore* core);
+    
 public Q_SLOTS:
 	void updateProperties();
 	void selectionChanged( int );
@@ -109,7 +116,9 @@ private:
 	Ui::propertyToolDialog m_Interface;
 	QViewerCore *m_ViewerCore;
 	_internal::FillChunkListThread *m_fillChunkListThread;
-
+	bool isInitialized;
+	
+	
 	void setIfHas( const std::string &name, QLabel *nameLabel, QLabel *propLabel, const boost::shared_ptr<data::Image> image );
 
 	void buildUpTree( const util::PropertyMap &image );
@@ -145,5 +154,9 @@ private:
 }
 }
 }
+
+QT_BEGIN_NAMESPACE
+Q_EXPORT_PLUGIN2(PropertyToolDialog, PropertyToolDialog)
+QT_END_NAMESPACE
 
 #endif

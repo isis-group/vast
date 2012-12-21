@@ -5,7 +5,8 @@
 TEMPLATE    = lib
 CONFIG      += plugin
 
-INCLUDEPATH += ../..
 INCLUDEPATH += $$OUT_PWD/../../widgets
+INCLUDEPATH += ../..
+DESTDIR     = ../../plugins
 LIBS += -L../..  -lviewer
 PRE_TARGETDEPS = ../../$$qtLibraryTarget(viewer)

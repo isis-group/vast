@@ -25,7 +25,7 @@
  *  Created on: Jan 05, 2012
  *      Author: tuerke
  ******************************************************************/
-#include "plugininterface.h"
+#include "viewer/plugininterface.h"
 #include "PropertyToolDialog.hpp"
 
 namespace isis
@@ -37,6 +37,7 @@ namespace plugin
 
 class PropertyTool : public PluginInterface
 {
+	Q_INTERFACES(isis::viewer::widget::PluginInterface)
 public:
 	PropertyTool() : isInitialized( false ) {}
 	virtual std::string getName() { return std::string( "Property Tool" ) ; }
@@ -72,7 +73,6 @@ private:
 }
 }
 
-isis::viewer::plugin::PluginInterface *loadPlugin()
-{
-	return new isis::viewer::plugin::PropertyTool();
-}
+QT_BEGIN_NAMESPACE
+Q_EXPORT_PLUGIN2(QImageWidget, isis::viewer::plugin::PropertyTool)
+QT_END_NAMESPACE

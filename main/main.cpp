@@ -58,6 +58,7 @@ int main( int argc, char *argv[] )
 	signal( SIGSEGV, error::sigsegv );
 
 
+	plugin::PluginLoader<PluginInterface> pLoader(VAST_WIDGET_PATH,"*vastPlugin*");
 
 	std::string appName = "vast";
 	std::string orgName = "cbs.mpg.de";
@@ -107,8 +108,16 @@ int main( int argc, char *argv[] )
 	app.parameters["widget"].needed() = false;
 	app.parameters["widget"].setDescription( "Use specific widget" );
 	app.init( argc, argv, false );
-	QDir tPath=app.getQApplication().applicationDirPath();tPath.cd("plugins");
-	util::Singletons::get<widget::WidgetLoader, 10>().addWidgetSearchPath( tPath );
+
+	foreach (const QString &path, app.getQApplication().libraryPaths()){
+		util::Singletons::get<widget::WidgetLoader, 10>().addWidgetSearchPath( path );
+		pLoader.addPluginSearchPath(path);
+	}
+
+	if( std::string( _VAST_WIDGET_PATH ).size() ) {
+		util::Singletons::get<widget::WidgetLoader, 10>().addWidgetSearchPath( QString(_VAST_WIDGET_PATH ) );
+	}
+	
 	QViewerCore *core = new QViewerCore;
 // 	boost::shared_ptr<qt4::QDefaultMessagePrint> logging_hanlder_runtime ( new qt4::QDefaultMessagePrint( verbose_info ) );
 // 	boost::shared_ptr<qt4::QDefaultMessagePrint> logging_hanlder_dev ( new qt4::QDefaultMessagePrint( verbose_info ) );
@@ -135,6 +144,8 @@ int main( int argc, char *argv[] )
 /*	core->addMessageHandler( logging_hanlder_runtime.get() );
 	core->addMessageHandlerDev( logging_hanlder_dev.get() );*/
 	//scan for plugins and hand them to the core
+
+	
 	core->addPlugins( plugin::PluginLoader::get().getPlugins() );
 	core->getUICore()->reloadPluginsToGUI();
 

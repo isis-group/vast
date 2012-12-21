@@ -2,12 +2,11 @@
 	error( Couldn't find the common.pri file! )
 }
 
-
 TEMPLATE = lib
 CONFIG += staticlib
 INCLUDEPATH += $$OUT_PWD/../widgets
 SOURCES += color.cpp common.cpp fileinformation.cpp geometrical.cpp imageholder.cpp memoryhandler.cpp nativeimageops.cpp \
-pluginloader.cpp qprogressfeedback.cpp qviewercore.cpp settings.cpp style.cpp uicore.cpp viewercorebase.cpp \
+qprogressfeedback.cpp qviewercore.cpp settings.cpp style.cpp uicore.cpp viewercorebase.cpp \
 widgetensemblecomponent.cpp widgetensemble.cpp widgetloader.cpp
 
 HEADERS += color.hpp common.hpp error.hpp fileinformation.hpp geometrical.hpp imageholder.hpp memoryhandler.hpp nativeimageops.hpp \

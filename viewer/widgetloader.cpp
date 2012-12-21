@@ -51,9 +51,9 @@ unsigned int WidgetLoader::findWidgets( QDir path )
 		return 0;
 	}
 
-	LOG( viewer::Dev, info ) << "Scanning " << util::MSubject( path.canonicalPath().toStdString() ) << " for widgets... (" << DL_PREFIX << "*" << DL_SUFFIX << ")";
+LOG( viewer::Dev, info ) << "Scanning " << path.canonicalPath().toStdString() << " for widgets... (*vastVisWidget*)";
 
-	foreach (QString fileName, path.entryList(QStringList(QString(DL_PREFIX)+"*"+DL_SUFFIX), QDir::Files)) {
+	foreach (QString fileName, path.entryList(QStringList("*vastVisWidget*"), QDir::Files)) {
 		QPluginLoader loader(path.absoluteFilePath(fileName));
 		QObject *plugin = loader.instance();
 		WidgetInterface *widget;
@@ -62,9 +62,9 @@ unsigned int WidgetLoader::findWidgets( QDir path )
 			const std::string widgetIdent = widget->getWidgetIdent();
 			widgetMap[widgetIdent] = widget;
 			ret++;
-			LOG( Dev, info ) << "Added widget " << widgetIdent;
+			LOG( Dev, info ) << "Added widget " << widgetIdent << " from " << path.canonicalPath().toStdString();
 		} else {
-			LOG( Dev, warning ) << "Could not load widget plugin " << util::MSubject( fileName.toStdString() ) << ":" <<  loader.errorString().toStdString();
+			LOG( Dev, warning ) << "Could not load widget plugin " << util::MSubject( path.filePath(fileName).toStdString() ) << ":" <<  loader.errorString().toStdString();
 		}
 	}
 	return ret;
@@ -95,10 +95,6 @@ WidgetLoader::WidgetLoader()
 		if( boost::filesystem::exists( home ) ) {
 			addWidgetSearchPath( QString::fromStdString (home.directory_string()) );
 		}
-	}
-	
-	if( std::string( _VAST_WIDGET_PATH ).size() ) {
-		addWidgetSearchPath( QString(_VAST_WIDGET_PATH ) );
 	}
 }
 

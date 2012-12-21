@@ -51,9 +51,7 @@ public:
 
 	virtual ImageHolder::Vector addImageList( const std::list< data::Image > imageList, const ImageHolder::ImageType &imageType );
 
-	void addPlugin( boost::shared_ptr< plugin::PluginInterface > plugin );
-	void addPlugins( plugin::PluginLoader::PluginListType plugins );
-	plugin::PluginLoader::PluginListType getPlugins() const { return m_PluginList; }
+// 	plugin::PluginLoader::PluginListType getPlugins() const { return m_PluginList; }
 
 	void setParentWidget( QWidget *parent ) { m_Parent = parent; }
 
@@ -110,7 +108,7 @@ private:
 	std::list< qt4::QMessage > m_DevMessageLog;
 
 	QWidget *m_Parent;
-	plugin::PluginLoader::PluginListType m_PluginList;
+// 	plugin::PluginLoader::PluginListType m_PluginList;
 	std::string m_CurrentPath;
 	boost::shared_ptr< QProgressFeedback > m_ProgressFeedback;
 	UICore *m_UI;

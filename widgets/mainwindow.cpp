@@ -444,17 +444,17 @@ void MainWindow::saveImageAs()
 }
 
 
-void MainWindow::reloadPluginsToGUI()
+void MainWindow::reloadPluginsToGUI(plugin::PluginLoader<plugin::PluginInterface>::PluginListType plugins)
 {
 	//adding all processes to the process (plugin) menu and connect the action to the respective call functions
 	QMenu *processMenu = new QMenu( QString( "Plugins" ) );
 
-	if( m_ViewerCore->getPlugins().size() ) {
+	if( plugins.size() ) {
 		getInterface().menu_Tools->addSeparator();
 		getInterface().menu_Tools->addMenu( processMenu );
 
 		QSignalMapper *signalMapper = new QSignalMapper( this );
-		BOOST_FOREACH( plugin::PluginLoader::PluginListType::const_reference plugin, m_ViewerCore->getPlugins() ) {
+		BOOST_FOREACH( plugin::PluginLoader<plugin::PluginInterface>::PluginInterfacePointer plugin, plugins ) {
 			std::list<std::string> sepName = isis::util::stringToList<std::string>( plugin->getName(), boost::regex( "/" ) );
 			QMenu *tmpMenu = processMenu;
 			std::list<std::string>::iterator iter = sepName.begin();

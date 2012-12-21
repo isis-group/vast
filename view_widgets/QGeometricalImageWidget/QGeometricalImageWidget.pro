@@ -3,7 +3,7 @@
 }
 
 
-TARGET      = $$qtLibraryTarget(QGeometricalImageWidget)
+TARGET      = $$qtLibraryTarget(vastVisWidgetGeometrical)
 
 SOURCES += geomhandler.cpp QGeomWidget.cpp
 HEADERS += geomhandler.hpp QGeomWidget.hpp
