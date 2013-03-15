@@ -1,0 +1,277 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Technical information &mdash; vast 0.7.2 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.7.2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="vast 0.7.2 documentation" href="index.html" />
+    <link rel="prev" title="The Screenshot function" href="screenshotfunction.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="screenshotfunction.html" title="The Screenshot function"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">vast 0.7.2 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="technical-information">
+<h1>Technical information<a class="headerlink" href="#technical-information" title="Permalink to this headline">¶</a></h1>
+<p>vast was written in C/C++ language.</p>
+<div class="section" id="dependencies">
+<span id="dependecies"></span><h2>Dependencies<a class="headerlink" href="#dependencies" title="Permalink to this headline">¶</a></h2>
+<ul>
+<li><dl class="first docutils">
+<dt>isis</dt>
+<dd><p class="first last">The <a class="reference external" href="https://github.com/isis-group/isis">isis-package</a> provides the io-interface for the viewer.
+Loading and saving of files and some parts of the data handling is performed by isis.
+It also provides the plugins for the <a class="reference internal" href="#supported-file-formats"><em>Supported file formats</em></a>. This means by adding new
+io-plugins to isis vast will also benefit from these plugins.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>Qt4</dt>
+<dd><p class="first last">The <a class="reference external" href="http://qt.nokia.com/">qt4-library</a> was used to write the GUI and the basic plane view of vast.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>boost</dt>
+<dd><p class="first last">Some functions of the <a class="reference external" href="http://www.boost.org/">boost-library</a> were used in the vast project. vast needs boost &gt;= 1.35.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</div>
+<div class="section" id="supported-file-formats">
+<span id="id1"></span><h2>Supported file formats<a class="headerlink" href="#supported-file-formats" title="Permalink to this headline">¶</a></h2>
+<p>As mentioned in the <a class="reference internal" href="#dependecies"><em>Dependencies</em></a>-section vast supports all file formats as the isis project does. With version <strong>0.4.2</strong> of isis these are:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="41%" />
+<col width="29%" />
+<col width="29%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">File format</th>
+<th class="head">Readable</th>
+<th class="head">Writable</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><em>Nifti</em></td>
+<td><ul class="first last simple">
+<li></li>
+</ul>
+</td>
+<td><ul class="first last simple">
+<li></li>
+</ul>
+</td>
+</tr>
+<tr class="row-odd"><td><em>Analyze</em></td>
+<td><ul class="first last simple">
+<li></li>
+</ul>
+</td>
+<td><ul class="first last simple">
+<li></li>
+</ul>
+</td>
+</tr>
+<tr class="row-even"><td><em>Vista</em></td>
+<td><ul class="first last simple">
+<li></li>
+</ul>
+</td>
+<td><ul class="first last simple">
+<li></li>
+</ul>
+</td>
+</tr>
+<tr class="row-odd"><td><em>Dicom</em></td>
+<td><ul class="first last simple">
+<li></li>
+</ul>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td><em>PNG</em></td>
+<td><ul class="first last simple">
+<li></li>
+</ul>
+</td>
+<td><ul class="first last simple">
+<li></li>
+</ul>
+</td>
+</tr>
+<tr class="row-odd"><td><em>raw</em></td>
+<td><ul class="first last simple">
+<li></li>
+</ul>
+</td>
+<td><ul class="first last simple">
+<li></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Furthermore, vast supports reading of zipped files with the following suffixes:</p>
+<ul class="simple">
+<li>tar.bz2</li>
+<li>tar.gz</li>
+<li>tar.Z</li>
+<li>tar</li>
+<li>tgz</li>
+<li>tbz</li>
+<li>taz</li>
+<li>gz</li>
+</ul>
+</div>
+<div class="section" id="supported-data-types">
+<span id="id2"></span><h2>Supported data types<a class="headerlink" href="#supported-data-types" title="Permalink to this headline">¶</a></h2>
+<p>vast supports the following data types:</p>
+<ul class="simple">
+<li>bool</li>
+<li>s8bit</li>
+<li>u8bit</li>
+<li>s16bit</li>
+<li>u16bit</li>
+<li>s32bit</li>
+<li>u32bit</li>
+<li>s64bit</li>
+<li>u64bit</li>
+<li>float</li>
+<li>double</li>
+<li>color24</li>
+<li>color48</li>
+</ul>
+</div>
+<div class="section" id="graphics-system">
+<h2>Graphics system<a class="headerlink" href="#graphics-system" title="Permalink to this headline">¶</a></h2>
+<p>If vast was build with Qt (&gt;=4.5) it is capable of setting the graphics system.
+This allows vast to be run in a <strong>raster</strong> graphics system mode which leads to much faster and smoother image rendering.</p>
+<p>The graphics system can be modified by using the environment variable <em>VAST_GRAPHICS_SYSTEM</em>.</p>
+<p>The following values are accepted:</p>
+<ul>
+<li><dl class="first docutils">
+<dt>raster (standard)</dt>
+<dd><p class="first last">Hardware accelerated graphics mode.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>native</dt>
+<dd><p class="first last">Software rendering. This mode is also used if vast was build with Qt(&lt;4.5).</p>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>opengl</dt>
+<dd><p class="first last">This is an experimental graphics system mode of Qt which uses <a class="reference external" href="http://www.opengl.org/">OpenGl</a> for rendering purpose.</p>
+</dd>
+</dl>
+</li>
+</ul>
+<p>On UNIX platforms the graphics system can be changed (e.g. to raster) by typing:</p>
+<blockquote>
+<div><tt class="docutils literal"><span class="pre">#</span> <span class="pre">export</span> <span class="pre">VAST_GRAPHICS_SYSTEM=&quot;raster&quot;</span></tt></div></blockquote>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Technical information</a><ul>
+<li><a class="reference internal" href="#dependencies">Dependencies</a></li>
+<li><a class="reference internal" href="#supported-file-formats">Supported file formats</a></li>
+<li><a class="reference internal" href="#supported-data-types">Supported data types</a></li>
+<li><a class="reference internal" href="#graphics-system">Graphics system</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="screenshotfunction.html"
+                        title="previous chapter">The Screenshot function</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/techinfo.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="screenshotfunction.html" title="The Screenshot function"
+             >previous</a> |</li>
+        <li><a href="index.html">vast 0.7.2 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2011, Erik Tuerke.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

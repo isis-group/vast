@@ -1,0 +1,241 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Opening images in vast &mdash; vast 0.7.2 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.7.2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="vast 0.7.2 documentation" href="index.html" />
+    <link rel="next" title="The image stack" href="imagestack.html" />
+    <link rel="prev" title="Introduction" href="introduction.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="imagestack.html" title="The image stack"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="introduction.html" title="Introduction"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">vast 0.7.2 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="opening-images-in-vast">
+<h1>Opening images in vast<a class="headerlink" href="#opening-images-in-vast" title="Permalink to this headline">¶</a></h1>
+<p>There are two ways to open images with vast. It can be done by <a class="reference internal" href="#usingterminal"><em>Using a terminal</em></a> or by clicking the vast symbol on the desktop or a menu-entry and <a class="reference internal" href="#usingvastopendialog"><em>Using the vast open dialog</em></a>.</p>
+<div class="section" id="using-a-terminal">
+<span id="usingterminal"></span><h2>Using a terminal<a class="headerlink" href="#using-a-terminal" title="Permalink to this headline">¶</a></h2>
+<p>To get an overview of the commands and options you can pass to vast you can type:</p>
+<blockquote>
+<div><tt class="docutils literal"><span class="pre">#</span> <span class="pre">vast</span> <span class="pre">--help</span></tt></div></blockquote>
+<p>This also gives you a list of all supported file formats. The simplest way to open vast without any images is to type:</p>
+<blockquote>
+<div><tt class="docutils literal"><span class="pre">#</span> <span class="pre">vast</span></tt></div></blockquote>
+<p>Then you have to use the vast open dialog to load images ( <a class="reference internal" href="#usingvastopendialog"><em>Using the vast open dialog</em></a> )</p>
+<div class="section" id="opening-files">
+<h3>Opening files<a class="headerlink" href="#opening-files" title="Permalink to this headline">¶</a></h3>
+<p>To open simple files ( e.g. Nifti, Vista ) all you have to type is:</p>
+<blockquote>
+<div><tt class="docutils literal"><span class="pre">#</span> <span class="pre">vast</span> <span class="pre">-in</span> <span class="pre">iamge.nii</span></tt></div></blockquote>
+<p>It is also possible to open a list of images:</p>
+<blockquote>
+<div><tt class="docutils literal"><span class="pre">#</span> <span class="pre">vast</span> <span class="pre">-in</span> <span class="pre">image1.nii</span> <span class="pre">image2.v</span> <span class="pre">image3.nii.gz</span></tt> <a class="footnote-reference" href="#f1" id="id1">[1]</a></div></blockquote>
+<p>This will open vast and load all <strong>3</strong> images in <strong>1</strong> widget-ensemble <a class="footnote-reference" href="#f2" id="id2">[2]</a>. So the 3 images are displayed superimposed.</p>
+<img alt="_images/opening_images_superimposed.jpg" src="_images/opening_images_superimposed.jpg" style="width: 600px;" />
+<p>If you want to vast to display each image in one widget you simply have to type:</p>
+<blockquote>
+<div><tt class="docutils literal"><span class="pre">#</span> <span class="pre">vast</span> <span class="pre">-in</span> <span class="pre">image1.nii</span> <span class="pre">image2.v</span> <span class="pre">image3.nii.gz</span> <span class="pre">-split</span></tt> <a class="footnote-reference" href="#f1" id="id3">[1]</a></div></blockquote>
+<p>This will open vast, load all <strong>3</strong> images and distribute them among <strong>3</strong> widget-ensembles <a class="footnote-reference" href="#f2" id="id4">[2]</a>.</p>
+<img alt="_images/opening_images_splitted.jpg" src="_images/opening_images_splitted.jpg" style="width: 600px;" />
+</div>
+</div>
+<div class="section" id="using-the-vast-open-dialog">
+<span id="usingvastopendialog"></span><h2>Using the vast open dialog<a class="headerlink" href="#using-the-vast-open-dialog" title="Permalink to this headline">¶</a></h2>
+<div class="line-block">
+<div class="line">If you are not familiar with using the terminal or just like clicking you can use the open dialog of vast.</div>
+<div class="line">It can be showed by pressing either <em>Ctrl+O</em>, <em>File-&gt;Open Image(s)...</em> or pressing the respective toolbar icon.</div>
+</div>
+<img alt="_images/open_dialog_all_options.jpg" src="_images/open_dialog_all_options.jpg" style="width: 600px;" />
+<p>The above image shows the open dialog with the <em>basic section</em> (green), the <em>advanced option section</em> (blue) and the <em>favorites section</em> (orange).
+The two later ones can be hidden by clicking the respective check box buttons.</p>
+<div class="section" id="basic-section">
+<span id="id5"></span><h3>Basic section<a class="headerlink" href="#basic-section" title="Permalink to this headline">¶</a></h3>
+<p>First, we will take a look at the basic section which is the one you will need at each time using the open dialog.</p>
+<img alt="_images/open_dialog_basic_section.jpg" src="_images/open_dialog_basic_section.jpg" style="width: 600px;" />
+<p>What you have to do first is to specify whether you want to open a simple file (<strong>1</strong>) (in most cases you will choose this option) or a directory (<strong>2</strong>) (with all its containing images).
+This option also influences the type of the file browse dialog which will be opened if you click <em>browse</em> button (<strong>4</strong>).</p>
+<p>Then you have two options to specify the file(s) or directory want to open:</p>
+<ul class="simple">
+<li>by typing the path to the file/directory into the text field (<strong>3</strong>)</li>
+<li>choosing the file(s)/directory with a file browser (<strong>4</strong>)</li>
+</ul>
+<p>Once specified the file(s)/directory vast will instantly check the existence and file type. If vast thinks it can not open it the path will be colored red.
+Otherwise it will be colored green.</p>
+</div>
+<div class="section" id="advanced-section">
+<h3>Advanced section<a class="headerlink" href="#advanced-section" title="Permalink to this headline">¶</a></h3>
+<img alt="_images/open_dialog_advanced_section.jpg" src="_images/open_dialog_advanced_section.jpg" style="width: 600px;" />
+<p>If you do not see the advanced section you can make it visible by clicking the check box button (<strong>1</strong>).</p>
+<p>The type (<strong>2</strong>) denotes how vast interpretes the image it is going to load. Th choices are:</p>
+<ul>
+<li><dl class="first docutils">
+<dt>structural image</dt>
+<dd><p class="first last">vast interpretes the image as a simple structural image. If not modified, the standard colortable will be used.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>zmap</dt>
+<dd><p class="first last">vast interpretes the image as a statistical image. If not modified, the standard zmap-colortable will be used. Furthermore, vast will switch to a <a class="reference internal" href="zmap.html"><em>zmap-mode</em></a>.</p>
+</dd>
+</dl>
+</li>
+</ul>
+<p>The readformat (<strong>3</strong>) tells vast which plugin it should use to load a file.
+Usually vast regognizes the file format by the filenames suffix (e.g. .nii for Nifti files).
+Sometimes it can happen that this suffix is missing (e.g. some DICOM files lack of this suffix).
+So vast is not able to automatically detect the plugin it should use to load the file(s).
+In these case the user has to specify manually which file format the image is supposed to be.</p>
+<p><strong>WARNING:</strong> dialect (<strong>4</strong>) is not implemented yet</p>
+<div class="line-block">
+<div class="line">The options (<strong>5</strong>) and (<strong>6</strong>) will only be showed if you already have loaded an image(s) to vast.</div>
+<div class="line">If the option <em>Open in new widget</em> (<strong>5</strong>) is selected vast will create a new widget-ensemble <a class="footnote-reference" href="#f2" id="id6">[2]</a> and insert the image into this widget-ensemble.</div>
+<div class="line">If the option <em>Insert in existing widget</em>  (<strong>6</strong>) is selected vast will insert into the top widget-ensemble <a class="footnote-reference" href="#f2" id="id7">[2]</a>.</div>
+</div>
+</div>
+<div class="section" id="favorites-section">
+<h3>Favorites section<a class="headerlink" href="#favorites-section" title="Permalink to this headline">¶</a></h3>
+<p>This section gives you the capability to add/remove images you often use to have quick access to them.</p>
+<img alt="_images/open_dialog_fav_section.jpg" src="_images/open_dialog_fav_section.jpg" style="width: 600px;" />
+<p>If you do not see the favorites section you can make it visible by clicking the check box button (<strong>1</strong>).</p>
+<div class="line-block">
+<div class="line">In the area denoted with the (<strong>2</strong>) you see a list of your favorite images. An entry is colored green if vast thinks it can open the image. Otherwise it will be colored red.</div>
+</div>
+<p>To open an image from that list you just have to double-click on it.</p>
+<div class="line-block">
+<div class="line">To add a new image to the favorite list you first have to type a path pointing to the file you want to add as favorite into the text field (<a class="reference internal" href="#basic-section"><em>Basic section</em></a> (<strong>3</strong>))</div>
+</div>
+<p>and then click the <em>Add as favorite</em>-button (<strong>3</strong>).</p>
+<div class="line-block">
+<div class="line">To remove an image from the favorite-list you have mark it by clicking on it and using the <em>Remove</em>-button (<strong>4</strong>).</div>
+</div>
+<table class="docutils footnote" frame="void" id="f1" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label">[1]</td><td><em>(<a class="fn-backref" href="#id1">1</a>, <a class="fn-backref" href="#id3">2</a>)</em> You can mix any file formats vast is capable of reading.</td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="f2" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label">[2]</td><td><em>(<a class="fn-backref" href="#id2">1</a>, <a class="fn-backref" href="#id4">2</a>, <a class="fn-backref" href="#id6">3</a>, <a class="fn-backref" href="#id7">4</a>)</em> A widget-ensemble is simply a set of 3 widgets (axial, sagittal and coronal).</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Opening images in vast</a><ul>
+<li><a class="reference internal" href="#using-a-terminal">Using a terminal</a><ul>
+<li><a class="reference internal" href="#opening-files">Opening files</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#using-the-vast-open-dialog">Using the vast open dialog</a><ul>
+<li><a class="reference internal" href="#basic-section">Basic section</a></li>
+<li><a class="reference internal" href="#advanced-section">Advanced section</a></li>
+<li><a class="reference internal" href="#favorites-section">Favorites section</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="introduction.html"
+                        title="previous chapter">Introduction</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="imagestack.html"
+                        title="next chapter">The image stack</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/openingimages.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="imagestack.html" title="The image stack"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="introduction.html" title="Introduction"
+             >previous</a> |</li>
+        <li><a href="index.html">vast 0.7.2 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2011, Erik Tuerke.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>
