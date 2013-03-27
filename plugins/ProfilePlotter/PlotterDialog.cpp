@@ -29,9 +29,10 @@
 #include "PlotterDialog.hpp"
 
 #include <fftw3.h>
+#include <qwt_plot_scaleitem.h>
+#include <qwt_scale_widget.h>
 
-isis::viewer::plugin::PlotterDialog::PlotterDialog ( QWidget *parent, isis::viewer::QViewerCore *core )
-	: QDialog( parent ), m_ViewerCore( core )
+isis::viewer::plugin::PlotterDialog::PlotterDialog ( QWidget *parent, isis::viewer::QViewerCore *core )	: QDialog( parent ), m_ViewerCore( core )
 {
 	ui.setupUi( this );
 	ui.timeCourseRadio->setChecked( true );
@@ -44,6 +45,7 @@ isis::viewer::plugin::PlotterDialog::PlotterDialog ( QWidget *parent, isis::view
 	plot->setAxisTitle( 0, tr( "Intensity" ) );
 	plot->setBackgroundRole( QPalette::Light );
 	plot->setFont( QFont( "", 2 ) );
+	
 	connect( m_ViewerCore, SIGNAL( emitPhysicalCoordsChanged( util::fvector3 ) ), this, ( SLOT( refresh( util::fvector3 ) ) ) );
 	connect( m_ViewerCore, SIGNAL( emitUpdateScene() ), this, SLOT( updateScene() ) );
 	connect( ui.comboAxis, SIGNAL( currentIndexChanged( int ) ), this, SLOT( updateScene() ) );
@@ -125,7 +127,6 @@ void isis::viewer::plugin::PlotterDialog::refresh ( isis::util::fvector3 physica
 					pen.setBrush( QBrush( Qt::gray, Qt::Dense1Pattern ) );
 					curve->setPen( pen );
 				}
-
 
 			} else {
 				plot->setTitle( QString( "Image has only one timestep!" ) );
@@ -273,6 +274,26 @@ void isis::viewer::plugin::PlotterDialog::fillSpectrum ( boost::shared_ptr< isis
 
 }
 
+void isis::viewer::plugin::PlotterDialog::setYScaleMax(double val)
+{
+	if(val == 0 && ui.yScaleMin->value()==0){
+		plot->setAxisAutoScale(QwtPlot::yLeft);
+	} else {
+		plot->setAxisScale(QwtPlot::yLeft,ui.yScaleMin->value(),ui.yScaleMax->value());
+	}
+	plot->updateAxes();
+	plot->replot();
+}
+void isis::viewer::plugin::PlotterDialog::setYScaleMin(double val)
+{
+	if(val == 0 && ui.yScaleMax->value()==0){
+		plot->setAxisAutoScale(QwtPlot::yLeft);
+	} else {
+		plot->setAxisScale(QwtPlot::yLeft,ui.yScaleMin->value(),ui.yScaleMax->value());
+	}
+	plot->updateAxes();
+	plot->replot();
+}
 
 
 

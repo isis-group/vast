@@ -56,6 +56,8 @@ public:
 public Q_SLOTS:
 	void showEvent( QShowEvent * );
 	void updateScene();
+	void setYScaleMax(double);
+	void setYScaleMin(double);
 
 	virtual void refresh( util::fvector3 physicalCoords );
 

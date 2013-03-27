@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>709</width>
-    <height>359</height>
+    <width>667</width>
+    <height>302</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -20,9 +20,6 @@
    <string>Dialog</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
-   <property name="margin">
-    <number>2</number>
-   </property>
    <item>
     <widget class="QFrame" name="frame_2">
      <property name="sizePolicy">
@@ -38,9 +35,40 @@
       <enum>QFrame::Raised</enum>
      </property>
      <layout class="QHBoxLayout" name="horizontalLayout_2">
-      <property name="margin">
-       <number>2</number>
-      </property>
+      <item>
+       <widget class="QLabel" name="label_2">
+        <property name="text">
+         <string>min:</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QDoubleSpinBox" name="yScaleMin">
+        <property name="minimum">
+         <double>-999999999.000000000000000</double>
+        </property>
+        <property name="maximum">
+         <double>999999999.000000000000000</double>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label_3">
+        <property name="text">
+         <string>max:</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QDoubleSpinBox" name="yScaleMax">
+        <property name="minimum">
+         <double>-999999999.000000000000000</double>
+        </property>
+        <property name="maximum">
+         <double>999999999.000000000000000</double>
+        </property>
+       </widget>
+      </item>
      </layout>
     </widget>
    </item>
@@ -110,5 +138,42 @@
  <resources>
   <include location="../resources/timeplotter.qrc"/>
  </resources>
- <connections/>
+ <connections>
+  <connection>
+   <sender>yScaleMax</sender>
+   <signal>valueChanged(double)</signal>
+   <receiver>plottingDialog</receiver>
+   <slot>setYScaleMax(double)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>579</x>
+     <y>28</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>665</x>
+     <y>53</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>yScaleMin</sender>
+   <signal>valueChanged(double)</signal>
+   <receiver>plottingDialog</receiver>
+   <slot>setYScaleMin(double)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>211</x>
+     <y>28</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>665</x>
+     <y>98</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>setYScaleMin(double)</slot>
+  <slot>setYScaleMax(double)</slot>
+ </slots>
 </ui>
