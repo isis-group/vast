@@ -54,7 +54,9 @@ public Q_SLOTS:
 	void offsetChanged( double );
 	void reset();
 	void applyScalingOffset( const double &scaling, const double &offset, bool global );
-
+	void on_scaleSlider_valueChanged(int);
+	void on_offsetSlider_valueChanged(int);
+	
 
 private:
 	Ui::scalingOptionDialog m_Interface;
