@@ -26,11 +26,11 @@
  *      Author: tuerke
  ******************************************************************/
 #include "filedialog.hpp"
-#include "common.hpp"
-#include "imageholder.hpp"
-#include "qviewercore.hpp"
-#include "widgetloader.hpp"
-#include "fileinformation.hpp"
+#include "../viewer/common.hpp"
+#include "../viewer/imageholder.hpp"
+#include "../viewer/qviewercore.hpp"
+#include "../viewer/widgetloader.hpp"
+#include "../viewer/fileinformation.hpp"
 
 #include <boost/algorithm/string.hpp>
 

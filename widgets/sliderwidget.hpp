@@ -2,7 +2,7 @@
 #define SLIDERWIDGET_HPP
 
 #include "ui_sliderWidget.h"
-#include "qviewercore.hpp"
+#include "../viewer/qviewercore.hpp"
 
 namespace isis
 {

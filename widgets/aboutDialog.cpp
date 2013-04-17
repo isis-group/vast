@@ -29,10 +29,7 @@
 #include "aboutDialog.hpp"
 
 
-isis::viewer::ui::AboutDialog::AboutDialog ( QWidget *parent, isis::viewer::QViewerCore *core )
-	: QDialog ( parent ),
-	  m_ViewerCore( core )
-
+isis::viewer::ui::AboutDialog::AboutDialog ( QWidget *parent, isis::viewer::QViewerCore *core )	: QDialog ( parent ), m_ViewerCore( core )
 {
 	m_Interface.setupUi( this );
 

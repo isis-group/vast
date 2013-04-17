@@ -14,6 +14,8 @@ set(VAST_DOC_INFIX share/vast/doc/html)
 
 include_directories(widgets)
 
+option(HAVE_WEBKIT "Set to off if you dont have QtWebKit (will disable help)" ON)
+
 # collecting files
 file (GLOB VIEWER_FILES_CPP  viewer/*.cpp)
 file (GLOB WIDGET_FILES_CPP widgets/*.cpp )
@@ -22,6 +24,11 @@ file (GLOB RESOURCE_FILES resources/*.qrc)
 file (GLOB INTERNAL_FILES_CPP viewer/internal/*.cpp )
 file (GLOB VIEWER_DEV_FILES viewer/*.hpp )
 file (GLOB WIDGET_DEV_FILES widgets/*.hpp )
+
+if(NOT HAVE_WEBKIT)
+	list(REMOVE_ITEM WIDGET_FILES_CPP ${CMAKE_SOURCE_DIR}/widgets/helpdialog.cpp)
+	list(REMOVE_ITEM WIDGET_DEV_FILES ${CMAKE_SOURCE_DIR}/widgets/helpdialog.hpp)
+endif(NOT HAVE_WEBKIT)
 
 set(VIEWER_FILES_HPP
 	viewer/qviewercore.hpp
@@ -36,9 +43,12 @@ set(VIEWER_FILES_HPP
 	widgets/filedialog.hpp
 	widgets/startwidget.hpp
 	widgets/keycommandsdialog.hpp
-	widgets/helpdialog.hpp
 	widgets/aboutDialog.hpp
 )
+
+if(HAVE_WEBKIT)
+	set(VIEWER_FILES_HPP ${VIEWER_FILES_HPP} widgets/helpdialog.hpp)
+endif(HAVE_WEBKIT)
 
 ##########################################################
 # set viewer version number
@@ -51,10 +61,14 @@ add_definitions(-D_VAST_VERSION_MAJOR=${VAST_VERSION_MAJOR})
 add_definitions(-D_VAST_VERSION_MINOR=${VAST_VERSION_MINOR})
 add_definitions(-D_VAST_VERSION_PATCH=${VAST_VERSION_PATCH})
 
+if(HAVE_WEBKIT)
+add_definitions(-DHAVE_WEBKIT)
+endif(HAVE_WEBKIT)
 
 ###########################################################
 # documentation
 ###########################################################
+if(HAVE_WEBKIT)
 option(${CMAKE_PROJECT_NAME}_DOCUMENTATION "Build the documentation for vast" OFF)
 
 IF(${CMAKE_PROJECT_NAME}_DOCUMENTATION)
@@ -63,6 +77,7 @@ ENDIF(${CMAKE_PROJECT_NAME}_DOCUMENTATION)
 
 set_source_files_properties( "${CMAKE_CURRENT_SOURCE_DIR}/widgets/helpdialog.cpp" PROPERTIES COMPILE_FLAGS
 		"-DVAST_DOC_PATH=\\\"${CMAKE_INSTALL_PREFIX}/${VAST_DOC_INFIX}\\\"")
+endif(HAVE_WEBKIT)
 
 ###########################################################
 # isis stuff
@@ -103,7 +118,11 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR} ${ISIS_INCLUDE_DIRS})
 # qt4 stuff
 ###########################################################
 
+if(HAVE_WEBKIT)
 FIND_PACKAGE(Qt4 COMPONENTS QtCore QtGui QtWebKit REQUIRED)
+else(HAVE_WEBKIT)
+FIND_PACKAGE(Qt4 COMPONENTS QtCore QtGui REQUIRED)
+endif(HAVE_WEBKIT)
 
 set(QT_USE_QTUITOOLS TRUE)
 

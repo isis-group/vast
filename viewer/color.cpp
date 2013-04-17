@@ -198,7 +198,7 @@ Color::ColormapType Color::getFallbackColormap() const
 }
 
 
-void Color::adaptColorMapToImage( ImageHolder *image, bool split )
+void Color::adaptColorMapToImage( ImageHolder *image )
 {
 	LOG_IF( image->getImageProperties().colorMap.size() != 256, Runtime, error ) << "The colormap is of size "
 			<< image->getImageProperties().colorMap.size() << " but has to be of size " << 256 << "!";
@@ -208,16 +208,9 @@ void Color::adaptColorMapToImage( ImageHolder *image, bool split )
 	const double extent = image->getImageProperties().extent;
 	const double min = image->getImageProperties().minMax.first->as<double>();
 	const double max = image->getImageProperties().minMax.second->as<double>();
-	const double lowerThreshold = image->getImageProperties().lowerThreshold;
-	const double upperThreshold = image->getImageProperties().upperThreshold;
 	const double offset = image->getImageProperties().offset;
 	const double scaling = image->getImageProperties().scaling;
 	const double norm = 256.0 / extent;
-	unsigned short mid = 0;
-
-	if( min < 0 && max > 0 ) {
-		mid  = ( norm * fabs( min ) );
-	}
 
 	short scaledVal;
 
@@ -231,52 +224,54 @@ void Color::adaptColorMapToImage( ImageHolder *image, bool split )
 		retMap[i] = tmpMap[scaledVal];
 	}
 
-	ColormapType negVec( mid );
-	AlphamapType negAlphas( mid );
-	ColormapType posVec( 256 - mid );
-	AlphamapType posAlphas( 256 - mid );
-	negAlphas.fill( 0 );
-	posAlphas.fill( 0 );
+	retMap[0] = QColor( 0, 0, 0, 0 ).rgba();
+	image->getImageProperties().alphaMap[0] = 0;
 
 	//only stuff necessary for colormaps
 	if( image->getImageProperties().imageType == ImageHolder::statistical_image ) {
 
-		if( split ) {
-			assert( negVec.size() + posVec.size() == 256 );
-
-			//fill negVec
-			if( min < 0 ) {
-				const double scaleMin = 1 - fabs( lowerThreshold / min );
-				const double normMin = 128.0 / mid;
-
-				for ( unsigned short i = 0; i < mid; i++ ) {
-					negVec[i *scaleMin] = retMap[i * normMin];
-					negAlphas[i *scaleMin] = 1;
-				}
+		unsigned short mid = ( norm * fabs( min ) );
+		ColormapType negVec( 128 );
+		AlphamapType negAlphas( 128 );
+		ColormapType posVec( 128 );
+		AlphamapType posAlphas( 128 );
+		const double lowerThreshold = image->getImageProperties().lowerThreshold;
+		const double upperThreshold = image->getImageProperties().upperThreshold;
+		
+		//fill negVec
+		if( min < 0 ) {
+			//where the negative colormap should end (index for "lowest" color) / rest until mid will be black
+			const double negMapEnd = (1 - lowerThreshold / min) * 128; // lowerThreshold < min => (1 - lowerThreshold / min) < 1 => negMapEnd < mid
+			for(unsigned short i=1;i<negMapEnd;i++){ //first entry in the colormap is reserved for background
+				int scaledVal = i/scaling;
+				
+				if( scaledVal < 1 ) scaledVal = 1;
+				if( scaledVal >= 128 ) scaledVal = 127;
+				
+				negVec[i]=tmpMap[scaledVal];
+				negAlphas[i] = 1;
 			}
-
-			if( max > 0 ) {
-				const double normMax = 128.0 / ( 256 - mid );
-				const double scaleMax = fabs( upperThreshold / max );
-				const double offset = ( 255 - mid ) * scaleMax;
-
-				for( unsigned short i = 0; i < ( 256 - mid ); i++ ) {
-					const unsigned short index = ( i * ( 1 - scaleMax ) + offset );
-					posVec[index] = retMap[128 + i * normMax];
-					posAlphas[index] = 1;
-				}
-			}
-
-			retMap = negVec << posVec;
-			image->getImageProperties().alphaMap = negAlphas << posAlphas;
-
 		}
+
+		if( max > 0 ) {
+			//where the positive colormap should start (index for "lowest" color) / rest from 128 will be black
+			const double posMapStart = (upperThreshold / max) * 128; // lowerThreshold < min => (1 - lowerThreshold / min) < 1 => negMapEnd < mid
+			for(unsigned short i=posMapStart;i<128;i++){
+				int scaledVal = i*scaling+128;
+				
+				if( scaledVal < 128 ) scaledVal = 128;
+				if( scaledVal >= 256 ) scaledVal = 255;
+				
+				posVec[i]=tmpMap[scaledVal];
+				posAlphas[i] = 1;
+			}
+		}
+
+		retMap = negVec << posVec;
+		image->getImageProperties().alphaMap = negAlphas << posAlphas;
+
 	}
-
-	retMap[0] = QColor( 0, 0, 0, 0 ).rgba();
-	image->getImageProperties().alphaMap[0] = 0;
 	image->getImageProperties().colorMap = retMap;
-
 }
 
 

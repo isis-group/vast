@@ -30,7 +30,7 @@
 #include <DataStorage/fileptr.hpp>
 #include "nativeimageops.hpp"
 #include "uicore.hpp"
-#include "mainwindow.hpp"
+#include "../widgets/mainwindow.hpp"
 
 #include <fstream>
 

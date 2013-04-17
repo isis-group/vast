@@ -26,7 +26,7 @@
  *      Author: tuerke
  ******************************************************************/
 #include "preferenceDialog.hpp"
-#include <qviewercore.hpp>
+#include "../viewer/qviewercore.hpp"
 
 namespace isis
 {

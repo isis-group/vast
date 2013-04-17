@@ -26,9 +26,9 @@
  *      Author: tuerke
  ******************************************************************/
 #include "scalingWidget.hpp"
-#include "common.hpp"
-#include "qviewercore.hpp"
-#include "nativeimageops.hpp"
+#include "../viewer/common.hpp"
+#include "../viewer/qviewercore.hpp"
+#include "../viewer/nativeimageops.hpp"
 
 namespace isis
 {
@@ -49,10 +49,7 @@ ScalingWidget::ScalingWidget( QWidget *parent, isis::viewer::QViewerCore *core )
 	connect( m_Interface.scaling, SIGNAL( valueChanged( double ) ), this, SLOT( scalingChanged( double ) ) );
 	connect( m_Interface.offset, SIGNAL( valueChanged( double ) ), this, SLOT( offsetChanged( double ) ) );
 	connect( m_Interface.resetButton, SIGNAL( clicked() ), this, SLOT( reset() ) );
-}
 
-void ScalingWidget::synchronize()
-{
 	m_Interface.offset->setMaximum( std::numeric_limits<double>::max() );
 	m_Interface.offset->setMinimum( -std::numeric_limits<double>::max() );
 	m_Interface.scaling->setMinimum( 0.0 );
@@ -61,6 +58,11 @@ void ScalingWidget::synchronize()
 	m_Interface.min->setMaximum( std::numeric_limits<double>::max() );
 	m_Interface.max->setMinimum( -std::numeric_limits<double>::max() );
 	m_Interface.max->setMaximum( std::numeric_limits<double>::max() );
+	
+}
+
+void ScalingWidget::synchronize()
+{
 
 	if( m_ViewerCore->hasImage() ) {
 		const ImageHolder::Pointer image = m_ViewerCore->getCurrentImage();
@@ -79,6 +81,18 @@ void ScalingWidget::synchronize()
 		connect( m_Interface.offset, SIGNAL( valueChanged( double ) ), this, SLOT( offsetChanged( double ) ) );
 
 		m_Interface.offset->setSingleStep( image->getImageProperties().extent / 100 );
+
+
+		m_Interface.offsetSlider->setValue(image->getImageProperties().offset);
+		m_Interface.offsetSlider->setMinimum(-image->getImageProperties().minMax.second->as<int>());
+		m_Interface.offsetSlider->setMaximum(image->getImageProperties().minMax.second->as<int>());
+		m_Interface.offsetDisp->display(image->getImageProperties().offset);
+		
+
+		// positive
+		m_Interface.scaleSlider->setValue(100./image->getImageProperties().scaling);
+		m_Interface.posVal->display    (image->getImageProperties().scalingMinMax.second);
+
 	}
 }
 
@@ -147,6 +161,17 @@ void ScalingWidget::applyScalingOffset( const double &scaling, const double &off
 	}
 
 	m_ViewerCore->getUICore()->refreshUI();
+}
+
+void ScalingWidget::on_scaleSlider_valueChanged(int value)
+{
+	scalingChanged(100./value);
+}
+void ScalingWidget::on_offsetSlider_valueChanged(int offset)
+{
+	ImageHolder::Pointer image = m_ViewerCore->getCurrentImage();
+	std::pair< double, double > minmax=operation::NativeImageOps::getMinMaxFromScalingOffset( std::make_pair<double, double>( image->getImageProperties().scaling, offset ), image );
+	applyScalingOffset( image->getImageProperties().scaling, offset, m_Interface.checkGlobal->isChecked() );
 }
 
 

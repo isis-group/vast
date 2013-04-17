@@ -30,7 +30,7 @@
 
 #include <QDialog>
 #include "ui_scalingDialog.h"
-#include "qviewercore.hpp"
+#include "../viewer/qviewercore.hpp"
 
 namespace isis
 {
@@ -54,6 +54,8 @@ public Q_SLOTS:
 	void offsetChanged( double );
 	void reset();
 	void applyScalingOffset( const double &scaling, const double &offset, bool global );
+	void on_scaleSlider_valueChanged( int );
+	void on_offsetSlider_valueChanged( int );
 
 
 private:

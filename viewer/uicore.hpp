@@ -128,8 +128,8 @@ private:
 }
 }
 
-#include "voxelInformationWidget.hpp"
-#include "imageStackWidget.hpp"
-#include "sliderwidget.hpp"
-#include "mainwindow.hpp"
+#include "../widgets/voxelInformationWidget.hpp"
+#include "../widgets/imageStackWidget.hpp"
+#include "../widgets/sliderwidget.hpp"
+#include "../widgets/mainwindow.hpp"
 #endif
