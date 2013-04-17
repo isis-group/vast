@@ -63,7 +63,7 @@ class VoxelInformationWidget : public QWidget
 				t = t == m_end ? 0 : t;
 				m_interface->timestepSpinBox->setValue( t );
 				msleep( deleyTime );
-				QApplication::processEvents(QEventLoop::AllEvents);
+				QApplication::processEvents( QEventLoop::AllEvents );
 				t++;
 
 			}
@@ -85,7 +85,7 @@ public Q_SLOTS:
 	void playTimecourse();
 	void timePlayFinished();
 	void onLUTMenuClicked();
-	void timeStepChanged(int);
+	void timeStepChanged( int );
 
 private:
 	isis::viewer::QViewerCore *m_ViewerCore;
