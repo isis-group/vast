@@ -45,9 +45,7 @@ void isis::viewer::ui::HelpDialog::showEvent ( QShowEvent *e )
 		std::string indexFile = std::string ( VAST_DOC_PATH ) + std::string( "/index.html" );
 		m_Interface.helpView->load( QUrl( indexFile.c_str() ) );
 	} else {
-		QMessageBox msgBox;
-		msgBox.setText( "Could not find help path for vast." );
-		msgBox.exec();
+		m_Interface.helpView->load( QUrl( "http://isis-group.github.io/vast/doc/index.html" ) );
 	}
 
 	QDialog::showEvent( e );
