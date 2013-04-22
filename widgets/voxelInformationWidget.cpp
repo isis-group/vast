@@ -61,8 +61,8 @@ VoxelInformationWidget::VoxelInformationWidget( QWidget *parent, QViewerCore *co
 
 	m_Interface.frame_4->setMaximumHeight( m_ViewerCore->getSettings()->getPropertyAs<uint16_t>( "maxOptionWidgetHeight" ) );
 	m_Interface.frame_4->setMinimumHeight( m_ViewerCore->getSettings()->getPropertyAs<uint16_t>( "minOptionWidgetHeight" ) );
-	m_Interface.rowBox->setMinimum( 0 );
-	m_Interface.columnBox->setMinimum( 0 );
+	m_Interface.columnSpin->setMinimum( 0 );
+	m_Interface.rowSpin->setMinimum( 0 );
 	m_Interface.sliceBox->setMinimum( 0 );
 	m_UpperHalfColormapLabel->setMaximumHeight( 20 );
 	m_Interface.playButton->setIcon( QIcon( ":/common/play.png" ) );
@@ -80,8 +80,8 @@ VoxelInformationWidget::VoxelInformationWidget( QWidget *parent, QViewerCore *co
 
 void VoxelInformationWidget::disconnectSignals()
 {
-	disconnect( m_Interface.rowBox, SIGNAL( valueChanged( int ) ), this, SLOT( voxPosChanged() ) );
-	disconnect( m_Interface.columnBox, SIGNAL( valueChanged( int ) ), this, SLOT( voxPosChanged() ) );
+	disconnect( m_Interface.columnSpin, SIGNAL( valueChanged( int ) ), this, SLOT( voxPosChanged() ) );
+	disconnect( m_Interface.rowSpin, SIGNAL( valueChanged( int ) ), this, SLOT( voxPosChanged() ) );
 	disconnect( m_Interface.sliceBox, SIGNAL( valueChanged( int ) ), this, SLOT( voxPosChanged() ) );
 	disconnect( m_Interface.xBox, SIGNAL( valueChanged( double ) ), this, SLOT( physPosChanged() ) );
 	disconnect( m_Interface.yBox, SIGNAL( valueChanged( double ) ), this, SLOT( physPosChanged() ) );
@@ -91,8 +91,8 @@ void VoxelInformationWidget::disconnectSignals()
 
 void VoxelInformationWidget::reconnectSignals()
 {
-	connect( m_Interface.rowBox, SIGNAL( valueChanged( int ) ), this, SLOT( voxPosChanged() ) );
-	connect( m_Interface.columnBox, SIGNAL( valueChanged( int ) ), this, SLOT( voxPosChanged() ) );
+	connect( m_Interface.columnSpin, SIGNAL( valueChanged( int ) ), this, SLOT( voxPosChanged() ) );
+	connect( m_Interface.rowSpin, SIGNAL( valueChanged( int ) ), this, SLOT( voxPosChanged() ) );
 	connect( m_Interface.sliceBox, SIGNAL( valueChanged( int ) ), this, SLOT( voxPosChanged() ) );
 	connect( m_Interface.xBox, SIGNAL( valueChanged( double ) ), this, SLOT( physPosChanged() ) );
 	connect( m_Interface.yBox, SIGNAL( valueChanged( double ) ), this, SLOT( physPosChanged() ) );
@@ -105,8 +105,8 @@ void VoxelInformationWidget::connectSignals()
 	connect( m_ViewerCore, SIGNAL( emitVoxelCoordChanged( util::ivector4 ) ), this, SLOT( synchronizePos( util::ivector4 ) ) );
 	connect( m_ViewerCore, SIGNAL( emitPhysicalCoordsChanged( util::fvector3 ) ), this, SLOT( synchronizePos( util::fvector3 ) ) );
 	connect( m_ViewerCore, SIGNAL( emitUpdateScene() ), this, SLOT( updateLowerUpperThreshold() ) );
-	connect( m_Interface.rowBox, SIGNAL( valueChanged( int ) ), this, SLOT( voxPosChanged() ) );
-	connect( m_Interface.columnBox, SIGNAL( valueChanged( int ) ), this, SLOT( voxPosChanged() ) );
+	connect( m_Interface.columnSpin, SIGNAL( valueChanged( int ) ), this, SLOT( voxPosChanged() ) );
+	connect( m_Interface.rowSpin, SIGNAL( valueChanged( int ) ), this, SLOT( voxPosChanged() ) );
 	connect( m_Interface.sliceBox, SIGNAL( valueChanged( int ) ), this, SLOT( voxPosChanged() ) );
 	connect( m_Interface.xBox, SIGNAL( valueChanged( double ) ), this, SLOT( physPosChanged() ) );
 	connect( m_Interface.yBox, SIGNAL( valueChanged( double ) ), this, SLOT( physPosChanged() ) );
@@ -180,8 +180,8 @@ void VoxelInformationWidget::physPosChanged()
 
 void VoxelInformationWidget::voxPosChanged()
 {
-	util::ivector4 voxelCoords( m_Interface.rowBox->text().toInt(),
-								m_Interface.columnBox->text().toInt(),
+	util::ivector4 voxelCoords( m_Interface.columnSpin->text().toInt(),
+								m_Interface.rowSpin->text().toInt(),
 								m_Interface.sliceBox->text().toInt(),
 								m_ViewerCore->getCurrentImage()->getImageProperties().timestep );
 	m_ViewerCore->physicalCoordsChanged( m_ViewerCore->getCurrentImage()->getISISImage()->getPhysicalCoordsFromIndex( voxelCoords ) ) ;
@@ -262,9 +262,9 @@ void VoxelInformationWidget::synchronize()
 
 		const util::ivector4 outerCorner = util::ivector4( image->getImageSize()[0] - 1, image->getImageSize()[1] - 1, image->getImageSize()[2] - 1 );
 
-		m_Interface.rowBox->setMaximum( outerCorner[0] );
+		m_Interface.columnSpin->setMaximum( outerCorner[0] );
 
-		m_Interface.columnBox->setMaximum( outerCorner[1] );
+		m_Interface.rowSpin->setMaximum( outerCorner[1] );
 
 		m_Interface.sliceBox->setMaximum( outerCorner[2] );
 
@@ -388,8 +388,8 @@ void VoxelInformationWidget::synchronizePos( util::ivector4 voxelCoords )
 	m_Interface.timestepSpinBox->setValue( image->getImageProperties().timestep );
 	image->getImageProperties().voxelValue = m_Interface.intensityValue->text().toDouble();
 	disconnectSignals();
-	m_Interface.rowBox->setValue( voxelCoords[0] );
-	m_Interface.columnBox->setValue( voxelCoords[1] );
+	m_Interface.columnSpin->setValue( voxelCoords[0] );
+	m_Interface.rowSpin->setValue( voxelCoords[1] );
 	m_Interface.sliceBox->setValue( voxelCoords[2] );
 	const util::fvector3 physCoords = image->getISISImage()->getPhysicalCoordsFromIndex( voxelCoords );
 	m_Interface.xBox->setValue( physCoords[0] );
