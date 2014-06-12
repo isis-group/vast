@@ -200,77 +200,114 @@ Color::ColormapType Color::getFallbackColormap() const
 
 void Color::adaptColorMapToImage( ImageHolder *image )
 {
-	LOG_IF( image->getImageProperties().colorMap.size() != 256, Runtime, error ) << "The colormap is of size "
-			<< image->getImageProperties().colorMap.size() << " but has to be of size " << 256 << "!";
-	ColormapType retMap ;
-	retMap.resize( 256 );
-	ColormapType tmpMap = util::Singletons::get<Color, 10>().getColormapMap().at( image->getImageProperties().lut );
-	const double extent = image->getImageProperties().extent;
-	const double min = image->getImageProperties().minMax.first->as<double>();
-	const double max = image->getImageProperties().minMax.second->as<double>();
-	const double offset = image->getImageProperties().offset;
-	const double scaling = image->getImageProperties().scaling;
-	const double norm = 256.0 / extent;
+	LOG_IF( image->getImageProperties().colorMap.size() != 256, Runtime, error )
+			<< "The colormap is of size "
+			<< image->getImageProperties().colorMap.size()
+			<< " but has to be of size " << 256 << "!";
 
-	short scaledVal;
+	ColormapType retMap( 256 ) ; // implicitely 0 initialised
 
-	for ( unsigned short i = 0; i < 256; i++ ) {
-		scaledVal = scaling * ( i - ( offset * norm ) );
+	ColormapType tmpMap  = util::Singletons::get<Color, 10>().getColormapMap().at( image->getImageProperties().lut );
 
-		if( scaledVal < 0 ) scaledVal = 0;
+	const double extent         = image->getImageProperties().extent;         // total value range, i.e. max - min
+	const double minVal         = image->getImageProperties().minMax.first->as<double>();
+	const double maxVal         = image->getImageProperties().minMax.second->as<double>();
+	const double offset         = image->getImageProperties().offset;         // color map offset
+	const double scaling        = image->getImageProperties().scaling;        // color map "scaling"
+	const double lowerThreshold = image->getImageProperties().lowerThreshold; // minVal<=lowerThreshold<=0, slider
+	const double upperThreshold = image->getImageProperties().upperThreshold; // 0<=upperThreshold<=maxVal, slider
 
-		if( scaledVal > 255 ) scaledVal = 255;
+	const double norm           = 255.0 / extent;
 
-		retMap[i] = tmpMap[scaledVal];
+	if( image->getImageProperties().imageType == ImageHolder::statistical_image ) {
+		// Program options "-stats" / "-zmap" leads us here.
+		// Overlay statistical attribute values on top of the boring grey level images
+
+		if( ( minVal < 0 ) && ( maxVal > 0 ) ) { // the usual case for "regular" zmaps
+			ColormapType negVec( 128 ); // the "zmap's" lower (usually negative) part
+			ColormapType posVec( 128 ); // the upper half
+
+			const float negMapEnd   = 127.0 * ( 1.0 - lowerThreshold / minVal );
+			const float negzMapIncr = 128.0 / floor( negMapEnd );
+			const float posMapStart = 1.0 + ( upperThreshold / maxVal ) * 128.0;
+			const float poszMapIncr = 128.0 / ( 128.0 - posMapStart );
+
+			float zMapIndex = 0;
+
+			for( short i = 0; i < floor( negMapEnd ); i++ ) { // starting with zero, using [i+1] below
+				if( zMapIndex >= 128.0 ) {
+					// sanity check, never happens ...
+					std::cout << __FILE__ << __LINE__ << ": adjusting zMap index from "
+							  << zMapIndex << " to 127." << std::endl;
+					zMapIndex = 127.0;
+				}
+
+				negVec[1 + i] = tmpMap[ round( zMapIndex ) ]; // first colormap entry is reserved for the background
+				zMapIndex += negzMapIncr;
+			}
+
+			// std::cout << "neg: i=0-" << negMapEnd << " -> zMapIndex=" << zMapIndex << std::endl;
+
+			zMapIndex = 128; // explicitely set to the upper half start index
+
+			for( short i = round( posMapStart ); i < 128; i++ ) {
+				if( zMapIndex >= 256.0 ) {
+					// sanity check, we should not see output from here
+					std::cout << __FILE__ << __LINE__ << ": adjusting zMapIndex from "
+							  << zMapIndex << " to 255." << std::endl;
+					zMapIndex = 255;
+				}
+
+				posVec[i] = tmpMap[zMapIndex];
+				zMapIndex += poszMapIncr;
+			}
+
+			// std::cout << "pos: " << posMapStart << " - " << zMapIndex << std::endl;
+
+			// combine into the final tables
+			retMap = negVec << posVec;
+		} else if ( minVal >= 0 && maxVal > 0 ) { // all stat/"zmap" values > 0
+			const float tgtStartIndex = 1.0 + upperThreshold * norm; // tgt lut index
+			const float zMapIndexIncr = 127.0 / ( 256.0 - floor( tgtStartIndex ) ) ;
+
+			float zMapIndex = 128.0; // zmap style ! Positive values start in the "middle"
+
+			for( short tgtMapIndex = floor( tgtStartIndex ); tgtMapIndex < 256; tgtMapIndex++ ) {
+				if( zMapIndex >= 256.0 ) { // sanity check
+					// virtually dead code
+					std::cout << __FILE__ << ": @tgtStartIndex=" << tgtStartIndex << ": adjusting statMapIndex from "
+							  << zMapIndex << " to " << 255
+							  << ", tgtMapIndex=" << tgtMapIndex << std::endl;
+					zMapIndex = 255.0;
+				}
+
+				retMap[tgtMapIndex] = tmpMap[zMapIndex];
+
+				zMapIndex += zMapIndexIncr;
+			}
+		} else {
+			std::cout << __FILE__ << __LINE__ << ", min and max < 0, unhandled case ..."
+					  << std::endl;
+		}
+	} else {
+		// the "nonstatistical case", a regular MR dataset
+		for ( unsigned short i = 1; i < 256; i++ ) {
+			short scaledVal = scaling * ( i - ( offset * norm ) );
+
+			if( scaledVal < 0 ) {
+				scaledVal = 0;
+			} else if( scaledVal > 255 ) {
+				scaledVal = 255;
+			}
+
+			retMap[i] = tmpMap[scaledVal];
+		}
 	}
 
+	// assure background reservation
 	retMap[0] = QColor( 0, 0, 0, 0 ).rgba();
 	image->getImageProperties().alphaMap[0] = 0;
 
-	//only stuff necessary for colormaps
-	if( image->getImageProperties().imageType == ImageHolder::statistical_image ) {
-
-		unsigned short mid = ( norm * fabs( min ) );
-		ColormapType negVec( 128 );
-		AlphamapType negAlphas( 128 );
-		ColormapType posVec( 128 );
-		AlphamapType posAlphas( 128 );
-		const double lowerThreshold = image->getImageProperties().lowerThreshold;
-		const double upperThreshold = image->getImageProperties().upperThreshold;
-		
-		//fill negVec
-		if( min < 0 ) {
-			//where the negative colormap should end (index for "lowest" color) / rest until mid will be black
-			const double negMapEnd = (1 - lowerThreshold / min) * 128; // lowerThreshold < min => (1 - lowerThreshold / min) < 1 => negMapEnd < mid
-			for(unsigned short i=1;i<negMapEnd;i++){ //first entry in the colormap is reserved for background
-				int scaledVal = i/scaling;
-				
-				if( scaledVal < 1 ) scaledVal = 1;
-				if( scaledVal >= 128 ) scaledVal = 127;
-				
-				negVec[i]=tmpMap[scaledVal];
-				negAlphas[i] = 1;
-			}
-		}
-
-		if( max > 0 ) {
-			//where the positive colormap should start (index for "lowest" color) / rest from 128 will be black
-			const double posMapStart = (upperThreshold / max) * 128; // lowerThreshold < min => (1 - lowerThreshold / min) < 1 => negMapEnd < mid
-			for(unsigned short i=posMapStart;i<128;i++){
-				int scaledVal = i*scaling+128;
-				
-				if( scaledVal < 128 ) scaledVal = 128;
-				if( scaledVal >= 256 ) scaledVal = 255;
-				
-				posVec[i]=tmpMap[scaledVal];
-				posAlphas[i] = 1;
-			}
-		}
-
-		retMap = negVec << posVec;
-		image->getImageProperties().alphaMap = negAlphas << posAlphas;
-
-	}
 	image->getImageProperties().colorMap = retMap;
 }
 
