@@ -119,11 +119,11 @@ public:
 					if( isisImage->checkVoxel( voxCoords ) ) {
 						const int32_t sliceCoords[] = { voxCoords[mapping[0]], voxCoords[mapping[1]] };
 						const int32_t chunkCoords[] = { voxCoords[0], voxCoords[1], voxCoords[2] };
-// 						memcpy( dest + sliceCoords[0] + sizeSliceChunk[0] * sliceCoords[1],
-// 									 src + chunkCoords[0] + sizeChunk[0] * chunkCoords[1] + sizeChunk[0] * sizeChunk[1] * chunkCoords[2],
-// 									 sizeof( TYPE ) );
+						//                      memcpy( dest + sliceCoords[0] + sizeSliceChunk[0] * sliceCoords[1],
+						//                                   src + chunkCoords[0] + sizeChunk[0] * chunkCoords[1] + sizeChunk[0] * sizeChunk[1] * chunkCoords[2],
+						//                                   sizeof( TYPE ) );
 						dest[sliceCoords[0] + sizeSliceChunk[0] * sliceCoords[1]]
-							= src[chunkCoords[0] + sizeChunk[0] * chunkCoords[1] + sizeChunk[0] * sizeChunk[1] * chunkCoords[2]];
+						= src[chunkCoords[0] + sizeChunk[0] * chunkCoords[1] + sizeChunk[0] * sizeChunk[1] * chunkCoords[2]];
 					}
 				}
 			}

@@ -98,12 +98,12 @@
             </sizepolicy>
            </property>
            <property name="text">
-            <string>Row:</string>
+            <string>Column:</string>
            </property>
           </widget>
          </item>
          <item row="0" column="1">
-          <widget class="QSpinBox" name="rowBox">
+          <widget class="QSpinBox" name="columnSpin">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Minimum" vsizetype="Maximum">
              <horstretch>0</horstretch>
@@ -121,12 +121,12 @@
             </sizepolicy>
            </property>
            <property name="text">
-            <string>Column:</string>
+            <string>Row:</string>
            </property>
           </widget>
          </item>
          <item row="1" column="1">
-          <widget class="QSpinBox" name="columnBox">
+          <widget class="QSpinBox" name="rowSpin">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Minimum" vsizetype="Maximum">
              <horstretch>0</horstretch>
