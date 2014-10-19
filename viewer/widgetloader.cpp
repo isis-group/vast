@@ -71,12 +71,12 @@ unsigned int WidgetLoader::findWidgets( std::list< std::string > paths )
 		boost::filesystem::path p( pathRef );
 
 		if( !boost::filesystem::exists( p ) ) {
-			LOG( Dev, warning ) << "Widgetpath " << util::MSubject( p.native_file_string() ) << " not found!";
+			LOG( Dev, warning ) << "Widgetpath " << util::MSubject( p ) << " not found!";
 			pathOk = false;
 		}
 
 		if( !boost::filesystem::is_directory( p ) ) {
-			LOG( Dev, warning ) << util::MSubject( p.native_file_string() ) << " is not a directory!";
+			LOG( Dev, warning ) << util::MSubject( p ) << " is not a directory!";
 			pathOk = false;
 		}
 
@@ -89,8 +89,8 @@ unsigned int WidgetLoader::findWidgets( std::list< std::string > paths )
 			for ( boost::filesystem::directory_iterator itr( p ); itr != boost::filesystem::directory_iterator(); ++itr ) {
 				if ( boost::filesystem::is_directory( *itr ) )continue;
 
-				if ( boost::regex_match( itr->path().leaf(), widgetFilter ) ) {
-					const std::string widgetName = itr->path().file_string();
+				if ( boost::regex_match( itr->path().filename().string(), widgetFilter ) ) {
+					const std::string widgetName = itr->path().native();
 #ifdef WIN32
 					HINSTANCE handle = LoadLibrary( widgetName.c_str() );
 #else
@@ -155,14 +155,14 @@ WidgetLoader::WidgetLoader()
 	const char *env_home = getenv( "HOME" );
 
 	if( env_path ) {
-		addWidgetSearchPath( boost::filesystem::path( env_path ).directory_string() );
+		addWidgetSearchPath( env_path );
 	}
 
 	if( env_home ) {
 		const boost::filesystem::path home = boost::filesystem::path( env_home ) / "vast" / "widgets";
 
 		if( boost::filesystem::exists( home ) ) {
-			addWidgetSearchPath( home.directory_string() );
+			addWidgetSearchPath( home.native() );
 		}
 	}
 

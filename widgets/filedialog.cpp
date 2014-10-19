@@ -284,7 +284,7 @@ bool isis::viewer::ui::FileDialog::checkIfPathIsValid( QString path, unsigned sh
 			for ( boost::filesystem::directory_iterator itr( p ); itr != boost::filesystem::directory_iterator(); ++itr ) {
 				if ( boost::filesystem::is_directory( *itr ) )continue;
 
-				checkIfPathIsValid( itr->path().file_string().c_str(), validFiles, suffix, OPEN_FILE );
+				checkIfPathIsValid( itr->path().native().c_str(), validFiles, suffix, OPEN_FILE );
 			}
 
 			if( validFiles ) {
@@ -319,8 +319,8 @@ void isis::viewer::ui::FileDialog::browse()
 	boost::trim( path_str );
 	boost::filesystem::path p( path_str );
 
-	if ( boost::filesystem::is_directory(  boost::filesystem::path( p.directory_string() ) ) ) {
-		m_FileDialog.setDirectory( p.directory_string().c_str() );
+	if ( boost::filesystem::is_directory( p ) ) {
+		m_FileDialog.setDirectory( p.native().c_str() );
 	}
 
 	QStringList files;
