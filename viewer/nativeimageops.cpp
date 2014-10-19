@@ -26,6 +26,7 @@
  *      Author: tuerke
  ******************************************************************/
 #include "nativeimageops.hpp"
+#include <boost/shared_ptr.hpp>
 
 isis::viewer::QViewerCore *isis::viewer::operation::NativeImageOps::m_ViewerCore;
 
@@ -203,7 +204,7 @@ std::vector<double> isis::viewer::operation::NativeImageOps::getHistogramFromIma
 
 	histogram.resize( extent );
 
-	const InternalImageType *dataPtr = boost::shared_static_cast<const InternalImageType>( image->getRawAdress( timestep ) ).get();
+	const InternalImageType *dataPtr = boost::static_pointer_cast<const InternalImageType>( image->getRawAdress( timestep ) ).get();
 
 	if( extent > 1e6 ) {
 		m_ViewerCore->getUICore()->toggleLoadingIcon( true, QString( "Calculating histogram for image " ) + image->getImageProperties().fileName.c_str() );
