@@ -211,7 +211,7 @@ bool ImageHolder::setImage( const data::Image &image, const ImageType &_imageTyp
 	getImageProperties().filePath = filename;
 	getImageProperties().zeroIsReserved = false;
 	boost::filesystem::path p( filename );
-	getImageProperties().fileName = p.filename();
+	getImageProperties().fileName = p.filename().string();
 	// get some image information
 	//add some more properties
 	getImageProperties().imageType = _imageType;

@@ -74,8 +74,12 @@ std::string getFileFormatsAsString( image_io::FileFormat::io_modes mode, const s
 			fileFormats << preSeparator << format << postSeparator;
 		}
 	}
-	fileFormats.str().erase( fileFormats.str().size() - 1 , 1 );
-	return fileFormats.str();
+	if(fileFormats.str().empty())
+		return "";
+	else {
+		fileFormats.str().erase( fileFormats.str().size() - 1 , 1 );
+		return fileFormats.str();
+	}
 
 }
 

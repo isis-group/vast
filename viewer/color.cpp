@@ -231,22 +231,36 @@ void Color::adaptColorMapToImage( ImageHolder *image )
 	if( image->getImageProperties().imageType == ImageHolder::statistical_image ) {
 
 		unsigned short mid = ( norm * fabs( min ) );
-		ColormapType negVec( 128 );
-		AlphamapType negAlphas( 128 );
-		ColormapType posVec( 128 );
-		AlphamapType posAlphas( 128 );
+		ColormapType negVec( mid );
+		AlphamapType negAlphas( mid );
+		ColormapType posVec( 256-mid );
+		AlphamapType posAlphas( 256-mid );
 		const double lowerThreshold = image->getImageProperties().lowerThreshold;
 		const double upperThreshold = image->getImageProperties().upperThreshold;
+
+		double imageScale=1;
+
+		switch(image->getImageProperties().majorTypeID)
+		{
+			case data::ValueArray<float>::staticID:
+			case data::ValueArray<double>::staticID:
+			break;
+			default:
+				if(extent<256)
+					imageScale=128/extent;
+			break;
+		}
+
 		
 		//fill negVec
 		if( min < 0 ) {
 			//where the negative colormap should end (index for "lowest" color) / rest until mid will be black
-			const double negMapEnd = (1 - lowerThreshold / min) * 128; // lowerThreshold < min => (1 - lowerThreshold / min) < 1 => negMapEnd < mid
+			const double negMapEnd = (1 - lowerThreshold / min) * mid; // lowerThreshold < min => (1 - lowerThreshold / min) < 1 => negMapEnd < mid
 			for(unsigned short i=1;i<negMapEnd;i++){ //first entry in the colormap is reserved for background
-				int scaledVal = i/scaling;
+				int scaledVal = i/(scaling*imageScale);
 				
 				if( scaledVal < 1 ) scaledVal = 1;
-				if( scaledVal >= 128 ) scaledVal = 127;
+				if( scaledVal > 127 ) scaledVal = 127;
 				
 				negVec[i]=tmpMap[scaledVal];
 				negAlphas[i] = 1;
@@ -255,11 +269,11 @@ void Color::adaptColorMapToImage( ImageHolder *image )
 
 		if( max > 0 ) {
 			//where the positive colormap should start (index for "lowest" color) / rest from 128 will be black
-			const double posMapStart = (upperThreshold / max) * 128; // lowerThreshold < min => (1 - lowerThreshold / min) < 1 => negMapEnd < mid
-			for(unsigned short i=posMapStart;i<128;i++){
-				int scaledVal = i*scaling+128;
+			const double posMapStart = (upperThreshold / max) * (256-mid); // lowerThreshold < min => (1 - lowerThreshold / min) < 1 => negMapEnd < mid
+			for(unsigned short i=std::max<unsigned short>(1,posMapStart);i<(256-mid-1);i++){ //first entry in the colormap is reserved for background
+				int scaledVal = i*scaling*imageScale+128;
 				
-				if( scaledVal < 128 ) scaledVal = 128;
+				if( scaledVal <= 128 ) scaledVal = 128;
 				if( scaledVal >= 256 ) scaledVal = 255;
 				
 				posVec[i]=tmpMap[scaledVal];

@@ -77,12 +77,12 @@ unsigned int PluginLoader::findPlugins( std::list< std::string > paths )
 		boost::filesystem::path p( pathRef );
 
 		if( !boost::filesystem::exists( p ) ) {
-			LOG( Runtime, warning ) << "Pluginpath " << util::MSubject( p.native_file_string() ) << " not found!";
+			LOG( Runtime, warning ) << "Pluginpath " << util::MSubject( p ) << " not found!";
 			pathOk = false;
 		}
 
 		if( !boost::filesystem::is_directory( p ) ) {
-			LOG( Runtime, warning ) << util::MSubject( p.native_file_string() ) << " is not a directory!";
+			LOG( Runtime, warning ) << util::MSubject( p ) << " is not a directory!";
 			pathOk = false;
 		}
 
@@ -94,8 +94,8 @@ unsigned int PluginLoader::findPlugins( std::list< std::string > paths )
 			for ( boost::filesystem::directory_iterator itr( p ); itr != boost::filesystem::directory_iterator(); ++itr ) {
 				if ( boost::filesystem::is_directory( *itr ) )continue;
 
-				if ( boost::regex_match( itr->path().leaf(), pluginFilter ) ) {
-					const std::string pluginName = itr->path().file_string();
+				if ( boost::regex_match( itr->path().filename().string(), pluginFilter ) ) {
+					const std::string pluginName = itr->path().native();
 #ifdef WIN32
 					HINSTANCE handle = LoadLibrary( pluginName.c_str() );
 #else
@@ -154,14 +154,14 @@ PluginLoader::PluginLoader()
 	const char *env_home = getenv( "HOME" );
 
 	if( env_path ) {
-		addPluginSearchPath( boost::filesystem::path( env_path ).directory_string() );
+		addPluginSearchPath( env_path );
 	}
 
 	if( env_home ) {
 		const boost::filesystem::path home = boost::filesystem::path( env_home ) / "vast" / "plugins";
 
 		if( boost::filesystem::exists( home ) ) {
-			addPluginSearchPath( home.directory_string() );
+			addPluginSearchPath( home.native() );
 		}
 	}
 
