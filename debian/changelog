@@ -1,8 +1,14 @@
-vast (0.7.4-1) UNRELEASED; urgency=low
+vast (0.7.4-2) UNRELEASED; urgency=low
+
+  * get rid of boost 1.48
+
+ -- ISIS Group (The friendly isis team) <gr_isis@cbs.mpg.de>  Fri, 13 Mar 2015 17:23:25 +0100
+
+vast (0.7.4-1) trusty; urgency=low
 
   * use boost::filesystem v3
 
- -- ISIS Group (The friendly isis team) <gr_isis@cbs.mpg.de>  Mon, 20 Oct 2014 12:57:25 +0200
+ -- ISIS Group (The friendly isis team) <gr_isis@cbs.mpg.de>  Fri, 07 Nov 2014 15:34:25 +0100
 
 vast (0.7.3-1) UNRELEASED; urgency=low
 
