@@ -227,7 +227,7 @@ add_subdirectory(plugins)
 #add the view_widgets directory
 add_subdirectory(view_widgets)
 
-target_link_libraries(vast ${NEEDED_LIBS})
+target_link_libraries(vast ${NEEDED_LIBS} ${CMAKE_DL_LIBS})
 
 install(TARGETS vast RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin )
 
