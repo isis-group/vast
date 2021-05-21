@@ -28,7 +28,7 @@
 #include "mainwindow.hpp"
 #include <iostream>
 #include <QGridLayout>
-#include <DataStorage/io_factory.hpp>
+#include <isis/core/io_factory.hpp>
 #include "../viewer/uicore.hpp"
 #include "../viewer/qviewercore.hpp"
 #include "../viewer/fileinformation.hpp"

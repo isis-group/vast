@@ -25,25 +25,20 @@
  *  Created on: Aug 12, 2011
  *      Author: tuerke
  ******************************************************************/
-#ifndef VIEWER_COMMON_HPP_
-#define VIEWER_COMMON_HPP_
+#pragma once
 
 #include <vector>
-#include <DataStorage/chunk.hpp>
-#include <DataStorage/image.hpp>
-#include <boost/shared_ptr.hpp>
-#include <DataStorage/common.hpp>
-#include <CoreUtils/common.hpp>
-#include <CoreUtils/types.hpp>
-#include <DataStorage/io_interface.h>
-#include <CoreUtils/matrix.hpp>
-
+#include <isis/core/chunk.hpp>
+#include <isis/core/image.hpp>
+#include <isis/core/common.hpp>
+#include <isis/core/types.hpp>
+#include <isis/core/io_interface.h>
+#include <isis/core/matrix.hpp>
 
 namespace isis
 {
-
-struct ViewerLog {static const char *name() {return "Viewer";}; enum {use = _ENABLE_LOG};};
-struct ViewerDev {static const char *name() { return "ViewerDev";}; enum {use = _ENABLE_DEV};};
+struct ViewerLog {static constexpr char name[]="Viewer";      static constexpr bool use = _ENABLE_LOG;};
+struct ViewerDev {static constexpr char name[]="ViewerDebug"; static constexpr bool use = _ENABLE_DEBUG;};
 
 namespace viewer
 {
@@ -85,4 +80,3 @@ std::string getCrashLogFilePath();
 }
 }
 #include "imageholder.hpp"
-#endif /* VIEWER_COMMON_HPP_ */

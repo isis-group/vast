@@ -28,7 +28,7 @@
 #include "uicore.hpp"
 #include "qviewercore.hpp"
 #include "widgetensemble.hpp"
-#include <DataStorage/io_interface.h>
+#include <isis/core/io_interface.h>
 
 #include <QSignalMapper>
 

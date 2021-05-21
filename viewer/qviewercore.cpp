@@ -26,8 +26,8 @@
  *      Author: tuerke
  ******************************************************************/
 #include "qviewercore.hpp"
-#include <DataStorage/io_factory.hpp>
-#include <DataStorage/fileptr.hpp>
+#include <isis/core/io_factory.hpp>
+#include <isis/core/fileptr.hpp>
 #include "nativeimageops.hpp"
 #include "uicore.hpp"
 #include "../widgets/mainwindow.hpp"

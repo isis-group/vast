@@ -27,7 +27,7 @@
  ******************************************************************/
 #include "HistogramDialog.hpp"
 #include <nativeimageops.hpp>
-#include <DataStorage/valuearray.hpp>
+#include <isis/core/valuearray.hpp>
 
 
 

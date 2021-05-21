@@ -56,7 +56,7 @@ class VoxelInformationWidget : public QWidget
 			: QThread( parent ), m_core( core ), m_start( 0 ), m_end( 0 ), m_interface( interface ) {} ;
 		void setStartStop( int start, int stop ) { m_start = start; m_end = stop; }
 		void run() {
-			uint16_t deleyTime = m_core->getSettings()->getPropertyAs<uint16_t>( "timeseriesPlayDelayTime" );
+			uint16_t deleyTime = m_core->getSettings()->getValueAs<uint16_t>( "timeseriesPlayDelayTime" );
 			uint16_t t = m_start;
 
 			while( true ) {
@@ -105,19 +105,20 @@ private:
 	QVBoxLayout *m_LayoutLeft;
 	QVBoxLayout *m_LayoutRight;
 
-
+//@todo simplify me
 	template<typename TYPE>
 	void displayIntensity( const util::ivector4 &coords ) const {
-		const util::Value<TYPE> vIntensity ( m_ViewerCore->getCurrentImage()->getISISImage()->voxel<TYPE>( coords[0], coords[1], coords[2], coords[3] ) );
+		const auto vIntensity = m_ViewerCore->getCurrentImage()->getISISImage()->voxel<TYPE>( coords[0], coords[1], coords[2], coords[3] );
 		const double intensity = roundNumber<double>( vIntensity, 4 );
 		m_Interface.intensityValue->setText( QString::number( intensity ) );
 	}
 
+//@todo simplify me
 	template<typename TYPE>
 	void displayIntensityColor( const util::ivector4 &coords ) const {
-		util::checkType<TYPE>();
-		const util::Value<TYPE> vIntensity ( m_ViewerCore->getCurrentImage()->getISISImage()->voxel<TYPE>( coords[0], coords[1], coords[2], coords[3] ) );
-		const std::string intensityStr = static_cast<const util::ValueBase &>( vIntensity ).as<std::string>();
+		util::knownType<TYPE>();
+		const util::Value vIntensity = m_ViewerCore->getCurrentImage()->getISISImage()->voxel<TYPE>( coords[0], coords[1], coords[2], coords[3] );
+		const std::string intensityStr = vIntensity.as<std::string>();
 		m_Interface.intensityValue->setText( intensityStr.c_str() );
 	}
 

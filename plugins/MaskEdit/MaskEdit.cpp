@@ -26,10 +26,10 @@
  *      Author: tuerke
  ******************************************************************/
 #include "MaskEdit.hpp"
-#include <DataStorage/image.hpp>
+#include <isis/core/image.hpp>
 #include "uicore.hpp"
 #include "common.hpp"
-#include <CoreUtils/vector.hpp>
+#include <isis/core/vector.hpp>
 
 
 namespace isis

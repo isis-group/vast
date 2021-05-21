@@ -28,8 +28,8 @@
 #ifndef VAST_MEMORY_HANDLER_HPP
 #define VAST_MEMORY_HANDLER_HPP
 
-#include <CoreUtils/vector.hpp>
-#include <DataStorage/chunk.hpp>
+#include <isis/core/vector.hpp>
+#include <isis/core/chunk.hpp>
 #include "../viewer/common.hpp"
 #include "imageholder.hpp"
 #include <boost/timer.hpp>

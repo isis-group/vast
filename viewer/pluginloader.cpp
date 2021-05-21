@@ -25,7 +25,7 @@
  *  Created on: Aug 12, 2011
  *      Author: tuerke
  ******************************************************************/
-#include <CoreUtils/message.hpp>
+#include <isis/core/message.hpp>
 #include "pluginloader.hpp"
 #include "common.hpp"
 #ifdef WIN32

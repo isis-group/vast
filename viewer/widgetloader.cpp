@@ -27,7 +27,7 @@
  ******************************************************************/
 
 #include "widgetloader.hpp"
-#include <CoreUtils/message.hpp>
+#include <isis/core/message.hpp>
 #include "common.hpp"
 #ifdef WIN32
 #include <windows.h>

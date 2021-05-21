@@ -25,8 +25,7 @@
  *  Created on: Aug 12, 2011
  *      Author: tuerke
  ******************************************************************/
-#ifndef VIEWERCOREBASE_HPP
-#define VIEWERCOREBASE_HPP
+#pragma once
 
 #include "pluginloader.hpp"
 #include "widgetloader.hpp"
@@ -36,9 +35,7 @@
 #include <map>
 #include <boost/signals2.hpp>
 
-namespace isis
-{
-namespace viewer
+namespace isis::viewer
 {
 
 class ViewerCoreBase
@@ -57,8 +54,8 @@ public:
 
 	bool removeImage( const ImageHolder::Pointer image );
 
-	const boost::shared_ptr<Settings> getSettings() const { return m_Settings; }
-	boost::shared_ptr<Settings> getSettings() { return m_Settings; }
+	const std::shared_ptr<Settings> getSettings() const { return m_Settings; }
+	std::shared_ptr<Settings> getSettings() { return m_Settings; }
 
 	void setCurrentImage( const ImageHolder::Pointer image ) { m_CurrentImage = image; emitCurrentImageChanged( image ); }
 
@@ -68,7 +65,7 @@ public:
 
 	bool hasImage() const { return m_imageVector.size() && m_CurrentImage.get(); }
 
-	widget::WidgetInterface *getWidget( const std::string &identifier ) throw( std::runtime_error & );
+	widget::WidgetInterface *getWidget( const std::string &identifier );
 	const util::PropertyMap *getWidgetProperties( const std::string &identifier ) ;
 
 	bool hasWidget( const std::string &identifier );
@@ -99,7 +96,7 @@ private:
 	ImageHolder::Pointer  m_CurrentImage;
 
 protected:
-	boost::shared_ptr<Settings> m_Settings;
+	std::shared_ptr<Settings> m_Settings;
 
 	ImageHolder::Pointer m_CurrentAnatomicalReference;
 	Mode m_Mode;
@@ -108,12 +105,4 @@ protected:
 
 };
 
-
-
-
-}
 } // end namespace
-
-
-
-#endif

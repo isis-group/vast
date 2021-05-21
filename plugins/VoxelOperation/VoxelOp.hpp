@@ -29,7 +29,7 @@
 #ifndef VAST_VOXELOP_HPP
 #define VAST_VOXELOP_HPP
 
-#include <DataStorage/image.hpp>
+#include <isis/core/image.hpp>
 
 namespace isis
 {

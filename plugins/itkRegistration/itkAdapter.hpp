@@ -24,11 +24,11 @@
 #ifndef ITKADAPTER_HPP_
 #define ITKADAPTER_HPP_
 
-#include "DataStorage/image.hpp"
-#include "CoreUtils/log.hpp"
-#include "CoreUtils/common.hpp"
-#include "CoreUtils/vector.hpp"
-#include "DataStorage/numeric_convert.hpp"
+#include "isis/core/image.hpp"
+#include "isis/core/log.hpp"
+#include "isis/core/common.hpp"
+#include "isis/core/vector.hpp"
+#include "isis/core/numeric_convert.hpp"
 
 //external includes
 #include <boost/shared_ptr.hpp>

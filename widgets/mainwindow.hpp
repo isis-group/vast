@@ -33,7 +33,7 @@
 #include "../viewer/qviewercore.hpp"
 
 
-#include <CoreUtils/progressfeedback.hpp>
+#include <isis/core/progressfeedback.hpp>
 
 
 

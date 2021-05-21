@@ -27,7 +27,7 @@
 
 #include "VTKImageWidgetImplementation.hpp"
 
-#include "CoreUtils/singletons.hpp"
+#include "isis/core/singletons.hpp"
 #include "geometrical.hpp"
 #include <widgetensemble.hpp>
 #include <uicore.hpp>

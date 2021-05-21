@@ -26,14 +26,11 @@
  *      Author: tuerke
  ******************************************************************/
 #include <iostream>
-#include <signal.h>
+#include <csignal>
 
-#include <Adapter/qtapplication.hpp>
-#include <Adapter/qdefaultmessageprint.hpp>
-#include <DataStorage/io_factory.hpp>
-#include <CoreUtils/log.hpp>
-#include "CoreUtils/singletons.hpp"
-#include <DataStorage/image.hpp>
+#include <isis/adapter/qt5/qtapplication.hpp>
+#include <isis/adapter/qt5/qdefaultmessageprint.hpp>
+#include <isis/core/io_factory.hpp>
 
 #include "viewer/pluginloader.hpp"
 #include "viewer/qviewercore.hpp"
@@ -49,54 +46,27 @@
 
 int main( int argc, char *argv[] )
 {
-
 	using namespace isis;
 	using namespace viewer;
 	signal( SIGSEGV, error::sigsegv );
-
-
 
 	std::string appName = "vast";
 	std::string orgName = "cbs.mpg.de";
 	QCoreApplication::setApplicationName( appName.c_str() );
 	QCoreApplication::setOrganizationName( orgName.c_str() );
-	//setting up vast graphics_system
-#if QT_VERSION >= 0x040500
-	const char *graphics_system = getenv( "VAST_GRAPHICS_SYSTEM" );
-	LOG( Dev, info ) << "QT_VERSION >= 0x040500";
+	QSettings settings;
 
-	if( graphics_system && ( !strcmp( graphics_system, "raster" ) || !strcmp( graphics_system, "opengl" ) || !strcmp( graphics_system, "native" ) ) ) {
-		QApplication::setGraphicsSystem( graphics_system );
-		LOG( Dev, info ) << "Using graphics_system=\"" << std::string( graphics_system ) << "\"";
-	} else {
-		QApplication::setGraphicsSystem( "raster" );
-		LOG( Dev, info ) << "Using graphics_system=\"raster\"";
-	}
-
-#else
-	std::cout << "Warning! Your Qt version is below Qt4.5. Not able to set graghics system." << std::endl;
-	LOG( Dev, warning ) << "QT_VERSION < 0x040500";
-#endif
-
-	qt4::IOQtApplication app( appName.c_str(), false, false );
+	qt5::IOQtApplication app( appName.c_str(), false, false );
 	app.parameters["in"] = util::slist();
 	app.parameters["in"].needed() = false;
 	app.parameters["in"].setDescription( "The input image file list." );
-	app.parameters["zmap"] = util::slist();
-	app.parameters["zmap"].needed() = false;
-	app.parameters["zmap"].setDescription( "The input image file list is interpreted as statistical maps. " );
+//	app.parameters["zmap"] = util::slist();
+//	app.parameters["zmap"].needed() = false;
+//	app.parameters["zmap"].setDescription( "The input image file list is interpreted as statistical maps. " );
 	//alias to zmap
-	app.parameters["stats"] = util::slist();
-	app.parameters["stats"].needed() = false;
-	app.parameters["stats"].setDescription( "The input image file list is interpreted as statistical maps. " );
-	app.parameters["rf"] = std::string();
-	app.parameters["rf"].needed() = false;
-	app.parameters["rf"].setDescription( "Override automatic detection of file suffix for reading with given value" );
-	app.parameters["rf"].hidden() = true;
-	app.parameters["rdialect"] = std::string();
-	app.parameters["rdialect"].needed() = false;
-	app.parameters["rdialect"].hidden() = true;
-	app.parameters["rdialect"].setDescription( "Dialect for reading" );
+//	app.parameters["stats"] = util::slist();
+//	app.parameters["stats"].needed() = false;
+//	app.parameters["stats"].setDescription( "The input image file list is interpreted as statistical maps. " );
 	app.parameters["split"] = false;
 	app.parameters["split"].needed() = false;
 	app.parameters["split"].setDescription( "Show each image in a separate view" );
@@ -104,44 +74,33 @@ int main( int argc, char *argv[] )
 	app.parameters["widget"].needed() = false;
 	app.parameters["widget"].setDescription( "Use specific widget" );
 	app.init( argc, argv, false );
-	QViewerCore *core = new QViewerCore;
-	boost::shared_ptr<qt4::QDefaultMessagePrint> logging_hanlder_runtime ( new qt4::QDefaultMessagePrint( verbose_info ) );
-	boost::shared_ptr<qt4::QDefaultMessagePrint> logging_hanlder_dev ( new qt4::QDefaultMessagePrint( verbose_info ) );
-	util::_internal::Log<viewer::Dev>::setHandler( logging_hanlder_dev );
-	util::_internal::Log<viewer::Runtime>::setHandler( logging_hanlder_runtime );
+	auto core = std::make_unique<QViewerCore>();
 
-	//make vast showing qmessage if an error log is thrown
-	logging_hanlder_dev->qmessageBelow( isis::warning );
-	logging_hanlder_runtime->qmessageBelow( isis::warning );
+	app.addLogging<viewer::Runtime>("");
+	app.addLogging<viewer::Dev>("");
 
 	//setting stylesheet
-	if ( core->getSettings()->getPropertyAs<bool>( "useStyleSheet" ) ) {
-		app.getQApplication().setStyleSheet( util::Singletons::get<style::Style, 10>().getStyleSheet( core->getSettings()->getPropertyAs<std::string>( "styleSheet" ) ) );
+	if ( settings.value( "useStyleSheet" ).toBool() ) {
+		app.getQApplication().setStyleSheet( util::Singletons::get<style::Style, 10>().getStyleSheet( settings.value("styleSheet").toString().toStdString() ) );
 	}
 
-	util::_internal::Log<isis::data::Runtime>::setHandler( logging_hanlder_runtime );
-	util::_internal::Log<isis::util::Runtime>::setHandler( logging_hanlder_runtime );
-	util::_internal::Log<isis::util::Debug>::setHandler( logging_hanlder_runtime );
-	util::_internal::Log<isis::data::Debug>::setHandler( logging_hanlder_runtime );
-	util::_internal::Log<isis::image_io::Runtime>::setHandler( logging_hanlder_runtime );
-	util::_internal::Log<isis::image_io::Debug>::setHandler( logging_hanlder_runtime );
-
-
-	core->addMessageHandler( logging_hanlder_runtime.get() );
-	core->addMessageHandlerDev( logging_hanlder_dev.get() );
+	//@todo implement me
+//	core->addMessageHandler( logging_hanlder_runtime.get() );
+//	core->addMessageHandlerDev( logging_hanlder_dev.get() );
 	//scan for plugins and hand them to the core
 	core->addPlugins( plugin::PluginLoader::get().getPlugins() );
 	core->getUICore()->reloadPluginsToGUI();
 
 	std::string widget_name = app.parameters["widget"];
 
+
 	if( widget_name.empty() ) {
-		if( core->getSettings()->getPropertyAs<bool>( "showImagesGeometricalView" ) && core->hasWidget( core->getSettings()->getPropertyAs<std::string>( "widgetGeometrical" ) ) ) {
-			widget_name = core->getSettings()->getPropertyAs<std::string>( "widgetGeometrical" );
-		} else if ( !core->getSettings()->getPropertyAs<bool>( "showImagesGeometricalView" ) && core->hasWidget( core->getSettings()->getPropertyAs<std::string>( "widgetLatched" ) ) ) {
-			widget_name = core->getSettings()->getPropertyAs<std::string>( "widgetLatched" );
+		if( settings.value( "showImagesGeometricalView" ).toBool() && core->hasWidget( settings.value( "widgetGeometrical" ).toString().toStdString() ) ) {
+			widget_name = settings.value("widgetGeometrical").toString().toStdString();
+		} else if ( !settings.value( "showImagesGeometricalView" ).toBool() && core->hasWidget( settings.value( "widgetLatched" ).toString().toStdString() ) ) {
+			widget_name = settings.value( "widgetLatched" ).toString().toStdString();
 		} else {
-			widget_name = core->getSettings()->getPropertyAs<std::string>( "defaultViewWidgetIdentifier" );
+			widget_name = settings.value( "defaultViewWidgetIdentifier" ).toString().toStdString();
 		}
 	}
 
@@ -150,22 +109,22 @@ int main( int argc, char *argv[] )
 	}
 
 	util::slist fileList = app.parameters["in"];
-	const bool zmapIsSet = app.parameters["zmap"].isSet() || app.parameters["stats"].isSet();
-	util::slist zmapFileList = app.parameters["zmap"];
-
-	if( !zmapFileList.size() ) {
-		zmapFileList = app.parameters["stats"];
-	}
-
-	if( zmapIsSet ) {
-		core->setMode( ViewerCoreBase::statistical_mode );
-	}  else {
-		core->setMode( ViewerCoreBase::default_mode );
-	}
+//	const bool zmapIsSet = app.parameters["zmap"].isParsed() || app.parameters["stats"].isParsed();
+//	util::slist zmapFileList = app.parameters["zmap"];
+//
+//	if( !zmapFileList.size() ) {
+//		zmapFileList = app.parameters["stats"];
+//	}
+//
+//	if( zmapIsSet ) {
+//		core->setMode( ViewerCoreBase::statistical_mode );
+//	}  else {
+//		core->setMode( ViewerCoreBase::default_mode );
+//	}
 
 	std::list<FileInformation> fileInfoList;
 
-	BOOST_FOREACH( util::slist::const_reference file, fileList ) {
+	for( util::slist::const_reference file: fileList ) {
 		fileInfoList.push_back( FileInformation( file,
 								app.parameters["rdialect"].as<std::string>().c_str(),
 								app.parameters["rf"].as<std::string>().c_str(),
@@ -173,14 +132,14 @@ int main( int argc, char *argv[] )
 								ImageHolder::structural_image,
 								app.parameters["split"].as<bool>() ) );
 	}
-	BOOST_FOREACH( util::slist::const_reference file, zmapFileList ) {
-		fileInfoList.push_back( FileInformation( file,
-								app.parameters["rdialect"].as<std::string>().c_str(),
-								app.parameters["rf"].as<std::string>().c_str(),
-								widget_name,
-								ImageHolder::statistical_image,
-								app.parameters["split"].as<bool>() ) );
-	}
+//	for( util::slist::const_reference file: zmapFileList ) {
+//		fileInfoList.push_back( FileInformation( file,
+//								app.parameters["rdialect"].as<std::string>().c_str(),
+//								app.parameters["rf"].as<std::string>().c_str(),
+//								widget_name,
+//								ImageHolder::statistical_image,
+//								app.parameters["split"].as<bool>() ) );
+//	}
 
 	core->getUICore()->showMainWindow( fileInfoList );
 	return app.getQApplication().exec();

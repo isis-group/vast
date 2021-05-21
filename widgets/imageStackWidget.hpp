@@ -1,16 +1,11 @@
-#ifndef IMAGESTACKWIDGET_HPP
-#define IMAGESTACKWIDGET_HPP
+#pragma once
 
 #include "ui_imageStackWidget.h"
 #include "../viewer/qviewercore.hpp"
+#include <QListWidget>
 
-namespace isis
+namespace isis::viewer::ui
 {
-namespace viewer
-{
-namespace ui
-{
-
 
 class ImageStack : public QListWidget
 {
@@ -71,12 +66,5 @@ private:
 
 
 };
-
-
-}
-}
 }
 
-
-
-#endif

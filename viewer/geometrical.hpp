@@ -28,7 +28,7 @@
 #ifndef VAST_GEOMETRICAL_HPP
 #define VAST_GEOMETRICAL_HPP
 
-#include <CoreUtils/vector.hpp>
+#include <isis/core/vector.hpp>
 
 
 namespace isis
@@ -40,15 +40,15 @@ namespace geometrical
 {
 
 ///l:r, a:p, s:i
-typedef util::FixedVector<std::pair<float, float>, 3 > BoundingBoxType;
+typedef util::vector3<std::pair<float, float>> BoundingBoxType;
 
 namespace _internal
 {
 }
 
-BoundingBoxType getPhysicalBoundingBox( const boost::shared_ptr<ImageHolder> image, const unsigned short &border = 0 );
+BoundingBoxType getPhysicalBoundingBox( const std::shared_ptr<ImageHolder> image, const unsigned short &border = 0 );
 
-BoundingBoxType getPhysicalBoundingBox ( const std::vector<boost::shared_ptr<ImageHolder> > images, const unsigned short &border = 0 );
+BoundingBoxType getPhysicalBoundingBox ( const std::vector<std::shared_ptr<ImageHolder> > images, const unsigned short &border = 0 );
 
 }
 }

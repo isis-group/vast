@@ -26,7 +26,7 @@
  *      Author: tuerke
  ******************************************************************/
 #include "common.hpp"
-#include <DataStorage/io_factory.hpp>
+#include <isis/core/io_factory.hpp>
 #include "imageholder.hpp"
 #include <boost/assign.hpp>
 #include <numeric>

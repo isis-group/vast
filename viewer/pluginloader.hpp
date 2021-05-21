@@ -35,7 +35,7 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/foreach.hpp>
 #include <list>
-#include <CoreUtils/singletons.hpp>
+#include <isis/core/singletons.hpp>
 
 namespace isis
 {

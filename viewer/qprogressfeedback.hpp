@@ -28,7 +28,7 @@
 #ifndef QPROGRESSFEEDBACK_HPP
 #define QPROGRESSFEEDBACK_HPP
 
-#include <CoreUtils/progressfeedback.hpp>
+#include <isis/core/progressfeedback.hpp>
 #include <QProgressBar>
 
 namespace isis

@@ -34,9 +34,9 @@
 #include <boost/foreach.hpp>
 #include <vector>
 #include <qapplication.h>
-#include <CoreUtils/propmap.hpp>
-#include <DataStorage/image.hpp>
-#include <CoreUtils/matrix.hpp>
+#include <isis/core/propmap.hpp>
+#include <isis/core/image.hpp>
+#include <isis/core/matrix.hpp>
 
 
 namespace isis
@@ -56,7 +56,7 @@ public:
 	void mapPhysicalToIndex( const float *physicalCoords, int32_t *index );
 	bool checkVoxel( const int32_t *coords );
 private:
-	util::ivector4 imageSize;
+	std::array<size_t,4> imageSize;
 };
 }
 
@@ -102,14 +102,14 @@ private:
 		std::string lut;
 		ImageType imageType;
 		InterpolationType interpolationType;
-		std::pair<util::ValueReference, util::ValueReference> minMax;
+		std::pair<util::Value, util::Value> minMax;
 		std::pair<double, double> scalingMinMax;
 		util::fvector3 indexOrigin;
 		util::Matrix3x3<float> orientation;
 		util::Matrix3x3<float> latchedOrientation;
 		unsigned short majorTypeID;
 		std::string majorTypeName;
-		std::pair<util::ValueReference, util::ValueReference> scalingToInternalType;
+		std::pair<util::Value, util::Value> scalingToInternalType;
 		geometrical::BoundingBoxType boundingBox;
 		double voxelValue;
 	};
@@ -132,7 +132,7 @@ public:
 
 	util::PropertyMap &getPropMap() { return m_PropMap; }
 	const util::PropertyMap &getPropMap() const { return m_PropMap; }
-	const util::FixedVector<size_t, 4> &getImageSize() const { return m_ImageSize; }
+	const util::vector4<size_t> &getImageSize() const { return m_ImageSize; }
 	boost::shared_ptr< _internal::__Image >getISISImage() const;
 
 	void addChangedAttribute( const std::string &attribute );
@@ -148,7 +148,7 @@ public:
 	void correctVoxelCoords( util::ivector4 &vc ) {
 		for( unsigned short i = 0; i < DIMS; i++ ) {
 			if( vc[i] < 0 ) vc[i] = 0;
-			else if( vc[i] >= static_cast<int32_t>( getImageSize()[i] ) ) vc[i] = static_cast<int32_t>( getImageSize()[i] - 1 );
+			else if( vc[i] >= static_cast<int32_t>( this->getImageSize()[i] ) ) vc[i] = static_cast<int32_t>( this->getImageSize()[i] - 1 );
 		}
 	}
 
@@ -179,14 +179,14 @@ public:
 	template<typename TYPE>
 	void setTypedVoxel(  const size_t &first, const size_t &second, const size_t &third, const size_t &fourth, const TYPE &value, bool sync = true ) {
 		m_VolumeVector[fourth].voxel<InternalImageType>( first, second, third )
-		= static_cast<double>( value ) * getImageProperties().scalingToInternalType.first->as<double>() + getImageProperties().scalingToInternalType.second->as<double>();
+		= static_cast<double>( value ) * getImageProperties().scalingToInternalType.first.as<double>() + getImageProperties().scalingToInternalType.second.as<double>();
 
 		if( sync ) {
 			getISISImage()->voxel<TYPE>( first, second, third, fourth ) = value;
 
-			if( value > getImageProperties().minMax.second->as<TYPE>() || value < getImageProperties().minMax.first->as<TYPE>() ) {
+			if( value > getImageProperties().minMax.second.as<TYPE>() || value < getImageProperties().minMax.first.as<TYPE>() ) {
 				getImageProperties().minMax = getISISImage()->getMinMax();
-				getImageProperties().extent = fabs( getImageProperties().minMax.second->as<double>() - getImageProperties().minMax.first->as<double>() );
+				getImageProperties().extent = fabs( getImageProperties().minMax.second.as<double>() - getImageProperties().minMax.first.as<double>() );
 				updateColorMap();
 			}
 		}
@@ -203,7 +203,7 @@ private:
 	unsigned short getMajorTypeID() const;
 	void collectImageInfo();
 
-	util::FixedVector<size_t, 4> m_ImageSize;
+	util::vector4<size_t> m_ImageSize;
 	util::PropertyMap m_PropMap;
 
 	bool m_AmbiguousOrientation;
@@ -222,31 +222,31 @@ private:
 	void copyImageToVector( const data::Image &image ) {
 		m_VolumeVector.clear();
 		m_ChunkVector = image.copyChunksToVector();
-		data::ValueArray<TYPE> imagePtr( ( TYPE * ) calloc( image.getVolume(), sizeof( TYPE ) ), image.getVolume() );
+		auto imagePtr = data::ValueArray::make<TYPE>(image.getVolume());
 		getImageProperties().memSizeInternal = image.getVolume() * sizeof( TYPE );
 		LOG( Dev, info ) << "Needed memory: " << getImageProperties().memSizeInternal / ( 1024.0 * 1024.0 ) << " mb.";
 
 		if( getImageProperties().zeroIsReserved ) {
-			data::scaling_pair scalingPair = image.getScalingTo( data::ValueArray<TYPE>::staticID, data::upscale );
-			double scaling = scalingPair.first->as<double>();
-			double offset = scalingPair.second->as<double>();
+			data::scaling_pair scalingPair = image.getScalingTo( util::typeID<TYPE>() );
+			auto scaling = scalingPair.scale.as<double>();
+			auto offset = scalingPair.offset.as<double>();
 			scaling /= static_cast<double>( getInternalExtent() + 1 ) / getInternalExtent();
 			offset += 1;
-			const data::scaling_pair newScaling( std::make_pair< util::ValueReference, util::ValueReference>( util::Value<double>( scaling ), util::Value<double>( offset ) ) ) ;
+			const data::scaling_pair newScaling( scaling, offset ) ;
 			getImageProperties().scalingToInternalType = newScaling;
 		} else {
-			getImageProperties().scalingToInternalType = image.getScalingTo( data::ValueArray<TYPE>::staticID, data::upscale );
+			getImageProperties().scalingToInternalType = image.getScalingTo( util::typeID<TYPE>() );
 		}
 
-		LOG( Dev, info ) << "scalingToInternalType: " << getImageProperties().scalingToInternalType.first->as<double>() << " : " << getImageProperties().scalingToInternalType.second->as<double>();
+		LOG( Dev, info ) << "scalingToInternalType: " << getImageProperties().scalingToInternalType.first.as<double>() << " : " << getImageProperties().scalingToInternalType.second.as<double>();
 		image.copyToMem<TYPE>( &imagePtr[0], image.getVolume(), getImageProperties().scalingToInternalType );
 		LOG( Dev, verbose_info ) << "Copied image to continuous memory space.";
 
 		//splice the image in its volumes -> we get a vector of t volumes
 		if( m_ImageSize[dim_time] > 1 ) { //splicing is only necessary if we got more than 1 timestep
-			std::vector< data::ValueArrayReference > refVec = imagePtr.splice( m_ImageSize[0] * m_ImageSize[1] * m_ImageSize[2] );
+			std::vector< data::ValueArray > refVec = imagePtr.splice( m_ImageSize[0] * m_ImageSize[1] * m_ImageSize[2] );
 
-			for ( std::vector< data::ValueArrayReference >::const_iterator iter = refVec.begin(); iter != refVec.end(); iter++ ) {
+			for ( std::vector< data::ValueArray >::const_iterator iter = refVec.begin(); iter != refVec.end(); iter++ ) {
 				m_VolumeVector.push_back( data::Chunk( *iter, m_ImageSize[0], m_ImageSize[1], m_ImageSize[2] ) );
 			}
 		} else {

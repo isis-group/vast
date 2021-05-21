@@ -15,7 +15,7 @@ find_package(ISIS REQUIRED COMPONENTS Qt)
 
 include_directories(widgets)
 
-option(HAVE_WEBKIT "Set to off if you dont have QtWebKit (will disable help)" ON)
+option(HAVE_WEBKIT "Set to off if you dont have QtWebKit (will disable help)" OFF)
 
 # collecting files
 file (GLOB VIEWER_FILES_CPP  viewer/*.cpp)
@@ -23,8 +23,8 @@ file (GLOB WIDGET_FILES_CPP widgets/*.cpp )
 file (GLOB UI_FILES forms/*.ui)
 file (GLOB RESOURCE_FILES resources/*.qrc)
 file (GLOB INTERNAL_FILES_CPP viewer/internal/*.cpp )
-file (GLOB VIEWER_DEV_FILES viewer/*.hpp )
-file (GLOB WIDGET_DEV_FILES widgets/*.hpp )
+#file (GLOB VIEWER_DEV_FILES viewer/*.hpp )
+#file (GLOB WIDGET_DEV_FILES widgets/*.hpp )
 
 if(NOT HAVE_WEBKIT)
 	list(REMOVE_ITEM WIDGET_FILES_CPP ${CMAKE_SOURCE_DIR}/widgets/helpdialog.cpp)
@@ -84,18 +84,14 @@ endif(HAVE_WEBKIT)
 # qt5 stuff
 ###########################################################
 
-#set(CMAKE_AUTOMOC ON)
-#set(CMAKE_AUTORCC ON)
-#set(CMAKE_AUTOUIC ON)
-
-#QT4_ADD_RESOURCES(vast_rcc_files ${RESOURCE_FILES})
-
-#qt4_wrap_cpp(vast_moc_files ${VIEWER_FILES_HPP}  OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED)
-#qt4_wrap_ui(vast_UIS_H ${UI_FILES})
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTORCC ON)
+set(CMAKE_AUTOUIC ON)
 
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ftemplate-depth-100 -Wextra -Wall -Wfatal-errors"  )
 #set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}  -Wextra -Wall -Wfatal-errors" )
 
+set(CMAKE_AUTOUIC_SEARCH_PATHS "forms")
 
 ############################################################
 # RCS revision number
@@ -149,7 +145,7 @@ include(CPack)
 # Build stuff
 ###########################################################
 
-add_executable(vast main.cpp ${VIEWER_FILES_CPP} ${WIDGET_FILES_CPP} ${vast_UIS_H} ${vast_moc_files} ${vast_rcc_files} ${INTERNAL_FILES_CPP})
+add_executable(vast main.cpp ${VIEWER_FILES_CPP} ${WIDGET_FILES_CPP} ${UI_FILES} ${RESOURCE_FILES} ${INTERNAL_FILES_CPP})
 
 #add the plugin directory
 #add_subdirectory(plugins)

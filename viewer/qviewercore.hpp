@@ -32,7 +32,7 @@
 #include "viewercorebase.hpp"
 #include "qprogressfeedback.hpp"
 
-#include <Adapter/qtapplication.hpp>
+#include <isis/adapter/qt5/qtapplication.hpp>
 
 #include <QtGui>
 
@@ -65,11 +65,12 @@ public:
 
 	const boost::shared_ptr< QProgressFeedback > getProgressFeedback() const { return m_ProgressFeedback; }
 
-	void addMessageHandler( qt4::QDefaultMessagePrint * );
-	void addMessageHandlerDev( qt4::QDefaultMessagePrint * );
+	void addMessageHandler( qt5::QDefaultMessageHandler * );
+	void addMessageHandlerDev( qt5::QDefaultMessageHandler * );
 
-	std::list< qt4::QMessage> getMessageLog() const { return m_MessageLog; }
-	std::list< qt4::QMessage> getMessageLogDev() const { return m_DevMessageLog; }
+//@todo implement me
+//	std::list< qt5::QMessage> getMessageLog() const { return m_MessageLog; }
+//	std::list< qt5::QMessage> getMessageLogDev() const { return m_DevMessageLog; }
 
 public Q_SLOTS:
 	virtual void settingsChanged();
@@ -83,9 +84,10 @@ public Q_SLOTS:
 	virtual void setShowCrosshair( bool );
 	virtual void updateScene( );
 	virtual bool callPlugin( QString name );
-	virtual void receiveMessage( qt4::QMessage  );
 	virtual void receiveMessage( std::string  );
-	virtual void receiveMessageDev( qt4::QMessage );
+	//@todo implement me
+//	virtual void receiveMessage( qt4::QMessage  );
+//	virtual void receiveMessageDev( qt4::QMessage );
 	virtual ImageHolder::Vector openFile( const FileInformation &fileInfo, bool show = true );
 	virtual void openFileList( const std::list< FileInformation > fileInfoList );
 	virtual void centerImages( bool ca = false );
@@ -106,8 +108,9 @@ private:
 
 	void checkForErrors();
 
-	std::list< qt4::QMessage > m_MessageLog;
-	std::list< qt4::QMessage > m_DevMessageLog;
+	//@todo implement me
+//	std::list< qt4::QMessage > m_MessageLog;
+//	std::list< qt4::QMessage > m_DevMessageLog;
 
 	QWidget *m_Parent;
 	plugin::PluginLoader::PluginListType m_PluginList;

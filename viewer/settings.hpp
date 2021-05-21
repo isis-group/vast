@@ -29,7 +29,7 @@
 #ifndef VAST_DEFAULT_SETTINGS_HPP
 #define VAST_DEFAULT_SETTINGS_HPP
 
-#include <CoreUtils/propmap.hpp>
+#include <isis/core/propmap.hpp>
 #include <QSettings>
 #include "fileinformation.hpp"
 

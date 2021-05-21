@@ -29,7 +29,7 @@
 #include "QGeomWidget.hpp"
 #include "geomhandler.hpp"
 #include "geometrical.hpp"
-#include <Adapter/qmatrixconversion.hpp>
+#include <isis/adapter/qt5/qmatrixconversion.hpp>
 
 #include "memoryhandler.hpp"
 #include "uicore.hpp"

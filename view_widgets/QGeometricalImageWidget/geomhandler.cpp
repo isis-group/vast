@@ -30,8 +30,8 @@
 #include "geometrical.hpp"
 #include <imageholder.hpp>
 #include <boost/numeric/ublas/vector.hpp>
-#include <Adapter/qmatrixconversion.hpp>
-#include <DataStorage/common.hpp>
+#include <isis/adapter/qt5/qmatrixconversion.hpp>
+#include <isis/core/common.hpp>
 
 namespace isis
 {

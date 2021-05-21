@@ -31,7 +31,7 @@
 #include "ui_maskEdit.h"
 #include "qviewercore.hpp"
 #include "widgetensemble.hpp"
-#include <DataStorage/chunk.hpp>
+#include <isis/core/chunk.hpp>
 
 namespace isis
 {

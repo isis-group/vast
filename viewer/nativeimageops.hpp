@@ -36,7 +36,7 @@
 #include "qviewercore.hpp"
 #include "imageholder.hpp"
 #include "uicore.hpp"
-#include <DataStorage/image.hpp>
+#include <isis/core/image.hpp>
 
 namespace isis
 {
