@@ -84,8 +84,8 @@ void ScalingWidget::synchronize()
 
 
 		m_Interface.offsetSlider->setValue(image->getImageProperties().offset);
-		m_Interface.offsetSlider->setMinimum(-image->getImageProperties().minMax.second->as<int>());
-		m_Interface.offsetSlider->setMaximum(image->getImageProperties().minMax.second->as<int>());
+		m_Interface.offsetSlider->setMinimum(-image->getImageProperties().minMax.second.as<int>());
+		m_Interface.offsetSlider->setMaximum(image->getImageProperties().minMax.second.as<int>());
 		m_Interface.offsetDisp->display(image->getImageProperties().offset);
 		
 
@@ -100,27 +100,27 @@ void ScalingWidget::maxChanged( double max )
 {
 	ImageHolder::Pointer image = m_ViewerCore->getCurrentImage();
 	image->getImageProperties().scalingMinMax.second =  max;
-	setScalingOffset( operation::NativeImageOps::getScalingOffsetFromMinMax( std::make_pair<double, double>( image->getImageProperties().scalingMinMax.first, max ), image ) );
+	setScalingOffset( operation::NativeImageOps::getScalingOffsetFromMinMax( { image->getImageProperties().scalingMinMax.first, max }, image ) );
 }
 
 void ScalingWidget::minChanged( double min )
 {
 	ImageHolder::Pointer image = m_ViewerCore->getCurrentImage();
 	image->getImageProperties().scalingMinMax.first = min;
-	setScalingOffset( operation::NativeImageOps::getScalingOffsetFromMinMax( std::make_pair<double, double>( min, image->getImageProperties().scalingMinMax.second ), image ) );
+	setScalingOffset( operation::NativeImageOps::getScalingOffsetFromMinMax( {min, image->getImageProperties().scalingMinMax.second }, image ) );
 }
 
 void ScalingWidget::offsetChanged( double offset )
 {
 	ImageHolder::Pointer image = m_ViewerCore->getCurrentImage();
-	setMinMax( operation::NativeImageOps::getMinMaxFromScalingOffset( std::make_pair<double, double>( image->getImageProperties().scaling, offset ), image ), image );
+	setMinMax( operation::NativeImageOps::getMinMaxFromScalingOffset( {image->getImageProperties().scaling, offset }, image ), image );
 	applyScalingOffset( image->getImageProperties().scaling, offset, m_Interface.checkGlobal->isChecked() );
 }
 
 void ScalingWidget::scalingChanged( double scaling )
 {
 	ImageHolder::Pointer image = m_ViewerCore->getCurrentImage();
-	setMinMax(  operation::NativeImageOps::getMinMaxFromScalingOffset( std::make_pair<double, double>( scaling, image->getImageProperties().offset ), image ), image );
+	setMinMax(  operation::NativeImageOps::getMinMaxFromScalingOffset( {scaling, image->getImageProperties().offset }, image ), image );
 	applyScalingOffset( scaling, image->getImageProperties().offset , m_Interface.checkGlobal->isChecked() );
 
 }
@@ -170,7 +170,7 @@ void ScalingWidget::on_scaleSlider_valueChanged(int value)
 void ScalingWidget::on_offsetSlider_valueChanged(int offset)
 {
 	ImageHolder::Pointer image = m_ViewerCore->getCurrentImage();
-	std::pair< double, double > minmax=operation::NativeImageOps::getMinMaxFromScalingOffset( std::make_pair<double, double>( image->getImageProperties().scaling, offset ), image );
+	std::pair< double, double > minmax=operation::NativeImageOps::getMinMaxFromScalingOffset( {image->getImageProperties().scaling, offset }, image );
 	applyScalingOffset( image->getImageProperties().scaling, offset, m_Interface.checkGlobal->isChecked() );
 }
 

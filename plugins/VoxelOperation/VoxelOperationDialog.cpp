@@ -68,11 +68,11 @@ void VoxelOperationDialog::calculatePressed()
 			util::slist voxelOpHistory;
 
 			if( image->getPropMap().hasProperty( "VoxelOperation/opHistory" ) ) {
-				voxelOpHistory = image->getPropMap().getPropertyAs<util::slist>( "VoxelOperation/opHistory" );
+				voxelOpHistory = image->getPropMap().getValueAs<util::slist>( "VoxelOperation/opHistory" );
 			}
 
 			voxelOpHistory.push_back( op );
-			image->getPropMap().setPropertyAs<util::slist>( "VoxelOperation/opHistory", voxelOpHistory );
+			image->getPropMap().setValueAs<util::slist>( "VoxelOperation/opHistory", voxelOpHistory );
 			std::stringstream ss1;
 			ss1 << "VoxelOperation: " << op;
 			image->addChangedAttribute( ss1.str() );

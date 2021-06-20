@@ -25,6 +25,7 @@
  *  Created on: Aug 12, 2011
  *      Author: tuerke
  ******************************************************************/
+#include <QMessageBox>
 #include "imageStackWidget.hpp"
 #include "../viewer/viewercorebase.hpp"
 #include "../viewer/qviewercore.hpp"
@@ -53,7 +54,7 @@ ImageStack::ImageStack( QWidget *parent, ImageStackWidget *widget, QViewerCore *
 	const widget::WidgetLoader::WidgetPropertyMapType &optionsMap = util::Singletons::get<widget::WidgetLoader, 10>().getWidgetPropertyMap();
 	BOOST_FOREACH( WRef w, widgetMap ) {
 		QAction *action = new QAction( this );
-		action->setText( optionsMap.at( w.first )->getPropertyAs<std::string>( "widgetName" ).c_str() );
+		action->setText( optionsMap.at( w.first )->getValueAs<std::string>( "widgetName" ).c_str() );
 		m_WidgetActions.push_back( action );
 		signalMapper->setMapping( action, w.first.c_str() );
 		connect( action, SIGNAL( triggered( bool ) ), signalMapper, SLOT( map() ) );
@@ -111,7 +112,7 @@ void ImageStack::contextMenuEvent( QContextMenuEvent *event )
 		menu.addAction( m_Widget->m_Interface.actionClose_image );
 
 
-		if( !image->getImageProperties().zeroIsReserved && !image->getImageProperties().isRGB && image->getImageProperties().minMax.first->as<double>() < 0 ) {
+		if( !image->getImageProperties().zeroIsReserved && !image->getImageProperties().isRGB && image->getImageProperties().minMax.first.as<double>() < 0 ) {
 			menu.addAction( m_Widget->m_Interface.actionSet_0_to_black );
 		}
 
@@ -172,14 +173,14 @@ ImageStackWidget::ImageStackWidget( QWidget *parent, QViewerCore *core )
 
 void ImageStackWidget::viewAllImagesClicked()
 {
-	m_ViewerCore->getSettings()->setPropertyAs<bool>( "viewAllImagesInStack", m_Interface.checkViewAllImages->isChecked() );
+	m_ViewerCore->getSettings()->setValueAs<bool>( "viewAllImagesInStack", m_Interface.checkViewAllImages->isChecked() );
 	synchronize();
 }
 
 void ImageStackWidget::setZeroToBlack()
 {
 	if(  m_ImageStack->currentItem() ) {
-		boost::shared_ptr<ImageHolder> image = m_ViewerCore->getImageMap().at( m_ImageStack->currentItem()->data( Qt::UserRole ).toString().toStdString() );
+		std::shared_ptr<ImageHolder> image = m_ViewerCore->getImageMap().at( m_ImageStack->currentItem()->data( Qt::UserRole ).toString().toStdString() );
 		operation::NativeImageOps::setTrueZero( image );
 		m_ViewerCore->updateScene();
 	}
@@ -190,11 +191,11 @@ void ImageStackWidget::synchronize()
 {
 	setVisible( m_ViewerCore->hasImage() );
 
-	m_Interface.frame->setMaximumHeight( m_ViewerCore->getSettings()->getPropertyAs<uint16_t>( "maxOptionWidgetHeight" ) );
-	m_Interface.frame->setMinimumHeight( m_ViewerCore->getSettings()->getPropertyAs<uint16_t>( "minOptionWidgetHeight" ) );
+	m_Interface.frame->setMaximumHeight( m_ViewerCore->getSettings()->getValueAs<uint16_t>( "maxOptionWidgetHeight" ) );
+	m_Interface.frame->setMinimumHeight( m_ViewerCore->getSettings()->getValueAs<uint16_t>( "minOptionWidgetHeight" ) );
 
 	disconnect( m_Interface.checkViewAllImages, SIGNAL( clicked( bool ) ), this, SLOT( viewAllImagesClicked() ) );
-	m_Interface.checkViewAllImages->setChecked( m_ViewerCore->getSettings()->getPropertyAs<bool>( "viewAllImagesInStack" ) );
+	m_Interface.checkViewAllImages->setChecked( m_ViewerCore->getSettings()->getValueAs<bool>( "viewAllImagesInStack" ) );
 	connect( m_Interface.checkViewAllImages, SIGNAL( clicked( bool ) ), this, SLOT( viewAllImagesClicked() ) );
 
 	m_ImageStack->clear();
@@ -212,9 +213,9 @@ void ImageStackWidget::synchronize()
 		BOOST_FOREACH( ImageHolder::Vector::const_reference image, imageList ) {
 			if( !( m_ViewerCore->getMode() == ViewerCoreBase::statistical_mode && image->getImageProperties().imageType == ImageHolder::structural_image ) ) {
 				QListWidgetItem *item = new QListWidgetItem;
-				QString sD = image->getPropMap().getPropertyAs<std::string>( "sequenceDescription" ).c_str();
+				QString sD = image->getPropMap().getValueAs<std::string>( "sequenceDescription" ).c_str();
 
-				if( m_ViewerCore->getSettings()->getPropertyAs<bool>( "showFullFilePath" ) ) {
+				if( m_ViewerCore->getSettings()->getValueAs<bool>( "showFullFilePath" ) ) {
 					item->setText( QString( image->getImageProperties().filePath.c_str() ) );
 				} else {
 					item->setText( QString( image->getImageProperties().fileName.c_str() ) );

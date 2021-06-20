@@ -72,7 +72,7 @@ unsigned int PluginLoader::findPlugins( std::list< std::string > paths )
 {
 	unsigned int ret = 0;
 	bool pathOk;
-	BOOST_FOREACH( PathsType::const_reference pathRef, paths ) {
+	for(const auto &pathRef: paths ) {
 		pathOk = true;
 		boost::filesystem::path p( pathRef );
 
@@ -88,13 +88,13 @@ unsigned int PluginLoader::findPlugins( std::list< std::string > paths )
 
 		LOG( Runtime, info ) << "Scanning " << util::MSubject( p ) << " for plugins...";
 
-		boost::regex pluginFilter( std::string( "^" ) + DL_PREFIX + "vastPlugin" + "[[:word:]]+" + DL_SUFFIX + "$" );
+		std::regex pluginFilter( std::string( "^" ) + DL_PREFIX + "vastPlugin" + "[[:word:]]+" + DL_SUFFIX + "$" );
 
 		if( pathOk ) {
 			for ( boost::filesystem::directory_iterator itr( p ); itr != boost::filesystem::directory_iterator(); ++itr ) {
 				if ( boost::filesystem::is_directory( *itr ) )continue;
 
-				if ( boost::regex_match( itr->path().filename().string(), pluginFilter ) ) {
+				if ( std::regex_match( itr->path().filename().string(), pluginFilter ) ) {
 					const std::string pluginName = itr->path().native();
 #ifdef WIN32
 					HINSTANCE handle = LoadLibrary( pluginName.c_str() );
@@ -139,7 +139,7 @@ unsigned int PluginLoader::findPlugins( std::list< std::string > paths )
 				} else {
 					LOG( Runtime, verbose_info )
 							<< "Ignoring " << util::MSubject( itr->path() )
-							<< " because it doesn't match " << pluginFilter.str();
+							<< " because it doesn't match the naming pattern for plugins";
 				}
 			}
 		}

@@ -59,8 +59,8 @@ VoxelInformationWidget::VoxelInformationWidget( QWidget *parent, QViewerCore *co
 	m_UpperThreshold->setAlignment( Qt::AlignRight );
 	m_LabelMax->setAlignment( Qt::AlignLeft );
 
-	m_Interface.frame_4->setMaximumHeight( m_ViewerCore->getSettings()->getPropertyAs<uint16_t>( "maxOptionWidgetHeight" ) );
-	m_Interface.frame_4->setMinimumHeight( m_ViewerCore->getSettings()->getPropertyAs<uint16_t>( "minOptionWidgetHeight" ) );
+	m_Interface.frame_4->setMaximumHeight( m_ViewerCore->getSettings()->getValueAs<uint16_t>( "maxOptionWidgetHeight" ) );
+	m_Interface.frame_4->setMinimumHeight( m_ViewerCore->getSettings()->getValueAs<uint16_t>( "minOptionWidgetHeight" ) );
 	m_Interface.columnSpin->setMinimum( 0 );
 	m_Interface.rowSpin->setMinimum( 0 );
 	m_Interface.sliceBox->setMinimum( 0 );
@@ -172,19 +172,19 @@ void VoxelInformationWidget::timePlayFinished()
 
 void VoxelInformationWidget::physPosChanged()
 {
-	util::fvector3 physicalCoord ( m_Interface.xBox->text().toFloat(),
+	util::fvector3 physicalCoord { m_Interface.xBox->text().toFloat(),
 								   m_Interface.yBox->text().toFloat(),
-								   m_Interface.zBox->text().toFloat() );
+								   m_Interface.zBox->text().toFloat() };
 	m_ViewerCore->physicalCoordsChanged( physicalCoord );
 }
 
 void VoxelInformationWidget::voxPosChanged()
 {
-	util::ivector4 voxelCoords( m_Interface.columnSpin->text().toInt(),
-								m_Interface.rowSpin->text().toInt(),
-								m_Interface.sliceBox->text().toInt(),
-								m_ViewerCore->getCurrentImage()->getImageProperties().timestep );
-	m_ViewerCore->physicalCoordsChanged( m_ViewerCore->getCurrentImage()->getISISImage()->getPhysicalCoordsFromIndex( voxelCoords ) ) ;
+	util::vector4<size_t> voxelCoords{ m_Interface.columnSpin->text().toUInt(),
+								m_Interface.rowSpin->text().toUInt(),
+								m_Interface.sliceBox->text().toUInt(),
+								m_ViewerCore->getCurrentImage()->getImageProperties().timestep };
+	m_ViewerCore->physicalCoordsChanged( m_ViewerCore->getCurrentImage()->getPhysicalCoordsFromIndex( voxelCoords ) ) ;
 
 }
 
@@ -194,7 +194,7 @@ void VoxelInformationWidget::synchronize()
 {
 	if( m_ViewerCore->hasImage() ) {
 		setVisible( true );
-		const boost::shared_ptr<ImageHolder> image = m_ViewerCore->getCurrentImage();
+		const std::shared_ptr<ImageHolder> image = m_ViewerCore->getCurrentImage();
 		disconnectSignals();
 		m_Interface.colormapFrame->setVisible( !image->getImageProperties().isRGB );
 
@@ -217,13 +217,13 @@ void VoxelInformationWidget::synchronize()
 			m_UpperThreshold->setVisible( true );
 			m_LabelMax->setVisible( true );
 
-			if( image->getImageProperties().minMax.first->as<double>() < 0 && image->getImageProperties().minMax.second->as<double>() > 0 ) {
+			if( image->getImageProperties().minMax.first.as<double>() < 0 && image->getImageProperties().minMax.second.as<double>() > 0 ) {
 				m_sepWidget->setVisible( true );
 			} else {
 				m_sepWidget->setVisible( false );
 			}
 
-			if( image->getImageProperties().minMax.first->as<double>() >= 0 ) {
+			if( image->getImageProperties().minMax.first.as<double>() >= 0 ) {
 				m_LowerHalfColormapLabel->setVisible( false );
 				m_LowerThreshold->setVisible( false );
 				m_LabelMin->setVisible( false );
@@ -240,7 +240,7 @@ void VoxelInformationWidget::synchronize()
 				m_LabelMin->setAlignment( Qt::AlignLeft );
 			}
 
-			if( image->getImageProperties().minMax.second->as<double>() <= 0 ) {
+			if( image->getImageProperties().minMax.second.as<double>() <= 0 ) {
 				m_UpperHalfColormapLabel->setVisible( false );
 				m_UpperThreshold->setVisible( false );
 				m_LabelMax->setVisible( false );
@@ -260,7 +260,7 @@ void VoxelInformationWidget::synchronize()
 			m_LabelMax->setText( QString::number( image->getImageProperties().scalingMinMax.second, 'g', 4 ) );
 		}
 
-		const util::ivector4 outerCorner = util::ivector4( image->getImageSize()[0] - 1, image->getImageSize()[1] - 1, image->getImageSize()[2] - 1 );
+		const util::vector4<size_t> outerCorner{image->getImageSize()[0] - 1, image->getImageSize()[1] - 1, image->getImageSize()[2] - 1, 0 };
 
 		m_Interface.columnSpin->setMaximum( outerCorner[0] );
 
@@ -282,7 +282,7 @@ void VoxelInformationWidget::synchronize()
 
 		synchronizePos( image->getImageProperties().voxelCoords );
 
-		const util::fvector3 transformedVec = image->getImageProperties().latchedOrientation.dot( image->getImageProperties().voxelSize );
+		const util::fvector3 transformedVec = image->getImageProperties().latchedOrientation * image->getImageProperties().voxelSize;
 
 		m_Interface.xBox->setSingleStep( fabs( transformedVec[0] ) );
 
@@ -332,55 +332,55 @@ void VoxelInformationWidget::synchronize()
 
 void VoxelInformationWidget::synchronizePos( util::fvector3 physicalCoords )
 {
-	synchronizePos( m_ViewerCore->getCurrentImage()->getISISImage()->getIndexFromPhysicalCoords( physicalCoords ) );
+	synchronizePos( m_ViewerCore->getCurrentImage()->getIndexFromPhysicalCoords( physicalCoords ) );
 }
 
-void VoxelInformationWidget::synchronizePos( util::ivector4 voxelCoords )
+void VoxelInformationWidget::synchronizePos(util::vector4<size_t> voxelCoords )
 {
-	boost::shared_ptr<ImageHolder> image = m_ViewerCore->getCurrentImage();
+	std::shared_ptr<ImageHolder> image = m_ViewerCore->getCurrentImage();
 	image->correctVoxelCoords<3>( voxelCoords );
-	const isis::data::Chunk &chunk = image->getISISImage()->getChunk( voxelCoords[0], voxelCoords[1], voxelCoords[2], voxelCoords[3], false );
-	const std::string typeName = chunk.getTypeName();
+	const data::Chunk &chunk = image->getISISImage()->getChunk( voxelCoords[0], voxelCoords[1], voxelCoords[2], voxelCoords[3], false );
+	const std::string typeName = chunk.typeName();
 	m_Interface.intensityValue->setToolTip( typeName.substr( 0, typeName.length() - 1 ).c_str() );
 
 	switch( chunk.getTypeID() ) {
-	case isis::data::ValueArray<bool>::staticID:
+	case util::typeID<bool>():
 		displayIntensity<bool>( voxelCoords );
 		break;
-	case isis::data::ValueArray<int8_t>::staticID:
+	case util::typeID<int8_t>():
 		displayIntensity<int8_t>( voxelCoords );
 		break;
-	case isis::data::ValueArray<uint8_t>::staticID:
+	case util::typeID<uint8_t>():
 		displayIntensity<uint8_t>( voxelCoords );
 		break;
-	case isis::data::ValueArray<int16_t>::staticID:
+	case util::typeID<int16_t>():
 		displayIntensity<int16_t>( voxelCoords );
 		break;
-	case isis::data::ValueArray<uint16_t>::staticID:
+	case util::typeID<uint16_t>():
 		displayIntensity<uint16_t>( voxelCoords );
 		break;
-	case isis::data::ValueArray<int32_t>::staticID:
+	case util::typeID<int32_t>():
 		displayIntensity<int32_t>( voxelCoords );
 		break;
-	case isis::data::ValueArray<uint32_t>::staticID:
+	case util::typeID<uint32_t>():
 		displayIntensity<uint32_t>( voxelCoords );
 		break;
-	case isis::data::ValueArray<int64_t>::staticID:
+	case util::typeID<int64_t>():
 		displayIntensity<int64_t>( voxelCoords );
 		break;
-	case isis::data::ValueArray<uint64_t>::staticID:
+	case util::typeID<uint64_t>():
 		displayIntensity<uint64_t>( voxelCoords );
 		break;
-	case isis::data::ValueArray<float>::staticID:
+	case util::typeID<float>():
 		displayIntensity<float>( voxelCoords );
 		break;
-	case isis::data::ValueArray<double>::staticID:
+	case util::typeID<double>():
 		displayIntensity<double>( voxelCoords );
 		break;
-	case isis::data::ValueArray<util::color24>::staticID:
+	case util::typeID<util::color24>():
 		displayIntensityColor<util::color24>( voxelCoords );
 		break;
-	case isis::data::ValueArray<util::color48>::staticID:
+	case util::typeID<util::color48>():
 		displayIntensityColor<util::color48> ( voxelCoords );
 		break;
 	}

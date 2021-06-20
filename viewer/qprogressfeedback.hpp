@@ -31,19 +31,18 @@
 #include <isis/core/progressfeedback.hpp>
 #include <QProgressBar>
 
-namespace isis
-{
-namespace viewer
+namespace isis::viewer
 {
 
 class QProgressFeedback : public util::ProgressFeedback
 {
 public:
-	virtual void show( size_t max, std::string header = "" );
-	virtual size_t progress( const std::string message = "", size_t step = 1 );
-	virtual void close();
-	virtual size_t getMax();
-	virtual size_t extend( size_t by );
+	virtual void show( size_t max, std::string header = "" )override;
+	virtual size_t progress( const std::string &message = "", size_t step = 1 )override;
+	virtual void close()override;
+	virtual size_t getMax()override;
+	virtual size_t extend( size_t by )override;
+	virtual void restart(std::size_t){}//@todo implement me
 
 	QProgressFeedback();
 
@@ -54,7 +53,6 @@ private:
 };
 
 
-}
 }
 
 

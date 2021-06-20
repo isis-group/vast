@@ -48,7 +48,7 @@ class PluginLoader
 {
 	friend class util::Singletons;
 public:
-	typedef boost::shared_ptr< PluginInterface > PluginInterfacePointer;
+	typedef std::shared_ptr< PluginInterface > PluginInterfacePointer;
 	typedef std::list< PluginInterfacePointer > PluginListType;
 	typedef std::list<std::string> PathsType;
 

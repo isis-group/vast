@@ -26,46 +26,35 @@
  *      Author: tuerke
  ******************************************************************/
 
-#ifndef VAST_FILEINFORMATION_HPP
-#define VAST_FILEINFORMATION_HPP
+#pragma once
 
 #include <string>
+#include <filesystem>
 #include <QSettings>
 
 #include "imageholder.hpp"
 
-
-namespace isis
-{
-namespace viewer
+namespace isis::viewer
 {
 
-class FileInformation
+class FileInformation : public std::filesystem::path
 {
 public:
-	FileInformation( const std::string &filename,
+	FileInformation()=delete;
+	explicit FileInformation( const std::string &filename,
 					 const util::istring &dialect = util::istring(),
 					 const util::istring &readformat = util::istring(),
 					 const std::string &widgetidentifier = std::string(),
 					 const ImageHolder::ImageType &imagetype = ImageHolder::structural_image,
 					 bool newensemble = true );
 
-	std::string getFileName() const  { return m_filename; }
-	std::string getCompletePath() const { return m_completePath; }
-	util::istring getDialect() const { return m_dialect; }
-	util::istring getReadFormat() const  { return m_readformat; }
-	std::string getWidgetIdentifier() const { return m_widgetIdentifier; }
-	bool isNewEnsemble() const { return m_newensemble; }
-	ImageHolder::ImageType getImageType() const { return m_imagetype; }
-
-	void setCompletePath( const std::string &cP ) { m_completePath = cP; }
-
-
+	[[nodiscard]] util::istring getDialect() const { return m_dialect; }
+	[[nodiscard]] util::istring getReadFormat() const  { return m_readformat; }
+	[[nodiscard]] std::string getWidgetIdentifier() const { return m_widgetIdentifier; }
+	[[nodiscard]] bool isNewEnsemble() const { return m_newensemble; }
+	[[nodiscard]] ImageHolder::ImageType getImageType() const { return m_imagetype; }
 
 private:
-	FileInformation() {};
-	std::string m_filename;
-	std::string m_completePath;
 	util::istring m_dialect;
 	util::istring m_readformat;
 	std::string m_widgetIdentifier;
@@ -89,5 +78,3 @@ private:
 };
 
 }
-}
-#endif

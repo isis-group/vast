@@ -59,7 +59,7 @@ void CreateMaskDialog::showEvent( QShowEvent * )
 		}
 
 		if( m_MaskEditDialog->m_ViewerCore->hasImage() ) {
-			const util::fvector3 &voxelSize = m_MaskEditDialog->m_ViewerCore->getCurrentImage()->getISISImage()->getPropertyAs<util::fvector3>( "voxelSize" ) ;
+			const util::fvector3 &voxelSize = m_MaskEditDialog->m_ViewerCore->getCurrentImage()->getISISImage()->getValueAs<util::fvector3>( "voxelSize" ) ;
 			m_Interface.xRes->setValue( voxelSize[0] );
 			m_Interface.yRes->setValue( voxelSize[1] );
 			m_Interface.zRes->setValue( voxelSize[2] );
@@ -75,10 +75,10 @@ void CreateMaskDialog::showEvent( QShowEvent * )
 void CreateMaskDialog::createMask()
 {
 	if( m_MaskEditDialog->m_ViewerCore->hasImage() ) {
-		boost::shared_ptr<ImageHolder> refImage = m_MaskEditDialog->m_ViewerCore->getCurrentImage();
+		std::shared_ptr<ImageHolder> refImage = m_MaskEditDialog->m_ViewerCore->getCurrentImage();
 		std::string dataType = m_Interface.maskType->currentText().toStdString();
 		dataType.append( "*" );
-		boost::shared_ptr<ImageHolder> maskImage;
+		std::shared_ptr<ImageHolder> maskImage;
 
 		switch ( isis::util::getTransposedTypeMap( false, true ).at( dataType ) ) {
 		case isis::data::ValueArray<bool>::staticID:

@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * Author: Erik Türke, tuerke@cbs.mpg.de
+ * Author: Erik Tï¿½rke, tuerke@cbs.mpg.de
  *
  * QImageWidgetImplementation.hpp
  *
@@ -51,7 +51,7 @@ class QImageWidgetImplementation : public QWidget, public WidgetInterface
 		/**scaling, offset, size**/
 		QOrientationHandler::ViewPortType viewPort;
 	};
-	typedef std::map<boost::shared_ptr<ImageHolder>, ImageProperties> ImagePropertiesMapType;
+	typedef std::map<std::shared_ptr<ImageHolder>, ImageProperties> ImagePropertiesMapType;
 
 public:
 
@@ -70,9 +70,9 @@ public Q_SLOTS:
 
 	virtual void setup( QViewerCore *, QWidget *, PlaneOrientation );
 	virtual void setZoom( float zoom );
-	virtual void addImage( const boost::shared_ptr<ImageHolder> image );
-	virtual bool removeImage( const boost::shared_ptr<ImageHolder> image );
-	virtual void paintImage( boost::shared_ptr< ImageHolder > image );
+	virtual void addImage( const std::shared_ptr<ImageHolder> image );
+	virtual bool removeImage( const std::shared_ptr<ImageHolder> image );
+	virtual void paintImage( std::shared_ptr< ImageHolder > image );
 	virtual void paintCrosshair() const;
 
 	virtual void lookAtPhysicalCoords( const util::fvector3 &physicalCoords );
@@ -113,7 +113,7 @@ private:
 	void recalculateTranslation();
 	void showLabels() const ;
 
-	boost::shared_ptr<ImageHolder> getWidgetSpecCurrentImage() const;
+	std::shared_ptr<ImageHolder> getWidgetSpecCurrentImage() const;
 
 	void commonInit();
 	util::PropertyMap m_WidgetProperties;

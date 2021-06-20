@@ -60,8 +60,8 @@ private:
 	ViewerCoreBase::Mode m_OrigMode;
 	Ui::correlationPlotterDialog m_Interface;
 	QViewerCore *m_ViewerCore;
-	boost::shared_ptr<ImageHolder> m_CurrentCorrelationMap;
-	boost::shared_ptr<ImageHolder> m_CurrentFunctionalImage;
+	std::shared_ptr<ImageHolder> m_CurrentCorrelationMap;
+	std::shared_ptr<ImageHolder> m_CurrentFunctionalImage;
 	boost::scoped_ptr< isis::data::Chunk > m_InternalChunk;
 	util::ivector4 m_CurrentVoxelPos;
 

@@ -60,7 +60,7 @@ TYPE roundNumber( TYPE number, unsigned  short placesOfDec )
 }
 
 void setOrientationToIdentity( data::Image &image );
-void checkForCaCp( boost::shared_ptr<ImageHolder> image );
+void checkForCaCp( std::shared_ptr<ImageHolder> image );
 std::string getFileFormatsAsString( image_io::FileFormat::io_modes mode, const std::string preSeparator, const std::string postSeparator = std::string( " " ) );
 
 std::list<util::istring> getFileFormatsAsList( image_io::FileFormat::io_modes mode );
@@ -71,9 +71,15 @@ std::list<std::string> getSupportedTypeList() ;
 typedef ViewerLog Runtime;
 typedef ViewerDev Dev;
 
-util::fvector4 mapCoordsToOrientation( const util::fvector4 &coords, const util::Matrix3x3<float> &orientationMatrix, PlaneOrientation orientation, bool back = false, bool absolute = true );
+template<typename T, int C> std::array<T, C> mapCoordsToOrientation( const std::array<T, C> &coords, const util::Matrix3x3<float> &orientationMatrix, PlaneOrientation orientation, bool back = false, bool absolute = true ){
+	const auto mapped=mapCoordsToOrientation<float,3>({coords[0],coords[1],coords[2]},orientationMatrix,orientation,back,absolute);
+	std::array<T, C> ret;
+	std::copy(std::begin(mapped),std::end(mapped),std::begin(ret));
+	std::fill(std::begin(ret)+3,std::end(ret),0);
+	return ret;
+}
 
-util::fvector3 mapCoordsToOrientation( const util::fvector3 &coords, const util::Matrix3x3<float> &orientationMatrix, PlaneOrientation orientation, bool back = false, bool absolute = true );
+util::fvector3 mapCoordsToOrientation( const util::fvector3 &coords, const util::Matrix3x3<float> &orientationMatrix, PlaneOrientation orientation, bool back=false, bool absolute = true );
 
 std::string getCrashLogFilePath();
 

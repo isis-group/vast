@@ -25,13 +25,11 @@
  *  Created on: Aug 12, 2011
  *      Author: tuerke
  ******************************************************************/
-#ifndef IMAGEHOLDER_HPP
-#define IMAGEHOLDER_HPP
+#pragma once
 
 #include "common.hpp"
 #include "color.hpp"
 #include "geometrical.hpp"
-#include <boost/foreach.hpp>
 #include <vector>
 #include <qapplication.h>
 #include <isis/core/propmap.hpp>
@@ -75,11 +73,13 @@ class ImageHolder
 public:
 	enum ImageType { structural_image, statistical_image };
 private:
+	util::fvector3 m_RowVec,m_ColumnVec,m_SliceVec,m_Offset;
+	util::fvector3 m_RowVecInv,m_ColumnVecInv,m_SliceVecInv;
 	struct ImageProperties {
 		std::string fileName;
 		std::string filePath;
-		util::ivector4 voxelCoords;
-		util::ivector4 trueVoxelCoords;
+		util::vector4<size_t> voxelCoords;
+		util::vector4<size_t> trueVoxelCoords;
 		util::fvector3 physicalCoords;
 		size_t timestep;
 		util::fvector3 voxelSize;
@@ -115,7 +115,7 @@ private:
 	};
 
 public:
-	typedef boost::shared_ptr< ImageHolder > Pointer;
+	typedef std::shared_ptr< ImageHolder > Pointer;
 	typedef std::vector< Pointer > Vector;
 	typedef std::map< std::string, Pointer > Map;
 
@@ -133,7 +133,7 @@ public:
 	util::PropertyMap &getPropMap() { return m_PropMap; }
 	const util::PropertyMap &getPropMap() const { return m_PropMap; }
 	const util::vector4<size_t> &getImageSize() const { return m_ImageSize; }
-	boost::shared_ptr< _internal::__Image >getISISImage() const;
+	std::shared_ptr< _internal::__Image >getISISImage() const;
 
 	void addChangedAttribute( const std::string &attribute );
 	bool removeChangedAttribute( const std::string &attribute );
@@ -141,11 +141,11 @@ public:
 	ImageProperties &getImageProperties() { return m_ImageProperties; }
 	const ImageProperties &getImageProperties() const { return m_ImageProperties; }
 
-	boost::shared_ptr<const void>
+	std::shared_ptr<const void>
 	getRawAdress( size_t timestep = 0 ) const;
 
 	template<unsigned short DIMS>
-	void correctVoxelCoords( util::ivector4 &vc ) {
+	void correctVoxelCoords( util::vector4<size_t> &vc ) {
 		for( unsigned short i = 0; i < DIMS; i++ ) {
 			if( vc[i] < 0 ) vc[i] = 0;
 			else if( vc[i] >= static_cast<int32_t>( this->getImageSize()[i] ) ) vc[i] = static_cast<int32_t>( this->getImageSize()[i] - 1 );
@@ -196,6 +196,8 @@ public:
 	void voxelCoordsChanged( const util::ivector4 &voxelCoords );
 	void timestepChanged( const size_t &timestep );
 
+	util::fvector3 getPhysicalCoordsFromIndex(const util::vector4<size_t> &voxelCoords ) const;
+	util::vector4<size_t> getIndexFromPhysicalCoords(const isis::util::fvector3 &physicalCoords ) const;
 private:
 	util::Matrix3x3<float> calculateLatchedImageOrientation( bool transposed = false );
 	util::Matrix3x3<float> calculateImageOrientation( bool transposed = false ) const;
@@ -208,13 +210,13 @@ private:
 
 	bool m_AmbiguousOrientation;
 
-	boost::shared_ptr<_internal::__Image> m_Image;
+	std::shared_ptr<_internal::__Image> m_Image;
 	std::pair<double, double> m_OptimalScalingPair;
 
 	std::vector< data::Chunk > m_ChunkVector;
 	std::vector< data::Chunk > m_VolumeVector;
 
-	boost::shared_ptr<color::Color> m_ColorHandler;
+	std::shared_ptr<color::Color> m_ColorHandler;
 
 	ImageProperties m_ImageProperties;
 
@@ -254,10 +256,8 @@ private:
 		}
 	}
 
-
+	bool updateOrientationMatrices();
 };
 
 }
 } //end namespace
-
-#endif

@@ -136,7 +136,7 @@ QTransform getTransform2ISISSpace ( const PlaneOrientation &orientation, const u
 	return retTransform;
 }
 
-util::Matrix3x3< qreal > getOrderedMatrix ( const boost::shared_ptr< ImageHolder > image, bool inverse, const bool &latched )
+util::Matrix3x3< qreal > getOrderedMatrix ( const std::shared_ptr< ImageHolder > image, bool inverse, const bool &latched )
 {
 	util::Matrix3x3<qreal> latchedOrientation_abs;
 
@@ -168,7 +168,7 @@ util::Matrix3x3< qreal > getOrderedMatrix ( const boost::shared_ptr< ImageHolder
 }
 
 
-util::FixedMatrix<qreal, 2, 2> extract2DMatrix ( const boost::shared_ptr<ImageHolder> image, const PlaneOrientation &orientation, bool inverse, const bool &latched )
+util::FixedMatrix<qreal, 2, 2> extract2DMatrix ( const std::shared_ptr<ImageHolder> image, const PlaneOrientation &orientation, bool inverse, const bool &latched )
 {
 	const util::Matrix3x3<qreal> mat = getOrderedMatrix( image, inverse, latched );
 	util::FixedMatrix<qreal, 2, 2> retMatrix;

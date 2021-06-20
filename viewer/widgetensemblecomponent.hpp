@@ -47,7 +47,7 @@ class WidgetEnsembleComponent
 {
 
 public:
-	typedef boost::shared_ptr< WidgetEnsembleComponent > Pointer;
+	typedef std::shared_ptr< WidgetEnsembleComponent > Pointer;
 	///map to associate a WidgetEnsembleComponent with a WidgetInterface raw pointer
 	typedef std::map< widget::WidgetInterface *, Pointer > Map;
 

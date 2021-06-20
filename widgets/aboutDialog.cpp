@@ -39,10 +39,10 @@ isis::viewer::ui::AboutDialog::AboutDialog ( QWidget *parent, isis::viewer::QVie
 
 	m_Interface.sendMailButton->setEnabled( false );
 
-	QPixmap pixMap( m_ViewerCore->getSettings()->getPropertyAs<std::string>( "vastSymbol" ).c_str() );
+	QPixmap pixMap( m_ViewerCore->getSettings()->getValueAs<std::string>( "vastSymbol" ).c_str() );
 	const float ratio = pixMap.height() / ( float )pixMap.width();
 	m_Interface.vastSymbolLabel->setPixmap( QPixmap(
-			m_ViewerCore->getSettings()->getPropertyAs<std::string>( "vastSymbol" ).c_str() ).scaled( 200 / ratio , m_Interface.vastSymbolLabel->height(), Qt::KeepAspectRatio ) );
+			m_ViewerCore->getSettings()->getValueAs<std::string>( "vastSymbol" ).c_str() ).scaled( 200 / ratio , m_Interface.vastSymbolLabel->height(), Qt::KeepAspectRatio ) );
 	QPalette pal;
 	pal.setColor( QPalette::Text, Qt::blue );
 	m_Interface.contactEdit->setPalette( pal );
@@ -54,10 +54,10 @@ isis::viewer::ui::AboutDialog::AboutDialog ( QWidget *parent, isis::viewer::QVie
 
 void isis::viewer::ui::AboutDialog::showEvent( QShowEvent * )
 {
-	m_Interface.labelCopyright->setText( m_ViewerCore->getSettings()->getPropertyAs<std::string>( "copyright" ).c_str() );
+	m_Interface.labelCopyright->setText( m_ViewerCore->getSettings()->getValueAs<std::string>( "copyright" ).c_str() );
 	m_Interface.labelVersion->setText( m_ViewerCore->getVersion().c_str() );
 	m_Interface.authorsList->clear();
-	BOOST_FOREACH( AboutDialog::AuthorMapType::const_reference author, m_authorMap ) {
+	for( const auto &author: m_authorMap ) {
 		m_Interface.authorsList->addItem( author.first.c_str() );
 	}
 	m_Interface.labelISISVersion->setText( util::Application::getCoreVersion().c_str() );

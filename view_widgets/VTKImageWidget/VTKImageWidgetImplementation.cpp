@@ -138,7 +138,7 @@ void VTKImageWidgetImplementation::commonInit()
 	m_RightButtonPressed = false;
 	m_LeftButtonPressed = false;
 
-	if( m_ViewerCore->getSettings()->getPropertyAs<bool>( "showCrosshair" ) ) {
+	if( m_ViewerCore->getSettings()->getValueAs<bool>( "showCrosshair" ) ) {
 		m_Cursor->AllOn();
 		m_Cursor->OutlineOff();
 	} else {
@@ -373,7 +373,7 @@ void VTKImageWidgetImplementation::updatePhysicalBounds()
 void VTKImageWidgetImplementation::lookAtPhysicalCoords ( const util::fvector3 &physicalCoords )
 {
 	if( m_ViewerCore->hasImage() ) {
-		boost::shared_ptr<ImageHolder> image = m_ViewerCore->getCurrentImage();
+		std::shared_ptr<ImageHolder> image = m_ViewerCore->getCurrentImage();
 
 		m_Cursor->SetFocalPoint( physicalCoords[0],
 								 physicalCoords[1],
@@ -518,9 +518,9 @@ isis::viewer::widget::WidgetInterface *loadWidget()
 const isis::util::PropertyMap *getProperties()
 {
 	isis::util::PropertyMap *properties = new isis::util::PropertyMap();
-	properties->setPropertyAs<std::string>( "widgetIdent", "vtk_rendering_widget" );
-	properties->setPropertyAs<std::string>( "widgetName", "3D Rendering widget (vtk) " );
-	properties->setPropertyAs<uint8_t>( "numberOfEntitiesInEnsemble", 1 );
-	properties->setPropertyAs<bool>( "hasOptionWidget", true );
+	properties->setValueAs<std::string>( "widgetIdent", "vtk_rendering_widget" );
+	properties->setValueAs<std::string>( "widgetName", "3D Rendering widget (vtk) " );
+	properties->setValueAs<uint8_t>( "numberOfEntitiesInEnsemble", 1 );
+	properties->setValueAs<bool>( "hasOptionWidget", true );
 	return properties;
 }

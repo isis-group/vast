@@ -45,7 +45,7 @@ class ViewerCoreBase;
 class WidgetEnsemble : public std::vector< WidgetEnsembleComponent::Pointer >
 {
 public:
-	typedef boost::shared_ptr< WidgetEnsemble > Pointer;
+	typedef std::shared_ptr< WidgetEnsemble > Pointer;
 	typedef std::vector< Pointer > Vector;
 
 	WidgetEnsemble();

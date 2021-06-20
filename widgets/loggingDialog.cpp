@@ -58,12 +58,12 @@ isis::viewer::ui::LoggingDialog::LoggingDialog( QWidget *parent, isis::viewer::Q
 	m_Interface.noticeCheck->setPalette( pal );
 }
 
-void isis::viewer::ui::LoggingDialog::printLog ( std::list< isis::qt4::QMessage > messageList )
+void isis::viewer::ui::LoggingDialog::printLog ( std::list< isis::util::Message > messageList )
 {
-	BOOST_FOREACH( std::list< qt4::QMessage>::const_reference message, messageList ) {
+	for(const auto &message: messageList ) {
 		QListWidgetItem *item = new QListWidgetItem();
 		std::stringstream logStream;
-		logStream << message.m_module << "(" << message.time_str << ") -> " << message.message ;
+		logStream << message.m_module << "(" << util::Value(message.m_timeStamp) << ") -> " << message.str() ;
 		item->setText( logStream.str().c_str() );
 
 		switch ( message.m_level ) {
@@ -117,11 +117,13 @@ void isis::viewer::ui::LoggingDialog::synchronize()
 	m_Interface.logList->clear();
 
 	if( m_Interface.checkDev->isChecked() ) {
-		printLog( m_ViewerCore->getMessageLogDev() );
+		//@todo implement me
+//		printLog( m_ViewerCore->getMessageLogDev() );
 	}
 
 	if( m_Interface.checkRuntime->isChecked() ) {
-		printLog( m_ViewerCore->getMessageLog() );
+		//@todo implement me
+//		printLog( m_ViewerCore->getMessageLog() );
 	}
 
 

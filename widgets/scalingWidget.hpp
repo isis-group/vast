@@ -62,7 +62,7 @@ private:
 	Ui::scalingOptionDialog m_Interface;
 	QViewerCore *m_ViewerCore;
 
-	void setMinMax( std::pair<double, double> minMax, boost::shared_ptr<ImageHolder> image ) ;
+	void setMinMax( std::pair<double, double> minMax, std::shared_ptr<ImageHolder> image ) ;
 	void setScalingOffset( std::pair<double, double> scalingOffset ) ;
 };
 

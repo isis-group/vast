@@ -100,11 +100,11 @@ void QImageWidgetImplementation::commonInit()
 	m_RightMouseButtonPressed = false;
 	m_ShowScalingOffset = false;
 
-	m_WidgetProperties.setPropertyAs<bool>( "zoomEvent", false );
-	m_WidgetProperties.setPropertyAs<float>( "zoomFactorIn", 1.5 );
-	m_WidgetProperties.setPropertyAs<float>( "zoomFactorOut", 1.5 );
-	m_WidgetProperties.setPropertyAs<float>( "maxZoom", 30 );
-	m_WidgetProperties.setPropertyAs<float>( "minZoom", 1.0 );
+	m_WidgetProperties.setValueAs<bool>( "zoomEvent", false );
+	m_WidgetProperties.setValueAs<float>( "zoomFactorIn", 1.5 );
+	m_WidgetProperties.setValueAs<float>( "zoomFactorOut", 1.5 );
+	m_WidgetProperties.setValueAs<float>( "maxZoom", 30 );
+	m_WidgetProperties.setValueAs<float>( "minZoom", 1.0 );
 	m_CrosshairWidth = 1;
 	currentZoom = 1.0;
 	translationX = 0.0;
@@ -124,20 +124,20 @@ void QImageWidgetImplementation::setMouseCursorIcon( QIcon icon )
 	}
 }
 
-void QImageWidgetImplementation::addImage( const boost::shared_ptr< ImageHolder > image )
+void QImageWidgetImplementation::addImage( const std::shared_ptr< ImageHolder > image )
 {
 	ImageProperties imgProperties;
 	imgProperties.viewPort = QOrientationHandler::ViewPortType();
-	m_ImageProperties.insert( std::make_pair< boost::shared_ptr<ImageHolder> , ImageProperties >( image, imgProperties ) );
+	m_ImageProperties.insert( std::make_pair< std::shared_ptr<ImageHolder> , ImageProperties >( image, imgProperties ) );
 	setFocus();
 }
 
-bool QImageWidgetImplementation::removeImage( const boost::shared_ptr< ImageHolder > image )
+bool QImageWidgetImplementation::removeImage( const std::shared_ptr< ImageHolder > image )
 {
 	return m_ImageProperties.erase( image ) > 0;
 }
 
-boost::shared_ptr< ImageHolder > QImageWidgetImplementation::getWidgetSpecCurrentImage() const
+std::shared_ptr< ImageHolder > QImageWidgetImplementation::getWidgetSpecCurrentImage() const
 {
 	if( std::find( getWidgetEnsemble()->getImageVector().begin(), getWidgetEnsemble()->getImageVector().end(), m_ViewerCore->getCurrentImage() ) != getWidgetEnsemble()->getImageVector().end() ) {
 		return m_ViewerCore->getCurrentImage();
@@ -149,11 +149,11 @@ boost::shared_ptr< ImageHolder > QImageWidgetImplementation::getWidgetSpecCurren
 
 void QImageWidgetImplementation::setZoom( float zoom )
 {
-	if( zoom <= m_WidgetProperties.getPropertyAs<float>( "maxZoom" ) && zoom >= m_WidgetProperties.getPropertyAs<float>( "minZoom" ) ) {
-		m_WidgetProperties.setPropertyAs<bool>( "zoomEvent", true );
+	if( zoom <= m_WidgetProperties.getValueAs<float>( "maxZoom" ) && zoom >= m_WidgetProperties.getValueAs<float>( "minZoom" ) ) {
+		m_WidgetProperties.setValueAs<bool>( "zoomEvent", true );
 		currentZoom = zoom;
 		update();
-		m_WidgetProperties.setPropertyAs<bool>( "zoomEvent", false );
+		m_WidgetProperties.setValueAs<bool>( "zoomEvent", false );
 	}
 
 }
@@ -170,7 +170,7 @@ void QImageWidgetImplementation::paintEvent( QPaintEvent */*event*/ )
 											m_PlaneOrientation,
 											m_Border
 										  );
-		boost::shared_ptr<ImageHolder> cImage =  getWidgetSpecCurrentImage();
+		std::shared_ptr<ImageHolder> cImage =  getWidgetSpecCurrentImage();
 
 		if( m_ViewerCore->getMode() == ViewerCoreBase::statistical_mode ) {
 			//painting all anatomical images
@@ -227,7 +227,7 @@ void QImageWidgetImplementation::paintEvent( QPaintEvent */*event*/ )
 			m_Painter->setFont( QFont( "Chicago", 10 ) );
 			m_Painter->setPen( Qt::red );
 			std::stringstream scalingOffset;
-			const boost::shared_ptr<ImageHolder> image = getWidgetSpecCurrentImage();
+			const std::shared_ptr<ImageHolder> image = getWidgetSpecCurrentImage();
 			scalingOffset << "Scaling: " << image->getImageProperties().scaling
 						  << " Offset: " << image->getImageProperties().offset;
 			m_Painter->drawText( 10, 30, scalingOffset.str().c_str() );
@@ -242,7 +242,7 @@ void QImageWidgetImplementation::paintEvent( QPaintEvent */*event*/ )
 void QImageWidgetImplementation::recalculateTranslation()
 {
 	if( currentZoom != 1 ) {
-		const boost::shared_ptr<ImageHolder > image = getWidgetSpecCurrentImage();
+		const std::shared_ptr<ImageHolder > image = getWidgetSpecCurrentImage();
 		const util::ivector4 mappedSize = mapCoordsToOrientation( image->getImageSize(), image->getImageProperties().latchedOrientation, m_PlaneOrientation );
 		const util::ivector4 mappedVoxelCoords = mapCoordsToOrientation( image->getImageProperties().voxelCoords, image->getImageProperties().latchedOrientation, m_PlaneOrientation );
 		const util::ivector4 signVec = mapCoordsToOrientation( util::ivector4( 1, 1, 1, 1 ), image->getImageProperties().latchedOrientation, m_PlaneOrientation, false, false );
@@ -261,7 +261,7 @@ void QImageWidgetImplementation::recalculateTranslation()
 }
 
 
-void QImageWidgetImplementation::paintImage( boost::shared_ptr< ImageHolder > image )
+void QImageWidgetImplementation::paintImage( std::shared_ptr< ImageHolder > image )
 {
 	ImageProperties &imgProps = m_ImageProperties.at( image );
 
@@ -283,7 +283,7 @@ void QImageWidgetImplementation::paintImage( boost::shared_ptr< ImageHolder > im
 							 m_PlaneOrientation, m_Border );
 	}
 
-	if( !m_LeftMouseButtonPressed || m_RightMouseButtonPressed || m_WidgetProperties.getPropertyAs<bool>( "zoomEvent" ) ) {
+	if( !m_LeftMouseButtonPressed || m_RightMouseButtonPressed || m_WidgetProperties.getValueAs<bool>( "zoomEvent" ) ) {
 		recalculateTranslation();
 	}
 
@@ -370,7 +370,7 @@ void QImageWidgetImplementation::mouseMoveEvent( QMouseEvent *e )
 				image->updateColorMap();
 			}
 		} else {
-			boost::shared_ptr<ImageHolder> image = getWidgetSpecCurrentImage();
+			std::shared_ptr<ImageHolder> image = getWidgetSpecCurrentImage();
 			const double offset =  ( m_StartCoordsPair.second - e->y() ) / ( float )height() * image->getImageProperties().extent;
 			const double scaling = 1.0 - ( m_StartCoordsPair.first - e->x() ) / ( float )width() * 5;
 			image->getImageProperties().offset = offset;
@@ -392,7 +392,7 @@ void QImageWidgetImplementation::mouseMoveEvent( QMouseEvent *e )
 
 util::fvector3 QImageWidgetImplementation::mouseCoords2PhysCoords ( const int &x, const int &y )
 {
-	const boost::shared_ptr<ImageHolder> image = getWidgetSpecCurrentImage();
+	const std::shared_ptr<ImageHolder> image = getWidgetSpecCurrentImage();
 	const ImageProperties &imgProps = m_ImageProperties.at( image );
 	const uint16_t slice = mapCoordsToOrientation( image->getImageProperties().voxelCoords, image->getImageProperties().latchedOrientation, m_PlaneOrientation )[2];
 	const util::ivector4 &coords = QOrientationHandler::convertWindow2VoxelCoords( imgProps.viewPort, image, x, y, slice, m_PlaneOrientation );
@@ -441,7 +441,7 @@ void QImageWidgetImplementation::showLabels() const
 
 void QImageWidgetImplementation::paintCrosshair() const
 {
-	const boost::shared_ptr< ImageHolder > image = getWidgetSpecCurrentImage();
+	const std::shared_ptr< ImageHolder > image = getWidgetSpecCurrentImage();
 	const ImageProperties &imgProps = m_ImageProperties.at( image );
 	std::pair<int, int> coords = QOrientationHandler::convertVoxel2WindowCoords( imgProps.viewPort, image, m_PlaneOrientation );
 	short border = -5000;
@@ -504,7 +504,7 @@ void QImageWidgetImplementation::wheelEvent( QWheelEvent *e )
 
 	}
 
-	if( m_ViewerCore->getSettings()->getPropertyAs<bool>( "propagateZooming" ) ) {
+	if( m_ViewerCore->getSettings()->getValueAs<bool>( "propagateZooming" ) ) {
 		m_ViewerCore->zoomChanged( oldZoom );
 	} else {
 		setZoom( oldZoom );
@@ -521,14 +521,14 @@ void QImageWidgetImplementation::keyPressEvent( QKeyEvent *e )
 	float oldZoom = currentZoom;
 
 	if( e->key() == Qt::Key_Minus ) {
-		oldZoom /= m_WidgetProperties.getPropertyAs<float>( "zoomFactorOut" );
+		oldZoom /= m_WidgetProperties.getValueAs<float>( "zoomFactorOut" );
 	} else if ( e->key() == Qt::Key_Plus ) {
-		oldZoom *= m_WidgetProperties.getPropertyAs<float>( "zoomFactorIn" );
+		oldZoom *= m_WidgetProperties.getValueAs<float>( "zoomFactorIn" );
 	} else if( e->key() == Qt::Key_Space ) {
 		m_ViewerCore->centerImages();
 	}
 
-	if( m_ViewerCore->getSettings()->getPropertyAs<bool>( "propagateZooming" ) ) {
+	if( m_ViewerCore->getSettings()->getValueAs<bool>( "propagateZooming" ) ) {
 		zoomChanged( oldZoom );
 	} else {
 		setZoom( oldZoom );
@@ -631,9 +631,9 @@ isis::viewer::widget::WidgetInterface *loadWidget()
 const isis::util::PropertyMap *getProperties()
 {
 	isis::util::PropertyMap *properties = new isis::util::PropertyMap();
-	properties->setPropertyAs<std::string>( "widgetIdent", "qt4_plane_widget" );
-	properties->setPropertyAs<std::string>( "widgetName", "Simple plane widget" );
-	properties->setPropertyAs<uint8_t>( "numberOfEntitiesInEnsemble", 3 );
-	properties->setPropertyAs<bool>( "hasOptionWidget", false );
+	properties->setValueAs<std::string>( "widgetIdent", "qt4_plane_widget" );
+	properties->setValueAs<std::string>( "widgetName", "Simple plane widget" );
+	properties->setValueAs<uint8_t>( "numberOfEntitiesInEnsemble", 3 );
+	properties->setValueAs<bool>( "hasOptionWidget", false );
 	return properties;
 }

@@ -52,7 +52,7 @@ void QProgressFeedback::show( size_t max, std::string header )
 	m_ProgressBar->show();
 }
 
-size_t QProgressFeedback::progress( const std::string /*message*/, size_t step )
+size_t QProgressFeedback::progress( const std::string &/*message*/, size_t step )
 {
 	m_CurrentVal += step;
 	m_ProgressBar->setValue( m_CurrentVal );

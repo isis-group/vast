@@ -28,16 +28,16 @@
 #include "mainwindow.hpp"
 #include <iostream>
 #include <QGridLayout>
+#include <QToolBar>
 #include <isis/core/io_factory.hpp>
+#include <QMessageBox>
 #include "../viewer/uicore.hpp"
 #include "../viewer/qviewercore.hpp"
 #include "../viewer/fileinformation.hpp"
 #include "../widgets/scalingWidget.hpp"
 
 
-namespace isis
-{
-namespace viewer
+namespace isis::viewer
 {
 
 MainWindow::MainWindow( QViewerCore *core ) :
@@ -59,7 +59,7 @@ MainWindow::MainWindow( QViewerCore *core ) :
 	m_StatusMovie( new QMovie( this ) )
 {
 	m_Interface.setupUi( this );
-	setWindowIcon( QIcon( m_ViewerCore->getSettings()->getPropertyAs<std::string>( "vastSymbol" ).c_str() ) );
+	setWindowIcon( QIcon( m_ViewerCore->getSettings()->getValueAs<std::string>( "vastSymbol" ).c_str() ) );
 	m_ActionReset_Scaling = new QAction( this );
 	m_ActionAuto_Scaling = new QAction( this );
 	m_ActionReset_Scaling->setShortcut( QKeySequence( tr( "R, S" ) ) );
@@ -166,13 +166,13 @@ MainWindow::MainWindow( QViewerCore *core ) :
 void MainWindow::toggleGeometrical ( bool geometrical )
 {
 	std::vector<ImageHolder::Vector> images;
-	m_ViewerCore->getSettings()->setPropertyAs<bool>( "showImagesGeometricalView", geometrical );
+	m_ViewerCore->getSettings()->setValueAs<bool>( "showImagesGeometricalView", geometrical );
 	std::string widgetIdentifier;
 
 	if( geometrical ) {
-		widgetIdentifier = m_ViewerCore->getSettings()->getPropertyAs<std::string>( "widgetGeometrical" );
+		widgetIdentifier = m_ViewerCore->getSettings()->getValueAs<std::string>( "widgetGeometrical" );
 	} else {
-		widgetIdentifier = m_ViewerCore->getSettings()->getPropertyAs<std::string>( "widgetLatched" );
+		widgetIdentifier = m_ViewerCore->getSettings()->getValueAs<std::string>( "widgetLatched" );
 	}
 
 	WidgetEnsemble::Vector eVec = m_ViewerCore->getUICore()->getEnsembleList();
@@ -196,7 +196,7 @@ void MainWindow::createScreenshot()
 
 		if( fileName.size() ) {
 			m_ViewerCore->getUICore()->toggleLoadingIcon( true, QString( "Creating and saving screenshot to " ) + fileName );
-			m_ViewerCore->getUICore()->getScreenshot().save( fileName, 0, m_ViewerCore->getSettings()->getPropertyAs<uint16_t>( "screenshotQuality" ) );
+			m_ViewerCore->getUICore()->getScreenshot().save( fileName, 0, m_ViewerCore->getSettings()->getValueAs<uint16_t>( "screenshotQuality" ) );
 			m_ViewerCore->setCurrentPath( fileName.toStdString() );
 		}
 
@@ -268,7 +268,7 @@ void MainWindow::resetScaling()
 
 void MainWindow::propagateZooming( bool propagate )
 {
-	m_ViewerCore->getSettings()->setPropertyAs<bool>( "propagateZooming", propagate );
+	m_ViewerCore->getSettings()->setValueAs<bool>( "propagateZooming", propagate );
 	m_ViewerCore->updateScene();
 }
 
@@ -287,18 +287,18 @@ void MainWindow::ignoreOrientation( bool ignore )
 			setOrientationToIdentity( *image->getISISImage() );
 			image->updateOrientation();
 		} else {
-			image->getISISImage()->setPropertyAs<util::fvector3>( "rowVec", image->getPropMap().getPropertyAs<util::fvector3>( "originalRowVec" ) );
-			image->getISISImage()->setPropertyAs<util::fvector3>( "columnVec", image->getPropMap().getPropertyAs<util::fvector3>( "originalColumnVec" ) );
-			image->getISISImage()->setPropertyAs<util::fvector3>( "sliceVec", image->getPropMap().getPropertyAs<util::fvector3>( "originalSliceVec" ) );
-			image->getISISImage()->setPropertyAs<util::fvector3>( "indexOrigin", image->getPropMap().getPropertyAs<util::fvector3>( "originalIndexOrigin" ) );
+			image->getISISImage()->setValueAs<util::fvector3>( "rowVec", image->getPropMap().getValueAs<util::fvector3>( "originalRowVec" ) );
+			image->getISISImage()->setValueAs<util::fvector3>( "columnVec", image->getPropMap().getValueAs<util::fvector3>( "originalColumnVec" ) );
+			image->getISISImage()->setValueAs<util::fvector3>( "sliceVec", image->getPropMap().getValueAs<util::fvector3>( "originalSliceVec" ) );
+			image->getISISImage()->setValueAs<util::fvector3>( "indexOrigin", image->getPropMap().getValueAs<util::fvector3>( "originalIndexOrigin" ) );
 			image->updateOrientation();
 
-			if( m_ViewerCore->getSettings()->getPropertyAs<bool>( "checkCACP" ) ) {
+			if( m_ViewerCore->getSettings()->getValueAs<bool>( "checkCACP" ) ) {
 				checkForCaCp( image );
 			}
 		}
 
-		image->getImageProperties().physicalCoords = image->getISISImage()->getPhysicalCoordsFromIndex( image->getImageProperties().voxelCoords );
+		image->getImageProperties().physicalCoords = image->getPhysicalCoordsFromIndex( image->getImageProperties().voxelCoords );
 	}
 	m_ViewerCore->getUICore()->getMainWindow()->getInterface().actionIgnore_Orientation->setChecked(ignore);
 	m_ViewerCore->getUICore()->refreshUI();
@@ -318,7 +318,7 @@ void MainWindow::showScalingOption()
 
 void MainWindow::spinRadiusChanged( int radius )
 {
-	m_ViewerCore->getSettings()->setPropertyAs<uint16_t>( "minMaxSearchRadius", radius );
+	m_ViewerCore->getSettings()->setValueAs<uint16_t>( "minMaxSearchRadius", radius );
 }
 
 void MainWindow::openImage()
@@ -335,12 +335,12 @@ void MainWindow::saveImage()
 		std::stringstream text;
 		text << "This will overwrite " << m_ViewerCore->getCurrentImage()->getImageProperties().filePath << " !";
 		msgBox.setText( text.str().c_str() );
-		const util::slist changedAttributes = m_ViewerCore->getCurrentImage()->getPropMap().getPropertyAs<util::slist>( "changedAttributes" );
+		const util::slist changedAttributes = m_ViewerCore->getCurrentImage()->getPropMap().getValueAs<util::slist>( "changedAttributes" );
 
 		if( changedAttributes.size() ) {
 			std::stringstream detailedText;
 			detailedText << "Changed attributes: " << std::endl;
-			BOOST_FOREACH( util::slist::const_reference attrChanged, m_ViewerCore->getCurrentImage()->getPropMap().getPropertyAs<util::slist>( "changedAttributes" ) ) {
+			BOOST_FOREACH( util::slist::const_reference attrChanged, m_ViewerCore->getCurrentImage()->getPropMap().getValueAs<util::slist>( "changedAttributes" ) ) {
 				detailedText << " >> " << attrChanged << std::endl;
 			}
 			msgBox.setDetailedText( detailedText.str().c_str() );
@@ -356,7 +356,7 @@ void MainWindow::saveImage()
 			break;
 		case QMessageBox::Yes:
 			m_ViewerCore->getUICore()->toggleLoadingIcon( true, QString( "Saving image to " ) + m_ViewerCore->getCurrentImage()->getImageProperties().fileName.c_str() );
-			isis::data::IOFactory::write( *m_ViewerCore->getCurrentImage()->getISISImage(), m_ViewerCore->getCurrentImage()->getImageProperties().filePath, "", "" );
+			isis::data::IOFactory::write( *m_ViewerCore->getCurrentImage()->getISISImage(), m_ViewerCore->getCurrentImage()->getImageProperties().filePath );
 			m_ViewerCore->getUICore()->toggleLoadingIcon( false );
 			break;
 		}
@@ -371,8 +371,8 @@ void MainWindow::saveAllImages()
 		BOOST_FOREACH( ImageHolder::Vector::const_reference image, m_ViewerCore->getImageVector() ) {
 			fileNames.push_back( image->getImageProperties().fileName );
 
-			if( image->getPropMap().getPropertyAs<util::slist>( "changedAttributes" ).size() ) {
-				changedAttributesList.push_back( image->getPropMap().getPropertyAs<util::slist>( "changedAttributes" ) );
+			if( image->getPropMap().getValueAs<util::slist>( "changedAttributes" ).size() ) {
+				changedAttributesList.push_back( image->getPropMap().getValueAs<util::slist>( "changedAttributes" ) );
 			}
 		}
 
@@ -389,9 +389,9 @@ void MainWindow::saveAllImages()
 			std::stringstream detailedText;
 			detailedText << "Changed attributes: " << std::endl;
 			BOOST_FOREACH( ImageHolder::Vector::const_reference image, m_ViewerCore->getImageVector() ) {
-				if( image->getPropMap().getPropertyAs<util::slist>( "changedAttributes" ).size() ) {
+				if( image->getPropMap().getValueAs<util::slist>( "changedAttributes" ).size() ) {
 					detailedText << image->getImageProperties().fileName << " : " << std::endl;
-					BOOST_FOREACH( util::slist::const_reference changedAttribute, image->getPropMap().getPropertyAs<util::slist>( "changedAttributes" ) ) {
+					BOOST_FOREACH( util::slist::const_reference changedAttribute, image->getPropMap().getValueAs<util::slist>( "changedAttributes" ) ) {
 						detailedText << changedAttribute << std::endl;
 					}
 				}
@@ -523,14 +523,14 @@ void MainWindow::openRecentPath ( QString path )
 
 void MainWindow::refreshUI()
 {
-	m_Interface.actionShow_Labels->setChecked( m_ViewerCore->getSettings()->getPropertyAs<bool>( "showLabels" ) );
-	m_Interface.actionShow_Crosshair->setChecked( m_ViewerCore->getSettings()->getPropertyAs<bool>( "showCrosshair" ) );
+	m_Interface.actionShow_Labels->setChecked( m_ViewerCore->getSettings()->getValueAs<bool>( "showLabels" ) );
+	m_Interface.actionShow_Crosshair->setChecked( m_ViewerCore->getSettings()->getValueAs<bool>( "showCrosshair" ) );
 	m_ViewerCore->setShowLabels( m_Interface.actionShow_Labels->isChecked() );
-	m_Interface.actionPropagate_Zooming->setChecked( m_ViewerCore->getSettings()->getPropertyAs<bool>( "propagateZooming" ) );
-	m_RadiusSpin->setValue( m_ViewerCore->getSettings()->getPropertyAs<uint16_t>( "minMaxSearchRadius" ) );
-	m_Interface.actionGeometrical_View->setChecked( m_ViewerCore->getSettings()->getPropertyAs<bool>( "showImagesGeometricalView" ) );
-	m_Interface.actionGeometrical_View->setVisible( m_ViewerCore->hasWidget( m_ViewerCore->getSettings()->getPropertyAs<std::string>( "widgetLatched" ) )
-			&& m_ViewerCore->hasWidget( m_ViewerCore->getSettings()->getPropertyAs<std::string>( "widgetGeometrical" ) )
+	m_Interface.actionPropagate_Zooming->setChecked( m_ViewerCore->getSettings()->getValueAs<bool>( "propagateZooming" ) );
+	m_RadiusSpin->setValue( m_ViewerCore->getSettings()->getValueAs<uint16_t>( "minMaxSearchRadius" ) );
+	m_Interface.actionGeometrical_View->setChecked( m_ViewerCore->getSettings()->getValueAs<bool>( "showImagesGeometricalView" ) );
+	m_Interface.actionGeometrical_View->setVisible( m_ViewerCore->hasWidget( m_ViewerCore->getSettings()->getValueAs<std::string>( "widgetLatched" ) )
+			&& m_ViewerCore->hasWidget( m_ViewerCore->getSettings()->getValueAs<std::string>( "widgetGeometrical" ) )
 												  );
 
 
@@ -547,9 +547,9 @@ void MainWindow::refreshUI()
 	updateRecentOpenList();
 
 	if( m_ViewerCore->getMode() == ViewerCoreBase::statistical_mode ) {
-		setWindowTitle( QString(  m_ViewerCore->getSettings()->getPropertyAs<std::string>( "signature" ).c_str() ) + QString( "(statistical mode)" ) );
+		setWindowTitle( QString(  m_ViewerCore->getSettings()->getValueAs<std::string>( "signature" ).c_str() ) + QString( "(statistical mode)" ) );
 	} else  if ( m_ViewerCore->getMode() == ViewerCoreBase::default_mode ) {
-		setWindowTitle( QString(  m_ViewerCore->getSettings()->getPropertyAs<std::string>( "signature" ).c_str() ) );
+		setWindowTitle( QString(  m_ViewerCore->getSettings()->getValueAs<std::string>( "signature" ).c_str() ) );
 	}
 
 	scalingWidget->synchronize();
@@ -595,5 +595,4 @@ void MainWindow::dropEvent ( QDropEvent *e )
 }
 
 
-}
 }

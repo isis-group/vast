@@ -32,11 +32,8 @@
 #include <isis/core/chunk.hpp>
 #include "../viewer/common.hpp"
 #include "imageholder.hpp"
-#include <boost/timer.hpp>
 
-namespace isis
-{
-namespace viewer
+namespace isis::viewer
 {
 
 class MemoryHandler
@@ -49,31 +46,31 @@ public:
 
 		const util::ivector4 trueVoxelCoords = image->getImageProperties().trueVoxelCoords;
 
-		const util::ivector4 mappedSize = mapCoordsToOrientation( image->getImageSize(), image->getImageProperties().latchedOrientation, orientation );
-		const util::ivector4 mappedCoords = mapCoordsToOrientation( trueVoxelCoords, image->getImageProperties().latchedOrientation, orientation );
-		const util::ivector4 mapping = mapCoordsToOrientation( util::ivector4( 0, 1, 2, 3 ), image->getImageProperties().latchedOrientation, orientation, true );
-		const util::ivector4 _mapping = mapCoordsToOrientation( util::ivector4( 0, 1, 2, 3 ), image->getImageProperties().latchedOrientation, orientation, false );
+		const auto mappedSize = mapCoordsToOrientation<size_t,4>( image->getImageSize(), image->getImageProperties().latchedOrientation, orientation );
+		const auto mappedCoords = mapCoordsToOrientation<int32_t,4> ( trueVoxelCoords, image->getImageProperties().latchedOrientation, orientation );
+		const auto mapping = mapCoordsToOrientation<int,4>({0, 1, 2, 3 }, image->getImageProperties().latchedOrientation, orientation, true );
+		const auto _mapping = mapCoordsToOrientation<int,4>( {0, 1, 2, 3 }, image->getImageProperties().latchedOrientation, orientation, false );
 		const data::Chunk &chunk = image->getVolumeVector()[image->getImageProperties().timestep];
 
 		const bool sliceIsInside = trueVoxelCoords[_mapping[2]] >= 0 && trueVoxelCoords[_mapping[2]] < mappedSize[2];
 
 		TYPE *dest = &static_cast<data::Chunk &>( sliceChunk ).voxel<TYPE>( 0 );
 
-		const util::ivector4 coords( 0, 0, mappedCoords[2] );
+		const util::ivector4 coords{ 0, 0, mappedCoords[2] };
 		const TYPE *src = &chunk.voxel<TYPE>( coords[mapping[0]], coords[mapping[1]], coords[mapping[2]] );
 
-		const util::ivector4 sizeAligned = static_cast<data::Chunk &>( sliceChunk ).getSizeAsVector();
+		const auto sizeAligned = static_cast<data::Chunk &>( sliceChunk ).getSizeAsVector();
 
-		const util::ivector4::value_type coords1x[3] = {0, 0, mappedCoords[2] };
-		const util::ivector4::value_type coords2x[3] = {1, 0, mappedCoords[2] };
-		const size_t lin1x = chunk.getLinearIndex( util::ivector4( coords1x[mapping[0]], coords1x[mapping[1]], coords1x[mapping[2]] ) );
-		const size_t lin2x = chunk.getLinearIndex( util::ivector4( coords2x[mapping[0]], coords2x[mapping[1]], coords2x[mapping[2]] ) );
+		const util::ivector3 coords1x = {0, 0, mappedCoords[2] };
+		const util::ivector3 coords2x = {1, 0, mappedCoords[2] };
+		const size_t lin1x = chunk.getLinearIndex({coords1x[mapping[0]], coords1x[mapping[1]], coords1x[mapping[2]] } );
+		const size_t lin2x = chunk.getLinearIndex( {coords2x[mapping[0]], coords2x[mapping[1]], coords2x[mapping[2]] } );
 		const size_t linx = lin2x - lin1x;
 
-		const util::ivector4::value_type coords1y[3] = {0, 0, mappedCoords[2] };
-		const util::ivector4::value_type coords2y[3] = {0, 1, mappedCoords[2] };
-		const size_t lin1y = chunk.getLinearIndex( util::ivector4( coords1y[mapping[0]], coords1y[mapping[1]], coords1y[mapping[2]] ) );
-		const size_t lin2y = chunk.getLinearIndex( util::ivector4( coords2y[mapping[0]], coords2y[mapping[1]], coords2y[mapping[2]] ) );
+		const util::ivector3 coords1y = {0, 0, mappedCoords[2] };
+		const util::ivector3 coords2y = {0, 1, mappedCoords[2] };
+		const size_t lin1y = chunk.getLinearIndex( { coords1y[mapping[0]], coords1y[mapping[1]], coords1y[mapping[2]]} );
+		const size_t lin2y = chunk.getLinearIndex( {coords2y[mapping[0]], coords2y[mapping[1]], coords2y[mapping[2]] } );
 		const size_t liny = lin2y - lin1y;
 
 		for ( util::ivector4::value_type y = 0; y < mappedSize[1]; y++ ) {
@@ -93,17 +90,17 @@ public:
 			fillSliceChunk<TYPE>( sliceChunk, image, orientation );
 		} else {
 			const data::Chunk &chunk = image->getVolumeVector()[image->getImageProperties().timestep];
-			boost::shared_ptr< _internal::__Image > isisImage = image->getISISImage();
+			std::shared_ptr< _internal::__Image > isisImage = image->getISISImage();
 			const geometrical::BoundingBoxType &bb = image->getImageProperties().boundingBox;
-			const util::ivector4 mapping = mapCoordsToOrientation( util::fvector4( 0, 1, 2 ), image->getImageProperties().latchedOrientation, orientation );
-			const util::ivector4 _mapping = mapCoordsToOrientation( util::fvector4( 0, 1, 2 ), util::IdentityMatrix<float, 3>(), orientation );
+			const auto mapping = mapCoordsToOrientation<int,3>( { 0, 1, 2 }, image->getImageProperties().latchedOrientation, orientation );
+			const auto _mapping = mapCoordsToOrientation<int,3>( {0, 1, 2 }, util::identityMatrix<float, 3>(), orientation );
 			float phys[] = { image->getImageProperties().physicalCoords[0], image->getImageProperties().physicalCoords[1], image->getImageProperties().physicalCoords[2] };
 			float factor = 1. / sqrt( 2 );
 			const float stepI = factor * image->getImageProperties().voxelSize[mapping[0]];
 			const float stepJ = factor * image->getImageProperties().voxelSize[mapping[1]];
 
-			const util::ivector4 sizeSliceChunk = static_cast<data::Chunk &>( sliceChunk ).getSizeAsVector();
-			const util::ivector4 sizeChunk = chunk.getSizeAsVector();
+			const auto sizeSliceChunk = static_cast<data::Chunk &>( sliceChunk ).getSizeAsVector();
+			const auto sizeChunk = chunk.getSizeAsVector();
 
 			const TYPE *src = &chunk.voxel<TYPE>( 0 );
 			TYPE *dest = &static_cast<data::Chunk &>( sliceChunk ).voxel<TYPE>( 0 );
@@ -134,7 +131,6 @@ public:
 
 
 
-}
 } //end namespace
 
 

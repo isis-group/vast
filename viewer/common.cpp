@@ -40,37 +40,39 @@ namespace viewer
 
 void setOrientationToIdentity( data::Image &image )
 {
-	image.setPropertyAs<isis::util::fvector3>( "rowVec", isis::util::fvector3( 1, 0, 0 ) );
-	image.setPropertyAs<isis::util::fvector3>( "columnVec", isis::util::fvector3( 0, 1, 0 ) );
-	image.setPropertyAs<isis::util::fvector3>( "sliceVec", isis::util::fvector3( 0, 0, -1 ) );
-	image.setPropertyAs<isis::util::fvector3>( "indexOrigin", isis::util::fvector3( 0, 0, 0 ) );
-	image.updateOrientationMatrices();
+	image.setValueAs<isis::util::fvector3>( "rowVec", {1, 0, 0} );
+	image.setValueAs<isis::util::fvector3>( "columnVec", { 0, 1, 0 } );
+	image.setValueAs<isis::util::fvector3>( "sliceVec", { 0, 0, -1 } );
+	image.setValueAs<isis::util::fvector3>( "indexOrigin", { 0, 0, 0 } );
+	// updateOrientationMatrices(); @todo call me
 }
-void checkForCaCp( boost::shared_ptr<ImageHolder> image )
+void checkForCaCp( std::shared_ptr<ImageHolder> image )
 {
 	if( image->getISISImage()->hasProperty( "Vista/ca" ) ) {
-		const util::fvector3 &rowVec = image->getISISImage()->getPropertyAs<util::fvector3>( "rowVec" );
-		const util::fvector3 &columnVec = image->getISISImage()->getPropertyAs<util::fvector3>( "columnVec" );
-		const util::fvector3 &sliceVec = image->getISISImage()->getPropertyAs<util::fvector3>( "sliceVec" );
-		const util::fvector3 &voxelSize = image->getISISImage()->getPropertyAs<util::fvector3>( "voxelSize" );
-		std::list<float> ca = util::stringToList<float>( image->getISISImage()->getPropertyAs<std::string>( "Vista/ca" ) );
-		std::list<float>::const_iterator iter = ca.end();
-		const util::fvector3 newIndexOrigin( -*--iter, -*--iter, -*--iter );
-		const util::fvector3 transformedOrigin = util::fvector3(
-					newIndexOrigin[0] * rowVec[0] * voxelSize[0] + newIndexOrigin[1] * columnVec[0] * voxelSize[1] + newIndexOrigin[2] * sliceVec[0] * voxelSize[2],
-					newIndexOrigin[0] * rowVec[1] * voxelSize[0] + newIndexOrigin[1] * columnVec[1] * voxelSize[1] + newIndexOrigin[2] * sliceVec[1] * voxelSize[2],
-					newIndexOrigin[0] * rowVec[2] * voxelSize[0] + newIndexOrigin[1] * columnVec[2] * voxelSize[1] + newIndexOrigin[2] * sliceVec[2] * voxelSize[2] );
-		image->getISISImage()->setPropertyAs<util::fvector3>( "indexOrigin", transformedOrigin );
+		const auto &rowVec = image->getISISImage()->getValueAs<util::fvector3>( "rowVec" );
+		const auto &columnVec = image->getISISImage()->getValueAs<util::fvector3>( "columnVec" );
+		const auto &sliceVec = image->getISISImage()->getValueAs<util::fvector3>( "sliceVec" );
+		const auto &voxelSize = image->getISISImage()->getValueAs<util::fvector3>( "voxelSize" );
+		auto ca = util::stringToList<float>( image->getISISImage()->getValueAs<std::string>( "Vista/ca" ) );
+		auto iter = ca.end();
+		const util::fvector3 newIndexOrigin{ -*--iter, -*--iter, -*--iter };
+
+		const util::fvector3 transformedOrigin =
+				rowVec * newIndexOrigin[0] * voxelSize[0] +
+				columnVec * newIndexOrigin[1] * voxelSize[1] +
+				sliceVec * newIndexOrigin[2] * voxelSize[2];
+
+		image->getISISImage()->setValueAs( "indexOrigin", transformedOrigin );
 		image->updateOrientation();
-		image->getImageProperties().physicalCoords = image->getISISImage()->getPhysicalCoordsFromIndex( image->getImageProperties().voxelCoords );
+		image->getImageProperties().physicalCoords = image->getPhysicalCoordsFromIndex( image->getImageProperties().voxelCoords );
 	}
 }
 
 std::string getFileFormatsAsString( image_io::FileFormat::io_modes mode, const std::string preSeparator, const std::string postSeparator )
 {
 	std::stringstream fileFormats;
-	BOOST_FOREACH( isis::data::IOFactory::FileFormatList::const_reference formatList, isis::data::IOFactory::getFormats() ) {
-		BOOST_FOREACH( std::list<util::istring>::const_reference format, formatList->getSuffixes( mode ) ) {
+	for( const auto &formatList: isis::data::IOFactory::getFormats() ) {
+		for( const auto &format: formatList->getSuffixes( mode ) ) {
 			fileFormats << preSeparator << format << postSeparator;
 		}
 	}
@@ -86,8 +88,8 @@ std::string getFileFormatsAsString( image_io::FileFormat::io_modes mode, const s
 std::list<util::istring> getFileFormatsAsList( image_io::FileFormat::io_modes mode )
 {
 	std::list<util::istring> retList;
-	BOOST_FOREACH( isis::data::IOFactory::FileFormatList::const_reference formatList, isis::data::IOFactory::getFormats() ) {
-		BOOST_FOREACH( std::list<util::istring>::const_reference format, formatList->getSuffixes( mode ) ) {
+	for( const auto &formatList: isis::data::IOFactory::getFormats() ) {
+		for( const auto &format: formatList->getSuffixes( mode ) ) {
 			retList.push_back( format.c_str() );
 		}
 	}
@@ -97,9 +99,9 @@ std::list<util::istring> getFileFormatsAsList( image_io::FileFormat::io_modes mo
 std::map< util::istring, std::list< util::istring > > getDialectsAsMap ( image_io::FileFormat::io_modes mode )
 {
 	std::map<util::istring, std::list< util::istring > > retMap;
-	BOOST_FOREACH( isis::data::IOFactory::FileFormatList::const_reference format, isis::data::IOFactory::getFormats() ) {
-		std::list<util::istring> dialectList = util::stringToList<util::istring>( format->dialects( "" ).c_str() );
-		BOOST_FOREACH( std::list< util::istring>::const_reference suffix, format->getSuffixes( mode ) ) {
+	for( const auto  &format: isis::data::IOFactory::getFormats() ) {
+		auto dialectList = format->dialects( );
+		for( const auto &suffix: format->getSuffixes( mode ) ) {
 			retMap[suffix.c_str()]  = dialectList;
 		}
 	}
@@ -120,16 +122,10 @@ std::string getCrashLogFilePath()
 	logFilePath << homePath << "/vastCrashLog.log";
 	return logFilePath.str();
 }
-util::fvector4 mapCoordsToOrientation ( const util::fvector4& coords, const isis::util::Matrix3x3< float >& orientationMatrix, PlaneOrientation orientation, bool back, bool absolute )
-{
-	util::fvector3 ret = mapCoordsToOrientation( util::fvector3( coords[0], coords[1], coords[2] ), orientationMatrix, orientation, back, absolute );
-	return util::fvector4( ret[0], ret[1], ret[2] );
-}
 
-
-util::fvector3 mapCoordsToOrientation( const util::fvector3 &coords, const util::Matrix3x3<float> &orientationMatrix, PlaneOrientation orientation, bool back, bool absolute )
+util::fvector3 mapCoordsToOrientation( const util::ivector3 &coords, const util::Matrix3x3<float> &orientationMatrix, PlaneOrientation orientation, bool back, bool absolute )
 {
-	util::Matrix3x3<float> transformMatrix = util::IdentityMatrix<float, 3>();
+	util::Matrix3x3<float> transformMatrix = util::identityMatrix<float, 3>();
 	util::fvector3 retVec;
 
 	switch ( orientation ) {
@@ -139,8 +135,8 @@ util::fvector3 mapCoordsToOrientation( const util::fvector3 &coords, const util:
 		* 0 -1  0
 		* 0  0  1
 		*/
-		transformMatrix.elem( 0, 0 ) = -1;
-		transformMatrix.elem( 1, 1 ) = 1;
+		transformMatrix[0][0] = -1;
+		transformMatrix[1][1] = 1;
 		break;
 	case sagittal:
 		/*setup sagittal matrix
@@ -148,12 +144,12 @@ util::fvector3 mapCoordsToOrientation( const util::fvector3 &coords, const util:
 		* 0  0  1
 		* 1  0  0
 		*/
-		transformMatrix.elem( 0, 0 ) = 0;
-		transformMatrix.elem( 0, 2 ) = 1;
-		transformMatrix.elem( 1, 0 ) = 1;
-		transformMatrix.elem( 2, 2 ) = 0;
-		transformMatrix.elem( 2, 1 ) = -1;
-		transformMatrix.elem( 1, 1 ) = 0;
+		transformMatrix[0][0] = 0;
+		transformMatrix[0][2] = 1;
+		transformMatrix[1][0] = 1;
+		transformMatrix[2][2] = 0;
+		transformMatrix[2][1] = -1;
+		transformMatrix[1][1] = 0;
 		break;
 	case coronal:
 		/*setup coronal matrix
@@ -162,25 +158,26 @@ util::fvector3 mapCoordsToOrientation( const util::fvector3 &coords, const util:
 		*  0  1  0
 		*/
 
-		transformMatrix.elem( 0, 0 ) = -1;
-		transformMatrix.elem( 1, 1 ) = 0;
-		transformMatrix.elem( 2, 2 ) = 0;
-		transformMatrix.elem( 1, 2 ) = 1;
-		transformMatrix.elem( 2, 1 ) = -1;
+		transformMatrix[0][0] = -1;
+		transformMatrix[1][1] = 0;
+		transformMatrix[2][2] = 0;
+		transformMatrix[1][2] = 1;
+		transformMatrix[2][1] = -1;
 		break;
 	case not_specified:
 		LOG( Runtime, warning ) << "Can not transform to PlaneOrientation \"not_specified\"!";
 		break;
 	}
 
+	const auto transform = transformMatrix * orientationMatrix;
 	if( back ) {
-		retVec = transformMatrix.dot( orientationMatrix ).transpose().dot( coords );
+		retVec = util::transpose(transform) * coords ;
 	} else {
-		retVec = transformMatrix.dot( orientationMatrix ).dot( coords );
+		retVec = transform * coords;
 	}
 
 	if( absolute ) {
-		return util::fvector3( fabs( retVec[0] ), fabs( retVec[1] ), fabs( retVec[2] )  );
+		return { fabsf( retVec[0] ), fabsf( retVec[1] ), fabsf( retVec[2] ) };
 	} else {
 		return retVec;
 	}

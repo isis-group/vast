@@ -69,7 +69,7 @@ void PropertyToolDialog::closeEvent ( QCloseEvent *e )
 }
 
 
-void PropertyToolDialog::setIfHas( const std::string &name, QLabel *nameLabel, QLabel *propLabel, const boost::shared_ptr<data::Image> image )
+void PropertyToolDialog::setIfHas( const std::string &name, QLabel *nameLabel, QLabel *propLabel, const std::shared_ptr<data::Image> image )
 {
 	if( image->hasProperty( name.c_str() ) ) {
 		nameLabel->setVisible( true );
@@ -85,12 +85,12 @@ void PropertyToolDialog::updateProperties()
 {
 	if( m_ViewerCore->hasImage() && isVisible() ) {
 
-		const boost::shared_ptr<data::Image> isisImage = m_ViewerCore->getCurrentImage()->getISISImage();
+		const std::shared_ptr<data::Image> isisImage = m_ViewerCore->getCurrentImage()->getISISImage();
 		//orientation
-		const util::fvector3 rowVec = isisImage->getPropertyAs<util::fvector3>( "rowVec" );
-		const util::fvector3 columnVec = isisImage->getPropertyAs<util::fvector3>( "columnVec" );
-		const util::fvector3 sliceVec = isisImage->getPropertyAs<util::fvector3>( "sliceVec" );
-		const util::fvector3 indexOrigin = isisImage->getPropertyAs<util::fvector3>( "indexOrigin" );
+		const util::fvector3 rowVec = isisImage->getValueAs<util::fvector3>( "rowVec" );
+		const util::fvector3 columnVec = isisImage->getValueAs<util::fvector3>( "columnVec" );
+		const util::fvector3 sliceVec = isisImage->getValueAs<util::fvector3>( "sliceVec" );
+		const util::fvector3 indexOrigin = isisImage->getValueAs<util::fvector3>( "indexOrigin" );
 		m_Interface.rowVec0->setText( QString::number( rowVec[0] ) );
 		m_Interface.rowVec1->setText( QString::number( rowVec[1] ) );
 		m_Interface.rowVec2->setText( QString::number( rowVec[2] ) );

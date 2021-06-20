@@ -28,10 +28,8 @@
 
 #include "fileinformation.hpp"
 
-
 isis::viewer::FileInformation::FileInformation ( const std::string &filename, const util::istring &dialect, const util::istring &readformat, const std::string &widgetidentifier, const isis::viewer::ImageHolder::ImageType &imagetype, bool newEnsemble )
-	: m_filename( filename ),
-	  m_completePath( std::string() ),
+	: std::filesystem::path( filename ),
 	  m_dialect( dialect ),
 	  m_readformat( readformat ),
 	  m_widgetIdentifier( widgetidentifier ),
@@ -47,9 +45,9 @@ void isis::viewer::FileInformationMap::writeFileInformationMap ( QSettings *sett
 	QStringList widgetidentifierList;
 	QStringList readFormats;
 	QList<QVariant> imageTypes;
-	BOOST_FOREACH( const_reference elem, *this ) {
-		fileNames.push_back( elem.second.getFileName().c_str() );
-		completePaths.push_back( elem.second.getCompletePath().c_str() );
+	for( auto &elem : *this ) {
+		fileNames.push_back( elem.second.filename().c_str() );
+		completePaths.push_back( std::filesystem::canonical(elem.second).c_str() );
 		widgetidentifierList.push_back( elem.second.getWidgetIdentifier().c_str() );
 		dialects.push_back( elem.second.getDialect().c_str() );
 		readFormats.push_back( elem.second.getReadFormat().c_str() );
@@ -85,7 +83,6 @@ void isis::viewer::FileInformationMap::readFileInfortmationMap ( QSettings *sett
 
 	while( fileNameIter != fileNames.end() ) {
 		isis::viewer::FileInformation fInfo( ( *fileNameIter ).toStdString(), ( *dialectsIter ).toStdString().c_str(), ( *readFormatsIter ).toStdString().c_str(), ( *widgetIdentifierIter ).toStdString(), static_cast<ImageHolder::ImageType>( ( *imageTypesIter ).toUInt() ), true );
-		fInfo.setCompletePath( ( *completePathIter ).toStdString() );
 		insertSave( fInfo );
 		fileNameIter++;
 		completePathIter++;
@@ -98,16 +95,15 @@ void isis::viewer::FileInformationMap::readFileInfortmationMap ( QSettings *sett
 	settings->endGroup();
 }
 
-isis::viewer::FileInformationMap::FileInformationMap()
-	: m_limit( 10 )
+isis::viewer::FileInformationMap::FileInformationMap() : m_limit( 10 )
 {
-
 }
 
 void isis::viewer::FileInformationMap::insertSave ( const isis::viewer::FileInformation &fileInfo )
 {
-	insert( std::make_pair<std::string, isis::viewer::FileInformation>( fileInfo.getCompletePath(), fileInfo ) );
-	m_lookup.push_back( fileInfo.getCompletePath() );
+	const std::string canon=std::filesystem::canonical(fileInfo).string();
+	insert( {canon , fileInfo } );
+	m_lookup.push_back( canon );
 
 	if( size() > m_limit ) {
 		const std::string front = m_lookup.front();

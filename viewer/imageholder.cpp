@@ -30,10 +30,10 @@
 #include "memoryhandler.hpp"
 #include "nativeimageops.hpp"
 #include <numeric>
+#include <boost/numeric/ublas/matrix.hpp>
+#include <isis/math/transform.hpp>
 
-namespace isis
-{
-namespace viewer
+namespace isis::viewer
 {
 
 namespace _internal
@@ -63,7 +63,7 @@ ImageHolder::ImageHolder()
 	:  m_AmbiguousOrientation( false )
 {}
 
-boost::shared_ptr< const void > ImageHolder::getRawAdress ( size_t timestep ) const
+std::shared_ptr< const void > ImageHolder::getRawAdress ( size_t timestep ) const
 {
 	if( getImageProperties().isRGB ) {
 		return m_VolumeVector.operator[]( timestep ).getValueArray<InternalImageColorType>().getRawAddress();
@@ -75,9 +75,9 @@ boost::shared_ptr< const void > ImageHolder::getRawAdress ( size_t timestep ) co
 util::Matrix3x3<float> ImageHolder::calculateImageOrientation( bool transposed ) const
 {
 
-	util::Matrix3x3<float> retMatrix (  m_Image->getPropertyAs<util::fvector3>( "rowVec" ),
-										m_Image->getPropertyAs<util::fvector3>( "columnVec" ),
-										m_Image->getPropertyAs<util::fvector3>( "sliceVec" ) );
+	util::Matrix3x3<float> retMatrix (  m_Image->getValueAs<util::fvector3>( "rowVec" ),
+										m_Image->getValueAs<util::fvector3>( "columnVec" ),
+										m_Image->getValueAs<util::fvector3>( "sliceVec" ) );
 
 	if( transposed ) {
 		return retMatrix;
@@ -90,9 +90,9 @@ util::Matrix3x3<float> ImageHolder::calculateLatchedImageOrientation( bool trans
 {
 	util::Matrix3x3<float> retMatrix;
 	retMatrix.fill( 0 );
-	const util::fvector3 &rowVec = m_Image->getPropertyAs<util::fvector3>( "rowVec" );
-	const util::fvector3 &columnVec = m_Image->getPropertyAs<util::fvector3>( "columnVec" );
-	const util::fvector3 &sliceVec = m_Image->getPropertyAs<util::fvector3>( "sliceVec" );
+	const util::fvector3 &rowVec = m_Image->getValueAs<util::fvector3>( "rowVec" );
+	const util::fvector3 &columnVec = m_Image->getValueAs<util::fvector3>( "columnVec" );
+	const util::fvector3 &sliceVec = m_Image->getValueAs<util::fvector3>( "sliceVec" );
 
 	size_t rB = rowVec.getBiggestVecElemAbs();
 	size_t cB = columnVec.getBiggestVecElemAbs();
@@ -190,7 +190,7 @@ void ImageHolder::collectImageInfo()
 }
 
 
-boost::shared_ptr< _internal::__Image > ImageHolder::getISISImage() const
+std::shared_ptr< _internal::__Image > ImageHolder::getISISImage() const
 {
 	return m_Image;
 }
@@ -258,15 +258,15 @@ bool ImageHolder::setImage( const data::Image &image, const ImageType &_imageTyp
 
 	getImageProperties().alphaMap.resize( 256 );
 	getImageProperties().alignedSize32 = MemoryHandler::get32BitAlignedSize( m_ImageSize );
-	m_PropMap.setPropertyAs<bool>( "init", true );
-	m_PropMap.setPropertyAs<util::slist>( "changedAttributes", util::slist() );
+	m_PropMap.setValueAs<bool>( "init", true );
+	m_PropMap.setValueAs<util::slist>( "changedAttributes", util::slist() );
 	updateOrientation();
 	getImageProperties().voxelCoords = util::ivector4( m_ImageSize[0] / 2, m_ImageSize[1] / 2, m_ImageSize[2] / 2, 0 );
 	getImageProperties().physicalCoords = m_Image->getPhysicalCoordsFromIndex( getImageProperties().voxelCoords );
-	m_PropMap.setPropertyAs<util::fvector3>( "originalColumnVec", image.getPropertyAs<util::fvector3>( "columnVec" ) );
-	m_PropMap.setPropertyAs<util::fvector3>( "originalRowVec", image.getPropertyAs<util::fvector3>( "rowVec" ) );
-	m_PropMap.setPropertyAs<util::fvector3>( "originalSliceVec", image.getPropertyAs<util::fvector3>( "sliceVec" ) );
-	m_PropMap.setPropertyAs<util::fvector3>( "originalIndexOrigin", image.getPropertyAs<util::fvector3>( "indexOrigin" ) );
+	m_PropMap.setValueAs<util::fvector3>( "originalColumnVec", image.getValueAs<util::fvector3>( "columnVec" ) );
+	m_PropMap.setValueAs<util::fvector3>( "originalRowVec", image.getValueAs<util::fvector3>( "rowVec" ) );
+	m_PropMap.setValueAs<util::fvector3>( "originalSliceVec", image.getValueAs<util::fvector3>( "sliceVec" ) );
+	m_PropMap.setValueAs<util::fvector3>( "originalIndexOrigin", image.getValueAs<util::fvector3>( "indexOrigin" ) );
 	updateColorMap();
 	logImageProps();
 	return true;
@@ -274,21 +274,21 @@ bool ImageHolder::setImage( const data::Image &image, const ImageType &_imageTyp
 
 void ImageHolder::addChangedAttribute( const std::string &attribute )
 {
-	util::slist attributes = m_PropMap.getPropertyAs<util::slist>( "changedAttributes" );
+	util::slist attributes = m_PropMap.getValueAs<util::slist>( "changedAttributes" );
 	attributes.push_back( attribute );
-	m_PropMap.setPropertyAs<util::slist>( "changedAttributes", attributes );
+	m_PropMap.setValueAs<util::slist>( "changedAttributes", attributes );
 }
 
 bool ImageHolder::removeChangedAttribute( const std::string &attribute )
 {
-	util::slist attributes = m_PropMap.getPropertyAs<util::slist>( "changedAttributes" );
+	util::slist attributes = m_PropMap.getValueAs<util::slist>( "changedAttributes" );
 	util::slist::iterator iter = std::find( attributes.begin(), attributes.end(), attribute );
 
 	if( iter == attributes.end() ) {
 		return false;
 	} else {
 		attributes.erase( iter );
-		m_PropMap.setPropertyAs<util::slist>( "changedAttributes", attributes );
+		m_PropMap.setValueAs<util::slist>( "changedAttributes", attributes );
 		return true;
 	}
 }
@@ -300,14 +300,14 @@ void ImageHolder::updateOrientation()
 	m_Image->updateOrientationMatrices();
 	getImageProperties().latchedOrientation = calculateLatchedImageOrientation();
 	getImageProperties().orientation = calculateImageOrientation();
-	getImageProperties().indexOrigin = getISISImage()->getPropertyAs<util::fvector3>( "indexOrigin" );
-	getImageProperties().rowVec = getISISImage()->getPropertyAs<util::fvector3>( "rowVec" );
-	getImageProperties().columnVec = getISISImage()->getPropertyAs<util::fvector3>( "columnVec" );
-	getImageProperties().sliceVec = getISISImage()->getPropertyAs<util::fvector3>( "sliceVec" );
-	m_ImageProperties.voxelSize = getISISImage()->getPropertyAs<util::fvector3>( "voxelSize" );
+	getImageProperties().indexOrigin = getISISImage()->getValueAs<util::fvector3>( "indexOrigin" );
+	getImageProperties().rowVec = getISISImage()->getValueAs<util::fvector3>( "rowVec" );
+	getImageProperties().columnVec = getISISImage()->getValueAs<util::fvector3>( "columnVec" );
+	getImageProperties().sliceVec = getISISImage()->getValueAs<util::fvector3>( "sliceVec" );
+	m_ImageProperties.voxelSize = getISISImage()->getValueAs<util::fvector3>( "voxelSize" );
 
 	if( getISISImage()->hasProperty( "voxelGap" ) ) {
-		getImageProperties().voxelSize += getISISImage()->getPropertyAs<util::fvector3>( "voxelGap" );
+		getImageProperties().voxelSize += getISISImage()->getValueAs<util::fvector3>( "voxelGap" );
 	}
 
 	m_ImageProperties.boundingBox = geometrical::getPhysicalBoundingBox( ImageHolder::Pointer( new ImageHolder( *this ) ) );
@@ -411,7 +411,7 @@ void ImageHolder::phyisicalCoordsChanged ( const util::fvector3 &physicalCoords 
 void ImageHolder::voxelCoordsChanged ( const util::ivector4 &voxelCoords )
 {
 	getImageProperties().voxelCoords = voxelCoords;
-	getImageProperties().physicalCoords = getISISImage()->getPhysicalCoordsFromIndex( voxelCoords );
+	getImageProperties().physicalCoords = getPhysicalCoordsFromIndex( voxelCoords );
 }
 
 void ImageHolder::timestepChanged ( const size_t &timestep )
@@ -422,8 +422,71 @@ void ImageHolder::timestepChanged ( const size_t &timestep )
 		getImageProperties().timestep = getISISImage()->getSizeAsVector()[3] - 1;
 	}
 }
+bool ImageHolder::updateOrientationMatrices()//@todo this need to be called somewhere
+{
+	const auto rowVec = m_Image->getValueAs<util::fvector3>( "rowVec" );
+	const auto columnVec = m_Image->getValueAs<util::fvector3>( "columnVec" );
+	const auto sliceVec = m_Image->getValueAs<util::fvector3>( "sliceVec" );
+	m_Offset = m_Image->getValueAs<util::fvector3>( "indexOrigin" );
+	auto spacing = m_Image->getValueAs<util::fvector3>( "voxelSize" );
+	if( m_Image->hasProperty( "voxelGap" ))
+		spacing += m_Image->getValueAs<util::fvector3>( "voxelGap" );
 
+	for( auto &s : spacing ) {
+		if( s == 0 ) s = 1;
+	}
 
+	m_RowVec = rowVec * spacing[0];
+	m_ColumnVec = columnVec * spacing[1];
+	m_SliceVec = sliceVec * spacing[2];
+	LOG( Dev, verbose_info ) << "Created orientation matrix: ";
+	LOG( Dev, verbose_info ) << "[ " << m_RowVec[0] << " " << m_ColumnVec[0] << " " << m_SliceVec[0] << " ] + " << m_Offset[0];
+	LOG( Dev, verbose_info ) << "[ " << m_RowVec[1] << " " << m_ColumnVec[1] << " " << m_SliceVec[1] << " ] + " << m_Offset[1];
+	LOG( Dev, verbose_info ) << "[ " << m_RowVec[2] << " " << m_ColumnVec[2] << " " << m_SliceVec[2] << " ] + " << m_Offset[2];
+
+	//for inversion of the orientation we use boost::ublas
+	using namespace boost::numeric::ublas;
+	bool invertible;
+	const util::Matrix3x3<float> orientation{m_RowVec,m_ColumnVec,m_SliceVec};
+	const util::Matrix3x3<float> inverse = math::inverseMatrix(orientation,invertible);
+
+	if( ! invertible ) {
+		LOG( Runtime, error ) << "Could not create the inverse of the orientation matrix!";
+		return false;
+	};
+	m_RowVecInv = inverse[0];
+	m_ColumnVecInv = inverse[1];
+	m_SliceVecInv = inverse[2];
+
+	LOG( Dev, verbose_info ) << "Created transposed orientation matrix: ";
+	LOG( Dev, verbose_info ) << "[ " << m_RowVecInv[0] << " " << m_ColumnVecInv[0] << " " << m_SliceVecInv[0] << " ] + " << m_Offset[0];
+	LOG( Dev, verbose_info ) << "[ " << m_RowVecInv[1] << " " << m_ColumnVecInv[1] << " " << m_SliceVecInv[1] << " ] + " << m_Offset[1];
+	LOG( Dev, verbose_info ) << "[ " << m_RowVecInv[2] << " " << m_ColumnVecInv[2] << " " << m_SliceVecInv[2] << " ] + " << m_Offset[2];
+	return true;
 }
+util::fvector3 ImageHolder::getPhysicalCoordsFromIndex(const util::vector4<size_t> &voxelCoords) const
+{
+	const auto rowVec = m_RowVec * voxelCoords[0];
+	const auto columnVec = m_ColumnVec * voxelCoords[1];
+	const auto sliceVec = m_SliceVec * voxelCoords[2];
+	return  rowVec + columnVec + sliceVec + m_Offset ;
+}
+util::vector4<size_t> ImageHolder::getIndexFromPhysicalCoords(const util::fvector3 &physicalCoords) const
+{
+	const util::fvector3 vec1 = physicalCoords - m_Offset;
+	const auto rowVec = m_RowVec * vec1[0];
+	const auto columnVec = m_ColumnVec * vec1[1];
+	const auto sliceVec = m_SliceVec * vec1[2];
+
+	auto _ret = m_RowVecInv + m_ColumnVecInv + m_SliceVecInv;
+
+	for( uint8_t i = 0; i < 3; i++ ) {
+		if( _ret[i] < 0 ) _ret[i] -= 0.5;
+		else _ret[i] += 0.5;
+	}
+
+	return {_ret[0],_ret[1],_ret[2]};
+}
+
 } //end namespace
 

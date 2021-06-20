@@ -25,10 +25,9 @@
  *  Created on: Aug 12, 2011
  *      Author: tuerke
  ******************************************************************/
-#ifndef COLOR_HPP
-#define COLOR_HPP
+#pragma once
 
-#include <boost/regex.hpp>
+#include <regex>
 #include <QColor>
 #include <QVector>
 #include <QIcon>
@@ -56,8 +55,8 @@ public:
 	typedef std::map<std::string, ColormapType > ColormapMapType;
 	enum icon_type { lower_half, upper_half, both };
 
-	bool addColormap( const std::string &path, const boost::regex &separator
-					  = boost::regex( "[[:space:]]+" ) );
+	bool addColormap( const std::string &path, const std::regex &separator
+					  = std::regex( "[[:space:]]+" ) );
 
 	ColormapMapType getColormapMap() const { return m_ColormapMap; }
 	void initStandardColormaps();
@@ -80,6 +79,3 @@ private:
 }
 
 #include "imageholder.hpp"
-
-
-#endif

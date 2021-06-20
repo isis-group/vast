@@ -50,8 +50,8 @@ class NativeImageOps
 	static isis::viewer::QViewerCore *m_ViewerCore;
 public:
 
-	static util::ivector4 getGlobalMin( const ImageHolder::Pointer image, const util::ivector4 &startPos, const unsigned short &radius );
-	static util::ivector4 getGlobalMax( const ImageHolder::Pointer image, const util::ivector4 &startPos, const unsigned short &radius );
+	static util::vector4<size_t> getGlobalMin( const ImageHolder::Pointer image, const util::ivector4 &startPos, const unsigned short &radius );
+	static util::vector4<size_t> getGlobalMax( const ImageHolder::Pointer image, const util::ivector4 &startPos, const unsigned short &radius );
 	static void setTrueZero( ImageHolder::Pointer image );
 	static std::vector<double> getHistogramFromImage( const ImageHolder::Pointer image );
 
@@ -63,10 +63,9 @@ public:
 private:
 
 	template<typename TYPE>
-	static util::ivector4 internGetMin( const ImageHolder::Pointer image, const util::ivector4 &startPos, const unsigned short &radius ) {
-		const util::ivector4 size = image->getImageSize();
-		util::ivector4 start;
-		util::ivector4 end;
+	static util::vector4<size_t> internGetMin( const ImageHolder::Pointer image, const util::ivector4 &startPos, const unsigned short &radius ) {
+		const auto size = image->getImageSize();
+		util::vector4<size_t> start, end;
 
 		if( radius ) {
 			for( size_t i = 0; i < 3; i++ ) {
@@ -77,11 +76,11 @@ private:
 			end[3] = size[3];
 			start[3] = 0;
 		} else {
-			start = util::ivector4( 0, 0, 0, 0 );
+			start = { 0, 0, 0, 0 };
 			end = size;
 		}
 
-		util::ivector4 currentPos;
+		util::vector4<size_t> currentPos;
 		TYPE currentValue;
 		data::TypedImage<TYPE> typedImage = *image->getISISImage();
 		TYPE currentMin = std::numeric_limits<TYPE>::max();
@@ -96,7 +95,7 @@ private:
 						currentValue = static_cast<data::Image &>( typedImage ).voxel<TYPE>( x, y, z, t );
 
 						if( currentValue < currentMin ) {
-							currentPos = util::ivector4( x, y, z, t );
+							currentPos = {x, y, z, t };
 							currentMin = currentValue;
 						}
 					}
@@ -109,10 +108,9 @@ private:
 	}
 
 	template<typename TYPE>
-	static util::ivector4 internGetMax( const ImageHolder::Pointer image, const util::ivector4 &startPos, const unsigned short &radius ) {
-		const util::ivector4 size = image->getImageSize();
-		util::ivector4 start;
-		util::ivector4 end;
+	static util::vector4<size_t> internGetMax( const ImageHolder::Pointer image, const util::ivector4 &startPos, const unsigned short &radius ) {
+		const auto size = image->getImageSize();
+		util::vector4<size_t> start,end;
 
 		if( radius ) {
 			for( size_t i = 0; i < 3; i++ ) {
@@ -123,11 +121,11 @@ private:
 			end[3] = size[3];
 			start[3] = 0;
 		} else {
-			start = util::ivector4( 0, 0, 0, 0 );
+			start = {0, 0, 0, 0 };
 			end = size;
 		}
 
-		util::ivector4 currentPos;
+		util::vector4<size_t> currentPos;
 		TYPE currentValue;
 		data::TypedImage<TYPE> typedImage = *image->getISISImage();
 		TYPE currentMax = -std::numeric_limits<TYPE>::max();
@@ -143,7 +141,7 @@ private:
 						currentValue = static_cast<data::Image &>( typedImage ).voxel<TYPE>( x, y, z, t );
 
 						if( currentValue > currentMax ) {
-							currentPos = util::ivector4( x, y, z, t );
+							currentPos = {x, y, z, t };
 							currentMax = currentValue;
 						}
 					}

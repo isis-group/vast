@@ -166,7 +166,7 @@ void QGeomWidget::paintEvent ( QPaintEvent* /*event*/ )
 
 		m_Painter->resetTransform();
 
-		if( m_ViewerCore->getSettings()->getPropertyAs<bool>( "latchSingleImage" ) ) {
+		if( m_ViewerCore->getSettings()->getValueAs<bool>( "latchSingleImage" ) ) {
 			m_LatchOrientation = getWidgetEnsemble()->getImageVector().size() == 1;
 		} else {
 			m_LatchOrientation = false;
@@ -436,7 +436,7 @@ void QGeomWidget::mouseMoveEvent ( QMouseEvent *e )
 				image->updateColorMap();
 			}
 		} else {
-			boost::shared_ptr<ImageHolder> image = getWidgetEnsemble()->getImageVector().back();
+			std::shared_ptr<ImageHolder> image = getWidgetEnsemble()->getImageVector().back();
 			const double offset =  ( m_StartCoordsPair.second - e->y() ) / ( float )height() * image->getImageProperties().extent;
 			const double scaling = 1.0 - ( m_StartCoordsPair.first - e->x() ) / ( float )width() * 5;
 			image->getImageProperties().offset = offset;
@@ -485,7 +485,7 @@ void QGeomWidget::wheelEvent ( QWheelEvent *e )
 
 	}
 
-	if( m_ViewerCore->getSettings()->getPropertyAs<bool>( "propagateZooming" ) ) {
+	if( m_ViewerCore->getSettings()->getValueAs<bool>( "propagateZooming" ) ) {
 		m_ViewerCore->zoomChanged( oldZoom );
 	} else {
 		setZoom( oldZoom );
@@ -586,9 +586,9 @@ isis::viewer::widget::WidgetInterface *loadWidget()
 const isis::util::PropertyMap *getProperties()
 {
 	isis::util::PropertyMap *properties = new isis::util::PropertyMap();
-	properties->setPropertyAs<std::string>( "widgetIdent", "qt4_geometrical_plane_widget" );
-	properties->setPropertyAs<std::string>( "widgetName", "Geometrical plane widget" );
-	properties->setPropertyAs<uint8_t>( "numberOfEntitiesInEnsemble", 3 );
-	properties->setPropertyAs<bool>( "hasOptionWidget", false );
+	properties->setValueAs<std::string>( "widgetIdent", "qt4_geometrical_plane_widget" );
+	properties->setValueAs<std::string>( "widgetName", "Geometrical plane widget" );
+	properties->setValueAs<uint8_t>( "numberOfEntitiesInEnsemble", 3 );
+	properties->setValueAs<bool>( "hasOptionWidget", false );
 	return properties;
 }

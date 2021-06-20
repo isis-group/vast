@@ -77,7 +77,7 @@ public:
 
 public Q_SLOTS:
 	void synchronize();
-	void synchronizePos( util::ivector4 voxelCoords );
+	void synchronizePos(util::vector4<size_t> voxelCoords );
 	void synchronizePos( util::fvector3 physicalCoords );
 	void voxPosChanged();
 	void physPosChanged();
@@ -107,7 +107,7 @@ private:
 
 //@todo simplify me
 	template<typename TYPE>
-	void displayIntensity( const util::ivector4 &coords ) const {
+	void displayIntensity(const util::vector4<size_t> &coords ) const {
 		const auto vIntensity = m_ViewerCore->getCurrentImage()->getISISImage()->voxel<TYPE>( coords[0], coords[1], coords[2], coords[3] );
 		const double intensity = roundNumber<double>( vIntensity, 4 );
 		m_Interface.intensityValue->setText( QString::number( intensity ) );
@@ -115,7 +115,7 @@ private:
 
 //@todo simplify me
 	template<typename TYPE>
-	void displayIntensityColor( const util::ivector4 &coords ) const {
+	void displayIntensityColor( const util::vector4<size_t> &coords ) const {
 		util::knownType<TYPE>();
 		const util::Value vIntensity = m_ViewerCore->getCurrentImage()->getISISImage()->voxel<TYPE>( coords[0], coords[1], coords[2], coords[3] );
 		const std::string intensityStr = vIntensity.as<std::string>();

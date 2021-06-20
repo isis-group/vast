@@ -47,12 +47,12 @@ namespace _internal
 
 class FillChunkListThread : public QThread
 {
-	boost::shared_ptr<data::Image> image;
+	std::shared_ptr<data::Image> image;
 	Ui::propertyToolDialog *interface;
 public:
 	FillChunkListThread ( QObject *parent, Ui::propertyToolDialog *pD )
 		: QThread( parent ), interface( pD ) {}
-	void setISISImage( boost::shared_ptr<data::Image> i ) { image = i; }
+	void setISISImage( std::shared_ptr<data::Image> i ) { image = i; }
 	void run() {
 		const std::vector<data::Chunk> chunks = image->copyChunksToVector( false );
 		interface->L_numberOfChunks->setVisible( chunks.size() > 1 );
@@ -110,7 +110,7 @@ private:
 	QViewerCore *m_ViewerCore;
 	_internal::FillChunkListThread *m_fillChunkListThread;
 
-	void setIfHas( const std::string &name, QLabel *nameLabel, QLabel *propLabel, const boost::shared_ptr<data::Image> image );
+	void setIfHas( const std::string &name, QLabel *nameLabel, QLabel *propLabel, const std::shared_ptr<data::Image> image );
 
 	void buildUpTree( const util::PropertyMap &image );
 
@@ -129,7 +129,7 @@ private:
 		TYPE value = fromString<TYPE>( name.toStdString(), ok );
 
 		if( ok ) {
-			map.setPropertyAs<TYPE>( path, value );
+			map.setValueAs<TYPE>( path, value );
 		} else {
 			QMessageBox msgBox;
 			msgBox.setText( "Could not parse input!" );

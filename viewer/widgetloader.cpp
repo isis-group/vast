@@ -83,13 +83,13 @@ unsigned int WidgetLoader::findWidgets( std::list< std::string > paths )
 		LOG( Dev, info ) << "Scanning " << util::MSubject( p ) << " for widgets...";
 		LOG( Dev, info ) << "Scanning " << util::MSubject( p ) << " for widgets...";
 
-		boost::regex widgetFilter( std::string( "^" ) + DL_PREFIX + "vastImageWidget" + "[[:word:]]+" + DL_SUFFIX + "$" );
+		std::regex widgetFilter( std::string( "^" ) + DL_PREFIX + "vastImageWidget" + "[[:word:]]+" + DL_SUFFIX + "$" );
 
 		if( pathOk ) {
 			for ( boost::filesystem::directory_iterator itr( p ); itr != boost::filesystem::directory_iterator(); ++itr ) {
 				if ( boost::filesystem::is_directory( *itr ) )continue;
 
-				if ( boost::regex_match( itr->path().filename().string(), widgetFilter ) ) {
+				if ( std::regex_match( itr->path().filename().string(), widgetFilter ) ) {
 					const std::string widgetName = itr->path().native();
 #ifdef WIN32
 					HINSTANCE handle = LoadLibrary( widgetName.c_str() );
@@ -110,7 +110,7 @@ unsigned int WidgetLoader::findWidgets( std::list< std::string > paths )
 
 						if ( loadFunc && loadProperties_func ) {
 							if( loadProperties_func()->hasProperty( "widgetIdent" ) ) {
-								const std::string widgetIdent = loadProperties_func()->getPropertyAs<std::string>( "widgetIdent" );
+								const auto widgetIdent = loadProperties_func()->getValueAs<std::string>( "widgetIdent" );
 								widgetMap[widgetIdent] = loadFunc;
 								widgetPropertyMap[widgetIdent] = loadProperties_func();
 								optionDialogMap[widgetIdent] = oLoadFunc;
@@ -140,7 +140,7 @@ unsigned int WidgetLoader::findWidgets( std::list< std::string > paths )
 				} else {
 					LOG( Dev, verbose_info )
 							<< "Ignoring " << util::MSubject( itr->path() )
-							<< " because it doesn't match " << widgetFilter.str();
+							<< " because it doesn't match the plugin name pattern";
 				}
 			}
 		}

@@ -140,7 +140,7 @@ void isis::viewer::plugin::PlotterDialog::refresh ( isis::util::fvector3 physica
 
 
 
-void isis::viewer::plugin::PlotterDialog::fillProfile ( boost::shared_ptr< isis::viewer::ImageHolder > image, const isis::util::ivector4 &voxCoords, QwtPlotCurve *curve, const unsigned short &axis )
+void isis::viewer::plugin::PlotterDialog::fillProfile ( std::shared_ptr< isis::viewer::ImageHolder > image, const isis::util::ivector4 &voxCoords, QwtPlotCurve *curve, const unsigned short &axis )
 {
 	std::stringstream title;
 	std::stringstream coordsAsString;
@@ -154,7 +154,7 @@ void isis::viewer::plugin::PlotterDialog::fillProfile ( boost::shared_ptr< isis:
 
 
 		if ( image->getISISImage()->hasProperty( "repetitionTime" ) ) {
-			factor = ( float )image->getISISImage()->getPropertyAs<uint16_t>( "repetitionTime" ) / 1000;
+			factor = ( float )image->getISISImage()->getValueAs<uint16_t>( "repetitionTime" ) / 1000;
 			plot->setAxisTitle( 2, tr( "t / s" ) );
 		} else {
 			plot->setAxisTitle( 2, tr( "Repetition (missing TR)" ) );
@@ -228,7 +228,7 @@ void isis::viewer::plugin::PlotterDialog::fillProfile ( boost::shared_ptr< isis:
 
 }
 
-void isis::viewer::plugin::PlotterDialog::fillSpectrum ( boost::shared_ptr< isis::viewer::ImageHolder > image, const isis::util::ivector4 &voxCoords, QwtPlotCurve *curve, const unsigned short &axis )
+void isis::viewer::plugin::PlotterDialog::fillSpectrum ( std::shared_ptr< isis::viewer::ImageHolder > image, const isis::util::ivector4 &voxCoords, QwtPlotCurve *curve, const unsigned short &axis )
 {
 	plot->setAxisTitle( 2, tr( "1 / Hz" ) );
 	plot->setAxisTitle( 0, tr( "" ) );

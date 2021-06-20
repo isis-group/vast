@@ -39,8 +39,8 @@ namespace viewer
 {
 
 ViewerCoreBase::ViewerCoreBase( )
-	: m_Settings( boost::shared_ptr< Settings >( new Settings ) ),
-	  m_CurrentAnatomicalReference( boost::shared_ptr<ImageHolder>() ),
+	: m_Settings( std::shared_ptr< Settings >( new Settings ) ),
+	  m_CurrentAnatomicalReference( std::shared_ptr<ImageHolder>() ),
 	  m_Mode( default_mode )
 {
 	util::Singletons::get<color::Color, 10>().initStandardColormaps();
@@ -66,9 +66,9 @@ ImageHolder::Pointer ViewerCoreBase::addImage( const isis::data::Image &image, c
 	std::string fileName;
 
 	if( image.hasProperty( "source" ) ) {
-		fileName = image.getPropertyAs<std::string>( "source" );
+		fileName = image.getValueAs<std::string>( "source" );
 	} else {
-		const boost::filesystem::path path = image.getChunk( 0 ).getPropertyAs<std::string>( "source" );
+		const boost::filesystem::path path = image.getChunk( 0 ).getValueAs<std::string>( "source" );
 		fileName = path.branch_path().string();
 	}
 
@@ -95,18 +95,18 @@ ImageHolder::Pointer ViewerCoreBase::addImage( const isis::data::Image &image, c
 
 	//setting the lutStructural
 	if( imageType == ImageHolder::structural_image ) {
-		retImage->getImageProperties().lut = getSettings()->getPropertyAs<std::string>( "lutStructural" );
+		retImage->getImageProperties().lut = getSettings()->getValueAs<std::string>( "lutStructural" );
 
 		if( !util::Singletons::get<color::Color, 10>().hasColormap( retImage->getImageProperties().lut ) ) {
 			retImage->getImageProperties().lut = std::string( "standard_grey_values" );
-			getSettings()->setPropertyAs<std::string>( "lutStructural", retImage->getImageProperties().lut );
+			getSettings()->setValueAs<std::string>( "lutStructural", retImage->getImageProperties().lut );
 		}
 	} else {
-		retImage->getImageProperties().lut = getSettings()->getPropertyAs<std::string>( "lutZMap" );
+		retImage->getImageProperties().lut = getSettings()->getValueAs<std::string>( "lutZMap" );
 
 		if( !util::Singletons::get<color::Color, 10>().hasColormap( retImage->getImageProperties().lut ) ) {
 			retImage->getImageProperties().lut = std::string( "standard_zmap" );
-			getSettings()->setPropertyAs<std::string>( "lutZMap", retImage->getImageProperties().lut );
+			getSettings()->setValueAs<std::string>( "lutZMap", retImage->getImageProperties().lut );
 		}
 	}
 
@@ -122,15 +122,15 @@ ImageHolder::Pointer ViewerCoreBase::addImage( const isis::data::Image &image, c
 
 	retImage->getImageProperties().boundingBox = geometrical::getPhysicalBoundingBox( retImage );
 
-	if( getSettings()->getPropertyAs<bool>( "checkCACP" ) ) {
+	if( getSettings()->getValueAs<bool>( "checkCACP" ) ) {
 		checkForCaCp( retImage );
 	}
 
-	if( getSettings()->getPropertyAs<bool>( "setZeroToBlackStructural" ) && retImage->getImageProperties().imageType == ImageHolder::structural_image ) {
+	if( getSettings()->getValueAs<bool>( "setZeroToBlackStructural" ) && retImage->getImageProperties().imageType == ImageHolder::structural_image ) {
 		operation::NativeImageOps::setTrueZero( retImage );
 	}
 
-	if( getSettings()->getPropertyAs<bool>( "setZeroToBlackStatistical" ) && retImage->getImageProperties().imageType == ImageHolder::statistical_image ) {
+	if( getSettings()->getValueAs<bool>( "setZeroToBlackStatistical" ) && retImage->getImageProperties().imageType == ImageHolder::statistical_image ) {
 		operation::NativeImageOps::setTrueZero( retImage );
 	}
 
@@ -203,7 +203,7 @@ bool ViewerCoreBase::hasWidget ( const std::string &identifier )
 }
 
 
-widget::WidgetInterface *ViewerCoreBase::getWidget ( const std::string &identifier ) throw( std::runtime_error & )
+widget::WidgetInterface *ViewerCoreBase::getWidget ( const std::string &identifier )
 {
 	const widget::WidgetLoader::WidgetMapType widgetMap = util::Singletons::get<widget::WidgetLoader, 10>().getWidgetMap();
 
@@ -218,7 +218,7 @@ widget::WidgetInterface *ViewerCoreBase::getWidget ( const std::string &identifi
 		LOG( Dev, error ) << "Can not find any widget with identifier \"" << identifier
 						  << "\"! Returning first widget i can find.";
 		const std::string fallback = widgetMap.begin()->first;
-		getSettings()->setPropertyAs<std::string>( "defaultViewWidgetIdentifier", fallback );
+		getSettings()->setValueAs<std::string>( "defaultViewWidgetIdentifier", fallback );
 		getSettings()->save();
 		return getWidget( fallback );
 	}
@@ -240,7 +240,7 @@ const util::PropertyMap *ViewerCoreBase::getWidgetProperties ( const std::string
 		LOG( Dev, error ) << "Can not find any widget properties with identifier \"" << identifier
 						  << "\"! Returning properties of the first widget i can find.";
 		const std::string fallback = widgetPropertyMap.begin()->first;
-		getSettings()->setPropertyAs<std::string>( "defaultViewWidgetIdentifier", fallback );
+		getSettings()->setValueAs<std::string>( "defaultViewWidgetIdentifier", fallback );
 		getSettings()->save();
 		return getWidgetProperties( fallback );
 	}

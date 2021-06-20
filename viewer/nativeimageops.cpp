@@ -33,7 +33,7 @@ isis::viewer::QViewerCore *isis::viewer::operation::NativeImageOps::m_ViewerCore
 std::pair< double, double > isis::viewer::operation::NativeImageOps::getMinMaxFromScalingOffset ( const std::pair< double, double >& scalingOffset, const isis::viewer::ImageHolder::Pointer image )
 {
 	std::pair<double, double> retMinMax;
-	const double min = image->getImageProperties().minMax.first->as<double>();
+	const double min = image->getImageProperties().minMax.first.as<double>();
 	const double extent = image->getImageProperties().extent;
 	const double offset = scalingOffset.second;
 	const double scaling = scalingOffset.first;
@@ -47,145 +47,146 @@ std::pair< double, double > isis::viewer::operation::NativeImageOps::getScalingO
 	std::pair<double, double> retScalingOffset;
 	const double extent = image->getImageProperties().extent;
 	const double _extent = minMax.second - minMax.first;
-	const double min = image->getImageProperties().minMax.first->as<double>();
+	const double min = image->getImageProperties().minMax.first.as<double>();
 	retScalingOffset.first = extent / _extent;
 	retScalingOffset.second = minMax.first - min ;
 	return retScalingOffset;
 }
 
 
-isis::util::ivector4 isis::viewer::operation::NativeImageOps::getGlobalMin( const boost::shared_ptr< isis::viewer::ImageHolder > image, const util::ivector4 &startPos, const unsigned short &radius )
+isis::util::vector4<size_t> isis::viewer::operation::NativeImageOps::getGlobalMin( const std::shared_ptr< isis::viewer::ImageHolder > image, const util::ivector4 &startPos, const unsigned short &radius )
 {
 	if( image->getISISImage()->getVolume() >= 1e6 ) {
 		m_ViewerCore->getUICore()->toggleLoadingIcon( true );
 	}
 
+	//@todo make this less ridiculous
 	switch ( image->getISISImage()->getMajorTypeID() ) {
-	case data::ValueArray<bool>::staticID:
+		case util::typeID<bool>():
 		return internGetMax<bool>( image, startPos, radius );
 		break;
-	case data::ValueArray<int8_t>::staticID:
+	case util::typeID<int8_t>():
 		return internGetMin<int8_t>( image, startPos, radius );
 		break;
-	case data::ValueArray<uint8_t>::staticID:
+	case util::typeID<uint8_t>():
 		return internGetMin<uint8_t>( image, startPos, radius );
 		break;
-	case data::ValueArray<int16_t>::staticID:
+	case util::typeID<int16_t>():
 		return internGetMin<int16_t>( image, startPos, radius );
 		break;
-	case data::ValueArray<uint16_t>::staticID:
+	case util::typeID<uint16_t>():
 		return internGetMin<uint16_t>( image, startPos, radius );
 		break;
-	case data::ValueArray<int32_t>::staticID:
+	case util::typeID<int32_t>():
 		return internGetMin<int32_t>( image, startPos, radius );
 		break;
-	case data::ValueArray<uint32_t>::staticID:
+	case util::typeID<uint32_t>():
 		return internGetMin<uint32_t>( image, startPos, radius );
 		break;
-	case data::ValueArray<int64_t>::staticID:
+	case util::typeID<int64_t>():
 		return internGetMin<int64_t>( image, startPos, radius );
 		break;
-	case data::ValueArray<uint64_t>::staticID:
+	case util::typeID<uint64_t>():
 		return internGetMin<uint64_t>( image, startPos, radius );
 		break;
-	case data::ValueArray<float>::staticID:
+	case util::typeID<float>():
 		return internGetMin<float>( image, startPos, radius );
 		break;
-	case data::ValueArray<double>::staticID:
+	case util::typeID<double>():
 		return internGetMin<double>( image, startPos, radius );
 		break;
 	default:
 		LOG( Runtime, error ) << "Search of min/max is not suported for " << image->getISISImage()->getMajorTypeID() << " !";
-		return isis::util::ivector4();
+		return {0,0,0,0};
 		break;
 	}
 
 }
 
-isis::util::ivector4 isis::viewer::operation::NativeImageOps::getGlobalMax( const boost::shared_ptr< isis::viewer::ImageHolder > image, const util::ivector4 &startPos, const unsigned short &radius )
+isis::util::vector4<size_t> isis::viewer::operation::NativeImageOps::getGlobalMax( const std::shared_ptr< isis::viewer::ImageHolder > image, const util::ivector4 &startPos, const unsigned short &radius )
 {
 	if( image->getISISImage()->getVolume() >= 1e6 ) {
 		m_ViewerCore->getUICore()->toggleLoadingIcon( true );
 	}
 
 	switch ( image->getISISImage()->getMajorTypeID() ) {
-	case data::ValueArray<bool>::staticID:
+	case util::typeID<bool>():
 		return internGetMax<bool>( image, startPos, radius );
 		break;
-	case data::ValueArray<int8_t>::staticID:
+	case util::typeID<int8_t>():
 		return internGetMax<int8_t>( image, startPos, radius );
 		break;
-	case data::ValueArray<uint8_t>::staticID:
+	case util::typeID<uint8_t>():
 		return internGetMax<uint8_t>( image, startPos, radius );
 		break;
-	case data::ValueArray<int16_t>::staticID:
+	case util::typeID<int16_t>():
 		return internGetMax<int16_t>( image, startPos, radius );
 		break;
-	case data::ValueArray<uint16_t>::staticID:
+	case util::typeID<uint16_t>():
 		return internGetMax<uint16_t>( image, startPos, radius );
 		break;
-	case data::ValueArray<int32_t>::staticID:
+	case util::typeID<int32_t>():
 		return internGetMax<int32_t>( image, startPos, radius );
 		break;
-	case data::ValueArray<uint32_t>::staticID:
+	case util::typeID<uint32_t>():
 		return internGetMax<uint32_t>( image, startPos, radius );
 		break;
-	case data::ValueArray<int64_t>::staticID:
+	case util::typeID<int64_t>():
 		return internGetMax<int64_t>( image, startPos, radius );
 		break;
-	case data::ValueArray<uint64_t>::staticID:
+	case util::typeID<uint64_t>():
 		return internGetMax<uint64_t>( image, startPos, radius );
 		break;
-	case data::ValueArray<float>::staticID:
+	case util::typeID<float>():
 		return internGetMax<float>( image, startPos, radius );
 		break;
-	case data::ValueArray<double>::staticID:
+	case util::typeID<double>():
 		return internGetMax<double>( image, startPos, radius );
 		break;
 	default:
 		LOG( Runtime, error ) << "Search of min/max is not suported for " << image->getISISImage()->getMajorTypeID() << " !";
-		return isis::util::ivector4();
+		return {0,0,0,0};
 		break;
 	}
 }
 
-void isis::viewer::operation::NativeImageOps::setTrueZero ( boost::shared_ptr< isis::viewer::ImageHolder > image )
+void isis::viewer::operation::NativeImageOps::setTrueZero ( std::shared_ptr< isis::viewer::ImageHolder > image )
 {
 	if( !image->getImageProperties().isRGB ) {
 		m_ViewerCore->getUICore()->toggleLoadingIcon( true );
 
 		switch ( image->getImageProperties().majorTypeID ) {
-		case data::ValueArray<bool>::staticID:
+		case util::typeID<bool>():
 			_setTrueZero<bool>( image );
 			break;
-		case data::ValueArray<int8_t>::staticID:
+		case util::typeID<int8_t>():
 			_setTrueZero<int8_t>( image );
 			break;
-		case data::ValueArray<uint8_t>::staticID:
+		case util::typeID<uint8_t>():
 			_setTrueZero<uint8_t>( image );
 			break;
-		case data::ValueArray<int16_t>::staticID:
+		case util::typeID<int16_t>():
 			_setTrueZero<int16_t>( image );
 			break;
-		case data::ValueArray<uint16_t>::staticID:
+		case util::typeID<uint16_t>():
 			_setTrueZero<uint16_t>( image );
 			break;
-		case data::ValueArray<int32_t>::staticID:
+		case util::typeID<int32_t>():
 			_setTrueZero<int32_t>( image );
 			break;
-		case data::ValueArray<uint32_t>::staticID:
+		case util::typeID<uint32_t>():
 			_setTrueZero<uint32_t>( image );
 			break;
-		case data::ValueArray<int64_t>::staticID:
+		case util::typeID<int64_t>():
 			_setTrueZero<int64_t>( image );
 			break;
-		case data::ValueArray<uint64_t>::staticID:
+		case util::typeID<uint64_t>():
 			_setTrueZero<uint64_t>( image );
 			break;
-		case data::ValueArray<float>::staticID:
+		case util::typeID<float>():
 			_setTrueZero<float>( image );
 			break;
-		case data::ValueArray<double>::staticID:
+		case util::typeID<double>():
 			_setTrueZero<double>( image );
 			break;
 		}
@@ -204,7 +205,7 @@ std::vector<double> isis::viewer::operation::NativeImageOps::getHistogramFromIma
 
 	histogram.resize( extent );
 
-	const InternalImageType *dataPtr = boost::static_pointer_cast<const InternalImageType>( image->getRawAdress( timestep ) ).get();
+	const InternalImageType *dataPtr = std::static_pointer_cast<const InternalImageType>( image->getRawAdress( timestep ) ).get();
 
 	if( extent > 1e6 ) {
 		m_ViewerCore->getUICore()->toggleLoadingIcon( true, QString( "Calculating histogram for image " ) + image->getImageProperties().fileName.c_str() );

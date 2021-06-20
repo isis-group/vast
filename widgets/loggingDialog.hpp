@@ -25,18 +25,15 @@
  *  Created on: Aug 12, 2011
  *      Author: tuerke
  ******************************************************************/
-#ifndef LOGGINGDIALOG_HPP
-#define LOGGINGDIALOG_HPP
+#pragma once
+
 #include <QDialog>
 
 #include "ui_loggingDialog.h"
 #include "../viewer/qviewercore.hpp"
+#include <isis/core/message.hpp>
 
-namespace isis
-{
-namespace viewer
-{
-namespace ui
+namespace isis::viewer::ui
 {
 
 class LoggingDialog : public QDialog
@@ -47,8 +44,7 @@ public:
 
 public Q_SLOTS:
 	void synchronize();
-//@todo implement me
-//	void printLog( std::list<qt4::QMessage> );
+	void printLog( std::list<util::Message> );
 
 private:
 	Ui::logDialog m_Interface;
@@ -57,8 +53,3 @@ private:
 
 
 }
-}
-}
-
-
-#endif

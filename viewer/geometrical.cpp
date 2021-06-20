@@ -35,14 +35,6 @@ namespace viewer
 namespace geometrical
 {
 
-BoundingBoxType getPhysicalBoundingBox ( const ImageHolder::Pointer image, const unsigned short &border )
-{
-	ImageHolder::Vector images;
-	images.push_back( image );
-	return getPhysicalBoundingBox( images, border  );
-}
-
-
 BoundingBoxType getPhysicalBoundingBox ( const ImageHolder::Vector images, const unsigned short &border )
 {
 	BoundingBoxType retBox;
@@ -52,15 +44,20 @@ BoundingBoxType getPhysicalBoundingBox ( const ImageHolder::Vector images, const
 		retBox[i].second = -std::numeric_limits<float>::max();
 	}
 
-	BOOST_FOREACH( ImageHolder::Vector::const_reference image, images ) {
-		const util::ivector4 imageSize = image->getISISImage()->getSizeAsVector();
-		const util::fvector3 mappedVoxelSize = image->getImageProperties().latchedOrientation.dot( image->getImageProperties().voxelSize );
+	for( const auto &image : images ) {
+		const auto imageSize = image->getISISImage()->getSizeAsVector();
+		const auto mappedVoxelSize = image->getImageProperties().latchedOrientation * image->getImageProperties().voxelSize;
 
 		for( unsigned short i = 0; i < 2; i++ ) {
 			for( unsigned short j = 0; j < 2; j++ ) {
 				for( unsigned short k = 0; k < 2; k++ ) {
-					const util::ivector4 currentCorner ( i * ( imageSize[0] + border ), j * ( imageSize[1] + border ), k * ( imageSize[2] + border ) );
-					const util::fvector3 currentPhysicalCorner = image->getISISImage()->getPhysicalCoordsFromIndex( currentCorner );
+					const util::vector4<size_t> currentCorner{
+						i * imageSize[0] + border,
+						j * imageSize[1] + border,
+						k * imageSize[2] + border,
+						0
+					};
+					const util::fvector3 currentPhysicalCorner = image->getPhysicalCoordsFromIndex( currentCorner );
 
 					for ( unsigned short l = 0; l < 3; l++ ) {
 						if( currentPhysicalCorner[l] < retBox[l].first ) {

@@ -30,14 +30,10 @@
 #include <QResource>
 #include <QFile>
 #include <fstream>
-#include <boost/iostreams/filter/newline.hpp>
+#include <regex>
 
 
-namespace isis
-{
-namespace viewer
-{
-namespace color
+namespace isis::viewer::color
 {
 
 void Color::initStandardColormaps()
@@ -59,7 +55,7 @@ void Color::initStandardColormaps()
 	m_ColormapMap["fallback"] = getFallbackColormap();
 }
 
-bool Color::addColormap( const std::string &path, const boost::regex &separator )
+bool Color::addColormap( const std::string &path, const std::regex &separator )
 {
 	LOG( Dev, verbose_info ) << "Adding colormap " << path;
 	QFile lutFile( path.c_str() );
@@ -72,22 +68,22 @@ bool Color::addColormap( const std::string &path, const boost::regex &separator 
 
 	std::string data( lutFile.readAll() );
 	lutFile.close();
-	std::list<std::string > lines = util::stringToList<std::string>( data, boost::regex( "\n" ) );
+	auto lines = util::stringToList<std::string>( data, '\n' );
 	ColormapType lutVec;
 	//get the name and colorspace
-	boost::regex descriptionRegex( "^([[:word:]]+):([[:word:]]{3,4})$" );
-	boost::cmatch results;
+	std::regex descriptionRegex( "^([[:word:]]+):([[:word:]]{3,4})$" );
+	std::cmatch results;
 
-	if( !boost::regex_match( lines.front().c_str(), results, descriptionRegex ) ) {
+	if( !std::regex_match( lines.front().c_str(), results, descriptionRegex ) ) {
 		LOG( Dev, warning ) << "Can not read colormap " << path << " because header is missing or has wrong syntax (name:type)!";
 		return false;
 	}
 
-	std::string lutTyp = boost::lexical_cast< std::string>( results.str( 2 ) );
-	std::string lutName = boost::lexical_cast< std::string>( results.str( 1 ) );
+	auto lutTyp = results.str( 2 );
+	auto lutName = results.str( 1 );
 	lines.pop_front();
-	BOOST_FOREACH( std::list<std::string>::const_reference lineRef, lines ) {
-		std::list< unsigned short > values = util::stringToList< unsigned short >( lineRef, separator );
+	for( const auto &lineRef: lines ) {
+		auto values = util::stringToList< unsigned short >( lineRef, separator );
 		std::vector<unsigned short> colorVec( values.begin(), values.end() );
 
 		if( lutTyp == std::string( "rgb" ) ) {
@@ -210,8 +206,8 @@ void Color::adaptColorMapToImage( ImageHolder *image )
 	ColormapType tmpMap  = util::Singletons::get<Color, 10>().getColormapMap().at( image->getImageProperties().lut );
 
 	const double extent         = image->getImageProperties().extent;         // total value range, i.e. max - min
-	const double minVal         = image->getImageProperties().minMax.first->as<double>();
-	const double maxVal         = image->getImageProperties().minMax.second->as<double>();
+	const double minVal         = image->getImageProperties().minMax.first.as<double>();
+	const double maxVal         = image->getImageProperties().minMax.second.as<double>();
 	const double offset         = image->getImageProperties().offset;         // color map offset
 	const double scaling        = image->getImageProperties().scaling;        // color map "scaling"
 	const double lowerThreshold = image->getImageProperties().lowerThreshold; // minVal<=lowerThreshold<=0, slider
@@ -312,6 +308,4 @@ void Color::adaptColorMapToImage( ImageHolder *image )
 }
 
 
-}
-}
 } // end namespace

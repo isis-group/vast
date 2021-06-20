@@ -147,7 +147,7 @@ void RegistrationDialog::startRegistration()
 	resampler->SetDefaultPixelValue( 0 );
 	resampler->Update();
 	data::Image outImage = fixedAdapter->makeIsisImageObject<ImageType>( resampler->GetOutput() ).front();
-	m_ViewerCore->getUICore()->createViewWidgetEnsemble( m_ViewerCore->getSettings()->getPropertyAs<std::string>( "defaultViewWidgetIdentifier" ), m_ViewerCore->addImage( outImage, ImageHolder::structural_image ) );
+	m_ViewerCore->getUICore()->createViewWidgetEnsemble( m_ViewerCore->getSettings()->getValueAs<std::string>( "defaultViewWidgetIdentifier" ), m_ViewerCore->addImage( outImage, ImageHolder::structural_image ) );
 	m_ViewerCore->getUICore()->refreshUI();
 }
 

@@ -51,7 +51,7 @@ public:
 
 	virtual ImageHolder::Vector addImageList( const std::list< data::Image > imageList, const ImageHolder::ImageType &imageType );
 
-	void addPlugin( boost::shared_ptr< plugin::PluginInterface > plugin );
+	void addPlugin( std::shared_ptr< plugin::PluginInterface > plugin );
 	void addPlugins( plugin::PluginLoader::PluginListType plugins );
 	plugin::PluginLoader::PluginListType getPlugins() const { return m_PluginList; }
 
@@ -63,7 +63,7 @@ public:
 	const UICore *getUICore() const { return m_UI; }
 	UICore *getUICore() { return m_UI; }
 
-	const boost::shared_ptr< QProgressFeedback > getProgressFeedback() const { return m_ProgressFeedback; }
+	const std::shared_ptr< QProgressFeedback > getProgressFeedback() const { return m_ProgressFeedback; }
 
 	void addMessageHandler( qt5::QDefaultMessageHandler * );
 	void addMessageHandlerDev( qt5::QDefaultMessageHandler * );
@@ -86,12 +86,12 @@ public Q_SLOTS:
 	virtual bool callPlugin( QString name );
 	virtual void receiveMessage( std::string  );
 	//@todo implement me
-//	virtual void receiveMessage( qt4::QMessage  );
-//	virtual void receiveMessageDev( qt4::QMessage );
+//	virtual void receiveMessage( qt5::QMessage  );
+//	virtual void receiveMessageDev( qt5::QMessage );
 	virtual ImageHolder::Vector openFile( const FileInformation &fileInfo, bool show = true );
 	virtual void openFileList( const std::list< FileInformation > fileInfoList );
 	virtual void centerImages( bool ca = false );
-	virtual void closeImage( boost::shared_ptr<ImageHolder> image, bool refreshUI = true );
+	virtual void closeImage( std::shared_ptr<ImageHolder> image, bool refreshUI = true );
 
 Q_SIGNALS:
 	void emitZoomChanged( float zoom );
@@ -109,13 +109,13 @@ private:
 	void checkForErrors();
 
 	//@todo implement me
-//	std::list< qt4::QMessage > m_MessageLog;
-//	std::list< qt4::QMessage > m_DevMessageLog;
+//	std::list< qt5::QMessage > m_MessageLog;
+//	std::list< qt5::QMessage > m_DevMessageLog;
 
 	QWidget *m_Parent;
 	plugin::PluginLoader::PluginListType m_PluginList;
 	std::string m_CurrentPath;
-	boost::shared_ptr< QProgressFeedback > m_ProgressFeedback;
+	std::shared_ptr< QProgressFeedback > m_ProgressFeedback;
 	UICore *m_UI;
 
 	std::list<FileInformation> m_OpenFileList;

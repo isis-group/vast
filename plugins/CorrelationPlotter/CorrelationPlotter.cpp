@@ -140,11 +140,11 @@ bool isis::viewer::plugin::CorrelationPlotterDialog::createCorrelationMap()
 			ch.join( static_cast<isis::util::PropertyMap &>( *m_CurrentFunctionalImage->getISISImage() ) );
 
 			if( !ch.hasProperty( "acquisitionNumber" ) ) {
-				ch.setPropertyAs<uint16_t>( "acquisitionNumber", 0 );
+				ch.setValueAs<uint16_t>( "acquisitionNumber", 0 );
 			}
 
 			isis::data::Image corrMap ( ch );
-			corrMap.setPropertyAs<std::string>( "source", "correlation_map" );
+			corrMap.setValueAs<std::string>( "source", "correlation_map" );
 
 			m_CurrentCorrelationMap = m_ViewerCore->addImage( corrMap, ImageHolder::statistical_image );
 			m_CurrentCorrelationMap->getImageProperties().lut = std::string( "standard_zmap" );

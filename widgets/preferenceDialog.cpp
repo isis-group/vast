@@ -120,39 +120,39 @@ void PreferencesDialog::loadSettings()
 			m_Interface.lutZmap->insertItem( index++, util::Singletons::get<color::Color, 10>().getIcon( lut.first, size.width() , size.height() ), QString( lut.first.c_str() ) ) ;
 		}
 	}
-	m_Interface.comboInterpolation->setCurrentIndex( m_ViewerCore->getSettings()->getPropertyAs<uint16_t>( "interpolationType" ) );
+	m_Interface.comboInterpolation->setCurrentIndex( m_ViewerCore->getSettings()->getValueAs<uint16_t>( "interpolationType" ) );
 
 	if( m_ViewerCore->hasImage() ) {
 		if( m_ViewerCore->getCurrentImage()->getImageProperties().imageType == ImageHolder::statistical_image ) {
 			m_Interface.lutZmap->setCurrentIndex( m_Interface.lutZmap->findText( m_ViewerCore->getCurrentImage()->getImageProperties().lut.c_str() ) );
-			m_Interface.lutStructural->setCurrentIndex( m_Interface.lutStructural->findText( m_ViewerCore->getSettings()->getPropertyAs<std::string>( "lutStructural" ).c_str() ) );
+			m_Interface.lutStructural->setCurrentIndex( m_Interface.lutStructural->findText( m_ViewerCore->getSettings()->getValueAs<std::string>( "lutStructural" ).c_str() ) );
 		} else if ( m_ViewerCore->getCurrentImage()->getImageProperties().imageType == ImageHolder::structural_image ) {
 			m_Interface.lutStructural->setCurrentIndex( m_Interface.lutStructural->findText( m_ViewerCore->getCurrentImage()->getImageProperties().lut.c_str() ) );
-			m_Interface.lutZmap->setCurrentIndex( m_Interface.lutZmap->findText( m_ViewerCore->getSettings()->getPropertyAs<std::string>( "lutZMap" ).c_str() ) );
+			m_Interface.lutZmap->setCurrentIndex( m_Interface.lutZmap->findText( m_ViewerCore->getSettings()->getValueAs<std::string>( "lutZMap" ).c_str() ) );
 		}
 	}
 
-	m_Interface.fancyStyle->setChecked( m_ViewerCore->getSettings()->getPropertyAs<bool>( "useStyleSheet" ) );
-	m_Interface.checkStartUpScreen->setChecked( m_ViewerCore->getSettings()->getPropertyAs<bool>( "showStartWidget" ) );
-	m_Interface.checkCrashMessage->setChecked( m_ViewerCore->getSettings()->getPropertyAs<bool>( "showCrashMessage" ) );
-	m_Interface.checkOnlyFirst->setChecked( m_ViewerCore->getSettings()->getPropertyAs<bool>( "visualizeOnlyFirstVista" ) );
-	m_Interface.checkCACP->setChecked( m_ViewerCore->getSettings()->getPropertyAs<bool>( "checkCACP" ) );
-	m_Interface.checkVoxelSpace->setChecked( m_ViewerCore->getSettings()->getPropertyAs<bool>("ignoreOrientationAlways") );
+	m_Interface.fancyStyle->setChecked( m_ViewerCore->getSettings()->getValueAs<bool>( "useStyleSheet" ) );
+	m_Interface.checkStartUpScreen->setChecked( m_ViewerCore->getSettings()->getValueAs<bool>( "showStartWidget" ) );
+	m_Interface.checkCrashMessage->setChecked( m_ViewerCore->getSettings()->getValueAs<bool>( "showCrashMessage" ) );
+	m_Interface.checkOnlyFirst->setChecked( m_ViewerCore->getSettings()->getValueAs<bool>( "visualizeOnlyFirstVista" ) );
+	m_Interface.checkCACP->setChecked( m_ViewerCore->getSettings()->getValueAs<bool>( "checkCACP" ) );
+	m_Interface.checkVoxelSpace->setChecked( m_ViewerCore->getSettings()->getValueAs<bool>("ignoreOrientationAlways") );
 
 	//view tab
-	m_Interface.checkLatchOrientation->setChecked( m_ViewerCore->getSettings()->getPropertyAs<bool>( "latchSingleImage" ) );
-	m_Interface.checkSetZeroStatistical->setChecked( m_ViewerCore->getSettings()->getPropertyAs<bool>( "setZeroToBlackStatistical" ) );
-	m_Interface.checkSetZeroStructural->setChecked( m_ViewerCore->getSettings()->getPropertyAs<bool>( "setZeroToBlackStructural" ) );
+	m_Interface.checkLatchOrientation->setChecked( m_ViewerCore->getSettings()->getValueAs<bool>( "latchSingleImage" ) );
+	m_Interface.checkSetZeroStatistical->setChecked( m_ViewerCore->getSettings()->getValueAs<bool>( "setZeroToBlackStatistical" ) );
+	m_Interface.checkSetZeroStructural->setChecked( m_ViewerCore->getSettings()->getValueAs<bool>( "setZeroToBlackStructural" ) );
 
 	//screenshot
-	m_Interface.screenshotQuality->setValue( m_ViewerCore->getSettings()->getPropertyAs<uint16_t>( "screenshotQuality" ) );
-	m_Interface.dpiX->setValue( m_ViewerCore->getSettings()->getPropertyAs<uint16_t>( "screenshotDPIX" ) );
-	m_Interface.dpiY->setValue( m_ViewerCore->getSettings()->getPropertyAs<uint16_t>( "screenshotDPIY" ) );
-	m_Interface.sizeX->setValue( m_ViewerCore->getSettings()->getPropertyAs<uint16_t>( "screenshotWidth" ) );
-	m_Interface.sizeY->setValue( m_ViewerCore->getSettings()->getPropertyAs<uint16_t>( "screenshotHeight" ) );
-	m_Interface.keepRatio->setChecked( m_ViewerCore->getSettings()->getPropertyAs<bool>( "screenshotKeepAspectRatio" ) );
-	m_Interface.manualScaling->setChecked( m_ViewerCore->getSettings()->getPropertyAs<bool>( "screenshotManualScaling" ) );
-	m_Interface.scalingFrame->setVisible( m_ViewerCore->getSettings()->getPropertyAs<bool>( "screenshotManualScaling" ) );
+	m_Interface.screenshotQuality->setValue( m_ViewerCore->getSettings()->getValueAs<uint16_t>( "screenshotQuality" ) );
+	m_Interface.dpiX->setValue( m_ViewerCore->getSettings()->getValueAs<uint16_t>( "screenshotDPIX" ) );
+	m_Interface.dpiY->setValue( m_ViewerCore->getSettings()->getValueAs<uint16_t>( "screenshotDPIY" ) );
+	m_Interface.sizeX->setValue( m_ViewerCore->getSettings()->getValueAs<uint16_t>( "screenshotWidth" ) );
+	m_Interface.sizeY->setValue( m_ViewerCore->getSettings()->getValueAs<uint16_t>( "screenshotHeight" ) );
+	m_Interface.keepRatio->setChecked( m_ViewerCore->getSettings()->getValueAs<bool>( "screenshotKeepAspectRatio" ) );
+	m_Interface.manualScaling->setChecked( m_ViewerCore->getSettings()->getValueAs<bool>( "screenshotManualScaling" ) );
+	m_Interface.scalingFrame->setVisible( m_ViewerCore->getSettings()->getValueAs<bool>( "screenshotManualScaling" ) );
 
 	screenshotXChanged( m_Interface.sizeX->value() );
 
@@ -161,39 +161,39 @@ void PreferencesDialog::loadSettings()
 	const widget::WidgetLoader::WidgetPropertyMapType &optionsMap = util::Singletons::get<widget::WidgetLoader, 10>().getWidgetPropertyMap();
 	m_Interface.defaultViewWidgetFrame->setVisible( widgetMap.size() > 1 );
 	BOOST_FOREACH( widget::WidgetLoader::WidgetMapType::const_reference w, widgetMap ) {
-		m_Interface.defaultViewWidgetComboBox->addItem( optionsMap.at( w.first )->getPropertyAs<std::string>( "widgetName" ).c_str(), QVariant( w.first.c_str() ) );
+		m_Interface.defaultViewWidgetComboBox->addItem( optionsMap.at( w.first )->getValueAs<std::string>( "widgetName" ).c_str(), QVariant( w.first.c_str() ) );
 	}
-	m_Interface.defaultViewWidgetComboBox->setCurrentIndex( m_Interface.defaultViewWidgetComboBox->findData( QVariant( m_ViewerCore->getSettings()->getPropertyAs<std::string>( "defaultViewWidgetIdentifier" ).c_str() ) ) );
+	m_Interface.defaultViewWidgetComboBox->setCurrentIndex( m_Interface.defaultViewWidgetComboBox->findData( QVariant( m_ViewerCore->getSettings()->getValueAs<std::string>( "defaultViewWidgetIdentifier" ).c_str() ) ) );
 }
 
 void PreferencesDialog::saveSettings()
 {
-	m_ViewerCore->getSettings()->setPropertyAs<uint16_t>( "interpolationType", m_Interface.comboInterpolation->currentIndex() );
-	m_ViewerCore->getSettings()->setPropertyAs<bool>( "showStartWidget", m_Interface.checkStartUpScreen->isChecked() );
-	m_ViewerCore->getSettings()->setPropertyAs<bool>( "showCrashMessage", m_Interface.checkCrashMessage->isChecked() );
-	m_ViewerCore->getSettings()->setPropertyAs<bool>( "useStyleSheet", m_Interface.fancyStyle->isChecked() );
-	m_ViewerCore->getSettings()->setPropertyAs<bool>( "ignoreOrientationAlways", m_Interface.checkVoxelSpace->isChecked() );
+	m_ViewerCore->getSettings()->setValueAs<uint16_t>( "interpolationType", m_Interface.comboInterpolation->currentIndex() );
+	m_ViewerCore->getSettings()->setValueAs<bool>( "showStartWidget", m_Interface.checkStartUpScreen->isChecked() );
+	m_ViewerCore->getSettings()->setValueAs<bool>( "showCrashMessage", m_Interface.checkCrashMessage->isChecked() );
+	m_ViewerCore->getSettings()->setValueAs<bool>( "useStyleSheet", m_Interface.fancyStyle->isChecked() );
+	m_ViewerCore->getSettings()->setValueAs<bool>( "ignoreOrientationAlways", m_Interface.checkVoxelSpace->isChecked() );
 
 	//view
-	m_ViewerCore->getSettings()->setPropertyAs<bool>( "latchSingleImage", m_Interface.checkLatchOrientation->isChecked() );
-	m_ViewerCore->getSettings()->setPropertyAs<bool>( "setZeroToBlackStatistical", m_Interface.checkSetZeroStatistical->isChecked() );
-	m_ViewerCore->getSettings()->setPropertyAs<bool>( "setZeroToBlackStructural", m_Interface.checkSetZeroStructural->isChecked() );
+	m_ViewerCore->getSettings()->setValueAs<bool>( "latchSingleImage", m_Interface.checkLatchOrientation->isChecked() );
+	m_ViewerCore->getSettings()->setValueAs<bool>( "setZeroToBlackStatistical", m_Interface.checkSetZeroStatistical->isChecked() );
+	m_ViewerCore->getSettings()->setValueAs<bool>( "setZeroToBlackStructural", m_Interface.checkSetZeroStructural->isChecked() );
 
 	//file formats
 	//vista
-	m_ViewerCore->getSettings()->setPropertyAs<bool>( "visualizeOnlyFirstVista", m_Interface.checkOnlyFirst->isChecked() );
-	m_ViewerCore->getSettings()->setPropertyAs<bool>( "checkCACP", m_Interface.checkCACP->isChecked() );
+	m_ViewerCore->getSettings()->setValueAs<bool>( "visualizeOnlyFirstVista", m_Interface.checkOnlyFirst->isChecked() );
+	m_ViewerCore->getSettings()->setValueAs<bool>( "checkCACP", m_Interface.checkCACP->isChecked() );
 
 	//screenshot
-	m_ViewerCore->getSettings()->setPropertyAs<bool>( "screenshotKeepAspectRatio", m_Interface.keepRatio->isChecked() );
-	m_ViewerCore->getSettings()->setPropertyAs<uint16_t>( "screenshotQuality", m_Interface.screenshotQuality->value() );
-	m_ViewerCore->getSettings()->setPropertyAs<uint16_t>( "screenshotDPIX", m_Interface.dpiX->value() );
-	m_ViewerCore->getSettings()->setPropertyAs<uint16_t>( "screenshotDPIY", m_Interface.dpiY->value() );
-	m_ViewerCore->getSettings()->setPropertyAs<uint16_t>( "screenshotWidth", m_Interface.sizeX->value() );
-	m_ViewerCore->getSettings()->setPropertyAs<uint16_t>( "screenshotHeight", m_Interface.sizeY->value() );
-	m_ViewerCore->getSettings()->setPropertyAs<bool>( "screenshotManualScaling", m_Interface.manualScaling->isChecked() );
+	m_ViewerCore->getSettings()->setValueAs<bool>( "screenshotKeepAspectRatio", m_Interface.keepRatio->isChecked() );
+	m_ViewerCore->getSettings()->setValueAs<uint16_t>( "screenshotQuality", m_Interface.screenshotQuality->value() );
+	m_ViewerCore->getSettings()->setValueAs<uint16_t>( "screenshotDPIX", m_Interface.dpiX->value() );
+	m_ViewerCore->getSettings()->setValueAs<uint16_t>( "screenshotDPIY", m_Interface.dpiY->value() );
+	m_ViewerCore->getSettings()->setValueAs<uint16_t>( "screenshotWidth", m_Interface.sizeX->value() );
+	m_ViewerCore->getSettings()->setValueAs<uint16_t>( "screenshotHeight", m_Interface.sizeY->value() );
+	m_ViewerCore->getSettings()->setValueAs<bool>( "screenshotManualScaling", m_Interface.manualScaling->isChecked() );
 
-	m_ViewerCore->getSettings()->setPropertyAs<std::string>( "defaultViewWidgetIdentifier", m_Interface.defaultViewWidgetComboBox->itemData( m_Interface.defaultViewWidgetComboBox->currentIndex() ).toString().toStdString() );
+	m_ViewerCore->getSettings()->setValueAs<std::string>( "defaultViewWidgetIdentifier", m_Interface.defaultViewWidgetComboBox->itemData( m_Interface.defaultViewWidgetComboBox->currentIndex() ).toString().toStdString() );
 
 	if( m_ViewerCore->hasImage() ) {
 		if( m_ViewerCore->getCurrentImage()->getImageProperties().imageType == ImageHolder::statistical_image ) {
@@ -202,8 +202,8 @@ void PreferencesDialog::saveSettings()
 			m_ViewerCore->getCurrentImage()->getImageProperties().lut = m_Interface.lutStructural->currentText().toStdString() ;
 		}
 
-		m_ViewerCore->getSettings()->setPropertyAs<std::string>( "lutZMap", m_Interface.lutZmap->currentText().toStdString() );
-		m_ViewerCore->getSettings()->setPropertyAs<std::string>( "lutStructural", m_Interface.lutStructural->currentText().toStdString() );
+		m_ViewerCore->getSettings()->setValueAs<std::string>( "lutZMap", m_Interface.lutZmap->currentText().toStdString() );
+		m_ViewerCore->getSettings()->setValueAs<std::string>( "lutStructural", m_Interface.lutStructural->currentText().toStdString() );
 	}
 }
 

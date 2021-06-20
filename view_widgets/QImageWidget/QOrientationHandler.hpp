@@ -50,11 +50,11 @@ class QOrientationHandler
 public:
 	typedef  util::FixedVector<float, 6 > ViewPortType;
 
-	static ViewPortType getViewPort( const float &zoom, const boost::shared_ptr< ImageHolder > image, const size_t &w, const size_t &h, PlaneOrientation orientation, unsigned short border = 0 );
-	static QTransform getTransform( const ViewPortType &viewPort, const boost::shared_ptr< ImageHolder > image, PlaneOrientation orientation );
+	static ViewPortType getViewPort( const float &zoom, const std::shared_ptr< ImageHolder > image, const size_t &w, const size_t &h, PlaneOrientation orientation, unsigned short border = 0 );
+	static QTransform getTransform( const ViewPortType &viewPort, const std::shared_ptr< ImageHolder > image, PlaneOrientation orientation );
 
-	static util::ivector4 convertWindow2VoxelCoords( const ViewPortType &viewPort, const boost::shared_ptr< ImageHolder > image, const size_t &x, const size_t &y, const size_t &slice, PlaneOrientation orientation );
-	static std::pair<int, int> convertVoxel2WindowCoords( const ViewPortType &viewPort, const boost::shared_ptr< ImageHolder > image, PlaneOrientation orientation );
+	static util::ivector4 convertWindow2VoxelCoords( const ViewPortType &viewPort, const std::shared_ptr< ImageHolder > image, const size_t &x, const size_t &y, const size_t &slice, PlaneOrientation orientation );
+	static std::pair<int, int> convertVoxel2WindowCoords( const ViewPortType &viewPort, const std::shared_ptr< ImageHolder > image, PlaneOrientation orientation );
 };
 
 

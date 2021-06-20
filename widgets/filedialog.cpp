@@ -33,6 +33,7 @@
 #include "../viewer/fileinformation.hpp"
 
 #include <boost/algorithm/string.hpp>
+#include <QDirModel>
 
 isis::viewer::ui::FileDialog::FileDialog( QWidget *parent, QViewerCore *core )
 	: QDialog ( parent ),
@@ -167,10 +168,10 @@ void isis::viewer::ui::FileDialog::setup()
 		m_Interface.widgetInsertFrame->setVisible( true );
 	}
 
-	m_Interface.favoritesFrame->setVisible( m_ViewerCore->getSettings()->getPropertyAs<bool>( "showFavoriteFileList" ) );
-	m_Interface.favoritesCheck->setChecked( m_ViewerCore->getSettings()->getPropertyAs<bool>( "showFavoriteFileList" ) );
-	m_Interface.advancedOptionsFrame->setVisible( m_ViewerCore->getSettings()->getPropertyAs<bool>( "showAdvancedFileDialogOptions" ) );
-	m_Interface.advancedOptionsCheck->setChecked( m_ViewerCore->getSettings()->getPropertyAs<bool>( "showAdvancedFileDialogOptions" ) );
+	m_Interface.favoritesFrame->setVisible( m_ViewerCore->getSettings()->getValueAs<bool>( "showFavoriteFileList" ) );
+	m_Interface.favoritesCheck->setChecked( m_ViewerCore->getSettings()->getValueAs<bool>( "showFavoriteFileList" ) );
+	m_Interface.advancedOptionsFrame->setVisible( m_ViewerCore->getSettings()->getValueAs<bool>( "showAdvancedFileDialogOptions" ) );
+	m_Interface.advancedOptionsCheck->setChecked( m_ViewerCore->getSettings()->getValueAs<bool>( "showAdvancedFileDialogOptions" ) );
 	m_Interface.favoriteList->clear();
 
 	BOOST_FOREACH( FileInformationMap::const_reference fileInfo, m_ViewerCore->getSettings()->getFavoriteFiles() ) {
@@ -191,21 +192,21 @@ void isis::viewer::ui::FileDialog::setup()
 	const widget::WidgetLoader::WidgetPropertyMapType &optionsMap = util::Singletons::get<widget::WidgetLoader, 10>().getWidgetPropertyMap();
 	BOOST_FOREACH( WRef w, widgetMap ) {
 		QVariant variant ( w.first.c_str() );
-		m_Interface.widgetTypeComboBox->addItem( optionsMap.at( w.first )->getPropertyAs<std::string>( "widgetName" ).c_str(), variant );
+		m_Interface.widgetTypeComboBox->addItem( optionsMap.at( w.first )->getValueAs<std::string>( "widgetName" ).c_str(), variant );
 	}
 	m_Interface.widgetTypeframe->setVisible( widgetMap.size() > 1 );
 	int index;
 
-	if( m_ViewerCore->getSettings()->getPropertyAs<bool>( "showImagesGeometricalView" )
-		&& m_ViewerCore->hasWidget( m_ViewerCore->getSettings()->getPropertyAs<std::string>( "widgetGeometrical" ) ) ) {
-		QVariant variant(  m_ViewerCore->getSettings()->getPropertyAs<std::string>( "widgetGeometrical" ).c_str() ) ;
+	if( m_ViewerCore->getSettings()->getValueAs<bool>( "showImagesGeometricalView" )
+		&& m_ViewerCore->hasWidget( m_ViewerCore->getSettings()->getValueAs<std::string>( "widgetGeometrical" ) ) ) {
+		QVariant variant(  m_ViewerCore->getSettings()->getValueAs<std::string>( "widgetGeometrical" ).c_str() ) ;
 		index = m_Interface.widgetTypeComboBox->findData( variant, Qt::UserRole );
-	} else if ( !m_ViewerCore->getSettings()->getPropertyAs<bool>( "showImagesGeometricalView" )
-				&& m_ViewerCore->hasWidget( m_ViewerCore->getSettings()->getPropertyAs<std::string>( "widgetLatched" ) ) ) {
-		QVariant variant(  m_ViewerCore->getSettings()->getPropertyAs<std::string>( "widgetLatched" ).c_str() ) ;
+	} else if ( !m_ViewerCore->getSettings()->getValueAs<bool>( "showImagesGeometricalView" )
+				&& m_ViewerCore->hasWidget( m_ViewerCore->getSettings()->getValueAs<std::string>( "widgetLatched" ) ) ) {
+		QVariant variant(  m_ViewerCore->getSettings()->getValueAs<std::string>( "widgetLatched" ).c_str() ) ;
 		index = m_Interface.widgetTypeComboBox->findData( variant, Qt::UserRole );
 	} else {
-		QVariant variant(  m_ViewerCore->getSettings()->getPropertyAs<std::string>( "fallbackWidgetIdentifier" ).c_str() ) ;
+		QVariant variant(  m_ViewerCore->getSettings()->getValueAs<std::string>( "fallbackWidgetIdentifier" ).c_str() ) ;
 		index = m_Interface.widgetTypeComboBox->findData( variant, Qt::UserRole );
 	}
 
@@ -356,14 +357,14 @@ void isis::viewer::ui::FileDialog::openPath()
 
 void isis::viewer::ui::FileDialog::advancedChecked( bool advanced )
 {
-	m_ViewerCore->getSettings()->setPropertyAs<bool>( "showAdvancedFileDialogOptions", advanced );
+	m_ViewerCore->getSettings()->setValueAs<bool>( "showAdvancedFileDialogOptions", advanced );
 	m_Interface.advancedOptionsFrame->setVisible( advanced );
 	adjustSize();
 }
 
 void isis::viewer::ui::FileDialog::favoritesChecked( bool favorites )
 {
-	m_ViewerCore->getSettings()->setPropertyAs<bool>( "showFavoriteFileList", favorites );
+	m_ViewerCore->getSettings()->setValueAs<bool>( "showFavoriteFileList", favorites );
 	m_Interface.favoritesFrame->setVisible( favorites );
 	adjustSize();
 }

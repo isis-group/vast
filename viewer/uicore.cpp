@@ -92,7 +92,7 @@ void UICore::showMainWindow( const std::list<FileInformation> &fileList )
 	m_MainWindow->getInterface().rightGridLayout->addWidget( m_SliderWidget );
 	m_MainWindow->show();
 
-	if( fileList.empty() && m_ViewerCore->getSettings()->getPropertyAs<bool>( "showStartWidget" ) ) {
+	if( fileList.empty() && m_ViewerCore->getSettings()->getValueAs<bool>( "showStartWidget" ) ) {
 		getMainWindow()->startWidget->show();
 	} else {
 		m_ViewerCore->openFileList( fileList );
@@ -129,7 +129,7 @@ WidgetEnsemble::Pointer UICore::createViewWidgetEnsemble( const std::string &wid
 
 	//if this widget has an option widget we are loading it and passing it to the ensemble
 	if( m_ViewerCore->getWidgetProperties( widgetIdentifier )->hasProperty( "hasOptionWidget" ) ) {
-		if( m_ViewerCore->getWidgetProperties( widgetIdentifier )->getPropertyAs<bool>( "hasOptionWidget" ) ) {
+		if( m_ViewerCore->getWidgetProperties( widgetIdentifier )->getValueAs<bool>( "hasOptionWidget" ) ) {
 			widget::WidgetLoader::OptionDialogMapType optionMap = util::Singletons::get<widget::WidgetLoader, 10>().getOptionWidgetMap();
 			const widget::WidgetLoader::OptionDialogMapType::const_iterator iter = optionMap.find( widgetIdentifier );
 
@@ -142,7 +142,7 @@ WidgetEnsemble::Pointer UICore::createViewWidgetEnsemble( const std::string &wid
 	uint8_t numberWidgets;
 
 	if( m_ViewerCore->getWidgetProperties( widgetIdentifier )->hasProperty( "numberOfEntitiesInEnsemble" ) ) {
-		numberWidgets = m_ViewerCore->getWidgetProperties( widgetIdentifier )->getPropertyAs<uint8_t>( "numberOfEntitiesInEnsemble" );
+		numberWidgets = m_ViewerCore->getWidgetProperties( widgetIdentifier )->getValueAs<uint8_t>( "numberOfEntitiesInEnsemble" );
 	} else {
 		LOG( Dev, error ) << "Your widget \"" << widgetIdentifier << "\" has no property \"numberOfEntitiesInEnsemble\" ! Setting it to 1";
 		numberWidgets = 1;
@@ -231,13 +231,13 @@ WidgetEnsembleComponent::Pointer UICore::createEnsembleComponent( const std::str
 	QFrame *frameWidget = new QFrame();
 	QWidget *placeHolder = new QWidget( frameWidget );
 	QDockWidget *dockWidget = createDockingEnsemble( frameWidget );
-	dockWidget->setMinimumHeight( m_ViewerCore->getSettings()->getPropertyAs<uint16_t>( "maxWidgetHeight" ) );
-	dockWidget->setMinimumWidth( m_ViewerCore->getSettings()->getPropertyAs<uint16_t>( "maxWidgetWidth" ) );
+	dockWidget->setMinimumHeight( m_ViewerCore->getSettings()->getValueAs<uint16_t>( "maxWidgetHeight" ) );
+	dockWidget->setMinimumWidth( m_ViewerCore->getSettings()->getValueAs<uint16_t>( "maxWidgetWidth" ) );
 	dockWidget->setWidget( frameWidget );
 	frameWidget->setParent( dockWidget );
 	frameWidget->setLayout( new QGridLayout() );
 	frameWidget->layout()->addWidget( placeHolder );
-	frameWidget->layout()->setMargin( m_ViewerCore->getSettings()->getPropertyAs<uint16_t>( "viewerWidgetMargin" ) );
+	frameWidget->layout()->setMargin( m_ViewerCore->getSettings()->getValueAs<uint16_t>( "viewerWidgetMargin" ) );
 
 	widget::WidgetInterface *widgetImpl = m_ViewerCore->getWidget( widgetIdentifier );
 	widgetImpl->setWidgetEnsemble( ensemble );
@@ -299,7 +299,7 @@ bool UICore::registerEnsembleComponent( WidgetEnsembleComponent::Pointer compone
 		return false;
 	}
 
-	m_WidgetMap.insert( std::make_pair< widget::WidgetInterface *, WidgetEnsembleComponent::Pointer >( component->getWidgetInterface(), component ) );
+	m_WidgetMap.insert( {component->getWidgetInterface(), component } );
 	return true;
 
 }
@@ -355,31 +355,31 @@ QImage UICore::getScreenshot()
 		const int offset = -7;
 
 		if( m_ViewerCore->getMode() == ViewerCoreBase::statistical_mode ) {
-			if( m_ViewerCore->getCurrentImage()->getImageProperties().minMax.first->as<double>() < 0 ) {
+			if( m_ViewerCore->getCurrentImage()->getImageProperties().minMax.first.as<double>() < 0 ) {
 				const double lT = roundNumber<double>( m_ViewerCore->getCurrentImage()->getImageProperties().lowerThreshold, 4 );
-				const double min = roundNumber<double>( m_ViewerCore->getCurrentImage()->getImageProperties().minMax.first->as<double>(), 4 );
+				const double min = roundNumber<double>( m_ViewerCore->getCurrentImage()->getImageProperties().minMax.first.as<double>(), 4 );
 				painter.drawPixmap( 100, widgetHeight * eIndex + 50, util::Singletons::get<color::Color, 10>().getIcon( m_ViewerCore->getCurrentImage()->getImageProperties().lut, 150, 15, color::Color::lower_half, true ).pixmap( 150, 15 ) );
 				painter.drawText( 20 + ( lT < 0 ? offset : 0 ), widgetHeight * eIndex + 65, QString::number( lT  ) );
-				painter.drawText( 280 + ( min < 0 ? offset : 0 ), widgetHeight * eIndex + 65, QString::number( roundNumber<double>( m_ViewerCore->getCurrentImage()->getImageProperties().minMax.first->as<double>(), 4 )  ) );
+				painter.drawText( 280 + ( min < 0 ? offset : 0 ), widgetHeight * eIndex + 65, QString::number( roundNumber<double>( m_ViewerCore->getCurrentImage()->getImageProperties().minMax.first.as<double>(), 4 )  ) );
 			}
 
-			if ( m_ViewerCore->getCurrentImage()->getImageProperties().minMax.second->as<double>() > 0  ) {
+			if ( m_ViewerCore->getCurrentImage()->getImageProperties().minMax.second.as<double>() > 0  ) {
 				painter.drawPixmap( 100, widgetHeight * eIndex + 20, util::Singletons::get<color::Color, 10>().getIcon( m_ViewerCore->getCurrentImage()->getImageProperties().lut, 150, 15, color::Color::upper_half ).pixmap( 150, 15 ) );
 				painter.drawText( 20, widgetHeight * eIndex + 35, QString::number( roundNumber<double>( m_ViewerCore->getCurrentImage()->getImageProperties().upperThreshold, 4 )  ) );
-				painter.drawText( 280, widgetHeight * eIndex + 35, QString::number( roundNumber<double>( m_ViewerCore->getCurrentImage()->getImageProperties().minMax.second->as<double>(), 4 )  ) );
+				painter.drawText( 280, widgetHeight * eIndex + 35, QString::number( roundNumber<double>( m_ViewerCore->getCurrentImage()->getImageProperties().minMax.second.as<double>(), 4 )  ) );
 			}
 		}
 
 		painter.end();
 		refreshUI();
-		QImage screenshotImage ( m_ViewerCore->getSettings()->getPropertyAs<bool>( "screenshotManualScaling" ) ? screenshot.scaled( m_ViewerCore->getSettings()->getPropertyAs<uint16_t>( "screenshotWidth" ),
-								 m_ViewerCore->getSettings()->getPropertyAs<uint16_t>( "screenshotHeight" ),
-								 m_ViewerCore->getSettings()->getPropertyAs<bool>( "screenshotKeepAspectRatio" ) ? Qt::KeepAspectRatioByExpanding : Qt::IgnoreAspectRatio,
+		QImage screenshotImage ( m_ViewerCore->getSettings()->getValueAs<bool>( "screenshotManualScaling" ) ? screenshot.scaled( m_ViewerCore->getSettings()->getValueAs<uint16_t>( "screenshotWidth" ),
+								 m_ViewerCore->getSettings()->getValueAs<uint16_t>( "screenshotHeight" ),
+								 m_ViewerCore->getSettings()->getValueAs<bool>( "screenshotKeepAspectRatio" ) ? Qt::KeepAspectRatioByExpanding : Qt::IgnoreAspectRatio,
 								 Qt::SmoothTransformation
 																																  ).toImage() : screenshot.toImage() );
 		const double dpiMeter = 39.3700787;
-		screenshotImage.setDotsPerMeterX( m_ViewerCore->getSettings()->getPropertyAs<uint16_t>( "screenshotDPIX" ) * dpiMeter );
-		screenshotImage.setDotsPerMeterY( m_ViewerCore->getSettings()->getPropertyAs<uint16_t>( "screenshotDPIY" ) * dpiMeter );
+		screenshotImage.setDotsPerMeterX( m_ViewerCore->getSettings()->getValueAs<uint16_t>( "screenshotDPIX" ) * dpiMeter );
+		screenshotImage.setDotsPerMeterY( m_ViewerCore->getSettings()->getValueAs<uint16_t>( "screenshotDPIY" ) * dpiMeter );
 		return screenshotImage;
 	}
 

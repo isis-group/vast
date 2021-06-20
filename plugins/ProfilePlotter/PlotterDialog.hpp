@@ -69,11 +69,11 @@ private:
 	QViewerCore *m_ViewerCore;
 	util::fvector3 m_CurrentPhysicalCoords;
 
-	void fillProfile( boost::shared_ptr<ImageHolder> image, const util::ivector4 &voxCoords, QwtPlotCurve *curve, const unsigned short &axis );
-	void fillSpectrum(  boost::shared_ptr<ImageHolder> image, const util::ivector4 &voxCoords, QwtPlotCurve *curve, const unsigned short &axis );
+	void fillProfile( std::shared_ptr<ImageHolder> image, const util::ivector4 &voxCoords, QwtPlotCurve *curve, const unsigned short &axis );
+	void fillSpectrum(  std::shared_ptr<ImageHolder> image, const util::ivector4 &voxCoords, QwtPlotCurve *curve, const unsigned short &axis );
 
 	template<typename TYPE>
-	void fillVector( QVector<double> &iv, const util::ivector4 &vox, const boost::shared_ptr<ImageHolder> image, const unsigned short &axis ) {
+	void fillVector( QVector<double> &iv, const util::ivector4 &vox, const std::shared_ptr<ImageHolder> image, const unsigned short &axis ) {
 		util::ivector4 _coords = vox;
 		isis::data::TypedImage<TYPE> tImage( *image->getISISImage() );
 

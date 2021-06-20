@@ -48,7 +48,7 @@ class WidgetLoader
 {
 	friend class util::Singletons;
 public:
-	typedef boost::shared_ptr< WidgetInterface > WidgetInterfacePointer;
+	typedef std::shared_ptr< WidgetInterface > WidgetInterfacePointer;
 
 	typedef isis::viewer::widget::WidgetInterface* ( *loadWidget_func )() ;
 	typedef QWidget* (  *loadOption_func )() ;

@@ -66,7 +66,7 @@ private:
 
 	Ui::maskEditDialog m_Interface;
 	QViewerCore *m_ViewerCore;
-	boost::shared_ptr<ImageHolder> m_CurrentMask;
+	std::shared_ptr<ImageHolder> m_CurrentMask;
 	unsigned short m_Radius;
 
 	CreateMaskDialog *m_CreateMaskDialog;
@@ -74,7 +74,7 @@ private:
 	WidgetEnsemble::Pointer m_CurrentWidgetEnsemble;
 
 	template<typename TYPE>
-	void manipulateVoxel( const util::fvector3 physCoord, boost::shared_ptr<ImageHolder> image ) {
+	void manipulateVoxel( const util::fvector3 physCoord, std::shared_ptr<ImageHolder> image ) {
 		util::ivector4 voxel = image->getISISImage()->getIndexFromPhysicalCoords( physCoord );
 		image->correctVoxelCoords<3>( voxel );
 		util::ivector4 start;

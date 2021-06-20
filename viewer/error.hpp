@@ -47,9 +47,9 @@ void sigsegv ( int exit_code )
 
 	//@todo implement me
 //	std::ofstream logFile ( getCrashLogFilePath().c_str(), std::ofstream::binary );
-//	const qt4::QMessageList &messageList = util::Singletons::get<qt4::QMessageList, 10>();
+//	const qt5::QMessageList &messageList = util::Singletons::get<qt5::QMessageList, 10>();
 //
-//	for( qt4::QMessageList::const_iterator iter = messageList.begin(); iter != messageList.end(); iter++ ) {
+//	for( qt5::QMessageList::const_iterator iter = messageList.begin(); iter != messageList.end(); iter++ ) {
 //		logFile << iter->m_module << "(" << iter->time_str << ") [" << iter->m_file << ":" << iter->m_line << "] " << iter->message << std::endl;
 //	}
 //
