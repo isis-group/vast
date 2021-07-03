@@ -25,14 +25,12 @@
  *  Created on: Aug 12, 2011
  *      Author: tuerke
  ******************************************************************/
-#ifndef NATIVEIMAGEOPS_HPP
-#define NATIVEIMAGEOPS_HPP
+#pragma once
 
 #include "common.hpp"
 
 #include <boost/concept_check.hpp>
 #include <numeric>
-#include "qprogressfeedback.hpp"
 #include "qviewercore.hpp"
 #include "imageholder.hpp"
 #include "uicore.hpp"
@@ -50,8 +48,8 @@ class NativeImageOps
 	static isis::viewer::QViewerCore *m_ViewerCore;
 public:
 
-	static util::vector4<size_t> getGlobalMin( const ImageHolder::Pointer image, const util::ivector4 &startPos, const unsigned short &radius );
-	static util::vector4<size_t> getGlobalMax( const ImageHolder::Pointer image, const util::ivector4 &startPos, const unsigned short &radius );
+	static util::vector4<size_t> getGlobalMin(const ImageHolder::Pointer image, const util::vector4<size_t> &startPos, const unsigned short &radius );
+	static util::vector4<size_t> getGlobalMax(const ImageHolder::Pointer image, const util::vector4<size_t> &startPos, const unsigned short &radius );
 	static void setTrueZero( ImageHolder::Pointer image );
 	static std::vector<double> getHistogramFromImage( const ImageHolder::Pointer image );
 
@@ -63,7 +61,7 @@ public:
 private:
 
 	template<typename TYPE>
-	static util::vector4<size_t> internGetMin( const ImageHolder::Pointer image, const util::ivector4 &startPos, const unsigned short &radius ) {
+	static util::vector4<size_t> internGetMin( const ImageHolder::Pointer image, const util::vector4<size_t> &startPos, const unsigned short &radius ) {
 		const auto size = image->getImageSize();
 		util::vector4<size_t> start, end;
 
@@ -86,12 +84,12 @@ private:
 		TYPE currentMin = std::numeric_limits<TYPE>::max();
 		m_ViewerCore->getProgressFeedback()->show( ( end[2] - start[2] ) * ( end[3] - start[3] ), "Searching minimum..." );
 
-		for( int32_t t = start[3]; t < end[3]; t++ ) {
-			for( int32_t z = start[2]; z < end[2]; z++ ) {
+		for( auto t = start[3]; t < end[3]; t++ ) {
+			for( auto z = start[2]; z < end[2]; z++ ) {
 				m_ViewerCore->getProgressFeedback()->progress();
 
-				for( int32_t y = start[1]; y < end[1]; y++ ) {
-					for( int32_t x = start[0]; x < end[0]; x++ ) {
+				for( auto y = start[1]; y < end[1]; y++ ) {
+					for( auto x = start[0]; x < end[0]; x++ ) {
 						currentValue = static_cast<data::Image &>( typedImage ).voxel<TYPE>( x, y, z, t );
 
 						if( currentValue < currentMin ) {
@@ -108,7 +106,7 @@ private:
 	}
 
 	template<typename TYPE>
-	static util::vector4<size_t> internGetMax( const ImageHolder::Pointer image, const util::ivector4 &startPos, const unsigned short &radius ) {
+	static util::vector4<size_t> internGetMax( const ImageHolder::Pointer image, const util::vector4<size_t> &startPos, const unsigned short &radius ) {
 		const auto size = image->getImageSize();
 		util::vector4<size_t> start,end;
 
@@ -132,12 +130,12 @@ private:
 
 		m_ViewerCore->getProgressFeedback()->show( ( end[2] - start[2] ) * ( end[3] - start[3] ), "Searching maximum..." );
 
-		for( int32_t t = start[3]; t < end[3]; t++ ) {
-			for( int32_t z = start[2]; z < end[2]; z++ ) {
+		for( auto t = start[3]; t < end[3]; t++ ) {
+			for( auto z = start[2]; z < end[2]; z++ ) {
 				m_ViewerCore->getProgressFeedback()->progress();
 
-				for( int32_t y = start[1]; y < end[1]; y++ ) {
-					for( int32_t x = start[0]; x < end[0]; x++ ) {
+				for( auto y = start[1]; y < end[1]; y++ ) {
+					for( auto x = start[0]; x < end[0]; x++ ) {
 						currentValue = static_cast<data::Image &>( typedImage ).voxel<TYPE>( x, y, z, t );
 
 						if( currentValue > currentMax ) {
@@ -187,6 +185,3 @@ private:
 }
 }
 }
-
-
-#endif

@@ -31,7 +31,6 @@
 #include "nativeimageops.hpp"
 #include "uicore.hpp"
 #include "../widgets/mainwindow.hpp"
-#include "qprogressfeedback.hpp"
 
 #include <fstream>
 #include <QMessageBox>
@@ -42,13 +41,11 @@ namespace isis::viewer
 QViewerCore::QViewerCore ()
 	: ViewerCoreBase( ),
 	  m_CurrentPath ( QDir::currentPath().toStdString() ),
-	  m_ProgressFeedback ( new QProgressFeedback ),
 	  m_UI ( new isis::viewer::UICore ( this ) )
 {
 	QApplication::setStartDragTime ( 1000 );
 
 	setParentWidget ( m_UI->getMainWindow() );
-	data::IOFactory::setProgressFeedback ( m_ProgressFeedback );
 	operation::NativeImageOps::setViewerCore( this );
 	m_Settings->load();
 	getUICore()->refreshUI();
@@ -96,36 +93,6 @@ void QViewerCore::checkForErrors()
 	getSettings()->getQSettings()->endGroup();
 }
 
-
-void QViewerCore::addMessageHandler ( qt5::QDefaultMessageHandler *handler )
-{
-	connect ( handler, SIGNAL ( commitMessage ( qt5::QMessage ) ) , this, SLOT ( receiveMessage ( qt5::QMessage ) ) );
-}
-
-void QViewerCore::addMessageHandlerDev ( qt5::QDefaultMessageHandler *handler )
-{
-	connect ( handler, SIGNAL ( commitMessage ( qt5::QMessage ) ) , this, SLOT ( receiveMessageDev( qt5::QMessage ) ) );
-}
-
-//void QViewerCore::receiveMessage ( util::Message message )
-//{
-//	m_MessageLog.push_back ( message );
-//}
-//
-//void QViewerCore::receiveMessageDev ( util::Message message )
-//{
-//	m_DevMessageLog.push_back( message );
-//}
-
-void QViewerCore::receiveMessage ( std::string message )
-{
-	//@todo implement me
-//	util::Message qmessage( message, std::string module, std::string file, int line, LogLevel level, std::weak_ptr<MessageHandlerBase> _commitTo );
-//	qmessage.message = message;
-//	receiveMessage ( qmessage );
-}
-
-
 void QViewerCore::onWidgetClicked ( widget::WidgetInterface *origin, util::fvector3 physicalCoords, Qt::MouseButton mouseButton )
 {
 	ImageHolder::ImageType iType;
@@ -158,7 +125,7 @@ void QViewerCore::timestepChanged ( int timestep )
 			timestep = getCurrentImage()->getImageSize() [3] - 1;
 		}
 
-		BOOST_FOREACH ( ImageHolder::Vector::const_reference image, getImageVector() ) {
+		for ( const auto &image: getImageVector() ) {
 			if ( static_cast<size_t> ( timestep ) < image->getImageSize() [3] ) {
 				image->getImageProperties().timestep = timestep;
 			}
@@ -326,7 +293,7 @@ ImageHolder::Vector QViewerCore::openFile ( const FileInformation &fileInfo, boo
 		setCurrentPath ( p.parent_path().string() );
 
 		//this is a vista thing. if we load a vista image and the option "visualizeOnlyFirstVista" is enabled we should do so
-//		if( boost::filesystem::extension( p ) == std::string( "v" ) && getSettings()->getValueAs<bool>( "visualizeOnlyFirstVista" ) && !dialect.size() ) {
+//		if( std::filesystem::extension( p ) == std::string( "v" ) && getSettings()->getValueAs<bool>( "visualizeOnlyFirstVista" ) && !dialect.size() ) {
 //			dialect = util::istring( "onlyfirst" );
 //		}
 
@@ -475,7 +442,9 @@ void QViewerCore::close ()
 	getSettings()->getQSettings()->sync();
 	getSettings()->getQSettings()->endGroup();
 }
+void QViewerCore::images_loaded(isis::qt5::IsisImageList images, QStringList rejects)
+{
 
-
+}
 
 }

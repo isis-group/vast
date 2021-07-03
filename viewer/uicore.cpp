@@ -32,9 +32,7 @@
 
 #include <QSignalMapper>
 
-namespace isis
-{
-namespace viewer
+namespace isis::viewer
 {
 
 
@@ -50,7 +48,7 @@ UICore::UICore( QViewerCore *core )
 	setOptionPosition( );
 	connect( m_MainWindow->getInterface().actionInformation_Areas, SIGNAL( triggered( bool ) ), SLOT( showInformationAreas( bool ) ) );
 
-	m_ViewerCore->emitCurrentImageChanged.connect( boost::bind( &UICore::refreshUI, this, _1 ) );
+	m_ViewerCore->emitCurrentImageChanged.connect( [this]( const ImageHolder::Pointer& image){ this->refreshUI(bool(image));} );//@todo this is ugly
 }
 
 void UICore::setOptionPosition( UICore::OptionPosition pos )
@@ -257,7 +255,7 @@ void UICore::reloadPluginsToGUI()
 void UICore::refreshUI( const bool &mainwindow )
 {
 	WidgetEnsemble::Vector cp = getEnsembleList();
-	BOOST_FOREACH( WidgetEnsemble::Vector::reference ensemble, cp ) {
+	for(auto &ensemble: cp ) {
 		if( ensemble->getImageVector().empty() ) {
 			closeWidgetEnsemble( ensemble );
 		} else {
@@ -422,10 +420,6 @@ void UICore::refreshEnsembles()
 
 void UICore::toggleLoadingIcon ( bool start, const QString &text )
 {
-	if( text.length() ) {
-		m_ViewerCore->receiveMessage( text.toStdString() );
-	}
-
 	getMainWindow()->m_StatusMovieLabel->setVisible( start );
 	getMainWindow()->m_Interface.statusbar->setVisible( start );
 	getMainWindow()->m_StatusTextLabel->setVisible( text.length() );
@@ -457,5 +451,4 @@ void UICore::openFromDropEvent ( QDropEvent */*e*/ )
 }
 
 
-}
 }

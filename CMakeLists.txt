@@ -153,7 +153,7 @@ add_executable(vast main.cpp ${VIEWER_FILES_CPP} ${WIDGET_FILES_CPP} ${UI_FILES}
 #add the view_widgets directory
 #add_subdirectory(view_widgets)
 
-target_link_libraries(vast ISIS::isis_qt5)
+target_link_libraries(vast ISIS::isis_qt5 ${CMAKE_DL_LIBS})
 
 install(TARGETS vast RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin )
 

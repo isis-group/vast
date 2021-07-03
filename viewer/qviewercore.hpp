@@ -30,8 +30,6 @@
 
 
 #include "viewercorebase.hpp"
-#include "qprogressfeedback.hpp"
-
 #include <isis/adapter/qt5/qtapplication.hpp>
 
 #include <QtGui>
@@ -45,6 +43,7 @@ class UICore;
 class QViewerCore : public QObject, public ViewerCoreBase
 {
 	Q_OBJECT
+	std::shared_ptr<util::ProgressFeedback> m_progress_feedback;
 public:
 
 	QViewerCore();
@@ -62,15 +61,12 @@ public:
 
 	const UICore *getUICore() const { return m_UI; }
 	UICore *getUICore() { return m_UI; }
-
-	const std::shared_ptr< QProgressFeedback > getProgressFeedback() const { return m_ProgressFeedback; }
-
-	void addMessageHandler( qt5::QDefaultMessageHandler * );
-	void addMessageHandlerDev( qt5::QDefaultMessageHandler * );
-
-//@todo implement me
-//	std::list< qt5::QMessage> getMessageLog() const { return m_MessageLog; }
-//	std::list< qt5::QMessage> getMessageLogDev() const { return m_DevMessageLog; }
+	const std::shared_ptr<util::ProgressFeedback> getProgressFeedback() const { return m_progress_feedback;  }
+	const void setProgressFeedback(std::shared_ptr<util::ProgressFeedback> &&pgrs)
+	{
+		m_progress_feedback=pgrs;
+		data::IOFactory::setProgressFeedback ( m_progress_feedback );
+	}
 
 public Q_SLOTS:
 	virtual void settingsChanged();
@@ -84,14 +80,12 @@ public Q_SLOTS:
 	virtual void setShowCrosshair( bool );
 	virtual void updateScene( );
 	virtual bool callPlugin( QString name );
-	virtual void receiveMessage( std::string  );
 	//@todo implement me
-//	virtual void receiveMessage( qt5::QMessage  );
-//	virtual void receiveMessageDev( qt5::QMessage );
 	virtual ImageHolder::Vector openFile( const FileInformation &fileInfo, bool show = true );
 	virtual void openFileList( const std::list< FileInformation > fileInfoList );
 	virtual void centerImages( bool ca = false );
 	virtual void closeImage( std::shared_ptr<ImageHolder> image, bool refreshUI = true );
+	void images_loaded(isis::qt5::IsisImageList images,QStringList rejects);
 
 Q_SIGNALS:
 	void emitZoomChanged( float zoom );
@@ -108,14 +102,9 @@ private:
 
 	void checkForErrors();
 
-	//@todo implement me
-//	std::list< qt5::QMessage > m_MessageLog;
-//	std::list< qt5::QMessage > m_DevMessageLog;
-
 	QWidget *m_Parent;
 	plugin::PluginLoader::PluginListType m_PluginList;
 	std::string m_CurrentPath;
-	std::shared_ptr< QProgressFeedback > m_ProgressFeedback;
 	UICore *m_UI;
 
 	std::list<FileInformation> m_OpenFileList;

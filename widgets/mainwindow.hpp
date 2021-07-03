@@ -25,8 +25,7 @@
  *  Created on: Aug 12, 2011
  *      Author: tuerke
  ******************************************************************/
-#ifndef ISISMAINWINDOW_HPP
-#define ISISMAINWINDOW_HPP
+#pragma once
 
 #include <QMainWindow>
 #include "ui_mainwindow.h"
@@ -115,7 +114,6 @@ protected:
 
 private:
 
-
 	Ui::vastMainWindow m_Interface;
 	QViewerCore *m_ViewerCore;
 
@@ -140,7 +138,6 @@ private:
 #include "preferenceDialog.hpp"
 #include "scalingWidget.hpp"
 #include "../viewer/nativeimageops.hpp"
-#include "loggingDialog.hpp"
 #include "filedialog.hpp"
 #include "startwidget.hpp"
 #include "keycommandsdialog.hpp"
@@ -148,6 +145,3 @@ private:
 #ifdef HAVE_WEBKIT
 #include "helpdialog.hpp"
 #endif //HAVE_WEBKIT
-
-
-#endif

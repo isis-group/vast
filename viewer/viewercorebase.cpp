@@ -68,8 +68,8 @@ ImageHolder::Pointer ViewerCoreBase::addImage( const isis::data::Image &image, c
 	if( image.hasProperty( "source" ) ) {
 		fileName = image.getValueAs<std::string>( "source" );
 	} else {
-		const boost::filesystem::path path = image.getChunk( 0 ).getValueAs<std::string>( "source" );
-		fileName = path.branch_path().string();
+		const std::filesystem::path path = image.getChunk( 0 ).getValueAs<std::string>( "source" );
+		fileName = path.parent_path().string();
 	}
 
 	ImageHolder::Pointer  retImage = ImageHolder::Pointer( new ImageHolder );

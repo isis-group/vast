@@ -39,7 +39,7 @@ namespace isis::viewer
 class MemoryHandler
 {
 public:
-	static util::ivector4 get32BitAlignedSize( const util::ivector4 &origSize );
+	static util::ivector4 get32BitAlignedSize(const util::vector4<size_t> &origSize );
 
 	template< typename TYPE>
 	static void fillSliceChunk( data::MemChunk<TYPE> &sliceChunk, const ImageHolder::Pointer image, const PlaneOrientation &orientation ) {
@@ -111,7 +111,7 @@ public:
 
 				for ( float i = bb[_mapping[0]].first; i < bb[_mapping[0]].second; i += stepI ) {
 					phys[_mapping[0]] = i;
-					isisImage->mapPhysicalToIndex( phys, voxCoords );
+					image->mapPhysicalToIndex( phys, voxCoords );
 
 					if( isisImage->checkVoxel( voxCoords ) ) {
 						const int32_t sliceCoords[] = { voxCoords[mapping[0]], voxCoords[mapping[1]] };

@@ -57,7 +57,7 @@ void isis::viewer::plugin::HistogramDialog::paintHistogram()
 
 	if( m_ViewerCore->hasImage() && isVisible() ) {
 		std::stringstream title;
-		title << "Histogram of " << boost::filesystem::path( m_ViewerCore->getCurrentImage()->getImageProperties().fileName ).leaf();
+		title << "Histogram of " << std::filesystem::path( m_ViewerCore->getCurrentImage()->getImageProperties().fileName ).leaf();
 
 		if( m_ViewerCore->getCurrentImage()->getImageSize()[3] > 1 ) {
 			title << " (volume " << m_ViewerCore->getCurrentImage()->getImageProperties().timestep << ")";

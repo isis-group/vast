@@ -246,7 +246,7 @@ void isis::viewer::ui::FileDialog::parsePath()
 		m_Interface.openSaveButton->setEnabled( false );
 		m_Interface.addToListButton->setEnabled( false );
 	} else {
-		util::istring extension = boost::filesystem::extension( boost::filesystem::path( m_Interface.fileDirEdit->currentText().toStdString() ) ).c_str();
+		util::istring extension = std::filesystem::path( m_Interface.fileDirEdit->currentText().toStdString() ).extension().c_str();
 		extension.erase( 0, 1 );
 
 		if( !extension.empty() && m_Suffix.empty() ) {
@@ -275,15 +275,15 @@ bool isis::viewer::ui::FileDialog::checkIfPathIsValid( QString path, unsigned sh
 {
 	std::string path_str = path.toStdString();
 	boost::trim( path_str );    //use trim to remove leading ant trailing white spaces
-	boost::filesystem::path p( path_str );
+	std::filesystem::path p( path_str );
 	std::list<util::istring> fileFormatList = getFileFormatsAsList( isis::image_io::FileFormat::read_only );
 
 	//ok, path exists
-	if( boost::filesystem::exists( p ) ) {
+	if( std::filesystem::exists( p ) ) {
 		//is dir?
-		if( boost::filesystem::is_directory( p ) && mode == OPEN_DIR ) {
-			for ( boost::filesystem::directory_iterator itr( p ); itr != boost::filesystem::directory_iterator(); ++itr ) {
-				if ( boost::filesystem::is_directory( *itr ) )continue;
+		if( std::filesystem::is_directory( p ) && mode == OPEN_DIR ) {
+			for ( std::filesystem::directory_iterator itr( p ); itr != std::filesystem::directory_iterator(); ++itr ) {
+				if ( std::filesystem::is_directory( *itr ) )continue;
 
 				checkIfPathIsValid( itr->path().native().c_str(), validFiles, suffix, OPEN_FILE );
 			}
@@ -293,8 +293,8 @@ bool isis::viewer::ui::FileDialog::checkIfPathIsValid( QString path, unsigned sh
 			}
 
 			//
-		} else if ( !boost::filesystem::is_directory( p ) ) {
-			util::istring extension = boost::filesystem::extension( p ).c_str();
+		} else if ( !std::filesystem::is_directory( p ) ) {
+			util::istring extension =  p.extension().c_str();
 			//lstrip "."
 			extension.erase( 0, 1 );
 
@@ -318,9 +318,9 @@ void isis::viewer::ui::FileDialog::browse()
 {
 	std::string path_str = m_Interface.fileDirEdit->currentText().toStdString();
 	boost::trim( path_str );
-	boost::filesystem::path p( path_str );
+	std::filesystem::path p( path_str );
 
-	if ( boost::filesystem::is_directory( p ) ) {
+	if ( std::filesystem::is_directory( p ) ) {
 		m_FileDialog.setDirectory( p.native().c_str() );
 	}
 

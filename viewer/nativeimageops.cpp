@@ -54,7 +54,7 @@ std::pair< double, double > isis::viewer::operation::NativeImageOps::getScalingO
 }
 
 
-isis::util::vector4<size_t> isis::viewer::operation::NativeImageOps::getGlobalMin( const std::shared_ptr< isis::viewer::ImageHolder > image, const util::ivector4 &startPos, const unsigned short &radius )
+isis::util::vector4<size_t> isis::viewer::operation::NativeImageOps::getGlobalMin(const std::shared_ptr< isis::viewer::ImageHolder > image, const util::vector4<size_t> &startPos, const unsigned short &radius )
 {
 	if( image->getISISImage()->getVolume() >= 1e6 ) {
 		m_ViewerCore->getUICore()->toggleLoadingIcon( true );
@@ -103,7 +103,7 @@ isis::util::vector4<size_t> isis::viewer::operation::NativeImageOps::getGlobalMi
 
 }
 
-isis::util::vector4<size_t> isis::viewer::operation::NativeImageOps::getGlobalMax( const std::shared_ptr< isis::viewer::ImageHolder > image, const util::ivector4 &startPos, const unsigned short &radius )
+isis::util::vector4<size_t> isis::viewer::operation::NativeImageOps::getGlobalMax(const std::shared_ptr< isis::viewer::ImageHolder > image, const util::vector4<size_t> &startPos, const unsigned short &radius )
 {
 	if( image->getISISImage()->getVolume() >= 1e6 ) {
 		m_ViewerCore->getUICore()->toggleLoadingIcon( true );

@@ -30,6 +30,7 @@
 #include <QGridLayout>
 #include <QToolBar>
 #include <isis/core/io_factory.hpp>
+#include <isis/adapter/qt5/guiprogressfeedback.hpp>
 #include <QMessageBox>
 #include "../viewer/uicore.hpp"
 #include "../viewer/qviewercore.hpp"
@@ -42,7 +43,6 @@ namespace isis::viewer
 
 MainWindow::MainWindow( QViewerCore *core ) :
 	preferencesDialog( new ui::PreferencesDialog( this, core ) ),
-	loggingDialog( new ui::LoggingDialog( this, core ) ),
 	fileDialog( new ui::FileDialog( this, core ) ),
 	startWidget( new ui::StartWidget( this, core ) ),
 	scalingWidget( new ui::ScalingWidget( this, core ) ),
@@ -148,7 +148,9 @@ MainWindow::MainWindow( QViewerCore *core ) :
 	m_RadiusSpin->setMaximum( 500 );
 	m_RadiusSpin->setToolTip( "Search radius for finding local minimum/maximum. If radius is 0 it will search the entire image." );
 
-	m_Interface.statusbar->addPermanentWidget( m_ViewerCore->getProgressFeedback()->getProgressBar() );
+	auto pgrs= std::make_shared<qt5::QStatusBarProgress>(m_Interface.statusbar);
+	m_ViewerCore->setProgressFeedback(std::static_pointer_cast<util::ProgressFeedback>(pgrs));
+
 	m_Interface.statusbar->addPermanentWidget( m_StatusTextLabel );
 	m_Interface.statusbar->addPermanentWidget( m_StatusMovieLabel );
 	m_StatusMovie->setFileName( ":/common/loading.gif" );
@@ -275,8 +277,7 @@ void MainWindow::propagateZooming( bool propagate )
 
 void MainWindow::showLoggingDialog()
 {
-	loggingDialog->synchronize();
-	loggingDialog->setVisible( true );
+	//@todo implement me
 }
 
 
@@ -407,7 +408,7 @@ void MainWindow::saveAllImages()
 			case QMessageBox::Yes:
 				BOOST_FOREACH( ImageHolder::Vector::const_reference image, m_ViewerCore->getImageVector() ) {
 					m_ViewerCore->getUICore()->toggleLoadingIcon( true, QString( "Saving image to " ) + image->getImageProperties().fileName.c_str() );
-					isis::data::IOFactory::write( *image->getISISImage(), image->getImageProperties().fileName, "", "" );
+					isis::data::IOFactory::write( *image->getISISImage(), image->getImageProperties().fileName );
 				}
 				m_ViewerCore->getUICore()->toggleLoadingIcon( false );
 				break;
@@ -435,7 +436,7 @@ void MainWindow::saveImageAs()
 
 		if( filename.size() ) {
 			m_ViewerCore->getUICore()->toggleLoadingIcon( true, QString( "Saving image to " ) + filename );
-			isis::data::IOFactory::write( *m_ViewerCore->getCurrentImage()->getISISImage(), filename.toStdString(), "", "" );
+			isis::data::IOFactory::write( *m_ViewerCore->getCurrentImage()->getISISImage(), filename.toStdString() );
 			m_ViewerCore->setCurrentPath( filename.toStdString() );
 			m_ViewerCore->getUICore()->toggleLoadingIcon( false );
 		}
@@ -454,8 +455,8 @@ void MainWindow::reloadPluginsToGUI()
 		getInterface().menu_Tools->addMenu( processMenu );
 
 		QSignalMapper *signalMapper = new QSignalMapper( this );
-		BOOST_FOREACH( plugin::PluginLoader::PluginListType::const_reference plugin, m_ViewerCore->getPlugins() ) {
-			std::list<std::string> sepName = isis::util::stringToList<std::string>( plugin->getName(), boost::regex( "/" ) );
+		for( const auto &plugin: m_ViewerCore->getPlugins() ) {
+			std::list<std::string> sepName = isis::util::stringToList<std::string>( plugin->getName(), std::regex( "/" ) );
 			QMenu *tmpMenu = processMenu;
 			std::list<std::string>::iterator iter = sepName.begin();
 
@@ -568,10 +569,12 @@ void MainWindow::findGlobalMin()
 {
 	if( m_ViewerCore->hasImage() ) {
 		const int radius = m_RadiusSpin->value();
-		const util::ivector4 minVoxel = operation::NativeImageOps::getGlobalMin( m_ViewerCore->getCurrentImage(),
-										m_ViewerCore->getCurrentImage()->getImageProperties().voxelCoords,
-										radius );
-		m_ViewerCore->physicalCoordsChanged( m_ViewerCore->getCurrentImage()->getISISImage()->getPhysicalCoordsFromIndex( minVoxel ) );
+		const auto minVoxel = operation::NativeImageOps::getGlobalMin(
+			m_ViewerCore->getCurrentImage(),
+			m_ViewerCore->getCurrentImage()->getImageProperties().voxelCoords,
+			radius
+		);
+		m_ViewerCore->physicalCoordsChanged( m_ViewerCore->getCurrentImage()->getPhysicalCoordsFromIndex( minVoxel ) );
 	}
 }
 
@@ -581,11 +584,11 @@ void MainWindow::findGlobalMax()
 		const int radius = m_RadiusSpin->value();
 
 
-		const util::ivector4 maxVoxel = operation::NativeImageOps::getGlobalMax( m_ViewerCore->getCurrentImage(),
+		const auto maxVoxel = operation::NativeImageOps::getGlobalMax( m_ViewerCore->getCurrentImage(),
 										m_ViewerCore->getCurrentImage()->getImageProperties().voxelCoords,
 										radius );
 
-		m_ViewerCore->physicalCoordsChanged( m_ViewerCore->getCurrentImage()->getISISImage()->getPhysicalCoordsFromIndex( maxVoxel ) );
+		m_ViewerCore->physicalCoordsChanged( m_ViewerCore->getCurrentImage()->getPhysicalCoordsFromIndex( maxVoxel ) );
 	}
 }
 

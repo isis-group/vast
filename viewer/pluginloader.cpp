@@ -74,14 +74,14 @@ unsigned int PluginLoader::findPlugins( std::list< std::string > paths )
 	bool pathOk;
 	for(const auto &pathRef: paths ) {
 		pathOk = true;
-		boost::filesystem::path p( pathRef );
+		std::filesystem::path p( pathRef );
 
-		if( !boost::filesystem::exists( p ) ) {
+		if( !std::filesystem::exists( p ) ) {
 			LOG( Runtime, warning ) << "Pluginpath " << util::MSubject( p ) << " not found!";
 			pathOk = false;
 		}
 
-		if( !boost::filesystem::is_directory( p ) ) {
+		if( !std::filesystem::is_directory( p ) ) {
 			LOG( Runtime, warning ) << util::MSubject( p ) << " is not a directory!";
 			pathOk = false;
 		}
@@ -91,8 +91,8 @@ unsigned int PluginLoader::findPlugins( std::list< std::string > paths )
 		std::regex pluginFilter( std::string( "^" ) + DL_PREFIX + "vastPlugin" + "[[:word:]]+" + DL_SUFFIX + "$" );
 
 		if( pathOk ) {
-			for ( boost::filesystem::directory_iterator itr( p ); itr != boost::filesystem::directory_iterator(); ++itr ) {
-				if ( boost::filesystem::is_directory( *itr ) )continue;
+			for ( std::filesystem::directory_iterator itr( p ); itr != std::filesystem::directory_iterator(); ++itr ) {
+				if ( std::filesystem::is_directory( *itr ) )continue;
 
 				if ( std::regex_match( itr->path().filename().string(), pluginFilter ) ) {
 					const std::string pluginName = itr->path().native();
@@ -158,9 +158,9 @@ PluginLoader::PluginLoader()
 	}
 
 	if( env_home ) {
-		const boost::filesystem::path home = boost::filesystem::path( env_home ) / "vast" / "plugins";
+		const std::filesystem::path home = std::filesystem::path( env_home ) / "vast" / "plugins";
 
-		if( boost::filesystem::exists( home ) ) {
+		if( std::filesystem::exists( home ) ) {
 			addPluginSearchPath( home.native() );
 		}
 	}

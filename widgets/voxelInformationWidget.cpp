@@ -391,7 +391,7 @@ void VoxelInformationWidget::synchronizePos(util::vector4<size_t> voxelCoords )
 	m_Interface.columnSpin->setValue( voxelCoords[0] );
 	m_Interface.rowSpin->setValue( voxelCoords[1] );
 	m_Interface.sliceBox->setValue( voxelCoords[2] );
-	const util::fvector3 physCoords = image->getISISImage()->getPhysicalCoordsFromIndex( voxelCoords );
+	const util::fvector3 physCoords = image->getPhysicalCoordsFromIndex( voxelCoords );
 	m_Interface.xBox->setValue( physCoords[0] );
 	m_Interface.yBox->setValue( physCoords[1] );
 	m_Interface.zBox->setValue( physCoords[2] );

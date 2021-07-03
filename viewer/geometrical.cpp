@@ -28,13 +28,10 @@
 
 #include "geometrical.hpp"
 
-namespace isis
+namespace isis::viewer::geometrical
 {
-namespace viewer
-{
-namespace geometrical
-{
-
+BoundingBoxType getPhysicalBoundingBox( const std::shared_ptr<ImageHolder> image, const unsigned short &border )
+{return getPhysicalBoundingBox({image},border);}
 BoundingBoxType getPhysicalBoundingBox ( const ImageHolder::Vector images, const unsigned short &border )
 {
 	BoundingBoxType retBox;
@@ -76,6 +73,4 @@ BoundingBoxType getPhysicalBoundingBox ( const ImageHolder::Vector images, const
 }
 
 
-}
-}
 }

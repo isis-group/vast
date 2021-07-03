@@ -40,7 +40,7 @@ isis::viewer::ui::HelpDialog::HelpDialog( QWidget *parent )
 
 void isis::viewer::ui::HelpDialog::showEvent ( QShowEvent *e )
 {
-	if( boost::filesystem::is_directory( boost::filesystem::path( std::string( VAST_DOC_PATH ) ) ) ) {
+	if( std::filesystem::is_directory( std::filesystem::path( std::string( VAST_DOC_PATH ) ) ) ) {
 		std::string indexFile = std::string ( VAST_DOC_PATH ) + std::string( "/index.html" );
 		m_Interface.helpView->load( QUrl( indexFile.c_str() ) );
 	} else {

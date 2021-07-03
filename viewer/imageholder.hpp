@@ -51,7 +51,6 @@ public:
 		imageSize = getSizeAsVector();
 	};
 
-	void mapPhysicalToIndex( const float *physicalCoords, int32_t *index );
 	bool checkVoxel( const int32_t *coords );
 private:
 	std::array<size_t,4> imageSize;
@@ -109,7 +108,7 @@ private:
 		util::Matrix3x3<float> latchedOrientation;
 		unsigned short majorTypeID;
 		std::string majorTypeName;
-		std::pair<util::Value, util::Value> scalingToInternalType;
+		data::scaling_pair scalingToInternalType;
 		geometrical::BoundingBoxType boundingBox;
 		double voxelValue;
 	};
@@ -179,7 +178,7 @@ public:
 	template<typename TYPE>
 	void setTypedVoxel(  const size_t &first, const size_t &second, const size_t &third, const size_t &fourth, const TYPE &value, bool sync = true ) {
 		m_VolumeVector[fourth].voxel<InternalImageType>( first, second, third )
-		= static_cast<double>( value ) * getImageProperties().scalingToInternalType.first.as<double>() + getImageProperties().scalingToInternalType.second.as<double>();
+		= static_cast<double>( value ) * getImageProperties().scalingToInternalType.scale.as<double>() + getImageProperties().scalingToInternalType.offset.as<double>();
 
 		if( sync ) {
 			getISISImage()->voxel<TYPE>( first, second, third, fourth ) = value;
@@ -193,11 +192,12 @@ public:
 	}
 
 	void phyisicalCoordsChanged( const util::fvector3 &physicalCoords );
-	void voxelCoordsChanged( const util::ivector4 &voxelCoords );
+	void voxelCoordsChanged(const util::vector4<size_t> &voxelCoords );
 	void timestepChanged( const size_t &timestep );
 
 	util::fvector3 getPhysicalCoordsFromIndex(const util::vector4<size_t> &voxelCoords ) const;
 	util::vector4<size_t> getIndexFromPhysicalCoords(const isis::util::fvector3 &physicalCoords ) const;
+	void mapPhysicalToIndex ( const float *physicalCoords, int32_t *index );
 private:
 	util::Matrix3x3<float> calculateLatchedImageOrientation( bool transposed = false );
 	util::Matrix3x3<float> calculateImageOrientation( bool transposed = false ) const;
@@ -240,8 +240,8 @@ private:
 			getImageProperties().scalingToInternalType = image.getScalingTo( util::typeID<TYPE>() );
 		}
 
-		LOG( Dev, info ) << "scalingToInternalType: " << getImageProperties().scalingToInternalType.first.as<double>() << " : " << getImageProperties().scalingToInternalType.second.as<double>();
-		image.copyToMem<TYPE>( &imagePtr[0], image.getVolume(), getImageProperties().scalingToInternalType );
+		LOG( Dev, info ) << "scalingToInternalType: " << getImageProperties().scalingToInternalType.scale;
+		image.copyToValueArray(imagePtr, getImageProperties().scalingToInternalType );
 		LOG( Dev, verbose_info ) << "Copied image to continuous memory space.";
 
 		//splice the image in its volumes -> we get a vector of t volumes

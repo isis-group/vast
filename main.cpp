@@ -50,49 +50,26 @@ int main( int argc, char *argv[] )
 	using namespace viewer;
 	signal( SIGSEGV, error::sigsegv );
 
-	std::string appName = "vast";
-	std::string orgName = "cbs.mpg.de";
-	QCoreApplication::setApplicationName( appName.c_str() );
-	QCoreApplication::setOrganizationName( orgName.c_str() );
+	QCoreApplication::setOrganizationName( "cbs.mpg.de" );
 	QSettings settings;
 
-	qt5::IOQtApplication app( appName.c_str(), false, false );
-	app.parameters["in"] = util::slist();
-	app.parameters["in"].needed() = false;
-	app.parameters["in"].setDescription( "The input image file list." );
-//	app.parameters["zmap"] = util::slist();
-//	app.parameters["zmap"].needed() = false;
-//	app.parameters["zmap"].setDescription( "The input image file list is interpreted as statistical maps. " );
-	//alias to zmap
-//	app.parameters["stats"] = util::slist();
-//	app.parameters["stats"].needed() = false;
-//	app.parameters["stats"].setDescription( "The input image file list is interpreted as statistical maps. " );
+	qt5::IOQtApplication app( "vast", true, false );
 	app.parameters["split"] = false;
 	app.parameters["split"].needed() = false;
 	app.parameters["split"].setDescription( "Show each image in a separate view" );
 	app.parameters["widget"] = std::string();
 	app.parameters["widget"].needed() = false;
 	app.parameters["widget"].setDescription( "Use specific widget" );
-	app.init( argc, argv, false );
-	auto core = std::make_unique<QViewerCore>();
+	auto core = app.init( argc, argv, &QViewerCore::images_loaded );
 
 	app.addLogging<viewer::Runtime>("");
 	app.addLogging<viewer::Dev>("");
 
-	//setting stylesheet
-	if ( settings.value( "useStyleSheet" ).toBool() ) {
-		app.getQApplication().setStyleSheet( util::Singletons::get<style::Style, 10>().getStyleSheet( settings.value("styleSheet").toString().toStdString() ) );
-	}
-
-	//@todo implement me
-//	core->addMessageHandler( logging_hanlder_runtime.get() );
-//	core->addMessageHandlerDev( logging_hanlder_dev.get() );
 	//scan for plugins and hand them to the core
 	core->addPlugins( plugin::PluginLoader::get().getPlugins() );
 	core->getUICore()->reloadPluginsToGUI();
 
 	std::string widget_name = app.parameters["widget"];
-
 
 	if( widget_name.empty() ) {
 		if( settings.value( "showImagesGeometricalView" ).toBool() && core->hasWidget( settings.value( "widgetGeometrical" ).toString().toStdString() ) ) {
@@ -108,39 +85,6 @@ int main( int argc, char *argv[] )
 		std::cerr << "Error loading widget!" << std::endl;
 	}
 
-	util::slist fileList = app.parameters["in"];
-//	const bool zmapIsSet = app.parameters["zmap"].isParsed() || app.parameters["stats"].isParsed();
-//	util::slist zmapFileList = app.parameters["zmap"];
-//
-//	if( !zmapFileList.size() ) {
-//		zmapFileList = app.parameters["stats"];
-//	}
-//
-//	if( zmapIsSet ) {
-//		core->setMode( ViewerCoreBase::statistical_mode );
-//	}  else {
-//		core->setMode( ViewerCoreBase::default_mode );
-//	}
-
-	std::list<FileInformation> fileInfoList;
-
-	for( util::slist::const_reference file: fileList ) {
-		fileInfoList.push_back( FileInformation( file,
-								app.parameters["rdialect"].as<std::string>().c_str(),
-								app.parameters["rf"].as<std::string>().c_str(),
-								widget_name,
-								ImageHolder::structural_image,
-								app.parameters["split"].as<bool>() ) );
-	}
-//	for( util::slist::const_reference file: zmapFileList ) {
-//		fileInfoList.push_back( FileInformation( file,
-//								app.parameters["rdialect"].as<std::string>().c_str(),
-//								app.parameters["rf"].as<std::string>().c_str(),
-//								widget_name,
-//								ImageHolder::statistical_image,
-//								app.parameters["split"].as<bool>() ) );
-//	}
-
-	core->getUICore()->showMainWindow( fileInfoList );
-	return app.getQApplication().exec();
+	core->getUICore()->showMainWindow( );
+	return app.exec();
 }

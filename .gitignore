@@ -14,6 +14,8 @@ debug/
 Debug/
 build/
 Build/
+cmake-build-*/
+.idea/
 
 #Packaging##############################
 lib/Core/debian/tmp/

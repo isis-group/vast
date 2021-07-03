@@ -66,16 +66,16 @@ unsigned int WidgetLoader::findWidgets( std::list< std::string > paths )
 {
 	unsigned int ret = 0;
 	bool pathOk;
-	BOOST_FOREACH( PathsType::const_reference pathRef, paths ) {
+	for( const auto &pathRef: paths ) {
 		pathOk = true;
-		boost::filesystem::path p( pathRef );
+		std::filesystem::path p( pathRef );
 
-		if( !boost::filesystem::exists( p ) ) {
+		if( !std::filesystem::exists( p ) ) {
 			LOG( Dev, warning ) << "Widgetpath " << util::MSubject( p ) << " not found!";
 			pathOk = false;
 		}
 
-		if( !boost::filesystem::is_directory( p ) ) {
+		if( !std::filesystem::is_directory( p ) ) {
 			LOG( Dev, warning ) << util::MSubject( p ) << " is not a directory!";
 			pathOk = false;
 		}
@@ -86,8 +86,8 @@ unsigned int WidgetLoader::findWidgets( std::list< std::string > paths )
 		std::regex widgetFilter( std::string( "^" ) + DL_PREFIX + "vastImageWidget" + "[[:word:]]+" + DL_SUFFIX + "$" );
 
 		if( pathOk ) {
-			for ( boost::filesystem::directory_iterator itr( p ); itr != boost::filesystem::directory_iterator(); ++itr ) {
-				if ( boost::filesystem::is_directory( *itr ) )continue;
+			for ( std::filesystem::directory_iterator itr( p ); itr != std::filesystem::directory_iterator(); ++itr ) {
+				if ( std::filesystem::is_directory( *itr ) )continue;
 
 				if ( std::regex_match( itr->path().filename().string(), widgetFilter ) ) {
 					const std::string widgetName = itr->path().native();
@@ -159,9 +159,9 @@ WidgetLoader::WidgetLoader()
 	}
 
 	if( env_home ) {
-		const boost::filesystem::path home = boost::filesystem::path( env_home ) / "vast" / "widgets";
+		const std::filesystem::path home = std::filesystem::path( env_home ) / "vast" / "widgets";
 
-		if( boost::filesystem::exists( home ) ) {
+		if( std::filesystem::exists( home ) ) {
 			addWidgetSearchPath( home.native() );
 		}
 	}
